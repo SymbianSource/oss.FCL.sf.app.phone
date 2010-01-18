@@ -1,0 +1,38 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  IBY file for Dialer
+*
+*/
+
+
+#ifndef DIALER_IBY
+#define DIALER_IBY
+
+#ifdef __ON_SCREEN_DIALER
+file=ABI_DIR\BUILD_DIR\dialer.dll                SHARED_LIB_DIR\DIALER.dll
+#else
+file=ABI_DIR\BUILD_DIR\dialerstub.dll            SHARED_LIB_DIR\DIALER.dll
+#endif
+
+#ifdef __ON_SCREEN_DIALER
+data=ZSYSTEM\install\dialer_stub.sis            	System\Install\dialer_stub.sis
+data=DATAZ_\RESOURCE_FILES_DIR\DIALER.rsc       	RESOURCE_FILES_DIR\DIALER.rsc
+SCALABLE_IMAGE(APP_BITMAP_DIR,APP_BITMAP_DIR,Dialer)
+#else
+// No resource or icon/image files needed when stub dialer is used.
+#endif __ON_SCREEN_DIALER
+
+#endif // DIALER_IBY
+
+//  End of File

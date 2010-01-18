@@ -1,0 +1,37 @@
+/*
+* Copyright (c) 2003-2005 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Build information specification for connection utility.
+*
+*/
+
+#include  <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+../inc/CCoUtlInterface.h        |../../../inc/ccoutlinterface.h
+../inc/CCoUtlInterface.inl      |../../../inc/ccoutlinterface.inl
+../inc/CoUtlInterface.hrh       |../../../inc/coutlinterface.hrh
+
+../data/connectutil_stub.SIS    /epoc32/data/z/system/install/connectutil_stub.sis
+
+../rom/connectutil.iby          CORE_APP_LAYER_IBY_EXPORT_PATH(connectutil.iby)
+../rom/connectutilResources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(connectutilResources.iby)
+../loc/connectutil.loc          APP_LAYER_LOC_EXPORT_PATH(connectutil.loc)
+
+PRJ_MMPFILES
+../group/ConnectUtil.mmp
+
+//  End of File  

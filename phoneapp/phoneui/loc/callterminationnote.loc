@@ -1,0 +1,36 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This is a localisation file for Phone
+*     A .loc file is the one and only place where the logical strings
+*     to be localised are defined. 
+*
+*/
+
+
+// LOCALISATION STRINGS
+
+// d: It is text used in the first line in call termination 
+// d: note.
+// l: popup_note_window
+//
+#define text_cterm_note_title "Call Terminated"
+
+// d: It is text used in the second line in call termination
+// d: note. After the text, last call timer value is shown.
+// l: popup_note_window
+//
+#define qtn_cterm_time "Time"
+
+// End of File

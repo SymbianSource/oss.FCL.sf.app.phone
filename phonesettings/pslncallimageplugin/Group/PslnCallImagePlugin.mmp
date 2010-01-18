@@ -1,0 +1,76 @@
+/*
+* Copyright (c) 2005-2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project specification file.
+*
+*/
+
+#include  <platform_paths.hrh>
+#include  <data_caging_paths.hrh>    // For RESOURCE_FILES_DIR
+
+CAPABILITY          CAP_ECOM_PLUGIN DRM WriteDeviceData
+TARGET              pslncallimageplugin.dll
+TARGETTYPE          PLUGIN
+UID                 0x10009D8D 0x102818EE
+VENDORID            VID_DEFAULT
+
+
+SOURCEPATH  ../src
+SOURCE      PslnCallImagePluginImplementationTable.cpp
+SOURCE      PslnCallImagePluginContainer.cpp
+SOURCE      PslnCallImagePlugin.cpp
+SOURCE      PslnCallImagePluginDRM.cpp
+
+//User include paths
+USERINCLUDE     ../inc
+USERINCLUDE     ../Data
+USERINCLUDE     ../Logger
+
+//System include paths
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE   /epoc32/include/ecom
+SYSTEMINCLUDE   /epoc32/include/cshelp
+
+SOURCEPATH      ../Data
+
+START RESOURCE  102818EE.rss
+TARGET          pslncallimageplugin.rsc
+END
+
+START RESOURCE  PslnCallImagePluginRsc.rss
+DEPENDS pslncommon.rsg
+TARGETPATH      RESOURCE_FILES_DIR
+HEADER
+LANGUAGE_IDS
+END
+
+LIBRARY   euser.lib
+LIBRARY   ecom.lib
+LIBRARY   efsrv.lib
+LIBRARY   avkon.lib
+LIBRARY   bafl.lib 
+LIBRARY   cone.lib 
+LIBRARY   eikcoctl.lib          // for CTextListBoxModel
+LIBRARY   eikcore.lib 
+LIBRARY   drmhelper.lib 		// for DRM functionality
+LIBRARY   mgfetch.lib			// for Media fetch
+LIBRARY   centralrepository.lib // for CenRep usage
+LIBRARY   commonengine.lib      // For RConeResourceLoader
+LIBRARY   aknskins.lib          // for icon creation.
+LIBRARY   featmgr.lib           // for feature manager
+LIBRARY   pslnframework.lib     // For base classes
+LIBRARY   flogger.lib      		// logging
+LIBRARY   drmutility.lib
+LIBRARY   aknskinsrv.lib		//skinServer
+
+// End of File

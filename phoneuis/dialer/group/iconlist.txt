@@ -1,0 +1,12 @@
+-c8,8  qgn_indi_dialer_eight
+-c8,8  qgn_indi_dialer_five
+-c8,8  qgn_indi_dialer_four
+-c8,8  qgn_indi_dialer_hash
+-c8,8  qgn_indi_dialer_nine
+-c8,8  qgn_indi_dialer_one
+-c8,8  qgn_indi_dialer_prefix
+-c8,8  qgn_indi_dialer_seven
+-c8,8  qgn_indi_dialer_six
+-c8,8  qgn_indi_dialer_three
+-c8,8  qgn_indi_dialer_two
+-c8,8  qgn_indi_dialer_zero

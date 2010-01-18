@@ -1,0 +1,327 @@
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains the localised strings for vm.app
+ *
+*/
+
+
+// LOCALISATION STRINGS
+
+// d: app name in list
+// l: list_single_large_graphic_pane_t1
+//
+#define qtn_apps_smsvo_list "Voice Mailbox"
+
+// d: app name in grid
+// l: cell_app_pane_t1
+//
+#define qtn_apps_smsvo_grid "Voice Mail"
+
+// d: Displayed in title pane
+// l: title_pane_t2/opt9
+//
+#define qtn_smsvo_title_voice_mailbox "Voice Mailbox"
+
+// d: Displayed in the main view in a list pane for double item
+// d: (the other item is the vmbx number)
+// l: list_double_pane_t1
+//
+#define qtn_smsvo_call_voicemail "Voice mail"
+
+// d: When vmbx number is not defined, this text is shown in the place of it.
+// l: list_double_pane_t2
+//
+#define qtn_smsvo_number_pane_empty "No number"
+
+// d: Command in options list in Vmbx. 
+// d: Changes voice mailbox number that was already defined earlier.
+// l: list_single_pane_t1_cp2
+//
+#define qtn_smsvo_change_number "Change number"
+
+// d: Command in options list in Vmbx. 
+// d: Changes voice mailbox number that was not defined earlier.
+// l: list_single_pane_t1_cp2
+//
+#define qtn_smsvo_define_number "Define number"
+
+// d: Prompt of the query for defining video mailbox number.
+// l: list_single_pane_t1_cp2
+// w:
+// r:3.1
+//
+#define qtn_smsvi_define_number "Define number"
+
+// d: Command in options list in Vmbx. 
+// d: Calls voice mailbox.
+// l: list_single_pane_t1_cp2
+//
+#define qtn_smsvo_call_voicemail_opt "Call voice mailbox"
+
+// CDMA ADDITIONS
+
+//d:Text in infotmation note when
+//d:the voicemail icon is cleared.
+//l:popup_note_window
+//
+#define qtn_smsvo_voicemail_cleared "Voicemail icon cleared"
+
+// d: Command in options list in Vmbx. 
+// d: Clears the voicemail icon.
+// l: list_single_pane_t1_cp2
+//
+#define qtn_smsvo_clear_icon "Clear icon"
+
+// d: Displayed in the main view in a list pane for double item.
+// d: The first item. Shows the voice message count.
+// l: list_double_pane_t1_cp2
+//
+#define qtn_smsvo_voice_messages "Voice messages"
+
+// d: Text for number of new messages in the double listbox.
+// d: For no new messages.
+// l: list_double_pane_t2
+//
+#define qtn_smsvo_no_new "No new messages"
+
+// d: Text for number of new messages in the double listbox.
+// d: For one new message.
+// l: list_double_pane_t2
+//
+#define qtn_smsvo_new_messages "New messages"
+
+// d: Text for number of new messages in the double listbox.
+// d: For several new messages.
+// l: list_double_pane_t2
+//
+#define qtn_smsvo_n_new "%N new messages"
+
+// d: Displayed in the main view in a list pane for double item;
+// d: The third/last item. Open the last message details dialog.
+// l: list_double_pane_t1_cp2
+//
+#define qtn_smsvo_details_of_last "Details of last message"
+
+// d: Displayed in title pane in the last message details dialog
+// l: title_pane_t2/opt9
+//
+#define qtn_smsvo_title_details "Details of last message"
+
+// d: Heading in the details view.
+// l: list_single_heading_pane_t2
+//
+#define qtn_smsvo_urgency "Urgency"
+
+// d: Body text in the details view under Urgency heading.
+// l: list_single_heading_pane_t1
+//
+#define qtn_smsvo_emergency "Emergency"
+
+// d: Body text in the details view under Urgency heading.
+// l: list_single_heading_pane_t1
+//
+#define qtn_smsvo_urgent "Urgent"
+
+// d: Body text in the details view under Urgency heading.
+// l: list_single_heading_pane_t1
+//
+#define qtn_smsvo_normal "Normal"
+
+// d: Heading in the details view.
+// l: list_single_heading_pane_t2
+//
+#define qtn_smsvo_date "Date"
+
+// d: Heading in the details view.
+// l: list_single_heading_pane_t2
+//
+#define qtn_smsvo_time "Time"
+
+// d: Heading in the details view.
+// l: list_single_heading_pane_t2
+//
+#define qtn_smsvo_call_back "Call back"
+
+// d: Heading in the details view.
+// l: list_single_heading_pane_t2
+//
+#define qtn_smsvo_text "Text"
+
+// d: Displayed in the main view in a list pane for double item
+// d: instead of qtn_smsvo_call_voicemail in CDMA
+// l: list_double_pane_t1_cp2
+//
+#define qtn_smsvo_mailbox_number "Mailbox number"
+
+
+
+// d: Displayed in the main view in a list pane for double item
+// d: (the other item is the vmbx address)
+// l: list_double_pane_t1
+//
+#define qtn_voip_mailbox "Internet call voice mailbox"
+
+// d: When vmbx address is not defined, this text is shown in the place of it.
+// l: list_double_pane_t2
+//
+#define qtn_voip_mailbox_empty "no address"
+
+// d: Command in options list in Vmbx. 
+// d: Changes voice mailbox address that was not defined earlier.
+// l: list_single_pane_t1_cp2
+//
+#define qtn_voip_define_mailbox_address "Define address"
+
+// d: Command in options list in Vmbx. 
+// d: Changes voice mailbox address that was already defined earlier.
+// l: list_single_pane_t1_cp2
+//
+#define qtn_voip_change_address "Change address"
+
+// d: Command in options list in Vmbx. 
+// d: Calls Int. voice mailbox.
+// l: list_single_pane_t1_cp2
+//
+#define qtn_voip_call_mailbox "Call Int. voice mailbox"
+
+// d: Text for calling voice mail in the options menu.
+// l: list_single_pane_t1_cp2
+// w:
+// r: 2.8
+//
+#define qtn_jpn_vmail_options_call_voice_mail "Call voice mail"
+
+// d: Text for activating voice mail in the options menu.
+// l: list_single_pane_t1_cp2
+// w:
+// r: 2.8
+//
+#define qtn_jpn_vmail_options_activate "Activate"
+
+// d: Text for cancelling voice mail in the options menu.
+// l: list_single_pane_t1_cp2
+// w:
+// r: 2.8
+//
+#define qtn_jpn_vmail_options_cancel "Cancel"
+
+// d: Text for voice mail status checking in the options menu.
+// l: list_single_pane_t1_cp2
+// w:
+// r: 2.8
+//
+#define qtn_jpn_vmail_options_status "Check Status"
+
+// d: Text for voice mail message checking in the options menu.
+// l: list_single_pane_t1_cp2
+// w:
+// r: 2.8
+//
+#define qtn_jpn_vmail_options_check_message "Check Message"
+
+// d: Text for voice mail main pane.
+// l: list_double2_pane
+// w:
+// r: 2.8
+//
+#define qtn_jpn_vmail_list_voice_mail "Voice mail"
+
+// d: Text for application title
+// l: title_pane_t2/opt9
+// w:
+// r: 2.8
+//
+#define qtn_jpn_vmail_title_voice_mail "Voice mail"
+
+// d: Text for activation title
+// l: heading_pane_t1
+// w:
+// r: 2.8
+//
+#define qtn_jpn_vmail_lbl_ringing_time "Ringing time:"
+
+// d: Text for items in activation list
+// l: list_single_pane_t1
+// w:
+// r: 2.8
+//
+#define qtn_jpn_vmail_sublist_seconds "%N seconds"
+
+// d: Displayed in the main view in a list pane for double item
+// d: (the other item is the vmbx number)
+// l: list_single_pane_t1
+// r: 3.1
+//
+#define qtn_smsvi_list_video_mailbox "Call videomail"
+
+// d: Command in options list in Vmbx. 
+// d: Calls video mailbox.
+// l: list_single_pane_t1_cp2
+// r: 3.1
+//
+#define qtn_smsvi_call_videomail_opt "Call video call mailbox"
+
+
+
+// d: Text in middle soft key (general purposes texts).
+// l:control_pane_t3/opt7
+// w:
+// r: 3.2
+//
+#define qtn_msk_call_cs_vmbx "Call"
+
+// d: Text in middle soft key (general purposes texts).
+// l:control_pane_t3/opt7
+// w:
+// r: 3.2
+//
+#define qtn_msk_call_video_mbx "Call"
+
+// d: Text in middle soft key (general purposes texts).
+// l:control_pane_t3/opt7
+// w:
+// r: 3.2
+//
+#define qtn_msk_call_voip_vmbx "Call"
+
+// d: Text in middle soft key (general purposes texts).
+// l:control_pane_t3/opt7
+// w:
+// r: 3.2
+//
+#define qtn_msk_define_video_mbx_number "Define"
+
+
+// d: Text in middle soft key (general purposes texts).
+// l:control_pane_t3/opt7
+// w:
+// r: 3.2
+//
+#define qtn_msk_define_cs_vmbx_number "Define"
+
+// d: Text in middle soft key (general purposes texts).
+// l:control_pane_t3/opt7
+// w:
+// r: 3.2
+//
+#define qtn_msk_define_voip_mbx_address "Define"
+
+// d: Displayed in the main view in a list pane for double item
+// d: (the other item is the vmbx number)
+// l: list_double_pane_t1
+// r:VoIP Rel3.0 
+//
+#define qtn_voip_list_mailbox_name "%U mailbox"
+
+// End of File

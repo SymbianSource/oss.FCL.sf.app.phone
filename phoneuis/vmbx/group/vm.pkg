@@ -1,0 +1,35 @@
+;
+; Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors:
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description: For packing vmbx.
+;
+; Languages
+&EN
+
+; Header
+#{"vm"},(0x100058F5),1,1,0,TYPE=PU
+
+;Localised Vendor name
+%{"Nokia"}
+
+; Unique Vendor name
+:"Nokia"
+
+;Files
+"vm.exe"-"c:\sys\bin\vm.exe"
+"gsvmbxplugin.dll"-"c:\sys\bin\gsvmbxplugin.dll"
+"gsvmbxpluginrsc.rsc"-"c:\resource\apps\gsvmbxpluginrsc.rsc"
+"vm.rsc"-"c:\resource\apps\vm.rsc"
+"gsvmbxplugin.mif"-"c:\resource\apps\vm_aif.mif"
+"gsvmbxplugin.mif"-"c:\resource\apps\vm_aif.mbm"
+"vm_reg.rsc"-"c:\private\10003a3f\import\apps\vm_reg.rsc"

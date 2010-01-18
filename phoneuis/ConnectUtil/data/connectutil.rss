@@ -1,0 +1,68 @@
+/*
+* Copyright (c) 2003 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains all the resources 
+*                for the Connection utility.
+*
+*/
+
+
+//  RESOURCE IDENTIFIER
+NAME     COUT
+
+//  INCLUDES
+#include <eikon.rh>
+#include <avkon.rh>
+#include <avkon.hrh>
+#include <avkon.rsg>
+#include <avkon.loc>
+
+#include <connectutil.loc>
+
+
+//  RESOURCE DEFINITIONS 
+
+// -----------------------------------------------------------------------------
+//
+//    RSS_SIGNATURE
+//    Signature.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE { }
+
+// -----------------------------------------------------------------------------
+//
+//    r_coutl_confirm_one_connection
+//    Text for confirming termination of one connection.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_coutl_confirm_one_connection
+    {
+    buf = qtn_dea_gprs_disconnect_single;
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    r_coutl_confirm_connections
+//    Text for confirming termination of multiple connections.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_coutl_confirm_connections
+    {
+    buf = qtn_dea_gprs_disconnect_many;
+    }
+
+// End of File

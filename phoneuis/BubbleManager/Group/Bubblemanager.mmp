@@ -1,0 +1,126 @@
+/*
+* Copyright (c) 2002-2005 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This is project specification file for the Bubblemanager. 
+*
+*/
+
+
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+// Capability assignment.
+CAPABILITY CAP_GENERAL_DLL
+
+// Assign Vendor ID.
+VENDORID VID_DEFAULT
+
+TARGET      bubblemanager.dll
+TARGETTYPE  dll
+UID         0x1000008d 0x100058FF 
+
+START RESOURCE ../Data/BubbleManager.rss
+HEADER
+TARGETPATH   RESOURCE_FILES_DIR 
+LANGUAGE_IDS
+END  // RESOURCE
+
+sourcepath  ../Src
+source  BMBubbleManager.cpp
+source  BMCallHeader.cpp
+source  BMBubblePlace.cpp
+source  BMBubbleOutlookBottom.cpp
+source  BMBubbleImageManager.cpp
+source  BMConfHeader.cpp
+source  BMBubbleHeader.cpp
+source  BMBubbleOutlook.cpp
+source  BMConfPane.cpp
+source  BMBubbleOutlookBottomRight.cpp
+source  BMBubbleOutlookMiddle.cpp
+source  BMBubbleOutlookTopLeft.cpp
+source  BMBubbleOutlookTopRight.cpp
+source  BMBubbleOutlookConference.cpp
+source  BMBubbleOutlookNE.cpp
+source  BMBubbleOutlookHide.cpp
+source  BMUtils.cpp
+source  BMPanic.cpp
+source  BMResourceManager.cpp
+source  BMBubbleOutlookTwoLined.cpp
+source  BMBubbleOutlookOneLined.cpp
+source  BMBubbleOutlookThreeLined.cpp
+source  BMBubbleOutlookMiddleCnap.cpp
+source  BMBubbleOutlookBottomCnap.cpp
+source  BMBubbleImage.cpp
+source  BMBubbleSkinBitmap.cpp
+source  BMBubbleOutlookFiveLined.cpp
+source  BMBubbleOutlookBottomText.cpp
+source  BMBubbleOutlookBottomImage.cpp
+source  BMCallObjectManager.cpp
+source  BMCallObjectUtils.cpp
+source  BMMediaReaderFactory.cpp
+source  BMMediaReader.cpp
+source  BMImageReader.cpp
+source  BMBubbleOutlookVideo.cpp
+source  BMBubbleOutlookVideoCnap.cpp
+source  BMVideoController.cpp
+source  BMBubbleVideoContainer.cpp    
+source  BMVideoPlayer.cpp
+source  BMBubbleOutlookBottomRiCnap.cpp
+source  BMBubbleOutlookBottomImCnap.cpp
+source  BMTouchPane.cpp
+source  BMCustomManager.cpp
+source  BMDefaultManager.cpp
+source  BMCallStatusIndi.cpp
+source  BMCallStatusIndiBig.cpp
+source  BMCallStatusIndiSmall.cpp
+source  BMCallStatusAnim.cpp
+source  BMCallStatusAnimBig.cpp
+source  BMCallStatusAnimSmall.cpp
+source  BMNumberTypeIcon.cpp
+source  BMMainPaneControl.cpp
+source  BMTouchPaneButton.cpp
+
+sourcepath ../laf
+source  BMLayout.cpp
+source  BMLayout2.cpp
+source  BMLayout3.cpp
+source  BMLayout4.cpp 
+source  BMLayout6.cpp
+
+USERINCLUDE . ../Inc ../Data ../laf ../bmcustomization/inc
+
+SYSTEMINCLUDE ../../../inc  // s60/app/telephony/inc
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY euser.lib cone.lib ws32.lib bmpanim.lib eikcore.lib
+LIBRARY eikcoctl.lib fbscli.lib bafl.lib 
+LIBRARY commonengine.lib
+LIBRARY aknskins.lib aknicon.lib avkon.lib
+LIBRARY numbergrouping.lib
+LIBRARY featmgr.lib
+LIBRARY cdlengine.lib
+LIBRARY aknlayout2scalable.lib
+LIBRARY gdi.lib
+LIBRARY bitgdi.lib
+LIBRARY egul.lib
+LIBRARY ihl.lib
+LIBRARY mediaclientvideo.lib
+LIBRARY efsrv.lib
+LIBRARY centralrepository.lib
+#ifdef RD_UI_TRANSITION_EFFECTS_PHASE2
+LIBRARY gfxtrans.lib
+LIBRARY akntransitionutils.lib
+#endif
+LIBRARY bmcustomization.lib
+
+// End of File

@@ -1,0 +1,60 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Phone Engine iby file
+*
+*/
+
+
+#ifndef PHONEENGINE_IBY
+#define PHONEENGINE_IBY
+
+#include <data_caging_paths_for_iby.hrh>
+
+// Phone Engine
+file=ABI_DIR\BUILD_DIR\PHONEENGINE.DLL        SHARED_LIB_DIR\PHONEENGINE.DLL
+
+// Engine Info
+file=ABI_DIR\BUILD_DIR\ENGINEINFO.DLL        SHARED_LIB_DIR\ENGINEINFO.DLL
+
+// Audio Handling
+file=ABI_DIR\BUILD_DIR\AUDIOHANDLING.DLL    SHARED_LIB_DIR\AUDIOHANDLING.DLL
+data=MULTI_LINGUIFY(RSC DATAZ_\RESOURCE_FILES_DIR\defaultbeep RESOURCE_FILES_DIR\defaultbeep)
+
+// Call Handling
+file=ABI_DIR\BUILD_DIR\CALLHANDLING.DLL     SHARED_LIB_DIR\CALLHANDLING.DLL
+
+// Contact Handling
+file=ABI_DIR\BUILD_DIR\CONTACTHANDLING.DLL  SHARED_LIB_DIR\CONTACTHANDLING.DLL
+
+// Log Handling
+file=ABI_DIR\BUILD_DIR\LOGHANDLING.DLL      SHARED_LIB_DIR\LOGHANDLING.DLL
+
+// Service Handling
+file=ABI_DIR\BUILD_DIR\peservicehandling.dll      SHARED_LIB_DIR\peservicehandling.dll
+
+data=DATAZ_\private\1000A86C\backup_registration.xml  private\1000A86C\backup_registration.xml
+
+
+// SIS stubs
+data=ZSYSTEM\install\audiohandling_stub.sis     System\Install\audiohandling_stub.sis
+data=ZSYSTEM\install\callhandling_stub.sis      System\Install\callhandling_stub.sis
+data=ZSYSTEM\install\contacthandling_stub.sis   System\Install\contacthandling_stub.sis
+data=ZSYSTEM\install\loghandling_stub.sis       System\Install\loghandling_stub.sis
+data=ZSYSTEM\install\phonemodel_stub.sis        System\Install\phonemodel_stub.sis
+data=ZSYSTEM\install\servicehandling_stub.sis   System\Install\servicehandling_stub.sis
+
+#endif // PHONEENGINE_IBY
+
+//  End of File  
+ 

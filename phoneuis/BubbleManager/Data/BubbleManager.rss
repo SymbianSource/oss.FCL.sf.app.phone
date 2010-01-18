@@ -1,0 +1,402 @@
+/*
+* Copyright (c) 2002-2005 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains all the resources for the module.
+*
+*/
+
+
+// RESOURCE IDENTIFIER
+NAME BMAN // 4 letter ID
+
+// INCLUDES
+#include <eikon.rh>
+#include <bubblemanager.mbg>
+#include <callstatus.mbg>
+#include <avkon.rh>
+#include <data_caging_paths_strings.hrh>
+
+// CONSTANTS 
+#define KBMResBitmapFile            "z:"APP_BITMAP_DIR"\\bubblemanager.mbm"
+#define KBMResCallStatusBitmapFile  "z:"APP_BITMAP_DIR"\\callstatus.mbm"
+
+// RESOURCE DEFINITIONS 
+
+RESOURCE RSS_SIGNATURE { }
+
+RESOURCE TBUF { buf="BubbleManager"; }
+
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_big_waiting_anim
+// Big animation data
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BMPANIM_DATA r_bubblemanager_big_waiting_anim
+    {
+    frameinterval = 500;
+    playmode = EAknBitmapAnimationPlayModeCycle;
+    frames = r_bubblemanager_big_waiting_image_array;
+    bmpfile = KBMResBitmapFile;
+    }
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_big_waiting_image_array
+// Big animation images
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_bubblemanager_big_waiting_image_array
+    {
+    items=
+        {
+        BMPANIM_FRAME 
+            { 
+            bmpid=EMbmBubblemanagerQgn_indi_call_waiting_1; 
+            maskid=EMbmBubblemanagerQgn_indi_call_waiting_1_mask;
+            },
+        BMPANIM_FRAME 
+            { 
+            bmpid=EMbmBubblemanagerQgn_indi_call_waiting_2; 
+            maskid=EMbmBubblemanagerQgn_indi_call_waiting_2_mask;
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_small_waiting_anim
+// Small animation data
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BMPANIM_DATA r_bubblemanager_small_waiting_anim
+    {
+    frameinterval = 500;
+    playmode = EAknBitmapAnimationPlayModeCycle;
+    frames = r_bubblemanager_small_waiting_image_array;
+    bmpfile = KBMResCallStatusBitmapFile;
+    }
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_small_waiting_image_array
+// Small animation images
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_bubblemanager_small_waiting_image_array
+    {
+    items=
+        {
+        BMPANIM_FRAME 
+            { 
+            bmpid=EMbmCallstatusQgn_indi_call_active; 
+            maskid=EMbmCallstatusQgn_indi_call_active_mask;
+            },
+        BMPANIM_FRAME 
+            { 
+            bmpid=EMbmCallstatusQgn_indi_call_active_2; 
+            maskid=EMbmCallstatusQgn_indi_call_active_2_mask;
+            }
+        };
+    }
+
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_editor
+// Number entry definion
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE PHONE_NUMBER_EDITOR r_bubblemanager_editor
+    {
+    maxChars = 100;
+    maxLines = 2;
+    truncation = <0x2026>; // three dots: ...
+    formats =
+        {
+        PHONE_NUMBER_EDITOR_FORMAT // 1 line, full width
+            {
+            top=112;
+            left=11;
+            bottom=130;
+            right=165;
+            lines=1;
+            bottomBaselineOffset=3;
+            baselineSeparation=18;
+            font=ELatinBold17;
+            },
+        PHONE_NUMBER_EDITOR_FORMAT // 2 lines, full width
+            {
+            top=94;
+            left=11;
+            bottom=130;
+            right=165;
+            lines=2;
+            bottomBaselineOffset=3;
+            baselineSeparation=18;
+            font=ELatinBold13;
+            },
+        PHONE_NUMBER_EDITOR_FORMAT // 1 line, narrowed width
+            {
+            top=112;
+            left=21;
+            bottom=130;
+            right=165;
+            lines=1;
+            bottomBaselineOffset=3;
+            baselineSeparation=18;
+            font=ELatinBold17;
+            },
+        PHONE_NUMBER_EDITOR_FORMAT // 2 lines, narrowed width
+            {
+            top=94;
+            left=21;
+            bottom=130;
+            right=165;
+            lines=2;
+            bottomBaselineOffset=3;
+            baselineSeparation=18;
+            font=ELatinBold13;
+            },
+        PHONE_NUMBER_EDITOR_FORMAT // 2 lines, full width, large font
+            {
+            top=0; // layout values read from layout API
+            left=0;
+            bottom=0;
+            right=0;
+            lines=2;
+            bottomBaselineOffset=0;
+            baselineSeparation=0;
+            font=ELatinBold17;
+            },                     
+// without status pane
+        PHONE_NUMBER_EDITOR_FORMAT // 1 line, full width
+            {
+            top=112+44;
+            left=11;
+            bottom=130+44;
+            right=165;
+            lines=1;
+            bottomBaselineOffset=3;
+            baselineSeparation=18;
+            font=ELatinBold17;
+            },
+        PHONE_NUMBER_EDITOR_FORMAT // 2 lines, full width
+            {
+            top=94+44;
+            left=11;
+            bottom=130+44;
+            right=165;
+            lines=2;
+            bottomBaselineOffset=3;
+            baselineSeparation=18;
+            font=ELatinBold13;
+            },
+        PHONE_NUMBER_EDITOR_FORMAT // 1 line, narrowed width
+            {
+            top=112+44;
+            left=21;
+            bottom=130+44;
+            right=165;
+            lines=1;
+            bottomBaselineOffset=3;
+            baselineSeparation=18;
+            font=ELatinBold17;
+            },
+        PHONE_NUMBER_EDITOR_FORMAT // 2 lines, narrowed width
+            {
+            top=94+44;
+            left=21;
+            bottom=130+44;
+            right=165;
+            lines=2;
+            bottomBaselineOffset=3;
+            baselineSeparation=18;
+            font=ELatinBold13;
+            },
+        PHONE_NUMBER_EDITOR_FORMAT // 2 lines, full width, large font
+            {
+            top=0; // layout values read from layout API
+            left=0;
+            bottom=0;
+            right=0;
+            lines=2;
+            bottomBaselineOffset=0;
+            baselineSeparation=0;
+            font=ELatinBold17;
+            }            
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_big_video_waiting_anim
+// Big animation data for video call
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BMPANIM_DATA r_bubblemanager_big_video_waiting_anim
+    {
+    frameinterval = 500;
+    playmode = EAknBitmapAnimationPlayModeCycle;
+    frames = r_bubblemanager_big_video_waiting_image_array;
+    bmpfile = KBMResCallStatusBitmapFile;
+    }
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_big_video_waiting_image_array
+// Big animation images for video call
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_bubblemanager_big_video_waiting_image_array
+    {
+    items=
+        {
+        BMPANIM_FRAME
+            {
+            bmpid = EMbmCallstatusQgn_indi_call_video_1;
+            maskid = EMbmCallstatusQgn_indi_call_video_1_mask;
+            },
+        BMPANIM_FRAME
+            {
+            bmpid = EMbmCallstatusQgn_indi_call_video_2;
+            maskid = EMbmCallstatusQgn_indi_call_video_2_mask;
+            }
+        };
+    }
+
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_small_video_waiting_anim
+// Small animation data for video call
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BMPANIM_DATA r_bubblemanager_small_video_waiting_anim
+    {
+    frameinterval = 500;
+    playmode = EAknBitmapAnimationPlayModeCycle;
+    frames = r_bubblemanager_small_video_waiting_image_array;
+    bmpfile = KBMResCallStatusBitmapFile;
+    }
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_small_video_waiting_image_array
+// Small animation images
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_bubblemanager_small_video_waiting_image_array
+    {
+    items=
+        {
+        BMPANIM_FRAME
+            {
+            bmpid = EMbmCallstatusQgn_indi_call_video_callsta_1;
+            maskid = EMbmCallstatusQgn_indi_call_video_callsta_1_mask;
+            },
+        BMPANIM_FRAME 
+            {
+            bmpid = EMbmCallstatusQgn_indi_call_video_callsta_2;
+            maskid = EMbmCallstatusQgn_indi_call_video_callsta_2_mask;
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_big_voip_waiting_anim
+// Big animation data
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BMPANIM_DATA r_bubblemanager_big_voip_waiting_anim
+    {
+    frameinterval = 500;
+    playmode = EAknBitmapAnimationPlayModeCycle;
+    frames = r_bubblemanager_big_voip_waiting_image_array;
+    bmpfile = KBMResBitmapFile;
+    }
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_big_voip_waiting_image_array
+// Big animation images
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_bubblemanager_big_voip_waiting_image_array
+    {
+    items=
+        {
+	BMPANIM_FRAME 
+            { 
+            bmpid=EMbmBubblemanagerQgn_indi_call_voip_waiting_1; 
+            maskid=EMbmBubblemanagerQgn_indi_call_voip_waiting_1_mask;
+			},
+        BMPANIM_FRAME 
+            { 
+            bmpid=EMbmBubblemanagerQgn_indi_call_voip_waiting_2; 
+            maskid=EMbmBubblemanagerQgn_indi_call_voip_waiting_2_mask;
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_small_voip_waiting_anim
+// Small animation data
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BMPANIM_DATA r_bubblemanager_small_voip_waiting_anim
+    {
+    frameinterval = 500;
+    playmode = EAknBitmapAnimationPlayModeCycle;
+    frames = r_bubblemanager_small_voip_waiting_image_array;
+    bmpfile = KBMResCallStatusBitmapFile;
+    }
+
+// -----------------------------------------------------------------------------
+//   
+// r_bubblemanager_small_voip_waiting_image_array
+// Small animation images
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE ARRAY r_bubblemanager_small_voip_waiting_image_array
+    {
+    items=
+        {
+        BMPANIM_FRAME 
+            { 
+            bmpid=EMbmCallstatusQgn_indi_call_voip_active; 
+            maskid=EMbmCallstatusQgn_indi_call_voip_active_mask;
+            },
+        BMPANIM_FRAME 
+            { 
+            bmpid=EMbmCallstatusQgn_indi_call_voip_active_2; 
+            maskid=EMbmCallstatusQgn_indi_call_voip_active_2_mask;
+            }
+        };
+    }    

@@ -1,0 +1,736 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  
+*     This file contains touch specific menu resources.
+*
+*/
+
+
+NAME    PTCH
+
+#include    <eikon.rh>
+#include    <avkon.loc>
+#include    <incallmenuandsoftkeys.loc>
+#include    <basiccallhandling.loc>
+#include    "phoneui.hrh"
+
+//  RESOURCE DEFINITIONS 
+
+RESOURCE RSS_SIGNATURE 
+    {
+    } 
+
+RESOURCE TBUF 
+    { 
+    buf = "PTCH";
+    }
+
+// Conference call menu
+
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_confcall_menubar
+//    Default menubar shown when call handling view is active in
+//    conference call state.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phoneui_touch_confcall_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_phoneui_touch_confcall_options_menu;
+            }
+        };
+    }
+    
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_confcall_options_menu
+//    Default commands menu pane.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phoneui_touch_confcall_options_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdUnmute; 
+            txt =  qtn_incal_unmute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdUnhold; 
+            txt =  qtn_incal_unhold_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdParticipants;
+            txt =  qtn_incal_participants_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDialer; 
+            txt =  qtn_incal_dialer_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdActivateIhf; 
+            txt =  qtn_incal_act_ihf_option;
+            },
+        MENU_ITEM            // HANDSET
+            {
+            command = EPhoneInCallCmdHandset;
+            txt = qtn_incal_handset_option;
+            },
+        MENU_ITEM            // BT HANDSFREE
+            {
+            command = EPhoneInCallCmdBtHandsfree;
+            txt = qtn_incal_bt_handsfree_option;
+            },            
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDeactivateIhf; 
+            txt =  qtn_incal_deact_ihf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdEndAllCalls; 
+            txt =  qtn_incal_end_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdHold;
+            txt =  qtn_incal_hold_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdMute; 
+            txt =  qtn_incal_mute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdLockKeypad;
+            txt = qtn_pwrc_lock_keys;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdLockScreen;
+            txt = qtn_pwrc_lock_display;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdNewCall; 
+            txt =  qtn_incal_new_call_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdGoToIdle; 
+            txt =  qtn_incal_goto_idle;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDtmfListQuery; 
+            txt =  qtn_incal_send_dtmf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdHelp; 
+            txt =  qtn_options_help;
+            }
+        };
+    }
+
+// Conference and waiting call menu
+
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_confandcallwaiting_menubar
+//    Default menubar shown when call handling view is active in
+//    call waiting state.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phoneui_touch_confandcallwaiting_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_phoneui_touch_confandcallwaiting_options_menu;
+            }
+        };
+    }
+
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_confandcallwaiting_options_menu
+//    Default commands menu pane.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phoneui_touch_confandcallwaiting_options_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdUnmute; 
+            txt =  qtn_incal_unmute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdAnswer; 
+            txt =  qtn_call_answer_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdReject; 
+            txt =  qtn_call_reject_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdReplace;
+            txt =  qtn_incal_replace_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdConferenceUnhold; 
+            txt =  qtn_incal_unhold_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdParticipants;
+            txt =  qtn_incal_participants_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDialer; 
+            txt =  qtn_incal_dialer_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdActivateIhf; 
+            txt =  qtn_incal_act_ihf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDeactivateIhf; 
+            txt =  qtn_incal_deact_ihf_option;
+            },
+        MENU_ITEM            // HANDSET
+            {
+            command = EPhoneInCallCmdHandset;
+            txt = qtn_incal_handset_option;
+            },
+        MENU_ITEM            // BT HANDSFREE
+            {
+            command = EPhoneInCallCmdBtHandsfree;
+            txt = qtn_incal_bt_handsfree_option;
+            },            
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdEndAllCalls; 
+            txt =  qtn_incal_end_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdConferenceHold; 
+            txt =  qtn_incal_hold_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdMute; 
+            txt =  qtn_incal_mute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdNewCall; 
+            txt =  qtn_incal_new_call_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdGoToIdle; 
+            txt =  qtn_incal_goto_idle;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDtmfListQuery; 
+            txt =  qtn_incal_send_dtmf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdHelp; 
+            txt =  qtn_options_help;
+            }
+        };
+    }
+
+
+// Conference and held call menu
+
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_activeconfandheld_menubar
+//    Default menubar shown when call handling view is activeandheld
+//    call state.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phoneui_touch_activeconfandheld_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_phoneui_touch_activeconfandheldcall_options_menu;
+            }
+        };
+    }
+
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_activeconfandheldcall_options_menu
+//    Default commands menu pane.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phoneui_touch_activeconfandheldcall_options_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdUnmute; 
+            txt =  qtn_incal_unmute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdSwap; 
+            txt =  qtn_incal_swap_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdParticipants;
+            txt =  qtn_incal_participants_option;
+            },            
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdJoin; 
+            txt =  qtn_incal_add_to_conf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDialer; 
+            txt =  qtn_incal_dialer_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdActivateIhf; 
+            txt =  qtn_incal_act_ihf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDeactivateIhf; 
+            txt =  qtn_incal_deact_ihf_option;
+            },
+        MENU_ITEM            // HANDSET
+            {
+            command = EPhoneInCallCmdHandset;
+            txt = qtn_incal_handset_option;
+            },
+        MENU_ITEM            // BT HANDSFREE
+            {
+            command = EPhoneInCallCmdBtHandsfree;
+            txt = qtn_incal_bt_handsfree_option;
+            },            
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdEndThisActiveCall; 
+            txt =  qtn_incal_drop_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdEndAllCalls; 
+            txt =  qtn_incal_end_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdMute; 
+            txt =  qtn_incal_mute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdGoToIdle; 
+            txt =  qtn_incal_goto_idle;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDtmfListQuery; 
+            txt =  qtn_incal_send_dtmf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdHelp; 
+            txt =  qtn_options_help;
+            }
+        };
+    }
+
+// Held conference and active call menu
+
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_activeandheldconf_menubar
+//    Default menubar shown when call handling view is activeandheld
+//    call state.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phoneui_touch_activeandheldconf_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_phoneui_touch_activeandheldconfcall_options_menu;
+            }
+        };
+    }
+
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_activeandheldconfcall_options_menu
+//    Default commands menu pane.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phoneui_touch_activeandheldconfcall_options_menu
+                    
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdUnmute; 
+            txt =  qtn_incal_unmute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdSwap; 
+            txt =  qtn_incal_swap_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdJoin; 
+            txt =  qtn_incal_join_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDialer; 
+            txt =  qtn_incal_dialer_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdActivateIhf; 
+            txt =  qtn_incal_act_ihf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDeactivateIhf; 
+            txt =  qtn_incal_deact_ihf_option;
+            },
+        MENU_ITEM            // HANDSET
+            {
+            command = EPhoneInCallCmdHandset;
+            txt = qtn_incal_handset_option;
+            },
+        MENU_ITEM            // BT HANDSFREE
+            {
+            command = EPhoneInCallCmdBtHandsfree;
+            txt = qtn_incal_bt_handsfree_option;
+            },            
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdEndThisActiveCall; 
+            txt =  qtn_incal_drop_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdEndAllCalls; 
+            txt =  qtn_incal_end_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdMute; 
+            txt =  qtn_incal_mute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdGoToIdle; 
+            txt =  qtn_incal_goto_idle;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDtmfListQuery; 
+            txt =  qtn_incal_send_dtmf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdHelp; 
+            txt =  qtn_options_help;
+            }
+        };
+    }
+
+// Conference, held and waiting call menu
+
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_confcallactiveheldandwaiting_menubar
+//    Default menubar shown when call handling view is callactiveheldandwaiting
+//    call state.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phoneui_touch_confcallactiveheldandwaiting_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_phoneui_touch_confcallactiveheldandwaiting_options_menu;
+            }
+        };
+    }
+    
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_confcallactiveheldandwaiting_options_menu
+//    Default commands menu pane.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phoneui_touch_confcallactiveheldandwaiting_options_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdUnmute; 
+            txt =  qtn_incal_unmute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdReject; 
+            txt =  qtn_call_reject_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdReplace;
+            txt =  qtn_incal_replace_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdSwap; 
+            txt =  qtn_incal_swap_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdParticipants;
+            txt =  qtn_incal_participants_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdJoin; 
+            txt =  qtn_incal_add_to_conf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDialer; 
+            txt =  qtn_incal_dialer_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdActivateIhf; 
+            txt =  qtn_incal_act_ihf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDeactivateIhf; 
+            txt =  qtn_incal_deact_ihf_option;
+            },
+        MENU_ITEM            // HANDSET
+            {
+            command = EPhoneInCallCmdHandset;
+            txt = qtn_incal_handset_option;
+            },
+        MENU_ITEM            // BT HANDSFREE
+            {
+            command = EPhoneInCallCmdBtHandsfree;
+            txt = qtn_incal_bt_handsfree_option;
+            },            
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdEndThisActiveCall; 
+            txt =  qtn_incal_drop_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdEndAllCalls; 
+            txt =  qtn_incal_end_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdMute; 
+            txt =  qtn_incal_mute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdGoToIdle; 
+            txt =  qtn_incal_goto_idle;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDtmfListQuery; 
+            txt =  qtn_incal_send_dtmf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdHelp; 
+            txt =  qtn_options_help;
+            }
+        };
+    }
+
+// Held conference, active call and waiting call menu
+
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_callactiveheldconfandwaiting_menubar
+//    Default menubar shown when call handling view is callactiveheldandwaiting
+//    call state.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_phoneui_touch_callactiveheldconfandwaiting_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_phoneui_touch_callactiveheldconfandwaiting_options_menu;
+            }
+        };
+    }
+
+// ----------------------------------------------------------------------------
+//   
+//    r_phoneui_touch_callactiveheldconfandwaiting_options_menu
+//    Default commands menu pane.
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_phoneui_touch_callactiveheldconfandwaiting_options_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdUnmute; 
+            txt =  qtn_incal_unmute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdReject; 
+            txt =  qtn_call_reject_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdReplace;
+            txt =  qtn_incal_replace_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdSwap; 
+            txt =  qtn_incal_swap_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdJoin; 
+            txt =  qtn_incal_join_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDialer; 
+            txt =  qtn_incal_dialer_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdActivateIhf; 
+            txt =  qtn_incal_act_ihf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDeactivateIhf; 
+            txt =  qtn_incal_deact_ihf_option;
+            },
+        MENU_ITEM            // HANDSET
+            {
+            command = EPhoneInCallCmdHandset;
+            txt = qtn_incal_handset_option;
+            },
+        MENU_ITEM            // BT HANDSFREE
+            {
+            command = EPhoneInCallCmdBtHandsfree;
+            txt = qtn_incal_bt_handsfree_option;
+            },            
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdEndThisActiveCall; 
+            txt =  qtn_incal_drop_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdEndAllCalls; 
+            txt =  qtn_incal_end_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdMute; 
+            txt =  qtn_incal_mute_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdGoToIdle; 
+            txt =  qtn_incal_goto_idle;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdDtmfListQuery; 
+            txt =  qtn_incal_send_dtmf_option;
+            },
+        MENU_ITEM
+            {
+            command = EPhoneInCallCmdHelp; 
+            txt =  qtn_options_help;
+            }
+        };
+    }
+     
+// End of File

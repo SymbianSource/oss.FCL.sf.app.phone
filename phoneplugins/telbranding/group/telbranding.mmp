@@ -1,0 +1,59 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for project branding plugin
+*
+*/
+
+
+#include <data_caging_paths.hrh>    
+#include <platform_paths.hrh>
+#include "telbrandingconstants.hrh"
+
+
+TARGET		  telbranding.dll
+TARGETTYPE	  PLUGIN
+UID			  0x10009d8d KDllUid
+CAPABILITY    CAP_ECOM_PLUGIN
+
+SOURCEPATH	  ../src
+SOURCE		  telbranding.cpp
+SOURCE        telbrandingsettingshandler.cpp
+SOURCE        telbrandingproxy.cpp
+SOURCE        telbrandingserverhandler.cpp
+SOURCE        telbrandingcallindicator.cpp
+SOURCE        telbrandingimage.cpp 
+SOURCE        telbrandingbubble.cpp
+
+USERINCLUDE	 . ../inc
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE   /epoc32/include/ecom
+
+SOURCEPATH              ../data
+START RESOURCE          102078FA.rss
+TARGET                  telbranding.rsc
+END
+
+LIBRARY                 ECom.lib
+LIBRARY                 serviceprovidersettings.lib
+LIBRARY	                euser.lib
+LIBRARY                 bmcustomization.lib
+LIBRARY                 bsclient.lib
+LIBRARY                 charconv.lib
+LIBRARY                 efsrv.lib
+LIBRARY                 eikcoctl.lib
+LIBRARY                 cone.lib
+LIBRARY                 AknSkins.lib
+LIBRARY                 aknicon.lib
+LIBRARY                 avkon.lib
+

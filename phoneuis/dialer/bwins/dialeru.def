@@ -1,0 +1,8 @@
+EXPORTS
+	??1CDialer@@UAE@XZ @ 1 NONAME ; CDialer::~CDialer(void)
+	??1CVideoDTMFDialer@@UAE@XZ @ 2 NONAME ; CVideoDTMFDialer::~CVideoDTMFDialer(void)
+	?NewL@CDialer@@SAPAV1@ABVCCoeControl@@ABVTRect@@@Z @ 3 NONAME ; class CDialer * CDialer::NewL(class CCoeControl const &, class TRect const &)
+	?NewL@CVideoDTMFDialer@@SAPAV1@ABVCCoeControl@@AAV2@ABVTRect@@@Z @ 4 NONAME ; class CVideoDTMFDialer * CVideoDTMFDialer::NewL(class CCoeControl const &, class CCoeControl &, class TRect const &)
+	?NumberEntry@CDialer@@QAEPAVMNumberEntry@@XZ @ 5 NONAME ; class MNumberEntry * CDialer::NumberEntry(void)
+	?SetNumberEntryObserver@CDialer@@UAEXAAVMNumberEntryObserver@@@Z @ 6 NONAME ; void CDialer::SetNumberEntryObserver(class MNumberEntryObserver &)
+

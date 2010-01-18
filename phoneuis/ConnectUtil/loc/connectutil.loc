@@ -1,0 +1,38 @@
+/*
+* Copyright (c) 2003 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains the localised strings for 
+*                Connection utility.
+*
+*/
+
+
+//  LOCALISATION STRINGS
+
+// d: When long End key is pressed and there is one GPRS connection
+// d: ongoing, a confirmation query with this text is shown. %U is replaced
+// d: with name of the connection.
+// l: popup_note_window
+//
+#define qtn_dea_gprs_disconnect_single "End packet data connection '%U'?"
+
+// d: When long End key is pressed and there are more than one GPRS connections
+// d: ongoing, a confirmation query with this text is shown. %N is replaced
+// d: with the amount of connections.
+// l: popup_note_window
+//
+#define qtn_dea_gprs_disconnect_many "End all %N packet data connections?"
+
+//  End of File  
+
+

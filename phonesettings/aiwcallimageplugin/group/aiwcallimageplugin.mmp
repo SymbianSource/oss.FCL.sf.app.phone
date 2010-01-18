@@ -1,0 +1,60 @@
+/*
+* Copyright (c) 2004-2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project specification for Aiw Call Image plugin.
+*
+*/
+
+#include  <platform_paths.hrh>
+#include  <data_caging_paths.hrh>    // For RESOURCE_FILES_DIR
+
+// Capability assignment.
+CAPABILITY      CAP_ECOM_PLUGIN WriteDeviceData
+TARGET          aiwcallimageplugin.dll
+TARGETTYPE      PLUGIN
+UID             0x10009D8D 0x102823D0
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../src
+SOURCE          aiwcallimageplugin.cpp
+SOURCE          aiwcallimagepluginmain.cpp
+
+SOURCEPATH      ../data
+
+START RESOURCE  102823d0.rss
+TARGET          aiwcallimageplugin.rsc
+END
+
+START RESOURCE  aiwcallimageplugin.rss
+DEPENDS avkon.rsg
+TARGETPATH      RESOURCE_FILES_DIR
+HEADER
+LANGUAGE_IDS
+END
+
+USERINCLUDE     ../inc
+USERINCLUDE     ../data
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE   /epoc32/include/ecom
+
+LIBRARY         euser.lib
+LIBRARY         servicehandler.lib      // AIW Framework.
+LIBRARY         centralrepository.lib   // for CenRep usage.
+LIBRARY         avkon.lib               // Note showing.
+LIBRARY         cone.lib                // for CCoeEnv usage.
+LIBRARY         drmhelper.lib           // for DRM functionality.
+LIBRARY         bafl.lib                // For loading language specific resourse.
+LIBRARY         drmutility.lib
+LIBRARY         efsrv.lib
+LIBRARY   		aknskinsrv.lib		//skinServer
+// End of file

@@ -1,0 +1,5 @@
+EXPORTS
+	_Z9LibEntryLR13CTestModuleIf @ 1 NONAME
+	_ZTI25CT_VideoDtmfDialerAppView @ 2 NONAME ; #<TI>#
+	_ZTV25CT_VideoDtmfDialerAppView @ 3 NONAME ; #<VT>#
+
