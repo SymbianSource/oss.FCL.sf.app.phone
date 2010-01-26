@@ -3916,6 +3916,28 @@ RESOURCE CBA r_phoneui_callhandling_callsetup_empty_dtmfdialer_cba
         };
     }
 
+RESOURCE CBA r_phoneui_callhandling_callsetup_dtmfdialer_endoutgoing_cba
+    {
+    buttons =
+        {
+        CBA_BUTTON
+            {
+            id = EPhoneInCallCmdDtmfManualQuery;
+            txt = qtn_incal_softk_dialer;
+            },
+        CBA_BUTTON
+            {
+            id = EPhoneInCallCmdEndThisOutgoingCall;
+            txt = text_softkey_drop;
+            },
+        CBA_BUTTON
+            {
+            id = EAknSoftkeyEmpty;
+            txt = "";
+            }
+        };
+    }
+
 RESOURCE CBA r_phoneui_callhandling_callsetup_toihf_endoutgoing_cba
     {
     buttons =
@@ -5584,20 +5606,20 @@ RESOURCE DIALOG r_phone_emergency_network_connect_wait_note
     }
 // ---------------------------------------------------------
 //
-//    r_phone_emergency_network_connect_wait_note_empty_dialer
+//    r_phone_emergency_network_connect_wait_note_dialer
 //
 //    It defines wait note showing when attempting an
 //    emergency call with onscreen dialer.
 //
 // ---------------------------------------------------------
 //
-RESOURCE DIALOG r_phone_emergency_network_connect_wait_note_empty_dialer
+RESOURCE DIALOG r_phone_emergency_network_connect_wait_note_dialer
     {
     flags = EEikDialogFlagNoDrag |
             EEikDialogFlagNoTitleBar |
             EEikDialogFlagCbaButtons;
 
-    buttons = r_phoneui_callhandling_callsetup_empty_dtmfdialer_cba;
+    buttons = r_phoneui_callhandling_callsetup_dtmfdialer_endoutgoing_cba;
     items =
         {
         DLG_LINE

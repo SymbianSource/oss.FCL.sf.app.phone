@@ -3784,7 +3784,10 @@ void CPhoneViewController::SetControltoCallHandlingL()
 		iAppui->AddToStackL( iPhoneView );
 		iAppui->RemoveFromStack( iDialerView );
 		}
-	if ( !iPhoneView->IsSecurityMode() )
+    
+    // If securitymode or emergency call not show toolbar
+	if ( !iPhoneView->IsSecurityMode() && 
+	     !iIncallIndicator->IsEmergencyCall() )
 		{
     	iToolbarController->ShowToolbar();
 		}

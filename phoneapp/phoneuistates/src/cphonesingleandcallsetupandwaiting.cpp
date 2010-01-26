@@ -197,24 +197,40 @@ void CPhoneSingleAndCallSetupAndWaiting::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnecting:
+            {
             iAlerting = ETrue;
             HandleConnectingL( aCallId );
+            }
             break;
         
         case MEngineMonitor::EPEMessageConnected:
+            {
             HandleConnectedL( aCallId );
+            }
             break;
         
         case MEngineMonitor::EPEMessageIdle:
+            {
             HandleIdleL( aCallId );
+            }
             break;
                     
         case MEngineMonitor::EPEMessageRemoteBusy:
+            {
             // If call setup failed then stop capturing keys.
             // Flow through to default branch.
-            CaptureKeysDuringCallNotificationL( EFalse );     
+            CaptureKeysDuringCallNotificationL( EFalse );
+            }
+            
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            {
+            HandleColpNoteL( aCallId );            
+            }
+            break;   
         default:
+            {
             CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
+            }
             break;
         }
     }
@@ -449,8 +465,6 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
     
-    HandleColpNoteL( aCallId );
-
     if ( aCallId != iWaitingCallId )
         {
         // Alerting call is connected

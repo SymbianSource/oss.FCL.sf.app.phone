@@ -173,8 +173,9 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
             }
         }
 
-    // Check is Audio muted
-    else if ( iStateMachine.PhoneEngineInfo()->AudioMute() )
+    // Check if Audio is muted
+    else if ( iStateMachine.PhoneEngineInfo()->AudioMute() &&
+        !FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ))
         {
         resourceId = EPhoneCallHandlingInCallUnmuteCBA;
         }

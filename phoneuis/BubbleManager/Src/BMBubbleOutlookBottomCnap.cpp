@@ -357,7 +357,7 @@ void CBubbleOutlookBottomCnap::DoCall2LayoutL()
             BubbleUtils::LayoutLabel( 
                 iTimerCost, 
                 rect, 
-                BubbleLayout2::popup_call2_audio_first_call_state_text(20) );
+                BubbleLayout2::popup_call2_audio_first_call_state_text(19) );
                 
             // Build call object bubble
             iBubble->SetRect( bubbleRect.Rect() );                                

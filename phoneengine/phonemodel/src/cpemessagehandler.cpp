@@ -1515,16 +1515,7 @@ void CPEMessageHandler::SetPhoneNumberForCallLogging(
             RemovePreAndPostFix( number );
   
             iDataStore.SetRemotePhoneNumber( number, aCallId );
-            }
-        
-        // The Colp number is stored to remoteparty in connected state.
-        TPEPhoneNumber colpNumber = iCallInfo->iRemoteParty.iRemoteNumber.iTelNumber;
-        RemovePreAndPostFix( colpNumber );
-        iDataStore.SetRemoteColpNumber( colpNumber, aCallId ); 
-        TEFLOGSTRING3( 
-            KTAMESINT, 
-            "PE CPEMessageHandler::SetPhoneNumberForCallLogging, colp number: '%S', call id: %d", 
-            &colpNumber, aCallId );
+            }            
         }
     else if ( iDataStore.CallDirection( aCallId ) == RMobileCall::EMobileTerminated )
         {
@@ -1750,9 +1741,6 @@ TInt CPEMessageHandler::HandleConnectedState(
     // logging works OK (see CPEMessageHandler::SetPhoneNumberForCallLogging).  
     iDataStore.SetPhoneNumber( KNullDesC() );
     
-    // COLP number is updated in connected state 
-    UpdateRemotePartyInfo();
-   
     return ECCPErrorNone;
     }
 
@@ -2902,9 +2890,14 @@ TInt CPEMessageHandler::HandleServiceEnabled()
 // CPEMessageHandler::HandleRemotePartyInfoChanged
 // -----------------------------------------------------------------------------
 //
-void CPEMessageHandler::HandleRemotePartyInfoChanged()
-    {
-    UpdateRemotePartyInfo();      
+void CPEMessageHandler::HandleRemotePartyInfoChanged( const TInt aCallId )
+    {        
+    UpdateRemotePartyInfo(); 
+    
+    if ( iDataStore.RemoteColpNumber( aCallId ).Length() )
+        {
+        iModel.SendMessage( MEngineMonitor::EPEMessageColpNumberAvailable );
+        }
     }
 
 

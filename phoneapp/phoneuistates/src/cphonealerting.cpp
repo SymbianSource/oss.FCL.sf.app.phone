@@ -177,17 +177,22 @@ EXPORT_C void CPhoneAlerting::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnected:
+            {
             HandleConnectedL( aCallId );
+            }
             break;
         
         case MEngineMonitor::EPEMessageDisconnecting:
+            {
             HandleDisconnectingL( aCallId );
+            }
             break;
         
         case MEngineMonitor::EPEMessageRemoteTerminated:
+            {
             iViewCommandHandle->ExecuteCommandL( 
-                EPhoneViewHideNaviPaneAudioVolume );
-            CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
+                EPhoneViewHideNaviPaneAudioVolume );            
+            }
             break;
         
         case MEngineMonitor::EPEMessageIncoming:
@@ -221,6 +226,12 @@ EXPORT_C void CPhoneAlerting::HandlePhoneEngineMessageL(
                 }
             }
             break;
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            {
+            HandleColpNoteL( aCallId );
+            return;
+            }
+            break;            
         
         default:
             break;
@@ -256,8 +267,6 @@ EXPORT_C void CPhoneAlerting::HandleConnectedL( TInt aCallId )
     SetToolbarDimming( EFalse );
 
     EndUiUpdate();
-    
-    HandleColpNoteL( aCallId );
     
     // Go to single state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );    

@@ -107,25 +107,41 @@ void CPhoneConferenceAndCallSetup::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnecting:
+            {
             iAlerting = ETrue;
             HandleConnectingL( aCallId );
+            }
             break;
             
         case MEngineMonitor::EPEMessageConnected:
+            {
             HandleConnectedL( aCallId );
+            }
             break;
             
         case MEngineMonitor::EPEMessageIdle:
+            {
             HandleIdleL( aCallId );
+            }
             break;
             
         case MEngineMonitor::EPEMessageConferenceIdle:
+            {
             HandleConferenceIdleL();
+            }
             break;
             
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            {
+            HandleColpNoteL( aCallId );            
+            }
+            break;         
+            
         default:
+            {
             CPhoneConference::HandlePhoneEngineMessageL( aMessage, 
                 aCallId );
+            }
             break;
         }
     }
@@ -311,8 +327,7 @@ void CPhoneConferenceAndCallSetup::HandleConnectedL( TInt aCallId )
     SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
     SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
     EndUiUpdate(); 
-
-    HandleColpNoteL( aCallId );
+    
     UpdateCbaL ( EPhoneCallHandlingNewCallSwapCBA );
    
     iStateMachine->ChangeState( EPhoneStateConferenceAndSingle );                     

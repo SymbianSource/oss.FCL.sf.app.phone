@@ -735,7 +735,7 @@ NONSHARABLE_CLASS( MPEDataStore )
          * @param aCallId, is the call identification number.
          */
          virtual void SetRemoteColpNumber(
-             TPEPhoneNumber& aColpNumber, 
+             const TPEPhoneNumber& aColpNumber, 
              const TInt aCallId ) = 0;
 
          /**
