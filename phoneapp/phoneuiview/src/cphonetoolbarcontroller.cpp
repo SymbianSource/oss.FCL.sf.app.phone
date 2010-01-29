@@ -130,6 +130,7 @@ void CPhoneToolbarController::ConstructL()
             CleanupStack::Pop( button );
             CleanupStack::PopAndDestroy( tooltipText );
             }
+        TRAP_IGNORE(iToolbar->DisableToolbarL( ETrue ));
         }
     }
     

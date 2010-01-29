@@ -1258,7 +1258,7 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         * @param aCallId, is the call identification number.
         */
         void SetRemoteColpNumber(
-            TPEPhoneNumber& aColpNumber, 
+            const TPEPhoneNumber& aColpNumber, 
             const TInt aCallId );
 
         /**

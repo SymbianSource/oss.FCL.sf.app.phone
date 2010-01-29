@@ -67,6 +67,12 @@ class CPhoneIncallIndicator : public CBase
         * @param aCommandParam command parameter
         */
         void HandleCipheringChange( TPhoneCommandParam* aCommandParam );
+        
+        
+        /**
+        * return is emergency call active
+        */
+        TBool IsEmergencyCall();
 
     private:
 

@@ -188,6 +188,11 @@ class CPhoneEmergency : public CPhoneGsmInCall
 		* EFalse otherwise.
 		*/
     	TBool TouchCallHandlingSupported () const;
+    	
+       /**
+       * Update status of startup if startup finish during emergency call
+       */
+       void HandlePhoneStartupL();
          
     private:
         /**

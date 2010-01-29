@@ -54,8 +54,13 @@ CPhCntAsyncToSync::~CPhCntAsyncToSync()
 TInt CPhCntAsyncToSync::MakeAsyncRequest()
     {
     iResponseReceived = EFalse;
-    TRAPD( err, DoMakeAsyncRequestL() );
-    if( !err )
+	// Return KErrInUse, if iWait is active.
+	TInt err( IsActive() ? KErrInUse : KErrNone );
+	if ( !err )
+		{
+		TRAP( err, DoMakeAsyncRequestL() );
+    	}
+	if( !err )
         {
         // Check that response is not already received, we cannot 
         // start the scheduler if response is received, otherwise

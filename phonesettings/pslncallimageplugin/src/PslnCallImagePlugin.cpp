@@ -336,13 +336,10 @@ void CPslnCallImagePlugin::DynInitMenuPaneL(
     	{
     	TInt active = static_cast<CPslnCallImagePluginContainer*>
                     (iContainer)->CurrentSelectionIndexL();
-        // Set menu item as Apply, if:
-        // a) 'None' is selected
-        // b) highlight is on inactive selection
-    	if ( active != iContainer->iListBox->CurrentItemIndex() && 
-    	    ( active == EPlsnCallImageNone || 
-    	      active ==  EPlsnCallImageThemeImage ) )
-        	{
+        // Set menu item is used when inactive item is focused and it 
+		// activates the focused item.
+    	if ( active != iContainer->iListBox->CurrentItemIndex() )
+    		{
         	aMenuPane->SetItemDimmed( EPslnCmdAppActivate, EFalse );
         	aMenuPane->SetItemDimmed( EPslnCmdAppDownload, ETrue );
         	}

@@ -948,7 +948,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
         case EPhoneEmergencyConnectWaitNote:
             if ( iVariationFlags & EOnscreenDialer )
                 {
-                retVal = R_PHONE_EMERGENCY_NETWORK_CONNECT_WAIT_NOTE_EMPTY_DIALER;
+                retVal = R_PHONE_EMERGENCY_NETWORK_CONNECT_WAIT_NOTE_DIALER;
                 }
             else
                 {

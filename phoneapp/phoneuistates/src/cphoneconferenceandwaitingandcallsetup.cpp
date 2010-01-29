@@ -112,25 +112,41 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnecting:
+            {
             iAlerting = ETrue;
             HandleConnectingL( aCallId );
+            }
             break;
             
         case MEngineMonitor::EPEMessageConnected:
+            {
             HandleConnectedL( aCallId );
+            }
             break;
         
         case MEngineMonitor::EPEMessageConferenceIdle:
+            {
             HandleConferenceIdleL();
+            }
             break;
 
         case MEngineMonitor::EPEMessageIdle:
+            {
             HandleIdleL( aCallId );
+            }
             break;
+            
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            {
+            HandleColpNoteL( aCallId );            
+            }
+            break;         
 
         default:
+            {
             CPhoneConference::HandlePhoneEngineMessageL( aMessage, 
                 aCallId );
+            }
             break;
         }
     }
@@ -321,8 +337,6 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectedL( TInt aCallId )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
-        
-    HandleColpNoteL( aCallId );
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );    
     SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );

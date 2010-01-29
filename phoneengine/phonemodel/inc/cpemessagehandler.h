@@ -504,10 +504,11 @@ NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase
         TInt HandleServiceEnabled();
         
         /**
-         * Handles remote party information changed         
+         * Handles remote party information changed   
+         * @param aCallId is the identification number of the call.               
          * @since Series60_5.2         
          */
-        void HandleRemotePartyInfoChanged( );
+        void HandleRemotePartyInfoChanged( const TInt aCallId );
 
         /**
         * Handles swap message from the phone application 

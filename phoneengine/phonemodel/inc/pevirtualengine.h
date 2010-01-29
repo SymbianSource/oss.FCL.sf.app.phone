@@ -419,7 +419,8 @@ NONSHARABLE_CLASS( MEngineMonitor )
 
         EPEMessageRemoteForwarding,
         EPEMessageMovedPermanently,        
-        EPEMessageMultipleChoices,        
+        EPEMessageMultipleChoices,     
+        EPEMessageColpNumberAvailable,
 
         // Contact messages                   3000 - 3999
         EPEMessageThumbnailLoadingCompleted  = 3000,

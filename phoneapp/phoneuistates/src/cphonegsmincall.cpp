@@ -218,26 +218,23 @@ void CPhoneGsmInCall::ReplaceCallL()
 // CPhoneGsmInCall::HandleColpNoteL
 // -----------------------------------------------------------
 //
-void CPhoneGsmInCall::HandleColpNoteL( 
-    TInt aCallId )
+void CPhoneGsmInCall::HandleColpNoteL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneGsmInCall::HandleColpNoteL() ");
 
     MPEEngineInfo* EngineInfo = CPhoneState::iStateMachine->PhoneEngineInfo();
-
-    if ( EngineInfo->RemoteColpNumber( aCallId ).Length() )
-        {
-        TPhoneCmdParamGlobalNote globalNoteParam;
-	    globalNoteParam.SetText(  EngineInfo->RemoteColpNumber( aCallId ) ); 
-	    globalNoteParam.SetType( EAknGlobalInformationNote );
-	    globalNoteParam.SetTextResourceId( 
-	        CPhoneMainResourceResolver::Instance()->
+    
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    globalNoteParam.SetText(  EngineInfo->RemoteColpNumber( aCallId ) ); 
+    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetTextResourceId( 
+            CPhoneMainResourceResolver::Instance()->
 	        ResolveResourceID( EPhoneColpConnected ) );
-	    globalNoteParam.SetTone( EAvkonSIDInformationTone );
+    globalNoteParam.SetTone( EAvkonSIDInformationTone );
 	        
-	    iViewCommandHandle->ExecuteCommandL( 
-	            EPhoneViewShowGlobalNote, &globalNoteParam );
-        }
+    iViewCommandHandle->ExecuteCommandL( 
+            EPhoneViewShowGlobalNote, &globalNoteParam );
+    
     }
 
 // -----------------------------------------------------------

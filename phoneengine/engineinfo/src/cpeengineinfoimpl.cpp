@@ -2546,7 +2546,7 @@ void CPEEngineInfoImpl::SetRemoteCompanyName(
 // -----------------------------------------------------------------------------
 //
 void CPEEngineInfoImpl::SetRemoteColpNumber(
-    TPEPhoneNumber& aColpNumber, 
+    const TPEPhoneNumber& aColpNumber, 
     const TInt aCallId )
     {
     return ( *iRemoteInfo )[ aCallId ]->SetColpNumber( aColpNumber );

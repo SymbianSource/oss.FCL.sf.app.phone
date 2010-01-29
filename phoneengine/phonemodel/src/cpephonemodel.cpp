@@ -1199,7 +1199,7 @@ TInt CPEPhoneModel::ProcessMessage(
             break;
             
         case MEngineMonitor::EPEMessageRemotePartyInfoChanged:
-            iMessageHandler->HandleRemotePartyInfoChanged( );
+            iMessageHandler->HandleRemotePartyInfoChanged( aCallId );
             break;    
 
         default:
