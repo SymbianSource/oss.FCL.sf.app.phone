@@ -265,10 +265,14 @@ EXPORT_C void CPhoneStateIdle::HandleKeyMessageL(
             
         case EKeyApplication0:
             {
+            // Security mode
+            TPhoneCmdParamBoolean isSecurityMode;      
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
+            	
             // If dialer is not open but phone is in foreground and phone receives
-            // applicaion-key event we have to open emergency dialer. No need own
-            // securitymode check because Applicationkey only captured in securitymode.
-            if ( !IsNumberEntryUsedL() )
+            // applicaion-key event we have to open emergency dialer. 
+            // Securitymode check because Applicationkey only open dialer in securitymode.
+            if ( isSecurityMode.Boolean() && !IsNumberEntryUsedL() )
                 {
                 HandleCommandL(EPhoneNumberAcqSecurityDialer);
                 }           

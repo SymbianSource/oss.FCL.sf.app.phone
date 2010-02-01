@@ -2931,6 +2931,8 @@ TInt CPEMessageHandler::HandleUnattendedTransfer()
     TInt errorCode = iCallHandling.DoUnattendedTransfer( 
             iDataStore.TransferTargetCommand() );
      
+    iDataStore.SetErrorCode( errorCode );
+    
     return errorCode;
     }
 
