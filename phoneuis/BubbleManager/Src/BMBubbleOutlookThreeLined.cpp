@@ -216,7 +216,7 @@ void CBubbleOutlookThreeLined::ReadBubbleHeader( CBubbleHeader& aHeader )
 TInt CBubbleOutlookThreeLined::CountComponentControls() const
     {
     TInt amount = 0;
-    
+
     if ( iNumberType ) 
         {
         amount++;
@@ -285,7 +285,7 @@ CCoeControl* CBubbleOutlookThreeLined::ComponentControl(TInt aIndex) const
     {
   
     TInt amount = -1;
-    
+    // coverity[var_compare_op]
     if ( iNumberType )
         {
         amount++;
@@ -293,6 +293,7 @@ CCoeControl* CBubbleOutlookThreeLined::ComponentControl(TInt aIndex) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iNumberType->Control();
         }
 
@@ -353,6 +354,7 @@ CCoeControl* CBubbleOutlookThreeLined::ComponentControl(TInt aIndex) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iSmallCallIndication->Control();
         }
 
@@ -383,6 +385,7 @@ CCoeControl* CBubbleOutlookThreeLined::ComponentControl(TInt aIndex) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iBrandImage->Control();
         }
     
@@ -393,6 +396,7 @@ CCoeControl* CBubbleOutlookThreeLined::ComponentControl(TInt aIndex) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iBigCallIndicator->Control();
         }
 

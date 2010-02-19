@@ -69,9 +69,6 @@ void CPEParserPhoneNumberHandler::ProcessDialToNumberL(
         &aNumber, 
         &aDtmfPostfix );
     
-    // Check if phone is locked
-    iOwner.CheckIfPhoneIsLockedL();
-    
     if ( aNumber.Length() == 0 )
         {
         User::Leave( ECCPErrorInvalidPhoneNumber );

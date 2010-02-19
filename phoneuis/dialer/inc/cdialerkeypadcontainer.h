@@ -26,11 +26,13 @@
 #include    <coemain.h>
 
 #include    "cdialercontainerbase.h"
+#include    "cdialerkeypadlabelmanager.h"
 
 // CONSTANTS
 
 // FORWARD DECLARATIONS
 class CDialerKeyPadButton;
+
 
 // CLASS DECLARATION
  
@@ -41,7 +43,8 @@ class CDialerKeyPadButton;
 *  @since S60 v5.0
 */
 NONSHARABLE_CLASS(CDialerKeyPadContainer) : public CDialerContainerBase, 
-                                            public MCoeForegroundObserver
+                                            public MCoeForegroundObserver,
+                                            public MDialerKeyPadLabelManagerCallback
     {
     public:  // Constructors and destructor
         
@@ -69,6 +72,19 @@ NONSHARABLE_CLASS(CDialerKeyPadContainer) : public CDialerContainerBase,
         
         void EnableTactileFeedback( const TBool aEnable );
         
+        // moved from private to public
+        /**
+        * @see CCoeControl
+        */        
+        void MakeVisible( TBool aVisible );
+        
+        /**
+         * Sets the operation mode. New mode takes effect once the
+         * size of the component is reset.
+         * @param   aOperatingMode  New operation mode.
+         */
+        void SetOperationMode( TDialerOperationMode aOperatingMode );
+        
     private:  // Functions from base classes
         
         /**
@@ -92,11 +108,6 @@ NONSHARABLE_CLASS(CDialerKeyPadContainer) : public CDialerContainerBase,
         void HandleResourceChange( TInt aType );   
         
         /**
-        * @see CCoeControl
-        */        
-        void MakeVisible( TBool aVisible );     
-        
-        /**
         * @see MCoeControlObserver
         */        
         void HandleControlEventL( CCoeControl* aControl,TCoeEvent aEventType );      
@@ -111,6 +122,10 @@ NONSHARABLE_CLASS(CDialerKeyPadContainer) : public CDialerContainerBase,
         */         
         void HandleLosingForeground();      
         
+        /**
+         * @see MDialerKeyPadLabelManagerCallback
+         */
+        void KeyLabelsChanged();
         
     private: // From CDialerContainerBase
     
@@ -140,6 +155,11 @@ NONSHARABLE_CLASS(CDialerKeyPadContainer) : public CDialerContainerBase,
         void SetPhoneLayout();
 
         /**
+         * Set layout in Easy Dialing mode
+         */
+        void SetEasyDialingLayout();
+        
+        /**
         * Set layout in Video DTMF mode
         */
         void SetVideoLayout();
@@ -148,7 +168,6 @@ NONSHARABLE_CLASS(CDialerKeyPadContainer) : public CDialerContainerBase,
         * Create keypad buttons.
         */
         void CreateButtonsL();
-        
         
     private:    // Data
     
@@ -174,6 +193,11 @@ NONSHARABLE_CLASS(CDialerKeyPadContainer) : public CDialerContainerBase,
          * Stores last pointer event. 
          */        
         TPointerEvent iPointerEvent;
+        
+        /**
+         * Helper to manage keypad button labels
+         */
+        CDialerKeyPadLabelManager* iKeyLabelManager;
     };
 
 #endif      // CDIALERKEYPADCONTAINER_H

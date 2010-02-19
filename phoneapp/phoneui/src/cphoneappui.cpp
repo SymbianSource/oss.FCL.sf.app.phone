@@ -109,6 +109,10 @@ void CPhoneAppUI::ConstructL()
     BaseConstructL( EAknEnableSkin | EAknEnableMSK | EAknSingleClickCompatible );
     SetKeyEventFlags( CAknAppUiBase::EDisableSendKeyShort | CAknAppUiBase::EDisableSendKeyLong );
     
+    // Item specific soft key IS DISABLED in order to make SK1 visible with easy dialing.
+    CEikCba* cba = static_cast<CEikCba*>( CEikButtonGroupContainer::Current()->ButtonGroup() );
+    cba->EnableItemSpecificSoftkey( EFalse );
+    
     SetAliasKeyCodeResolverL( this );
     
     // Set phone application to be system application so it can't be closed

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2008 - 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -57,9 +57,6 @@ enum TPhoneBgLayers
     EPhoneBgLayersN             = 1
     };
 
-#define LSC_VARIETY   0
-#define PRT_VARIETY   6
-
 // ================= MEMBER FUNCTIONS =======================
 
 // -----------------------------------------------------------------------------
@@ -88,7 +85,7 @@ void CPhoneDialerView::ConstructL( TRect aRect )
     CreateWindowL();
     DrawableWindow()->SetPointerGrab( ETrue );
 
-    SetRect( aRect );
+    SetComponentsToInheritVisibility( ETrue );
     }
 
 // -----------------------------------------------------------------------------
@@ -214,78 +211,25 @@ TTypeUid::Ptr CPhoneDialerView::MopSupplyObject( TTypeUid aId )
 // CPhoneDialerView::SetRect
 // -----------------------------------------------------------------------------
 //    
-void CPhoneDialerView::SetRect( const TRect &aRect )
+void CPhoneDialerView::SetRect( const TRect& aRect )
     {
-    __LOGMETHODSTARTEND(EPhoneUIView, "CPhoneDialerView::SetRect()");
-    if ( !AknLayoutUtils::PenEnabled() )
+    CCoeControl::SetRect( aRect );
+    iControlRect = Rect();
+    // Forward size change to the control only if we are visible. Otherwise the
+    // control rect is just srored and relayed to control when we do become
+    // visible. This way we can avoid unnecessary relayout work for example when
+    // status bar size changes or screen is rotated while in-call ui is active.
+    if ( IsVisible() )
         {
-        CCoeControl::SetRect( aRect );
+        UpdateControlRect();
         }
-    else
-        {
-        if ( iSecurityMode )
-            {
-            // In security mode aRect is ok.
-            CCoeControl::SetRect( aRect );    
-            iControlRect = Rect();
-            }
-        else
-            {
-            TAknLayoutRect viewRect;
-            
-            TRect screenRect;
-            AknLayoutUtils::LayoutMetricsRect( 
-                AknLayoutUtils::EScreen,
-                screenRect  );    
-
-            // dialer view
-            viewRect.LayoutRect( 
-                screenRect, 
-                TAknWindowComponentLayout::Compose(
-                    AknLayoutScalable_Avkon::application_window( 0 ),
-                    AknLayoutScalable_Avkon::main_pane( 7 ) ) );
-
-            CCoeControl::SetRect( viewRect.Rect() );    
-            
-            TInt variety ( PRT_VARIETY ) ; // portrait
-            if ( Layout_Meta_Data::IsLandscapeOrientation() )
-                {
-                variety = LSC_VARIETY;
-                }
-            
-            // reduce toolbar
-            TAknLayoutRect toolbarRect;
-            toolbarRect.LayoutRect( 
-                screenRect, 
-                TAknWindowComponentLayout::Compose(
-                AknLayoutScalable_Avkon::application_window( 0 ),
-                AknLayoutScalable_Avkon::area_side_right_pane( variety ) ) );
-            
-            if ( toolbarRect.Rect().Intersects( viewRect.Rect() ) )
-                {
-                iControlRect = Rect();
-                if ( variety == PRT_VARIETY ) // portrait
-                    {
-                    iControlRect.iBr.iY -= toolbarRect.Rect().Height();
-                    }
-                else
-                    {
-                    iControlRect.iBr.iX -= toolbarRect.Rect().Width();
-                    }
-                }
-            else
-                {
-                iControlRect = Rect();    
-                }                            
-            }                
-        }        
     }
 
 // -----------------------------------------------------------------------------
 // CPhoneDialerView::Draw
 // -----------------------------------------------------------------------------
 //
-void CPhoneDialerView::Draw(  const TRect& aRect ) const
+void CPhoneDialerView::Draw( const TRect& aRect ) const
     {
     __LOGMETHODSTARTEND(EPhoneUIView, "CPhoneDialerView::Draw()");
     TRect rect = Rect();
@@ -343,8 +287,6 @@ void CPhoneDialerView::SizeChanged()
     iBgContext->SetLayerImage( EPhoneBgFirstLayer, KAknsIIDQsnBgScreen );
     iBgContext->SetParentPos( screen.iTl );
     iBgContext->SetLayerRect( EPhoneBgFirstLayer, screen ) ;
-
-    UpdateControlRect();
     }
 
 // -----------------------------------------------------------------------------
@@ -387,7 +329,7 @@ void CPhoneDialerView::UpdateControlRect()
             if ( iControlRect != iControl->Rect() )
                 {
                 iControl->SetRect( iControlRect );
-                }    
+                }
             } 
         }
     }
@@ -405,6 +347,22 @@ void CPhoneDialerView::HandleResourceChange( TInt aType )
         {
         DrawDeferred();
         }
+    }
+
+// -----------------------------------------------------------------------------
+// CPhoneDialerView::MakeVisible
+// -----------------------------------------------------------------------------
+//
+void CPhoneDialerView::MakeVisible( TBool aVisible )
+    {
+    if ( aVisible )
+        {
+        // Deferred control rect size update before view becomes visible.
+        // We don't relay size changes to our control while view is invisible
+        // to avoid unnecessary layout recalculations.
+        UpdateControlRect();
+        }
+    CCoeControl::MakeVisible( aVisible );
     }
 
 // -----------------------------------------------------------------------------

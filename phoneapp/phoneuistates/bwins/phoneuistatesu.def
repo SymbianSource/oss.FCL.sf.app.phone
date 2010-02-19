@@ -62,4 +62,6 @@ EXPORTS
 	??0CPhoneTwoSingles@@IAE@PAVMPhoneStateMachine@@PAVMPhoneViewCommandHandle@@PAVMPhoneCustomization@@@Z @ 61 NONAME ; CPhoneTwoSingles::CPhoneTwoSingles(class MPhoneStateMachine *, class MPhoneViewCommandHandle *, class MPhoneCustomization *)
 	?CallId@CPhoneSingleCall@@IBEHXZ @ 62 NONAME ; int CPhoneSingleCall::CallId(void) const
 	?HandleConnectedConferenceL@CPhoneTwoSingles@@MAEXH@Z @ 63 NONAME ; void CPhoneTwoSingles::HandleConnectedConferenceL(int)
+	?HandleErrorL@CPhoneConferenceAndSingleAndWaiting@@UAEXABUTPEErrorInfo@@@Z @ 64 NONAME ; void CPhoneConferenceAndSingleAndWaiting::HandleErrorL(struct TPEErrorInfo const &)
+	?HandleErrorL@CPhoneConferenceAndWaiting@@UAEXABUTPEErrorInfo@@@Z @ 65 NONAME ; void CPhoneConferenceAndWaiting::HandleErrorL(struct TPEErrorInfo const &)
 

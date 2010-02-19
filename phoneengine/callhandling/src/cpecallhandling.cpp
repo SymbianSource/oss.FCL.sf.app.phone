@@ -833,10 +833,7 @@ EXPORT_C TInt  CPECallHandling::HangUp(
 
     else if ( CallIdCheck::IsConference( aCallId ) )
         {
-        if( iConferenceCall )
-            {
-            errorCode = iConferenceCall->HangUp();
-            }
+        ReleaseConference();
         }
     return errorCode;
     }
@@ -855,12 +852,7 @@ EXPORT_C TInt CPECallHandling::TerminateAllConnections()
     
     RejectCall(); // Rejects ringing call if one exists.
 
-    if ( iConferenceCall )
-        {
-        TEFLOGSTRING( KTAMESOUT, 
-            "CALL CPECallHandling::TerminateAllConnections: Hanging Up conference call" );
-        iConferenceCall->HangUp();
-        }
+    ReleaseConference(); // Release conference call if exists
             
     // Hangup normal Voice Calls
     for( TInt callId = 0; callId < KPEMaximumNumberOfVoiceCalls; callId++ )
@@ -1916,6 +1908,7 @@ EXPORT_C void CPECallHandling::DialEmergencyCall( const TPEPhoneNumber& aEmergen
     SendMessage( MEngineMonitor::EPEMessageInitiatedEmergencyCall );
     TEFLOGSTRING( KTAINT, "CALL CPECallHandling::DialEmergencyCall start emergency dialing" );
     CPESingleCall* callData = iCallArrayOwner->GetCallObject( KPEEmergencyCallId );
+    // coverity[dereference]
     callData->DialEmergency( aEmergencyNumber );   
     }
 
@@ -2466,6 +2459,20 @@ void CPECallHandling::SetColpNumber( TInt aCallId, const MCCECall& aCall ) const
         }        
     }
         
-
+// -----------------------------------------------------------------------------
+// CPECallHandling::ReleaseConference
+// Release conference call
+// -----------------------------------------------------------------------------
+//
+EXPORT_C TInt CPECallHandling::ReleaseConference()
+    {
+    TInt errorCode( ECCPErrorNotFound );
+    
+    if ( iConferenceCall )
+        {            
+        errorCode = iConferenceCall->HangUp();
+        }
+    return errorCode;
+    }
 
 //  End of File 

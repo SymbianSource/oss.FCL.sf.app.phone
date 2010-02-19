@@ -451,4 +451,10 @@
 //
 #define qtn_called_number_has_barred_incoming_calls "Called number has barred incoming calls"
 
+//d: Permanent note Invalid Card. Shown when the Sim inserted is not same as 
+//d: the one provided by the operator.
+//l: popup_note_window
+//w:
+//r: 5.0
+#define text_invalid_card "Invalid card"
 // End of File

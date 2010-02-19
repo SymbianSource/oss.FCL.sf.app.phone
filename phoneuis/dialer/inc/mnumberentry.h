@@ -29,6 +29,7 @@
 
 // FORWARD DECLARATIONS
 class CCoeControl;
+class CEikMenuPane; // easydialing
 
 // CLASS DECLARATION
 

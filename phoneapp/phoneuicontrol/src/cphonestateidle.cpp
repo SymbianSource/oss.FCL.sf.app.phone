@@ -58,6 +58,7 @@
 #include "phoneui.pan"
 #include "phoneconstants.h"
 #include "mphonecustomization.h"
+#include <easydialingcommands.hrh>
 
 //CONSTANTS
 const TInt  KMaxParamLength = 1024;
@@ -307,7 +308,14 @@ EXPORT_C void CPhoneStateIdle::HandleKeyMessageL(
         case EKeyEnter:
             if ( IsNumberEntryVisibleL() )
                 {
-                HandleCommandL( EPhoneCmdOptions );
+                if ( IsDialingExtensionInFocusL() )
+                    {
+                    HandleCommandL( EEasyDialingEnterKeyAction );
+                    }
+                else
+                    {
+                    HandleCommandL( EPhoneCmdOptions );
+                    }               
                 }
             break;
 #endif
@@ -541,9 +549,8 @@ EXPORT_C TBool CPhoneStateIdle::HandleCommandL( TInt aCommand )
             // Open number entry menubar
             TPhoneCmdParamInteger integerParam;  
                       
-            integerParam.SetInteger( 
-             CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( EPhoneNumberAcqMenubar ) );               
+            TInt menuId( GetNumberAcqMenuIdL() );
+            integerParam.SetInteger( menuId );   
 
             iViewCommandHandle->ExecuteCommandL( 
                 EPhoneViewMenuBarOpen, &integerParam );
@@ -563,7 +570,13 @@ EXPORT_C TBool CPhoneStateIdle::HandleCommandL( TInt aCommand )
             
         case EPhoneCmdBack:
             HandleBackCommandL();
-            break;            
+            break;      
+     
+        case EPhoneViewOpenNumberEntry:    
+            BeginTransEffectLC( ENumberEntryCreate );
+            commandStatus = CPhoneState::HandleCommandL( aCommand );
+            EndTransEffect();        
+            break; 
             
         default:
             commandStatus = CPhoneState::HandleCommandL( aCommand );
@@ -649,6 +662,7 @@ EXPORT_C void CPhoneStateIdle::DialL(
 void CPhoneStateIdle::HandleBackCommandL()
     {
     TBool previousApp(EFalse);
+
     // If previous app activation is true then open
     // previous application.
     if ( iOnScreenDialer && 
@@ -658,29 +672,40 @@ void CPhoneStateIdle::HandleBackCommandL()
         iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewGetActivatePreviousApp, &booleanParam );
         
+
         if ( booleanParam.Boolean() )
             {
             // Open previous app.
             iViewCommandHandle->ExecuteCommandL( 
                 EPhoneViewActivatePreviousApp );
 
+            BeginTransEffectLC( ENumberEntryClose ); 
+
             // Remove number entry from screen
             iViewCommandHandle->ExecuteCommandL( 
                 EPhoneViewRemoveNumberEntry ); 
 
+            EndTransEffect(); 
+
             iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateFSW ); 
             previousApp = ETrue;   
-            }
+            }        
         }
         
     if ( !previousApp )
         {
+        BeginTransEffectLC( ENumberEntryClose ); 
+
         // Remove number entry from screen
         iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewRemoveNumberEntry );
+        
+        EndTransEffect();
+        
         // Do state-specific operation when number entry is cleared
         HandleNumberEntryClearedL();
-        }    
+        }  
+ 
     }
 
 // -----------------------------------------------------------
@@ -1148,21 +1173,22 @@ void CPhoneStateIdle::HandleEndKeyPressL( TPhoneKeyEventMessages aMessage )
             else if ( !TopAppIsDisplayedL() )
                 {
                 // Phone might not be the topmost app since it has
-                // some dialog/query open therefore we need to check this
-                // and remove dialog/phone.
-                if ( IsAnyQueryActiveL()  )
+                // some dialog/query open therefore we need to remove dialog/phone.
+            
+                if ( !IsSimStateNotPresentWithSecurityModeEnabled() )
                     {
-                    if ( !IsSimStateNotPresentWithSecurityModeEnabled() )
-                        {
-                        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-                        }
-                    
-                    // Remove number entry from screen
-                    iViewCommandHandle->ExecuteCommandL( 
+                    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
+                    }
+                // Remove number entry from screen
+                iViewCommandHandle->ExecuteCommandL( 
                         EPhoneViewRemoveNumberEntry );
-                    } 
-			    // Bring Idle app to the foreground
+                    
+                // Bring Idle app to the foreground
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewBringIdleToForeground );
+                
+                // Updates Task list
+                iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateFSW );
+
                 }
             }
         else if ( IsNumberEntryUsedL() )
@@ -1307,32 +1333,31 @@ TBool CPhoneStateIdle::RestoreOngoing()
 // -----------------------------------------------------------------------------
 //
 TBool CPhoneStateIdle::CheckAppLaunchingL( const TKeyCode aCode )
-	{
-	TBool valuesFetched( EFalse );
-	
-	if( !IsSimOk() )
-	    {
-	    return valuesFetched;
-	    }
-	
-	TPhoneCmdParamAppInfo appInfo;
-	HBufC8* appParam = HBufC8::NewL( KMaxParamLength );
-	CleanupStack::PushL( appParam );
-
-    TPhoneCmdParamInteger numberEntryCount;
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetNumberEntryCount,
-        &numberEntryCount );
+    {
+    TBool valuesFetched( EFalse );
     
-    TBool isValidAppLaunchingKeyEvent = EFalse;
-    if ( iCustomization && iCustomization->AllowAlphaNumericMode() &&
-         TKeyCode( KPhoneDtmfHashCharacter ) == aCode )
+    if( !IsSimOk() )
         {
-        // If alphanumeric mode is supported FEP changes text input mode with
-        // long hash and removes hash from number entry.
-        isValidAppLaunchingKeyEvent = ( numberEntryCount.Integer() == 0 );
+        return valuesFetched;
         }
-    else
+    
+    TPhoneCmdParamAppInfo appInfo;
+    HBufC8* appParam = HBufC8::NewL( KMaxParamLength );
+    CleanupStack::PushL( appParam );
+
+    TBool isValidAppLaunchingKeyEvent = ETrue;
+    
+    // By-pass checking of number entry length in case of #-character.
+    // #-character is handled differently from other keys, and number 
+    // entry length has been checked earlier. Checking number entry length
+    // for #-character is difficult here, because we cannot know if FEP
+    // has removed the long-# from number entry or not.
+    if ( TKeyCode( KPhoneDtmfHashCharacter ) != aCode )
         {
+        TPhoneCmdParamInteger numberEntryCount;
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewGetNumberEntryCount,
+            &numberEntryCount );
+    
         isValidAppLaunchingKeyEvent = ( numberEntryCount.Integer() == 1 );
         }
     
@@ -1340,21 +1365,21 @@ TBool CPhoneStateIdle::CheckAppLaunchingL( const TKeyCode aCode )
         {
         TRAPD( err, 
             CPhoneCenRepProxy::Instance()->FetchValuesFromCenRepL( 
-        	appInfo, aCode, appParam, valuesFetched ) );
+            appInfo, aCode, appParam, valuesFetched ) );
         
         if ( KErrNone == err && valuesFetched )
             {
             // Remove the number entry window
             iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
 
-        	// Stop playing DTMF tone
-        	iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF );
+            // Stop playing DTMF tone
+            iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF );
 
             TPhoneCommandParam* phoneCommandParam = 
                 static_cast<TPhoneCommandParam*>( &appInfo );
-        	iViewCommandHandle->ExecuteCommandL( 
-        				EPhoneViewActivateAppViewConventional,
-        				phoneCommandParam ); 
+            iViewCommandHandle->ExecuteCommandL( 
+                        EPhoneViewActivateAppViewConventional,
+                        phoneCommandParam ); 
             
             // Continue displaying current app but set up the 
             // idle screen in the background
@@ -1363,7 +1388,7 @@ TBool CPhoneStateIdle::CheckAppLaunchingL( const TKeyCode aCode )
         }
     CleanupStack::PopAndDestroy( appParam );
     return valuesFetched;
-	}
+    }
 
 // -----------------------------------------------------------
 // CPhoneStateIdle::NumberForSpeedDialLocationL
@@ -1422,7 +1447,12 @@ void CPhoneStateIdle::HandleVoiceCallCommandL( TBool aSendKey )
         else
 #endif // _DEBUG
             {
-            if ( IsSpeedDialNumber( *phoneNumber ) )
+            if ( IsDialingExtensionInFocusL() )
+                {
+                CPhoneState::HandleCommandL( EEasyDialingVoiceCall );
+                }
+            
+            else if ( IsSpeedDialNumber( *phoneNumber ) )
                 {
                 // Handle speed dial
                 SpeedDialL( (*phoneNumber)[0], aSendKey ? EDialMethodSendCommand : EDialMethodMenuSelection );
@@ -1437,6 +1467,31 @@ void CPhoneStateIdle::HandleVoiceCallCommandL( TBool aSendKey )
             CleanupStack::PopAndDestroy( phoneNumber );
             }
         }    
+    }
+
+// -----------------------------------------------------------
+// CPhoneStateIdle::HandleVoiceCallCommandL()
+// -----------------------------------------------------------
+//
+TInt CPhoneStateIdle::GetNumberAcqMenuIdL()
+    {
+    TInt menuId = CPhoneMainResourceResolver::Instance()->
+            ResolveResourceID( EPhoneNumberAcqMenubar );
+    
+    // Use easy dialing menu id, if easydialing is in focus.
+    // Otherwise use number acquisition menu id.
+    if ( IsDialingExtensionInFocusL() )
+        {
+        // Fetch easydialing menu id, check its validity and assign to menuId
+        TPhoneCmdParamInteger integerParam;  
+        iViewCommandHandle->ExecuteCommandL(
+                EPhoneViewGetEasyDialingMenuId, &integerParam );
+        if ( integerParam.Integer() ) 
+            {
+            menuId = integerParam.Integer();
+            }
+        }
+    return menuId;
     }
 
 // End of File

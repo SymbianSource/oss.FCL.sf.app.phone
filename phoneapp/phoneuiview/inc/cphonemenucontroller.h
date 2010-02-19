@@ -116,7 +116,11 @@ class CPhoneMenuController : public CBase, public MPhonePubSubObserver
 		void SendAiwCommandL( TPhoneCommandParam* aCommandParam );      
  
 		void SetContextMenu( TPhoneCommandParam* aCommandParam );
-		
+
+        void SetInvalidCsPhoneNumberFlag( TPhoneCommandParam* aCommandParam );
+	        
+        void GetInvalidCsPhoneNumberFlag( TPhoneCommandParam* aCommandParam );
+
     public: //from base class 
         
          void HandlePropertyChangedL( 
@@ -181,6 +185,8 @@ class CPhoneMenuController : public CBase, public MPhonePubSubObserver
         TBool iAllowDtmfOptionsFlag;
         TBool iVoipEnabledFlag;  
         TBool iHideVideoCallDTMFVisibility;
+        TBool iInvalidCsPhoneNumber;
+
         // Eikon environment delivered from CPhoneViewController
         CEikonEnv& iEikEnv;       
         // Pointer to AIW service handler. OWNED.

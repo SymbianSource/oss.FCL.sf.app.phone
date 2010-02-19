@@ -26,7 +26,7 @@
 #include <ctsydomainpskeys.h>
 #include <mpedatastore.h>
 #include <pepanic.pan>
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h>
 #include <talogger.h>
 #include <telephonyvariant.hrh>
 #include <telinternalcrkeys.h>

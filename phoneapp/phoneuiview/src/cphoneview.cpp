@@ -49,7 +49,7 @@
 #include <layoutmetadata.cdl.h>
 #include <aknlayoutscalable_apps.cdl.h>
 #include <aknlayoutscalable_avkon.cdl.h>
-#include <aknstatuspaneutils.h>
+#include <AknStatuspaneUtils.h>
 
 enum TPhoneBgLayers
     {

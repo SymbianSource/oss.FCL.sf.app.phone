@@ -15,6 +15,7 @@
 *              
 */ 
 
+#include "../easydialing/group/bld.inf"
 #include "../dialer/group/bld.inf"
 #include "../BubbleManager/Group/bld.inf"
 #include "../ConnectUtil/group/bld.inf"

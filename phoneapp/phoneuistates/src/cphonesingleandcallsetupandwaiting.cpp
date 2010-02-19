@@ -221,12 +221,7 @@ void CPhoneSingleAndCallSetupAndWaiting::HandlePhoneEngineMessageL(
             // Flow through to default branch.
             CaptureKeysDuringCallNotificationL( EFalse );
             }
-            
-        case MEngineMonitor::EPEMessageColpNumberAvailable:
-            {
-            HandleColpNoteL( aCallId );            
-            }
-            break;   
+           
         default:
             {
             CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );

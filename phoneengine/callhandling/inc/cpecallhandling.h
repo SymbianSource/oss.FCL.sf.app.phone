@@ -432,6 +432,13 @@ class CPECallHandling
         * @return Error (KErrNone is success).
         */
         IMPORT_C TInt ForwardCallToAddress( TInt aIndex );
+        
+        /**
+        * Makes HangUp requests for conference call. 
+        * @return Error (ECCPErrorNotFound if there is not a conference call 
+        * 
+        */
+        IMPORT_C TInt ReleaseConference();
 
     public: // From MPECallHandling - DTMF related
         /**

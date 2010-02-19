@@ -25,7 +25,7 @@
 #include    <AknGlobalConfirmationQuery.h>
 #include    <AknUtils.h>
 #include    <StringLoader.h>
-#include    <ConnectUtilRsc.rsg>
+#include    <connectutilrsc.rsg>
 #include    <avkon.hrh>
 #include    <e32property.h>
 #include    <PSVariables.h>

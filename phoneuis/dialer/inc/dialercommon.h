@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2007 - 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -34,6 +34,27 @@ const TUid KPhoneUidAppPhone = { 0x100058B3 };
 
 // ROM drive.
 _LIT( KDriveZ, "z:" );
+
+// Application name literal for panic macro
+_LIT( KModuleName, "Dialer" );
+
+// Panic macro
+inline void DialerPanic( TInt aReason )
+    {
+    User::Panic( KModuleName, aReason );
+    }
+
+// Panic codes
+enum TDialerPanicCode 
+    {
+    EDialerPanicDrawingError = 100,
+    EDialerPanicNoApplicationInstance,
+    EDialerPanicUnknownScript,
+    EDialerPanicChineseScriptError,
+    EDialerPanicLabelNotFound,
+    EDialerPanicToolbarButtonNotFound,
+    EDialerPanicNullController
+    };
 
 #endif // DIALERCOMMON_H
 

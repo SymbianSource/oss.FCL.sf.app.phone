@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -1113,7 +1113,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneInformationWaitNote:
-            retVal = R_PHONE_INFORMATION_NOTE_WITH_WAIT;
+            retVal = R_PHONE_INFORMATION_NOTE_WITH_CBA;
             break;
 
         case EPhoneInformationErrorNote:
@@ -1307,6 +1307,9 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             retVal = R_PHONEUI_SIM_REMOVED;
             break;
 
+        case EPhoneSIMInvalidUICC:
+            retVal = R_SIM_INVALID_UICC;
+            break;
         case EPhoneRebootRequired:
             retVal = R_PHONEUI_REBOOT_REQUIRED;
             break;

@@ -108,4 +108,7 @@ LIBRARY         serviceprovidersettings.lib
 LIBRARY         serviceselector.lib
 LIBRARY         vccuipropertyhandler.lib //For VCC Usage
 LIBRARY         ws32.lib
+LIBRARY         centralrepository.lib
+LIBRARY         phoneuiview.lib
+LIBRARY         aknskins.lib
 

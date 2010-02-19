@@ -22,7 +22,7 @@
 #include    <DRMHelper.h>
 #include    <coemain.h>
 #include    <aknnotewrappers.h>
-#include    <psln.rsg>
+#include    <Psln.rsg>
 #include    <drmutility.h>
 
 // Logging

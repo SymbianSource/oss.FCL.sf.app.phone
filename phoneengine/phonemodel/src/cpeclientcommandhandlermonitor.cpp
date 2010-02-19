@@ -442,10 +442,10 @@ TInt CPEClientCommandHandlerMonitor::HangUp( TPEState aState )
     TEFLOGSTRING2( KTAINT, "CPEClientCommandHandlerMonitor::HangUp aState=%d", aState); 
     TInt ret( ECCPErrorNotFound ); 
   
-    TPEState conferenceState = iCallHandling.GetCallState( KPEConferenceCallID ); 
+    TPEState conferenceState = iModel.DataStore()->ConferenceCallState();
     if ( conferenceState == aState ) 
         { 
-        ret = iCallHandling.HangUp( KPEConferenceCallID, ETPEHangUpDefault ); 
+        ret = iCallHandling.ReleaseConference(); 
         } 
     else 
         { 

@@ -101,7 +101,8 @@ enum TDialerOperationMode
     {
     EModeDialer, // Phone Dialer
     EModeVoiceDTMF, // Phone DTMF string query 
-    EModeVideoDTMF // Video telephony DTMF send
+    EModeVideoDTMF, // Video telephony DTMF send
+    EModeEasyDialing // Easy dialing mode
     };
 
 enum TVideoVariety 

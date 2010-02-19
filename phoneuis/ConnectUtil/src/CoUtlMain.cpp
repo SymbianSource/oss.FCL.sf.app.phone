@@ -20,7 +20,7 @@
 // INCLUDE FILES
 #include    <ecom.h>
 #include    <implementationproxy.h>
-#include    <CoUtlInterface.hrh>
+#include    <coutlinterface.hrh>
 #include    "CCoUtlImplementation.h"
 
 // CONSTANTS

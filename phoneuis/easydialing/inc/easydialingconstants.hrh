@@ -1,0 +1,39 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Easy dialing constant definitions.
+*
+*/
+
+#ifndef __EASYDIALINGCONSTANTS_HRH__
+#define __EASYDIALINGCONSTANTS_HRH__
+
+/**
+ * Dll uid for plugin.
+ */
+#define EASYDIALING_PLUGIN_DLL_UID 0x200212A0
+
+/**
+ * Ecom interface uid plugin
+ */
+#define EASYDIALING_PLUGIN_IF_UID 0x200212A1
+
+/**
+ * Ecom implementation uid plugin. Same as DLL UID.
+ */
+#define EASYDIALING_PLUGIN_ECOM_IMPL_UID 0x200212A0
+
+#endif //__EASYDIALINGCONSTANTS_HRH__
+
+// End of File
+

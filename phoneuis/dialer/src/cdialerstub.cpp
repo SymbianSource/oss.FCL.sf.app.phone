@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2007 - 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -30,11 +30,12 @@
 // ---------------------------------------------------------------------------
 //
 EXPORT_C CDialer* CDialer::NewL( const CCoeControl& aContainer, 
-                                 const TRect& aRect )
+                                 const TRect& aRect, 
+                                 MPhoneDialerController* aController )
     {
     CDialer* self = new( ELeave )CDialer ( );    
     CleanupStack::PushL( self );
-    self->ConstructL( aContainer , aRect );
+    self->ConstructL( aContainer , aRect, aController );
     CleanupStack::Pop();    // self
     return self;
     }
@@ -53,12 +54,12 @@ EXPORT_C CDialer::~CDialer()
 //
 void CDialer::ConstructL( 
     const CCoeControl& aContainer, 
-    const TRect& aRect )
-    {    
+    const TRect& aRect,
+    MPhoneDialerController* /*aController*/ )
+    {
     // set window
     SetContainerWindowL( aContainer );
     SetParent( const_cast<CCoeControl*>(&aContainer) );
-    iParentControl = &aContainer;
     SetRect( aRect );
     }
 
@@ -90,6 +91,41 @@ EXPORT_C void CDialer::SetNumberEntryObserver( MNumberEntryObserver& /*aObserver
     // Empty
     }
 
+// -----------------------------------------------------------------------------
+// CDialer::SetControllerL
+// -----------------------------------------------------------------------------
+//
+EXPORT_C void CDialer::SetControllerL( MPhoneDialerController* /*aController*/ ) 
+    {
+    // Empty
+    }
+
+// ---------------------------------------------------------------------------
+// CDialer::Controller
+// ---------------------------------------------------------------------------
+//
+EXPORT_C MPhoneDialerController* CDialer::Controller()
+    {
+    return NULL;
+    }
+
+// -----------------------------------------------------------------------------
+// CDialer::GetEasyDialingInterface
+// -----------------------------------------------------------------------------
+//
+EXPORT_C CDialingExtensionInterface* CDialer::GetEasyDialingInterface() const
+    {
+    return NULL;
+    }
+
+// ---------------------------------------------------------------------------
+// CDialer::UpdateToolbar
+// ---------------------------------------------------------------------------
+//
+EXPORT_C void CDialer::UpdateToolbar()
+    {
+    // empty
+    }
 
 // Methods from MNumberEntry
 
@@ -226,6 +262,18 @@ void CDialer::EnableTactileFeedback( const TBool /*aEnable*/ )
     {
     // Empty
     }
+
+
+// ---------------------------------------------------------------------------
+// CDialer::HandleControlEventL
+// ---------------------------------------------------------------------------
+//
+void CDialer::HandleControlEventL( CCoeControl* /*aControl*/, TCoeEvent /*aEventType*/ )
+    {
+    // Empty
+    }
+
+
 // Functions from CCoeControl
 
 // ---------------------------------------------------------------------------

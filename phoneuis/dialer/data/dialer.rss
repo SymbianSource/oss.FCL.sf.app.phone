@@ -32,8 +32,6 @@ NAME DIAL // 4 letter ID
 #include <avkon.loc>
 #include <data_caging_paths_strings.hrh>
 
-
-
 // CONSTANTS 
 
 // RESOURCE DEFINITIONS 
@@ -99,7 +97,6 @@ RESOURCE PHONE_NUMBER_EDITOR r_inputfield
             }
         };
      }
-
 
 // End of File
 

@@ -24,4 +24,16 @@ EXPORTS
 	?ExecuteCommandL@CPhoneViewController@@UAEXHPAVTPhoneCommandParam@@@Z @ 23 NONAME ; void CPhoneViewController::ExecuteCommandL(int, class TPhoneCommandParam *)
 	?FetchContent@CPhoneViewController@@UAEABVTDesC16@@XZ @ 24 NONAME ; class TDesC16 const & CPhoneViewController::FetchContent(void)
 	?HandleCommandL@CPhoneViewController@@UAEHH@Z @ 25 NONAME ; int CPhoneViewController::HandleCommandL(int)
+	?ButtonState@CPhoneDialerController@@UBEHW4TButtonIndex@MPhoneDialerController@@@Z @ 26 NONAME ; int CPhoneDialerController::ButtonState(enum MPhoneDialerController::TButtonIndex) const
+	?ConstructL@CPhoneDialerController@@IAEXXZ @ 27 NONAME ; void CPhoneDialerController::ConstructL(void)
+	??0CPhoneDialerController@@IAE@PAVCPhoneBubbleWrapper@@AAVCCoeEnv@@@Z @ 28 NONAME ; CPhoneDialerController::CPhoneDialerController(class CPhoneBubbleWrapper *, class CCoeEnv &)
+	?SetNumberEntryIsEmpty@CPhoneDialerController@@UAEXH@Z @ 29 NONAME ; void CPhoneDialerController::SetNumberEntryIsEmpty(int)
+	?EasyDialingAllowed@CPhoneDialerController@@UBEHXZ @ 30 NONAME ; int CPhoneDialerController::EasyDialingAllowed(void) const
+	?EmergencyCallActive@CPhoneDialerController@@IBEHXZ @ 31 NONAME ; int CPhoneDialerController::EmergencyCallActive(void) const
+	??1CPhoneDialerController@@UAE@XZ @ 32 NONAME ; CPhoneDialerController::~CPhoneDialerController(void)
+	?CbaResourceId@CPhoneDialerController@@UBEHXZ @ 33 NONAME ; int CPhoneDialerController::CbaResourceId(void) const
+	?NumberEntryPromptTextL@CPhoneDialerController@@UAEABVTDesC16@@XZ @ 34 NONAME ; class TDesC16 const & CPhoneDialerController::NumberEntryPromptTextL(void)
+	?MenuResourceId@CPhoneDialerController@@UBEHXZ @ 35 NONAME ; int CPhoneDialerController::MenuResourceId(void) const
+	?ButtonDimmed@CPhoneDialerController@@UBEHW4TButtonIndex@MPhoneDialerController@@@Z @ 36 NONAME ; int CPhoneDialerController::ButtonDimmed(enum MPhoneDialerController::TButtonIndex) const
+	?GetButtonData@CPhoneDialerController@@UBEHW4TButtonIndex@MPhoneDialerController@@AAV?$RPointerArray@VCButtonData@MPhoneDialerController@@@@@Z @ 37 NONAME ; int CPhoneDialerController::GetButtonData(enum MPhoneDialerController::TButtonIndex, class RPointerArray<class MPhoneDialerController::CButtonData> &) const
 

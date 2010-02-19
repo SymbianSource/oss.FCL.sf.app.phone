@@ -219,7 +219,16 @@ enum
     EPhoneIsCustomizedDialerVisible,
 
     EPhoneCmdVideoCallOutOfMemory,
-   
+
+    // dialer and easy dialing releated commands
+    EEasyDialingSettingsItemPlaceHolder,
+    EEasyDialingCmdSelect,
+    EPhoneDialerValidNumber,
+    EPhoneDialerInvalidNumber,
+    EPhoneCmdUpdateCba,
+    EPhoneCmdBlockingDialogLaunched,
+    EPhoneCmdBlockingDialogClosed,
+
     EPhoneCmdLast
     };
     

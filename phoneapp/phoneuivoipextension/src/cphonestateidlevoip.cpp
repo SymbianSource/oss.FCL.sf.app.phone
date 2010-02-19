@@ -151,7 +151,7 @@ void CPhoneStateIdleVoIP::HandleSendCommandL()
     
     HBufC* phoneNumber = PhoneNumberFromEntryLC();
      
-    if ( !IsSimOk() || IsEmergencyNumber( *phoneNumber ) )
+    if ( !IsSimOk() || IsEmergencyNumber( *phoneNumber ) || IsDialingExtensionInFocusL() )
         {
         CPhoneIdle::HandleSendCommandL();         
         }  

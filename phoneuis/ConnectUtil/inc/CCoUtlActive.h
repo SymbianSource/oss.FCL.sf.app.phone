@@ -21,7 +21,7 @@
 #define CCOUTLACTIVE_H
 
 //  INCLUDES
-#include    <CCoUtlInterface.h>
+#include    <ccoutlinterface.h>
 #include    <etel.h>
 #include    <etelmm.h>
 #include    <etelpckt.h>

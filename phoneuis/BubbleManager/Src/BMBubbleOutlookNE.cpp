@@ -41,7 +41,7 @@
 
 //for resources
 #include    <barsread.h>
-#include    <Bubblemanager.rsg>
+#include    <BubbleManager.rsg>
 
 // CONSTANTS
 const TUint8 KBubbleNE1LongLineFormat = 0;

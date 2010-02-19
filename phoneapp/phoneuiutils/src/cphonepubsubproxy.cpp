@@ -301,22 +301,6 @@ void CPhonePubSubProxy::CancelAllObserverNotifies(
             // Remove observer 
             observerRemoved = ETrue;
             iObserverArray->Delete( i );
-
-            // Remove this observers' subscriptions
-            TInt pubSubCount = iPublishSubscriberArray->Count();
-     
-            for ( TInt j = pubSubCount - 1; j >= 0; j++ )
-                {
-                CPhonePublishSubscriberAO* publishSubscriber = 
-                    iPublishSubscriberArray->At( j );
-
-                if ( publishSubscriber->Category() == observerTag.iCategory && 
-                    publishSubscriber->Key() == observerTag.iKey )
-                    {
-                    iPublishSubscriberArray->Delete( i );
-                    delete publishSubscriber;
-                    }
-                }
             }
         }
     }

@@ -924,6 +924,12 @@ void CPhoneConference::HandleIncomingL( TInt aCallId )
         "CPhoneConference::HandleIncomingL()");
     
     BeginUiUpdateLC();
+    
+    // Hide the number entry if it exists
+    if ( IsNumberEntryUsedL() )
+        {
+        SetNumberEntryVisibilityL( EFalse );    
+        }
  
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
@@ -1126,4 +1132,35 @@ void CPhoneConference::UpdateConferenceSecurityStatusL( TInt aCallId )
         }
     }
 
+// -----------------------------------------------------------
+// CPhoneConference::DisconnectCallL
+// -----------------------------------------------------------
+//
+void CPhoneConference::DisconnectCallL()
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConference::DisconnectCallL( ) ");
+    // Fetch active call's id from view
+    TPhoneCmdParamCallStateData callStateData;
+    callStateData.SetCallState( EPEStateConnected );
+    iViewCommandHandle->HandleCommandL(
+        EPhoneViewGetCallIdByState, &callStateData );
+
+    if( callStateData.CallId() == KErrNotFound )
+        {
+        // No connected call, find the hold call
+        callStateData.SetCallState( EPEStateHeld );
+        iViewCommandHandle->HandleCommandL(
+            EPhoneViewGetCallIdByState, &callStateData );
+        }
+  
+    if( callStateData.CallId() > KErrNotFound  )
+        {
+        iStateMachine->SendPhoneEngineMessage(
+                      CPEPhoneModelIF::EPEMessageHangUpConference );  
+        }
+    else
+        {
+        CPhoneState::DisconnectCallL();
+        }
+    }
 // End of File

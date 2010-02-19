@@ -41,13 +41,13 @@
 // Psln Framework specific.
 #include <pslnfwviewuids.h>
 #include <psln.hrh>
-#include <pslncommon.rsg>
+#include <PslnCommon.rsg>
 
 // General services
 #include <MGFetch.h>
 
 // Resources
-#include <psln.rsg>
+#include <Psln.rsg>
 
 // Logging
 #include "PslnCallImagePluginLogger.h"

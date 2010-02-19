@@ -226,12 +226,7 @@ EXPORT_C void CPhoneAlerting::HandlePhoneEngineMessageL(
                 }
             }
             break;
-        case MEngineMonitor::EPEMessageColpNumberAvailable:
-            {
-            HandleColpNoteL( aCallId );
-            return;
-            }
-            break;            
+                   
         
         default:
             break;

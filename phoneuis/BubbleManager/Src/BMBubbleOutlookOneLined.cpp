@@ -198,6 +198,7 @@ TInt CBubbleOutlookOneLined::CountComponentControls() const
 CCoeControl* CBubbleOutlookOneLined::ComponentControl( TInt aIndex ) const
     {
     TInt amount = -1;
+    // coverity[var_compare_op]
     if ( iSmallCallIndication )
         {
         amount++;
@@ -205,6 +206,7 @@ CCoeControl* CBubbleOutlookOneLined::ComponentControl( TInt aIndex ) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iSmallCallIndication->Control();
         }
 

@@ -121,6 +121,7 @@ class CPhoneConference : public CPhoneGsmInCall
 
         void UpdateConferenceSecurityStatusL( TInt aCallId );
 		
+        virtual void DisconnectCallL();
         
      private:
               

@@ -82,8 +82,8 @@ void CPhCntService::AttachCriteriasL()
 	
 	
 	iCriteriaArray.AppendL( assignCriteria  );
-	iAiwService->AttachL( iCriteriaArray ); 
 	CleanupStack::Pop( assignCriteria );
+	iAiwService->AttachL( iCriteriaArray ); 
 	}
 
         

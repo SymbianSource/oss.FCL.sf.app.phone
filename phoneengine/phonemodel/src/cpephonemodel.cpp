@@ -478,7 +478,9 @@ TPtrC CPEPhoneModel::NameByMessageFromPhoneEngine(
         case MEngineMonitor::EPEMessageRemotePartyInfoChanged:
             return MESSAGE("EPEMessageRemotePartyInfoChanged");
         case MEngineMonitor::EPEMessageConnectingWithInband:
-            return MESSAGE("EPEMessageConnectingWithInband");
+            return MESSAGE("EPEMessageConnectingWithInband");            
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            return MESSAGE("EPEMessageColpNumberAvailable");
 
         // Contact messages                   3000 - 3999
         case MEngineMonitor::EPEMessageThumbnailLoadingCompleted:
@@ -716,8 +718,10 @@ void CPEPhoneModel::HandleMessage(
             errorCode = iMessageHandler->HandleReleaseAll( );            
             break;
         case MPEPhoneModel::EPEMessageRelease:     //Make HangUp request
+            errorCode = iMessageHandler->HandleReleaseCall( );
+            break;
         case CPEPhoneModelIF::EPEMessageHangUpConference:
-            errorCode = iMessageHandler->HandleReleaseCall( );            
+            errorCode = iMessageHandler->HandleReleaseConference();
             break;
         case MPEPhoneModel::EPEMessageAnswer:                        //Make Answer request
             errorCode = iMessageHandler->HandleAnswerCall( EFalse );

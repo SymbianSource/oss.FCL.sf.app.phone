@@ -1,0 +1,40 @@
+/*
+* Copyright (c) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: Image description file for variable resouces of Dialer
+*
+*/
+
+
+#ifndef DIALER_VARIANT_IBY
+#define DIALER_VARIANT_IBY
+
+#include <data_caging_paths_for_iby.hrh>
+
+// NOTE: It's necessary to include keypad resources only to those scripts
+// which are present in the device. However, including them all doens't hurt
+// either and each resource file is quite small.
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad.rsc            RESOURCE_FILES_DIR\dialerkeypad.rsc
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad_cyrillic.rsc   RESOURCE_FILES_DIR\dialerkeypad_cyrillic.rsc
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad_greek.rsc      RESOURCE_FILES_DIR\dialerkeypad_greek.rsc
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad_hebrew.rsc     RESOURCE_FILES_DIR\dialerkeypad_hebrew.rsc
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad_arabic.rsc     RESOURCE_FILES_DIR\dialerkeypad_arabic.rsc
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad_farsi.rsc      RESOURCE_FILES_DIR\dialerkeypad_farsi.rsc
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad_urdu.rsc       RESOURCE_FILES_DIR\dialerkeypad_urdu.rsc
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad_thai.rsc       RESOURCE_FILES_DIR\dialerkeypad_thai.rsc
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad_devanagari.rsc RESOURCE_FILES_DIR\dialerkeypad_devanagari.rsc
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad_chn_pinyin.rsc RESOURCE_FILES_DIR\dialerkeypad_chn_pinyin.rsc
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad_chn_stroke.rsc RESOURCE_FILES_DIR\dialerkeypad_chn_stroke.rsc
+data = DATAZ_\RESOURCE_FILES_DIR\dialerkeypad_chn_zhuyin.rsc RESOURCE_FILES_DIR\dialerkeypad_chn_zhuyin.rsc
+
+#endif // DIALER_VARIANT_IBY

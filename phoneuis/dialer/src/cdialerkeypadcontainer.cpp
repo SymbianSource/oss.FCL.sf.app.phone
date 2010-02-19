@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2007 - 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,7 +21,6 @@
 #include <e32event.h>
 #include <gulicon.h>
 #include <eikapp.h>
-#include <AknUtils.h>
 #include <aknbutton.h>
 #include <AknControl.h>
 #include <AknsUtils.h>
@@ -33,310 +32,59 @@
 #include <layoutmetadata.cdl.h>
 #include <data_caging_path_literals.hrh> // for KDC_APP_RESOURCE_DIR
 #include <touchfeedback.h>
+#include <aknlayoutscalable_avkon.cdl.h>
+#include <aknsframebackgroundcontrolcontext.h>
 
 #include "cdialerkeypadcontainer.h"
 #include "dialercommon.h"
 #include "dialertrace.h"
 
 #include "cdialerkeypadbutton.h"
-_LIT( KDialerMifFileName, "dialer.mif" );
 
 // Number of buttons in this container
 const TInt KNumberOfButtons = 12; 
 
-// Keypad button images
-const TMifDialer KKeyPadButtons[] =
+struct TDialerButton
     {
-    EMbmDialerQgn_indi_dialer_one,
-    EMbmDialerQgn_indi_dialer_two,
-    EMbmDialerQgn_indi_dialer_three,
-    EMbmDialerQgn_indi_dialer_four,
-    EMbmDialerQgn_indi_dialer_five,
-    EMbmDialerQgn_indi_dialer_six,
-    EMbmDialerQgn_indi_dialer_seven,
-    EMbmDialerQgn_indi_dialer_eight,
-    EMbmDialerQgn_indi_dialer_nine,
-    EMbmDialerQgn_indi_dialer_prefix,
-    EMbmDialerQgn_indi_dialer_zero,
-    EMbmDialerQgn_indi_dialer_hash
+    TMifDialer iBitmap;
+    TMifDialer iBitmapMask;
+    TInt iScanCode;
+    TInt iKeyCode;
+    };  
+
+const TDialerButton KKeyPadButtons[ KNumberOfButtons ] =
+
+    {
+        { EMbmDialerQgn_indi_dialer_voicemail,
+          EMbmDialerQgn_indi_dialer_voicemail_mask, 
+          '1',
+          '1'
+        },
+        { KDialerNoIcon, KDialerNoIcon, 
+          '2', '2' },
+        { KDialerNoIcon, KDialerNoIcon,  
+          '3', '3' },
+        { KDialerNoIcon, KDialerNoIcon,  
+          '4', '4' },
+        { KDialerNoIcon, KDialerNoIcon,  
+          '5', '5' },
+        { KDialerNoIcon, KDialerNoIcon,  
+          '6', '6' },
+        { KDialerNoIcon, KDialerNoIcon, 
+          '7', '7' },
+        { KDialerNoIcon, KDialerNoIcon,  
+          '8', '8' },
+        { KDialerNoIcon, KDialerNoIcon,  
+          '9', '9' },
+        { KDialerNoIcon, KDialerNoIcon,  
+          EStdKeyNkpAsterisk, '*'  },
+        { KDialerNoIcon, KDialerNoIcon,  
+          '0', '0' },
+        { KDialerNoIcon, KDialerNoIcon,      
+          EStdKeyHash, '#' }
     };
 
-// Keypad button image masks
-const TMifDialer KKeyPadButtonsMasks[] =
-    {
-    EMbmDialerQgn_indi_dialer_one_mask,
-    EMbmDialerQgn_indi_dialer_two_mask,
-    EMbmDialerQgn_indi_dialer_three_mask,
-    EMbmDialerQgn_indi_dialer_four_mask,
-    EMbmDialerQgn_indi_dialer_five_mask,
-    EMbmDialerQgn_indi_dialer_six_mask,
-    EMbmDialerQgn_indi_dialer_seven_mask,
-    EMbmDialerQgn_indi_dialer_eight_mask,
-    EMbmDialerQgn_indi_dialer_nine_mask,
-    EMbmDialerQgn_indi_dialer_prefix_mask,
-    EMbmDialerQgn_indi_dialer_zero_mask,
-    EMbmDialerQgn_indi_dialer_hash_mask
-    };
 
-// Match keypresses to keyevents send to the phone
-//
-const TInt TDialerButtonToKeypadMap[12][2] = 
-        {  
-            { 49, // ScanCode
-              49  // KeyCode
-            },
-            { 50,
-              50
-            },
-            { 51,
-              51
-            },
-            { 52,
-              52
-            },    
-            { 53,
-              53
-            },
-            { 54,
-              54
-            },
-            { 55,
-              55
-            },
-            { 56,
-              56
-            },
-            { 57,
-              57
-            },                        
-            { EStdKeyNkpAsterisk,
-              42
-            },
-            { '0',
-              '0'
-            }, 
-            { EStdKeyHash,
-              35
-            }                                                                                                       
-        };   
-
-// Class declaration for CDialerKeyPadButton separated to cdialerkeypadbutton.h.
-
-// ---------------------------------------------------------------------------
-// C++ default constructor
-// ---------------------------------------------------------------------------
-//
-CDialerKeyPadButton::CDialerKeyPadButton()
-    {
-    }
-
-// ---------------------------------------------------------------------------
-// Destructor
-// ---------------------------------------------------------------------------
-//
-CDialerKeyPadButton::~CDialerKeyPadButton()
-    {
-    MTouchFeedback* feedback = MTouchFeedback::Instance();
-    if ( feedback )
-        {
-        feedback->RemoveFeedbackForControl( iButton );
-        }
-    delete iButton;   
-    }
-        
-// ---------------------------------------------------------------------------
-// Creates number keypad button
-// ---------------------------------------------------------------------------
-//
-void CDialerKeyPadButton::CreateButtonL( const TInt aScanCode, 
-                                         const TInt aKeyCode,
-                                         const TMifDialer aButtonIcon, 
-                                         const TMifDialer aButtonIconMask )
-    {
-    iScanCode = aScanCode;
-    iKeyCode  = aKeyCode;
-    iButtonIcon = aButtonIcon;
-    iButtonIconMask = aButtonIconMask;
-    
-    TFileName mifPath( KDriveZ );
-    mifPath.Append( KDC_APP_BITMAP_DIR );
-    mifPath.Append( KDialerMifFileName );
-
-    MAknsSkinInstance* skin = AknsUtils::SkinInstance();
-    CFbsBitmap* bitmap (NULL);
-    CFbsBitmap* mask (NULL);
-
-    // Get icon ids.
-    TAknsItemID skinItemId( KAknsIIDNone );  
-    
-    // Create button image.
-    MapDialerIconToSkinIcon( aButtonIcon ,skinItemId );
-    AknsUtils::CreateColorIconLC( 
-        skin, 
-        skinItemId,
-        KAknsIIDQsnIconColors, 
-        EAknsCIQsnIconColorsCG30,
-        bitmap, 
-        mask, 
-        mifPath, 
-        aButtonIcon, 
-        aButtonIconMask,
-        KRgbBlack
-        );
-
-    CGulIcon* icon = CGulIcon::NewL( bitmap, mask );
-    CleanupStack::Pop( 2 );
-    CleanupStack::PushL( icon );
-    iButton = CAknButton::NewL(
-        icon , // ownership taken
-        NULL, NULL, NULL, _L(""), _L(""), 0, 0 );
-    iButton->SetButtonFlags( KAknButtonReportOnLongPress|
-                            KAknButtonReportOnKeyDown  |
-                            KAknButtonRequestExitOnButtonUpEvent );
-    iButton->SetIconScaleMode( EAspectRatioPreserved );
-    iButton->SetMargins( TMargins8(0,0,0,0) );    
-    CleanupStack::Pop( icon ); 
-    }
-    
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//    
-TInt CDialerKeyPadButton::ScanCode() const
-    {
-    return iScanCode;
-    }
-    
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//    
-TInt CDialerKeyPadButton::KeyCode() const
-    {
-    return iKeyCode;
-    }    
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CDialerKeyPadButton::MapDialerIconToSkinIcon( const TInt aDialerIcon, 
-                                         TAknsItemID& aItemId ) const
-    {    
-    switch ( aDialerIcon )
-        {
-        case EMbmDialerQgn_indi_dialer_one:
-            aItemId = KAknsIIDQgnIndiDialerOne;
-            break;
-        case EMbmDialerQgn_indi_dialer_two:
-            aItemId = KAknsIIDQgnIndiDialerTwo;
-            break;
-        case EMbmDialerQgn_indi_dialer_three:
-            aItemId = KAknsIIDQgnIndiDialerThree;
-            break;
-        case EMbmDialerQgn_indi_dialer_four:
-            aItemId = KAknsIIDQgnIndiDialerFour;
-            break;
-        case EMbmDialerQgn_indi_dialer_five:
-            aItemId = KAknsIIDQgnIndiDialerFive;
-            break;
-        case EMbmDialerQgn_indi_dialer_six:
-            aItemId = KAknsIIDQgnIndiDialerSix;
-            break;
-        case EMbmDialerQgn_indi_dialer_seven:
-            aItemId = KAknsIIDQgnIndiDialerSeven;
-            break;    
-        case EMbmDialerQgn_indi_dialer_eight:
-            aItemId = KAknsIIDQgnIndiDialerEight;
-            break;
-        case EMbmDialerQgn_indi_dialer_nine:
-            aItemId = KAknsIIDQgnIndiDialerNine;
-            break;
-        case EMbmDialerQgn_indi_dialer_zero:
-            aItemId = KAknsIIDQgnIndiDialerZero;
-            break;
-        case EMbmDialerQgn_indi_dialer_prefix:
-            aItemId = KAknsIIDQgnIndiDialerPrefix;
-            break;
-        case EMbmDialerQgn_indi_dialer_hash:
-            aItemId = KAknsIIDQgnIndiDialerHash;
-            break;                        
-        default:
-            break;
-        }
-    }   
-
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//   
-void CDialerKeyPadButton::SetIconSize( TSize& aSize )
-    {
-    iButton->SetIconSize( aSize );
-    }  
-    
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//   
-void CDialerKeyPadButton::UpdateIconL()
-    {
-    TFileName mifPath( KDriveZ );
-    mifPath.Append( KDC_APP_BITMAP_DIR );
-    mifPath.Append( KDialerMifFileName );
-    
-    MAknsSkinInstance* skin = AknsUtils::SkinInstance();
-    CFbsBitmap* bitmap (NULL);
-    CFbsBitmap* mask (NULL);
-        
-    // Get icon id.
-    TAknsItemID skinItemId( KAknsIIDNone );  
-    MapDialerIconToSkinIcon( iButtonIcon, skinItemId );
-    
-    AknsUtils::CreateColorIconLC( 
-            skin, 
-            skinItemId,
-            KAknsIIDQsnIconColors, 
-            EAknsCIQsnIconColorsCG30,
-            bitmap, 
-            mask, 
-            mifPath, 
-            iButtonIcon, 
-            iButtonIconMask,
-            KRgbBlack
-            );
-    
-    CGulIcon* icon = CGulIcon::NewL( bitmap, mask );
-    CleanupStack::Pop( 2 );
-    
-    iButton->State()->SetIcon( icon ); // icon ownership transfered
-    
-    }  
-
-// ---------------------------------------------------------------------------
-// 
-// Enable or disable audio but keep vibra feedback 
-// ---------------------------------------------------------------------------
-//   
-void CDialerKeyPadButton::EnableAudioFeedback( const TBool aEnable )
-    {
-    MTouchFeedback* feedback = MTouchFeedback::Instance();
-    if ( feedback )
-        {
-        feedback->EnableFeedbackForControl( iButton, ETrue, aEnable );
-        }
-    }
-// ---------------------------------------------------------------------------
-// 
-// ---------------------------------------------------------------------------
-//
-void CDialerKeyPadButton::HandleResourceChange( TInt aType )
-    {
-    if ( aType == KAknsMessageSkinChange )
-        {
-        TRAP_IGNORE( UpdateIconL() );
-        iButton->HandleResourceChange( aType );
-        }    
-    }
 
 // ========================= MEMBER FUNCTIONS ================================
 
@@ -366,9 +114,9 @@ void CDialerKeyPadContainer::ConstructL()
     {    
     DIALER_PRINT("KeyPadContainer::ConstructL<");
     BaseConstructL();
+    iKeyLabelManager = CDialerKeyPadLabelManager::NewL( *iCoeEnv, *this );
     CreateButtonsL();
-    CCoeEnv* env = CCoeEnv::Static();
-    env->AddForegroundObserverL( *this );
+    iCoeEnv->AddForegroundObserverL( *this );
     DIALER_PRINT("KeyPadContainer::ConstructL>");
     }
 
@@ -387,14 +135,12 @@ CDialerKeyPadContainer::CDialerKeyPadContainer(
 CDialerKeyPadContainer::~CDialerKeyPadContainer()
     {
     for ( TInt i = 0; i < iButtonCount; i++ )
-        {
-        AknsUtils::DeregisterControlPosition( 
-                   ((CDialerKeyPadButton*)iButtons[i])->Control());   
+        {   
         delete iButtons[i];
         }
     iButtons.Close();
-    CCoeEnv* env = CCoeEnv::Static();
-    env->RemoveForegroundObserver( *this );
+    iCoeEnv->RemoveForegroundObserver( *this );
+    delete iKeyLabelManager;
     }
 
 // ---------------------------------------------------------------------------
@@ -417,7 +163,7 @@ CCoeControl* CDialerKeyPadContainer::ComponentControl( TInt aIndex ) const
     __ASSERT_DEBUG( aIndex < KNumberOfButtons, 
     _L("CDialerKeyPadContainer::ComponentControl, index out of range."));
     
-    return ((CDialerKeyPadButton*)iButtons[aIndex])->Control();
+    return iButtons[aIndex];
     }
     
 // ---------------------------------------------------------------------------
@@ -465,9 +211,12 @@ void CDialerKeyPadContainer::SetVariety()
 //
 void CDialerKeyPadContainer::SetLayout()
     {
-    if ( iOperatingMode == EModeDialer )
+    if ( iOperatingMode == EModeDialer ||
+         iOperatingMode == EModeEasyDialing )
         {
-        SetPhoneLayout();
+        // Same renewed layout is used regardless of the status
+        // of Easy Dialing
+        SetEasyDialingLayout();
         }
     else
         {
@@ -497,20 +246,9 @@ void CDialerKeyPadContainer::SetPhoneLayout()
     
     TRect parentRect( Rect() );
 
-    // Icon size - all in same size
-    TAknLayoutRect functionGraphics;  
-             
-    functionGraphics.LayoutRect( 
-        parentRect,
-        TAknWindowComponentLayout::Compose(
-            AknLayoutScalable_Apps::cell_dialer2_keypad_pane( iVariety ),
-            AknLayoutScalable_Apps::cell_dialer2_keypad_pane_g1( 
-                                                        iVariety ) ) );
-    TSize iconSize = functionGraphics.Rect().Size();
-    
     // Layout buttons
     TAknLayoutScalableParameterLimits limits = 
-    AknLayoutScalable_Apps::cell_dialer2_keypad_pane_ParamLimits( iVariety );
+        AknLayoutScalable_Apps::cell_dialer2_keypad_pane_ParamLimits( iVariety );
     
     TInt i = 0;
     for ( TInt row = limits.FirstRow(); row <= limits.LastRow(); row++ )
@@ -518,19 +256,60 @@ void CDialerKeyPadContainer::SetPhoneLayout()
         for ( TInt col = limits.FirstColumn(); 
               col <= limits.LastColumn(); col++ )
             {
-            // Layout button
-            AknLayoutUtils::LayoutControl(
-                ((CDialerKeyPadButton*)iButtons[i])->Control(), parentRect, 
-                TAknWindowComponentLayout::Compose( 
-                    AknLayoutScalable_Apps::cell_dialer2_keypad_pane( iVariety,
-                                                col, row ), 
-                    AknLayoutScalable_Apps::bg_button_pane_pane_cp04( 
-                                                iVariety ) ) );
-            
-            // Set icon size
-            ((CDialerKeyPadButton*)iButtons[i++])->SetIconSize( iconSize );
+            iButtons[i]->SetVariety( iVariety );
+            iButtons[i]->SetOperationMode( iOperatingMode );
+    
+            AknLayoutUtils::LayoutControl( iButtons[i], parentRect, TAknWindowComponentLayout::Compose( 
+                    AknLayoutScalable_Apps::cell_dialer2_keypad_pane( iVariety, col, row ), 
+                    AknLayoutScalable_Apps::bg_button_pane_pane_cp04( iVariety ) ) );
+            i++;
             }
         }
+    }
+
+// ---------------------------------------------------------------------------
+// CDialerKeyPadContainer::SetEasyDialingLayout
+//
+// ---------------------------------------------------------------------------
+//
+void CDialerKeyPadContainer::SetEasyDialingLayout()
+    {
+    TRect parentRect( Rect() );
+    
+    // Layout buttons
+    TAknLayoutScalableParameterLimits limits = 
+        AknLayoutScalable_Apps::cell_dialer2_keypad_pane_ParamLimits( iVariety );
+    
+    // Rectangle of the first button
+    TAknLayoutRect buttonLayoutRect;
+    buttonLayoutRect.LayoutRect( parentRect, 
+            AknLayoutScalable_Apps::cell_dia3_key_num_pane( iVariety ) );
+    TRect firstButtonRect = buttonLayoutRect.Rect();
+    // Move the first button rect to top-left-corner of the keypad area, 
+    // the default place is wrong in mirrored layout.
+    firstButtonRect.SetRect( parentRect.iTl, firstButtonRect.Size() );
+    
+    TInt colCount = limits.LastColumn() - limits.FirstColumn() + 1;
+
+    for ( TInt row = limits.FirstRow() ; row <= limits.LastRow() ; row++ )
+        {
+        for ( TInt col = limits.FirstColumn() ; col <= limits.LastColumn() ; col++ )
+            {
+            // Calculate corresponding index in iButtons array
+            TInt idx = col + row * colCount;
+            
+            // Set mode and variety so that correct button internal layout will be used
+            iButtons[idx]->SetVariety( iVariety );
+            iButtons[idx]->SetOperationMode( iOperatingMode );
+            
+            // Layout button
+            TRect buttonRect = firstButtonRect;
+            buttonRect.Move( col * buttonRect.Width(), row * buttonRect.Height() );
+            buttonRect.Shrink( 1, 1 ); // to create small gap between buttons
+            iButtons[idx]->SetRect( buttonRect );
+            }
+        }
+    
     }
 
 // ---------------------------------------------------------------------------
@@ -542,21 +321,8 @@ void CDialerKeyPadContainer::SetVideoLayout()
     {
     TRect parentRect( Rect() );
     
-    // Icon size - all in same size
-    TAknLayoutRect functionGraphics;  
-             
-    functionGraphics.LayoutRect( 
-        parentRect,
-        TAknWindowComponentLayout::Compose(
-            AknLayoutScalable_Apps::cell_video_dialer_keypad_pane( iVariety, 
-                                        0, 0 ),
-            AknLayoutScalable_Apps::cell_video_dialer_keypad_pane_g1( 
-                                        iVariety ) ) );
-    TSize iconSize = functionGraphics.Rect().Size();
-    
     TAknLayoutScalableParameterLimits limits = 
-        AknLayoutScalable_Apps::cell_video_dialer_keypad_pane_ParamLimits( 
-                                        iVariety ) ;
+        AknLayoutScalable_Apps::cell_video_dialer_keypad_pane_ParamLimits( iVariety ) ;
     
     TInt i = 0;
     for ( TInt row = limits.FirstRow(); row <= limits.LastRow(); row++ )
@@ -565,17 +331,17 @@ void CDialerKeyPadContainer::SetVideoLayout()
               col <= limits.LastColumn(); 
               col++ )
             {
+            iButtons[i]->SetVariety( iVariety );
+            iButtons[i]->SetOperationMode( iOperatingMode );
+        
             // Layout button
             AknLayoutUtils::LayoutControl(
-                ((CDialerKeyPadButton*)iButtons[i])->Control(), parentRect, 
+                iButtons[i], parentRect, 
                 TAknWindowComponentLayout::Compose( 
                     AknLayoutScalable_Apps::cell_video_dialer_keypad_pane( 
-                        iVariety, col, row ), 
-                    AknLayoutScalable_Apps::bg_button_pane_cp08( 
-                                        iVariety ) ) );
-            
-            // Set icon size
-            iButtons[i++]->SetIconSize( iconSize );
+                        iVariety, col, row ),             
+                    AknLayoutScalable_Apps::bg_button_pane_cp08( iVariety ) ) );
+            i++;
             }
         }
     }
@@ -590,24 +356,37 @@ void CDialerKeyPadContainer::CreateButtonsL()
     {
     DIALER_PRINT("KeyPadContainer::CreateButtonsL<");
     
-    for ( TInt i=0; i < KNumberOfButtons; i++ )
+    TInt flags ( KAknButtonReportOnLongPress|
+                 KAknButtonReportOnKeyDown  |
+                 KAknButtonRequestExitOnButtonUpEvent );
+    
+    for ( TInt i = 0; i < KNumberOfButtons; i++ )
         {
-        CDialerKeyPadButton* button = new (ELeave) CDialerKeyPadButton();
-        CleanupStack::PushL( button );
-        button->CreateButtonL( TDialerButtonToKeypadMap[i][0],
-                               TDialerButtonToKeypadMap[i][1],         
-                               KKeyPadButtons[i],
-                               KKeyPadButtonsMasks[i] );
+        const TPtrC numLabel = iKeyLabelManager->ButtonNumLabel( i );
+
+        const TPtrC alphaLabel = iKeyLabelManager->ButtonFirstAlphaLabel( i );
+
+        const TPtrC secondAlphaLabel = iKeyLabelManager->ButtonSecondAlphaLabel( i );
+        
+        CDialerKeyPadButton* button = CDialerKeyPadButton::NewLC( 
+            numLabel,
+            alphaLabel,
+            secondAlphaLabel,
+            KKeyPadButtons[i].iScanCode,
+            KKeyPadButtons[i].iKeyCode,
+            KKeyPadButtons[i].iBitmap,
+            KKeyPadButtons[i].iBitmapMask,
+            flags );
+        iButtons.AppendL( button );
         CleanupStack::Pop( button );
-        iButtons.Append( button );                      
-        button->Control()->SetMopParent( this );
-        button->Control()->SetParent( this );    
-        button->Control()->SetContainerWindowL( *this );
-        button->Control()->SetObserver( this );    
-        button->Control()->ActivateL();
-        AknsUtils::RegisterControlPosition( button->Control() );   
+        
+        button->SetMopParent( this );
+        button->SetParent( this );
+        button->SetContainerWindowL( *this );
+        button->SetObserver( this );
+        button->ActivateL();
         }     
-    DIALER_PRINT("KeyPadContainer::CreateButtonsL>");        
+    DIALER_PRINT("KeyPadContainer::CreateButtonsL>");
     }
 
 // ---------------------------------------------------------------------------
@@ -635,17 +414,19 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
         CDialerKeyPadButton* tappedButton = NULL;
         for ( TInt i=0; i < iButtons.Count(); i++ )
             {
-            if ( iButtons[i]->Control() == aControl )
+            if ( iButtons[i] == aControl )
                 {
                 tappedButton = iButtons[i];
                 break;
                 }    
             }
-            
+        
+        __ASSERT_ALWAYS( tappedButton, 
+        _L("CDialerKeyPadContainer::HandleControlEventL, invalid button handle"));
+        
         // Send key event to phone.
         TKeyEvent keyEvent;
         keyEvent.iScanCode = tappedButton->ScanCode();
-        keyEvent.iCode = tappedButton->KeyCode();
         keyEvent.iModifiers = 0;
         keyEvent.iRepeats = 0;  
              
@@ -664,7 +445,7 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
                 {    
                 DIALER_PRINT("HandleControlEventL.EEventStateChanged");
                 iButtonPressedDown = ETrue;
-
+                keyEvent.iCode = tappedButton->KeyCode();
                 iParentControl.PrepareForFocusGainL();
 
                 ControlEnv()->SimulateKeyEventL( keyEvent, EEventKeyDown );    
@@ -696,8 +477,7 @@ void CDialerKeyPadContainer::HandleResourceChange( TInt aType )
         {    
         for ( TInt i=0; i < iButtons.Count(); i++ )
             {
-            (( CDialerKeyPadButton* )iButtons[i])->HandleResourceChange( 
-                                                                    aType );
+            iButtons[i]->HandleResourceChange( aType );
             }
         }
     }
@@ -705,7 +485,7 @@ void CDialerKeyPadContainer::HandleResourceChange( TInt aType )
 // ---------------------------------------------------------------------------
 // CDialerKeyPadContainer::MakeVisible
 //
-// Called when dialer control come visible or unvisible
+// Called when dialer control becomes visible or invisible
 //
 // ---------------------------------------------------------------------------
 //
@@ -723,6 +503,17 @@ void CDialerKeyPadContainer::MakeVisible( TBool aVisible )
     CCoeControl::MakeVisible( aVisible );        
     }
 
+// ---------------------------------------------------------------------------
+// CDialerKeyPadContainer::SetOperationMode
+//
+// Set new operation mode for the keypad
+//
+// ---------------------------------------------------------------------------
+//
+void CDialerKeyPadContainer::SetOperationMode( TDialerOperationMode aOperatingMode )
+    {
+    iOperatingMode = aOperatingMode;
+    }
 
 // ---------------------------------------------------------------------------
 // CDialerKeyPadContainer::HandleGainingForeground
@@ -752,6 +543,30 @@ void CDialerKeyPadContainer::HandleLosingForeground()
         iPointerEvent.iType = TPointerEvent::EButton1Up;
         TRAP_IGNORE( HandlePointerEventL( iPointerEvent ) );
         }    
+    }
+
+// ---------------------------------------------------------------------------
+// CDialerKeyPadContainer::KeyLabelsChanged
+//
+// Reset button labels and update the layout
+// ---------------------------------------------------------------------------
+//
+void CDialerKeyPadContainer::KeyLabelsChanged()
+    {
+    for ( TInt i = 0 ; i < iButtons.Count() ; i++ )
+        {
+        const TPtrC numLabel = iKeyLabelManager->ButtonNumLabel( i );
+        const TPtrC alphaLabel = iKeyLabelManager->ButtonFirstAlphaLabel( i );
+        const TPtrC secondAlphaLabel = iKeyLabelManager->ButtonSecondAlphaLabel( i );
+        
+        iButtons[i]->SetNumLabel( numLabel );
+        iButtons[i]->SetPrimaryAlphaLabel( alphaLabel );
+        iButtons[i]->SetSecondaryAlphaLabel( secondAlphaLabel );
+        
+        // reset layout
+        iButtons[i]->SetSize( iButtons[i]->Size() );
+        }
+    DrawDeferred();
     }
 
 // ---------------------------------------------------------------------------

@@ -33,6 +33,7 @@
 #include "tphonecmdparamtranseffect.h"
 
 #include "mphoneviewblockingdialogobserver.h"
+#include "mnumberentry.h"
 
 // FORWARD DECLARATIONS
 class CPhoneButtonsController;
@@ -76,12 +77,15 @@ class CAknAppUi;
 class CDialer;
 class MPhoneNumberEntryChangedHandler;
 class MPhoneViewCustomization;
+class CPhoneEasyDialingController;
+class CPhoneDtmfDialerController;
 
 class CPhoneViewController :
     public CBase,
     public MPhoneViewCommandHandle,
     public MPhoneStatusPaneObserver,
-    public MPhoneViewBlockingDialogObserver
+    public MPhoneViewBlockingDialogObserver,
+    public MNumberEntryObserver
     {
     public:  // Constructors and destructor
 
@@ -244,6 +248,12 @@ class CPhoneViewController :
         *                        displayed.
         */
         IMPORT_C void SetBlockingDialogIsDisplayed( TBool aBlockingDialog );
+
+        /**
+         * From base class MNumberEntryObserver
+         * Indication that numberentry state changed
+         */
+        void NumberEntryStateChanged( TBool aEntryHasText );    
 
     private:     // New functions
 
@@ -592,12 +602,6 @@ class CPhoneViewController :
         */
         TInt FindAppByWgIDL( TInt aAppWgID );
 
-        /**
-        * Returns pointer to the control that is responsible of handling
-        * Phone Number Entry Changed events.
-        */
-        MPhoneNumberEntryChangedHandler* NumberEntryChangedHandler() const;
-
        /**
         * Returns single item fetch type
         * @return single item fetch type
@@ -613,6 +617,16 @@ class CPhoneViewController :
          * Unlock keys & screen.        
          */         
         void DisableKeyLock();
+        
+        /**
+         * Checks if DTMF dialer mode is currently active        
+         */
+        TBool IsDtmfDialerActive() const;
+        
+        /**
+         * Checks if custom dialer mode is currently active        
+         */
+        TBool IsCustomDialerActive() const;
         
     private:    // Data
 
@@ -634,9 +648,15 @@ class CPhoneViewController :
         // Controls the touch buttons
         CPhoneDialerController* iDialerController;
         
+        // Controls touch dialer in DTMF mode
+        CPhoneDtmfDialerController* iDtmfDialerController;
+        
         // Controls the toolbar
         CPhoneToolbarController* iToolbarController;
 
+        // Handles easydialing commands. Owned.
+        CPhoneEasyDialingController* iEasyDialingController;
+        
         // For accessing incall indicator
         CPhoneIncallIndicator* iIncallIndicator;
 

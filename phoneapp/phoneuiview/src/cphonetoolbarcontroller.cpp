@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2007 - 2009 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -31,11 +31,11 @@
 #include <phoneui.mbg>
 
 #include "cphonetoolbarcontroller.h"
-#include "PhoneUI.hrh"
-#include "PhoneRssBase.h"
-#include "TPhoneCmdParamInteger.h"
-#include "TPhoneCmdParamBoolean.h"
-#include "PhoneLogger.h"
+#include "phoneui.hrh"
+#include "phonerssbase.h"
+#include "tphonecmdparaminteger.h"
+#include "tphonecmdparamboolean.h"
+#include "phonelogger.h"
 
 
 _LIT ( KPhoneMifFileName, "phoneui.mif" );
@@ -303,6 +303,8 @@ TAknsItemID CPhoneToolbarController::GetSkinIdL( TInt aCommandId )
         }
     return skinId;        
     }
+
+// ---------------------------------------------------------------------------
 // ShowToolbar
 //
 // ---------------------------------------------------------------------------
@@ -310,6 +312,7 @@ TAknsItemID CPhoneToolbarController::GetSkinIdL( TInt aCommandId )
 void CPhoneToolbarController::ShowToolbar()
     {
     __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneToolbarController::ShowToolbar()" );
+
     if ( iToolbar )
         {
         if ( iToolbar->IsToolbarDisabled() )
@@ -317,7 +320,6 @@ void CPhoneToolbarController::ShowToolbar()
             TRAP_IGNORE(iToolbar->DisableToolbarL( EFalse ));
             }
         UpdateToolbar();
-        iToolbar->HideItemsAndDrawOnlyBackground( EFalse );
         iToolbar->SetToolbarVisibility( ETrue, EFalse );
         }
     }
@@ -332,17 +334,12 @@ void CPhoneToolbarController::HideToolbar()
     __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneToolbarController::HideToolbar()" );
     if ( iToolbar )
         {
-        if( iToolbar->IsShown() )
-            {
-            iToolbar->HideItemsAndDrawOnlyBackground( ETrue );
-            }
-        else if ( iToolbar->IsToolbarDisabled() )
+        if ( iToolbar->IsToolbarDisabled() )
             {
             TRAP_IGNORE(iToolbar->DisableToolbarL( EFalse ));
-            iToolbar->HideItemsAndDrawOnlyBackground( ETrue );
-            iToolbar->SetToolbarVisibility( ETrue, EFalse );
             }
-        }        
+        iToolbar->SetToolbarVisibility( EFalse, EFalse );
+        }
     }
 
 // ---------------------------------------------------------

@@ -1,0 +1,54 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: Build info file
+*
+*/
+
+#include <platform_paths.hrh>
+
+#include "../edcontactor/group/bld.inf"
+
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+../rom/easydialingplugin.iby             CORE_APP_LAYER_IBY_EXPORT_PATH(easydialingplugin.iby)
+../rom/easydialingpluginresources.iby    LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(easydialingpluginresources.iby)
+
+
+../conf/easydialing.confml               APP_LAYER_CONFML(easydialing.confml)
+../conf/easydialing_200212A0.crml        APP_LAYER_CRML(easydialing_200212A0.crml)
+../cenrep/200212A0.txt                   /epoc32/data/z/private/10202be9/200212A0.txt
+../cenrep/200212A0.txt                   /epoc32/release/winscw/udeb/z/private/10202be9/200212A0.txt
+
+../inc/dialingextensioninterface.h       |../../../inc/dialingextensioninterface.h
+../inc/easydialingcommands.hrh           |../../../inc/easydialingcommands.hrh
+../inc/easydialingcrkeys.h               APP_LAYER_PLATFORM_EXPORT_PATH(easydialingcrkeys.h)
+
+../loc/easydialing.loc                   APP_LAYER_LOC_EXPORT_PATH(easydialing.loc)
+
+../data/easydialing_stub.sis              /epoc32/data/z/system/install/easydialing_stub.sis
+
+
+PRJ_EXTENSIONS
+START EXTENSION s60/mifconv
+  OPTION TARGETFILE easydialing.mif
+  OPTION HEADERFILE easydialing.mbg
+  OPTION SOURCEFILE iconlist.txt		  
+END
+
+PRJ_MMPFILES
+easydialingplugin.mmp
+

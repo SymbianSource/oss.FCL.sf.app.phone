@@ -255,4 +255,8 @@ EXPORTS
 	_ZThn8_N16CPhoneTwoSingles17HandleKeyMessageLEN15MPhoneKeyEvents22TPhoneKeyEventMessagesE8TKeyCode @ 254 NONAME
 	_ZThn8_N16CPhoneTwoSinglesD0Ev @ 255 NONAME
 	_ZThn8_N16CPhoneTwoSinglesD1Ev @ 256 NONAME
+	_ZN26CPhoneConferenceAndWaiting12HandleErrorLERK12TPEErrorInfo @ 257 NONAME
+	_ZN35CPhoneConferenceAndSingleAndWaiting12HandleErrorLERK12TPEErrorInfo @ 258 NONAME
+	_ZThn4_N26CPhoneConferenceAndWaiting12HandleErrorLERK12TPEErrorInfo @ 259 NONAME
+	_ZThn4_N35CPhoneConferenceAndSingleAndWaiting12HandleErrorLERK12TPEErrorInfo @ 260 NONAME
 

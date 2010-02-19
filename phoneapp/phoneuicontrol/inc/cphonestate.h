@@ -369,6 +369,12 @@ class CPhoneState :
 
         IMPORT_C void RetainPreviousKeylockStateL();
         
+        /**
+        * Check if possible dialer extension is in focus
+        * @return boolean value indicating if dialer extension is in focus
+        */
+        IMPORT_C TBool IsDialingExtensionInFocusL() const;
+
     public: // NumberEntry functions.
 
         /**
@@ -424,7 +430,7 @@ class CPhoneState :
         /**
         * Disconnect call
         */
-        IMPORT_C TBool DisconnectCallL();
+        IMPORT_C virtual void DisconnectCallL();
 
         /**
         * Display idle screen
@@ -1102,6 +1108,12 @@ class CPhoneState :
         * Opens virtual keyboard.
         */
         void OpenVkbL();
+        
+        /**
+        * Handles commands sent by easydialing plugin.
+        * @param aCommandId - command id to be handled
+        */
+        void HandleEasyDialingCommandsL( TInt aCommandId );
 
     private: // NumberEntry functions.
 

@@ -142,6 +142,12 @@ void CPhoneGsmInCall::HandlePhoneEngineMessageL(
     	    UpdateCbaL( EPhoneCallHandlingInCallCBA );
 			}
 			break;
+			
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            {
+            HandleColpNoteL( aCallId );                    
+            }
+            break; 
 
         default:
             CPhoneStateInCall::HandlePhoneEngineMessageL( 

@@ -20,7 +20,7 @@
 #define C_CPHONECUSTOMIZATIONVOIP_H
 
 // INCLUDES
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h> 
 #include <telmenuextension.h>
 #include <spdefinitions.h>
 #include "mphonecustomization.h"
@@ -206,6 +206,11 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         */
         void GetVoipServiceNameL( TServiceId aServiceId, TDes& aServiceName ) const;
     	
+        /**
+         * EasyDialing enabled check
+         */
+        TBool EasyDialingEnabled();
+
         /**
     	* Modifies menu when there is active call.
     	* @param aResourceId Menu resource id.

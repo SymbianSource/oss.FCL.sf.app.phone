@@ -83,7 +83,9 @@ RESOURCE :
 		/c8,8 qgn_indi_dialer_add_contacts.svg \
 		/c8,8 qgn_indi_dialer_logs.svg \
 		/c8,8 qgn_indi_button_send_dtmf.svg \
-		/c8,8 qgn_indi_button_silence.svg
+		/c8,8 qgn_indi_button_silence.svg \
+		/c8,8 qgn_indi_button_answer_white.svg \
+		/c8,8 qgn_indi_button_logdialer_white.svg \
 
 FREEZE : do_nothing
 

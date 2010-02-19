@@ -30,6 +30,8 @@ PRJ_EXPORTS
 
 ../rom/dialer.iby           CORE_APP_LAYER_IBY_EXPORT_PATH(dialer.iby)
 
+../rom/dialer_variant.iby   CUSTOMER_APP_LAYER_IBY_EXPORT_PATH(dialer_variant.iby)
+
 PRJ_EXTENSIONS
 START EXTENSION s60/mifconv
   OPTION TARGETFILE dialer.mif

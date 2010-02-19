@@ -16,16 +16,17 @@
 */
 
 #include <AknBidiTextUtils.h>
-#include <aknsdrawutils.h>
+#include <AknsDrawUtils.h>
 #include <aknlayoutscalable_avkon.cdl.h>
 #include <gulicon.h>
 #include <barsread.h> 
 #include <AknsFrameBackgroundControlContext.h>
-#include <aknsconstants.h>
+#include <AknsConstants.h>
+#include <phoneappcommands.hrh>
 
-#include "bmtouchpanebutton.h"
+#include "BMTouchPaneButton.h"
 #include "BMTouchPaneInterface.h"
-#include "bmpanic.h"
+#include "BMPanic.h"
 
 
 const TInt KBubbleButtonText = 255;
@@ -97,9 +98,7 @@ void CBubbleTouchPaneButton::ConstructFromResouceL( TResourceReader& aReader )
     
     CAknButton::ConstructFromResourceL( aReader );
     
-    // function button text color
-    SetTextColorIds( KAknsIIDQsnTextColors, 
-                              EAknsCIQsnTextColorsCG65 );
+    SelectTextColor();
     
     // Customize icons
     if ( iIconProvider )
@@ -410,3 +409,25 @@ TAknsItemID CBubbleTouchPaneButton::SelectPressedButton( TAknsItemID frameId ) c
        return KAknsIIDQsnFrButtonInactive;
        }
    }
+
+// -----------------------------------------------------------------------------
+// Selects the correct text color.
+// -----------------------------------------------------------------------------
+//
+void CBubbleTouchPaneButton::SelectTextColor() 
+    { 
+    TAknsQsnTextColorsIndex textColorIndex( EAknsCIQsnTextColorsCG65 );
+    TInt command = CommandId( EFalse );
+
+    if ( command == EPhoneCallComingCmdAnswer )
+        {
+        textColorIndex = EAknsCIQsnTextColorsCG82;
+        }
+    else if ( command == EPhoneCallComingCmdReject )
+        {
+        textColorIndex = EAknsCIQsnTextColorsCG83;
+        }
+
+    // function button text color
+    SetTextColorIds( KAknsIIDQsnTextColors, textColorIndex );
+    }

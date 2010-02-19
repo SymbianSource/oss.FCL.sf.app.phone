@@ -3,11 +3,15 @@ EXPORTS
 	_ZN16CVideoDTMFDialerD0Ev @ 2 NONAME
 	_ZN16CVideoDTMFDialerD1Ev @ 3 NONAME
 	_ZN16CVideoDTMFDialerD2Ev @ 4 NONAME
-	_ZN7CDialer11NumberEntryEv @ 5 NONAME
-	_ZN7CDialer22SetNumberEntryObserverER20MNumberEntryObserver @ 6 NONAME
-	_ZN7CDialer4NewLERK11CCoeControlRK5TRect @ 7 NONAME
-	_ZN7CDialerD0Ev @ 8 NONAME
-	_ZN7CDialerD1Ev @ 9 NONAME
-	_ZN7CDialerD2Ev @ 10 NONAME
-	_ZThn52_N7CDialer22SetNumberEntryObserverER20MNumberEntryObserver @ 11 NONAME ; #<thunk>#
+	_ZN7CDialer10ControllerEv @ 5 NONAME
+	_ZN7CDialer11NumberEntryEv @ 6 NONAME
+	_ZN7CDialer13UpdateToolbarEv @ 7 NONAME
+	_ZN7CDialer14SetControllerLEP22MPhoneDialerController @ 8 NONAME
+	_ZN7CDialer22SetNumberEntryObserverER20MNumberEntryObserver @ 9 NONAME
+	_ZN7CDialer4NewLERK11CCoeControlRK5TRectP22MPhoneDialerController @ 10 NONAME
+	_ZN7CDialerD0Ev @ 11 NONAME
+	_ZN7CDialerD1Ev @ 12 NONAME
+	_ZN7CDialerD2Ev @ 13 NONAME
+	_ZNK7CDialer23GetEasyDialingInterfaceEv @ 14 NONAME
+	_ZThn52_N7CDialer22SetNumberEntryObserverER20MNumberEntryObserver @ 15 NONAME
 

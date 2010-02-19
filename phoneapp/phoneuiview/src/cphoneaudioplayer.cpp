@@ -998,11 +998,11 @@ TInt CPhoneAudioPlayer::ConvertVolume( TInt aVolume )
 
     TInt result( 0 );    
     
-    if ( iFormat == EFormatTone )
+    if ( iFormat == EFormatTone && iTonePlayer )
         {
         result = iTonePlayer->MaxVolume() * aVolume / KMaxVolumeLevel;
         }
-    else if ( iFormat == EFormatTts )
+    else if ( iFormat == EFormatTts && iTtsPlayer )
         {
         result = iTtsPlayer->MaxVolume() * aVolume / KMaxVolumeLevel;    
         }
@@ -1041,11 +1041,11 @@ void CPhoneAudioPlayer::MutePlaying()
     //_DPRINT( 5, "P.Aud.Mute" );
     if ( iPlayerStatus == ETonePlaying )
         {
-        if ( iFormat == EFormatTone )
+        if ( iFormat == EFormatTone && iTonePlayer )
             {
             iTonePlayer->SetVolume(0);
             }
-        else if ( iFormat == EFormatTts )
+        else if ( iFormat == EFormatTts && iTtsPlayer )
             {
             iTtsPlayer->SetVolume(0);
             }

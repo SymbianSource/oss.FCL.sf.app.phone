@@ -27,4 +27,17 @@
 
 ;Files to install
 ""-"z:\sys\bin\dialer.dll"
-""-"z:\resource\dialer.rsc"
+""-"z:\resource\dialer.r*"
+""-"z:\resource\dialerkeypad.rsc"
+""-"z:\resource\dialerkeypad_cyrillic.rsc"
+""-"z:\resource\dialerkeypad_greek.rsc"
+""-"z:\resource\dialerkeypad_hebrew.rsc"
+""-"z:\resource\dialerkeypad_arabic.rsc"
+""-"z:\resource\dialerkeypad_farsi.rsc"
+""-"z:\resource\dialerkeypad_urdu.rsc"
+""-"z:\resource\dialerkeypad_thai.rsc"
+""-"z:\resource\dialerkeypad_devanagari.rsc"
+""-"z:\resource\dialerkeypad_chn_pinyin.rsc"
+""-"z:\resource\dialerkeypad_chn_stroke.rsc"
+""-"z:\resource\dialerkeypad_chn_zhuyin.rsc"
+

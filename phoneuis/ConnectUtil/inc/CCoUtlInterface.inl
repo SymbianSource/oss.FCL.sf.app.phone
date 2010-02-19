@@ -19,7 +19,7 @@
 
 // INCLUDE FILES
 #include    <ecom/ecom.h>
-#include    <CoUtlInterface.hrh>
+#include    <coutlinterface.hrh>
 
 // CONSTANTS
 _LIT8( KCoUtlResolverData, "default" );

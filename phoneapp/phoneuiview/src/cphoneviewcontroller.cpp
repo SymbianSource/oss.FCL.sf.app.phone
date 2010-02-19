@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005 - 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -23,6 +23,8 @@
 #include "cphonetoolbarcontroller.h"
 #include "cphonebuttonscontroller.h"
 #include "cphonedialercontroller.h"
+#include "cphoneeasydialingcontroller.h"
+#include "cphonedtmfdialercontroller.h"
 #include "cphonemenucontroller.h"
 #include "cphonenotecontroller.h"
 #include "cphonequerycontroller.h"
@@ -106,7 +108,7 @@
 #include <cphcntcontactid.h>
 #include <AknUtils.h>
 #include <AknSgcc.h>
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h>
 #include <UikonInternalPSKeys.h>
 #include <startupdomainpskeys.h>
 #include <utf.h>
@@ -128,7 +130,9 @@
 #include <gfxtranseffect/gfxtranseffect.h>
 #include <akntranseffect.h>
 
-#include <GSLauncher.h> // Call Settings launch.
+#include <gslauncher.h> // Call Settings launch.
+
+#include <dialingextensioninterface.h>
 
 // Kastor effect IDs, aknskincontent/101f84b9.sel
 const TInt KTouchDialerOpenEffect  = 1505;
@@ -209,32 +213,40 @@ void CPhoneViewController::ConstructL( TRect aRect )
         iEikEnv.WsSession(),
         iEikEnv.WsSession().FindWindowGroupIdentifier( 0, KPhoneEikonServer ) );
 
+    CCoeEnv* coeEnv = CCoeEnv::Static();
+    
     if ( FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
         {
         iButtonsController = CPhoneButtonsController::NewL( iBubbleWrapper->TouchPane() );
+        iToolbarController = CPhoneToolbarController::NewL( *coeEnv );
         }
 
     if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) )
         {
+        iDialerActive = EFalse;
+        // Create dialer controller
+        iDialerController = CPhoneDialerController::NewL( iBubbleWrapper,
+                                                          *coeEnv );
         // Create dialer view
         iDialerView = CPhoneDialerView::NewL( aRect );
         iDialerView->DrawableWindow()->SetOrdinalPosition( -1 );
         iDialerView->MakeVisible( EFalse );
         // Create dialer
-        iDialer = CDialer::NewL( *iDialerView, aRect );
+        iDialer = CDialer::NewL( *iDialerView, aRect, iDialerController );
         // Set NE for bubbleWrapper
         iBubbleWrapper->SetNumberEntry( iDialer->NumberEntry() );
-        CCoeEnv* coeEnv = static_cast<CCoeControl*>(iDialer)->ControlEnv();
-        iDialerController = CPhoneDialerController::NewL( *iBubbleWrapper,
-                                                            *coeEnv,
-                                                            *iMenuController );
+        iBubbleWrapper->SetNumberEntryObserver( *this );
+        // Finalise dialer view
+        iDialerView->SetControl( iDialer );
+        iDialerView->ActivateL();
         
-        iToolbarController = CPhoneToolbarController::NewL( *coeEnv  );
-                                                           
-      
-		iDialerView->SetControl( iDialer );
-		iDialerView->ActivateL();
-		iDialerActive = EFalse;
+        // Create controller for Easy Dialing
+        iEasyDialingController = CPhoneEasyDialingController::NewL( *iDialer );
+        iDialerController->SetEasyDialingController( iEasyDialingController );
+        
+        // Create controller for DTMF mode of the dialer
+        iDtmfDialerController = CPhoneDtmfDialerController::NewL( iBubbleWrapper, 
+                                                                  *coeEnv );
         }
 
     User::LeaveIfError( iKeyLock.Connect() );
@@ -298,6 +310,10 @@ CPhoneViewController::~CPhoneViewController()
             }
         delete iDialerView;
         }
+		
+	delete iEasyDialingController;
+	delete iDtmfDialerController;
+		
     delete iDialer;
     if ( iSingleItemFetch )
         {
@@ -542,7 +558,7 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             {
             if ( iDialer )
                 {
-                iDialerController->UpdateToolbar();
+                iDialer->UpdateToolbar();
                 }
             }
             break;
@@ -745,8 +761,13 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             break;
 
         case EPhoneViewMenuPane:
-            iMenuController->SetReplaceFlag( IsReplaceAllowed() );
-            iMenuController->DynInitMenuPaneL( aCommandParam );
+            // First offer initialization to easydialing, and if no
+            // initialization done, give it to the menu controller.
+            if ( !iEasyDialingController->InitializeEasyDialingMenuL( aCommandParam ) )
+                {
+                iMenuController->SetReplaceFlag( IsReplaceAllowed() );
+                iMenuController->DynInitMenuPaneL( aCommandParam );
+                }
             break;
 
         case EPhoneViewMenuBar:
@@ -918,7 +939,7 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
 
             if ( iDialer )
                 {
-                iDialerController->SetServiceCodeFlagL( aCommandParam );
+                iDialerController->SetServiceCodeFlag( aCommandParam );
                 }
             break;
 
@@ -1057,13 +1078,19 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
                 {
                 TPhoneCmdParamBoolean* booleanParam =
                     static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
-                iDialerController->SetDtmfDialerVisibleL(
-                                                booleanParam->Boolean() );
+                if ( booleanParam->Boolean() )
+                    {
+                    iDialer->SetControllerL( iDtmfDialerController );
+                    }
+                else
+                    {
+                    iDialer->SetControllerL( iDialerController );
+                    }
                  }
             break;
             }
 
-        case EPhoneViewSetRetrictedDialer:
+        case EPhoneViewSetRestrictedDialer:
             {
             if ( iDialer )
                 {
@@ -1106,10 +1133,12 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
 
         case EPhoneViewShowCustomizedDialer:
             {
-            TPhoneCmdParamCustomDialer* customDialerParam =
-                static_cast<TPhoneCmdParamCustomDialer*>( aCommandParam );
-            iDialerController->ShowCustomizedDialerL(
-                                      customDialerParam->DialerController() );
+            if ( iDialer )
+                {
+                TPhoneCmdParamCustomDialer* customDialerParam =
+                    static_cast<TPhoneCmdParamCustomDialer*>( aCommandParam );
+                iDialer->SetControllerL( customDialerParam->DialerController() );
+                }
             }
             break;
         case EPhoneViewGetNumberFromEntry:
@@ -1148,6 +1177,21 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             iToolbarController->DimToolbar( booleanParam->Boolean());
             break;
             }
+            
+        case EPhoneViewSetInvalidCsPhoneNumberFlag:
+            iMenuController->SetInvalidCsPhoneNumberFlag( aCommandParam );
+            break;
+                
+        case EPhoneViewGetInvalidCsPhoneNumberFlag:
+            iMenuController->GetInvalidCsPhoneNumberFlag( aCommandParam );
+            break;
+
+        case EPhoneViewGetEasyDialingMenuId:
+        case EPhoneViewGetEasyDialingCbaId:
+                {
+                iEasyDialingController->ExecuteCommandL( aCmdId, aCommandParam );
+                }
+            break;
 
         default:
             __PHONELOG( EBasic, EPhonePhoneapp,
@@ -1372,11 +1416,21 @@ EXPORT_C void CPhoneViewController::ExecuteCommand(
                     static_cast<TPhoneCmdParamTransEffect*>( aCommandParam )->Type();
                 TBool isForeground = iAppui->IsForeground();
 
-                if ( isForeground && // newer run effect if not at front
+                // Check whether the idle is on foreground
+                TBool idleInFore = ForegroundApplicationWindowGroupId() ==  IdleWindowGroupId() ?
+                        ETrue : EFalse;
+                
+                if ( isForeground && // Newer run effect if not at front
                      ( ( type == EPhoneTransEffectDialerCreate && !iDialerActive ) ||
                        ( type == EPhoneTransEffectDialerOpen && !iDialerActive &&
                          iBubbleWrapper->IsNumberEntryUsed() ) ||
                        ( type == EPhoneTransEffectDialerClose && iDialerActive ) ) )
+                    {
+                    HandleTransitionEffect( type );
+                    }
+                // In case transition is from idle to dialer show transition effects as well.
+                else if ( idleInFore && !iDialerActive &&
+                          type == EPhoneTransEffectDialerCreate )
                     {
                     HandleTransitionEffect( type );
                     }
@@ -1408,8 +1462,7 @@ EXPORT_C void CPhoneViewController::ExecuteCommand(
 
         case EPhoneViewSetNumberEntryObserver:
             {
-            NumberEntryChangedHandler()->SetNumberEntryChangedCallBack(
-                                                aCommandParam );
+            iBubbleWrapper->SetNumberEntryChangedCallBack( aCommandParam );
             break;
             }
         case EPhoneViewGetSingleItemFetchType:
@@ -1447,9 +1500,11 @@ EXPORT_C void CPhoneViewController::ExecuteCommand(
             break;
 			
         case EPhoneViewEnableToolbarButton:
+            {
             TPhoneCmdParamInteger*  integerParam =
                 static_cast<TPhoneCmdParamInteger*>( aCommandParam );
             iToolbarController->SetToolbarButtonDimmed( integerParam->Integer(), EFalse );
+            }
             break;
 
         default:
@@ -1493,7 +1548,26 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
                 }
              break;
 
-        case EPhoneViewIsNumberEntryNumericMode:
+         case EPhoneViewGetEasyDialingInFocusStatus:
+         case EEasyDialingVoiceCall:
+         case EEasyDialingVideoCall:
+         case EEasyDialingSendMessage:
+         case EEasyDialingOpenContact:
+         case EEasyDialingCallHandlingActivated:
+         case EEasyDialingEnterKeyAction:
+         case EEasyDialingOn:
+         case EEasyDialingOff:
+             if ( iDialer )
+                 {
+                 viewResponse = iEasyDialingController->HandleCommandL( aCmdId );
+                 }
+             else
+                 {
+                 viewResponse = EPhoneViewResponseFailed;
+                 }
+             break;
+
+         case EPhoneViewIsNumberEntryNumericMode:
             viewResponse = iBubbleWrapper->IsNENumericMode() ?
                 EPhoneViewResponseSuccess :
                 EPhoneViewResponseFailed;
@@ -1579,9 +1653,9 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
         case EPhoneViewIsDTMFEditorVisible:
             if ( iDialer )
                 {
-                viewResponse = iDialerController->IsDTMFDialerVisible() ?
+                viewResponse = ( IsDtmfDialerActive() ?
                     EPhoneViewResponseSuccess :
-                    EPhoneViewResponseFailed;
+                    EPhoneViewResponseFailed );
                 }
             else // non-touch.
                 {
@@ -1631,13 +1705,13 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
                     RemovePhoneDialogsL();
                     }
                 // Remove DTMF dialer when exist
-                if ( iDialerController->IsDTMFDialerVisible() )
+                if ( IsDtmfDialerActive() )
                     {
                     static_cast<MEikCommandObserver*>( CEikonEnv::Static()->EikAppUi() )
                     ->ProcessCommandL( EPhoneDtmfDialerExit );
                     }
                 else if ( iCustomization && 
-                          iDialerController->IsCustomizedDialerVisible() )
+                          IsCustomDialerActive() )
                     {
                     iCustomization->HandleCommandL( 
                        *this, EPhoneViewOpenCallHandling, NULL );
@@ -1683,7 +1757,7 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
 
         case EPhoneIsCustomizedDialerVisible:
             {
-            viewResponse = iDialerController->IsCustomizedDialerVisible() ?
+            viewResponse = IsCustomDialerActive() ?
                 EPhoneViewResponseSuccess :
                 EPhoneViewResponseFailed;
             }
@@ -1691,8 +1765,11 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
 
         case EPhoneViewHideCustomizedDialer:
             {
-            iDialerController->HideCustomizedDialer();
-            viewResponse = EPhoneViewResponseSuccess;
+            if ( iDialer )
+                {
+                iDialer->SetControllerL( iDialerController );
+                viewResponse = EPhoneViewResponseSuccess;
+                }
             }
             break;
         case EPhoneViewShowToolbar:
@@ -1841,19 +1918,19 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
 
         case EPhoneViewGetCustomizedDialerMenuResourceId:
             {
-            TInt resId = iDialerController->CustomizedMenuResourceId();
+            TInt resId = iDialer->Controller()->MenuResourceId(); // easydialing change
             static_cast<TPhoneCmdParamInteger*>( aCommandParam )->SetInteger( resId );
             viewResponse = EPhoneViewResponseSuccess;
             }
             break;
         case EPhoneViewGetCustomizedDialerCbaResourceId:
             {
-            TInt resId = iDialerController->CustomizedCbaResourceId();
+            TInt resId = iDialer->Controller()->CbaResourceId(); // easydialing change
             static_cast<TPhoneCmdParamInteger*>( aCommandParam )->SetInteger( resId );
             viewResponse = EPhoneViewResponseSuccess;
             }
             break;
-
+            
         default:
             if ( iCustomization )
                 {
@@ -2029,18 +2106,13 @@ EXPORT_C void CPhoneViewController::HandleResourceChangeL( TInt aType )
                         "CPhoneViewController::HandleResourceChangeL()" )
     // Notify the bubble that there has been a resource change
     iBubbleWrapper->Control()->HandleResourceChange( aType );
-
+    
     // Notify dialer and switch statuspane layout.
     if ( iDialer )
         {
         if ( aType == KEikDynamicLayoutVariantSwitch )
             {
             SwitchLayoutToFlatStatusPaneL( iDialerActive );
-            
-            if ( !iDialerActive && Layout_Meta_Data::IsLandscapeOrientation() )
-                {        
-                iDialerController->HideToolbar(); 
-                }
             }
         static_cast<CCoeControl*>(iDialer)->HandleResourceChange( aType );
         }
@@ -2064,10 +2136,10 @@ EXPORT_C void CPhoneViewController::HandleLayoutChange( TRect aRect )
     __PHONELOG( EBasic, EPhoneUIView,"CPhoneViewController::HandleLayoutChange()" )
     iPhoneView->SetRect( aRect );
     if ( iDialerView )
-	    {
-		iDialerView->SetRect( aRect );
-		iStatusPane->UpdateTitlePane();
-	    }
+        {
+        iDialerView->SetRect( aRect );
+        iStatusPane->UpdateTitlePane();
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -2109,6 +2181,17 @@ EXPORT_C void CPhoneViewController::SetBlockingDialogIsDisplayed(
     __PHONELOG1( EBasic, EPhoneUIView,
         "CPhoneViewController::SetBlockingDialogIsDisplayed(%d)",
         iBlockingDialogIsDisplayed );
+    }
+
+// ---------------------------------------------------------------------------
+// CPhoneViewController::NumberEntryStateChanged
+// ---------------------------------------------------------------------------
+//
+void CPhoneViewController::NumberEntryStateChanged( TBool aEntryHasText )
+    {
+    iBubbleWrapper->HandleNumberEntryChanged();
+    iMenuController->SetNumberEntryEmptyFlag( !aEntryHasText );
+    ExecuteCommandL( EPhoneViewUpdateToolbar );
     }
 
 // ---------------------------------------------------------------------------
@@ -2596,7 +2679,9 @@ void CPhoneViewController::SetCbaL( TPhoneCommandParam* aCommandParam )
     TInt resourceId = cbaResource->Integer();
 
     iCba->SetCommandSetL( resourceId );
+    
     iCba->DrawDeferred();
+    
     }
 
 // ---------------------------------------------------------------------------
@@ -3734,24 +3819,32 @@ void CPhoneViewController::SetControltoDialerL()
         {
         iDialerActive = ETrue;
 
+        // Hide in-call view toolbar
+        iToolbarController->HideToolbar();
+
+        // Ensure that toolbar and menu commands are up-to-date 
+        TBuf<1> temp; // we are only interested if the text is empty or not
+        iDialer->GetTextFromNumberEntry( temp );
+        NumberEntryStateChanged( temp.Length() > 0 );
+        
         // Make dialer view top most
         iDialerView->DrawableWindow()->SetOrdinalPosition(
             iPhoneView->DrawableWindow()->OrdinalPosition() );
-        iDialerView->MakeVisible( ETrue );
-        iDialerView->DrawNow();
 
         SwitchLayoutToFlatStatusPaneL( ETrue );
 
         iPhoneView->DrawableWindow()->SetOrdinalPosition( -1 );
         iPhoneView->MakeVisible( EFalse );
 
-        iToolbarController->HideToolbar();
-        iDialerController->ShowToolbar();
-
         // Update control stack
         iAppui->AddToStackL( iDialerView );
-		iAppui->RemoveFromStack( iPhoneView );
-		}
+        iAppui->RemoveFromStack( iPhoneView );
+
+        // Don't make dialer view visible before status pane is updated.
+        // This prevents unnecessary resizings.
+        iDialerView->MakeVisible( ETrue );
+        iDialerView->DrawDeferred();
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -3763,34 +3856,36 @@ void CPhoneViewController::SetControltoCallHandlingL()
     __PHONELOG1( EBasic, EPhoneUIView,
         "CPhoneViewController::SetControltoCallHandlingL iDialerActive (%d)", iDialerActive );
 
+    // If securitymode or emergency call not show toolbar
+    if ( !iPhoneView->IsSecurityMode() && 
+     !iIncallIndicator->IsEmergencyCall() )
+     {
+         iToolbarController->ShowToolbar();
+     }
     if ( iDialerActive )
         {
         iDialerActive = EFalse;
-
+        // Hide dialer view. Do this before resizing status pane to prevent unnecessary
+        // resizing of dialer components. Hiding dialer view already before showing
+        // phone view might cause screen flickering but tests have proven it doesn't happen.
+        iDialerView->MakeVisible( EFalse );
+        
         SwitchLayoutToFlatStatusPaneL( EFalse );
 
-		// Make call handling view top most
-		iPhoneView->DrawableWindow()->SetOrdinalPosition(
+        // Make call handling view top most
+        iPhoneView->DrawableWindow()->SetOrdinalPosition(
             iDialerView->DrawableWindow()->OrdinalPosition() );
         iPhoneView->MakeVisible( ETrue );
         iPhoneView->DrawNow();
 
-		iDialerView->DrawableWindow()->SetOrdinalPosition( -1 );
-        iDialerView->MakeVisible( EFalse );
-
-        iDialerController->HideToolbar();
+        iDialerView->DrawableWindow()->SetOrdinalPosition( -1 );
 
         // Update control stack
-		iAppui->AddToStackL( iPhoneView );
-		iAppui->RemoveFromStack( iDialerView );
-		}
-    
-    // If securitymode or emergency call not show toolbar
-	if ( !iPhoneView->IsSecurityMode() && 
-	     !iIncallIndicator->IsEmergencyCall() )
-		{
-    	iToolbarController->ShowToolbar();
-		}
+        iAppui->AddToStackL( iPhoneView );
+        iAppui->RemoveFromStack( iDialerView );
+        
+        iEasyDialingController->HandleCommandL( EEasyDialingCallHandlingActivated );
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -3897,16 +3992,32 @@ void CPhoneViewController::AllowWaitingCallHeaderL(
     }
 
 // ---------------------------------------------------------------------------
-// CPhoneViewController::NumberEntryChangedHandler
+// CPhoneViewController::IsDtmfDialerActive
 // ---------------------------------------------------------------------------
 //
-MPhoneNumberEntryChangedHandler* CPhoneViewController::NumberEntryChangedHandler() const
+TBool CPhoneViewController::IsDtmfDialerActive() const
     {
-    if( iDialerController )
-        return iDialerController;
-    else
-        return iBubbleWrapper;
+    TBool ret = 
+            ( iDialer && iDtmfDialerController && 
+              iDialer->Controller() == iDtmfDialerController );
+    return ret;
+    }
 
+// ---------------------------------------------------------------------------
+// CPhoneViewController::IsCustomDialerActive
+// ---------------------------------------------------------------------------
+//
+TBool CPhoneViewController::IsCustomDialerActive() const
+    {
+    TBool ret = EFalse;
+    if ( iDialer )
+        {
+        MPhoneDialerController* curController = iDialer->Controller();
+        ret = ( curController && 
+                curController != iDialerController && 
+                curController != iDtmfDialerController );
+        }
+    return ret;
     }
 
 // End of File

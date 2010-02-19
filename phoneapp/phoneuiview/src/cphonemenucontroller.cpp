@@ -254,6 +254,10 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] );
                     }
+                else if ( iInvalidCsPhoneNumber )
+                    {
+                    menuPane->DeleteMenuItem( menuItemArray[ i ] );
+                    }
                 break;
                 
             case EPhoneNumberAcqCmdVideoCall:
@@ -268,10 +272,14 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] );
                     }
+                else if ( iInvalidCsPhoneNumber )
+                    {
+                    menuPane->DeleteMenuItem( menuItemArray[ i ] );
+                    }
                 break;
  
             case EPhoneNumberAcqCmdSendMessage:            
-                if ( iNumberEntryEmpty )
+                if ( iNumberEntryEmpty || iInvalidCsPhoneNumber )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] ); 
                     }
@@ -473,7 +481,7 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
 
             case EPhoneNumberAcqCmdAddToContacts:
                 {
-                if ( onScreenDialer && iNumberEntryEmpty   )
+                if ( onScreenDialer && iNumberEntryEmpty )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[i] );                    
                     }                
@@ -518,6 +526,15 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                 if( !FeatureManager::FeatureSupported( KFeatureIdMultimediaSharing ) )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[i] );      
+                    }
+                }
+                break;
+                
+            case EEasyDialingSettingsItemPlaceHolder:
+                {
+                if( !FeatureManager::FeatureSupported( KFeatureIdProductIncludesHomeScreenEasyDialing ) )
+                    {
+                    menuPane->DeleteMenuItem( menuItemArray[i] );
                     }
                 }
                 break;
@@ -1058,5 +1075,52 @@ void CPhoneMenuController::HandlePropertyChangedL(
         }
     }
 
-     
+// ---------------------------------------------------------
+// CPhoneMenuController::SetInvalidCsPhoneNumberFlag
+// ---------------------------------------------------------
+//
+void CPhoneMenuController::SetInvalidCsPhoneNumberFlag( TPhoneCommandParam* aCommandParam )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneMenuController::SetInvalidCsPhoneNumberFlag()" );
+    if ( aCommandParam->ParamId() == TPhoneCommandParam::EPhoneParamIdBoolean )
+        {
+        TPhoneCmdParamBoolean* boolParam = 
+            static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
+        
+        __PHONELOG1( 
+            EBasic, 
+            EPhonePhoneapp, 
+            "CPhoneMenuController::SetInvalidCsPhoneNumberFlag() - Boolean parameter = %d)", 
+            boolParam->Boolean() );
+        
+        iInvalidCsPhoneNumber = boolParam->Boolean();
+        }    
+    }
+
+// ---------------------------------------------------------
+// CPhoneMenuController::GetInvalidCsPhoneNumberFlag
+// ---------------------------------------------------------
+//
+void CPhoneMenuController::GetInvalidCsPhoneNumberFlag( 
+        TPhoneCommandParam* aCommandParam )
+    {
+    __LOGMETHODSTARTEND( 
+            EPhoneUIView, 
+            "CPhoneMenuController::GetInvalidCsPhoneNumberFlag()" );
+    
+    if ( aCommandParam->ParamId() == TPhoneCommandParam::EPhoneParamIdBoolean )
+        {
+        TPhoneCmdParamBoolean* boolParam = 
+            static_cast<TPhoneCmdParamBoolean*>( aCommandParam ); 
+        
+        __PHONELOG1( 
+            EBasic, 
+            EPhonePhoneapp, 
+            "CPhoneMenuController::GetInvalidCsPhoneNumberFlag() - Boolean return value = %d)", 
+            boolParam->Boolean() );
+
+        boolParam->SetBoolean( iInvalidCsPhoneNumber );
+        }     
+    }
+
 // End of File

@@ -21,7 +21,7 @@
 #define CCOUTLIMPLEMENTATION_H
 
 //  INCLUDES
-#include    <CCoUtlInterface.h>
+#include    <ccoutlinterface.h>
 #include    <ConeResLoader.h>
 
 // FORWARD DECLARATION

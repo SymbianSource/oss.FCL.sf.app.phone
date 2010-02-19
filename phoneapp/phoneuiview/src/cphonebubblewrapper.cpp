@@ -895,7 +895,11 @@ TKeyResponse CPhoneBubbleWrapper::HandleKeyEventL(
     CCoeControl* control(NULL);
     if ( iUseDialer )
         {
-        control = iDialerNumberEntry->GetNumberEntry();
+        // TODO: We should try to clarify the dialer control hierarchy.
+        // Currently, we have three controls, each of which are somewhere
+        // referred as "number entry": CDialer, CDialerNumberEntry, and CAknPhoneNumberEditor.
+        // Each of these are present on the code line below.
+        control = iDialerNumberEntry->GetNumberEntry()->Parent();
         }
     else
         {

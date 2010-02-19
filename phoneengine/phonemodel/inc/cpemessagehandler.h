@@ -167,7 +167,13 @@ NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase
         * @return Return possible error code.
         */
         TInt HandleReleaseCall( TPEHangUpOptions aAutoResumeOption = ETPEHangUpDefault );
-
+        
+		/**
+        * Handles release message from application 
+        * @return Return possible error code.
+        */
+        TInt HandleReleaseConference();
+        
         /**
         * Handles send dtmf message from phone application 
         * @return possible error code from the CallHandling subsystem.
@@ -564,11 +570,6 @@ NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase
         * @return Possible error code
         */
         TInt HandleReplaceActive();
-        
-        /**
-        * Check if phone is locked, if locked leave with ECCPErrorAuthenticationFailed error.
-        */
-        void CheckIfPhoneIsLockedL();
         
         /**
          * Handles unattended transfer request response.

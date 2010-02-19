@@ -76,9 +76,9 @@
 // None.
 
 // CONSTANTS
-// Prefix change off. See SettingsInternalCRKeys.h
+// Prefix change off. See settingsinternalcrkeys.h
 const TInt KPEPrefixChangeOff = 0;
-// Prefix change on. See SettingsInternalCRKeys.h
+// Prefix change on. See settingsinternalcrkeys.h
 const TInt KPEPrefixChangeOn = 1;
 // International prefix
 _LIT( KPEIntPrefix, "+" );
@@ -400,6 +400,19 @@ TInt CPEMessageHandler::HandleReleaseCall( TPEHangUpOptions aAutoResumeOption )
         errorCode = iCallHandling.HangUp( callId, aAutoResumeOption );
         }
     return errorCode;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEMessageHandler::HandleReleaseConference
+// Handles release message from phone application
+// Method calls HangUp method from the CallHandling subsystem.
+// -----------------------------------------------------------------------------
+//
+TInt CPEMessageHandler::HandleReleaseConference()
+    {
+    
+    return iCallHandling.ReleaseConference(); 
+ 
     }
 
 // -----------------------------------------------------------------------------
@@ -2838,26 +2851,6 @@ TInt CPEMessageHandler::HandleReplaceActive()
     }
 
 // -----------------------------------------------------------------------------
-// CPEMessageHandler::CheckIfPhoneIsLockedL
-// -----------------------------------------------------------------------------
-//
-void CPEMessageHandler::CheckIfPhoneIsLockedL()
-    {
-    // Check if phone is locked
-    TInt  keyLockStatus( EAutolockStatusUninitialized );
-    TInt err = RProperty::Get( KPSUidCoreApplicationUIs, KCoreAppUIsAutolockStatus, keyLockStatus );
-    const TBool phoneIsLocked = ( keyLockStatus > EAutolockOff );
-
-    if ( phoneIsLocked && err == KErrNone )
-        {
-        // New call is not possible if device lock is on 
-        TEFLOGSTRING2( KTAERROR,
-            "PE CPEMessageHandler::CheckIfPhoneIsLockedL, keyLockStatus : %d", keyLockStatus );
-        User::Leave( ECCPErrorAuthenticationFailed );
-        }
-    }
-
-// -----------------------------------------------------------------------------
 // CPEMessageHandler::IsActiveVideo
 // Checks if there are any connected video calls
 // -----------------------------------------------------------------------------
@@ -2896,7 +2889,7 @@ void CPEMessageHandler::HandleRemotePartyInfoChanged( const TInt aCallId )
     
     if ( iDataStore.RemoteColpNumber( aCallId ).Length() )
         {
-        iModel.SendMessage( MEngineMonitor::EPEMessageColpNumberAvailable );
+        iModel.SendMessage( MEngineMonitor::EPEMessageColpNumberAvailable, aCallId );
         }
     }
 
