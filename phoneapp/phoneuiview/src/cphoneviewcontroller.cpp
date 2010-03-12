@@ -73,6 +73,7 @@
 #include "tphonecmdparampointer.h"
 #include "dialer.hrh"
 #include "phoneui.hrh"
+#include "musmanager.h"
 #include <apgtask.h>
 #include <apgwgnam.h>
 #include <apacmdln.h>
@@ -133,6 +134,7 @@
 #include <gslauncher.h> // Call Settings launch.
 
 #include <dialingextensioninterface.h>
+#include <easydialingcommands.hrh>
 
 // Kastor effect IDs, aknskincontent/101f84b9.sel
 const TInt KTouchDialerOpenEffect  = 1505;
@@ -148,7 +150,7 @@ const TInt KTouchDialerCloseEffect = 1506;
 //
 CPhoneViewController::CPhoneViewController() :
     iEikEnv( *CEikonEnv::Static() ),
-    iNeedToSendToBackground( EFalse ),
+    iNeedToReturnToForegroundAppAfterCall( EFalse ),
     iHelpCommand( KINCAL_HLP_CALL_HANDLING ),
     iBlockingDialogIsDisplayed( EFalse ),
     iIdleUid( KErrNotFound ),
@@ -637,6 +639,12 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             }
             break;
 
+        case EPhoneViewLaunchMultimediaSharing:
+            {
+            LaunchMultimediaSharingL();
+            }
+            break;
+
         default:
             __PHONELOG( EBasic, EPhonePhoneapp,
                 "CPhoneViewController::ExecuteCommandL -> UnKnownMessage !");
@@ -835,8 +843,8 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             }
             break;
 
-        case EPhoneViewSetNeedToSendToBackgroundStatus:
-            SetNeedToSendToBackground( aCommandParam );
+        case EPhoneViewSetNeedToReturnToForegroundAppStatus:
+            SetNeedToReturnToForegroundAppAfterCall( aCommandParam );
             break;
 
        case EPhoneViewSetBlockingDialogStatus:
@@ -1192,7 +1200,13 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
                 iEasyDialingController->ExecuteCommandL( aCmdId, aCommandParam );
                 }
             break;
-
+        case EPhoneViewSetConferenceAndWaitingVideo:
+            {
+            TPhoneCmdParamBoolean*  booleanParam =
+                            static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
+            iMenuController->SetConferenceAndWaitingVideoFlag( booleanParam->Boolean() );
+			}
+            break;
         default:
             __PHONELOG( EBasic, EPhonePhoneapp,
              "CPhoneViewController::ExecuteCommandL -> UnKnownMessage !!! " );
@@ -1466,9 +1480,10 @@ EXPORT_C void CPhoneViewController::ExecuteCommand(
             break;
             }
         case EPhoneViewGetSingleItemFetchType:
+            {
             static_cast<TPhoneCmdParamInteger*>( aCommandParam )->SetInteger( SingleItemFetchType() );
             break;
-
+            }
         case EPhoneViewSetPhoneCustomization:
             {
             TPhoneCmdParamPointer* pointerParam =
@@ -1573,8 +1588,8 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
                 EPhoneViewResponseFailed;
             break;
 
-        case EPhoneViewGetNeedToSendToBackgroundStatus:
-            viewResponse = NeedToSendToBackground() ?
+        case EPhoneViewGetNeedToReturnToForegroundAppStatus:
+            viewResponse = GetNeedToReturnToForegroundAppAfterCall() ?
                 EPhoneViewResponseSuccess :
                 EPhoneViewResponseFailed;
             break;
@@ -1737,7 +1752,7 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
             // If dialer was not active and needtosendback is false
             // then check if dialer view is to be opened.
             if ( !iDialerActive &&
-                 !iNeedToSendToBackground &&
+                 !iNeedToReturnToForegroundAppAfterCall &&
                  iPhoneView->PhoneAppViewToDialer() )
                 {
                 SetControltoDialerL();
@@ -2189,8 +2204,8 @@ EXPORT_C void CPhoneViewController::SetBlockingDialogIsDisplayed(
 //
 void CPhoneViewController::NumberEntryStateChanged( TBool aEntryHasText )
     {
-    iBubbleWrapper->HandleNumberEntryChanged();
     iMenuController->SetNumberEntryEmptyFlag( !aEntryHasText );
+    iBubbleWrapper->HandleNumberEntryChanged();
     ExecuteCommandL( EPhoneViewUpdateToolbar );
     }
 
@@ -2222,31 +2237,6 @@ void CPhoneViewController::GetSecurityModeStatus(
             static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
         booleanValue->SetBoolean( iPhoneView->IsSecurityMode() );
         }
-    }
-
-// ---------------------------------------------------------------------------
-// CPhoneViewController::SetNeedToSendToBackground
-// ---------------------------------------------------------------------------
-//
-void CPhoneViewController::SetNeedToSendToBackground(
-    TPhoneCommandParam* aCommandParam )
-    {
-    TPhoneCmdParamBoolean* booleanParam = static_cast<TPhoneCmdParamBoolean*>(
-        aCommandParam );
-
-    iNeedToSendToBackground = booleanParam->Boolean();
-    __PHONELOG1( EBasic, EPhoneUIView,
-        "CPhoneViewController::SetNeedToSendToBackground(%d)",
-        iNeedToSendToBackground );
-    }
-
-// ---------------------------------------------------------------------------
-// CPhoneViewController::NeedToSendToBackground
-// ---------------------------------------------------------------------------
-//
-TBool CPhoneViewController::NeedToSendToBackground()
-    {
-    return iNeedToSendToBackground;
     }
 
 // ---------------------------------------------------------------------------
@@ -2301,7 +2291,7 @@ void CPhoneViewController::SendToBackgroundL()
         }
 
     // Clear the send to background flag
-    iNeedToSendToBackground = EFalse;
+    iNeedToReturnToForegroundAppAfterCall = EFalse;
     }
 
 // ---------------------------------------------------------------------------
@@ -2590,6 +2580,17 @@ void CPhoneViewController::CreateConnectionL()
         {
         User::LeaveIfError( iApaLsSession.Connect() );
         }
+    }
+
+// ---------------------------------------------------------------------------
+// CPhoneViewController::LaunchMultimediaSharingL (static)
+// ---------------------------------------------------------------------------
+//
+void CPhoneViewController::LaunchMultimediaSharingL()
+    {
+    CMusManager* manager = CMusManager::NewLC();
+    manager->StartApplicationL( MultimediaSharing::EMusLiveVideo );
+    CleanupStack::PopAndDestroy( manager );
     }
 
 // ---------------------------------------------------------------------------
@@ -3030,15 +3031,13 @@ TBool CPhoneViewController::AssignSpeedDialLocation(
     // Indicate that the contact operation is blocking key
     // events from the Phone
     iBlockingDialogIsDisplayed = ETrue;
-    TBool numberAssigned;
-    TRAPD( err,
-        numberAssigned = AssignSpeedDialLocationL(
-        locationParam->Integer()))
+    TBool numberAssigned = EFalse;
+    TRAP_IGNORE( numberAssigned = AssignSpeedDialLocationL(locationParam->Integer()) );
 
     // Reset the flag
     iBlockingDialogIsDisplayed = EFalse;
 
-    return err ? EFalse : numberAssigned;
+    return numberAssigned;
     }
 
 // ---------------------------------------------------------------------------
@@ -3702,7 +3701,8 @@ void CPhoneViewController::SwitchLayoutToFlatStatusPaneL( TBool aSwitch )
             {
             SwapEmptyIndicatorPaneInSecureStateL( EFalse );
 
-            iStatusPane->NaviPane().Pop();
+            //  do Pop for navipane
+            iAudioController->DeactivateVolumeControl();
 
             if ( !Layout_Meta_Data::IsLandscapeOrientation() )
                 {
@@ -3856,12 +3856,12 @@ void CPhoneViewController::SetControltoCallHandlingL()
     __PHONELOG1( EBasic, EPhoneUIView,
         "CPhoneViewController::SetControltoCallHandlingL iDialerActive (%d)", iDialerActive );
 
-    // If securitymode or emergency call not show toolbar
+    // Do not show toolbar if securitymode or emergency call active
     if ( !iPhoneView->IsSecurityMode() && 
-     !iIncallIndicator->IsEmergencyCall() )
-     {
-         iToolbarController->ShowToolbar();
-     }
+         !iIncallIndicator->IsEmergencyCall() )
+        {
+        iToolbarController->ShowToolbar();
+        }
     if ( iDialerActive )
         {
         iDialerActive = EFalse;
@@ -4018,6 +4018,31 @@ TBool CPhoneViewController::IsCustomDialerActive() const
                 curController != iDtmfDialerController );
         }
     return ret;
+    }
+
+// ---------------------------------------------------------------------------
+// CPhoneViewController::SetNeedToReturnToForegroundAppAfterCall
+// ---------------------------------------------------------------------------
+//
+void CPhoneViewController::SetNeedToReturnToForegroundAppAfterCall(
+    TPhoneCommandParam* aCommandParam )
+    {
+    TPhoneCmdParamBoolean* booleanParam = static_cast<TPhoneCmdParamBoolean*>(
+        aCommandParam );
+
+    iNeedToReturnToForegroundAppAfterCall = booleanParam->Boolean();
+    __PHONELOG1( EBasic, EPhoneUIView,
+        "CPhoneViewController::SetNeedToReturnToForegroundAppAfterCall(%d)",
+        iNeedToReturnToForegroundAppAfterCall );
+    }
+
+// ---------------------------------------------------------------------------
+// CPhoneViewController::GetNeedToReturnToForegroundAppAfterCall
+// ---------------------------------------------------------------------------
+//
+TBool CPhoneViewController::GetNeedToReturnToForegroundAppAfterCall() const
+    {
+    return iNeedToReturnToForegroundAppAfterCall;
     }
 
 // End of File

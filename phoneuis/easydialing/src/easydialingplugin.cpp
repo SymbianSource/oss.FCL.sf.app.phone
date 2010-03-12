@@ -24,6 +24,7 @@
 #include "easydialingcenreplistener.h"
 #include "easydialingcontactdatamanager.h"
 #include "easydialingutils.h"
+#include "easydialingcommands.hrh"
 #include <easydialingpluginresources.rsg>
 
 // AVKON and drawing header files
@@ -183,6 +184,10 @@ void CEasyDialingPlugin::ConstructL()
     // Set contact store observer to listen to contact store events.
     iContactManager->ContactStoresL().OpenAllL( *this );
     
+    iContactDataManager = new (ELeave) CEasyDialingContactDataManager(iContactManager);
+    iContactDataManager->ConstructL();
+    iContactDataManager->SetObserver(this);
+
     PERF_MEASURE_START
 
     InitPredictiveContactSearchL();
@@ -206,10 +211,6 @@ void CEasyDialingPlugin::ConstructL()
     iContactLauncher = static_cast<MCCAConnectionExt*>( any );
     
     iCenrepListener = CEasyDialingCenrepListener::NewL(this);
-    
-    iContactDataManager = new (ELeave) CEasyDialingContactDataManager(iContactManager);
-    iContactDataManager->ConstructL();
-    iContactDataManager->SetObserver(this);
    
     iContactorService = CEDContactorService::NewL( this );
 
@@ -388,6 +389,8 @@ void CEasyDialingPlugin::InitPredictiveContactSearchL()
         contact_fields.Append(R_VPBK_FIELD_TYPE_COMPANYNAME);
         }
 
+    SetSortOrderL( iContactDataManager->NameOrder() );
+
     // Create and fill ps settings object.
     CPsSettings* ps_settings = CPsSettings::NewL();
     CleanupStack::PushL(ps_settings);
@@ -404,6 +407,32 @@ void CEasyDialingPlugin::InitPredictiveContactSearchL()
     CleanupStack::PopAndDestroy(&contact_fields);
 
     iPredictiveSearchQuery = CPsQuery::NewL();
+    }
+
+// -----------------------------------------------------------------------------
+// GetContactFields
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::SetSortOrderL( CEasyDialingContactDataManager::TNameOrder aNameOrder )
+    {
+    RArray<TInt> fields;
+    CleanupClosePushL( fields );
+    if ( aNameOrder == CEasyDialingContactDataManager::EFirstnameLastname )
+        {
+        fields.Append(R_VPBK_FIELD_TYPE_FIRSTNAME);
+        fields.Append(R_VPBK_FIELD_TYPE_LASTNAME);
+        }
+    else
+        {
+        fields.Append(R_VPBK_FIELD_TYPE_LASTNAME);
+        fields.Append(R_VPBK_FIELD_TYPE_FIRSTNAME);
+        }
+    if ( iCompanyNamePCSIndex != KErrNotFound )
+        {
+        fields.Append(R_VPBK_FIELD_TYPE_COMPANYNAME);
+        }
+    iPredictiveContactSearchHandler->ChangeSortOrderL( *iContactDataStores[0], fields );
+    CleanupStack::PopAndDestroy(); //fields
     }
 
 // -----------------------------------------------------------------------------
@@ -752,6 +781,19 @@ void CEasyDialingPlugin::AllContactDataLoaded()
     }
 
 // -----------------------------------------------------------------------------
+// NameOrderChanged
+// From MContactDataManagerObserver
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::NameOrderChanged()
+    {
+    if ( iPredictiveContactSearchHandler )
+        {
+        TRAP_IGNORE( SetSortOrderL( iContactDataManager->NameOrder() ) );
+        }
+    }
+
+// -----------------------------------------------------------------------------
 // InformContactorEvent
 // From MEDContactorObserver
 // -----------------------------------------------------------------------------
@@ -805,7 +847,7 @@ void CEasyDialingPlugin::LaunchSearchL()
         {
         return;
         }
-    
+   
     iDiscardCompletingSearches = EFalse;
     iNewSearchNeeded = EFalse;
     
@@ -968,10 +1010,7 @@ void CEasyDialingPlugin::HandlePsResultsUpdateL( RPointerArray<CPsClientData>& a
     if ( numberOfPCSMatches > 0 )
         {
         // retrieve the name order before adding
-        CPbkContactEngine* pbkEngine = CPbkContactEngine::NewL();
-        CleanupStack::PushL( pbkEngine );
-        CPbkContactEngine::TPbkNameOrder nameOrder = pbkEngine->NameDisplayOrderL();
-        CleanupStack::PopAndDestroy( pbkEngine );
+        CEasyDialingContactDataManager::TNameOrder nameOrder = iContactDataManager->NameOrder();
 
         // map results to old contact match data
         for( TInt i = 0; i < numberOfPCSMatches; i++ )
@@ -995,7 +1034,7 @@ void CEasyDialingPlugin::HandlePsResultsUpdateL( RPointerArray<CPsClientData>& a
 
         TInt numberOfFavs( iContactDataManager->NumberOfFavsL() );
         TBuf<KBufferMaxLen> results;
-        for ( TInt i = 0; i < numberOfFavs; i++ )
+        for ( TInt i = numberOfFavs - 1; i >= 0; i-- )
             {
             // check if this fav matches the search
             HBufC* favContactString = iContactDataManager->FavContactStringLC( i, nameOrder );
@@ -1169,7 +1208,8 @@ void CEasyDialingPlugin::CreateListBoxContactStringL(
 //
 // -----------------------------------------------------------------------------
 //
-HBufC* CEasyDialingPlugin::CreateContactStringLC( CPsClientData* aResult, CPbkContactEngine::TPbkNameOrder aNameOrder )
+HBufC* CEasyDialingPlugin::CreateContactStringLC( CPsClientData* aResult,
+        CEasyDialingContactDataManager::TNameOrder aNameOrder )
     {
     TPtr firstName = aResult->Data( iFirstNamePCSIndex )->Des();
     TPtr lastName = aResult->Data( iLastNamePCSIndex )->Des();
@@ -1441,7 +1481,7 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
             
             // Not only Number Entry is removed but also closes down number selection popup in case it happens to be open.
             iContactorService->CancelService();
-			ret = ETrue;
+            ret = ETrue;
             break;
             
         default:
@@ -1607,7 +1647,9 @@ void CEasyDialingPlugin::DoLaunchActionL( )
             return;
         }
 
-    CEDContactorService::TCSParameter param( selector, *contact8, 0, *fullName );
+    CEDContactorService::TCSParameter param( selector, *contact8, 
+                                             CEDContactorService::TCSParameter::EEnableDefaults, 
+                                             *fullName );
 
     iContactorService->ExecuteServiceL( param );
 

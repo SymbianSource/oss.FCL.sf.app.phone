@@ -32,6 +32,7 @@
 #include <bautils.h>                        // for BaflUtils
 #include <aknedsts.h>
 #include <dialingextensioninterface.h>
+#include <easydialingcommands.hrh>
 #include <dialer.rsg>
 
 #include "cdialer.h"
@@ -306,7 +307,7 @@ void CDialer::RemoveNumberEntry()
 TInt CDialer::ChangeEditorMode( TBool aDefaultMode )
     {
     TInt ret( KErrNotSupported );
-    ret = iNumberEntry->ChangeEditorMode( aDefaultMode );        
+    ret = iNumberEntry->ChangeEditorMode( aDefaultMode );
     return ret;
     }
     

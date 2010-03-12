@@ -200,20 +200,12 @@ void CPhoneTwoSingles::HandleIdleL( TInt aCallId )
     switch( activeCallCount.Integer() )
         {
         case EOneActiveCall:
-            {   
-            if ( IsNumberEntryUsedL() )
-                {
-                // Show the number entry if it exists
-                SetNumberEntryVisibilityL(ETrue);
-                }
-            else
-                {
-                // Close menu bar if number entry is not open.
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
+            {
+            // Close menu bar if number entry is not open.
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
                 
-                // Set incall CBAs
-                UpdateCbaL( EPhoneCallHandlingInCallCBA );                
-                }
+            // Set incall CBAs
+            UpdateCbaL( EPhoneCallHandlingInCallCBA );                
             
             TPhoneCmdParamCallStateData callStateData;  
             callStateData.SetCallState( EPEStateHeld );
@@ -445,25 +437,15 @@ void CPhoneTwoSingles::DisplayIncomingCallL(
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
-    // Cannot delete active note, e.g. New call query, 
-    // but show waiting note with or without caller name
-    if ( IsAnyQueryActiveL() ||  
-        ( !aCommandParam.Boolean() && iOnScreenDialer ) )
-        {
-        CallWaitingNoteL( aCallId );        
-        }
-    else
-        {
-        // Remove any phone dialogs if they are displayed
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-        }
+    // Remove any phone dialogs if they are displayed
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
 
     // Indicate that the Phone needs to be sent to the background if
     // an application other than the top application is in the foreground
     TPhoneCmdParamBoolean booleanParam;
     booleanParam.SetBoolean( !TopAppIsDisplayedL() );
     iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus,
+        EPhoneViewSetNeedToReturnToForegroundAppStatus,
         &booleanParam );
 
     // Bring Phone app in the foreground

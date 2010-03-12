@@ -175,13 +175,11 @@ private:
      * before drawing.
      * @param   aGc Graphics context.
      * @param   aNameRectUnMirrored Name rect, where fav star is contained
-     * @param   aTextWidth The width of the name
      * @param   aEffectiveRect The whole listbox item rect. Used for mirroring.
      */
     void DrawFavouriteIcon(
             CWindowGc& aGc, 
             TRect aNameRectUnMirrored,
-            TInt aTextWidth,
             TRect aEffectiveRect) const;
     
 private:

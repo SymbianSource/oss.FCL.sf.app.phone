@@ -380,14 +380,6 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
     // Stop tone playing, if necessary
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
     
-    if( IsVideoCall( aCallId ) && !IsAutoLockOn() )
-        {
-        // For keeping video call on top
-        TPhoneCmdParamBoolean booleanParam;
-        booleanParam.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL(
-            EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-        }
     
     BeginTransEffectLC( ENumberEntryOpen );
 
@@ -485,7 +477,7 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     
      if ( IsNumberEntryUsedL() )
         {
-        if ( NeedToSendToBackgroundL() )
+        if ( NeedToReturnToForegroundAppL() )
             {
             // Return phone to the background if send to background is needed.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
@@ -501,7 +493,7 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
             SetNumberEntryVisibilityL(ETrue);
             }
         }
-    else if ( NeedToSendToBackgroundL() ||
+    else if ( NeedToReturnToForegroundAppL() ||
         SoftRejectMessageEditorIsDisplayedL() )
         {
         // Continue displaying current app but set up the

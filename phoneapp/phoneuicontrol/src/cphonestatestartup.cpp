@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -134,7 +134,7 @@ EXPORT_C void CPhoneStateStartup::HandlePhoneEngineMessageL(
 // CPhoneStateStartup::HandlePEConstructionReadyL
 // -----------------------------------------------------------
 //
-void CPhoneStateStartup::HandlePEConstructionReadyL( TInt /*aCallId*/ )
+EXPORT_C void CPhoneStateStartup::HandlePEConstructionReadyL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::HandlePEConstructionReadyL() ");
     // Indicate that phone engine construction is ready

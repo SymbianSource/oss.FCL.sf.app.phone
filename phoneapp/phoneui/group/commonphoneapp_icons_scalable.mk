@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2004 Nokia Corporation and/or its subsidiary(-ies).
+# Copyright (c) 2004-2010 Nokia Corporation and/or its subsidiary(-ies).
 # All rights reserved.
 # This component and the accompanying materials are made available
 # under the terms of "Eclipse Public License v1.0"
@@ -75,6 +75,7 @@ RESOURCE :
 		/c8,8 qgn_indi_button_unmute_mic.svg \
 		/c8,8 qgn_indi_button_video_to_voice.svg \
 		/c8,8 qgn_indi_button_voice_to_video.svg \
+		/c8,8 qgn_indi_button_video_share.svg \
 		/c8,8 qgn_indi_button_answer.svg \
 		/c8,8 qgn_indi_button_reject.svg \
 		/c8,8 qgn_indi_tb_call.svg \

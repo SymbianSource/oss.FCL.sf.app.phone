@@ -70,6 +70,8 @@ class CPhoneMenuController : public CBase, public MPhonePubSubObserver
         
         void GetConferenceAndSingleFlag( TPhoneCommandParam* aCommandParam );
         
+        void SetConferenceAndWaitingVideoFlag( TBool aIsConfAndWaitingVideo );
+        
         void SetSoftRejectFlag( TPhoneCommandParam* aCommandParam );
         
         void GetSoftRejectFlag( TPhoneCommandParam* aCommandParam );
@@ -166,6 +168,7 @@ class CPhoneMenuController : public CBase, public MPhonePubSubObserver
         TBool iMuteFlag;
         TBool iHoldFlag;
         TBool iConferenceAndSingleFlag;
+        TBool iConferenceAndWaitingVideoFlag;
         TBool iSoftRejectFlag;
         TBool iServiceCodeFlag;
         TBool iWiredAccFlag;

@@ -32,7 +32,7 @@ HBufC* EasyDialingUtils::CreateContactStringLC(
         const TDesC& aFirstName,
         const TDesC& aLastName,
         const TDesC& aCompanyName,
-        CPbkContactEngine::TPbkNameOrder aNameOrder )
+        CEasyDialingContactDataManager::TNameOrder aNameOrder )
     {
     // first strip control chars from the names
     HBufC* firstName = aFirstName.AllocLC();
@@ -68,7 +68,7 @@ HBufC* EasyDialingUtils::CreateContactStringLC(
     // If there are both first and last name, the name string is composed of them both.
     else 
         {
-        if( aNameOrder == CPbkContactEngine::EPbkNameOrderFirstNameLastName )
+        if( aNameOrder == CEasyDialingContactDataManager::EFirstnameLastname )
             {
             ptr.Copy( *firstName );
             ptr.Append( KNameSeparatorChar );

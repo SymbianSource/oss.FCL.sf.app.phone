@@ -704,18 +704,31 @@ void CPhoneConference::MakeStateTransitionToIdleL()
 
     if ( IsNumberEntryUsedL() )
         {
-        // Show the number entry if it exists
-        SetNumberEntryVisibilityL(ETrue);
+        if ( NeedToReturnToForegroundAppL() )
+            {
+            // Return phone to the background if menu application is needed to foreground.
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
+    
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
+    
+            // Set Number Entry CBA
+            iCbaManager->SetCbaL( EPhoneNumberAcqCBA );
+            }
+        else
+            {
+            // Show the number entry if it exists
+            SetNumberEntryVisibilityL(ETrue);
         
-        // Close dtmf dialer when call is disconnected.
-        if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-            {            
-            CloseDTMFEditorL();
-            // Display idle screen and update CBAs
-            DisplayIdleScreenL();
-            }        
-        }
-    else if ( !TopAppIsDisplayedL() )
+            // Close dtmf dialer when call is disconnected.
+            if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
+                {            
+                CloseDTMFEditorL();
+                // Display idle screen and update CBAs
+                DisplayIdleScreenL();
+                }
+            }
+        }  
+    else if ( !TopAppIsDisplayedL() || NeedToReturnToForegroundAppL() )
         {
         // Close menu bar, if it is displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
@@ -752,11 +765,7 @@ void CPhoneConference::MakeStateTransitionToSingleL()
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
  
-    if ( IsNumberEntryUsedL() )
-        {
-        // Show the number entry if it exists
-        SetNumberEntryVisibilityL(ETrue);
-        }
+
     SetTouchPaneButtons( EPhoneIncallButtons );    
   
     // Go to single state
@@ -775,11 +784,6 @@ void CPhoneConference::MakeStateTransitionToTwoSinglesL()
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
-    if ( IsNumberEntryUsedL() )
-        {
-        // Show the number entry if it exists
-        SetNumberEntryVisibilityL(ETrue);
-        }
         
     SetTouchPaneButtons( EPhoneTwoSinglesButtons );        
     
@@ -930,6 +934,14 @@ void CPhoneConference::HandleIncomingL( TInt aCallId )
         {
         SetNumberEntryVisibilityL( EFalse );    
         }
+    
+    // Indicate that the menu application on foreground needs to be sent back to the foreground 
+    // after call is ended.
+    TPhoneCmdParamBoolean booleanParam;
+    booleanParam.SetBoolean( !TopAppIsDisplayedL() );
+    iViewCommandHandle->ExecuteCommandL( 
+        EPhoneViewSetNeedToReturnToForegroundAppStatus,
+        &booleanParam );
  
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
@@ -970,25 +982,15 @@ void CPhoneConference::DisplayIncomingCallL(
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
-    // Cannot delete active note, e.g. New call query, 
-    // but show waiting note with or without caller name
-    if ( IsAnyQueryActiveL() ||  
-        ( !aCommandParam.Boolean() && iOnScreenDialer ) )
-        {
-        CallWaitingNoteL( aCallId );        
-        }
-    else
-        {
-        // Remove any phone dialogs if they are displayed
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-        }
+    // Remove any phone dialogs if they are displayed
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
 
     // Indicate that the Phone needs to be sent to the background if
     // an application other than the top application is in the foreground
     TPhoneCmdParamBoolean booleanParam;
     booleanParam.SetBoolean( !TopAppIsDisplayedL() );
     iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus,
+        EPhoneViewSetNeedToReturnToForegroundAppStatus,
         &booleanParam );
 
     // Bring Phone app in the foreground

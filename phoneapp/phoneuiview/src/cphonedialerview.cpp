@@ -326,10 +326,7 @@ void CPhoneDialerView::UpdateControlRect()
             }
         else
             {
-            if ( iControlRect != iControl->Rect() )
-                {
-                iControl->SetRect( iControlRect );
-                }
+            iControl->SetRect( iControlRect );
             } 
         }
     }

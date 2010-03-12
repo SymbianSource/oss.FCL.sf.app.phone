@@ -228,6 +228,13 @@ void CPhoneConferenceAndWaiting::OpenMenuBarL()
         resourceId = EPhoneConfCallParticipantsMenubar;    
         }        
     
+    TPhoneCmdParamBoolean booleanParam;
+    const TBool videoWaiting = IsVideoCallRingingL();
+    booleanParam.SetBoolean( videoWaiting );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetConferenceAndWaitingVideo,
+        &booleanParam );
+    
+    
     TPhoneCmdParamInteger integerParam;
     integerParam.SetInteger( 
                 CPhoneMainResourceResolver::Instance()->
@@ -290,7 +297,7 @@ void CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt
     
     // Effect is shown when dialer exist.
     TBool effectStarted ( EFalse );
-    if ( !NeedToSendToBackgroundL() )
+    if ( !NeedToReturnToForegroundAppL() )
         {
         BeginTransEffectLC( ENumberEntryOpen );
         effectStarted = ETrue; 
@@ -314,31 +321,16 @@ void CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt
     
     if ( IsNumberEntryUsedL() )
         {
-        if ( NeedToSendToBackgroundL() )
+        if ( NeedToReturnToForegroundAppL() )
             {
-            // Return phone to the background if send to background is needed.
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-            
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
             
             UpdateCbaL( EPhoneCallHandlingInCallCBA );
-            }
-        else
-            {
-            // Show the number entry if it exists.
-            SetNumberEntryVisibilityL(ETrue);
             }
         }
     else
         {
         UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
-        // If numberentry is not open just check NeedToSendToBackgroundL and 
-        // sendbackround if needed.
-        if ( NeedToSendToBackgroundL() )
-            {
-            // Return phone to the background if send to background is needed.
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-            }
         }
     SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
     SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
@@ -374,7 +366,7 @@ void CPhoneConferenceAndWaiting::HandleIdleL( TInt aCallId )
         {
         // Effect is shown when dialer exist.
         TBool effectStarted ( EFalse );
-        if ( !NeedToSendToBackgroundL() )
+        if ( !NeedToReturnToForegroundAppL() )
             {
             BeginTransEffectLC( ENumberEntryOpen );
             effectStarted = ETrue;
@@ -391,27 +383,22 @@ void CPhoneConferenceAndWaiting::HandleIdleL( TInt aCallId )
             
         if ( IsNumberEntryUsedL() )
             {
-            if ( NeedToSendToBackgroundL() )
+            if ( NeedToReturnToForegroundAppL() ) 
                 {
-                // Return phone to the background if send to background is needed.
+                // Return phone to the background if menu application is needed to foreground.
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
  
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
                 
                 UpdateCbaL( EPhoneCallHandlingInCallCBA );
                 }
-            else
-                {
-                // Show the number entry if it exists.
-                SetNumberEntryVisibilityL(ETrue);
-                }
             }
         else
             {
             UpdateCbaL( EPhoneCallHandlingInCallCBA );
-            // If numberentry is not open just check NeedToSendToBackgroundL and 
+            // If numberentry is not open just check NeedToReturnToForegroundAppL and 
             // sendbackround if needed.
-            if ( NeedToSendToBackgroundL() )
+            if ( NeedToReturnToForegroundAppL() )
                 {
                 // Return phone to the background if send to background is needed.
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );

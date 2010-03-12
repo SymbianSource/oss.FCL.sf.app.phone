@@ -42,6 +42,8 @@
 #include <MVPbkStoreContact.h>
 #include <centralrepository.h>
 
+#include <PbkGlobalSettingFactory.h>
+
 #include "easydialingcontactdata.h"
 #include "easydialingcontactdatamanager.h"
 #include "easydialingutils.h"
@@ -78,6 +80,12 @@ CEasyDialingContactDataManager::~CEasyDialingContactDataManager()
         {
         iContactStore->Close( *this);
         }
+    
+    if ( iPbkSettings )
+        {
+        iPbkSettings->Close();
+        }
+    delete iPbkSettings;
     }
 
 // ---------------------------------------------------------------------------
@@ -104,6 +112,20 @@ void CEasyDialingContactDataManager::ConstructL()
     CleanupStack::PushL( cenrep );
     User::LeaveIfError( cenrep->Get( KEasyDialingContactThumbnails, iContactThumbnailSetting ) );
     CleanupStack::PopAndDestroy( cenrep );
+    
+    iPbkSettings = PbkGlobalSettingFactory::CreatePersistentSettingL();
+    iPbkSettings->ConnectL( MPbkGlobalSetting::EGeneralSettingCategory );
+    
+    /*
+    * Phonebook name ordering flag, integer value, possible values:
+    * 0: name order Lastname Firstname
+    * 1: name order Firstname Lastname
+    * 2: name order undefined
+    */
+    TInt nameOrderSetting;
+    iPbkSettings->Get( MPbkGlobalSetting::ENameOrdering, nameOrderSetting );
+    iNameOrder = ( nameOrderSetting == 0 ? ELastnameFirstname : EFirstnameLastname );
+    iPbkSettings->RegisterObserverL( this );
     }
 
 // ---------------------------------------------------------------------------
@@ -254,7 +276,7 @@ MVPbkContactLink* CEasyDialingContactDataManager::FavLinkLC( TInt aIndex )
 // CEasyDialingContactDataManager::FavContactStringLC
 // ---------------------------------------------------------------------------
 //
-HBufC* CEasyDialingContactDataManager::FavContactStringLC( TInt aIndex, CPbkContactEngine::TPbkNameOrder aNameOrder )
+HBufC* CEasyDialingContactDataManager::FavContactStringLC( TInt aIndex, TNameOrder aNameOrder )
     {
     const MVPbkBaseContactFieldCollection& fields = iFavsView->ContactAtL( aIndex ).Fields();
     TPtrC firstName;
@@ -292,6 +314,15 @@ HBufC* CEasyDialingContactDataManager::FavContactStringLC( TInt aIndex, CPbkCont
         }
     
     return EasyDialingUtils::CreateContactStringLC( firstName, lastName, companyName, aNameOrder );
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactDataManager::NameOrder
+// ---------------------------------------------------------------------------
+//
+CEasyDialingContactDataManager::TNameOrder CEasyDialingContactDataManager::NameOrder()
+    {
+    return iNameOrder;
     }
 
 // ---------------------------------------------------------------------------
@@ -391,6 +422,25 @@ void CEasyDialingContactDataManager::Pbk2ImageGetFailed(MPbk2ImageOperation& aOp
     {
     LOGSTRING("CEasyDialingContactDataManager: Pbk2ImageGetFailed");
     Pbk2ImageGetComplete(aOperation, NULL);
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactDataManager::SettingChangedL
+// From MPbkGlobalSettingObserver
+// ---------------------------------------------------------------------------
+//
+void CEasyDialingContactDataManager::SettingChangedL( MPbkGlobalSetting::TPbkGlobalSetting aKey )
+    {
+    if ( aKey == MPbkGlobalSetting::ENameOrdering )
+        {
+        TInt nameOrderSetting;
+        iPbkSettings->Get( MPbkGlobalSetting::ENameOrdering, nameOrderSetting );
+        iNameOrder = ( nameOrderSetting == 0 ? ELastnameFirstname : EFirstnameLastname );
+        if ( iObserver )
+            {
+            iObserver->NameOrderChanged();
+            }
+        }
     }
 
 // ---------------------------------------------------------------------------

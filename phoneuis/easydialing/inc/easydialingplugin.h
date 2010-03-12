@@ -28,9 +28,9 @@
 #include "measydialingcenreplistenerobserver.h"
 #include "mcontactdatamanagerobserver.h"
 #include "medcontactorobserver.h"
+#include "easydialingcontactdatamanager.h"  // for TNameOrder
 
 // Phonebook engine API
-#include <CPbkContactEngine.h>
 #include <MVPbkContactStoreListObserver.h>
 
 // ListBox Observer API
@@ -250,6 +250,11 @@ public:
     void AllContactDataLoaded();
     
     /**
+    * From MContactDataManagerObserver.
+    */
+    void NameOrderChanged();
+    
+    /**
     * From MEDContactorObserver.
     */
     void InformContactorEvent( MEDContactorObserver::TEvent aEvent );
@@ -279,6 +284,8 @@ private:
 
     void InitPredictiveContactSearchL();
         
+    void SetSortOrderL( CEasyDialingContactDataManager::TNameOrder aNameOrder );
+    
     /**
     * From MPsResultsObserver.
     */
@@ -350,7 +357,8 @@ private:
     /**
      * Creates string with first name, last name and company name.
      */
-    HBufC* CreateContactStringLC( CPsClientData* aResult, CPbkContactEngine::TPbkNameOrder aNameOrder );
+    HBufC* CreateContactStringLC( CPsClientData* aResult,
+            CEasyDialingContactDataManager::TNameOrder aNameOrder );
     
     /** Possible actions launched by this plugin. */
     enum TEasyDialingAction
@@ -465,7 +473,6 @@ private:
     
     /** Action to be launched next asynchronously. */
     TEasyDialingAction iActionToBeLaunched;
-       
 };
 
 

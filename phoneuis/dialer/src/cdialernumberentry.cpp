@@ -214,7 +214,7 @@ TInt CDialerNumberEntry::GetEditorMode() const
 void CDialerNumberEntry::SetTextToNumberEntry( const TDesC& aDesC )
     {
     DIALER_PRINT("numberentry::SetTextToNumberEntry<");
-        	
+    
     iEditor->SetText( aDesC );   
     
     if ( iEasyDialer && iOperationMode == EModeEasyDialing )
@@ -283,7 +283,7 @@ void CDialerNumberEntry::SetNumberEntryPromptTextL( const TDesC& aPromptText )
 TBool CDialerNumberEntry::HandleCommandL( TDialerCommandId aCommand)
     {
     DIALER_PRINTF("numberentry::HandleCommandL<:", aCommand); 
-    	
+    
     TBool handled( ETrue );
     switch ( aCommand )
         {
@@ -298,7 +298,7 @@ TBool CDialerNumberEntry::HandleCommandL( TDialerCommandId aCommand)
             }
             break;
         }
-        
+    
     DIALER_PRINT("numberentry::HandleCommandL>");         
     return handled;
     }
@@ -653,7 +653,7 @@ void CDialerNumberEntry::HandleEditorFormatting()
 void CDialerNumberEntry::StartVirtualKeyBoard( )
     {
     // To change focus to VKB, if not called VKB will not come visible
-    CEikonEnv::Static()->SyncNotifyFocusObserversOfChangeInFocus();
+    iEikonEnv->SyncNotifyFocusObserversOfChangeInFocus();
     iEditor->OpenVKB();
     }
   
@@ -801,6 +801,7 @@ void CDialerNumberEntry::CheckLabelSkinningColor()
     }
     
     
+// -----------------------------------------------------------------------------
 // CDialerNumberEntry::MakeVisible( TBool aVisible )
 // -----------------------------------------------------------------------------
 //	

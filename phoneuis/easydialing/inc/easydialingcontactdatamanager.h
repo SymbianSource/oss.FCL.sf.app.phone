@@ -24,8 +24,8 @@
 #include <MVPbkContactStoreObserver.h>
 #include <MVPbkOperationObserver.h>
 #include <MVPbkContactViewBase.h>
-#include <CPbkContactEngine.h>  // for TPbkNameOrder
 #include <TPbk2ImageManagerParams.h>
+#include <MPbkGlobalSetting.h> // For name order setting
 #include "easydialingcontactdata.h"
 
 // FORWARD DECLARATIONS
@@ -46,11 +46,22 @@ class CEasyDialingContactDataManager :
         public MVPbkSingleContactOperationObserver,
         public MVPbkContactStoreObserver,
         public MVPbkOperationErrorObserver,
-        public MVPbkOperationResultObserver<MVPbkContactViewBase*>
+        public MVPbkOperationResultObserver<MVPbkContactViewBase*>,
+        public MPbkGlobalSettingObserver
         
     {
 public:
-    
+        
+    /**
+     * Contact name display order 
+     */
+    enum TNameOrder
+        {
+        EFirstnameLastname,
+        ELastnameFirstname
+        };
+        
+public:
     
     /**
     * Constructor.
@@ -180,10 +191,14 @@ public:
     * @param aNameOrder Name ordering to be used
     * @return the newly created string (added to cleanupstack)
     */
-    HBufC* FavContactStringLC( TInt aIndex, CPbkContactEngine::TPbkNameOrder aNameOrder );
+    HBufC* FavContactStringLC( TInt aIndex, TNameOrder aNameOrder );
+    
+    /**
+     * @return Contact name display order
+     */
+    TNameOrder NameOrder();
 
 public:
-    
     
     /**
      * From MPbk2ImageGetObserver.
@@ -196,8 +211,14 @@ public:
      */
     void Pbk2ImageGetFailed(MPbk2ImageOperation& aOperation, TInt aError);
 
+public:
+    
+    /**
+     * From MPbkGlobalSettingObserver.
+     */
+    void SettingChangedL( MPbkGlobalSetting::TPbkGlobalSetting aKey );
+    
 private: 
-
     
     /**
      * From MVPbkSingleContactOperationObserver.
@@ -317,6 +338,12 @@ private:
         
     /** Virtual phonebook operation handle for getting favourites. Owned. */
     MVPbkContactOperationBase* iFavsOperation;
+    
+    /** Phonebook settings interface. */
+    MPbkGlobalSetting* iPbkSettings;
+    
+    /** Contact name display order. */
+    TNameOrder iNameOrder;
     };
 
 #endif //__EASYDIALINGTHUMBNAILMANAGER_H__

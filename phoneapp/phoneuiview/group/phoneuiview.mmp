@@ -166,3 +166,5 @@ LIBRARY         platformenv.lib // PathInfo
 
 LIBRARY         phonemediatorcenter.lib
 LIBRARY         serviceprovidersettings.lib
+
+LIBRARY         musmanagerclient.lib

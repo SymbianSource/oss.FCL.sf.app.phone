@@ -552,7 +552,7 @@ class CPhoneState :
         * @return boolean value indicating that application needs to be
         *  sent to the background
         */
-        IMPORT_C TBool NeedToSendToBackgroundL() const;
+        IMPORT_C TBool NeedToReturnToForegroundAppL() const;
 
         /**
         * Check if the top application is currently displayed in the foreground

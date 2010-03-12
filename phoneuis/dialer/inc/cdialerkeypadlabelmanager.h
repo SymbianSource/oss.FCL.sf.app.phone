@@ -21,10 +21,12 @@
 // INCLUDES
 #include <e32std.h>
 #include <e32base.h>
+#include <badesca.h>
 #include "cdialercenrepwrapper.h"
 
 
 // FORWARD DECLARATIONS
+class CCoeEnv;
 class CPtiEngine;
 class CEnvironmentChangeNotifier;
 

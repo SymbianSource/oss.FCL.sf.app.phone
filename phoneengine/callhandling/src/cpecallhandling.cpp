@@ -443,20 +443,20 @@ void CPECallHandling::SendMessage(
             {
             TEFLOGSTRING( KTAMESINT, "CALL CPECallHandling::SendMessage -> EPEMessageRemotePartyInfoChanged");
             // HO cases call type can changes
-            CPESingleCall* connectedCall;
-            connectedCall = iCallArrayOwner->CallPointerByState( EPEStateConnected );
-            
-            if( connectedCall )
+            CPESingleCall* call;
+            call = static_cast<CPESingleCall*>( iCallArrayOwner->CallByCallId( aCallId ) );
+                                 
+            if ( EPEStateConnected == call->GetCallState() )
                 {
-                MCCECall& call = connectedCall->Call();
-                CCPCall::TCallType callType = call.Parameters().CallType();
+                MCCECall& connectedCall = call->Call();
+                CCPCall::TCallType callType = connectedCall.Parameters().CallType();
                 
                 if ( callType == CCPCall::ECallTypePS ) 
                     {
                     TEFLOGSTRING( KTAMESINT, 
                         "CALL CPECallHandling::SendMessage -> EPEMessageRemotePartyInfoChanged->update call type to PS");
                     iModel.DataStore()->SetCallType( EPECallTypeVoIP, aCallId ); 
-                    iModel.DataStore()->SetServiceIdCommand( connectedCall->Call().Parameters().ServiceId() );
+                    iModel.DataStore()->SetServiceIdCommand( call->Call().Parameters().ServiceId() );
                     iCallOpenParams->SetCallType( CCPCall::ECallTypePS); 
                     }
                 else if ( callType == CCPCall::ECallTypeCSVoice )
@@ -465,13 +465,17 @@ void CPECallHandling::SendMessage(
                         "CALL CPECallHandling::SendMessage -> EPEMessageRemotePartyInfoChanged->update call type to CS");
                     iCallOpenParams->SetCallType( CCPCall::ECallTypeCSVoice );
                     iModel.DataStore()->SetServiceIdCommand( 1 );
-                    iModel.DataStore()->SetCallType( EPECallTypeCSVoice, aCallId );  
-                    SetColpNumber( aCallId, call );
+                    iModel.DataStore()->SetCallType( EPECallTypeCSVoice, aCallId ); 
+                    
+                    if ( UpdateColpNumber( aCallId, connectedCall ))
+                        {
+                        iModel.SendMessage( MEngineMonitor::EPEMessageColpNumberAvailable, aCallId );
+                        }
                     }
                 
-                iModel.DataStore()->SetRemotePartyName( call.RemotePartyName(), aCallId );                
-                iModel.DataStore()->SetRemotePhoneNumber( call.RemoteParty(), aCallId );
-                iModel.DataStore()->SetCallIndex(call.CallIndex(), aCallId );
+                iModel.DataStore()->SetRemotePartyName( connectedCall.RemotePartyName(), aCallId );                
+                iModel.DataStore()->SetRemotePhoneNumber( connectedCall.RemoteParty().Left( KPEPhoneNumberMaxLength ), aCallId );
+                iModel.DataStore()->SetCallIndex(connectedCall.CallIndex(), aCallId );
                 }
             break;
             }
@@ -484,7 +488,7 @@ void CPECallHandling::SendMessage(
                 {
                 MCCECall& call = callData->Call();
                 iModel.DataStore()->SetRemotePartyName( call.RemotePartyName(), aCallId );
-                iModel.DataStore()->SetRemotePhoneNumber( call.RemoteParty(), aCallId );
+                iModel.DataStore()->SetRemotePhoneNumber( call.RemoteParty().Left( KPEPhoneNumberMaxLength ), aCallId );
                 iModel.DataStore()->SetCallIndex(call.CallIndex(), aCallId );
                 }
             break;
@@ -833,7 +837,7 @@ EXPORT_C TInt  CPECallHandling::HangUp(
 
     else if ( CallIdCheck::IsConference( aCallId ) )
         {
-        ReleaseConference();
+        errorCode = ReleaseConference();
         }
     return errorCode;
     }
@@ -2372,13 +2376,19 @@ void CPECallHandling::HandleAutoResume()
     else
         {
         CPESingleCall* callData = iCallArrayOwner->CallPointerByState( EPEStateHeld );
-        // Check that no actice and held call, if waiting call gets idle
-        CPESingleCall* connectedCallData = iCallArrayOwner->CallPointerByState( EPEStateConnected );
-        if( callData && ( iModel.DataStore()->ResumeHeldCall( callData->GetCallId() ) )
-                    && !connectedCallData )
+        if ( callData )
             {
-            TEFLOGSTRING( KTAINT, "CALL CPECallHandling::HandleAutoResume single" );
-            callData->Resume();
+            // Checks to be done in case waiting call gets idle state:
+            // Check that no active and held calls case
+            // Check that no dialling/connecting and held calls case
+            if ( iModel.DataStore()->ResumeHeldCall( callData->GetCallId() ) &&
+                 !IsCallInState( EPEStateConnected ) &&
+                 !IsCallInState( EPEStateConnecting ) &&
+                 !IsCallInState( EPEStateDialing ) )
+                {
+                TEFLOGSTRING( KTAINT, "CALL CPECallHandling::HandleAutoResume single" );
+                callData->Resume();
+                }
             }
         }
     }
@@ -2426,37 +2436,51 @@ void  CPECallHandling::SetCallOrigin( const TInt aCallId, const MCCECall& aCall 
     }
 
 // -----------------------------------------------------------------------------
-// CPECallHandling::SetColpNumber
+// CPECallHandling::UpdateColpNumber
 // -----------------------------------------------------------------------------
 //
-void CPECallHandling::SetColpNumber( TInt aCallId, const MCCECall& aCall ) const
+TBool CPECallHandling::UpdateColpNumber( TInt aCallId, const MCCECall& aCall ) const
     {
-    TEFLOGSTRING( KTAINT, "CALL CPECallHandling::SetColpNumber" );
+    TEFLOGSTRING( KTAINT, "CALL CPECallHandling::UpdateColpNumber" );
     
+    TBool updateDone( EFalse );
     TInt errorCode( KErrNone );
     TInt value( KPEMatchDefault );
-    TPEMatcher matcher;    
+    TPEMatcher matcher;       
+    TPEPhoneNumber remoteNumber;
     
-    const TPEPhoneNumber& origRemoteNumber = iModel.DataStore()->RemotePhoneNumber( aCallId );    
-    const TPEPhoneNumber& remoteNumber = aCall.RemoteParty();
+    MPEDataStore* dataStore = iModel.DataStore();
+    
+    if ( dataStore->RemoteColpNumber( aCallId ).Length() )
+        {
+        remoteNumber = dataStore->RemoteColpNumber( aCallId );
+        }
+    else
+        {
+        remoteNumber = dataStore->RemotePhoneNumber( aCallId );
+        }    
+        
+    const TPEPhoneNumber& updatedNumber = aCall.RemoteParty();
     
     errorCode = iRepository->Get( KTelMatchDigits, value );
-
     if ( !errorCode == KErrNone )
         {
         TEFLOGSTRING( KTAOBJECT, "Reading KTelMatchDigits failed, use default value for matching");
-        }    
+        } 
     
     //check if remote number is different from dialled number
-    if ( !matcher.numbersMatch( origRemoteNumber, remoteNumber, value ) )
+    if ( !matcher.numbersMatch( remoteNumber, updatedNumber, value ) )
         {
         //set COLP number        
-        iModel.DataStore()->SetRemoteColpNumber( remoteNumber, aCallId );
+        dataStore->SetRemoteColpNumber( updatedNumber, aCallId );
         
         TEFLOGSTRING3( KTAMESINT, 
-                "CPECallHandling::SetColpNumber, colp number: '%S', call id: %d", 
-                &remoteNumber, aCallId );
-        }        
+                "CPECallHandling::UpdateColpNumber, colp number: '%S', call id: %d", 
+                &updatedNumber, aCallId );
+        updateDone = ETrue;
+        }  
+    
+    return updateDone;
     }
         
 // -----------------------------------------------------------------------------

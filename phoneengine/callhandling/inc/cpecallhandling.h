@@ -662,8 +662,9 @@ class CPECallHandling
          * different from dialled number.
          * @param aCallid.
          * @param aCall reference to call object
+         * @return Updating Colp number was necessary.
          */
-        void SetColpNumber( TInt aCallId, const MCCECall& aCall ) const;
+        TBool UpdateColpNumber( TInt aCallId, const MCCECall& aCall ) const;
 
     protected:
         // Phone model instance which owns this object.

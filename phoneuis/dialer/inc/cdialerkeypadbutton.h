@@ -141,6 +141,7 @@ NONSHARABLE_CLASS( CDialerKeyPadButton ) : public CAknButton
         void GetTextColors( TRgb& aPenColor, TRgb& aBrushColor ) const; 
         void MapDialerIconToSkinIcon( TInt aDialerIcon, 
                                       TAknsItemID& aItemId ) const; 
+        void SetIconLayout( const TRect& aRect );
         
     private: // constructors    
         

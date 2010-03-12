@@ -204,7 +204,7 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
         
     // Effect is shown when dialer exist.
     TBool effectStarted ( EFalse );
-    if ( !NeedToSendToBackgroundL() )
+    if ( !NeedToReturnToForegroundAppL() )
         {
         BeginTransEffectLC( ENumberEntryOpen );
         effectStarted = ETrue; 
@@ -330,7 +330,7 @@ void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSing
 
     if ( IsNumberEntryUsedL() )
         {
-        if ( NeedToSendToBackgroundL() )
+        if ( NeedToReturnToForegroundAppL() ) 
             {
             // Return phone to the background if send to background is needed.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
@@ -348,9 +348,9 @@ void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSing
     else
         {
         UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
-        // If numberentry is not open just check NeedToSendToBackgroundL and 
+        // If numberentry is not open just check NeedToReturnToForegroundAppL and 
         // sendbackround if needed.
-        if ( NeedToSendToBackgroundL() )
+        if ( NeedToReturnToForegroundAppL() ) 
             {
             // Return phone to the background if send to background is needed.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );

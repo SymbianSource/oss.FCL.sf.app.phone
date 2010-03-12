@@ -18,8 +18,6 @@
 #ifndef __CDIALEREXTENSIONINTERFACE_H
 #define __CDIALEREXTENSIONINTERFACE_H
 
-#include <easydialingcommands.hrh>
-
 #include <ecom/ecom.h>
 #include <coecntrl.h>
 #include <eikmenup.h>
@@ -170,7 +168,8 @@ public:
 
     
     /**
-     * Gets the resource id of plugin's menu bar resource.
+     * Handle a command. Supported command IDs are defined in header
+     * easydialingcommands.hrh.
      * 
      * @param   aCommand   Command id.
      * @return  ETrue if command was handled, EFalse otherwise.

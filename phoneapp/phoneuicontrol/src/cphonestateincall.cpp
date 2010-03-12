@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -26,6 +26,7 @@
 #include <videotelcontrolmediatorapi.h>
 #include <MediatorDomainUIDs.h>
 #include <bldvariant.hrh>
+#include <coreapplicationuisdomainpskeys.h>
 
 #include "cphonestateincall.h"
 #include "tphonecmdparamboolean.h"
@@ -76,10 +77,7 @@ EXPORT_C CPhoneStateInCall::CPhoneStateInCall(
 //
 EXPORT_C CPhoneStateInCall::~CPhoneStateInCall()
     {
-    if( iDtmfWaitCharTimer )
-        {
-        delete iDtmfWaitCharTimer;            
-        }
+    delete iDtmfWaitCharTimer;            
     }
 
 // -----------------------------------------------------------
@@ -306,30 +304,43 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
     SetDefaultFlagsL();
     if ( IsNumberEntryUsedL() )
         {
-        // Show the number entry if it exists and update cba's.
-        SetNumberEntryVisibilityL( ETrue );
-        
-        // Close dtmf dialer when call is disconnected.
-        if ( IsDTMFEditorVisibleL() )
-            {      
-            CloseDTMFEditorL();
-            
-            // Display idle screen and update CBA's
-            DisplayIdleScreenL();
+        if ( NeedToReturnToForegroundAppL() )
+            {
+            // Return phone to the background if menu application is needed to foreground.
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
+    
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
+    
+            // Set Number Entry CBA
+            iCbaManager->SetCbaL( EPhoneNumberAcqCBA );
             }
-        else if ( iOnScreenDialer && IsCustomizedDialerVisibleL() )
-            {            
-            CloseCustomizedDialerL();
-            // Display idle screen and update CBA's
-            DisplayIdleScreenL();
-            }          
+        else
+            {
+            // Show the number entry if it exists and update cba's.
+            SetNumberEntryVisibilityL( ETrue );
+            
+            // Close dtmf dialer when call is disconnected.
+            if ( IsDTMFEditorVisibleL() )
+                {      
+                CloseDTMFEditorL();
+                
+                // Display idle screen and update CBA's
+                DisplayIdleScreenL();
+                }
+            else if ( iOnScreenDialer && IsCustomizedDialerVisibleL() )
+                {            
+                CloseCustomizedDialerL();
+                // Display idle screen and update CBA's
+                DisplayIdleScreenL();
+                } 
+            }
         }
     else
         {
         // Close menu bar, if it is displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
         
-        if ( !TopAppIsDisplayedL() || IsAutoLockOn() )
+        if ( !TopAppIsDisplayedL() || IsAutoLockOn() || NeedToReturnToForegroundAppL() )
             {        
             // Continue displaying current app but set up the 
             // idle screen in the background
@@ -369,11 +380,11 @@ EXPORT_C void CPhoneStateInCall::UpdateInCallCbaL()
 EXPORT_C void CPhoneStateInCall::UpdateCbaL( TInt aResource )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateInCall::UpdateCbaL() ");
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
+    if ( iOnScreenDialer && IsNumberEntryVisibleL() && IsDTMFEditorVisibleL() )
         {
         iCbaManager->SetCbaL( EPhoneDtmfDialerCBA );        
         }
-    else if ( iOnScreenDialer && IsCustomizedDialerVisibleL() )
+    else if ( iOnScreenDialer && IsNumberEntryVisibleL() && IsCustomizedDialerVisibleL() )
         {
         iCbaManager->SetCbaL( CustomizedDialerCbaResourceIdL() );
         }
@@ -817,6 +828,10 @@ EXPORT_C TBool CPhoneStateInCall::HandleCommandL( TInt aCommand )
             commandStatus = CPhoneState::HandleCommandL( aCommand );        
             break;
  
+        case EPhoneInCallCmdShareLiveVideo:
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewLaunchMultimediaSharing );
+            break;
+
        default:
             commandStatus = CPhoneState::HandleCommandL( aCommand );
             break;
@@ -1291,7 +1306,7 @@ EXPORT_C void CPhoneStateInCall::DisconnectOutgoingCallL()
     }
 
 // -----------------------------------------------------------------------------
-// CPhoneStateInCall::LockKeysL
+// CPhoneStateInCall::LockKeypadL
 // -----------------------------------------------------------------------------
 //
 void CPhoneStateInCall::LockKeypadL()
@@ -1600,4 +1615,30 @@ void CPhoneStateInCall::ShowDtmfTextQueryL(
         &queryDialogParam );    
     }
   
+// -----------------------------------------------------------------------------
+// CPhoneStateInCall::HandlePropertyChangedL
+// from CPhoneState
+// -----------------------------------------------------------------------------
+//  
+EXPORT_C void CPhoneStateInCall::HandlePropertyChangedL(
+        const TUid& aCategory, const TUint aKey, const TInt aValue)
+    {
+    if ( aCategory == KPSUidCoreApplicationUIs &&
+         aKey == KCoreAppUIsVideoSharingIndicator )
+        {
+        if ( aValue == ECoreAppUIsVideoSharingIndicatorOn )
+            {
+            SetTouchPaneButtons( EPhoneIncallVideoShareButtons );
+            }
+        else
+            {
+            SetTouchPaneButtons( EPhoneIncallButtons );
+            }
+        }
+    else
+        {
+        CPhoneState::HandlePropertyChangedL( aCategory, aKey, aValue );
+        }
+    }
+
 // End of File

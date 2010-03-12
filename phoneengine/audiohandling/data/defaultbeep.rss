@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -230,6 +230,33 @@ RESOURCE VAR_ARRAY r_net_call_waiting
 	// 20 = tone_tick = 200ms
 	// 11 = OPCODE_END
 	}
+
+RESOURCE VAR_ARRAY r_net_call_waiting_alternative_tone
+        {
+        sequence={0,17,10,83,20,64,10,83,20,64,125,64,125,64,100,83,20,64,10,83,20,11};
+        // 0  = OPCODE_SEQUENCE_START
+	// 17 = OPCODE_DURATION_UNIT
+	// 10 = duration unit => tone duration is 10ms * tone_tick
+	// 83-64=19=AUD_TONE_NETWORK_DUAL_FREQ_2 = 440Hz
+	// 20 = tone_tick = 200ms
+	// 64-64 = 0 = AUD_TONE_FREQ_OFF         = 0Hz
+	// 10 = tone_tick = 100ms
+	// 83-64=19=AUD_TONE_NETWORK_DUAL_FREQ_2 = 440Hz
+	// 20 = tone_tick = 200ms
+	// 64-64 = 0 = AUD_TONE_FREQ_OFF         = 0Hz
+	// 125 = tone_tick = 1250ms
+	// 64-64 = 0 = AUD_TONE_FREQ_OFF         = 0Hz
+	// 125 = tone_tick = 1250ms
+	// 64-64 = 0 = AUD_TONE_FREQ_OFF         = 0Hz
+	// 100 = tone_tick = 1000ms
+	// 83-64=19=AUD_TONE_NETWORK_DUAL_FREQ_2 = 440Hz
+	// 20 = tone_tick = 200ms
+	// 64-64 = 0 = AUD_TONE_FREQ_OFF         = 0Hz
+	// 10 = tone_tick = 100ms
+	// 83-64=19=AUD_TONE_NETWORK_DUAL_FREQ_2 = 440Hz
+	// 20 = tone_tick = 200ms
+	// 11 = OPCODE_END
+        }
 
 RESOURCE VAR_ARRAY r_data_call_tone
 	{

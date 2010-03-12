@@ -164,6 +164,14 @@ protected: // methods
     TBool EmergencyCallActive() const;
     
     /**
+     * Check if Easy Dialing contact listbox is in focus.
+     * @return  ETrue   if contact list is in focus
+     *          EFalse  otherwise (may be also because there's no ED
+     *                  present in the device)
+     */
+    TBool EasyDialingFocused() const;
+    
+    /**
      * Create button data object from given source data.
      * @param   aSourceData Defines, where the data should be loaded.
      * @param   aSkin       Skin instance. Ownership not transferred.

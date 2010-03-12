@@ -64,4 +64,10 @@ EXPORTS
 	?HandleConnectedConferenceL@CPhoneTwoSingles@@MAEXH@Z @ 63 NONAME ; void CPhoneTwoSingles::HandleConnectedConferenceL(int)
 	?HandleErrorL@CPhoneConferenceAndSingleAndWaiting@@UAEXABUTPEErrorInfo@@@Z @ 64 NONAME ; void CPhoneConferenceAndSingleAndWaiting::HandleErrorL(struct TPEErrorInfo const &)
 	?HandleErrorL@CPhoneConferenceAndWaiting@@UAEXABUTPEErrorInfo@@@Z @ 65 NONAME ; void CPhoneConferenceAndWaiting::HandleErrorL(struct TPEErrorInfo const &)
+	?HandleErrorL@CPhoneSingleAndCallSetupAndWaiting@@UAEXABUTPEErrorInfo@@@Z @ 66 NONAME ; void CPhoneSingleAndCallSetupAndWaiting::HandleErrorL(struct TPEErrorInfo const &)
+	?HandleErrorL@CPhoneCallSetupAndWaiting@@UAEXABUTPEErrorInfo@@@Z @ 67 NONAME ; void CPhoneCallSetupAndWaiting::HandleErrorL(struct TPEErrorInfo const &)
+	?HandleErrorL@CPhoneConferenceAndWaitingAndCallSetup@@UAEXABUTPEErrorInfo@@@Z @ 68 NONAME ; void CPhoneConferenceAndWaitingAndCallSetup::HandleErrorL(struct TPEErrorInfo const &)
+	?HandlePhoneEngineMessageL@CPhoneStartupSimlockUi@@UAEXHH@Z @ 69 NONAME ; void CPhoneStartupSimlockUi::HandlePhoneEngineMessageL(int, int)
+	?HandlePhoneStartupL@CPhoneStartupSimlockUi@@EAEXXZ @ 70 NONAME ; void CPhoneStartupSimlockUi::HandlePhoneStartupL(void)
+	?HandlePropertyChangedL@CPhoneStartupSimlockUi@@EAEXABVTUid@@IH@Z @ 71 NONAME ; void CPhoneStartupSimlockUi::HandlePropertyChangedL(class TUid const &, unsigned int, int)
 

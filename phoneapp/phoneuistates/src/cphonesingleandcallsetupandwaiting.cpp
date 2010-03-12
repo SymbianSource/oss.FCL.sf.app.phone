@@ -268,6 +268,28 @@ TBool CPhoneSingleAndCallSetupAndWaiting::HandleCommandL( TInt aCommand )
     }
 
 // -----------------------------------------------------------
+// CPhoneSingleAndCallSetupAndWaiting::HandleErrorL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneSingleAndCallSetupAndWaiting::HandleErrorL( 
+        const TPEErrorInfo& aErrorInfo )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetupAndWaiting::HandleErrorL()");
+    
+    if( aErrorInfo.iErrorCode == ECCPErrorCCUserAlertingNoAnswer )
+        {
+        // Should not shown "No Answer" note
+        __PHONELOG1( EBasic, EPhoneUIStates,
+       "PhoneUIStates: CPhoneSingleAndCallSetupAndWaiting::HandleErrorL - aErrorInfo.iErrorCode =%d ",
+            aErrorInfo.iErrorCode);
+        }
+    else
+        {
+        CPhoneState::HandleErrorL( aErrorInfo );
+        }
+    }
+
+// -----------------------------------------------------------
 // CPhoneSingleAndCallSetupAndWaiting::OpenMenuBarL
 // -----------------------------------------------------------
 //
@@ -435,12 +457,7 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleAndCallSetupAndWaiting::HandleConnectedL()");
-    // Keep Phone in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-    
+  
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 

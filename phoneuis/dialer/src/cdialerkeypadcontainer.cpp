@@ -78,7 +78,8 @@ const TDialerButton KKeyPadButtons[ KNumberOfButtons ] =
           '9', '9' },
         { KDialerNoIcon, KDialerNoIcon,  
           EStdKeyNkpAsterisk, '*'  },
-        { KDialerNoIcon, KDialerNoIcon,  
+        { EMbmDialerQgn_indi_dialer_internet, 
+          EMbmDialerQgn_indi_dialer_internet_mask,  
           '0', '0' },
         { KDialerNoIcon, KDialerNoIcon,      
           EStdKeyHash, '#' }
@@ -126,19 +127,14 @@ CDialerKeyPadContainer::CDialerKeyPadContainer(
     TDialerOperationMode aOperatingMode )
     : CDialerContainerBase ( 
         const_cast<CCoeControl&>(aContainer) ),
-      iOperatingMode( aOperatingMode ),
-      iButtonCount( KNumberOfButtons )
+      iOperatingMode( aOperatingMode )
     {
     }
     
 // Destructor
 CDialerKeyPadContainer::~CDialerKeyPadContainer()
     {
-    for ( TInt i = 0; i < iButtonCount; i++ )
-        {   
-        delete iButtons[i];
-        }
-    iButtons.Close();
+    iButtons.ResetAndDestroy();
     iCoeEnv->RemoveForegroundObserver( *this );
     delete iKeyLabelManager;
     }
@@ -422,7 +418,7 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
             }
         
         __ASSERT_ALWAYS( tappedButton, 
-        _L("CDialerKeyPadContainer::HandleControlEventL, invalid button handle"));
+        _L("CDialerKeyPadContainer::HandleControlEventL, invalid button handle")); // TODO: This is meaningless statement, use either Panic or make this only comment.
         
         // Send key event to phone.
         TKeyEvent keyEvent;

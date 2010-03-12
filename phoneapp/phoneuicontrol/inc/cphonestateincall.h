@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -283,6 +283,18 @@ class CPhoneStateInCall : public CPhoneState
         */
         void HandleVoiceKeyPressL( TPhoneKeyEventMessages aMessage );
         
+        // From CPhoneState
+        /**
+         * This function is called when there is property value change.
+         * @param aCategory Category of the property
+         * @param aKey      Property key that is changed
+         * @param aValue    New property value
+         */
+        IMPORT_C virtual void HandlePropertyChangedL(
+            const TUid& aCategory,
+            const TUint aKey,
+            const TInt aValue );
+
     private:
     
     	/**

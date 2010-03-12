@@ -1374,6 +1374,10 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             retVal = R_PHONEUI_INCALL_BUTTONS;
             break;
 
+        case EPhoneIncallVideoShareButtons:
+            retVal = R_PHONEUI_INCALL_VIDEO_SHARE_BUTTONS;
+            break;
+
         case EPhoneTwoSinglesButtons:
             retVal = R_PHONEUI_TWO_SINGLES_BUTTONS;
             break;

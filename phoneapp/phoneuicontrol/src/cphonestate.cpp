@@ -1480,13 +1480,13 @@ EXPORT_C void CPhoneState::HandleCenRepChangeL(
     }
 
 // -----------------------------------------------------------
-// CPhoneState::NeedToSendToBackgroundL
+// CPhoneState::NeedToReturnToForegroundAppL
 // -----------------------------------------------------------
 //
-EXPORT_C TBool CPhoneState::NeedToSendToBackgroundL() const
+EXPORT_C TBool CPhoneState::NeedToReturnToForegroundAppL() const
     {
     return iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetNeedToSendToBackgroundStatus ) ==
+        EPhoneViewGetNeedToReturnToForegroundAppStatus ) ==
         EPhoneViewResponseSuccess;
     }
 
@@ -1717,7 +1717,7 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
                 // Show the number entry if it exists
                 SetNumberEntryVisibilityL(ETrue);
                 }
-            else if ( NeedToSendToBackgroundL() )
+            else if ( NeedToReturnToForegroundAppL() )
                 {
                 // Continue displaying current app but set up the
                 // idle screen in the background
@@ -2275,21 +2275,15 @@ EXPORT_C void CPhoneState::UpdateSingleActiveCallL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewSetVideoCallFlag, &booleanParam );
         }
 
-    // Go to background if necessary
-    if ( NeedToSendToBackgroundL() ||  IsAutoLockOn() )
+    // Check if application and number entry was open before incoming call. If so give control to number entry 
+	// to prevent flickering
+    if ( NeedToReturnToForegroundAppL() ||  IsAutoLockOn() )
         {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
         // If number entry is used set control and visibility.
         if ( IsNumberEntryUsedL() )
            {
            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
            }
-        }
-    // If there is no need to send back ground and number entry is used then
-    // we must show number entry.
-    else if ( !NeedToSendToBackgroundL() && IsNumberEntryUsedL() )
-        {
-        SetNumberEntryVisibilityL(ETrue);
         }
     }
 

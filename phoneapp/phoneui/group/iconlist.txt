@@ -16,6 +16,7 @@
 -c8,8 qgn_indi_button_unmute_mic
 -c8,8 qgn_indi_button_video_to_voice
 -c8,8 qgn_indi_button_voice_to_video
+-c8,8 qgn_indi_button_video_share
 -c8,8 qgn_indi_button_answer
 -c8,8 qgn_indi_button_reject
 -c8,8 qgn_indi_dialer_call_send

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -568,6 +568,33 @@ RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_voice_to_video_toggle_button
         };    
     }      
      
+// -----------------------------------------------------------------------------
+//
+//    r_phoneui_video_share_button
+//    Video share button
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_video_share_button
+    {
+    commands =
+        {
+        EPhoneInCallCmdShareLiveVideo
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_share_video\
+                      <0x0001>\
+                      qtn_incal_button_share_video_landscape;
+                }
+            };
+        };
+    }
+
 // ----------------------------------------------------------------
 //   
 //    r_phoneui_incall_buttons
@@ -587,7 +614,7 @@ RESOURCE BUBBLE_TOUCH_PANE r_phoneui_incall_buttons
         // r_phoneui_voice_to_video_toggle_button
         };
     }
-    
+
 // ----------------------------------------------------------------
 //   
 //    r_phoneui_two_singles_buttons
@@ -608,7 +635,27 @@ RESOURCE BUBBLE_TOUCH_PANE r_phoneui_two_singles_buttons
         // r_phoneui_end_all_calls_button
         };
     }    
-    
+
+// ----------------------------------------------------------------
+//
+//    r_phoneui_incall_video_share_buttons
+//    Touch buttons shown in incall situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_incall_video_share_buttons
+    {
+    buttons =
+        {
+        r_phoneui_video_share_button,
+        r_phoneui_end_call_button
+        
+        // ALTERNATIVE BUTTONS FOR REPLACE, TOTAL MAX.4 BUTTONS
+        // r_phoneui_go_to_idle_button
+        // r_phoneui_voice_to_video_toggle_button
+        };
+    }
+
 // ----------------------------------------------------------------
 //   
 //    r_phoneui_conference_buttons

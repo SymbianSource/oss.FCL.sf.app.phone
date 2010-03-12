@@ -355,7 +355,7 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
         TPhoneCmdParamBoolean booleanParam;
         booleanParam.SetBoolean( !TopAppIsDisplayedL() );
         iViewCommandHandle->ExecuteCommandL(
-            EPhoneViewSetNeedToSendToBackgroundStatus,
+                EPhoneViewSetNeedToReturnToForegroundAppStatus,
             &booleanParam );
 
         // Bring Phone app in the foreground
@@ -419,12 +419,6 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
         // Stop capturing keys
         CaptureKeysDuringCallNotificationL( EFalse );
         }
-
-    // Keep Phone in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL(
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
 
     // Remove emergency connecting note
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNote );

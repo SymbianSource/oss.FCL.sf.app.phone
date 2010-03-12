@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -54,7 +54,7 @@ class CPhoneStateStartup : public CPhoneState
         * @param aMessage Message from Phone Engine
         * @param aCallId Call id the message concerns
         */
-        IMPORT_C void HandlePhoneEngineMessageL(
+        IMPORT_C virtual void HandlePhoneEngineMessageL(
             const TInt aMessage, 
             TInt aCallId );       
             
@@ -71,6 +71,11 @@ class CPhoneStateStartup : public CPhoneState
         */
         IMPORT_C virtual void HandlePhoneStartupL();
 
+        /**
+        * A message handling function for message EPEMessagePEConstructionReady.
+        * @param aCallId: the call id of the call
+        */
+        IMPORT_C void HandlePEConstructionReadyL( TInt aCallId );
         /**
          * Indicates when the Idle app is in the foreground.
          */
@@ -106,11 +111,6 @@ class CPhoneStateStartup : public CPhoneState
         IMPORT_C void HandleDtmfKeyToneL( const TKeyEvent& aKeyEvent,
                 TEventCode aEventCode );
         
-        /**
-        * A message handling function for message EPEMessagePEConstructionReady.
-        * @param aCallId: the call id of the call
-        */
-        void HandlePEConstructionReadyL( TInt aCallId );
         
         /**
         * Starts to shows note.
@@ -129,10 +129,10 @@ class CPhoneStateStartup : public CPhoneState
         // Provides phone engine startup status
         TBool iPEReady;
 
-    private: // Data
 
         // Provides phone application startup status
         TBool iPhoneReady;
+    private: // Data
         
         // Ownded: idle object to create note.
         CIdle* iCreateNote;

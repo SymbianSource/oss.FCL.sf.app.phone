@@ -267,7 +267,7 @@ class CPhoneViewController :
         * background after being brought to the foreground using
         * BringToForeground()
         */
-        TBool NeedToSendToBackground();
+        TBool GetNeedToReturnToForegroundAppAfterCall() const;
 
         /**
         * Gets the blocking dialogs status
@@ -277,7 +277,7 @@ class CPhoneViewController :
         /**
         * Sets the required background status of the application
         */
-        void SetNeedToSendToBackground( TPhoneCommandParam* aCommandParam );
+        void SetNeedToReturnToForegroundAppAfterCall( TPhoneCommandParam* aCommandParam );
 
         /**
         * Sends application to background.
@@ -337,6 +337,11 @@ class CPhoneViewController :
         * @param aCommandParam command parameter
         */
         void ActivateAppViewConventionalL( TPhoneCommandParam* aCommandParam );
+
+        /**
+        * Launches multimedia sharing (live video sharing)
+        */
+        static void LaunchMultimediaSharingL();
 
         /**
         * Launches application.
@@ -765,6 +770,10 @@ class CPhoneViewController :
         TInt iPrevious;
 
         TBool iPriotityChanged;
+        
+        // Boolean flag. ETrue if the application needs to return
+        // to the foreground after call ended
+        TBool iNeedToReturnToForegroundAppAfterCall;
     };
 
 #endif // CPHONEVIEWCONTROLLER_H

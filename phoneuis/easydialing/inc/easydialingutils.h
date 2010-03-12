@@ -18,7 +18,7 @@
 #ifndef __EASYDIALINGUTILS_H__
 #define __EASYDIALINGUTILS_H__
 
-#include <CPbkContactEngine.h>  // for TPbkNameOrder
+#include "easydialingcontactdatamanager.h"  // for TNameOrder
 
 class EasyDialingUtils
     {
@@ -37,7 +37,7 @@ class EasyDialingUtils
             const TDesC& aFirstName,
             const TDesC& aLastName,
             const TDesC& aCompanyName,
-            CPbkContactEngine::TPbkNameOrder aNameOrder );
+            CEasyDialingContactDataManager::TNameOrder aNameOrder );
     };
 
 #endif //__EASYDIALINGUTILS_H__

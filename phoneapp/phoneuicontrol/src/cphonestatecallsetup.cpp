@@ -566,13 +566,8 @@ void CPhoneStateCallSetup::CancelDTMFSendingL()
 //
 void CPhoneStateCallSetup::HandleConnectedL( TInt aCallId )
     {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleConnectedL()");
-    // Keep Phone in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-        
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleConnectedL()");        
+
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     
@@ -631,7 +626,7 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
         // Show the number entry if it exists
         SetNumberEntryVisibilityL(ETrue);    
         }    
-    else if ( NeedToSendToBackgroundL() )
+    else if ( NeedToReturnToForegroundAppL() )
         {
         __PHONELOG( EBasic,EPhoneControl,"CPhoneStateCallSetup::elseif1");
         // Continue displaying current app but set up the 

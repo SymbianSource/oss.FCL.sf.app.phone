@@ -243,11 +243,6 @@ EXPORT_C void CPhoneAlerting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneAlerting::HandleConnectedL()");
-    // Keep Phone in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL(
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
 
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );

@@ -238,7 +238,7 @@ void CPhoneTwoSinglesAndWaiting::HandleIdleL( TInt aCallId )
     // Effect is shown when dialer exist.
     
     TBool effectStarted ( EFalse );
-    if ( !NeedToSendToBackgroundL())
+    if ( !NeedToReturnToForegroundAppL() )
         {
         BeginTransEffectLC( ENumberEntryOpen );
         effectStarted = ETrue;   
@@ -282,9 +282,9 @@ void CPhoneTwoSinglesAndWaiting::StateTransitionToTwoSinglesL()
     if ( IsNumberEntryUsedL() )
         {
         // Go to background if necessary
-        if ( NeedToSendToBackgroundL() )
+        if ( NeedToReturnToForegroundAppL() )
             {
-            // Return phone to the background if send to background is needed.
+            // Return phone to the background if menu application is needed to foreground.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
 
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
@@ -302,9 +302,9 @@ void CPhoneTwoSinglesAndWaiting::StateTransitionToTwoSinglesL()
         // Set Two singles softkeys
         UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
 	    
-        // If numberentry is not open just check NeedToSendToBackgroundL and 
+        // If numberentry is not open just check NeedToReturnToForegroundAppL and 
         // sendbackround if needed.
-        if ( NeedToSendToBackgroundL() )
+        if ( NeedToReturnToForegroundAppL() )
             {
             // Return phone to the background if send to background is needed.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
@@ -398,7 +398,8 @@ void CPhoneTwoSinglesAndWaiting::HandleConnectedConferenceL( TInt aCallId )
     TPhoneCmdParamBoolean booleanParam;
     booleanParam.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
+         EPhoneViewSetNeedToReturnToForegroundAppStatus,
+         &booleanParam );
         
     EndUiUpdate();
     // Go to Conference And Waiting state

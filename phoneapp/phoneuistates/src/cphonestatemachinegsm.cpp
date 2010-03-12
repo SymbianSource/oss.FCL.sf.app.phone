@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -40,8 +40,13 @@
 #include "cphoneemergency.h"
 #include "cphoneconferenceandwaitingandcallsetup.h"
 #include "cphoneidle.h"
-#include "cphoneincoming.h"
 #include "cphonestartup.h"
+#include "cphoneincoming.h"
+#include "cphonestartupsimlockui.h"
+#include "cphonepubsubproxy.h"
+#include <startupdomainpskeys.h>
+#include "phoneconstants.h"
+#include <featmgr.h>
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -262,9 +267,20 @@ EXPORT_C MPhoneState* CPhoneStateMachineGSM::State()
                 break;
 
             case EPhoneStateStartup:
-                TRAP( err, iState = 
-          			CPhoneStartup::NewL( this, iViewCommandHandle, 
-          			iOldStateId == EPhoneStateEmergency ) );
+            	
+                if( IsSimlockStartupStateCreated() )
+                    {
+                    TRAP( err, iState =
+                        CPhoneStartupSimlockUi::NewL( this, iViewCommandHandle,
+                            iOldStateId == EPhoneStateEmergency ) );
+                    }
+                else
+                    {
+                    TRAP( err, iState =
+                        CPhoneStartup::NewL( this, iViewCommandHandle,
+                            iOldStateId == EPhoneStateEmergency ) );
+                    }
+
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
@@ -283,6 +299,28 @@ EXPORT_C MPhoneState* CPhoneStateMachineGSM::State()
 
     return iState;
     }
+
+
+// -----------------------------------------------------------
+// CPhoneStateMachineGSM::IsSimlockStartupStateCreated
+// -----------------------------------------------------------
+//
+TBool CPhoneStateMachineGSM::IsSimlockStartupStateCreated() const
+    {
+    if ( FeatureManager::FeatureSupported( KFeatureIdFfSimlockUi ) )
+        {
+        TInt securityStatus =
+                CPhonePubSubProxy::Instance()->Value(
+                        KPSUidStartup, KStartupSimSecurityStatus );
+        if ( securityStatus == ESimUnaccepted )
+            {
+            return ETrue;
+            }
+        }
+
+    return EFalse;
+    }
+
 
 // -----------------------------------------------------------
 // CPhoneStateMachineGSM::NewL()

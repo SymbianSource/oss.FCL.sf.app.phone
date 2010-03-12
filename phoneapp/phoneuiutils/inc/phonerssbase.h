@@ -370,6 +370,7 @@ enum TPhoneRssBase
 
     // Touch buttons
     EPhoneIncallButtons,
+    EPhoneIncallVideoShareButtons,
     EPhoneTwoSinglesButtons,
     EPhoneConferenceButtons,
     EPhoneParticipantListButtons,

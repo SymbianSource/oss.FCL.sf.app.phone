@@ -209,6 +209,28 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleKeyMessageL(
     }
 
 // -----------------------------------------------------------
+// CPhoneConferenceAndWaitingAndCallSetup::HandleErrorL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneConferenceAndWaitingAndCallSetup::HandleErrorL( 
+        const TPEErrorInfo& aErrorInfo )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndWaitingAndCallSetup::HandleErrorL()");
+    
+    if( aErrorInfo.iErrorCode == ECCPErrorCCUserAlertingNoAnswer )
+        {
+        // Should not shown "No Answer" note
+        __PHONELOG1( EBasic, EPhoneUIStates,
+       "PhoneUIStates: CPhoneConferenceAndWaitingAndCallSetup::HandleErrorL - aErrorInfo.iErrorCode =%d ",
+            aErrorInfo.iErrorCode);
+        }
+    else
+        {
+        CPhoneState::HandleErrorL( aErrorInfo );
+        }
+    }
+
+// -----------------------------------------------------------
 // CPhoneConferenceAndWaitingAndCallSetup::OpenMenuBarL
 // -----------------------------------------------------------
 //

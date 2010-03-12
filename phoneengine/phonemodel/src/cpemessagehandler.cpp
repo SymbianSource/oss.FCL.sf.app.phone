@@ -2886,11 +2886,7 @@ TInt CPEMessageHandler::HandleServiceEnabled()
 void CPEMessageHandler::HandleRemotePartyInfoChanged( const TInt aCallId )
     {        
     UpdateRemotePartyInfo(); 
-    
-    if ( iDataStore.RemoteColpNumber( aCallId ).Length() )
-        {
-        iModel.SendMessage( MEngineMonitor::EPEMessageColpNumberAvailable, aCallId );
-        }
+        
     }
 
 

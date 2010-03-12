@@ -26,6 +26,8 @@ class MContactDataManagerObserver
     {
 public:
     virtual void AllContactDataLoaded() = 0;
+    
+    virtual void NameOrderChanged() = 0;
     };
 
 #endif //__MCONTACTDATAMANAGEROBSERVER_H__

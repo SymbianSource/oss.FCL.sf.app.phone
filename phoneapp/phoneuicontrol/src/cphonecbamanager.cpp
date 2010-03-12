@@ -131,7 +131,7 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
         }
 
     // Is numberentry visible
-    else if ( iState->IsNumberEntryUsedL() )
+    else if ( iState->IsNumberEntryUsedL() && iState->IsNumberEntryVisibleL() )
         {
         if ( iState->IsAutoLockOn() || !(iState->IsSimOk()) )
             {

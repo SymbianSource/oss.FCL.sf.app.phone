@@ -358,7 +358,7 @@ EXPORT_C void CPhoneStateIdle::HandlePhoneEngineMessageL(
                     // Show the number entry if it exists
                     SetNumberEntryVisibilityL(ETrue);    
                     }    
-                else if ( NeedToSendToBackgroundL() )
+                else if ( NeedToReturnToForegroundAppL() )
                     {
                     // Continue displaying current app but set up the 
                     // idle screen in the background
@@ -763,12 +763,12 @@ EXPORT_C void CPhoneStateIdle::DisplayIncomingCallL( TInt aCallId )
     // Capture keys when there is an incoming call
     CaptureKeysDuringCallNotificationL( ETrue );
 
-    // Indicate that the Phone needs to be sent to the background if
-    // an application other than the top application is in the foreground
+    // Indicate that the Foreground application needs to be sent to the foreground 
+    // after call is ended.
     TPhoneCmdParamBoolean booleanParam;
     booleanParam.SetBoolean( !TopAppIsDisplayedL() );
     iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus,
+        EPhoneViewSetNeedToReturnToForegroundAppStatus,
         &booleanParam );
 
     // Bring Phone app in the foreground
@@ -806,15 +806,6 @@ EXPORT_C void CPhoneStateIdle::DisplayCallSetupL( TInt aCallId )
 
     // Capture keys when the phone is dialling
     CaptureKeysDuringCallNotificationL( ETrue );
-
-    // Indicate that the Phone needs to be sent to the background if
-    // an application other than the top application is in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( !TopAppIsDisplayedL() );
-    
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus,
-        &booleanParam );
     
     // Bring Phone app in the foreground
     TPhoneCmdParamInteger uidParam;

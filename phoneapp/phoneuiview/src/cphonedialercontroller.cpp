@@ -43,9 +43,9 @@ _LIT ( KPhoneMifFileName, "phoneui.mif" );
 /** States for Call button. */
 enum TCallButtonState
     {
-    ECallButtonCallStateIndex = 0,
-    ECallButtonLogStateIndex,
-    ECallButtonSendStateIndex
+    ECallButtonCallState = 0,
+    ECallButtonLogState,
+    ECallButtonSendState
     };
 static const CPhoneDialerController::TLocalButtonData KCallButtonDataTable[] =
     {
@@ -75,8 +75,8 @@ static const TInt KCallButtonDataTableCount =
 /** States for Phonebook button */
 enum TPhonebookButtonState
     {
-    EPhonebookButtonContactsIndex = 0,
-    EPhonebookButtonAddContactIndex
+    EPhonebookButtonContactsState = 0,
+    EPhonebookButtonAddContactState
     };
 static const CPhoneDialerController::TLocalButtonData KPhonebookButtonDataTable[] =
     {
@@ -100,7 +100,7 @@ static const TInt KPhonebookButtonDataTableCount =
 /** States for Clear button */
 enum TClearButtonState
     {
-    EClearButtonClearIndex = 0
+    EClearButtonClearState = 0
     };
 static const CPhoneDialerController::TLocalButtonData KClearButtonDataTable[] =
     {
@@ -301,32 +301,27 @@ EXPORT_C void CPhoneDialerController::SetNumberEntryIsEmpty( TBool aEmpty )
 //
 EXPORT_C TInt CPhoneDialerController::ButtonState( TButtonIndex aIndex ) const
     {
-    TInt state = 0;
+    TInt state( KErrNotFound );
     // Figure out correct state for each key
     switch ( aIndex )
         {
         case ECallButton:
             {
-            state = ECallButtonCallStateIndex;
             if ( !iNumberAvailable )
                 {
-                state = ECallButtonLogStateIndex;
+                // Show "Recent calls" when no number available
+                state = ECallButtonLogState;
                 }
-            else if ( iServiceCodeFlag )
+            else if ( iServiceCodeFlag && !EasyDialingFocused() )
                 {
-                // Set "Send" state unless Easy dialing is focused
-                TBool edFocused = EFalse;
-                if ( iEasyDialingController )
-                    {
-                    TInt commandResponse( EPhoneViewResponseFailed );
-                    TRAP_IGNORE( commandResponse = iEasyDialingController->HandleCommandL(
-                            EPhoneViewGetEasyDialingInFocusStatus) );
-                    edFocused = ( commandResponse == EPhoneViewResponseSuccess );
-                    }
-                if ( !edFocused )
-                    {
-                    state = ECallButtonSendStateIndex;
-                    }
+                // Show "Send" if service code entered and contact list
+                // is not focused.
+                state = ECallButtonSendState;
+                }
+            else
+                {
+                // Show "Call" in all other cases
+                state = ECallButtonCallState;
                 }
             }
             break;
@@ -334,17 +329,17 @@ EXPORT_C TInt CPhoneDialerController::ButtonState( TButtonIndex aIndex ) const
             {
             if ( !iNumberAvailable )
                 {
-                state = EPhonebookButtonContactsIndex;
+                state = EPhonebookButtonContactsState;
                 }
             else
                 {
-                state = EPhonebookButtonAddContactIndex;
+                state = EPhonebookButtonAddContactState;
                 }
             }
             break;
         case EClearButton:
             {
-            state = EClearButtonClearIndex;
+            state = EClearButtonClearState;
             }
             break;
         default:
@@ -408,6 +403,23 @@ EXPORT_C TBool CPhoneDialerController::EmergencyCallActive() const
         ret = ( connected == KEmergencyCallId );
         }
     return ret;
+    }
+
+// ---------------------------------------------------------------------------
+// EasyDialingFocused
+// ---------------------------------------------------------------------------
+//
+TBool CPhoneDialerController::EasyDialingFocused() const
+    {
+    TBool edFocused = EFalse;
+    if ( iEasyDialingController )
+        {
+        TInt commandResponse( EPhoneViewResponseFailed );
+        TRAP_IGNORE( commandResponse = iEasyDialingController->HandleCommandL(
+                EPhoneViewGetEasyDialingInFocusStatus) );
+        edFocused = ( commandResponse == EPhoneViewResponseSuccess );
+        }
+    return edFocused;
     }
 
 // ---------------------------------------------------------------------------

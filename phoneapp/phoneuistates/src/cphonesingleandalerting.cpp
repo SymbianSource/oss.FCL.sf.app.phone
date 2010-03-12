@@ -192,13 +192,7 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         EPhoneViewGetCallIdByState, &callStateData );
         
     if( callStateData.CallId() == aCallId )
-        {    
-        // Keep Phone in the foreground
-        TPhoneCmdParamBoolean booleanParam;
-        booleanParam.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-        
+        {        
         // Close menu bar, if it is displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 

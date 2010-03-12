@@ -36,7 +36,20 @@
 #include "cdialerkeypadbutton.h"
 
 _LIT( KDialerMifFileName, "dialer.mif" );
-static const TInt KIconMarginPercent = 5;
+
+// Keypad icon size relative to height of button.
+static const TInt KIconSizePercent = 40;
+
+// Keypad icon size used when key has already two lines
+// of text, and the icon needs to be squeezed into smaller space.
+static const TInt KSmallIconSizePercent = 30;
+
+// Horizontal icon margin relative to button width. 
+static const TInt KIconMarginXPercent = 10;
+
+// Vertical icon margin relative to button height. 
+static const TInt KIconMarginYPercent = 5;
+
 static const TInt KCent = 100;
 
 // ---------------------------------------------------------------------------
@@ -202,49 +215,22 @@ void CDialerKeyPadButton::SizeChanged()
             {
             iPrimaryAlphaLayout.LayoutText( buttonRect, 
                 AknLayoutScalable_Apps::cell_dia3_key_num_pane_t2( iVariety ) );
-            }
-
-        // Icon layout
-        iconLayout.LayoutRect( buttonRect, 
-            AknLayoutScalable_Apps::cell_dialer2_keypad_pane_g2( 1 ) );
-        iIconRect = iconLayout.Rect();
-
-        // Icon doesn't fit to location set in the layout if key has any alpha label.
-        // In that case, move the icon to upper-right corner.
-        if ( iPrimaryAlphaLabel.Length() || iSecondaryAlphaLabel.Length() )
-            {
-            TSize iconSize = iIconRect.Size();
-            TInt xMargin = buttonRect.Width() * KIconMarginPercent / KCent;
-            TInt yMargin = buttonRect.Height() * KIconMarginPercent / KCent;
-            TPoint iconPos( buttonRect.iBr.iX - iconSize.iWidth - xMargin, 
-                            buttonRect.iTl.iY + yMargin );
-            iIconRect.SetRect( iconPos, iconSize );
-            }
+            }   
         }
     else if ( iOperationMode == EModeDialer )
         {
         // Number layout
         iNumberLayout.LayoutText( buttonRect, 
             AknLayoutScalable_Apps::cell_dialer2_keypad_pane_t1() );
-    
-        // Icon layout
-        iconLayout.LayoutRect( buttonRect,
-            AknLayoutScalable_Apps::cell_dialer2_keypad_pane_g2( 1 ) );
-        iIconRect = iconLayout.Rect();
         }
     else // video mode layout
         {
         // Number layout
         iNumberLayout.LayoutText( buttonRect, 
-            AknLayoutScalable_Apps::cell_video_dialer_keypad_pane_t1() );
-        
-        // Icon layout
-        iconLayout.LayoutRect( buttonRect, 
-            AknLayoutScalable_Apps::cell_video_dialer_keypad_pane_g2( 2 ) );
-        iIconRect = iconLayout.Rect();
+            AknLayoutScalable_Apps::cell_video_dialer_keypad_pane_t1() );        
         }
 
-    SetIconSize( iIconRect.Size() );
+    SetIconLayout( buttonRect );
     }
 
 // -----------------------------------------------------------------------------
@@ -371,7 +357,9 @@ TInt CDialerKeyPadButton::ScanCode() const
 TInt CDialerKeyPadButton::KeyCode() const
     {
     return iKeyCode;
-    }    
+    }
+
+
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
@@ -388,6 +376,44 @@ void CDialerKeyPadButton::MapDialerIconToSkinIcon(
             break;
         }
     }   
+
+
+// ---------------------------------------------------------------------------
+// 
+// ---------------------------------------------------------------------------
+//
+void CDialerKeyPadButton::SetIconLayout( const TRect& aRect )
+    {
+    // Calculate icon size and placement.
+    TInt iconSize = aRect.Height() * KIconSizePercent / KCent;             
+    TInt xMargin = aRect.Width() * KIconMarginXPercent / KCent;
+    TInt yMargin = aRect.Height() * KIconMarginYPercent / KCent;
+    
+    // Adapt icon size and vertical margin. If the button has 
+    // already two lines of text, use smaller icon size
+    if ( iOperationMode == EModeEasyDialing && iSecondaryAlphaLabel.Length() ) 
+        {
+        iconSize = aRect.Height() * KSmallIconSizePercent / KCent;
+        yMargin = 0;
+        }
+    
+    if ( AknLayoutUtils::LayoutMirrored() ) 
+        {
+        iIconRect.SetRect( aRect.iTl.iX + xMargin,
+                aRect.iTl.iY + yMargin, 
+                aRect.iTl.iX + xMargin + iconSize, 
+                aRect.iTl.iY + iconSize + yMargin );       
+        }
+    else 
+        {
+        iIconRect.SetRect( aRect.iBr.iX - iconSize - xMargin,
+                aRect.iTl.iY + yMargin, 
+                aRect.iBr.iX - xMargin, 
+                aRect.iTl.iY + iconSize + yMargin );        
+        }
+    SetIconSize( iIconRect.Size() );
+    }
+
 
 // ---------------------------------------------------------------------------
 // Update icon when skin is changed

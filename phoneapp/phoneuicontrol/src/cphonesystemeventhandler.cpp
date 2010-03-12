@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -22,6 +22,9 @@
 #include <UikonInternalPSKeys.h>
 #include <startupdomainpskeys.h>
 #include <hwrmdomainpskeys.h>
+#include <oem/SimLockUiKeys.h>
+#include <featmgr.h>
+#include <coreapplicationuisdomainpskeys.h>
 
 #include "cphonesystemeventhandler.h"
 #include "mphonestate.h"
@@ -95,6 +98,24 @@ void CPhoneSystemEventHandler::ConstructL()
         CPhonePubSubProxy::Instance()->NotifyChangeL(
             KPSUidHWRM,
             KHWRMGripStatus,
+            this );
+        }
+    
+    if ( FeatureManager::FeatureSupported( KFeatureIdFfSimlockUi ) )
+       {
+        //Set up notifications for Sim Lock Dialogs values.
+        CPhonePubSubProxy::Instance()->NotifyChangeL(
+            KSimLockProperty,
+            ESimLockActiveStatus,
+            this );
+       }
+
+    if ( FeatureManager::FeatureSupported( KFeatureIdFfEntryPointForVideoShare ) )
+        {
+        // Set up notifications for Video Share (un)availability
+        CPhonePubSubProxy::Instance()->NotifyChangeL(
+            KPSUidCoreApplicationUIs,
+            KCoreAppUIsVideoSharingIndicator,
             this );
         }
     }

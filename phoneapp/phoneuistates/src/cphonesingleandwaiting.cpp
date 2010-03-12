@@ -452,7 +452,7 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
         {
         // Effect is shown when dialer exist.
         TBool effectStarted ( EFalse );
-        if ( !NeedToSendToBackgroundL() )
+        if ( !NeedToReturnToForegroundAppL() )
             {
             BeginTransEffectLC( ENumberEntryOpen );
             effectStarted = ETrue;
@@ -466,7 +466,7 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
         // Idle message came for waiting call
         if ( IsNumberEntryUsedL() )
             {
-            if ( NeedToSendToBackgroundL() )
+            if ( NeedToReturnToForegroundAppL() )
                 {
                 // Return phone to the background if send to background is needed.
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
@@ -484,9 +484,9 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
         else
             {
             UpdateCbaL( EPhoneCallHandlingInCallCBA );
-            // If numberentry is not open just check NeedToSendToBackgroundL and
+            // If numberentry is not open just check NeedToReturnToForegroundAppL and
             // sendbackround if needed.
-            if ( NeedToSendToBackgroundL() )
+            if ( NeedToReturnToForegroundAppL() )
                 {
                 // Return phone to the background if send to background is needed.
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
@@ -622,7 +622,7 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
 
     // Effect is shown when dialer exist.
     TBool effectStarted ( EFalse );
-    if ( !NeedToSendToBackgroundL() )
+    if ( !NeedToReturnToForegroundAppL() )
         {
         BeginTransEffectLC( ENumberEntryOpen );
         effectStarted = ETrue;
@@ -645,13 +645,20 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
     holdFlag.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
 
+    // Close dtmf dialer if exist.
+    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
+        {
+        CloseDTMFEditorL();
+        }
+    else if ( iOnScreenDialer && IsCustomizedDialerVisibleL() )
+        {
+        CloseCustomizedDialerL();
+        }
+     
     if ( IsNumberEntryUsedL() )
         {
-        if ( NeedToSendToBackgroundL() )
+        if ( NeedToReturnToForegroundAppL() )
             {
-            // Return phone to the background if send to background is needed.
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
 
             UpdateCbaL( EPhoneCallHandlingInCallCBA );
@@ -666,24 +673,6 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
         {
         // Set Two singles softkeys
         UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
-
-        // If numberentry is not open just check NeedToSendToBackgroundL and
-        // sendbackround if needed.
-        if ( NeedToSendToBackgroundL() )
-            {
-            // Return phone to the background if send to background is needed.
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-            }
-        }
-
-    // Close dtmf dialer if exist.
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-        {
-        CloseDTMFEditorL();
-        }
-    else if ( iOnScreenDialer && IsCustomizedDialerVisibleL() )
-        {
-        CloseCustomizedDialerL();
         }
 
     SetTouchPaneButtons( EPhoneTwoSinglesButtons );
@@ -824,19 +813,6 @@ EXPORT_C void CPhoneSingleAndWaiting::HandleErrorL( const TPEErrorInfo& aErrorIn
 void CPhoneSingleAndWaiting::HandleDisconnectingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndWaiting::HandleDisconnectingL( ) ");
-    
-    if( ( iSingleCallId == aCallId ) && IsVideoCall( aCallId ) )
-        {
-        __PHONELOG( EBasic, EPhoneControl, 
-            "CPhoneSingleAndWaiting::HandleDisconnectingL EPhoneViewSetNeedToSendToBackgroundStatus" );
-        
-        // Keep phone on the foreground
-        TPhoneCmdParamBoolean booleanParam;
-        booleanParam.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL(
-            EPhoneViewSetNeedToSendToBackgroundStatus,
-            &booleanParam );
-        }
     }
 
 // End of File

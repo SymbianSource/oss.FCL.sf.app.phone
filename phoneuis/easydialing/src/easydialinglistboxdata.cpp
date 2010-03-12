@@ -94,6 +94,9 @@ const TInt KArrowIconSizePercent = 20;
 // is an extra space in highlight boundary to make the text look less crowded.
 const TInt KMatchingTextMarginInPixels = 3;
 
+// KFavoriteIconSizePercent is size of favorite icon relative to text height.
+const TInt KFavoriteIconSizePercent = 65;
+
 // KMatchingTextMarginInPixels is the absolute pixel value for rounding used in highlight 
 // rectangle.
 const TInt KHighligthRectangleRoundingYInPixels = 4;
@@ -135,7 +138,7 @@ static TRect CompanyNameBoundingBox(
         const CFont* aCompanyNameFont, 
         TBool aIsCurrentItem,
         TBool aThumbnailsShown );
-static TRect FavouriteIconBoundingBox( const TRect& aContactNameBoundingBox, TInt aTextWidth );
+static TRect FavouriteIconBoundingBox( const TRect& aContactNameBoundingBox );
 static TRect MirrorLayoutBoundingBox(const TRect& aSourceRect, TRect& aBoundingBoxRect);
 static TInt BaseLineOffset( const TRect& aTextBoundingBox, const CFont* aFont );
 static TBool ContainsRightToLeftText( const TDesC& aDesc );
@@ -477,7 +480,7 @@ void CEasyDialingListBoxData::DrawDataFormatted(
     if ( !err && fav )
         {
         // Draws the Favourite Icon
-        DrawFavouriteIcon( aGc, nameRectUnMirrored, textWidth, aItemRect );
+        DrawFavouriteIcon( aGc, nameRectUnMirrored, aItemRect );
         }
     
     if ( transApi )
@@ -556,14 +559,13 @@ void CEasyDialingListBoxData::DrawArrowIcon(
 void CEasyDialingListBoxData::DrawFavouriteIcon(
         CWindowGc& aGc, 
          TRect aNameRectUnMirrored,
-         TInt aTextWidth,
          TRect aEffectiveRect) const
     {
     CFbsBitmap* favouriteIcon;
     CFbsBitmap* favouriteIconMask;
     TRect favouriteIconBoundingBox;
 
-    favouriteIconBoundingBox = FavouriteIconBoundingBox( aNameRectUnMirrored, aTextWidth );
+    favouriteIconBoundingBox = FavouriteIconBoundingBox( aNameRectUnMirrored );
 
     if ( AknLayoutUtils::LayoutMirrored() )
         {
@@ -855,18 +857,21 @@ TRect ArrowIconBoundingBox(const TRect& aItemRect)
 // -----------------------------------------------------------------------------
 // FavouriteIconBoundingBox
 // Calculates the area to which the favourite icon is drawn.
-// Because favourite icon is drawn in the same line with contact name,
-// this function takes contact name bounding box as the parameter, not
-// the whole item rect. 
+// Favourite icon is drawn right beside contact name bounding box.
 // -----------------------------------------------------------------------------
 //
-static TRect FavouriteIconBoundingBox( const TRect& aContactNameBoundingBox, TInt aTextWidth )
+static TRect FavouriteIconBoundingBox( const TRect& aContactNameBoundingBox )
     {
-    return TRect(
-            aContactNameBoundingBox.iTl.iX + aTextWidth,
+    // Favourite icons place is right beside contact name bounding box.
+    // Contact name bounding box is calculated so that there is room for the icon.
+    TInt shrinkMargin = ( KCent - KFavoriteIconSizePercent ) * aContactNameBoundingBox.Height() / ( 2 * KCent );
+    TRect rect(
+            aContactNameBoundingBox.iBr.iX,
             aContactNameBoundingBox.iTl.iY,
-            aContactNameBoundingBox.iTl.iX + aTextWidth + aContactNameBoundingBox.Height(),
+            aContactNameBoundingBox.iBr.iX + aContactNameBoundingBox.Height(),
             aContactNameBoundingBox.iBr.iY);
+    rect.Shrink( shrinkMargin, shrinkMargin );
+    return rect;
     }
 
 

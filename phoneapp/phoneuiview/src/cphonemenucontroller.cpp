@@ -227,6 +227,12 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
         {
         switch( menuItemArray[ i ] )
             {
+            case EPhoneInCallCmdAnswer:
+                if ( iConferenceAndWaitingVideoFlag )
+                    {
+                    menuPane->DeleteMenuItem( menuItemArray[ i ] );
+                    }
+                break;
             case EPhoneInCallCmdDialer:
                 if ( !onScreenDialer )
                     {
@@ -678,6 +684,16 @@ void CPhoneMenuController::GetConferenceAndSingleFlag(
             static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
         booleanValue->SetBoolean( iConferenceAndSingleFlag );
         }
+    }
+
+// ---------------------------------------------------------
+// CPhoneMenuController::SetConferenceAndWaitingVideoFlag
+// ---------------------------------------------------------
+//
+void CPhoneMenuController::SetConferenceAndWaitingVideoFlag( TBool aIsConfAndWaitingVideo )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneMenuController::SetConferenceAndWaitingVideoFlag" );
+    iConferenceAndWaitingVideoFlag = aIsConfAndWaitingVideo;
     }
 
 // ---------------------------------------------------------

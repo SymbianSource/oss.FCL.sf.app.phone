@@ -295,13 +295,7 @@ void CPhoneConferenceAndCallSetup::HandleConnectedL( TInt aCallId )
     
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-    
-    // Keep Phone in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-    
+ 
     BeginUiUpdateLC();
         
     // Show bubble

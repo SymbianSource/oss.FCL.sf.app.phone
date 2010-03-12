@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -854,6 +854,13 @@ CGulIcon* CPhoneButtonsController::GetIconForCommandL( TInt aCommandId )
             maskIndex = EMbmPhoneuiQgn_indi_button_silence_mask;
             break;
             }  
+        case EPhoneInCallCmdShareLiveVideo:
+            {
+            skinId = KAknsIIDQgnIndiButtonVideoShare;
+            fileIndex = EMbmPhoneuiQgn_indi_button_video_share;
+            maskIndex = EMbmPhoneuiQgn_indi_button_video_share_mask;
+            break;
+            }            
 
         default:
             return NULL; 

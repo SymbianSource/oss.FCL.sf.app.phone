@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -62,6 +62,9 @@ const TUid KPhoneUidViewPhoneInfo = { 1 };
 const TUid KPhoneUidViewLogLastDial = { 1 };        // Last dialled view ID of Log application
 const TUid KPhoneUidLogStm = { 0x01002982 };        // Id for stm for Log application
 _LIT8( KPhoneStmLoadMagicString, "outside" );       // Message for activating view of an application
+
+// SimLock Ui UID to launch the SimLock App
+const TUid KSimLockUIApplicationUid= {0x2000B0FA};
 
 // Used in CPhoneKeyEventHandler
 // Seconds in microseconds

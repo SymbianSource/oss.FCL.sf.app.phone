@@ -1225,24 +1225,41 @@ TBool CPEPhoneModel::DelayMessageSending(
     TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::DelayMessageSending" );
         
     TBool sendingDelayed( EFalse );
-    
-    if ( MEngineMonitor::EPEMessageInitiatedEmergencyCall == aMessage )
+        
+    switch ( aMessage )
         {
-        iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );
-        if ( iCallStackCutter )
+        case MEngineMonitor::EPEMessageInitiatedEmergencyCall:
             {
-            delete iCallStackCutter;
-            iCallStackCutter = NULL;
+            iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );  
+            sendingDelayed = ETrue;            
             }
-        TRAPD( err, iCallStackCutter = CIdle::NewL( CActive::EPriorityHigh ) );
-        if ( !err )
-            {
-            iCallBackMessage = aMessage; 
-            iCallBackCallId  = aCallId;
-            iCallStackCutter->Start( TCallBack( CallBackMessageSend , this ) );
+            break;
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            {              
+            sendingDelayed = ETrue;            
             }
-        sendingDelayed = ETrue;        
+            break;
+        default:
+            // Other messages cause no action.
+            break;
         }
+    
+        if ( sendingDelayed )
+            {        
+            if ( iCallStackCutter )
+                {
+                delete iCallStackCutter;
+                iCallStackCutter = NULL;
+                }
+            TRAPD( err, iCallStackCutter = CIdle::NewL( CActive::EPriorityHigh ) );
+            if ( !err )
+                {
+                iCallBackMessage = aMessage; 
+                iCallBackCallId  = aCallId;
+                iCallStackCutter->Start( TCallBack( CallBackMessageSend , this ) );
+                }
+            }                
+        
     return sendingDelayed;
     }
 

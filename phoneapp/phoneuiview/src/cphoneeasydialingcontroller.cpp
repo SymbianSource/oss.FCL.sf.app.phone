@@ -22,6 +22,7 @@
 #include "tphonecmdparaminteger.h"
 #include "tphonecmdparamdynmenu.h"
 #include "dialingextensioninterface.h"
+#include "easydialingcommands.hrh"
 
 // ======== MEMBER FUNCTIONS ========
 
