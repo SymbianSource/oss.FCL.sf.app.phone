@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2008 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -20,299 +20,190 @@
 #define CPHONEDIALERCONTROLLER_H
 
 #include <e32base.h>
-#include <akntoolbarobserver.h>
-#include <mnumberentry.h>
+#include "mphonedialercontroller.h"
 #include "mphonenumberentrychangedhandler.h"
 
-class CAknToolbar;
 class CPhoneBubbleWrapper;
 class CCoeEnv;
-class CPhoneMenuController;
+class MAknsSkinInstance;
 class TPhoneCommandParam;
-class CAknButton;
-class TAknsItemID;
-class MPhoneDialerController;
-class TPhoneCommandParam;
+class CPhoneEasyDialingController;
 
 /**
- *  Dialer controller, updates toolbar buttons
+ *  Dialer controller, provides toolbar button data for the normal mode dialer
  *
  *  @lib PhoneUIView.lib
  *  @since S60 v5.0
  */
-NONSHARABLE_CLASS( CPhoneDialerController ): 
-    public CBase, public MAknToolbarObserver, public MNumberEntryObserver,
-    public MPhoneNumberEntryChangedHandler
+class CPhoneDialerController : 
+    public CBase,
+    public MPhoneDialerController
     {
-public:
+public: // constructor and destructor
     /**
      * Two-phased constructor.
-     * @param aBubbleWrapper 
-     * @param aCoeEnv 
-     * @param aMenuController 
+     * @param aBubbleWrapper    Handle to bubble wrapper. Ownership not transferred.
+     *                          May be NULL, but then emergency call state can't be identified
+     * @param aCoeEnv           Handle to coeenv. Ownership not transferred.
      */
-    static CPhoneDialerController* NewL( CPhoneBubbleWrapper& aBubbleWrapper,
-                                         CCoeEnv& aCoeEnv,
-                                         CPhoneMenuController& aMenuController );
+    static CPhoneDialerController* NewL( CPhoneBubbleWrapper* aBubbleWrapper,
+                                         CCoeEnv& aCoeEnv );
     /**
      * Destructor.
      */
-    virtual ~CPhoneDialerController();
+    IMPORT_C virtual ~CPhoneDialerController();
     
-     /**
-     * Updates toolbar buttons according to numberentry state.
-     *
-     * @since S60 v5.0
-     */
-    void UpdateToolbar();
-    
-     /**
-     * Sets state of dtmf dialer visibility.
-     *
-     * @since S60 v5.0
-     * @param aVisible
-     */    
-    void SetDtmfDialerVisibleL( TBool aVisible );  
-    
-     /**
-     * Returns dtmf dialer visibility status.
-     *
-     * @since S60 v5.0
-     * @return ETrue if DTMF Dialer is visible
-     */     
-    TBool IsDTMFDialerVisible() const;
-    
-     /**
-     * Sets state of restricted dialer.
-     *
-     * @since S60 v5.0
-     * @param aRestricted
-     */      
-	void SetRestrictedDialer( TBool aRestricted );    
-	
-     /**
-     * Sets state of service code flag.
-     *
-     * @since S60 v5.0
-     * @param aCommandParam
-     */	
-	void SetServiceCodeFlagL( TPhoneCommandParam* aCommandParam );
-    
-	/**
-    * Enables toolbar
-    *
-    * @since S60 v5.0
-    */ 
-	void ShowToolbar();
-
-    /**
-    * Disables toolbar
-    *
-    * @since S60 v5.0
-    */ 
-    void HideToolbar();	
-
-    /**
-    * Sets custom dialer visible.
-    * @param aCustomController Pointer to dialer extension implementation
-    * @since S60 v5.1
-    */    
-    void ShowCustomizedDialerL( 
-            MPhoneDialerController* aCustomController );
-    
-    /**
-    * Sets custom dialer visible.
-    * @since S60 v5.1
-    */ 
-    void HideCustomizedDialer();
-	
-    /**
-    * Returns flag indicating if customized dialer is visible.
-    * @return ETrue if customized dialer visible, else EFalse
-    * @since S60 v5.1
-    */   
-    TBool IsCustomizedDialerVisible() const;
-	
-    /**
-    * Returns sotkeys resource of the customized dialer
-    * @return Customized dialer softkeys resource id
-    * @since S60 v5.1
-    */ 
-    TInt CustomizedCbaResourceId() const;
-	
-    /**
-    * Returns menu resource of the customized dialer
-    * @return Customized dialer menu resource id
-    * @since S60 v5.1
-    */ 
-    TInt CustomizedMenuResourceId() const;
-
-public:     // from MAknToolbarObserver
-    /**
-     * From base class MAknToolbarObserver
-     * Handles toolbar events for a certain toolbar item.
-     *
-     * @param aCommand The command ID of some toolbar item.
-     */ 
-    void OfferToolbarEventL( TInt aCommand );
-    
-    /**
-     * From base class MAknToolbarObserver
-     * Should be used to set the properties of some toolbar components 
-     * before it is drawn.
-     *   
-     * @param aResourceId The resource ID for particular toolbar
-     * @param aToolbar The toolbar object pointer
-     */
-    void DynInitToolbarL( TInt aResourceId, CAknToolbar* aToolbar );
-    
-public:     // from MNumberEntryObserver
-    /**
-     * From base class MNumberEntryObserver
-     * Indication that numberentry state changed
-     *
-     * @since S60 v5.0
-     */
-    void NumberEntryStateChanged( TBool aHidePromptText );    
-    
-public:    // from base class MPhoneNumberEntryChangedHandler
-        
-    /**
-     * From MPhoneNumberEntryChangedHandler
-     * 
-     * Handles number entry state change. 
-     * Checks has the content of the number entry been modifed.
-     * Informs the via call back functionality the party interested about 
-     * the change. (at the moment phone state machine) 
-     * 
-     * @since S60 5.0
-     */
-     void HandleNumberEntryChanged( );
-        
-     /**
-      * From MPhoneNumberEntryChangedHandler
-      * 
-      * Sets the call back function that is used to get notification when the 
-      * content of the Number Entry has changed. (Used by the the phone 
-      * statemachine.)  
-      * 
-      * @since S60 5.0
-      */
-     void SetNumberEntryChangedCallBack( TPhoneCommandParam* aCommandParam );
-      
-private:
-
-    /**
-     * Creates CAknButton with given parameters and leaves it to 
-     * CleanupStack.
-     * 
-     * @param aNormalIconId
-     * @param aNormalMaskId
-     * @param aTooltipText
-     * @param aSkinIconId
-     * @param aCommand 
-     */  
-    CAknButton* CreateButtonLC( TInt aNormalIconId,
-                                TInt aNormalMaskId,
-                                const TDesC& aTooltipText, 
-                                const TAknsItemID& aSkinIconId,
-                                TInt aCommand );
-    
-    /**
-     * Creates button set for an empty Number Entry.  
-     */
-    void CreateButtonSetNumberEntryEmpty();
-
-    /**
-     * Creates button set for Number Entry when some charaters 
-     * have been entered.
-     */
-    void CreateButtonSetNumberEntryNotEmpty();
+protected: // constructors
     
     /**
      * Constructor.
      * 
      * @param aBubbleWrapper 
      * @param aCoeEnv 
-     * @param aMenuController 
      */
-    CPhoneDialerController( CPhoneBubbleWrapper& aBubbleWrapper,
-                             CCoeEnv& aCoeEnv,
-                             CPhoneMenuController& aMenuController );    
+    IMPORT_C CPhoneDialerController( CPhoneBubbleWrapper* aBubbleWrapper,
+                                     CCoeEnv& aCoeEnv );
     /**
      * Symbian 2nd phase constructor.
      * 
      */
-    void ConstructL();
+    IMPORT_C void ConstructL();
+    
+public: // new methods
     
     /**
-     * Searches the skin id for the given icon.
+     * Sets state of restricted dialer.
+     *
+     * @since S60 v5.0
+     * @param aRestricted
+     */      
+    void SetRestrictedDialer( TBool aRestricted );    
+    
+     /**
+     * Sets state of service code flag.
+     *
+     * @since S60 v5.0
+     * @param aCommandParam
      */
-    inline TAknsItemID SkinId( TInt aIconIndex );
-    
+    void SetServiceCodeFlag( TPhoneCommandParam* aCommandParam );
+
     /**
-     * Searches the tooltip text for the button using the 
-     * the given command id.
+     * Sets handle to the Easy Dialing controller.
      * 
-     * @param aCommandId the command id
-     * @param aText     the searched tooltip text
+     * @since S60 v5.2
+     * @param aController   Easy Dialing controller. Ownership not transferred.
      */
-    void  GetTooltipTextL( TInt aCommandId, HBufC*& aText ); 
+    void SetEasyDialingController( CPhoneEasyDialingController* aController );
     
-private: // data
+public: // From MPhoneDialerController
+
     /**
-     * AknToolbar. 
-     * Not own.  
+     * @see MPhoneDialerController
      */
-    CAknToolbar* iToolbar;
+    IMPORT_C TInt CbaResourceId() const;
+
+    /**
+     * @see MPhoneDialerController
+     */
+    IMPORT_C TInt MenuResourceId() const;
+
+    /**
+     * @see MPhoneDialerController
+     */
+    IMPORT_C const TDesC& NumberEntryPromptTextL();
+
+    /**
+     * @see MPhoneDialerController
+     */
+
+    /**
+     * @see MPhoneDialerController
+     */
+    IMPORT_C TInt GetButtonData( TButtonIndex aIndex, RPointerArray<CButtonData>& aData ) const;
     
     /**
-     * The reference to the Bubblewrapper
+     * @see MPhoneDialerController
      */
-    CPhoneBubbleWrapper& iBubbleWrapper;
+    IMPORT_C void SetNumberEntryIsEmpty( TBool aEmpty );
     
+    /**
+     * @see MPhoneDialerController
+     */
+    IMPORT_C TInt ButtonState( TButtonIndex aIndex ) const;
+    
+    /**
+     * @see MPhoneDialerController
+     */
+    IMPORT_C TBool ButtonDimmed( TButtonIndex aIndex ) const;
+    
+    /**
+     * @see MPhoneDialerController
+     */
+    IMPORT_C TBool EasyDialingAllowed() const;
+
+public: // data types
+    /** 
+     * Initialization data for one toolbar button state.
+     */
+    struct TLocalButtonData
+        {
+        TInt iCommandId;
+        TInt iSkinItemIdMinor;
+        TInt iBitmapIndex;
+        TInt iBitmapMaskIndex;
+        TInt iTooltipResourceId;
+        };
+    
+protected: // methods
+    
+    /**
+     * Check is there an emergency call ongoing.
+     * @return  ETrue   if there's an active emergency call.
+     *          EFalse  otherwise.
+     */
+    TBool EmergencyCallActive() const;
+    
+    /**
+     * Create button data object from given source data.
+     * @param   aSourceData Defines, where the data should be loaded.
+     * @param   aSkin       Skin instance. Ownership not transferred.
+     * @param   aMifFile    Full path to the MIF file holding the fallback graphics.
+     * @return  New CButtonData instance. Ownership is transferred.
+     */
+    CButtonData* CreateButtonDataL( const TLocalButtonData& aSourceData, 
+            MAknsSkinInstance* aSkin, const TDesC& aMifFile ) const;
+    
+protected: // data
     /**
      * CoeEnv 
      */
     CCoeEnv& iCoeEnv;
     
     /**
-     * Menucontroller
+     * Handle to the Bubblewrapper. May be NULL. Not owned.
      */
-    CPhoneMenuController& iMenuController;    
+    CPhoneBubbleWrapper* iBubbleWrapper;
     
     /**
-     * Used to check is the Dialer in DTMF mode
+     * Handle to Easy Dialing controller. May be NULL. Not owned. 
      */
-    TBool iDtmfDialerVisible;
-
+    CPhoneEasyDialingController* iEasyDialingController;
+    
     /**
      * Used to check is the Dialer in the restricted mode.
-     * 'Send' and 'Add to Contacts' buttons are dimmed.
      */
-    TBool iRestrictedDialer; 
+    TBool iRestrictedDialer;
     
     /**
-     * Used to check is the service code flag set.
-     * Tooltip text is changed between 'Send' or 'Call' 
+     * Used to check is the service code flag set, meaning that number entry
+     * contains a service code rather than phone number.
      */
     TBool iServiceCodeFlag;
     
-    /*
-     * Is used to check has the hide prompt text flag changed.
-     */
-    TBool iPreviousHidePromptTextStatus;
-    
-    // Pointer to dialer extension implementation
-    MPhoneDialerController* iCustomizedDialer;
-    
     /**
-     * Is used to check should toolbar be updated. 
+     * Store availability of phone number (etc) in the number entry.
      */
-    TBool iUpdateToolbar;
-
+    TBool iNumberAvailable;
     };
-
-#include    "cphonedialercontroller.inl"
 
 #endif // CPHONEDIALERCONTROLLER_H

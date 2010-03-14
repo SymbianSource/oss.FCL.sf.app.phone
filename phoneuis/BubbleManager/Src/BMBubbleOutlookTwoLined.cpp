@@ -275,7 +275,7 @@ CCoeControl* CBubbleOutlookTwoLined::ComponentControl(TInt aIndex) const
     {
   
     TInt amount = -1;
-    
+    // coverity[var_compare_op]
     if ( iNumberType )
         {
         amount++;
@@ -283,6 +283,7 @@ CCoeControl* CBubbleOutlookTwoLined::ComponentControl(TInt aIndex) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iNumberType->Control();
         }
 
@@ -293,6 +294,7 @@ CCoeControl* CBubbleOutlookTwoLined::ComponentControl(TInt aIndex) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iSmallCallIndication->Control();
         }
 
@@ -363,6 +365,7 @@ CCoeControl* CBubbleOutlookTwoLined::ComponentControl(TInt aIndex) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iBrandImage->Control();
         }
 
@@ -373,6 +376,7 @@ CCoeControl* CBubbleOutlookTwoLined::ComponentControl(TInt aIndex) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iBigCallIndicator->Control();
         }
     

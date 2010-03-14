@@ -66,6 +66,14 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
             const TKeyEvent& aKeyEvent,
             TEventCode aEventCode );
         
+        /**
+        * HandleError
+        * Implements error handling framework
+        * @param aErrorInfo: the error info
+        */
+        IMPORT_C virtual void HandleErrorL( 
+            const TPEErrorInfo& aErrorInfo ); 
+        
     protected:
 
         /**

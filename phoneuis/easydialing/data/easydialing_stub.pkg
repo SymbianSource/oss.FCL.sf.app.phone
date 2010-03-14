@@ -1,0 +1,23 @@
+; easydialing_stub.pkg
+;
+;Language - standard language definitions
+&EN
+
+; standard SIS file header
+#{"Easy dialing plug-in"},(0x200212A0),1,0,0, TYPE=SA
+
+;Localised Vendor name
+%{"Nokia"}
+
+;Unique Vendor name
+:"Nokia"
+
+""-"z:\sys\bin\easydialingplugin.dll"
+""-"z:\resource\plugins\easydialingplugin.r*"
+""-"z:\resource\easydialingpluginresources.r*"
+""-"z:\resource\apps\easydialing.mif"
+
+""-"z:\sys\bin\edcontactor.dll"
+""-"z:\resource\edcontactor.r*"
+
+""-"z:\system\data\10202BE9\200212A0.txt"

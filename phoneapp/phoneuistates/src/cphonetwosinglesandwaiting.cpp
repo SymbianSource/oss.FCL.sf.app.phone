@@ -20,7 +20,7 @@
 #include <pevirtualengine.h>
 #include <StringLoader.h>
 #include <mpeengineinfo.h>
-#include <FeatMgr.h>
+#include <featmgr.h>
 #include "cphonetwosinglesandwaiting.h"
 #include "tphonecmdparamboolean.h"
 #include "mphonestatemachine.h"

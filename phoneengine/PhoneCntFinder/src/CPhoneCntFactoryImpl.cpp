@@ -45,7 +45,7 @@
 #include    "cphcntstoreloaderimpl.h"
 
 #include    <coemain.h>     // CONE
-#include    <SecUi.h>       // For TSecUi
+#include    <secui.h>       // For TSecUi
 #include    <featmgr.h>     // Feature Manager
 #include    <talogger.h>
 

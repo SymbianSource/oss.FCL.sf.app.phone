@@ -24,7 +24,8 @@ PRJ_PLATFORMS
 DEFAULT
 
 PRJ_EXPORTS
-
+../inc/mphonedialercontroller.h       |../../../inc/mphonedialercontroller.h
+../inc/cphonedialercontroller.h       |../../../inc/cphonedialercontroller.h
 
 // Stub SIS files:
 ../group/phoneuiview_stub.sis                   /epoc32/data/z/system/install/phoneuiview_stub.sis

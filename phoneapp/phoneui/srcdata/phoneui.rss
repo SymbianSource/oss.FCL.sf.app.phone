@@ -6235,20 +6235,19 @@ RESOURCE TBUF r_phone_bt_dev_address
     buf = qtn_bt_dev_address;
     }
 
-
 // ---------------------------------------------------------
 //
-//    r_phone_information_note_with_wait
+//    r_phone_information_note_with_cba
 //    It defines note template for information notes. Text
 //    must be replaced to correct in code. Note has wait
 //    flag.
 //
 // ---------------------------------------------------------
 //
-RESOURCE DIALOG r_phone_information_note_with_wait
+RESOURCE DIALOG r_phone_information_note_with_cba
     {
     flags = EEikDialogFlagNoDrag | EEikDialogFlagNoTitleBar |
-            EEikDialogFlagCbaButtons | EEikDialogFlagWait;
+            EEikDialogFlagCbaButtons;
     buttons = r_phoneui_wait_note_cba;
     items =
         {
@@ -6999,7 +6998,16 @@ RESOURCE TBUF r_phoneui_sim_unaccepted
     buf = text_sim_lock_active;
     }
 
-
+// -----------------------------------------------------------------------------
+//
+//    r_sim_invalid_uicc
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_sim_invalid_uicc
+    {
+    buf = text_invalid_card;
+    }      
 
 // -----------------------------------------------------------------------------
 //
@@ -7726,6 +7734,11 @@ RESOURCE MENU_PANE r_phoneuidialer_options_menu
             cascade = r_phoneui_numberacq_options_add_to_contacts_menu;
             txt = qtn_phob_opt_save_to_pb;
             flags = EEikMenuItemSeparatorAfter;
+            },
+        MENU_ITEM
+            {
+            command = EEasyDialingSettingsItemPlaceHolder;
+            flags = EEikMenuItemDimmed;
             },
         MENU_ITEM
             {

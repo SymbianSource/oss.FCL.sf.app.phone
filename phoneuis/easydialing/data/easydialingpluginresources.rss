@@ -1,0 +1,213 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Easy dialing resources.
+*
+*/
+
+//  RESOURCE IDENTIFIER
+
+NAME EDPL
+
+
+//  INCLUDES
+
+#include <eikon.rh>
+#include <avkon.rh>
+
+#include <avkon.loc>
+#include <numberentry.loc>
+#include <callui.loc>
+#include "easydialing.loc"
+
+#include <phoneappcommands.hrh>
+#include "easydialingcommands.hrh"
+
+
+//  CONSTANTS  
+
+//  MACROS  
+
+//  RESOURCE DEFINITIONS 
+
+// ---------------------------------------------------------
+//   
+//    Define the resource file signature 
+//    This resource should be empty.
+//
+// ---------------------------------------------------------
+//
+
+RESOURCE RSS_SIGNATURE { }
+
+// ---------------------------------------------------------
+//   
+//    r_easydialing_cba
+//    Contains softkey definitions for easy dialing.
+//
+// ---------------------------------------------------------
+//
+RESOURCE CBA r_easydialing_cba
+    {
+    buttons =
+        {
+        CBA_BUTTON
+            {
+            id = EPhoneCmdOptions;
+            txt = text_softkey_option;
+            },      
+        CBA_BUTTON
+            {
+            id = EPhoneCmdBack;
+            txt = text_softkey_exit;
+            },
+        CBA_BUTTON
+            {
+            id = EAknSoftkeyOpen;
+            txt = text_softkey_open;
+            }
+        };
+    }
+
+
+// -----------------------------------------------------------------------------
+//
+//   r_easydialing_menubar
+//   Menubar for easy dialing when action menu is closed.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_easydialing_menubar
+    {
+    titles =
+        {
+        MENU_TITLE { menu_pane = r_easydialing_menu; }
+        };
+    }
+
+
+// -----------------------------------------------------------------------------
+//
+//   r_easydialing_menu
+//   Menu pane
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_easydialing_menu
+    {
+    items =
+        {
+        MENU_ITEM
+                {
+                command = EEasyDialingOpenContact;
+                txt = qtn_options_open;
+                },
+        MENU_ITEM
+                {
+                command = EEasyDialingVoiceCall;
+                cascade = r_easydialing_options_call_menu;
+                txt = text_number_call;
+                },
+        MENU_ITEM
+                {
+                command = EEasyDialingSendMessage;
+                txt = qtn_nren_send_message;
+                },
+        MENU_ITEM
+                {
+                txt = qtn_easydial_option_submenu_title;
+                cascade = r_easydialing_options_on_off_cascade_menu;
+                },
+        MENU_ITEM 
+                {
+                command = EPhoneDialerCmdHelp; 
+                txt = qtn_options_help;
+                },
+        MENU_ITEM 
+                {
+                command = EPhoneCmdBack; 
+                txt = qtn_options_exit;
+                }
+        };
+    }
+
+
+// ---------------------------------------------------------
+//   
+//    r_easydialing_options_call_menu
+//    Number Acquisition view options call menu pane.
+//
+// ---------------------------------------------------------
+//
+RESOURCE MENU_PANE r_easydialing_options_call_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = EEasyDialingVoiceCall; 
+            txt =   qtn_call_sub_voice;
+            },
+        MENU_ITEM
+            {
+            command = EEasyDialingVideoCall; 
+            txt =  qtn_call_sub_video;
+            }
+        };
+    }
+
+//----------------------------------------------------------------------------
+// r_easydialing_options_on_off_menu_item
+//
+// Menu item for setting Easy dialing on/off.
+// ---------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_easydialing_options_on_off_menu_item
+   {
+   items =
+       {
+       MENU_ITEM 
+           {
+           txt = qtn_easydial_option_submenu_title;
+           cascade = r_easydialing_options_on_off_cascade_menu;
+           }
+       };
+   }
+
+//----------------------------------------------------------------------------
+// r_easydialing_options_on_off_cascade_menu
+//
+// Submenu for setting Easy dialing on/off.
+// ---------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_easydialing_options_on_off_cascade_menu
+   {
+   items =
+       {
+       MENU_ITEM 
+           {
+           command  = EEasyDialingOn;
+           txt      = qtn_easy_dialing_on;
+           flags    = EEikMenuItemRadioStart;
+           },
+       MENU_ITEM 
+           { 
+           command  = EEasyDialingOff;
+           txt      = qtn_easy_dialing_off;
+           flags    = EEikMenuItemRadioEnd;
+           }
+       };
+   }
+
+
+// End of File

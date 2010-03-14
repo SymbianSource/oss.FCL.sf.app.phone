@@ -992,7 +992,7 @@ EXPORT_C void CBubbleManager::EndChanges( )
     TBool calledBegin = (TBool) CAknTransitionUtils::GetData( ( TInt ) this );
     // Only draw parent control if no number entry exists, the number entry is
     // used or if begin has not been called.
-    if ( !iNumberEntry || iNumberEntry->IsUsed() || !calledBegin )
+    if ( iNumberEntry->IsUsed() || !calledBegin )
         {
         // Do redraw. Do not use DrawDeferred() here!
         iParentControl->DrawNow();

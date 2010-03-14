@@ -165,4 +165,6 @@ EXPORTS
 	_ZThn8_NK15CPECallHandling16GetCallIdByStateEj @ 164 NONAME
 	_ZThn8_NK15CPECallHandling28GetCallTerminatedDiagnosticsER4TBufILi128EE @ 165 NONAME
 	_ZThn8_NK15CPECallHandling9CallOwnerEv @ 166 NONAME
+	_ZN15CPECallHandling17ReleaseConferenceEv @ 167 NONAME
+	_ZThn8_N15CPECallHandling17ReleaseConferenceEv @ 168 NONAME
 

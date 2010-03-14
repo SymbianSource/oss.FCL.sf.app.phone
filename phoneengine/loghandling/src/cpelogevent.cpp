@@ -673,6 +673,16 @@ void CPELogEvent::SetRemoteContact( CLogEvent& aEvent,
     if ( KNullDesC() != aLogInfo.PhoneNumber() )
         {
         aEvent.SetNumber( aLogInfo.PhoneNumber() );
+       
+        if ( CPELogInfo::EPEVoIPEvent == aLogInfo.EventType() )
+            {
+            TRAPD( error, RemoveTagFromDataFieldL( KLogsDataFldTag_URL ) );
+            if( error )
+                {
+                TEFLOGSTRING2( KTAERROR, 
+                    "LOG CPELogEvent::SetRemoteContact()>RemoveTagFromDataFieldL(), error=%d", error )
+                }
+            }
         }
     
     if ( KNullDesC() != aLogInfo.VoipAddress() )
@@ -681,8 +691,40 @@ void CPELogEvent::SetRemoteContact( CLogEvent& aEvent,
         if ( error )
             {
             TEFLOGSTRING2( KTAERROR, 
-                "LOG CPELogEvent::SetLogEvent()>SetDataFieldL(), error=%d", error )
+                "LOG CPELogEvent::SetRemoteContact()>SetDataFieldL(), error=%d", error )
             }
+        aEvent.SetNumber( KNullDesC() );
+        }
+    }
+
+// -----------------------------------------------------------------------------
+// CPELogEvent::RemoveTagFromDataFieldL
+// -----------------------------------------------------------------------------
+//
+void CPELogEvent::RemoveTagFromDataFieldL( const TDesC8& aTag )
+    {
+    __ASSERT_ALWAYS( aTag.Length() != 0 ,
+        User::Leave( KErrArgument ) );
+
+    TInt index = iEvent->Data().Find( aTag );
+    if ( KErrNotFound != index  )
+        {
+        HBufC8* eventData = iEvent->Data().AllocLC();
+        TPtrC8 urlData = eventData->Mid( index );
+        TInt otherTag = urlData.Find( KLogsDataFldNameDelimiter );
+       
+        const TInt dlLen = KLogsDataFldNameDelimiter().Length();
+        if ( KErrNotFound == otherTag )
+            {
+            eventData->Des().Delete( index - dlLen, urlData.Length() + dlLen );
+            }
+        else
+            {
+            eventData->Des().Delete( index - dlLen, otherTag );
+            }
+        iEvent->SetDataL( *eventData );
+
+        CleanupStack::PopAndDestroy( eventData );
         }
     }
 

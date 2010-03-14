@@ -22,8 +22,8 @@
 #include <mpecontacthandling.h>
 #include <mpedatastore.h>
 #include <pepanic.pan>
-#include <SecUi.h>
-#include <SecUiManualSecuritySettings.h>
+#include <secui.h>
+#include <secuimanualsecuritysettings.h>
 #include <talogger.h>
 
 

@@ -111,13 +111,7 @@ void CPhoneSingleAndAlerting::HandlePhoneEngineMessageL(
             HandleIdleL( aCallId );
             }
             break;
-            
-        case MEngineMonitor::EPEMessageColpNumberAvailable:
-            {
-            HandleColpNoteL( aCallId );            
-            }
-            break;         
-            
+           
         default:
             {
             CPhoneAlerting::HandlePhoneEngineMessageL( aMessage, aCallId );

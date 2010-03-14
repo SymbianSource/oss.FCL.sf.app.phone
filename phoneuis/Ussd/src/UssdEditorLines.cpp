@@ -104,9 +104,9 @@ void CUssdEditorLines::SizeChanged()
     {
     // Move rectangles to right position
     
-    for ( TInt i = 0; 
-          iRects && i < iRects->Count() && i < UssdLayout::NumberOfEditorLines(); 
-          i++ )
+    for ( TInt i = 0;
+            i < iRects->Count() && i < UssdLayout::NumberOfEditorLines(); 
+            i++ )
         {
         iRects->At( i )->LayoutRect( Rect() , 
             UssdLayout::MessageWritingLayoutElements6( i+1 ) );
@@ -119,10 +119,10 @@ void CUssdEditorLines::SizeChanged()
 // 
 // -----------------------------------------------------------------------------
 //
-void CUssdEditorLines::Draw( const TRect& aRect ) const
+void CUssdEditorLines::Draw( const TRect& /*aRect*/ ) const
     {
     // Take the colour from some ramdom line.
-    // Here it is takem from the first line.
+    // Here it is taken from the first line.
 
     TRgb lineColour( KRgbWhite );
 
@@ -151,7 +151,7 @@ void CUssdEditorLines::Draw( const TRect& aRect ) const
     // Draw row lines by clearing rectangles corresponding to row locations.
     TInt count( iRects->Count() );
     TInt lines( UssdLayout::NumberOfEditorLines() );
-    for ( TInt i = 0; iRects && i < count && i < lines; i++ )
+    for ( TInt i = 0; i < count && i < lines; i++ )
         {
         gc.Clear( iRects->At( i )->Rect() );
         }

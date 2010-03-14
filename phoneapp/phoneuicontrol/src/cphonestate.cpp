@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -36,7 +36,7 @@
 #include <wlaninternalpskeys.h>
 #include <btengdomainpskeys.h>
 #include <btengdomaincrkeys.h>
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h>
 #include <starterclient.h>
 #include <RSSSettings.h>
 #include <UikonInternalPSKeys.h>
@@ -105,6 +105,8 @@
 #include "cphonecallheadermanager.h"
 #include "cphonenumberentrymanager.h"
 #include "mphonestorage.h"
+#include "easydialingcommands.hrh"
+
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -459,7 +461,8 @@ EXPORT_C void CPhoneState::HandleAudioOutputChangedL()
         CPhoneBtaaDisconnectHandler::InstanceL()->HandleConnectionLostL();
         }
     else if ( audioOutput == EPEBTAudioAccessory && 
-            previousOutput != EPEBTAudioAccessory &&
+    		previousOutput > EPENotActive && 
+    		previousOutput != EPEBTAudioAccessory &&
             btAvailable )
         {
         CPhoneAccessoryBTHandler* bt = CPhoneAccessoryBTHandler::NewLC(
@@ -1059,7 +1062,9 @@ EXPORT_C void CPhoneState::HandleNumericKeyEventL(
 
     if ( numberEntryUsed && ( aKeyEvent.iRepeats == 0 ||
               aKeyEvent.iScanCode == EStdKeyBackspace ||
-              aKeyEvent.iScanCode ==EStdKeyLeftArrow  ||
+              aKeyEvent.iScanCode ==EStdKeyLeftArrow  ||              
+              aKeyEvent.iScanCode == EStdKeyUpArrow  ||
+              aKeyEvent.iScanCode == EStdKeyDownArrow  ||              
               aKeyEvent.iScanCode ==EStdKeyRightArrow ))
         {
         // Number entry exists but may be hidden
@@ -1125,6 +1130,18 @@ TBool CPhoneState::IsNoteDismissableL()
         }
     __PHONELOG1( EBasic, EPhoneControl, "CPhoneState::IsNoteDismissableL: %d ", dismiss );
     return dismiss;
+    }
+
+// -----------------------------------------------------------
+// CPhoneState::IsDialingExtensionInFocusL
+// -----------------------------------------------------------
+//
+EXPORT_C TBool CPhoneState::IsDialingExtensionInFocusL() const
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::IsDialingExtensionInFocusL( ) ");
+    return iViewCommandHandle->HandleCommandL(
+        EPhoneViewGetEasyDialingInFocusStatus ) ==
+        EPhoneViewResponseSuccess;
     }
 
 // -----------------------------------------------------------
@@ -1437,7 +1454,9 @@ EXPORT_C void CPhoneState::HandlePropertyChangedL(
     else if ( aCategory == KPSUidStartup && aKey == KStartupSimSecurityStatus )
         {
         // Show security note, SIM is not valid.
-        if ( aValue == ESimRejected ||  aValue == ESimUnaccepted )
+        if ( aValue == ESimRejected 
+                || aValue == ESimUnaccepted 
+                || aValue == ESimInvalid )
             {
             __PHONELOG( EBasic, EPhoneControl, "CPhoneStateStartup::HandlePropertyChangedL - SimSecurity status received" );
             StartShowSecurityNoteL();
@@ -1508,7 +1527,7 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
             //cancel emergency mode.
             TPhoneCmdParamBoolean booleanParam;
             booleanParam.SetBoolean( EFalse );
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetRetrictedDialer,&booleanParam );
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetRestrictedDialer, &booleanParam );
             }
             // this should be bypasses?
         case EPhoneDialerCallHandling:
@@ -1645,7 +1664,7 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
                 // Set dialer to restricted mode.
                 TPhoneCmdParamBoolean booleanParam;
                 booleanParam.SetBoolean( ETrue );
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewSetRetrictedDialer,&booleanParam );
+                iViewCommandHandle->ExecuteCommandL( EPhoneViewSetRestrictedDialer, &booleanParam );
 
                 NumberEntryManagerL()->CreateNumberEntryL();
                 }
@@ -1734,16 +1753,28 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
             DisconnectCallL();
             break;
 
+        case EPhoneCmdUpdateCba:
+        case EPhoneDialerValidNumber:
+        case EPhoneDialerInvalidNumber:
+        case EPhoneCmdBlockingDialogLaunched:
+        case EPhoneCmdBlockingDialogClosed:
+            {
+            // these command ids are sent by easydialing to communicate to phone app
+            HandleEasyDialingCommandsL( aCommand );
+            }
+            break;
+                
         default:
             if ( IsOnScreenDialerSupported() )
                 {
                 // Offer command to view.
+                // Easydialing commands are handled in view, too.
                 TPhoneViewResponseId resId =
                             iViewCommandHandle->HandleCommandL( aCommand );
 
                 if( resId == EPhoneViewResponseFailed )
                     {
-                    commandStatus = EFalse;
+                     commandStatus = EFalse;
                     }
                 }
             else
@@ -1958,7 +1989,7 @@ EXPORT_C void CPhoneState::DialVoiceCallL()
 // CPhoneState::DisconnectCallL
 // -----------------------------------------------------------
 //
-EXPORT_C TBool CPhoneState::DisconnectCallL()
+EXPORT_C void CPhoneState::DisconnectCallL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::DisconnectCallL( ) ");
     // Fetch active call's id from view
@@ -1999,7 +2030,6 @@ EXPORT_C TBool CPhoneState::DisconnectCallL()
             }
         }
 
-    TBool ret = EFalse;
     if( callStateData.CallId() > KErrNotFound )
         {
         // Release the call
@@ -2022,16 +2052,13 @@ EXPORT_C TBool CPhoneState::DisconnectCallL()
             iStateMachine->SendPhoneEngineMessage(
                 MPEPhoneModel::EPEMessageRelease );
             }
-        ret = ETrue;
         }
     else
         {
         __PHONELOG( EOnlyFatal, EPhoneControl,
             "CPhoneState::DisconnectCallL has negative call id!" );
-        }
-
-    return ret;
-    }
+        }   
+   }
 
 // -----------------------------------------------------------
 // CPhoneState::DisplayIdleScreenL
@@ -2122,33 +2149,41 @@ EXPORT_C void CPhoneState::CallFromNumberEntryL()
                 }
             }
         }
-
-    // Get the number entry contents
-    HBufC* phoneNumber = PhoneNumberFromEntryLC();
-
-    // Call the number
-    iStateMachine->PhoneEngineInfo()->SetPhoneNumber( *phoneNumber );
-
-    if ( phoneNumber->Des().Length() < KPhoneValidPhoneNumberLength )
+    
+    // If easydialing has focus, call should be initiated to focused contact.
+    if ( IsDialingExtensionInFocusL() )
         {
-        // Closing effect is shown when dialer exist.
-        BeginTransEffectLC( ENumberEntryClose );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-        EndTransEffect();
-
-        HandleNumberEntryClearedL();
+        iViewCommandHandle->HandleCommandL( EEasyDialingVoiceCall );
         }
-
-    CleanupStack::PopAndDestroy( phoneNumber );
-
-    if ( !iCustomization ||
-         !iCustomization->HandleCallFromNumberEntryL() )
-        {
-        // Customization didn't handle call. Dial voice call
-        // as normally
-        DialVoiceCallL();
+    else
+        {  
+        // Get the number entry contents
+        HBufC* phoneNumber = PhoneNumberFromEntryLC();
+        
+        // Call the number
+        iStateMachine->PhoneEngineInfo()->SetPhoneNumber( *phoneNumber );
+    
+        if ( phoneNumber->Des().Length() < KPhoneValidPhoneNumberLength )
+            {
+            // Closing effect is shown when dialer exist.
+            BeginTransEffectLC( ENumberEntryClose );            
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
+            EndTransEffect();
+            
+            HandleNumberEntryClearedL();
+            }
+    
+        CleanupStack::PopAndDestroy( phoneNumber );        
+    
+        if ( !iCustomization || 
+             !iCustomization->HandleCallFromNumberEntryL() )
+            {
+            // Customization didn't handle call. Dial voice call
+            // as normally
+            DialVoiceCallL();
+            }
         }
-
+    
     }
 
 // -----------------------------------------------------------
@@ -2732,7 +2767,7 @@ void CPhoneState::UpdateIncallIndicatorL( TInt aCallState )
             KCTsyCallType ) );
 
     TInt activeCallId = GetActiveCallIdL();
-    if ( activeCallId > KErrNotFound )
+    if ( activeCallId > KErrNone )
         {
         if ( iStateMachine->PhoneEngineInfo()->CallALSLine( activeCallId )
              == CCCECallParameters::ECCELineTypeAux )
@@ -2779,6 +2814,11 @@ void CPhoneState::UpdateIncallIndicatorL( TInt aCallState )
                 incallIndicatorParam.SetLittleBubbleVisible( EFalse );
                 }
             }
+        }
+    // TODO: Refactor -> this looks really dubious.
+    else
+        {
+        incallIndicatorParam.SetLittleBubbleVisible( ETrue );
         }
 
     // Update the in-call indicator
@@ -3334,6 +3374,7 @@ EXPORT_C TBool CPhoneState::IsSimOk()
             {
             case ESimRejected:
             case ESimUnaccepted:
+            case ESimInvalid:
                 retVal = EFalse;
                 break;
 
@@ -3435,21 +3476,38 @@ EXPORT_C void CPhoneState::StartShowSecurityNoteL()
 
     TInt resourceId ( KErrNone );
 
-    if ( SimSecurityStatus() == ESimRejected )
+
+    switch( SimSecurityStatus() )
         {
-        resourceId = CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneSimRejected );
-        }
-    else if ( SimState() == EPESimNotPresent )
-        {
-        // insert sim card -note
-        resourceId = CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneSimRemoved );
-        }
-    else if ( SimSecurityStatus() == ESimUnaccepted )
-        {
-        resourceId = CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneSimUnaccepted );
+			  case ESimRejected:
+			      {
+			      resourceId = CPhoneMainResourceResolver::Instance()->
+              ResolveResourceID( EPhoneSimRejected );
+            break;
+			      }
+			  case ESimUnaccepted:
+			      {
+			      // insert sim card -note
+            resourceId = CPhoneMainResourceResolver::Instance()->
+              ResolveResourceID( EPhoneSimUnaccepted );	
+			      break;
+			      }
+			  case ESimInvalid:
+			      {
+			      resourceId = CPhoneMainResourceResolver::Instance()->
+              ResolveResourceID( EPhoneSIMInvalidUICC );
+			      break;
+			      }
+        default:
+	          {
+	          if ( SimState() == EPESimNotPresent )
+                {
+                // insert sim card -note
+                resourceId = CPhoneMainResourceResolver::Instance()->
+                    ResolveResourceID( EPhoneSimRemoved );
+                }
+	          break;	
+	          }
         }
 
     if ( resourceId != KErrNone )
@@ -3821,33 +3879,14 @@ EXPORT_C void CPhoneState::HandleLongHashL()
             &numberEntryCountParam );
     TInt neLength( numberEntryCountParam.Integer() );
 
-    if( iCustomization && iCustomization->AllowAlphaNumericMode() )
+    if( neLength == 1 )
         {
-        if ( NumberEntryManagerL()->NumberEntryInNumericModeL() )
-            {
-            if ( neLength == 0 )
-                {
-                OnlyHashInNumberEntryL();
-                }
+        TPhoneCmdParamBoolean isSecurityMode;
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
 
-            if ( neLength == 1 )
-                {
-                NumberEntryClearL();
-                }
-            }
-        NumberEntryManagerL()->NumberEntryToggleAlphaNumericModeL();
-        }
-    else
-        {
-        if( neLength == 1 )
+        if ( !isSecurityMode.Boolean() )
             {
-            TPhoneCmdParamBoolean isSecurityMode;
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-
-            if ( !isSecurityMode.Boolean() )
-                {
-                OnlyHashInNumberEntryL();
-                }
+            OnlyHashInNumberEntryL();
             }
         }
     }
@@ -4132,6 +4171,8 @@ TInt CPhoneState::SimSecurityStatus() const
     ESimSecurityStatusUninitialized = KStartupEnumerationFirstValue,
     ESimRejected,   // The PUK code has been entered incorrectly, so the card is rejected.
     ESimUnaccepted  // The SIM lock is on, so the card is unaccepted.
+    ESimInvalid     // The Sim inserted is not same as the one provided by the
+                    // operator, so card is invalid.
     */
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::SimSecurityStatus()" );
     return CPhonePubSubProxy::Instance()->Value(
@@ -4941,6 +4982,54 @@ EXPORT_C void CPhoneState::SetToolbarButtonLoudspeakerEnabled()
         }
     }
 
+// ---------------------------------------------------------
+// CPhoneState::HandleEasyDialingCommandsL
+// ---------------------------------------------------------
+//
+void CPhoneState::HandleEasyDialingCommandsL( TInt aCommandId )
+    {
+    switch ( aCommandId )
+        {
+        case EPhoneCmdUpdateCba:
+            iCbaManager->UpdateInCallCbaL();
+            break;
+                
+        case EPhoneDialerValidNumber:
+            {
+            TPhoneCmdParamBoolean command;
+            command.SetBoolean( EFalse );
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetInvalidCsPhoneNumberFlag, &command );           
+            }
+            break;
+                
+        case EPhoneDialerInvalidNumber:
+            {
+            TPhoneCmdParamBoolean command;
+            command.SetBoolean( ETrue );
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetInvalidCsPhoneNumberFlag, &command );
+            }
+            break;
+            
+        case EPhoneCmdBlockingDialogLaunched:
+            {
+            TPhoneCmdParamBoolean param;
+            param.SetBoolean( ETrue );
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetBlockingDialogStatus, &param );
+            }
+            break;
+            
+        case EPhoneCmdBlockingDialogClosed:
+            {
+            TPhoneCmdParamBoolean param;
+            param.SetBoolean( EFalse );
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetBlockingDialogStatus, &param );
+            }
+            break;
+            
+        default:
+            break;
+        }
+    }
 
 //  End of File
 

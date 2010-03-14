@@ -139,37 +139,7 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
             }
         else
             {
-            TBool dtmfEditorVisible = iViewCommandHandle.HandleCommandL(
-                    EPhoneViewIsDTMFEditorVisible ) ==
-                    EPhoneViewResponseSuccess;
-            TPhoneCmdParamInteger activeCallCount;
-            iViewCommandHandle.ExecuteCommandL(
-                    EPhoneViewGetCountOfActiveCalls, &activeCallCount );
-            
-            TPhoneCmdParamCallStateData callStateData;
-		    callStateData.SetCallState( EPEStateRinging );
-            iViewCommandHandle.HandleCommandL(
-                    EPhoneViewGetCallIdByState, &callStateData );
-		    
-            TInt incomingCall = callStateData.CallId();
-
-            if( dtmfEditorVisible )
-            	{
-                resourceId = EPhoneDtmfDialerCBA;
-                }                    
-            else if( activeCallCount.Integer() == ENoActiveCalls )
-                {
-                resourceId = EPhoneNumberAcqCBA;
-                }
-            else if ( activeCallCount.Integer() > ENoActiveCalls &&  
-            		  incomingCall > KErrNotFound )
-				{
-				resourceId = EPhoneCallHandlingCallWaitingCBA;
-				}
-            else
-                {
-                resourceId = EPhoneInCallNumberAcqCBA;
-                }
+            resourceId = GetNumberEntryCbaIdL();
             }
         }
 
@@ -343,9 +313,18 @@ EXPORT_C void CPhoneCbaManager::SetCbaL( TInt aResource )
             "CPhoneCbaManager::SetCbaL : %d",aResource );
 
     TPhoneCmdParamInteger integerParam;
-    integerParam.SetInteger(
-        CPhoneMainResourceResolver::Instance()->ResolveResourceID(
-        aResource ) );
+    
+    if ( EPhoneEasyDialingCba == aResource )
+        {
+        iViewCommandHandle.ExecuteCommandL( EPhoneViewGetEasyDialingCbaId, &integerParam );
+        }
+    else
+        {
+        integerParam.SetInteger(
+            CPhoneMainResourceResolver::Instance()->ResolveResourceID(
+            aResource ) );
+        }
+
     iViewCommandHandle.ExecuteCommandL( EPhoneViewUpdateCba,
         &integerParam );
     }
@@ -484,6 +463,56 @@ TInt CPhoneCbaManager::GetIncomingCallSilenceCBA(
     // next calls.
     SetRingtoneSilencedStatus( EFalse );
 
+    return ret;
+    }
+
+// -----------------------------------------------------------
+// CPhoneCbaManager::GetNumberEntryCbaIdL
+// -----------------------------------------------------------
+//
+TInt CPhoneCbaManager::GetNumberEntryCbaIdL()
+    {
+    TInt ret( EPhoneNumberAcqCBA );
+    
+    if ( iState->IsDialingExtensionInFocusL() )
+        {
+        ret = EPhoneEasyDialingCba;
+        }
+    else
+        {
+        TBool dtmfEditorVisible = iViewCommandHandle.HandleCommandL(
+                EPhoneViewIsDTMFEditorVisible ) ==
+                EPhoneViewResponseSuccess;
+        TPhoneCmdParamInteger activeCallCount;
+        iViewCommandHandle.ExecuteCommandL(
+                EPhoneViewGetCountOfActiveCalls, &activeCallCount );
+
+        TPhoneCmdParamCallStateData callStateData;
+        callStateData.SetCallState( EPEStateRinging );
+        iViewCommandHandle.HandleCommandL(
+                EPhoneViewGetCallIdByState, &callStateData );
+
+        TInt incomingCall = callStateData.CallId();
+
+        if( dtmfEditorVisible )
+            {
+            ret = EPhoneDtmfDialerCBA;
+            }                    
+        else if( activeCallCount.Integer() == ENoActiveCalls )
+            {
+            ret = EPhoneNumberAcqCBA;
+            }
+        else if ( activeCallCount.Integer() > ENoActiveCalls &&  
+                incomingCall > KErrNotFound )
+            {
+            ret = EPhoneCallHandlingCallWaitingCBA;
+            }
+        else
+            {
+            ret = EPhoneInCallNumberAcqCBA;
+            }
+        }
+    
     return ret;
     }
 

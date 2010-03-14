@@ -20,7 +20,7 @@
 #include <StringLoader.h>
 #include <cpephonemodelif.h>
 #include <featmgr.h>
-#include <TelephonyVariant.hrh>
+#include <telephonyvariant.hrh>
 #include "cphoneconferenceandwaiting.h"
 #include "mphonestatemachine.h"
 #include "phoneviewcommanddefinitions.h"
@@ -183,6 +183,28 @@ void CPhoneConferenceAndWaiting::HandleKeyEventL(
         __PHONELOG( EBasic, EPhoneUIStates,
             "CPhoneConferenceAndWaiting::HandleKeyMessageL-deviceF" );
         HandleHoldSwitchL();
+        }
+    }
+
+// -----------------------------------------------------------
+// CPhoneConferenceAndWaiting::HandleErrorL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneConferenceAndWaiting::HandleErrorL( 
+        const TPEErrorInfo& aErrorInfo )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndWaiting::HandleErrorL()");
+    
+    if( aErrorInfo.iErrorCode == ECCPErrorCCUserAlertingNoAnswer )
+        {
+        // Should not shown "No Answer" note
+        __PHONELOG1( EBasic, EPhoneUIStates,
+       "PhoneUIStates: CPhoneConferenceAndWaiting::HandleErrorL - aErrorInfo.iErrorCode =%d ",
+            aErrorInfo.iErrorCode);
+        }
+    else
+        {
+        CPhoneState::HandleErrorL( aErrorInfo );
         }
     }
 

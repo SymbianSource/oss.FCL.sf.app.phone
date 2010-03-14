@@ -67,5 +67,6 @@ LIBRARY gdi.lib
 LIBRARY bitgdi.lib
 LIBRARY egul.lib
 LIBRARY efsrv.lib
+LIBRARY ecom.lib
 
 // End of File

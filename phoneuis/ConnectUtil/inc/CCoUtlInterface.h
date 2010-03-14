@@ -86,7 +86,7 @@ class CCoUtlInterface
 
     };
 
-#include    <CCoUtlInterface.inl>
+#include    <ccoutlinterface.inl>
 
 #endif      // CCOUTLINTERFACE_H
             

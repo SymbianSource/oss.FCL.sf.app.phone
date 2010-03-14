@@ -377,8 +377,9 @@ void CPhoneRingingTonePlayerAO::MuteRingingToneOnAnswer()
     {
     __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneRingingTonePlayerAO::MuteRingingToneOnAnswer()" );
     
-    if ( iVideoPlayer && iTonePlayingStatus == EVideoTonePlaying ||
-         iTonePlayingStatus == EPersonalVideoTonePlaying )
+    if ( iVideoPlayer &&
+            ( iTonePlayingStatus == EVideoTonePlaying ||
+         iTonePlayingStatus == EPersonalVideoTonePlaying ) )
         {
         // Mute the video audio
         iVideoPlayer->MuteVideoRingTone();
@@ -399,8 +400,9 @@ void CPhoneRingingTonePlayerAO::MuteRingingTone()
     {
     __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneRingingTonePlayerAO::MuteRingingTone()" );
     
-    if ( iVideoPlayer && iTonePlayingStatus == EVideoTonePlaying ||
-         iTonePlayingStatus == EPersonalVideoTonePlaying )
+    if ( iVideoPlayer &&
+            ( iTonePlayingStatus == EVideoTonePlaying ||
+         iTonePlayingStatus == EPersonalVideoTonePlaying )  )
         {
         // Mute the video audio
         iVideoPlayer->MuteVideoRingTone();
@@ -1631,7 +1633,7 @@ void CPhoneRingingTonePlayerAO::SolveNewVolumeAndRamptime( TTtsStatus aStatus )
                     ramptime ); 
                 currPlayer->SetNewVolumeAndRamptime( iTtsVolume, 0 );    
                 }
-             break;
+            break;
         
         case ESaidTwice:
             if ( iTtsRingingType == EProfileRingingTypeAscending )
@@ -1814,42 +1816,42 @@ CPhoneAudioPlayer* CPhoneRingingTonePlayerAO::ActiveAudioPlayer()
     switch( iTonePlayingStatus )
         {
         case EAudioTonePlaying:
-            if( iAudioPlayer != NULL )
+            if( iAudioPlayer )
                 {
 				return iAudioPlayer;
                 }
             break;
             
         case EDefaultTonePlaying:
-            if ( iDefaultPlayer != NULL )
+            if ( iDefaultPlayer )
                 {
 				return iDefaultPlayer;
                 }
             break;
             
         case EBeepOnce:
-            if( iBeepOncePlayer != NULL )
+            if( iBeepOncePlayer )
                 {
 				return iBeepOncePlayer;
                 }
             break;
             
         case EBackupTonePlaying:
-            if( iBackupPlayer != NULL )
+            if( iBackupPlayer )
                 {
                 return iBackupPlayer;
                 }
             break;
             
         case ESilentTonePlaying:
-            if( iSilentPlayer != NULL )
+            if( iSilentPlayer )
                 {
                 return iSilentPlayer;
                 }
             break;
             
         case EUnsecureVoIPTonePlaying:
-            if( iUnsecureVoIPTonePlayer != NULL )
+            if( iUnsecureVoIPTonePlayer )
                 {
                 return iUnsecureVoIPTonePlayer;
                 }
@@ -1858,11 +1860,11 @@ CPhoneAudioPlayer* CPhoneRingingTonePlayerAO::ActiveAudioPlayer()
         case EVideoTonePlaying: // video ringing tone
         case EPersonalVideoTonePlaying:
         case ESilentVideoTonePlaying:
-            if ( iBeepOncePlayer != NULL )
+            if ( iBeepOncePlayer )
                 {
                 return iBeepOncePlayer;                    
                 }    
-            else if ( iSilentPlayer != NULL )
+            else if ( iSilentPlayer )
                 {
                 return iSilentPlayer;                    
                 }    
@@ -1888,7 +1890,7 @@ void CPhoneRingingTonePlayerAO::DoMuteRingingTone()
         case EVideoTonePlaying: // video ringing tone, fall through
         case EPersonalVideoTonePlaying: // fall through
         case ESilentVideoTonePlaying:
-            if ( iVideoPlayer != NULL )
+            if ( iVideoPlayer )
 	            {
                 iVideoPlayer->MuteVideoRingTone();
                 return;	            	
@@ -1900,7 +1902,7 @@ void CPhoneRingingTonePlayerAO::DoMuteRingingTone()
 		}
 	
 	CPhoneAudioPlayer* activePlayer = ActiveAudioPlayer();
-	if( activePlayer != NULL )
+	if( activePlayer )
 		{
 		activePlayer->MutePlaying();
 		}

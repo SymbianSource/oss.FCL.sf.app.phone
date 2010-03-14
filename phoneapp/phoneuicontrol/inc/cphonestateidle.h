@@ -281,6 +281,13 @@ class CPhoneStateIdle : public CPhoneState
              TPhoneCmdParamSpeedDial& aSpeedDialParam ) const;
 
          void HandleVoiceCallCommandL( TBool aSendKey );
+
+         /**
+          * Returns options menu id when number entry is visible.
+		  * If easydialing is in focus, id is asked from it.
+          * @return Menu resource id.
+          */   
+         TInt GetNumberAcqMenuIdL();
          
     private:
     

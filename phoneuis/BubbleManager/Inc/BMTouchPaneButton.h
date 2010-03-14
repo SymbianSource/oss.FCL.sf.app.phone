@@ -182,6 +182,11 @@ NONSHARABLE_CLASS( CBubbleTouchPaneButton ) : public CAknButton
          */
         void GetTextColors( TRgb& aPenColor ) const; 
         
+        /**
+         * Selects the correct text color.
+         */
+        void SelectTextColor(); 
+        
     private: // data
         /**
          * Array of the button commands.

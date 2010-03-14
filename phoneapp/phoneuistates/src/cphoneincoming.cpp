@@ -194,6 +194,12 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     
     BeginUiUpdateLC();
     
+    // Hide the number entry if it exists
+    if ( IsNumberEntryUsedL() )
+        {
+        SetNumberEntryVisibilityL( EFalse );    
+        }
+    
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
     

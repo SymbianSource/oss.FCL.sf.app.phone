@@ -34,7 +34,7 @@
 #include "phoneui.hrh"
 #include "mphonestorage.h"
 #include "cphonecenrepproxy.h"
-#include <TelephonyVariant.hrh>
+#include <telephonyvariant.hrh>
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -57,13 +57,15 @@ CPhoneConferenceAndSingleAndWaiting::CPhoneConferenceAndSingleAndWaiting(
 //
 CPhoneConferenceAndSingleAndWaiting::~CPhoneConferenceAndSingleAndWaiting()
     {
-    // Reset flag
+    // Need to check iViewCommandHandle validity here to not
+    // trigger a high/can panic error in a Codescanner run.
+    // coverity[var_compare_op]
     if ( iViewCommandHandle )
         {
         TPhoneCmdParamBoolean dtmfSendFlag;
         dtmfSendFlag.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
-    	&dtmfSendFlag );
+        TRAP_IGNORE( iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
+    	&dtmfSendFlag ) );
         }
     }
 
@@ -433,6 +435,28 @@ void CPhoneConferenceAndSingleAndWaiting::HandleKeyEventL(
         __PHONELOG( EBasic, EPhoneUIStates,
             "CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL-deviceF" );
         HandleHoldSwitchL();
+        }
+    }
+
+// -----------------------------------------------------------
+// CPhoneConferenceAndSingleAndWaiting::HandleErrorL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneConferenceAndSingleAndWaiting::HandleErrorL( 
+        const TPEErrorInfo& aErrorInfo )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingleAndWaiting::HandleErrorL()");
+    
+    if( aErrorInfo.iErrorCode == ECCPErrorCCUserAlertingNoAnswer )
+        {
+        // Should not shown "No Answer" note
+        __PHONELOG1( EBasic, EPhoneUIStates,
+       "PhoneUIStates: CPhoneConferenceAndSingleAndWaiting::HandleErrorL - aErrorInfo.iErrorCode =%d ",
+            aErrorInfo.iErrorCode);
+        }
+    else
+        {
+        CPhoneState::HandleErrorL( aErrorInfo );
         }
     }
 

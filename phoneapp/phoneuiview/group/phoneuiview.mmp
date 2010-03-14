@@ -65,7 +65,8 @@ SOURCE          phonebubbleextensionmanager.cpp
 SOURCE          phonebubbleextension.cpp 
 SOURCE          phonebubbleextensiondata.cpp
 SOURCE          cphonetoolbarcontroller.cpp
-
+SOURCE          cphoneeasydialingcontroller.cpp 
+SOURCE          cphonedtmfdialercontroller.cpp 
 
 /* Languages */
 LANG SC

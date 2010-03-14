@@ -160,7 +160,7 @@ enum
     EPhoneViewGetIsConferenceInSelectionMode,
     EPhoneViewIsStraightCallToVideoMailBox,
     EPhoneViewSetDtmfDialerViewVisible, // 130
-    EPhoneViewSetRetrictedDialer, 
+    EPhoneViewSetRestrictedDialer, 
     EPhoneViewIsConferenceInExpandedMode,
     EPhoneViewIsMenuBarVisible,
     EPhoneViewGetBlockingDialogStatus,
@@ -227,7 +227,13 @@ enum
     EPhoneViewSetToolbarDimming,
 	EPhoneViewEnableToolbarButton,
 	EPhoneViewHideToolbar,
-	EPhoneViewShowToolbar,
+	EPhoneViewShowToolbar,    
+    EPhoneViewGetEasyDialingInFocusStatus,
+    EPhoneViewSetInvalidCsPhoneNumberFlag,
+    EPhoneViewGetInvalidCsPhoneNumberFlag,
+    EPhoneViewGetEasyDialingMenuId,
+    EPhoneViewGetEasyDialingCbaId,
+
     EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.
 };
 

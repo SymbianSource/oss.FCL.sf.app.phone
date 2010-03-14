@@ -52,13 +52,15 @@ CPhoneConferenceAndCallSetup::CPhoneConferenceAndCallSetup(
 //
 CPhoneConferenceAndCallSetup::~CPhoneConferenceAndCallSetup()
     {
-    // Reset flag
+    // Need to check iViewCommandHandle validity here to not
+    // trigger a high/can panic error in a Codescanner run.
+    // coverity[var_compare_op]
     if ( iViewCommandHandle )
         {
         TPhoneCmdParamBoolean dtmfSendFlag;
         dtmfSendFlag.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
-    	    &dtmfSendFlag );
+        TRAP_IGNORE( iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
+    	    &dtmfSendFlag ) );
         }
     }
 
@@ -130,12 +132,6 @@ void CPhoneConferenceAndCallSetup::HandlePhoneEngineMessageL(
             HandleConferenceIdleL();
             }
             break;
-            
-        case MEngineMonitor::EPEMessageColpNumberAvailable:
-            {
-            HandleColpNoteL( aCallId );            
-            }
-            break;         
             
         default:
             {

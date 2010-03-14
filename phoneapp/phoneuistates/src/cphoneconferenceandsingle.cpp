@@ -57,13 +57,15 @@ CPhoneConferenceAndSingle::CPhoneConferenceAndSingle(
 //
 CPhoneConferenceAndSingle::~CPhoneConferenceAndSingle()
     {
-    // Reset flag 
+    // Need to check iViewCommandHandle validity here to not
+    // trigger a high/can panic error in a Codescanner run.
+    // coverity[var_compare_op]
     if ( iViewCommandHandle )
         {
         TPhoneCmdParamBoolean dtmfSendFlag;
         dtmfSendFlag.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
-    	    &dtmfSendFlag );     	
+        TRAP_IGNORE( iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
+    	    &dtmfSendFlag ) );     	
         }
     }
 
@@ -461,6 +463,12 @@ void CPhoneConferenceAndSingle::HandleIncomingL( TInt aCallId )
     
     BeginUiUpdateLC();  
     
+    // Hide the number entry if it exists
+    if ( IsNumberEntryUsedL() )
+        {
+        SetNumberEntryVisibilityL( EFalse );    
+        }
+    
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
     
@@ -651,6 +659,30 @@ void CPhoneConferenceAndSingle::HandleSendL()
             MPEPhoneModel::EPEMessageCheckEmergencyNumber );
         } 	
     CleanupStack::PopAndDestroy( phoneNumber );
+    }
+
+// -----------------------------------------------------------
+// CPhoneConferenceAndSingle::DisconnectCallL
+// -----------------------------------------------------------
+//
+void CPhoneConferenceAndSingle::DisconnectCallL()
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndSingle::DisconnectCallL( ) ");
+    // Fetch active call's id from view
+    TPhoneCmdParamCallStateData callStateData;
+    callStateData.SetCallState( EPEStateConnected );
+    iViewCommandHandle->HandleCommandL(
+        EPhoneViewGetCallIdByState, &callStateData );
+  
+    if( callStateData.CallId() > KErrNotFound  && callStateData.CallId() == KConferenceCallId )
+        {
+        iStateMachine->SendPhoneEngineMessage(
+                      CPEPhoneModelIF::EPEMessageHangUpConference );  
+        }
+    else
+        {
+        CPhoneState::DisconnectCallL();
+        }
     }
 
 // End of File

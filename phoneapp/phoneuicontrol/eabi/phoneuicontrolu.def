@@ -468,4 +468,5 @@ EXPORTS
 	_ZThn8_NK11CPhoneState17IsMenuBarVisibleLEv @ 467 NONAME
 	_ZN11CPhoneState17SetToolbarDimmingEi @ 468 NONAME
 	_ZN11CPhoneState34SetToolbarButtonLoudspeakerEnabledEv @ 469 NONAME
+	_ZNK11CPhoneState26IsDialingExtensionInFocusLEv @ 470 NONAME
 

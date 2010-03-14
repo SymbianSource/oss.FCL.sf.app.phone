@@ -317,6 +317,14 @@ class MPECallHandling
         * @return Error (KErrNone is success).
         */ 
         virtual TInt ForwardCallToAddress( TInt aIndex ) = 0;
+				        
+        /**
+        * Put all the calls to idle and make an request to 
+        * end the connection 
+        * @return KErrNotFound if there is not a call 
+        *         KErrNone if there is one call at least
+        */
+        virtual TInt ReleaseConference() = 0;
         
     public: // DTMF related
         /**

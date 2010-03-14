@@ -1,0 +1,6 @@
+EXPORTS
+	_ZN19CEDContactorService15ExecuteServiceLERKNS_12TCSParameterE @ 1 NONAME
+	_ZN19CEDContactorService4NewLEP20MEDContactorObserver @ 2 NONAME
+	_ZNK19CEDContactorService6IsBusyEv @ 3 NONAME
+	_ZN19CEDContactorService13CancelServiceEv @ 4 NONAME
+

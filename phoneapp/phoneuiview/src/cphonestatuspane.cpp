@@ -45,7 +45,7 @@
 #include "tphonecmdparambitmap.h"
 #include "phonelogger.h"
 
-#include <stringloader.h>
+#include <StringLoader.h>
 
 // CONSTANTS
 

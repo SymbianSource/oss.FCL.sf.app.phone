@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2007 - 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -37,6 +37,10 @@ class CEikMenuPane;
 class CEikonEnv;
 class CAknEdwinState;
 class MNumberEntryObserver;
+class CDialingExtensionInterface;
+class CDialingExtensionObserver;
+class CDialerToolbarContainer;
+class MPhoneDialerController;
 
 // CLASS DECLARATION
 
@@ -114,7 +118,7 @@ class MNumberEntryObserver;
     delete dialer;
 *
 */
-NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry
+NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry, public MCoeControlObserver // easy dialing change
     {
     public:  // Constructors and destructor
 
@@ -122,10 +126,12 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry
         * Two phase constructor
         * @param aContainer Parent container
         * @param aRect Area to use for dialer
+        * @param aController Dialer controller providing state data for dialer
         * @return New instance of Dialer
         */
         IMPORT_C static CDialer* NewL( const CCoeControl& aContainer,
-                                       const TRect& aRect );
+                                       const TRect& aRect,
+                                       MPhoneDialerController* aController );
 
         /**
         * Destructor.
@@ -144,6 +150,32 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry
         * Set number entry observer.
         */
         IMPORT_C void SetNumberEntryObserver( MNumberEntryObserver& aObserver );
+
+        /**
+        * Sets controller of the dialer. Controller is responsible of providing
+        * toolbar functions, text prompt, etc, as appropriate for the curret dialer state.
+        */
+        IMPORT_C void SetControllerL( MPhoneDialerController* aController );
+
+        /**
+        * Gets current controller of the dialer.
+        */
+        IMPORT_C MPhoneDialerController* Controller();
+        
+        /**
+         * Returns pointer to easydialing interface. This can be NULL if
+         * easydialing is not present in device, so value must be checked
+         * before using the interface.
+         * 
+         * @return  Pointer to easydialing interface
+         */
+        IMPORT_C CDialingExtensionInterface* GetEasyDialingInterface() const;
+        
+        /**
+         * Toolbar of the easydialing layout is owned by the Dialer.
+         * Calling this methods updates status of its buttons.
+         */
+        IMPORT_C void UpdateToolbar();
         
     public: // from MNumberEntry 
 
@@ -179,9 +211,9 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry
         
         /**
         * Get Number Entry Text.
-        * @param aDesC The text.
+        * @param aDes The text.
         */
-        void GetTextFromNumberEntry( TDes& aDesC );
+        void GetTextFromNumberEntry( TDes& aDes );
         
         /**
         * Removes NE and empties the buffer.
@@ -223,6 +255,10 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry
         */             
         void EnableTactileFeedback( const TBool aEnable );
 
+    private: // Functions from MCoeControlObserver
+        
+        void HandleControlEventL( CCoeControl* aControl, TCoeEvent aEventType );
+        
     private:  // Functions from CCoeControl
         
         /**
@@ -287,9 +323,11 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry
         * 2nd phase constructor.
         * @param aContainer Parent container
         * @param aRect Area to use for dialer
+        * @param aController Dialer controller providing state data for dialer 
         */
-        void ConstructL( const CCoeControl& aContainer , 
-            const TRect& aRect );
+        void ConstructL( const CCoeControl& aContainer, 
+            const TRect& aRect,
+            MPhoneDialerController* aController );
         
         /**
         * Load resource file.
@@ -319,6 +357,26 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry
          */
         void UpdateVkbEditorFlagsL();
 
+        /**
+         * Loads easydialing plugin. If loading fails (for instance when
+         * easydialing feature flag is not enabled in the device),
+         * iEasyDialer will be NULL after this function returns.
+         */
+        void LoadEasyDialingPlugin();
+        
+        /**
+         * Checks if Easy dialing is available, allowed, and currently enabled.
+         * 
+         * @return  ETrue if Easy Dialing is enabked 
+         */
+        TBool EasyDialingEnabled() const;
+        
+        /**
+         * Layout number entry component. The used layout depends on
+         * the availability and state of Easy dialing. 
+         */
+        void LayoutNumberEntry( const TRect& aParent, TInt aVariety );
+        
     private:    // Data
           
         // Keypad container  - owned
@@ -326,9 +384,6 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry
              
         // Number entry container - owned
         CDialerNumberEntry* iNumberEntry;
-        
-        // Parent container
-        const CCoeControl* iParentControl;
         
         // Is Number entry (e.g. dialer) being used at the moment
         TBool iIsUsed;
@@ -342,6 +397,30 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry
         // Is virtual key board open
         TBool iVirtualKeyBoardOpen;
 
+        /**
+         * Easydialing plugin. This can be NULL if easydialing feature flag
+         * is not enabled in the device.
+         * Own.
+         */
+        CDialingExtensionInterface* iEasyDialer;
+        
+        /**
+         * Observer for Easydialing.
+         * Own.
+         */
+        CDialingExtensionObserver* iDialingExtensionObserver;
+        
+        /**
+         * Toolbar used in Easy dialing layout.
+         * Own.
+         */
+        CDialerToolbarContainer* iToolbar;
+        
+        /**
+         * Controller rules the mode of the Dialer (e.g. normal, DTMF, restricted...)
+         * Not owned.
+         */
+        MPhoneDialerController* iController;
     };
 
 #endif      // CDIALER_H

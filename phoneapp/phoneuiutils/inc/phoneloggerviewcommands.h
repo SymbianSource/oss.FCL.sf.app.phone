@@ -293,8 +293,8 @@ public:
 		EPhoneViewIsStraightCallToVideoMailBox,
 		/** EPhoneViewSetDtmfDialerViewVisible */
 		EPhoneViewSetDtmfDialerViewVisible,
-		/** EPhoneViewSetRetrictedDialer */
-		EPhoneViewSetRetrictedDialer,
+		/** EPhoneViewSetRestrictedDialer */
+		EPhoneViewSetRestrictedDialer,
 		/** EPhoneViewIsConferenceInExpandedMode */
 		EPhoneViewIsConferenceInExpandedMode,
 		/** EPhoneViewIsMenuBarVisible */
@@ -415,6 +415,24 @@ public:
 		EPhoneViewSetNoConnectedCalls,
 		/** EPhoneViewIsDTMFEditorVisible */
 		EPhoneViewIsDTMFEditorVisible,
+		/** EPhoneViewSetToolbarDimming */
+		EPhoneViewSetToolbarDimming,
+		/** EPhoneViewEnableToolbarButton */
+		EPhoneViewEnableToolbarButton,
+		/** EPhoneViewHideToolbar */
+		EPhoneViewHideToolbar,
+		/** EPhoneViewShowToolbar */
+		EPhoneViewShowToolbar,
+		/** EPhoneViewGetEasyDialingInFocusStatus */
+		EPhoneViewGetEasyDialingInFocusStatus,
+		/** EPhoneViewSetInvalidCsPhoneNumberFlag */
+		EPhoneViewSetInvalidCsPhoneNumberFlag,
+		/** EPhoneViewGetInvalidCsPhoneNumberFlag */
+		EPhoneViewGetInvalidCsPhoneNumberFlag,
+		/** EPhoneViewGetEasyDialingMenuId */
+		EPhoneViewGetEasyDialingMenuId,
+		/** EPhoneViewGetEasyDialingCbaId */
+		EPhoneViewGetEasyDialingCbaId,
 		/** , // Don't remove this, this should always be the last in list. */
 		EPhoneAmountOfCommands
 		};

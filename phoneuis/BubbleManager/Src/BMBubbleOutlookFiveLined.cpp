@@ -166,7 +166,7 @@ void CBubbleOutlookFiveLined::ReadBubbleHeader( CBubbleHeader& aHeader )
 TInt CBubbleOutlookFiveLined::CountComponentControls() const
     {
     TInt amount = 0;
-
+    
     if ( iNumberType ) 
         {
         amount++;
@@ -238,9 +238,8 @@ TInt CBubbleOutlookFiveLined::CountComponentControls() const
 //
 CCoeControl* CBubbleOutlookFiveLined::ComponentControl(TInt aIndex) const
     {
-  
     TInt amount = -1;
-
+    // coverity[var_compare_op]
     if ( iNumberType )
         {
         amount++;
@@ -248,6 +247,7 @@ CCoeControl* CBubbleOutlookFiveLined::ComponentControl(TInt aIndex) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iNumberType->Control();
         }
 
@@ -328,6 +328,7 @@ CCoeControl* CBubbleOutlookFiveLined::ComponentControl(TInt aIndex) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iSmallCallIndication->Control();
         }
 
@@ -358,6 +359,7 @@ CCoeControl* CBubbleOutlookFiveLined::ComponentControl(TInt aIndex) const
 
     if ( aIndex == amount )
         {
+        // coverity[var_deref_model]
         return iBigCallIndicator->Control();
         }
 

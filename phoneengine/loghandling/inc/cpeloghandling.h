@@ -254,6 +254,15 @@ class CPELogHandling : public CBase,
         CPELogExtensionWrapper* CreateExtensionWrapperLC( 
             const TUid& aPluginUid ) const;
         
+        /**
+         * Checks if string is valid number for CS call.
+         * @since   S60 v5.1
+         * @param   aString A string to be checked.
+         * @return  ETrue if valid phone number.
+         */
+        TBool IsValidPhoneNumber( 
+            const TDesC& aString ) const;
+        
     private: // data 
         // Reference to MPEPhoneModelInternal, also object owner
         MPEPhoneModelInternal&  iModel;

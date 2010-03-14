@@ -102,11 +102,13 @@ RESOURCE MENU_PANE r_psln_ci_basic_menupane
             {
             command = EPslnCmdAppActivate;
             txt = qtn_skins_option_activate;
+            flags = EEikMenuItemAction;
             },
         MENU_ITEM 
             {
             command = EPslnCmdAppDownload;
             txt = qtn_options_change;
+            flags = EEikMenuItemAction;
             },
 #ifdef __SERIES60_HELP
         MENU_ITEM 

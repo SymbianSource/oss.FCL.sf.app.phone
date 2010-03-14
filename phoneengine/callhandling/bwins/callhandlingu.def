@@ -76,4 +76,5 @@ EXPORTS
 	?ForwardCallToAddress@CPECallHandling@@UAEHH@Z @ 75 NONAME ; int CPECallHandling::ForwardCallToAddress(int)
 	??1CPEDtmfHandling@@UAE@XZ @ 76 NONAME ; CPEDtmfHandling::~CPEDtmfHandling(void)
 	?CallCapsChanged@CPEConferenceCall@@UAEXW4TCCEConferenceCallCaps@MCCEConferenceCallObserver@@@Z @ 77 NONAME ; void CPEConferenceCall::CallCapsChanged(enum MCCEConferenceCallObserver::TCCEConferenceCallCaps)
+	?ReleaseConference@CPECallHandling@@UAEHXZ @ 78 NONAME ; int CPECallHandling::ReleaseConference(void)
 

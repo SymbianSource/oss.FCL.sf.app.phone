@@ -90,6 +90,7 @@ class CPhoneConferenceAndSingle : public CPhoneConference
         
         virtual void HandleConferenceIdleL();
         
+        virtual void DisconnectCallL();
         
      private:
      

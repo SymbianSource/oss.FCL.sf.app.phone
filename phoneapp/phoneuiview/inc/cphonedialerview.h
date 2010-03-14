@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2008 - 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -56,6 +56,13 @@ class CPhoneDialerView : public CCoeControl, public MCoeView
         */
         void HandleResourceChange( TInt aType );
 
+        /**
+        * From CCoeControl
+        * @param aVisible : ETrue if view is to be shown
+        *                   EFalse if view is to be hidden
+        */
+        void MakeVisible( TBool aVisible );
+
     public: // New functions
 
         /**
@@ -75,7 +82,7 @@ class CPhoneDialerView : public CCoeControl, public MCoeView
         * @param aStatus ETrue for the security mode. EFalse for the 
         * normal mode.
         */ 
-        void SetSecurityMode ( TBool aStatus );
+        void SetSecurityMode( TBool aStatus );
         
         /**
         * Get state of the security mode flag

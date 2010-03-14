@@ -40,6 +40,9 @@
 #include "cphonestateutilsvoip.h"
 #include "cphonestatemachinevoip.h"
 
+#include "easydialingcommands.hrh"
+
+
 // ================= MEMBER FUNCTIONS =======================
 
 // C++ default constructor can NOT contain any code, that
@@ -137,7 +140,15 @@ TBool CPhoneStateSingleVoIP::HandleCommandL( TInt aCommand )
         	break;
      	
         case EPhoneNumberAcqCmdSendCommand:
-            StartCallingL();
+            // If easydialing has focus, call should be initiated to focused contact.
+            if ( IsDialingExtensionInFocusL() )
+                {
+                commandStatus = CPhoneSingleCall::HandleCommandL( aCommand );
+                }
+            else
+                {
+                StartCallingL();
+                }
             break;
          
         case EPhoneCmdAcceptUnattendedTransfer:
@@ -177,11 +188,19 @@ void CPhoneStateSingleVoIP::HandleKeyMessageL(
                  
             if( IsNumberEntryVisibleL() && neLength )
                 {
-                if ( IsOnScreenDialerSupported() &&  
-                     ( IsDTMFEditorVisibleL() ||
-                       IsCustomizedDialerVisibleL() ) )
+                if ( IsOnScreenDialerSupported() )
                     {
-                    return;
+                    if ( IsDTMFEditorVisibleL() || 
+                         IsCustomizedDialerVisibleL() )
+                        {
+                        return;
+                        }
+                    // If easydialing has focus, call should be initiated to focused contact.
+                    else if ( IsDialingExtensionInFocusL() )
+                        {
+                        CPhoneSingleCall::HandleKeyMessageL( aMessage, aKeyCode );
+                        return;
+                        }
                     }
                     
                 StartCallingL();

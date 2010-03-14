@@ -156,7 +156,7 @@ _STLIT8(K128, "EPhoneResetTouchButtons");
 _STLIT8(K129, "EPhoneViewGetIsConferenceInSelectionMode");
 _STLIT8(K130, "EPhoneViewIsStraightCallToVideoMailBox");
 _STLIT8(K131, "EPhoneViewSetDtmfDialerViewVisible");
-_STLIT8(K132, "EPhoneViewSetRetrictedDialer");
+_STLIT8(K132, "EPhoneViewSetRestrictedDialer");
 _STLIT8(K133, "EPhoneViewIsConferenceInExpandedMode");
 _STLIT8(K134, "EPhoneViewIsMenuBarVisible");
 _STLIT8(K135, "EPhoneViewGetBlockingDialogStatus");
@@ -217,7 +217,16 @@ _STLIT8(K189, "EPhoneViewAddContactByString");
 _STLIT8(K190, "EPhoneViewIsActiveNoteDissmissableByKeyEvent");
 _STLIT8(K191, "EPhoneViewSetNoConnectedCalls");
 _STLIT8(K192, "EPhoneViewIsDTMFEditorVisible");
-_STLIT8(K193, ", // Don't remove this, this should always be the last in list.");
+_STLIT8(K193, "EPhoneViewSetToolbarDimming");
+_STLIT8(K194, "EPhoneViewEnableToolbarButton");
+_STLIT8(K195, "EPhoneViewHideToolbar");
+_STLIT8(K196, "EPhoneViewShowToolbar");
+_STLIT8(K197, "EPhoneViewGetEasyDialingInFocusStatus");
+_STLIT8(K198, "EPhoneViewSetInvalidCsPhoneNumberFlag");
+_STLIT8(K199, "EPhoneViewGetInvalidCsPhoneNumberFlag");
+_STLIT8(K200, "EPhoneViewGetEasyDialingMenuId");
+_STLIT8(K201, "EPhoneViewGetEasyDialingCbaId");
+_STLIT8(K202, ", // Don't remove this, this should always be the last in list.");
 
 // Intermediate
 const void * const KStringPointers[] =
@@ -414,8 +423,17 @@ const void * const KStringPointers[] =
 	(const void*)&K190,
 	(const void*)&K191,
 	(const void*)&K192,
-	(const void*)&K193
+	(const void*)&K193,
+	(const void*)&K194,
+	(const void*)&K195,
+	(const void*)&K196,
+	(const void*)&K197,
+	(const void*)&K198,
+	(const void*)&K199,
+	(const void*)&K200,
+	(const void*)&K201,
+	(const void*)&K202
 	};
 
-const TStringTable PhoneLoggerviewCommands::Table = {193, KStringPointers, EFalse};
+const TStringTable PhoneLoggerviewCommands::Table = {202, KStringPointers, EFalse};
 

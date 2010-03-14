@@ -182,6 +182,13 @@ void CPhoneEmergency::HandlePhoneEngineMessageL(
                     }
                  }
             break;
+            
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            {
+            //Don't show COLP note during emergency call.
+            return;                    
+            }
+            break; 
 
         default:
             CPhoneGsmInCall::HandlePhoneEngineMessageL(

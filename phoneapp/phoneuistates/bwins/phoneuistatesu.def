@@ -62,4 +62,6 @@ EXPORTS
 	?SetDivertIndication@CPhoneGsmInCall@@MAEXH@Z @ 61 NONAME ; void CPhoneGsmInCall::SetDivertIndication(int)
 	?HandleErrorL@CPhoneIncoming@@UAEXABUTPEErrorInfo@@@Z @ 62 NONAME ; void CPhoneIncoming::HandleErrorL(struct TPEErrorInfo const &)
 	?HandleRemConCommandL@CPhoneEmergency@@MAEHW4TRemConCoreApiOperationId@@W4TRemConCoreApiButtonAction@@@Z @ 63 NONAME ; int CPhoneEmergency::HandleRemConCommandL(enum TRemConCoreApiOperationId, enum TRemConCoreApiButtonAction)
+	?HandleErrorL@CPhoneConferenceAndSingleAndWaiting@@UAEXABUTPEErrorInfo@@@Z @ 64 NONAME ; void CPhoneConferenceAndSingleAndWaiting::HandleErrorL(struct TPEErrorInfo const &)
+	?HandleErrorL@CPhoneConferenceAndWaiting@@UAEXABUTPEErrorInfo@@@Z @ 65 NONAME ; void CPhoneConferenceAndWaiting::HandleErrorL(struct TPEErrorInfo const &)
 

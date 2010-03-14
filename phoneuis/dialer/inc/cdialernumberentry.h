@@ -28,6 +28,7 @@
 #include <AknPhoneNumberEditor.h>
 
 #include "cdialercontainerbase.h"
+#include "dialer.hrh"
 
 // CONSTANTS
 
@@ -37,7 +38,7 @@ class CAknButton;
 class CAknsFrameBackgroundControlContext;
 class MNumberEntryObserver;
 class CEikLabel;
-
+class CDialingExtensionInterface;
 
 // Number entry varietys
 enum TDialerNEVariety
@@ -111,10 +112,16 @@ NONSHARABLE_CLASS(CDialerNumberEntry) :
         void SetTextToNumberEntry( const TDesC& aDesC );
 
         /**
-        * Get tect from number entry.
-        * @param aDesc Text is returned here.
+        * Returns TPtrC pointed to editor text.
+        * @return   Pointer to editor text.
         */
-        void GetTextFromNumberEntry( TDes& aDesC );
+        TPtrC Text() const;
+        
+        /**
+        * Get tect from number entry.
+        * @param aDes Text is returned here.
+        */
+        void GetTextFromNumberEntry( TDes& aDes );
 
         /**
         * Reset editor to default values.
@@ -143,7 +150,13 @@ NONSHARABLE_CLASS(CDialerNumberEntry) :
         * Clear editor flags to default values.
         */
         void ClearEditorFlags();
+
+        void SetEasyDialingPlugin( CDialingExtensionInterface* iEasyDialer );
         
+        void SetOperationMode( TDialerOperationMode aMode );
+        
+        TBool Validate( const TDesC& aString );
+
     private:  // Functions from MCoeControlObserver
         /**
         * @see MCoeControlObserver
@@ -178,12 +191,22 @@ NONSHARABLE_CLASS(CDialerNumberEntry) :
         */
         void HandleResourceChange( TInt aType );        
 
+        /**
+        * @see CCoeControl
+        */
+        void HandlePointerEventL( const TPointerEvent& aPointerEvent );
+
     public:        
         /**
         * @see CCoeControl
         */
         void SetFocus( TBool aFocus, 
                        TDrawNow aDrawNow=ENoDrawNow );
+					   
+		/**
+        * @see CCoeControl
+        */			   
+        void MakeVisible( TBool aVisible );
    
     private: // From CDialerContainerBase
 
@@ -289,6 +312,16 @@ NONSHARABLE_CLASS(CDialerNumberEntry) :
         MNumberEntryObserver* iObserver;    
         
         TBool iNumberContents;  
+        
+        TBuf<KDialerPhoneNumberEntryBufferSize> iPreviousNumberEntryContent;
+
+        // NOT OWN
+        CDialingExtensionInterface* iEasyDialer;
+        
+        TDialerOperationMode iOperationMode;
+        
+        // NOT OWNED.
+        CEikAppUi* iAppUi;
     };
 
 #endif      // CDIALERNUMBERENTRY_H

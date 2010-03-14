@@ -35,6 +35,7 @@
 #include "cphonecenrepproxy.h"
 #include "cphonemediatorfactory.h"
 #include "tphonecmdparamnumberentryobserver.h"
+#include <phoneappcommands.hrh>
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -323,9 +324,17 @@ EXPORT_C TBool CPhoneUIController::HandleCommandL( TInt aCommand )
     {
     __ASSERT_DEBUG( iStateMachine->State(), Panic( EPhoneCtrlInvariant ) );
 
+    
 	// Send key up message to engine so that we wouldn't accidentally play
 	// any DTMF tone.
-    iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF );
+    
+    // DTMF tone is not ended if command is EPhoneDialerValidNumber or
+    // EPhoneDialerInvalidNumber. These commands result from
+    // user pressing numbers, and they must not interfere with tones.
+    if ( ! ( aCommand == EPhoneDialerValidNumber || aCommand == EPhoneDialerInvalidNumber ) )
+        {
+        iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF );
+        }
 
     return iStateMachine->State()->HandleCommandL( aCommand );
     }

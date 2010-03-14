@@ -1,0 +1,6 @@
+EXPORTS
+	?ExecuteServiceL@CEDContactorService@@QAEXABVTCSParameter@1@@Z @ 1 NONAME ; void CEDContactorService::ExecuteServiceL(class CEDContactorService::TCSParameter const &)
+	?IsBusy@CEDContactorService@@QBEHXZ @ 2 NONAME ; int CEDContactorService::IsBusy(void) const
+	?NewL@CEDContactorService@@SAPAV1@PAVMEDContactorObserver@@@Z @ 3 NONAME ; class CEDContactorService * CEDContactorService::NewL(class MEDContactorObserver *)
+	?CancelService@CEDContactorService@@QAEXXZ @ 4 NONAME ; void CEDContactorService::CancelService(void)
+

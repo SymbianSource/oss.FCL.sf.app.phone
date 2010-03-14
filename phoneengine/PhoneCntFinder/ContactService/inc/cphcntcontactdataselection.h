@@ -20,7 +20,7 @@
 #define CPHCNTCONTACTDATASELECTION_H
 
 #include <e32base.h>
-#include "MPhCntMatch.h"
+#include "mphcntmatch.h"
 
 NONSHARABLE_CLASS( CPhCntSelectedData ) : public CBase
     {

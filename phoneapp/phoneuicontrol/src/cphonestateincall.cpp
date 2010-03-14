@@ -51,6 +51,8 @@
 #include "cphonemediatorsender.h"
 #include "cphoneterminateallconnectionscommand.h"
 #include "mphonecustomization.h"
+#include "easydialingcommands.hrh"
+
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -146,7 +148,15 @@ EXPORT_C void CPhoneStateInCall::HandleKeyMessageL(
                 }
             else if ( IsNumberEntryVisibleL() )
                 {
-                HandleCommandL( EPhoneCmdOptions );
+                if ( IsDialingExtensionInFocusL() )
+                    {
+                    iViewCommandHandle->HandleCommandL(
+                                       EEasyDialingEnterKeyAction );
+                    }
+                else
+                    {
+                    HandleCommandL( EPhoneCmdOptions );
+                    }
                 }
             break;
 #endif            
@@ -762,7 +772,7 @@ EXPORT_C TBool CPhoneStateInCall::HandleCommandL( TInt aCommand )
 
         case EPhoneCmdEnd:
             CloseDtmfQueryL();
-            CPhoneState::DisconnectCallL();
+            DisconnectCallL();
             break;
             
         // 'End all calls' from menu

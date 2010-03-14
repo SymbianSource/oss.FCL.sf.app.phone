@@ -98,9 +98,6 @@ void CPEParserVoipNumberHandler::ProcessDialToVoipNumberL(
           &aDtmfPostfix );
 
     TPEPhoneNumber phoneNumber;
-    
-    // Check if phone is locked
-    iOwner.CheckIfPhoneIsLockedL();
   
     if ( aNumber.Length() == 0 )
         {

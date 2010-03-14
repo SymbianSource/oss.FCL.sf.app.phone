@@ -27,7 +27,7 @@
 #include <connect/sbdefs.h>
 #include <videotelcontrolmediatorapi.h>
 #include <MediatorDomainUIDs.h>
-#include <TelephonyVariant.hrh>
+#include <telephonyvariant.hrh>
 
 #include "cphonesinglecall.h"
 #include "tphonecmdparamstring.h"
@@ -498,6 +498,12 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
         "CPhoneSingleCall::HandleIncomingL()");
     
     BeginUiUpdateLC();
+    
+    // Hide the number entry if it exists
+    if ( IsNumberEntryUsedL() )
+        {
+        SetNumberEntryVisibilityL( EFalse );    
+        }
     
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );

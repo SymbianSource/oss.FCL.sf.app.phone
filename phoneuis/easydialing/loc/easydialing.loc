@@ -1,0 +1,38 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Easy dialing localization file.
+*
+*/
+
+// LOCALISATION STRINGS
+
+// d: Option in Number Acquisition state menu.
+// d: It contains submenu on/off states of easy dialing.
+// l: list_single_pane_t1_cp2/opt3
+// r:9.1
+#define qtn_easydial_option_submenu_title "Contact search"
+
+//d: Submenu item for easy dialing setting.
+//l: list_single_popup_submenu_pane_t1/opt1
+//r:9.2
+//
+#define qtn_easy_dialing_on "On"
+
+//d: Submenu item for easy dialing setting.
+//l: list_single_popup_submenu_pane_t1/opt1
+//r:9.2
+//
+#define qtn_easy_dialing_off "Off"
+
+// End of File

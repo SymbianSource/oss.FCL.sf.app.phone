@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2007 - 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -31,20 +31,24 @@
 #include <data_caging_path_literals.hrh>    // for KDC_APP_RESOURCE_DIR
 #include <bautils.h>                        // for BaflUtils
 #include <aknedsts.h>
+#include <dialingextensioninterface.h>
+#include <dialer.rsg>
 
 #include "cdialer.h"
 #include "dialercommon.h"
-#include <dialer.rsg>
 #include "dialer.hrh"
 #include "cdialerkeypadcontainer.h"
 #include "cdialernumberentry.h"
 #include "dialertrace.h"
 #include "mnumberentry.h"
+#include "cdialingextensionobserver.h"
+#include "cdialertoolbarcontainer.h"
 
 /// ROM drive.
 _LIT( KDialerResourceFile, "dialer.rsc" );
-// number entry, keypad area
-const TInt KContainedControlsInTelephonyMode = 2;  
+
+// number entry, keypad area, easydialing, toolbar
+const TInt KContainedControlsInTelephonyMode = 4;  
 
 // ========================= MEMBER FUNCTIONS ================================
 
@@ -55,12 +59,13 @@ const TInt KContainedControlsInTelephonyMode = 2;
 // ---------------------------------------------------------------------------
 //
 EXPORT_C CDialer* CDialer::NewL( const CCoeControl& aContainer, 
-                                 const TRect& aRect )
+                                 const TRect& aRect,
+                                 MPhoneDialerController* aController )
     {
-    CDialer* self = new( ELeave )CDialer ( );    
+    CDialer* self = new( ELeave )CDialer();
     CleanupStack::PushL( self );
-    self->ConstructL( aContainer , aRect );
-    CleanupStack::Pop();    // self
+    self->ConstructL( aContainer, aRect, aController );
+    CleanupStack::Pop( self );
     return self;
     }
 
@@ -72,6 +77,10 @@ EXPORT_C CDialer::~CDialer()
 
     delete iKeypadArea;
     delete iNumberEntry;
+
+    delete iEasyDialer;
+    delete iDialingExtensionObserver;
+    delete iToolbar;
 
     UnLoadResources();
     DIALER_PRINT("CDialer::~CDialer>"); 
@@ -85,7 +94,8 @@ EXPORT_C CDialer::~CDialer()
 //
 void CDialer::ConstructL( 
     const CCoeControl& aContainer, 
-    const TRect& aRect )
+    const TRect& aRect,
+    MPhoneDialerController* aController )
     {    
     DIALER_PRINT("CDialer::ConstructL<");	
     LoadResourceL();    
@@ -93,16 +103,28 @@ void CDialer::ConstructL(
     // set window
     SetContainerWindowL( aContainer );
     SetParent( const_cast<CCoeControl*>(&aContainer) );
-    iParentControl = &aContainer;
 
     iNumberEntry = CDialerNumberEntry::NewL( *this );    
 
-    iKeypadArea = CDialerKeyPadContainer::NewL( *this,  EModeDialer );    
+    iController = aController;
     
+    iKeypadArea = CDialerKeyPadContainer::NewL( *this, EModeEasyDialing );    
+    
+    iToolbar = CDialerToolbarContainer::NewL( *this, iController );
+
+    // try to create easydialing plugin. If plugin is not present, iEasydialer gets value NULL.
+    LoadEasyDialingPlugin();
+
+    iNumberEntry->SetEasyDialingPlugin( iEasyDialer );
+    iNumberEntry->SetObserver( this );
+    iNumberEntry->SetNumberEntryPromptTextL( iController->NumberEntryPromptTextL() );
+
+    UpdateToolbar();
+
     SetRect( aRect );
     
-    SetComponentsToInheritVisibility( ETrue );
-    
+    SetComponentsToInheritVisibility( EFalse );
+
     ActivateL();
     DIALER_PRINT("CDialer::ConstructL>");
     }
@@ -136,6 +158,59 @@ EXPORT_C void CDialer::SetNumberEntryObserver( MNumberEntryObserver& aObserver )
     iNumberEntry->SetNumberEntryObserver( aObserver );  
     }
 
+// -----------------------------------------------------------------------------
+// CDialer::SetControllerL
+// -----------------------------------------------------------------------------
+//
+EXPORT_C void CDialer::SetControllerL( MPhoneDialerController* aController )
+    {
+    DIALER_PRINTF( "CDialer::SetControllerL, aController = %x", aController );
+    __ASSERT_DEBUG( aController, DialerPanic(EDialerPanicNullController) );
+    if ( aController && iController != aController )
+        {
+        iController = aController;
+        iToolbar->SetContentProviderL( iController );
+        iNumberEntry->SetNumberEntryPromptTextL( iController->NumberEntryPromptTextL() );
+        SizeChanged();
+        UpdateToolbar();
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// CDialer::Controller
+// ---------------------------------------------------------------------------
+//
+EXPORT_C MPhoneDialerController* CDialer::Controller()
+    {
+    return iController;
+    }
+            
+// ---------------------------------------------------------------------------
+// CDialer::GetEasyDialingInterface
+// ---------------------------------------------------------------------------
+//
+EXPORT_C CDialingExtensionInterface* CDialer::GetEasyDialingInterface() const
+    {
+    DIALER_PRINT("CDialer::GetEasyDialingInterface");
+    return iEasyDialer;
+    }
+
+// ---------------------------------------------------------------------------
+// CDialer::UpdateToolbar
+// ---------------------------------------------------------------------------
+//
+EXPORT_C void CDialer::UpdateToolbar()
+    {
+    if ( iToolbar && iNumberEntry && iController )
+        {
+        TBool numAvailable = ( iNumberEntry->TextLength() > 0 );
+        iController->SetNumberEntryIsEmpty( !numAvailable );
+        iToolbar->UpdateButtonStates();
+        iToolbar->DrawDeferred();
+        iKeypadArea->DrawDeferred(); // needed to remove drawing problem from leftmost button column
+        }
+    }
+
 // Methods from MNumberEntry
 
 // ---------------------------------------------------------------------------
@@ -149,7 +224,7 @@ void CDialer::CreateNumberEntry()
     DIALER_PRINT("CDialer::CreateNumberEntry<");
     
     iIsUsed = ETrue;    
-    
+
     DIALER_PRINT("CDialer::CreateNumberEntry>");        
     }
     
@@ -158,7 +233,7 @@ void CDialer::CreateNumberEntry()
 //  
 // ---------------------------------------------------------------------------
 //
-CCoeControl* CDialer::GetNumberEntry( ) const
+CCoeControl* CDialer::GetNumberEntry() const
     {
     CCoeControl* control( NULL );
     control = iNumberEntry->GetNumberEntry();
@@ -170,7 +245,7 @@ CCoeControl* CDialer::GetNumberEntry( ) const
 //  
 // ---------------------------------------------------------------------------
 //
-TBool CDialer::IsNumberEntryUsed( ) const
+TBool CDialer::IsNumberEntryUsed() const
     {
     return iIsUsed;
     }
@@ -199,9 +274,9 @@ void CDialer::SetTextToNumberEntry( const TDesC& aDesC )
 //  
 // ---------------------------------------------------------------------------
 //
-void CDialer::GetTextFromNumberEntry( TDes& aDesC )
+void CDialer::GetTextFromNumberEntry( TDes& aDes )
     {
-    iNumberEntry->GetTextFromNumberEntry( aDesC );
+    iNumberEntry->GetTextFromNumberEntry( aDes );
     }
     
 // ---------------------------------------------------------------------------
@@ -209,10 +284,18 @@ void CDialer::GetTextFromNumberEntry( TDes& aDesC )
 //  
 // ---------------------------------------------------------------------------
 //
-void CDialer::RemoveNumberEntry( )
+void CDialer::RemoveNumberEntry()
     {
     ResetEditorToDefaultValues();
     iIsUsed = EFalse;
+
+    // easydialer change begins
+    if (iEasyDialer)
+        {
+        TRAP_IGNORE( iEasyDialer->HandleCommandL( EEasyDialingClosePopup ) );
+        iEasyDialer->Reset();
+        }
+    // easydialer change ends
     }
     
 // ---------------------------------------------------------------------------
@@ -281,6 +364,30 @@ void CDialer::EnableTactileFeedback( const TBool aEnable )
     iKeypadArea->EnableTactileFeedback( aEnable );
     }
 
+// ---------------------------------------------------------------------------
+// CDialer::HandleControlEventL
+// ---------------------------------------------------------------------------
+//
+void CDialer::HandleControlEventL( CCoeControl* aControl, TCoeEvent aEventType )
+    {
+    switch ( aEventType )
+        {
+        case MCoeControlObserver::EEventRequestFocus:
+            if ( aControl == iNumberEntry )
+                {
+                if ( iEasyDialer )
+                    {
+                    iEasyDialer->SetFocus( EFalse );
+                    }
+                iNumberEntry->SetFocus( ETrue );
+                }
+            break;
+            
+        default:
+            break;
+        }
+    }
+
 // Functions from CCoeControl
 
 // ---------------------------------------------------------------------------
@@ -293,7 +400,7 @@ void CDialer::EnableTactileFeedback( const TBool aEnable )
 void CDialer::SizeChanged()
     {
     AknsUtils::RegisterControlPosition( this );
-    TRect parentRect(Rect()); 
+    TRect parentRect( Rect() );
        
     // Method is called before containers are created.
     if ( !iKeypadArea )
@@ -301,19 +408,32 @@ void CDialer::SizeChanged()
         return;
         }
         
-    TDialerVariety variety( EDialerVarietyLandscape );
-    if (  !Layout_Meta_Data::IsLandscapeOrientation() )
-        {
-        variety = EDialerVarietyPortrait;
-        }            
-    // number entry
-    AknLayoutUtils::LayoutControl(
-        iNumberEntry, parentRect, 
-        AknLayoutScalable_Apps::dialer2_ne_pane( variety ).LayoutLine() );
-    // keypad area.
+    TDialerVariety variety = ( Layout_Meta_Data::IsLandscapeOrientation() ?
+        EDialerVarietyLandscape : EDialerVarietyPortrait );
+    
+    // keypad area
+    TDialerOperationMode keypadOpMode = 
+            ( EasyDialingEnabled() ? EModeEasyDialing : EModeDialer );
+    iKeypadArea->SetOperationMode( keypadOpMode );
     AknLayoutUtils::LayoutControl(
         iKeypadArea, parentRect, 
-        AknLayoutScalable_Apps::grid_dialer2_keypad_pane( variety ).LayoutLine() );
+        AknLayoutScalable_Apps::dia3_keypad_num_pane( variety ).LayoutLine() );
+
+    // toolbar
+    AknLayoutUtils::LayoutControl(
+        iToolbar, parentRect, 
+        AknLayoutScalable_Apps::dia3_keypad_fun_pane( variety ).LayoutLine() );
+
+    // easy dial contacts list
+    if ( iEasyDialer )
+        {
+        AknLayoutUtils::LayoutControl(
+            iEasyDialer, parentRect, 
+            AknLayoutScalable_Apps::dia3_listscroll_pane( variety ).LayoutLine() );
+        }
+
+    // number entry
+    LayoutNumberEntry( parentRect, variety );   
     }
 
 // ---------------------------------------------------------------------------
@@ -333,8 +453,12 @@ void CDialer::PositionChanged()
 //
 TInt CDialer::CountComponentControls() const
     {
-    TInt count(0);
-    count = KContainedControlsInTelephonyMode;
+    TInt count( KContainedControlsInTelephonyMode );
+    
+    if ( !iEasyDialer )
+        {
+        count--;
+        }
     return count;
     }
     
@@ -347,7 +471,7 @@ TInt CDialer::CountComponentControls() const
 CCoeControl* CDialer::ComponentControl( TInt aIndex ) const
     {
     CCoeControl* currentControl(NULL);
-    currentControl = ComponentControlForDialerMode( aIndex);
+    currentControl = ComponentControlForDialerMode( aIndex );
     return currentControl;
     } 
 
@@ -365,7 +489,17 @@ void CDialer::Draw( const TRect& /*aRect*/ ) const
 //
 void CDialer::FocusChanged(TDrawNow aDrawNow)
     {
-    iNumberEntry->SetFocus( IsFocused(), aDrawNow );    
+    if ( iEasyDialer )
+        {           
+        // Number entry is set to focus if dialer is in focus and easydialing plugin
+        // is not in focus.
+        TBool numberEntryFocus = IsFocused() && !iEasyDialer->IsFocused();
+        iNumberEntry->SetFocus( numberEntryFocus, aDrawNow );
+        }
+    else
+        {
+        iNumberEntry->SetFocus( IsFocused(), aDrawNow );    
+        }
     }
     
 // ---------------------------------------------------------------------------
@@ -373,9 +507,32 @@ void CDialer::FocusChanged(TDrawNow aDrawNow)
 // ---------------------------------------------------------------------------
 //
 void CDialer::MakeVisible( TBool aVisible )
-	{
-	CCoeControl::MakeVisible( aVisible );
-	}
+    {
+    CCoeControl::MakeVisible( aVisible );
+
+    // Component control do not inherit visibility automatically as we
+    // want to control their visibility separately.
+    if ( iNumberEntry )
+        {
+        iNumberEntry->MakeVisible( aVisible );
+        }
+
+    if ( iKeypadArea )
+        {
+        iKeypadArea->MakeVisible( aVisible );
+        }
+
+    if ( iEasyDialer )
+        {
+        TBool edVisible = 
+            ( aVisible && EasyDialingEnabled() );
+        iEasyDialer->MakeVisible( edVisible );
+        }
+    if ( iToolbar )
+        {
+        iToolbar->MakeVisible( aVisible );
+        }
+    }
 
 // ---------------------------------------------------------------------------
 // CDialer::PrepareForFocusGainL
@@ -471,6 +628,14 @@ CCoeControl* CDialer::ComponentControlForDialerMode( const TInt aIndex ) const
         case 1:
             currentControl = iKeypadArea;
             break;
+            
+        case 2:
+            currentControl = iToolbar;
+            break;
+        case 3:
+            currentControl = iEasyDialer;
+            break;
+            
         default:
             {
             __ASSERT_DEBUG( EFalse, _L("CDialer::ComponentControl no such component defined"));
@@ -522,6 +687,76 @@ void CDialer::UpdateVkbEditorFlagsL()
     // Report state updated
     edwinState->ReportAknEdStateEventL(
                     MAknEdStateObserver::EAknEdwinStateEventStateUpdate );
+    }
+
+// ---------------------------------------------------------------------------
+// CDialer::LoadEasyDialingPlugin
+// ---------------------------------------------------------------------------
+//
+void CDialer::LoadEasyDialingPlugin()
+    {
+    DIALER_PRINT( "CDialer::LoadEasyDialingPlugin" )
+    TRAPD( error, 
+        {
+        iEasyDialer = CDialingExtensionInterface::NewL();
+        iEasyDialer->InitializeL( *this );
+        
+        iDialingExtensionObserver = CDialingExtensionObserver::NewL( iEasyDialer, iNumberEntry, this );
+        iEasyDialer->AddObserverL( iDialingExtensionObserver );
+        } );
+
+    if ( error )
+        {
+        DIALER_PRINT( "CDialer::LoadEasyDialingPlugin, load failed" )
+                
+        delete iEasyDialer;        
+        iEasyDialer = NULL;
+        
+        delete iDialingExtensionObserver;
+        iDialingExtensionObserver = NULL;
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// CDialer::EasyDialingEnabled
+// ---------------------------------------------------------------------------
+//
+TBool CDialer::EasyDialingEnabled() const
+    {
+    TBool easyDialEnabled = ( iEasyDialer &&
+                              iEasyDialer->IsEnabled() &&
+                              iController &&
+                              iController->EasyDialingAllowed() );
+    return easyDialEnabled;
+    }
+
+// ---------------------------------------------------------------------------
+// CDialer::LayoutNumberEntry
+// ---------------------------------------------------------------------------
+//
+void CDialer::LayoutNumberEntry( const TRect& aParent, TInt aVariety )
+    {
+    // Use larger number entry if Easy dialing is not currently enabled.
+    if ( EasyDialingEnabled() )
+        {
+        iNumberEntry->SetOperationMode( EModeEasyDialing );
+        AknLayoutUtils::LayoutControl(
+            iNumberEntry, aParent, 
+            AknLayoutScalable_Apps::dia3_numentry_pane( aVariety ).LayoutLine() );
+        }
+    else
+        {
+        iNumberEntry->SetOperationMode( EModeDialer );
+        TAknLayoutRect neLayoutRect;
+        neLayoutRect.LayoutRect( aParent, AknLayoutScalable_Apps::dia3_numentry_pane( aVariety ) );
+        TAknLayoutRect edLayoutRect;
+        edLayoutRect.LayoutRect( aParent, AknLayoutScalable_Apps::dia3_listscroll_pane( aVariety ) );
+
+        // create rect which is union of layout rects for ED and NE
+        TRect neRect( edLayoutRect.Rect().iTl, neLayoutRect.Rect().iBr );
+
+        iNumberEntry->SetRect( neRect );
+        }
     }
 
 // End of File

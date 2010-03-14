@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -359,6 +359,7 @@ enum TPhoneRssBase
     EPhoneNoteTTYNoAudioControl, //300
     EPhoneInfoClirChange,
     EPhoneInfoCugInUse,
+    EPhoneSIMInvalidUICC,
 
     //the "DTMF number" list query
     EPhoneDtmfNumberListQuery,
@@ -388,6 +389,8 @@ enum TPhoneRssBase
     EPhoneNoteVideoCallOnlyPossibleUnder3GCoverage, // cause 50
     EPhoneNoteUnableToMakeVideoCallNotSupportedByOtherPhone, // cause 57,88 
     EPhoneNoteCalledNumberHasBarredIncomingCalls, // cause 21
+
+    EPhoneEasyDialingCba, // the CBA resource id is asked from Easydialing plugin
 
     // Last
     EPhoneRssBaseLast

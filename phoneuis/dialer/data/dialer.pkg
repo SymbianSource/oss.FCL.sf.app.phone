@@ -28,3 +28,16 @@
 ;Files to install
 "\epoc32\release\armv5\urel\dialer.dll"-"z:\sys\bin\dialer.dll"
 "\epoc32\data\z\resource\dialer.rsc"-"z:\resource\dialer.rsc"
+"\epoc32\data\z\resource\dialerkeypad.rsc"-"z:\resource\dialerkeypad.rsc"
+"\epoc32\data\z\resource\dialerkeypad_cyrillic.rsc"-"z:\resource\dialerkeypad_cyrillic.rsc"
+"\epoc32\data\z\resource\dialerkeypad_greek.rsc"-"z:\resource\dialerkeypad_greek.rsc"
+"\epoc32\data\z\resource\dialerkeypad_hebrew.rsc"-"z:\resource\dialerkeypad_hebrew.rsc"
+"\epoc32\data\z\resource\dialerkeypad_arabic.rsc"-"z:\resource\dialerkeypad_arabic.rsc"
+"\epoc32\data\z\resource\dialerkeypad_farsi.rsc"-"z:\resource\dialerkeypad_farsi.rsc"
+"\epoc32\data\z\resource\dialerkeypad_urdu.rsc"-"z:\resource\dialerkeypad_urdu.rsc"
+"\epoc32\data\z\resource\dialerkeypad_thai.rsc"-"z:\resource\dialerkeypad_thai.rsc"
+"\epoc32\data\z\resource\dialerkeypad_devanagari.rsc"-"z:\resource\dialerkeypad_devanagari.rsc"
+"\epoc32\data\z\resource\dialerkeypad_chn_pinyin.rsc"-"z:\resource\dialerkeypad_chn_pinyin.rsc"
+"\epoc32\data\z\resource\dialerkeypad_chn_stroke.rsc"-"z:\resource\dialerkeypad_chn_stroke.rsc"
+"\epoc32\data\z\resource\dialerkeypad_chn_zhuyin.rsc"-"z:\resource\dialerkeypad_chn_zhuyin.rsc"
+

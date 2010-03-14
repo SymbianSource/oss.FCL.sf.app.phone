@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2008, 2009 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -19,8 +19,8 @@
 // INCLUDES
 #include <e32base.h>
 
-#include <akntoolbar.h>
 #include <AknsItemID.h>
+#include <AknsUtils.h>
 #include <StringLoader.h>
 
 #include <phoneui.mbg>
@@ -69,6 +69,7 @@ const TPhoneDialerToolbarButton bArray[KButtonCount] =
 // might leave.
 //  
 CPhoneTransferDialerController::CPhoneTransferDialerController()
+    : CPhoneDialerController( NULL, *CCoeEnv::Static() )
     {
     }
 
@@ -98,49 +99,6 @@ CPhoneTransferDialerController* CPhoneTransferDialerController::NewL()
     }
 
 // -----------------------------------------------------------
-// CPhoneTransferDialerController::Initialize
-// -----------------------------------------------------------
-//
-void CPhoneTransferDialerController::InitializeL( CAknToolbar& aToolbar )
-    {  
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-        "CPhoneTransferDialerController::InitializeL()"); 
-    
-    if ( !iIsInitialized )
-        {    
-        __PHONELOG1( 
-                EAll, 
-                PhoneUIVoIPExtension, 
-                "Toolbar control count:=%d", 
-                aToolbar.CountComponentControls());
-        iToolbar = &aToolbar;
-        // Create transfer specific buttons and add them to the 
-        // toolbar starting from index 0
-        CAknButton* button( NULL );
-    
-        for( TInt i = 0; i < KButtonCount; i++ )
-            {
-            TAknsItemID skinId = SkinId( bArray[i].iIconIndex );
-            // Load tooltip text.
-            HBufC* tooltipText = GetTooltipTextL( bArray[i].iCommandId );  
-            CleanupStack::PushL( tooltipText );
-            button = CreateButtonLC(
-                    bArray[i].iIconIndex, 
-                    bArray[i].iMaskIndex, 
-                    *tooltipText, 
-                    skinId );
-            // Toolbar takes ownership of the button                    
-            iToolbar->AddItemL( button, EAknCtButton, bArray[i].iCommandId, 0, i );
-            CleanupStack::Pop( button );
-            CleanupStack::PopAndDestroy( tooltipText );
-            }      
-        iIsInitialized = ETrue;
-        }
-   
-    iNumberEntryIsEmpty = ETrue;
-    }
-
-// -----------------------------------------------------------
 // CPhoneTransferDialerController::CbaResourceId
 // -----------------------------------------------------------
 //
@@ -155,7 +113,7 @@ TInt CPhoneTransferDialerController::CbaResourceId() const
 //
 TInt CPhoneTransferDialerController::MenuResourceId() const
     {
-    if ( iNumberEntryIsEmpty )
+    if ( !iNumberAvailable )
         {
         return EPhoneVoIPTransferDialerNumberEntryEmptyMenubar;
         }
@@ -177,84 +135,138 @@ const TDesC& CPhoneTransferDialerController::NumberEntryPromptTextL()
         {
         iNumberEntryPromptText = StringLoader::LoadL( 
             CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneVoIPTransferAddress ) );
+            ResolveResourceID( EPhoneVoIPTransferAddress ), &iCoeEnv );
         }  
     
     return *iNumberEntryPromptText;
     }
 
-// -----------------------------------------------------------
-// CPhoneTransferDialerController::HandleNumberEntryIsEmpty
-// -----------------------------------------------------------
+// ---------------------------------------------------------------------------
+// GetButtonData
+// ---------------------------------------------------------------------------
 //
-void CPhoneTransferDialerController::HandleNumberEntryIsEmpty( TBool aIsEmpty )
+TInt CPhoneTransferDialerController::GetButtonData( TButtonIndex aIndex, RPointerArray<CButtonData>& aData ) const
     {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-        "CPhoneTransferDialerController::HandleNumberEntryIsEmpty()");
-    __ASSERT_DEBUG( iToolbar, Panic( EPhoneCtrlInvariant ) );
-    iToolbar->SetItemDimmed( EPhoneCmdTransferDialerOk, aIsEmpty, EFalse );
-    iToolbar->SetItemDimmed( EPhoneCmdTransferDialerSearch, !aIsEmpty, EFalse );
-    iToolbar->SetItemDimmed( EPhoneDialerCmdClear, aIsEmpty, EFalse );
-    iNumberEntryIsEmpty = aIsEmpty;
-    }
-
-// -----------------------------------------------------------
-// CPhoneTransferDialerController::ShowButtons
-// -----------------------------------------------------------
-//
-void CPhoneTransferDialerController::ShowButtons( TBool aShow )
-    {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-        "CPhoneTransferDialerController::ShowButtons()");
-    __ASSERT_DEBUG( iToolbar, Panic( EPhoneCtrlInvariant ) );
-    for( TInt i = 0; i < KButtonCount; i++ )
-        {
-        iToolbar->HideItem( bArray[ i ].iCommandId, !aShow, EFalse );
-        }    
+    TInt err = KErrNone;
     
-    if ( aShow )
+    TInt arrayIdx = KErrNotFound;
+    if ( aIndex == ECallButton )
         {
-        iToolbar->SetItemDimmed( EPhoneCmdTransferDialerOk, ETrue, EFalse ); 
-        iToolbar->SetItemDimmed( EPhoneCmdTransferDialerSearch, EFalse, EFalse ); 
-        iToolbar->SetItemDimmed( EPhoneDialerCmdClear, ETrue, EFalse ); 
+        arrayIdx = 0;
+        }
+    else if ( aIndex == EPhonebookButton )
+        {
+        arrayIdx = 1;
         }
     
-    iToolbar->DrawDeferred();
+    if ( arrayIdx >= 0 )
+        {
+        const TPhoneDialerToolbarButton& arrItem = bArray[ arrayIdx ];
+        CButtonData* btn = NULL;
+        TRAP( err, btn = CreateButtonDataL( arrItem.iCommandId, 
+                                            arrItem.iIconIndex, 
+                                            arrItem.iMaskIndex ) );
+        if ( !err )
+            {
+            err = aData.Append( btn );
+            if ( err )
+                {
+                delete btn;
+                }
+            }
+        }
+    else
+        {
+        // Trust base class on other buttons (i.e. the clear button)
+        err = CPhoneDialerController::GetButtonData( aIndex, aData );
+        }
+    
+    return err;
     }
 
 // ---------------------------------------------------------------------------
-// PhoneTransferDialerController::CreateButtonLC
+// ButtonState
 // ---------------------------------------------------------------------------
 //
-CAknButton* CPhoneTransferDialerController::CreateButtonLC( 
-    TInt aNormalIconId,
-    TInt aNormalMaskId,
-    const TDesC& aTooltipText,
-    const TAknsItemID& aSkinIconId ) const
-    {   
+TInt CPhoneTransferDialerController::ButtonState( TButtonIndex aIndex ) const
+    {
+    // Out button have only one state. Trust base class on clear button
+    if ( aIndex == ECallButton || aIndex == EPhonebookButton )
+        {
+        return 0;
+        }
+    else
+        {
+        return CPhoneDialerController::ButtonState( aIndex );
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// ButtonDimmed
+// ---------------------------------------------------------------------------
+//
+TBool CPhoneTransferDialerController::ButtonDimmed( TButtonIndex aIndex ) const
+    {
+    TBool dimmed = EFalse;
+    
+    // Ok is dimmed when there's no number. Search is dimmed when there is
+    // a number. Trust base class on clear button.
+    if ( aIndex == ECallButton )
+        {
+        dimmed = !iNumberAvailable;
+        }
+    else if ( aIndex == EPhonebookButton )
+        {
+        dimmed = iNumberAvailable;
+        }
+    else
+        {
+        dimmed = CPhoneDialerController::ButtonDimmed( aIndex );
+        }
+    return dimmed;
+    }
+
+// ---------------------------------------------------------------------------
+// EasyDialingAllowed
+// ---------------------------------------------------------------------------
+//
+TBool CPhoneTransferDialerController::EasyDialingAllowed() const
+    {
+    return EFalse;
+    }
+
+// ---------------------------------------------------------------------------
+// PhoneTransferDialerController::CreateButtonDataL
+// ---------------------------------------------------------------------------
+//
+MPhoneDialerController::CButtonData* CPhoneTransferDialerController::CreateButtonDataL(
+        TInt aCommandId,
+        TInt aNormalIconId,
+        TInt aNormalMaskId ) const
+    {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-        "CPhoneTransferDialerController::CreateButtonLC()");
+            "CPhoneTransferDialerController::CreateButtonDataL()");
+    
+    // Load tooltip text.
+    HBufC* tooltipText = GetTooltipTextL( aCommandId );
+    CleanupStack::PushL( tooltipText );
+    
+    // Load icon
     TFileName mifPath( KDriveZ );
     mifPath.Append( KDC_APP_BITMAP_DIR );
     mifPath.Append( KPhoneMifFileName );
-
-    CAknButton* button = CAknButton::NewLC( 
-        mifPath,
-        aNormalIconId,
-        aNormalMaskId,
-        -1, -1, // dimmed
-        -1, -1, // pressed
-        -1, -1, // hover
-        KNullDesC,
-        aTooltipText, // help
-        0, // flags
-        0, // state flags
-        aSkinIconId );
-                                                                 
-    button->SetFocusing( EFalse );
-    button->SetBackground( iToolbar );
-
-    return button;
+    
+    TAknsItemID skinId = SkinId( aNormalIconId );
+    MAknsSkinInstance* skin = AknsUtils::SkinInstance();
+    CGulIcon* icon = AknsUtils::CreateGulIconL( skin, skinId, mifPath, 
+                aNormalIconId, aNormalMaskId );
+    CleanupStack::PushL( icon );
+    
+    CButtonData* btnData = new (ELeave) CButtonData( aCommandId, icon, tooltipText );
+    CleanupStack::Pop( icon );
+    CleanupStack::Pop( tooltipText );
+    
+    return btnData;
     }
 
 // ---------------------------------------------------------------------------
@@ -278,13 +290,16 @@ HBufC* CPhoneTransferDialerController::GetTooltipTextL( TInt aCommandId ) const
             resourceId = R_VOIP_DIALER_TOOLTIP_SEARCH;
             break;                      
        default:
-           tooltip = KNullDesC().Alloc();
            break;
        }
            
     if ( resourceId )
         {
-        tooltip = StringLoader::LoadL( resourceId, CCoeEnv::Static() );
+        tooltip = StringLoader::LoadL( resourceId, &iCoeEnv );
+        }
+    else
+        {
+        tooltip = KNullDesC().AllocL();
         }
     return tooltip;
     }

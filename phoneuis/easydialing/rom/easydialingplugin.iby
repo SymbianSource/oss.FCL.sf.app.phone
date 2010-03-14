@@ -1,0 +1,41 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: The ROM definition file
+*
+*/
+
+#ifdef FF_HOME_SCREEN_EASY_DIALING
+
+#ifndef __ED_PLUGIN_IBY_
+#define __ED_PLUGIN_IBY_
+
+#include <bldvariant.hrh>
+
+// Stub sis file
+data=ZSYSTEM\install\easydialing_stub.sis            System\Install\easydialing_stub.sis
+
+// Binary code and not localized resources
+
+ECOM_PLUGIN(easydialingplugin.dll,easydialingplugin.rsc)
+
+file=ABI_DIR\BUILD_DIR\edcontactor.dll SHARED_LIB_DIR\edcontactor.dll
+data=DATAZ_\RESOURCE_FILES_DIR\edcontactor.rsc RESOURCE_FILES_DIR\edcontactor.rsc
+
+data=\epoc32\data\z\private\10202be9\200212A0.txt     "\private\10202be9\200212A0.txt"
+
+#endif // __ED_PLUGIN_IBY_
+
+#endif // FF_HOME_SCREEN_EASY_DIALING
+
+// End of File

@@ -44,9 +44,12 @@
 #include "dialertrace.h"
 #include "dialer.hrh"
 #include "mnumberentry.h"
-
+#include    <dialingextensioninterface.h>
+#include    <phoneappcommands.hrh>
 
 const TInt KNumberEntryControlCount = 2; //  = number entry, label
+
+_LIT( KPhoneValidChars, "0123456789*#+pwPW" );
 
 // ========================= MEMBER FUNCTIONS ================================
 
@@ -76,7 +79,7 @@ CDialerNumberEntry* CDialerNumberEntry::NewL(
 //
 void CDialerNumberEntry::ConstructL()
     {   
-   	DIALER_PRINT("numberentry::ConstructL<");  
+    DIALER_PRINT("numberentry::ConstructL<");  
     BaseConstructL();
  
     // Create number entry editor    
@@ -106,6 +109,9 @@ void CDialerNumberEntry::ConstructL()
     iLabel->SetTextL( KNullDesC );
     iLabel->MakeVisible( EFalse );    
     CheckLabelSkinningColor();
+    
+    iAppUi = iEikonEnv->EikAppUi();
+    __ASSERT_ALWAYS( iAppUi, DialerPanic( EDialerPanicNoApplicationInstance ) );
      
     ActivateL();
     DIALER_PRINT("numberentry::ConstructL>");
@@ -128,7 +134,6 @@ CDialerNumberEntry::~CDialerNumberEntry()
     delete iEditor;
     delete iFrameContext;
     delete iLabel;
-    
     }
 
 
@@ -146,11 +151,11 @@ void CDialerNumberEntry::SetNumberEntryObserver(
 // CDialerNumberEntry::SetFocus
 // ---------------------------------------------------------------------------
 //
-void CDialerNumberEntry::SetFocus( TBool aFocus, 
-                                            TDrawNow /*aDrawNow*/ )
+void CDialerNumberEntry::SetFocus( TBool aFocus, TDrawNow aDrawNow )
     {
     DIALER_PRINT("numberentry::SetFocus<");
     
+    CCoeControl::SetFocus( aFocus, aDrawNow );
     iEditor->SetFocus( aFocus );
      
     DIALER_PRINT("numberentry::SetFocus>");    
@@ -211,6 +216,12 @@ void CDialerNumberEntry::SetTextToNumberEntry( const TDesC& aDesC )
     DIALER_PRINT("numberentry::SetTextToNumberEntry<");
         	
     iEditor->SetText( aDesC );   
+    
+    if ( iEasyDialer && iOperationMode == EModeEasyDialing )
+        {
+        TRAP_IGNORE( iEasyDialer->SetInputL( aDesC ) );
+        }
+    
     iEditor->DrawNow();
     
     DIALER_PRINT("numberentry::SetTextToNumberEntry>");
@@ -220,9 +231,18 @@ void CDialerNumberEntry::SetTextToNumberEntry( const TDesC& aDesC )
 // CDialerNumberEntry::GetTextFromNumberEntry
 // ---------------------------------------------------------------------------
 //
-void CDialerNumberEntry::GetTextFromNumberEntry( TDes& aDesC )
+void CDialerNumberEntry::GetTextFromNumberEntry( TDes& aDes )
     {
-    iEditor->GetText( aDesC );
+    iEditor->GetText( aDes );
+    }
+
+// ---------------------------------------------------------------------------
+// CDialerNumberEntry::Text
+// ---------------------------------------------------------------------------
+//
+TPtrC CDialerNumberEntry::Text() const
+    {
+    return iEditor->Text();
     }
 
 // ---------------------------------------------------------------------------
@@ -301,15 +321,15 @@ void CDialerNumberEntry::HandleControlEventL( CCoeControl* aControl,
     {
     DIALER_PRINT("numberentry::HandleControlEventL<"); 
     
-    TInt format( KDialerNELayoutLargeFont );
     if ( aControl == iEditor && aEventType == EEventStateChanged )
         {
         HandleEditorFormatting();
+        
         InformNumberEntryState();        
+        
         iEditor->DrawDeferred();
-        
         }
-        
+    
     DIALER_PRINT("numberentry::HandleControlEventL>");                
     }
 
@@ -320,8 +340,22 @@ void CDialerNumberEntry::HandleControlEventL( CCoeControl* aControl,
 TKeyResponse CDialerNumberEntry::OfferKeyEventL( 
                                             const TKeyEvent& aKeyEvent, 
                                             TEventCode aType )
-    {   
-    return iEditor->OfferKeyEventL( aKeyEvent, aType );
+    {       
+    TKeyResponse handled = EKeyWasNotConsumed;
+        
+    // First, offer keyevent to easy dialer.
+    if (iEasyDialer)
+        {
+        handled = iEasyDialer->OfferKeyEventL(aKeyEvent, aType);
+        }
+        
+    // Then to number entry editor. 
+    if (handled == EKeyWasNotConsumed)
+        {
+        handled = iEditor->OfferKeyEventL(aKeyEvent, aType);
+        }
+        
+    return handled;
     }
     
 // ---------------------------------------------------------------------------
@@ -398,14 +432,15 @@ void CDialerNumberEntry::SetLayout()
     AknsUtils::RegisterControlPosition( this );
 
     TDialerVariety variety( EDialerVarietyLandscape );
-    if (  !Layout_Meta_Data::IsLandscapeOrientation() )
+    if ( !Layout_Meta_Data::IsLandscapeOrientation() )
         {
         variety = EDialerVarietyPortrait;
         }      
         
     TRect parentRect( Rect() );
-    TAknTextComponentLayout neLayout = 
-                        AknLayoutScalable_Apps::dialer2_ne_pane_t1( variety ); 
+    TAknTextComponentLayout neLayout = ( iOperationMode == EModeEasyDialing ?
+        AknLayoutScalable_Apps::dia3_numentry_pane_t1( variety ) :
+        AknLayoutScalable_Apps::dialer2_ne_pane_t1( variety ) );
 
     AknLayoutUtils::LayoutControl(
         iEditor, parentRect, 
@@ -418,13 +453,13 @@ void CDialerNumberEntry::SetLayout()
         neLayout.H()
         );
 
-    UpdateNumberEntryFormats(); 
-      
     RectFrameInnerOuterRects(
-           Rect(),
+           parentRect,
            iOuterRect,
            iInnerRect );
 
+    UpdateNumberEntryFormats();
+      
     iFrameContext->SetFrameRects( iOuterRect, iInnerRect );
                 
     MAknsSkinInstance* skin = AknsUtils::SkinInstance();
@@ -438,15 +473,13 @@ void CDialerNumberEntry::SetLayout()
     // Portrait variety is temporarily used also in landscape.
     // Landscape layout data is now unavailable. 
     TAknTextComponentLayout labelLayout = 
-                        AknLayoutScalable_Apps::dialer2_ne_pane_t2( 
-                                                    EDialerVarietyPortrait );
+        AknLayoutScalable_Apps::dialer2_ne_pane_t2( EDialerVarietyPortrait );
     // Temporary solution 
-    labelLayout.Setl(neLayout.l());
+    labelLayout.Setl( neLayout.l() );
     AknLayoutUtils::LayoutLabel( iLabel, parentRect, labelLayout );
     
     HandleEditorFormatting();
     iEditor->DrawDeferred();
-    
     }
 
 // ---------------------------------------------------------------------------
@@ -502,111 +535,62 @@ void CDialerNumberEntry::UpdateNumberEntryFormats( )
 void CDialerNumberEntry::CalculateLayout( 
         CAknPhoneNumberEditor::TFormat& aFormat, TInt aNEVariety )
     {
-    TAknLayoutText textsLargeFontLine1Text;
-    TAknLayoutText textsLargeFontLine2Text;
-    TAknLayoutText textsLargeFontLine3Text;
-    
-    TAknLayoutText textsSmallFontLine1Text;
-    TAknLayoutText textsSmallFontLine2Text;
-    TAknLayoutText textsSmallFontLine3Text;    		
-      
-    const CAknLayoutFont* layoutFont;
-	
-	switch ( aNEVariety )
-		{
-		case KDialerNELayoutLargeFont:
-			{
-			TInt variety = Layout_Meta_Data::IsLandscapeOrientation() ? 2 : 0;
-			
-            TAknLayoutScalableParameterLimits limits = 
-                AknLayoutScalable_Apps::dialer2_ne_pane_t1_ParamLimits( 
-                                                         variety );                
-            //Line 1
-            textsLargeFontLine1Text.LayoutText( Rect(), 
-                 AknLayoutScalable_Apps::dialer2_ne_pane_t1( 
-                                                         variety, 0, 0 ) );  
-            //Line 2     
-            textsLargeFontLine2Text.LayoutText( Rect(), 
-                 AknLayoutScalable_Apps::dialer2_ne_pane_t1( 
-                                                         variety, 
-                                                         0, 
-                                                         1 ) );
-            //Last row
-            textsLargeFontLine3Text.LayoutText( Rect(), 
-                AknLayoutScalable_Apps::dialer2_ne_pane_t1( variety,
-                                                            0, 
-                                                            limits.LastRow() ) );
+    TAknLayoutText textsLine1Text;
+    TAknLayoutText textsLine2Text;
 
-            //Need to add one row because zero is the first line                
-            aFormat.iNumLines =  limits.LastRow()+1;
-                            	
-        	//take font from line 1    
-            aFormat.iFont = textsLargeFontLine1Text.Font();
-            layoutFont = CAknLayoutFont::AsCAknLayoutFontOrNull( aFormat.iFont);
-            aFormat.iBottomBaselineOffset = 
-                                         layoutFont->BaselineToTextPaneBottom();
-            //outer rect from last line
-            aFormat.iOuterRect = textsLargeFontLine3Text.TextRect();
-            // have to add extra gap
-            aFormat.iOuterRect.iTl.iY -= aFormat.iBottomBaselineOffset; 
-         
-            //calculate baselineSeparation from the difference of the second 
-            //line and the first line bottom right Y coordinates            
-            TInt baselineSeparation = textsLargeFontLine2Text.TextRect().iBr.iY 
-                - textsLargeFontLine1Text.TextRect().iBr.iY;
-            
-            aFormat.iOuterRect.iTl.iY -= ( (aFormat.iNumLines - 1) 
-                                            * baselineSeparation );
-            aFormat.iBaselineSeparation = baselineSeparation;  									
-			}
-			break;
-		case KDialerNELayoutSmallFont:
-			{
-			TInt variety = Layout_Meta_Data::IsLandscapeOrientation() ? 3 : 1;
-			
-            TAknLayoutScalableParameterLimits limits = 
-                AknLayoutScalable_Apps::dialer2_ne_pane_t1_ParamLimits( 
-                                                                variety );                   
-            //Line 1
-            textsSmallFontLine1Text.LayoutText( Rect(), 
-                 AknLayoutScalable_Apps::dialer2_ne_pane_t1( variety,0,0 ) );  
-            //Line 2     
-            textsSmallFontLine2Text.LayoutText( Rect(), 
-                 AknLayoutScalable_Apps::dialer2_ne_pane_t1( variety,0,1 ) );
-            //Last row
-            textsSmallFontLine3Text.LayoutText( Rect(), 
-                 AknLayoutScalable_Apps::dialer2_ne_pane_t1( 
-                                                         variety,
-                                                         0, 
-                                                         limits.LastRow() ) ); 
-            
-            //Need to add one row because zero is the first line
-            aFormat.iNumLines =  limits.LastRow()+1;
-                                                                   
-        	 //take font from line 1     
-            aFormat.iFont = textsSmallFontLine1Text.Font();
-            layoutFont = CAknLayoutFont::AsCAknLayoutFontOrNull( 
-                                                           aFormat.iFont);
-            aFormat.iBottomBaselineOffset = 
-                                        layoutFont->BaselineToTextPaneBottom();
-            //outer rect from line 3
-            aFormat.iOuterRect = textsSmallFontLine3Text.TextRect();
-            // have to add extra gap
-            aFormat.iOuterRect.iTl.iY -= aFormat.iBottomBaselineOffset; 
-            
-            //calculate baselineSeparation from the difference of the second 
-            //line and the first line bottom right Y coordinates
-            TInt baselineSeparation = textsSmallFontLine2Text.TextRect().iBr.iY 
-                - textsSmallFontLine1Text.TextRect().iBr.iY;
-            
-            aFormat.iOuterRect.iTl.iY -= ( (aFormat.iNumLines - 1) 
-                                            * baselineSeparation );
-            aFormat.iBaselineSeparation = baselineSeparation; 					
-			} 
-			break;
-	 	default:
-	 		break;
-		} 				
+    if ( iOperationMode == EModeEasyDialing )
+        {
+        TInt variety = Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0;
+        textsLine1Text.LayoutText( Rect(), AknLayoutScalable_Apps::dia3_numentry_pane_t1(variety) );        
+        textsLine2Text = textsLine1Text;
+        }
+    else
+        {
+        TInt variety = 0;
+        if ( aNEVariety == KDialerNELayoutLargeFont )
+            {
+            variety = Layout_Meta_Data::IsLandscapeOrientation() ? 2 : 0;
+            }
+        else
+            {
+            variety = Layout_Meta_Data::IsLandscapeOrientation() ? 3 : 1;
+            }
+
+        //Line 1
+        textsLine1Text.LayoutText( Rect(), 
+            AknLayoutScalable_Apps::dialer2_ne_pane_t1( variety, 0, 0 ) );  
+        //Line 2     
+        textsLine2Text.LayoutText( Rect(), 
+            AknLayoutScalable_Apps::dialer2_ne_pane_t1( variety, 0, 1 ) );
+        }
+    
+    //take font from line 1
+    aFormat.iFont = textsLine1Text.Font();
+    const CAknLayoutFont* layoutFont = CAknLayoutFont::AsCAknLayoutFontOrNull( aFormat.iFont );
+    aFormat.iBottomBaselineOffset = layoutFont->BaselineToTextPaneBottom();
+
+    // Calculate baselineSeparation from the difference of the second 
+    // line and the first line bottom right Y coordinates.
+    TInt baselineSeparation = 
+        textsLine2Text.TextRect().iBr.iY - textsLine1Text.TextRect().iBr.iY;
+    aFormat.iBaselineSeparation = baselineSeparation;
+
+    // Outer rect of the text editor is the inner rect of the whole text box
+    aFormat.iOuterRect = iInnerRect;
+    
+    aFormat.iNumLines = 1;
+    
+    // If multiline layout is to be used, the exact number of lines is calculated 
+    // based on available area and the row height (i.e. baselineSeparation)
+    if ( baselineSeparation > 0 && baselineSeparation < iInnerRect.Height() )
+        {
+        aFormat.iNumLines = ( iInnerRect.Height() / baselineSeparation );
+
+        // Center editor vertically to the available area.
+        TInt editorHeight = aFormat.iNumLines * baselineSeparation;
+        TInt deltaHeight = ( iInnerRect.Height() - editorHeight ) / 2;
+        aFormat.iOuterRect.Shrink( 0, deltaHeight );
+        }
 	}
 
 // ---------------------------------------------------------------------------
@@ -622,6 +606,24 @@ void CDialerNumberEntry::HandleResourceChange( TInt aType )
         CheckLabelSkinningColor(); 
         }
     }
+
+// ---------------------------------------------------------------------------
+// CDialerNumberEntry::HandlePointerEventL  
+// ---------------------------------------------------------------------------
+//
+void CDialerNumberEntry::HandlePointerEventL( const TPointerEvent& aPointerEvent )
+    {
+    // Normal pointer event handling and delegation to editor component 
+    // happens only if we are already in focus. Otherwise we just take the
+    // focus. This is to prevent accidental cursor movements as putting the
+    // cursor back to the end of the text is difficult for right-aligned
+    // text.
+    if ( iEditor->IsFocused() )
+        {
+        CCoeControl::HandlePointerEventL( aPointerEvent );
+        }
+    }
+
 // ---------------------------------------------------------------------------
 // CDialerNumberEntry::HandleEditorFormatting  
 // ---------------------------------------------------------------------------
@@ -679,41 +681,51 @@ void CDialerNumberEntry::RectFrameInnerOuterRects( const TRect& aFrameRect,
                                               TRect& aOuterRect,
                                               TRect& aInnerRect )
     {
-    if ( Layout_Meta_Data::IsMirrored() )
+    if ( iOperationMode == EModeEasyDialing )
         {
-        TAknLayoutRect frameTopRight;        
-        frameTopRight.LayoutRect( 
-         aFrameRect, 
-         AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g3().LayoutLine() );                
-                
-        TAknLayoutRect frameBottomLeft;        
-        frameBottomLeft.LayoutRect( 
-         aFrameRect, 
-         AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g4().LayoutLine() );                        
-
-        aOuterRect = TRect( frameTopRight.Rect().iTl, 
-                            frameBottomLeft.Rect().iBr );
-                
-        aInnerRect = TRect( frameTopRight.Rect().iBr, 
-                            frameBottomLeft.Rect().iTl );    
+        aOuterRect = Rect();
+        TAknLayoutRect innerRectLayout;
+        innerRectLayout.LayoutRect( aOuterRect, AknLayoutScalable_Apps::bg_dia3_numentry_pane_g1() );
+        aInnerRect = innerRectLayout.Rect();
         }
     else
         {
-        TAknLayoutRect frameTopLeft;        
-        frameTopLeft.LayoutRect( 
-         aFrameRect, 
-         AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g2().LayoutLine() );
-
-        TAknLayoutRect frameBottomRight;        
-        frameBottomRight.LayoutRect( 
-         aFrameRect, 
-         AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g5().LayoutLine() );
-        
-        aOuterRect = TRect( frameTopLeft.Rect().iTl, 
-                            frameBottomRight.Rect().iBr );
-        aInnerRect = TRect( frameTopLeft.Rect().iBr, 
-                            frameBottomRight.Rect().iTl );    
-        }                    
+        if ( Layout_Meta_Data::IsMirrored() )
+            {
+            TAknLayoutRect frameTopRight;        
+            frameTopRight.LayoutRect( 
+             aFrameRect, 
+             AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g3().LayoutLine() );                
+                    
+            TAknLayoutRect frameBottomLeft;        
+            frameBottomLeft.LayoutRect( 
+             aFrameRect, 
+             AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g4().LayoutLine() );                        
+    
+            aOuterRect = TRect( frameTopRight.Rect().iTl, 
+                                frameBottomLeft.Rect().iBr );
+                    
+            aInnerRect = TRect( frameTopRight.Rect().iBr, 
+                                frameBottomLeft.Rect().iTl );    
+            }
+        else
+            {
+            TAknLayoutRect frameTopLeft;        
+            frameTopLeft.LayoutRect( 
+             aFrameRect, 
+             AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g2().LayoutLine() );
+    
+            TAknLayoutRect frameBottomRight;        
+            frameBottomRight.LayoutRect( 
+             aFrameRect, 
+             AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g5().LayoutLine() );
+            
+            aOuterRect = TRect( frameTopLeft.Rect().iTl, 
+                                frameBottomRight.Rect().iBr );
+            aInnerRect = TRect( frameTopLeft.Rect().iBr, 
+                                frameBottomRight.Rect().iTl );    
+            }
+        }
     }    
     
 // -----------------------------------------------------------------------------
@@ -741,11 +753,28 @@ void CDialerNumberEntry::InformNumberEntryState()
         iNumberContents = EFalse;
         } 
 
-    if( iObserver )
+    if ( iPreviousNumberEntryContent.Compare( iEditor->Text() ) != 0 )
         {
-        iObserver->NumberEntryStateChanged( iNumberContents );
-        }
+        iPreviousNumberEntryContent.Zero();
+        iEditor->GetText( iPreviousNumberEntryContent );
+
+        // The following stores the information of validity of the number for normal calls.
+        // This information is needed so that we don't show call items for invalid numbers.
+        TBool validPhoneNumber = Validate( iEditor->Text() );
+        TInt commandId = validPhoneNumber ? EPhoneDialerValidNumber : EPhoneDialerInvalidNumber;
+        
+        TRAP_IGNORE( iAppUi->HandleCommandL( commandId ) );
     
+        if ( iEasyDialer && iOperationMode == EModeEasyDialing )
+            {
+            TRAP_IGNORE( iEasyDialer->SetInputL( iEditor->Text() ) );
+            }
+
+        if ( iObserver )
+            {
+            iObserver->NumberEntryStateChanged( iNumberContents );
+            }
+        }
     }
     
 // -----------------------------------------------------------------------------
@@ -771,4 +800,54 @@ void CDialerNumberEntry::CheckLabelSkinningColor()
         }   
     }
     
+    
+// CDialerNumberEntry::MakeVisible( TBool aVisible )
+// -----------------------------------------------------------------------------
+//	
+void CDialerNumberEntry::MakeVisible( TBool aVisible )
+	{
+	CCoeControl::MakeVisible( aVisible );
+	iEditor->MakeVisible( aVisible );
+	}
+	
+	
+// -----------------------------------------------------------------------------
+// CDialerNumberEntry::SetEasyDialingPlugin
+// -----------------------------------------------------------------------------
+//
+void CDialerNumberEntry::SetEasyDialingPlugin(CDialingExtensionInterface* aEasyDialer)
+    {
+    DIALER_PRINT("numberentry::SetEasyDialingPlugin");
+    iEasyDialer = aEasyDialer;
+    }
+
+// -----------------------------------------------------------------------------
+// CDialerNumberEntry::SetOperationMode
+// -----------------------------------------------------------------------------
+//
+void CDialerNumberEntry::SetOperationMode( TDialerOperationMode aMode )
+    {
+    iOperationMode = aMode;
+    }
+
+// -----------------------------------------------------------------------------
+// CDialerNumberEntry::Validate
+//
+// Copied from cphonekeys.
+// -----------------------------------------------------------------------------
+//
+TBool CDialerNumberEntry::Validate( const TDesC& aString )
+    {
+    DIALER_PRINT("numberentry::Validate");
+    TLex input( aString );
+    TPtrC valid( KPhoneValidChars );
+
+    while ( valid.Locate( input.Peek() ) != KErrNotFound )
+        {
+        input.Inc();
+        }
+    
+    return !input.Remainder().Length();
+    }
+
 // End of File

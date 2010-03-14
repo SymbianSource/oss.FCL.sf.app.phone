@@ -21,8 +21,8 @@
 #include "BMBubbleManager.h"
 #include <aknenv.h>
 #include <applayout.cdl.h>
-#include <aknutils.h>
-#include <aknlayout2scalabledef.h>
+#include <AknUtils.h>
+#include <AknLayout2ScalableDef.h>
 #include <aknlayoutscalable_apps.cdl.h>
 #include <layoutmetadata.cdl.h>
 

@@ -28,6 +28,8 @@
 #include <phoneuivoip.rsg>
 #include <StringLoader.h>
 #include <featmgr.h>
+#include <centralrepository.h>
+#include <easydialingcrkeys.h>
 
 #include "cphonecustomizationvoip.h"
 #include "tphonecmdparaminteger.h"
@@ -207,7 +209,7 @@ void CPhoneCustomizationVoip::CustomizeMenuPaneL(
             {
             case EPhoneDialerCmdTouchInput:
                 {
-                if ( !AllowAlphaNumericMode() )
+                if ( !VoIPSupportedL() )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] ); 
                     }
@@ -232,7 +234,7 @@ void CPhoneCustomizationVoip::CustomizeMenuPaneL(
             case EPhoneInCallCmdNewCall:
                 {
                 if ( !FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) &&
-                     AllowAlphaNumericMode() &&
+                     VoIPSupportedL() &&
                      R_PHONEUI_NEW_CALL_MENU_VOIP != aResourceId )
                     {
                         
@@ -457,6 +459,11 @@ TBool CPhoneCustomizationVoip::AllowAlphaNumericMode()
     
     TBool alphaModeSupported( EFalse );
     TRAP_IGNORE( alphaModeSupported = VoIPSupportedL() );
+
+    if ( !alphaModeSupported )
+        {
+        alphaModeSupported = EasyDialingEnabled();
+        }
     
     return alphaModeSupported;
     }
@@ -680,6 +687,30 @@ TBool CPhoneCustomizationVoip::VoIPSupportedL()
     return voipSupported;   
     }
 
+// -----------------------------------------------------------
+// CPhoneCustomizationVoip::EasyDialingEnabled
+// -----------------------------------------------------------
+//
+TBool CPhoneCustomizationVoip::EasyDialingEnabled()
+    {
+    __LOGMETHODSTARTEND( PhoneUIVoIPExtension,
+            "CPhoneCustomizationVoip::EasyDialingEnabled" );
+
+    TBool easyDialingEnabled( EFalse );
+    if ( FeatureManager::FeatureSupported( KFeatureIdProductIncludesHomeScreenEasyDialing ) )
+        {
+        TInt easyDialingSetting;
+        TInt err = CPhoneCenRepProxy::Instance()->GetInt(
+                KCRUidEasyDialSettings,
+                KEasyDialing,
+                easyDialingSetting);
+        if ( !err && easyDialingSetting )
+            {
+            easyDialingEnabled = ETrue;
+            }
+        }
+    return easyDialingEnabled;
+    }
 
 // -----------------------------------------------------------
 // CPhoneCustomizationVoip::ModifyInCallMenuL
@@ -776,11 +807,12 @@ void CPhoneCustomizationVoip::InsertInternetCallMenuItemL(
 
     HBufC* phoneNumber = PhoneNumberFromEntryLC();
 
+    TInt index(KErrNotFound);
+
     if ( aResourceId == R_PHONEUI_NUMBERACQ_OPTIONS_CALL_MENU )
         {
         if ( !CPhoneKeys::Validate( phoneNumber->Des() ) )
-            {
-            TInt index(KErrNotFound);
+            {        
             if ( aMenuPane.MenuItemExists( EPhoneNumberAcqCmdCall, index ) )
                 {
                 aMenuPane.DeleteMenuItem( EPhoneNumberAcqCmdCall );
@@ -794,12 +826,12 @@ void CPhoneCustomizationVoip::InsertInternetCallMenuItemL(
         
         aMenuPane.AddMenuItemL( voipMenuItem->iData );
         }
-    else if ( iStateMachine.PhoneEngineInfo()->PhoneNumberIsServiceCode() )
+    else if ( !aMenuPane.MenuItemExists( EPhoneNumberAcqCmdCall, index ) )
         {
-        // When user writes string recognized as service code (eg.*#31# -> clir off)
-        // call menu is not visible. Internet call must still be possible so 
-        // internet call option is added here to the menu.
-        
+        // Call menu is removed if user inserts anything that is not
+        // a valid cs number, so must add Internet call option here where
+        // we know that voip is however supported.
+    
         // If number entry is empty don't add internet call option 
         if ( phoneNumber->Length() )
             {
@@ -1089,7 +1121,16 @@ TBool CPhoneCustomizationVoip::CheckFeatureSupportByCallTypeL(
         if( array[i].iCallState == CTelMenuExtension::EOutgoing ||
             array[i].iCallState == CTelMenuExtension::EActive ||
             array[i].iCallState == CTelMenuExtension::EOnHold )
-            {
+            {              
+            if( aFeature == EFeatureTransfer &&
+                array[i].iCallState == CTelMenuExtension::EOutgoing &&
+                array[i].iCallType == CTelMenuExtension::EPsVoice  )
+                {
+                // If there is outgoing VoIP call then transfer is not supported
+                supported = EFalse;
+                break;
+                }
+            
             if( firstCallType == CTelMenuExtension::EUninitialized )
                 {
                 // Memorize first found call type
@@ -1380,7 +1421,7 @@ void CPhoneCustomizationVoip::AddHandoverMenuItemIfNeededL( TInt aResourceId,
         "CPhoneCustomizationVoip::AddHandoverMenuItemIfNeededL" );
     
     // Menu items to be added
-    if ( iVccHandler && AllowAlphaNumericMode() &&
+    if ( iVccHandler && VoIPSupportedL() &&
         ( aResourceId == R_PHONEUI_CALLHANDLING_INCALL_OPTIONS_MENU ||
           aResourceId == R_PHONEUI_CALLWAITING_OPTIONS_MENU ||
           aResourceId == R_PHONEUI_ACTIVEANDHELDCALL_OPTIONS_MENU ||
