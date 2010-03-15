@@ -413,7 +413,6 @@ void CEasyDialingListBox::SetRectToNumberOfItems( TInt aNumberOfNames )
     }
 
 
-
 // -----------------------------------------------------------------------------
 // SetFocusedWithKeyEventL
 // -----------------------------------------------------------------------------

@@ -423,7 +423,7 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
         // Send key event to phone.
         TKeyEvent keyEvent;
         keyEvent.iScanCode = tappedButton->ScanCode();
-        keyEvent.iModifiers = 0;
+        keyEvent.iModifiers = ( EModifierNumLock | EModifierKeypad ); // Mark that this event is dialer simulated
         keyEvent.iRepeats = 0;  
              
         switch ( aEventType )

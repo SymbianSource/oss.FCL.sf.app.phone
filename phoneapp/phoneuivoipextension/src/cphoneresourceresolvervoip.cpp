@@ -219,7 +219,7 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
             retVal = R_PHONE_VOIP_QUERY_ACC_ID_HEADER;
             break;
         case EPhoneVoIPTransferAddress:
-            retVal = R_VOIP_TRANSFER_ADDRESS;
+            retVal = R_VOIP_DIALER_UNATT_TRANSFER_INPUT_FIELD_TEXT;           
             break;
         case EPhoneVoIPTransferDialerNumberEntryEmptyMenubar:
             retVal = R_PHONEUIDIALER_NUMBERENTRY_EMPTY_TRANSFER_MENUBAR;

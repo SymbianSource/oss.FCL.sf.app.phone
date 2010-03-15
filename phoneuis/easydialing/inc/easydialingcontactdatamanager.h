@@ -198,6 +198,13 @@ public:
      */
     TNameOrder NameOrder();
 
+    /**
+     * Pause the loading of contact data. This is used to make sure listbox is responsive
+     * and smooth during panning and flicking.
+     * @param aPause Pause on/off
+     */
+    void Pause( TBool aPause );
+
 public:
     
     /**
@@ -344,6 +351,9 @@ private:
     
     /** Contact name display order. */
     TNameOrder iNameOrder;
+    
+    /** Contact data manager pause status */
+    TBool iPause;
     };
 
 #endif //__EASYDIALINGTHUMBNAILMANAGER_H__

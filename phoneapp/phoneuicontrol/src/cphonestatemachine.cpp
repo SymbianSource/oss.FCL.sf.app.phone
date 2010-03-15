@@ -29,8 +29,6 @@
 #include "cphonestateincall.h"
 #include "phonestatedefinitions.h"
 #include "phonelogger.h"
-#include "cphonestorage.h"
-#include "mphonestorage.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -79,11 +77,6 @@ EXPORT_C CPhoneStateMachine::~CPhoneStateMachine()
 	    delete iPhoneEngine;
 	    iPhoneEngine = NULL;			
 		}
-	if( iPhoneStorage )
-	    {
-	    delete iPhoneStorage;
-	    iPhoneStorage = NULL;
-	    }
     }
 
 // ---------------------------------------------------------
@@ -181,21 +174,6 @@ EXPORT_C void CPhoneStateMachine::SetCallId(
         "CALL ID: CPhoneStateMachine::SetCallId (%d)",
         aCallId);     
     PhoneEngineInfo()->SetCallId( aCallId );
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateMachine::PhoneStorage
-// -----------------------------------------------------------
-//
-EXPORT_C MPhoneStorage* CPhoneStateMachine::PhoneStorage()
-    {
-    if ( iPhoneStorage == NULL )
-        {
-        TInt err( KErrNone );
-        TRAP( err, iPhoneStorage = CPhoneStorage::NewL());
-        __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
-        }
-    return iPhoneStorage;
     }
 
 // End of File

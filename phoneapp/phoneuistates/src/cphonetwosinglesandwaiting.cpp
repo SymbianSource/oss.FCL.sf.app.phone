@@ -36,7 +36,6 @@
 #include "phonerssbase.h"
 #include "phonestatedefinitionsgsm.h"
 #include "phonelogger.h"
-#include "mphonestorage.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -132,22 +131,6 @@ void CPhoneTwoSinglesAndWaiting::HandleKeyMessageL(
         default:
             CPhoneTwoSingles::HandleKeyMessageL( aMessage, aCode );   
             break;
-        }
-    }
-
-// -----------------------------------------------------------
-// CPhoneTwoSinglesAndWaiting::HandleKeyEventL
-// -----------------------------------------------------------
-//
-void CPhoneTwoSinglesAndWaiting::HandleKeyEventL(
-    const TKeyEvent& aKeyEvent,
-    TEventCode aEventCode )
-    {
-    if( EKeyDeviceF == aKeyEvent.iCode )
-        {
-        __PHONELOG( EBasic, EPhoneUIStates,
-            "CPhoneTwoSinglesAndWaiting::HandleKeyMessageL-deviceF" );
-        HandleHoldSwitchL();
         }
     }
 
@@ -311,15 +294,6 @@ void CPhoneTwoSinglesAndWaiting::StateTransitionToTwoSinglesL()
             }
         }
 
-    if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-        && iStateMachine->PhoneStorage()->IsScreenLocked() )
-        {
-        EnableCallUIL();
-        }
-    
-    // Reset blocked keys list
-    iStateMachine->PhoneStorage()->ResetBlockedKeysList();
-
     // Go to two singles state
     SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
     SetTouchPaneButtons( EPhoneTwoSinglesButtons );
@@ -340,9 +314,6 @@ void CPhoneTwoSinglesAndWaiting::StateTransitionToSingleAndWaitingL()
   
     // Set touch controls
     SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
-    
-    // Check if HW Keys or Call UI should be disabled
-    CheckDisableHWKeysAndCallUIL();
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
   
@@ -386,9 +357,6 @@ void CPhoneTwoSinglesAndWaiting::HandleConnectedConferenceL( TInt aCallId )
     // Set touch controls
     SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
 
-    // Check if HW Keys or Call UI should be disabled
-    CheckDisableHWKeysAndCallUIL();
-    
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewCreateConference, aCallId,

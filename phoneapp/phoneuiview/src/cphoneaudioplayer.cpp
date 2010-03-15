@@ -30,7 +30,7 @@
 #include "cphoneringingtone.h"
 #include "mphoneaudioplayerobserver.h"
 #include "phoneconstants.h"
-#include "phonelogger.h"
+#include "phoneuiviewtrace.h"
 #include "phoneui.pan"
 
 
@@ -69,7 +69,7 @@ void CPhoneAudioPlayer::ConstructL(
     const TDesC& aFileName,
     CMdaServer* aMdaServer )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::ConstructL()" );
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::ConstructL() <" );
     if ( iFormat == EFormatTone )
         {
         iTonePlayer = CMdaAudioToneUtility::NewL( *this, aMdaServer );
@@ -79,9 +79,7 @@ void CPhoneAudioPlayer::ConstructL(
     else
         {
         //audio sample player
-        __PHONELOG3( 
-            EBasic, 
-            EPhoneUIView, 
+        PHONEUIVIEW_PRINTF3(
             "CPhoneAudioPlayer::ConstructL - aFileName(%S), iPriority(%d), iPreference(%d)",
             &aFileName, 
             iPriority, 
@@ -92,10 +90,11 @@ void CPhoneAudioPlayer::ConstructL(
             *this, 
             iPriority,
             static_cast< TMdaPriorityPreference >( iPreference ),
-            aMdaServer );            
+            aMdaServer );
         iPlayerStatus = EToneLoading;
-        
+
         }
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::ConstructL() >" );
     }
 
 // -----------------------------------------------------------------------------
@@ -106,11 +105,12 @@ void CPhoneAudioPlayer::ConstructSeqL(
     const TDesC8& aSequence,
         CMdaServer* aMdaServer )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::ConstructSeqL()" );
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::ConstructSeqL() <" );
     iTonePlayer = CMdaAudioToneUtility::NewL( *this, aMdaServer );
     iSequence = aSequence.AllocL();
     iTonePlayer->PrepareToPlayDesSequence( *iSequence );
     iPlayerStatus = EToneLoading;
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::ConstructSeqL() >" );
     }
 
 // -----------------------------------------------------------------------------
@@ -122,19 +122,19 @@ void CPhoneAudioPlayer::ConstructTtsL(
     TInt aPriority,
     TUint aPreference )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::ConstructTtsL()" );
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::ConstructTtsL() <" );
     delete iTtsPlayer; // if any
     iTtsPlayer = NULL;
     iTtsPlayer = 
         CMdaAudioPlayerUtility::NewL( 
             *this, aPriority, 
             static_cast< TMdaPriorityPreference >( aPreference ) );
-    
+
     delete iTtsText;  // if any
     iTtsText = NULL;
     // UTF-8 strings can take up to 4 bytes per character
     iTtsText = HBufC8::NewL( aTtsText.Length() << KTimesToMultiply ); 
-    
+
     TPtr8 refText = iTtsText->Des(); 
     User::LeaveIfError( 
         CnvUtfConverter::ConvertFromUnicodeToUtf8( refText, aTtsText ) );
@@ -148,8 +148,9 @@ void CPhoneAudioPlayer::ConstructTtsL(
         // ReAlloc failed, set back to original.
         iTtsText = oldText;
         }
-    
+
     iTtsPlayer->OpenDesL( *iTtsText );
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::ConstructTtsL() >" );
     }
 
 // -----------------------------------------------------------------------------
@@ -165,7 +166,7 @@ CPhoneAudioPlayer* CPhoneAudioPlayer::New(
     CMdaServer* aMdaServer,
     TBool aExtSecNeeded )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::New()" );
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::New() <" );
     CPhoneAudioPlayer* self = NULL;
     TRAPD( err, self = CPhoneAudioPlayer::NewL( 
         aRingingTone,
@@ -179,6 +180,7 @@ CPhoneAudioPlayer* CPhoneAudioPlayer::New(
         {
         return NULL;
         }
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::New() >" );
     return self;
     }
 
@@ -195,23 +197,23 @@ CPhoneAudioPlayer* CPhoneAudioPlayer::NewL(
     CMdaServer* aMdaServer,
     TBool aExtSecNeeded )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::NewL()" );
-    __PHONELOG1( EBasic, EPhoneUIView, "CPhoneAudioPlayer::NewL - aExtSecNeeded(%d)",
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::NewL() <" );
+    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::NewL - aExtSecNeeded(%d)",
         aExtSecNeeded );
-    
+
     // Check the file DRM property if extend secure is needed.
     if ( aExtSecNeeded )
         {
         if ( !aRingingTone.IsFileInRom() &&
              !aRingingTone.IsFileDrmProtected() )
             {
-            __PHONELOG( EBasic, EPhoneUIView, "CPhoneAudioPlayer::NewL - DRM extend security check permission denied" );
+            PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::NewL - DRM extend security check permission denied" );
             User::Leave( KErrPermissionDenied );
             }
-        __PHONELOG( EBasic, EPhoneUIView, "CPhoneAudioPlayer::NewL - DRM extend security check ok" );
+        PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::NewL - DRM extend security check ok" );
         }
-	// RNG file types have to be played with CMdaAudioToneUtility player.
-	// Otherwise use sample player
+    // RNG file types have to be played with CMdaAudioToneUtility player.
+    // Otherwise use sample player
     TAudioDataFormat format = 
     ( aRingingTone.MimeType().CompareF( KFileListRngMimeType ) == KErrNone ) 
     ? EFormatTone :EFormatSample;
@@ -223,11 +225,11 @@ CPhoneAudioPlayer* CPhoneAudioPlayer::NewL(
             aPriority,
             aPreference,
             aId );
-    
+
     CleanupStack::PushL( self );
     self->ConstructL( aRingingTone.FileName(), aMdaServer );
     CleanupStack::Pop( self );
-
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::NewL() >" );
     return self;
     }
 
@@ -244,7 +246,7 @@ CPhoneAudioPlayer* CPhoneAudioPlayer::NewL(
     CMdaServer* aMdaServer,
     TBool aExtSecNeeded )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::NewL()" );
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::NewL() <" );
     CPhoneRingingTone* tone = CPhoneRingingTone::NewL( aFileName );
     CleanupStack::PushL( tone );
 
@@ -257,8 +259,8 @@ CPhoneAudioPlayer* CPhoneAudioPlayer::NewL(
                                                          aExtSecNeeded );
 
     CleanupStack::PopAndDestroy( tone );
-    
-    return player;        
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::NewL() >");
+    return player;
     }
 
 // -----------------------------------------------------------------------------
@@ -273,7 +275,7 @@ CPhoneAudioPlayer* CPhoneAudioPlayer::NewSeqL(
     TInt aId,
     CMdaServer* aMdaServer )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::NewSeqL()" );
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::NewSeqL() <" );
     CPhoneAudioPlayer* self = 
         new (ELeave) CPhoneAudioPlayer( 
             EFormatTone, 
@@ -281,11 +283,12 @@ CPhoneAudioPlayer* CPhoneAudioPlayer::NewSeqL(
             aPriority,
             aPreference,
             aId );
-    
+
     CleanupStack::PushL( self );
     self->ConstructSeqL( aSequence, aMdaServer  );
     CleanupStack::Pop( self );
 
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::NewSeqL() >" );
     return self;
     }
 
@@ -300,7 +303,7 @@ CPhoneAudioPlayer* CPhoneAudioPlayer::NewTtsL(
     MPhoneAudioPlayerObserver& aObserver, 
     TInt aId )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::NewTtsL()" );
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::NewTtsL() <" );
     CPhoneAudioPlayer* self = 
         new (ELeave) CPhoneAudioPlayer( 
             EFormatTts, 
@@ -308,11 +311,11 @@ CPhoneAudioPlayer* CPhoneAudioPlayer::NewTtsL(
             aPriority,
             aPreference,
             aId );
-    
+
     CleanupStack::PushL( self );
     self->ConstructTtsL( aText, aPriority, aPreference );
     CleanupStack::Pop( self );
-
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::NewTtsL() >" );
     return self;
     }
 
@@ -322,14 +325,14 @@ CPhoneAudioPlayer* CPhoneAudioPlayer::NewTtsL(
 //
 CPhoneAudioPlayer::~CPhoneAudioPlayer()
     {
-    
+
     if ( iAudioOutput )
         {
-    	delete iAudioOutput;    
-        }  
-    if ( iTonePlayer )  
+        delete iAudioOutput;
+        }
+    if ( iTonePlayer )
         {
-        delete iTonePlayer;  
+        delete iTonePlayer;
         } 
     if ( i3DPlugin )
        {
@@ -338,22 +341,22 @@ CPhoneAudioPlayer::~CPhoneAudioPlayer()
         }
     // ECom cleanup
     REComSession::FinalClose();
-    if ( iSamplePlayer )    
+    if ( iSamplePlayer )
         {
         delete iSamplePlayer; 
         }
     if ( iTtsPlayer )
         {
-        delete iTtsPlayer;   
+        delete iTtsPlayer; 
         }
     if ( iSequence )
         {
         delete iSequence; 
         }
-    if ( iTtsText )  
+    if ( iTtsText )
         {
         delete iTtsText;
-        }   
+        } 
     }
 
 // -----------------------------------------------------------------------------
@@ -362,16 +365,12 @@ CPhoneAudioPlayer::~CPhoneAudioPlayer()
 //
 void CPhoneAudioPlayer::Play( TRingingType aRingType, TInt aVolume, TInt aTTsToBePlayed )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::Play()" );
-    __PHONELOG2( 
-        EBasic, 
-        EPhoneUIView, 
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::Play() <" );
+    PHONEUIVIEW_PRINTF2( 
         "CPhoneAudioPlayer::Play - iFormat(%d), iPlayerStatus(%d)",
         iFormat, 
         iPlayerStatus );
-    __PHONELOG3( 
-        EBasic, 
-        EPhoneUIView, 
+    PHONEUIVIEW_PRINTF3( 
         "CPhoneAudioPlayer::Play - aRingType(%d), aVolume(%d), aTTsToBePlayed(%d)",
         aRingType, 
         aVolume,
@@ -379,7 +378,7 @@ void CPhoneAudioPlayer::Play( TRingingType aRingType, TInt aVolume, TInt aTTsToB
     iRingType = aRingType;
     iVolume = aVolume;
     iTTsToBePlayed = aTTsToBePlayed;
-    
+
     if ( iFormat == EFormatTone )
         {
         switch ( iPlayerStatus )
@@ -400,8 +399,7 @@ void CPhoneAudioPlayer::Play( TRingingType aRingType, TInt aVolume, TInt aTTsToB
 
             default:
                 __ASSERT_DEBUG( EFalse, 
-
-                      Panic( EPhoneViewCaseNotHandled ) );
+                       Panic( EPhoneViewCaseNotHandled ) );
             }
         }
     else if ( iFormat == EFormatTts )
@@ -450,27 +448,25 @@ void CPhoneAudioPlayer::Play( TRingingType aRingType, TInt aVolume, TInt aTTsToB
 
             default:
                 __ASSERT_DEBUG( EFalse, 
-
                         Panic( EPhoneViewCaseNotHandled ) );
             }
         }
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::Play() >" );
     }
-    
+
 // -----------------------------------------------------------------------------
 // CPhoneAudioPlayer::ReStartPlaying
 // -----------------------------------------------------------------------------
-//    
+//
 void CPhoneAudioPlayer::ReStartPlaying()
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::ReStartPlaying()" );
-    __PHONELOG3( 
-        EBasic, 
-        EPhoneUIView, 
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::ReStartPlaying() <" );
+    PHONEUIVIEW_PRINTF3( 
         "CPhoneAudioPlayer::ReStartPlaying - iFormat(%d), iRingType(%d), iVolume(%d)",
         iFormat, 
         iRingType, 
         iVolume );
-        
+
     if ( iFormat == EFormatTone )
         {
         iTonePlayer->Play();
@@ -480,12 +476,13 @@ void CPhoneAudioPlayer::ReStartPlaying()
         {
         iTtsPlayer->Play();
         iPlayerStatus = ETonePlaying;
-        }        
+        }
     else
         {
         iSamplePlayer->Play();
         iPlayerStatus = ETonePlaying;
-        }    
+        }
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::ReStartPlaying() >" );
     }
 
 // -----------------------------------------------------------------------------
@@ -494,9 +491,10 @@ void CPhoneAudioPlayer::ReStartPlaying()
 //
 void CPhoneAudioPlayer::StopPlaying()
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::StopPlaying()" );
+   PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::StopPlaying() <" );
+
     iToBePlaying = EFalse;
-    
+
     if ( iFormat == EFormatTone )
         {
         if ( EMdaAudioToneUtilityPrepared == iTonePlayer->State() )
@@ -522,11 +520,12 @@ void CPhoneAudioPlayer::StopPlaying()
             }
         else
             {
-            iSamplePlayer->Stop();        
+            iSamplePlayer->Stop();
             }
         }
-    
+
     iPlayerStatus = EToneReady;
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::StopPlaying() >" );
     }
 
 // -----------------------------------------------------------------------------
@@ -537,8 +536,8 @@ void CPhoneAudioPlayer::MapcInitComplete(
     TInt aError, 
     const TTimeIntervalMicroSeconds& /*aDuration*/ )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::MapcInitComplete()" );
-    __PHONELOG1( EBasic, EPhoneUIView, "CPhoneAudioPlayer::MapcInitComplete - aError(%d)",
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::MapcInitComplete() <" );
+    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::MapcInitComplete - aError(%d)",
         aError );
     __ASSERT_DEBUG( ( ( iFormat == EFormatSample ) || ( iFormat == EFormatTts ) ) && 
         ( iPlayerStatus == EToneLoading ), Panic( EPhoneViewGeneralError ) );
@@ -562,6 +561,7 @@ void CPhoneAudioPlayer::MapcInitComplete(
             MPhoneAudioPlayerObserver::EAudioPlayerInitializingFailure, 
             aError, iId );
         }
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::MapcInitComplete() >" );
     }
 
 // -----------------------------------------------------------------------------
@@ -570,8 +570,8 @@ void CPhoneAudioPlayer::MapcInitComplete(
 //
 void CPhoneAudioPlayer::MapcPlayComplete( TInt aError )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::MapcPlayComplete()" );
-    __PHONELOG2( EBasic, EPhoneUIView, "CPhoneAudioPlayer::MapcPlayComplete - iFormat(%d), aError(%d)",
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::MapcPlayComplete() <" );
+    PHONEUIVIEW_PRINTF2( "CPhoneAudioPlayer::MapcPlayComplete - iFormat(%d), aError(%d)",
         iFormat, aError );
     iPlayerStatus = EToneReady;
 
@@ -582,7 +582,7 @@ void CPhoneAudioPlayer::MapcPlayComplete( TInt aError )
         {
         i3DPlugin->Stop();
         delete i3DPlugin;
-        i3DPlugin = NULL;            
+        i3DPlugin = NULL;
         }
 
     if ( aError != KErrNone )
@@ -595,6 +595,7 @@ void CPhoneAudioPlayer::MapcPlayComplete( TInt aError )
         {
         iObserver.HandlePlayingComplete( iId );
         }
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::MapcPlayComplete() >" );
     }
 
 // -----------------------------------------------------------------------------
@@ -603,11 +604,11 @@ void CPhoneAudioPlayer::MapcPlayComplete( TInt aError )
 //
 void CPhoneAudioPlayer::MatoPrepareComplete( TInt aError )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::MatoPrepareComplete()" );
-    __PHONELOG1( EBasic, EPhoneUIView, "CPhoneAudioPlayer::MatoPrepareComplete - aError(%d)",
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::MatoPrepareComplete() <" );
+    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::MatoPrepareComplete - aError(%d)",
         aError );
-        
-	__ASSERT_DEBUG( ( iFormat == EFormatTone ) && ( iPlayerStatus == EToneLoading ), 
+
+    __ASSERT_DEBUG( ( iFormat == EFormatTone ) && ( iPlayerStatus == EToneLoading ), 
         Panic( EPhoneViewGeneralError ) );
     if ( aError == KErrNone )
         {
@@ -629,6 +630,7 @@ void CPhoneAudioPlayer::MatoPrepareComplete( TInt aError )
             MPhoneAudioPlayerObserver::EAudioPlayerInitializingFailure, 
             aError, iId );
         }
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::MatoPrepareComplete() >" );
     }
 
 // -----------------------------------------------------------------------------
@@ -637,8 +639,8 @@ void CPhoneAudioPlayer::MatoPrepareComplete( TInt aError )
 //
 void CPhoneAudioPlayer::MatoPlayComplete(TInt aError)
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::MatoPlayComplete()" );
-    __PHONELOG1( EBasic, EPhoneUIView, "CPhoneAudioPlayer::MatoPlayComplete - aError(%d)",
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::MatoPlayComplete() <" );
+    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::MatoPlayComplete - aError(%d)",
         aError );
     if ( aError != KErrNone )
         {
@@ -650,6 +652,7 @@ void CPhoneAudioPlayer::MatoPlayComplete(TInt aError)
         {
         iObserver.HandlePlayingComplete( iId );
         }
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::MatoPlayComplete() >" );
     }
 
 // -----------------------------------------------------------------------------
@@ -658,12 +661,12 @@ void CPhoneAudioPlayer::MatoPlayComplete(TInt aError)
 //
 void CPhoneAudioPlayer::DoPlay()
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::DoPlay()" );
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::DoPlay() <" );
     __ASSERT_DEBUG( iPlayerStatus == ETonePlaying, 
         Panic( EPhoneViewGeneralError ) );
-        
+
     SetRingingTypeProperties();
-    
+
     TInt err(KErrNone);
     if ( iFormat == EFormatTone )
         {
@@ -672,7 +675,7 @@ void CPhoneAudioPlayer::DoPlay()
     else if ( iFormat == EFormatTts )
         {
         iTtsPlayer->Play();
-        }        
+        }
     else
         {
         TRAP( err,i3DPlugin = C3DRingingToneInterface::NewL( KNullUid ) );
@@ -685,28 +688,27 @@ void CPhoneAudioPlayer::DoPlay()
             {
             if ( !iAudioOutput )
                  {
-                 __PHONELOG( EBasic, EPhoneUIView, "CPhoneAudioPlayer::DoPlay c aud ");
+                 PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::DoPlay c aud ");
                  TRAP (err, iAudioOutput = CAudioOutput::NewL( *iSamplePlayer ) );
                 if ( err )
                     {
-                    __PHONELOG1(EBasic, EPhoneUIView, 
-                        "P.AudPlayer.DoPlay.iAudioOutput.err ", err );
-                    }                      	        
+                    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::DoPlay iAudioOutput.err ", err );
+                    }
                }
             if ( !err && iAudioOutput )
                  {
-                 __PHONELOG( EBasic, EPhoneUIView, "CPhoneAudioPlayer::DoPlay EALL ");
+                 PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::DoPlay EALL ");
                  TRAP (err, iAudioOutput->SetAudioOutputL( CAudioOutput::EAll ) );
                  if ( err )
                      {
-                     __PHONELOG1( EBasic, EPhoneUIView, 
-                         "P.AudPlayer.DoPlay.SetAudioOutputL.err ", err );   
+                     PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::DoPlay SetAudioOutputL.err ", err ); 
                      }
 
                  }
             iSamplePlayer->Play();
             }
         }
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::DoPlay() >" );
     }
 
 // -----------------------------------------------------------------------------
@@ -715,10 +717,10 @@ void CPhoneAudioPlayer::DoPlay()
 //
 void CPhoneAudioPlayer::SetRingingTypeProperties()
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::SetRingingTypeProperties()" );
-    __PHONELOG2( EBasic, EPhoneUIView, "CPhoneAudioPlayer::SetRingingTypeProperties - iFormat(%d), iRingType(%d)",
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::SetRingingTypeProperties() <" );
+    PHONEUIVIEW_PRINTF2( "CPhoneAudioPlayer::SetRingingTypeProperties - iFormat(%d), iRingType(%d)",
         iFormat, iRingType );
-    TInt rampTime( 0 );     
+    TInt rampTime( 0 ); 
     if ( iFormat == EFormatTone )
         {
         switch ( iRingType )
@@ -726,7 +728,7 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
             case ETypeRinging:
                 //If we have TTS activated and ringingtype is ringing:
                 //We need to play TTS sequence again when ringingtone restarts.
-                //Thats why we need to set ringingtype to ETypeRingingOnce because  
+                //Thats why we need to set ringingtype to ETypeRingingOnce because
                 //it is the only way of knowing when ringingtone is completed. 
                 //Then we can restart it with new TTS iterations.
                 if ( iTTsToBePlayed )
@@ -736,10 +738,7 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                         TTimeIntervalMicroSeconds(
                         KPhoneRingingRepeatsTrailPause ) ); 
                     iTonePlayer->SetVolume( ConvertVolume( iVolume ) );
-                    __PHONELOG1( 
-                        EBasic, 
-                        EPhoneUIView, 
-                        "CPhoneAudioPlayer::SetRingingTypeProperties - Ringing tone with TTS, Set volume(%d) and ring once",
+                    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::SetRingingTypeProperties - Ringing tone with TTS, Set volume(%d) and ring once",
                         iVolume );
                     }
                 else
@@ -748,10 +747,7 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                         TTimeIntervalMicroSeconds( 
                          KPhoneRingingRepeatsTrailPause ) );
                     iTonePlayer->SetVolume( ConvertVolume( iVolume ) );
-                    __PHONELOG1( 
-                        EBasic, 
-                        EPhoneUIView, 
-                        "CPhoneAudioPlayer::SetRingingTypeProperties - Ringing tone, Set volume(%d)",
+                    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::SetRingingTypeProperties - Ringing tone, Set volume(%d)",
                         iVolume );
                     }
                 break;
@@ -762,10 +758,7 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                     TTimeIntervalMicroSeconds(
                     KPhoneRingingRepeatsTrailPause ) ); 
                 iTonePlayer->SetVolume( ConvertVolume( iVolume ) );
-                __PHONELOG1( 
-                    EBasic, 
-                    EPhoneUIView, 
-                    "CPhoneAudioPlayer::SetRingingTypeProperties - Ring once tone, set volume(%d)",
+                PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::SetRingingTypeProperties - Ring once tone, set volume(%d)",
                     iVolume );
                 break;
 
@@ -780,10 +773,7 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                     {
                     //rampTime in this case is only 3 seconds and volume is 1.
                     rampTime = KPhoneAudioAscendingRampDuration;
-                    __PHONELOG1( 
-                        EBasic, 
-                        EPhoneUIView, 
-                        "CPhoneAudioPlayer::SetRingingTypeProperties - Ascending tone with TTS, Start from lowest volume, rampTime(%d)",
+                    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::SetRingingTypeProperties - Ascending tone with TTS, Start from lowest volume, rampTime(%d)",
                         rampTime );
                     iTonePlayer->SetVolumeRamp( 
                         TTimeIntervalMicroSeconds( rampTime ) ); 
@@ -795,16 +785,13 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                     {
                     //rampTime: time for one step * volume level
                     rampTime = KPhoneAudioAscendingRampDuration*iVolume;
-                    __PHONELOG2( 
-                        EBasic, 
-                        EPhoneUIView, 
-                        "CPhoneAudioPlayer::SetRingingTypeProperties - Ascending tone, Set volume(%d), rampTime(%d)",
+                    PHONEUIVIEW_PRINTF2( "CPhoneAudioPlayer::SetRingingTypeProperties - Ascending tone, Set volume(%d), rampTime(%d)",
                         iVolume, rampTime );
                     iTonePlayer->SetVolumeRamp( 
                         TTimeIntervalMicroSeconds( rampTime ) );
-                        
+
                     iCurrentVolume = 1; //we start from the lowest volume
-                    iTonePlayer->SetVolume( ConvertVolume( iVolume ) );       
+                    iTonePlayer->SetVolume( ConvertVolume( iVolume ) ); 
                     }
                 break;
 
@@ -813,10 +800,7 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                 break;
             }
 
-        __PHONELOG3( 
-            EBasic, 
-            EPhoneUIView, 
-            "CPhoneAudioPlayer::SetRingingTypeProperties - Tone, iPriority(%d), iPreference(%d), iVolume(%d)",
+        PHONEUIVIEW_PRINTF3( "CPhoneAudioPlayer::SetRingingTypeProperties - Tone, iPriority(%d), iPreference(%d), iVolume(%d)",
             iPriority, iPreference, iVolume );
 
         //Set priority and preference
@@ -837,21 +821,15 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                     TTimeIntervalMicroSeconds( 
                     KPhoneRingingRepeatsTrailPause ) );
                 iTtsPlayer->SetVolume( ConvertVolume( iVolume ) );
-                __PHONELOG1( 
-                    EBasic, 
-                    EPhoneUIView, 
-                    "CPhoneAudioPlayer::SetRingingTypeProperties - TTS, Set volume(%d)",
+                PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::SetRingingTypeProperties - TTS, Set volume(%d)",
                     iVolume );
                 break;
-            
+
             default:
                 __ASSERT_DEBUG( EFalse, 
                         Panic( EPhoneViewCaseNotHandled ) );
             }
-        __PHONELOG( 
-            EBasic, 
-            EPhoneUIView, 
-            "CPhoneAudioPlayer::SetRingingTypeProperties - TTS" );
+        PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::SetRingingTypeProperties - TTS" );
         }
     else
         {
@@ -860,7 +838,7 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
             case ETypeRinging:
                 //If we have TTS activated and ringingtype is ringing:
                 //We need to play TTS sequence again when ringingtone restarts.
-                //Thats why we need to set ringingtype to ETypeRingingOnce because  
+                //Thats why we need to set ringingtype to ETypeRingingOnce because
                 //it is theonly way of knowing when ringingtone is completed. 
                 //Then we can restartit with new TTS iterations.
                 if ( iTTsToBePlayed )
@@ -870,10 +848,7 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                         TTimeIntervalMicroSeconds(
                         KPhoneRingingRepeatsTrailPause ) ); 
                     iSamplePlayer->SetVolume( ConvertVolume( iVolume ) );
-                    __PHONELOG1( 
-                        EBasic, 
-                        EPhoneUIView, 
-                        "CPhoneAudioPlayer::SetRingingTypeProperties - Ringing sample with TTS, Ring only once, Set volume(%d)",
+                    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::SetRingingTypeProperties - Ringing sample with TTS, Ring only once, Set volume(%d)",
                         iVolume );
                     }
                 else
@@ -882,10 +857,7 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                         TTimeIntervalMicroSeconds( 
                         KPhoneRingingRepeatsTrailPause ) );
                     iSamplePlayer->SetVolume( ConvertVolume( iVolume ) );
-                    __PHONELOG1( 
-                        EBasic, 
-                        EPhoneUIView, 
-                        "CPhoneAudioPlayer::SetRingingTypeProperties - Ringing sample, Set volume(%d)",
+                    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::SetRingingTypeProperties - Ringing sample, Set volume(%d)",
                         iVolume );
                     }
                 break;
@@ -895,10 +867,7 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                     TTimeIntervalMicroSeconds( 
                     KPhoneRingingRepeatsTrailPause ) ); 
                 iSamplePlayer->SetVolume( ConvertVolume( iVolume ) );
-                __PHONELOG1( 
-                    EBasic, 
-                    EPhoneUIView, 
-                    "CPhoneAudioPlayer::SetRingingTypeProperties - Ring once sample, set volume(%d)",
+                PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::SetRingingTypeProperties - Ring once sample, set volume(%d)",
                     iVolume );
                 break;
 
@@ -913,10 +882,7 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                     {
                     //rampTime in this case is only 3 seconds and volume is 1.
                     rampTime = KPhoneAudioAscendingRampDuration;
-                    __PHONELOG1( 
-                        EBasic, 
-                        EPhoneUIView, 
-                        "CPhoneAudioPlayer::SetRingingTypeProperties - Ascending sample with TTS, Start from lowest volume, rampTime(%d)",
+                    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::SetRingingTypeProperties - Ascending sample with TTS, Start from lowest volume, rampTime(%d)",
                         rampTime );
                     iSamplePlayer->SetVolumeRamp( 
                         TTimeIntervalMicroSeconds( rampTime ) ); 
@@ -928,14 +894,11 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                     {
                     //rampTime: time for one step * volume level
                     rampTime = KPhoneAudioAscendingRampDuration*iVolume;
-                    __PHONELOG2( 
-                        EBasic, 
-                        EPhoneUIView, 
-                        "CPhoneAudioPlayer::SetRingingTypeProperties - Ascending sample, Set volume(%d), rampTime(%d)",
+                    PHONEUIVIEW_PRINTF2( "CPhoneAudioPlayer::SetRingingTypeProperties - Ascending sample, Set volume(%d), rampTime(%d)",
                         iVolume, rampTime );
                     iSamplePlayer->SetVolumeRamp( 
                         TTimeIntervalMicroSeconds( rampTime ) );
-                        
+
                     iCurrentVolume = 1; //we start from the lowest volume
                     iSamplePlayer->SetVolume( ConvertVolume( iVolume ) );
                     }
@@ -946,96 +909,93 @@ void CPhoneAudioPlayer::SetRingingTypeProperties()
                 break;
             }
 
-        __PHONELOG( 
-            EBasic, 
-            EPhoneUIView, 
-            "CPhoneAudioPlayer::SetRingingTypeProperties - Sample" );
+        PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::SetRingingTypeProperties - Sample" );
         }
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::SetRingingTypeProperties() >" );
     }
 
 // -----------------------------------------------------------------------------
 // CPhoneAudioPlayer::SetNewVolumeAndRamptime
 // -----------------------------------------------------------------------------
-//    
+//
 void CPhoneAudioPlayer::SetNewVolumeAndRamptime( TInt aVolume, TInt aRamptime )
     {
-    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioPlayer::SetNewVolumeAndRamptime()" );
-   
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::SetNewVolumeAndRamptime() <" );
+ 
     //Check that volume is in valid range.
-   TInt volume = aVolume<1 ? 1:aVolume;
-    __PHONELOG1( EBasic, EPhoneUIView, "CPhoneAudioPlayer::SetNewVolumeAndRamptime - aVolume(%d)",
+    TInt volume = aVolume<1 ? 1:aVolume;
+    PHONEUIVIEW_PRINTF( "CPhoneAudioPlayer::SetNewVolumeAndRamptime - aVolume(%d)",
         aVolume ); 
-            
+
     if ( iFormat == EFormatTone && iTonePlayer )
         {
         iTonePlayer->SetVolumeRamp(TTimeIntervalMicroSeconds( aRamptime ) );
         iTonePlayer->SetVolume( ConvertVolume( volume ) );
-        __PHONELOG( EBasic, EPhoneUIView, "CPhoneAudioPlayer::SetNewVolumeAndRamptime - Tone player" );
+        PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::SetNewVolumeAndRamptime - Tone player" );
         }
     else if ( iFormat == EFormatTts && iTtsPlayer )
         {
         iTtsPlayer->SetVolumeRamp(TTimeIntervalMicroSeconds( aRamptime ) );
         iTtsPlayer->SetVolume( ConvertVolume( volume ) );
-        __PHONELOG( EBasic, EPhoneUIView, "CPhoneAudioPlayer::SetNewVolumeAndRamptime - TTS player" );
+        PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::SetNewVolumeAndRamptime - TTS player" );
         }
     else 
         {
         iSamplePlayer->SetVolumeRamp(TTimeIntervalMicroSeconds( aRamptime ) );
         iSamplePlayer->SetVolume( ConvertVolume( volume ) );
-        __PHONELOG( EBasic, EPhoneUIView, "CPhoneAudioPlayer::SetNewVolumeAndRamptime - Sample player" );
+        PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::SetNewVolumeAndRamptime - Sample player" );
         }
-   
+ 
+    PHONEUIVIEW_PRINT( "CPhoneAudioPlayer::SetNewVolumeAndRamptime() >" );
     }
-   
+ 
 
 // -----------------------------------------------------------------------------
 // CPhoneAudioPlayer::ConvertVolume
 // -----------------------------------------------------------------------------
-//  
+//
 TInt CPhoneAudioPlayer::ConvertVolume( TInt aVolume )
     {
-    //_DDPRINT( 5, "P.AudPlayer.ConvertVolume.aVolume", aVolume );
+    TInt result( 0 );
 
-    TInt result( 0 );    
-    
     if ( iFormat == EFormatTone && iTonePlayer )
         {
         result = iTonePlayer->MaxVolume() * aVolume / KMaxVolumeLevel;
         }
     else if ( iFormat == EFormatTts && iTtsPlayer )
         {
-        result = iTtsPlayer->MaxVolume() * aVolume / KMaxVolumeLevel;    
+        result = iTtsPlayer->MaxVolume() * aVolume / KMaxVolumeLevel;
         }
     else
         {
-        result = iSamplePlayer->MaxVolume() * aVolume / KMaxVolumeLevel;       
+        result = iSamplePlayer->MaxVolume() * aVolume / KMaxVolumeLevel; 
         }
-        
-	// if user has selected minimum volume level
-	// set HW volume 1
+
+    // if user has selected minimum volume level
+    // set HW volume 1
     if ( aVolume == KMinVolumeLevel && result == 0 )
         {
         result = 1; 
         }
-       
-    //_DDPRINT( 5, "P.AudPlayer.ConvertVolume.result", result );       
-    return result;    
+ 
+    //_DDPRINT( 5, "P.AudPlayer.ConvertVolume.result", result ); 
+    return result;
     }
 
-       
+ 
 // -----------------------------------------------------------------------------
 // CPhoneAudioPlayer::SetTTsToBePlayed
 // -----------------------------------------------------------------------------
-//  
+//
 void CPhoneAudioPlayer::SetTTsToBePlayed( TBool aTTsToBePlayed )
-	{
-	iTTsToBePlayed = aTTsToBePlayed;
-	}  
+    {
+    iTTsToBePlayed = aTTsToBePlayed;
+    }
 
 // -----------------------------------------------------------------------------
 // CPhoneAudioPlayer::MutePlaying
 // -----------------------------------------------------------------------------
-//	
+//
 void CPhoneAudioPlayer::MutePlaying()
     {
     //_DPRINT( 5, "P.Aud.Mute" );
@@ -1051,14 +1011,14 @@ void CPhoneAudioPlayer::MutePlaying()
             }
         else // EFormatSample
             {
-            iSamplePlayer->SetVolume(0);        
+            iSamplePlayer->SetVolume(0);
             }
         }
     else
         {
         // Mute called during EToneLoading state.
-        iToBePlaying = EFalse;    
-        }                   
+        iToBePlaying = EFalse;
+        } 
     }
-   
-//  End of File  
+ 
+//  End of File

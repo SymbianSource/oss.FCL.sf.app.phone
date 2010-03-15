@@ -54,7 +54,6 @@
 #include "cphonemediatorsender.h"
 #include "cphonereleasecommand.h"
 #include "mphonecustomization.h"
-#include "mphonestorage.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -228,14 +227,6 @@ EXPORT_C void CPhoneStateIncoming::HandleKeyMessageL(
                 }
             break;
 
-        case EKeyDeviceF:
-                {
-                __PHONELOG( EBasic, EPhoneUIStates,
-                    "CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL-deviceF" );
-                HandleHoldSwitchL();
-                }
-            break;
-            
         default:
             break;
         }
@@ -383,15 +374,6 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
     
     BeginTransEffectLC( ENumberEntryOpen );
 
-    if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-         && iStateMachine->PhoneStorage()->IsScreenLocked() )
-        {
-        EnableCallUIL();
-        }
-    
-    // Reset blocked keys list
-    iStateMachine->PhoneStorage()->ResetBlockedKeysList();
-
     BeginUiUpdateLC();
     
     // Update single call
@@ -450,16 +432,6 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
 
-    // Enable call UI
-    if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-        && iStateMachine->PhoneStorage()->IsScreenLocked() )
-        {
-        EnableCallUIL();
-        }
-
-    // Reset blocked keys list
-    iStateMachine->PhoneStorage()->ResetBlockedKeysList();
-    
     // Remove call
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     // Close menu bar, if it is displayed
@@ -863,35 +835,6 @@ void CPhoneStateIncoming::ShowDisconnectingL( TInt aCallId )
 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId,
         &callHeaderParam );
-    }
-
-// ---------------------------------------------------------
-// CPhoneStateIncoming::HandleKeyLockEnabledL
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneStateIncoming::HandleKeyLockEnabled( TBool aKeylockEnabled )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIncoming::HandleKeyLockEnabledL( ) ");
-    if( !FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke )
-		&& CPhoneCenRepProxy::Instance()->
-			IsTelephonyFeatureSupported( KTelephonyLVFlagDisableCallControlHardKeysWhileLocked ) )
-		{
-    	if( aKeylockEnabled )
-        	{
-	        // Keylock enabled
-            if( iStateMachine->PhoneStorage()->IsBlockedKeysListEmpty() )
-                {
-                // Disable HW Keys if needed
-                DisableHWKeysL();
-                }
-	        }
-	    else
-	        {
-	        // Keylock disabled
-            // Reset blocked keys list
-            iStateMachine->PhoneStorage()->ResetBlockedKeysList();
-	        }
-		}
     }
 
 // End of File

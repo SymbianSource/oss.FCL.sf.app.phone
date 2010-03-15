@@ -40,7 +40,6 @@
 #include "cphonetimer.h"
 #include "cphonenote.h"
 #include "cphonedtmfsendingnote.h"
-#include "cphoneuidisablednote.h"
 
 // CONSTANTS
 const TInt KPhoneIntervalDivider = 100;
@@ -144,13 +143,6 @@ void CPhoneNoteController::CreateNoteL(
             tone = noteParam->Tone();
             break;
 
-        case EPhoneNoteUIDisabled:
-            // Use the specified values
-            resourceId = noteParam->ResourceId();
-            timeout = CAknNoteDialog::ENoTimeout;
-            tone = CAknNoteDialog::ENoTone;
-            break;
-            
         default:
             Panic( EPhoneViewCaseNotHandled );
             break;
@@ -161,10 +153,6 @@ void CPhoneNoteController::CreateNoteL(
 		{
 		iNote = new ( ELeave ) CPhoneDtmfSendingNote( reinterpret_cast<CEikDialog**>( &iNote ), *iEikEnv.EikAppUi() );						
 		}
-	else if( noteParam->Type() == EPhoneNoteUIDisabled )
-        {
-        iNote = new ( ELeave ) CPhoneUIDisabledNote( reinterpret_cast<CEikDialog**>( &iNote ), *iEikEnv.EikAppUi() );
-        }
 	else
 		{
 		iNote = new ( ELeave ) CPhoneNote( reinterpret_cast<CEikDialog**>( &iNote ), *iEikEnv.EikAppUi() );			

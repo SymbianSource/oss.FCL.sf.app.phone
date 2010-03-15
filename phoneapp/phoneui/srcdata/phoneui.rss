@@ -35,7 +35,6 @@ NAME    PHUI
 #include    <uikon.hrh>
 #include    <AiwCommon.hrh>
 #include    <AiwCommon.rh>
-#include    <aknnotifyplugin.loc>
 
 #include    <phone.loc>
 
@@ -4794,14 +4793,6 @@ RESOURCE PHONE_STRING_LIST r_phoneui_string_list
             }
         };
     }
-
-// ---------------------------------------------------------
-//
-RESOURCE TBUF r_notetext_use_keyguard_to_unlock
-    {
-    buf = qtn_keyg_info_note_display_lock_switch;
-    }
-
 
 // ---------------------------------------------------------
 //

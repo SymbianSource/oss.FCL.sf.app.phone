@@ -27,7 +27,6 @@
 #include <connect/sbdefs.h>
 #include <videotelcontrolmediatorapi.h>
 #include <MediatorDomainUIDs.h>
-#include <telephonyvariant.hrh>
 
 #include "cphonesinglecall.h"
 #include "tphonecmdparamstring.h"
@@ -47,8 +46,6 @@
 #include "cphonemediatorfactory.h"
 #include "cphonemediatorsender.h"
 #include "cphoneswitchtovideoorvoicecommand.h"
-#include "mphonestorage.h"
-#include "cphonecenrepproxy.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -520,29 +517,6 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
     // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
 
-    if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-            && !CPhoneCenRepProxy::Instance()->
-            IsTelephonyFeatureSupported( KTelephonyLVFlagAllowUnlockOnIncoming ) 
-            && ( IsKeyLockOn() || IsAutoLockOn() ) )
-        {
-        DisableCallUIL();
-        }
-    else
-        {
-        // if keys have been locked, disable keylock without information note
-        if ( IsKeyLockOn() )
-            {
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewDisableKeyLockWithoutNote );
-            }
-        }
-    
-    if( CPhoneCenRepProxy::Instance()->
-            IsTelephonyFeatureSupported( KTelephonyLVFlagDisableCallControlHardKeysWhileLocked ) 
-            && ( IsKeyLockOn() || IsAutoLockOn() ) )
-        {
-        DisableHWKeysL();
-        }
-    
     EndUiUpdate();
 
     // This query is required to dismiss
@@ -572,6 +546,12 @@ void CPhoneSingleCall::DisplayIncomingCallL(
 
     // Remove any phone dialogs if they are displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
+
+    // if keys have been locked, disable keylock without information note
+    if ( IsKeyLockOn() )
+        {
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewDisableKeyLockWithoutNote );
+        }
     
     // Indicate that the Phone needs to be sent to the background if
     // an application other than the top application is in the foreground

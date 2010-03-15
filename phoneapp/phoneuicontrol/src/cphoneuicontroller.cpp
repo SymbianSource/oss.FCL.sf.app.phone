@@ -349,16 +349,6 @@ EXPORT_C TBool CPhoneUIController::ProcessCommandL( TInt aCommand )
     return iStateMachine->State()->ProcessCommandL( aCommand );
     }
 
-
-// ---------------------------------------------------------
-// CPhoneUIController::HandleKeyLockEnabled
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneUIController::HandleKeyLockEnabled( TBool aKeylockEnabled )
-    {
-    iSystemEventHandler->HandleKeyLockEnabled( aKeylockEnabled );
-    }
-
 // ---------------------------------------------------------
 // CPhoneUIController::CreateProtocolDllL
 // ---------------------------------------------------------

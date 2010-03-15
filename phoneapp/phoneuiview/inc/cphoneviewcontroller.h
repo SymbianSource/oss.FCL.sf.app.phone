@@ -42,7 +42,6 @@ class CPhoneView;
 class CPhoneDialerView;
 class TPhoneViewId;
 class TPhoneCommandParam;
-class TPhoneCmdParamBoolean;
 class CEikButtonGroupContainer;
 class CPhoneMenuController;
 class CPhoneNoteController;
@@ -613,16 +612,6 @@ class CPhoneViewController :
         */
         TInt SingleItemFetchType() const;
 
-        /**
-         * Checks screen lock status.        
-         */        
-        TBool IsKeyLockEnabled();
-        
-        /**
-         * Unlock keys & screen.        
-         */         
-        void DisableKeyLock();
-        
         /**
          * Checks if DTMF dialer mode is currently active        
          */

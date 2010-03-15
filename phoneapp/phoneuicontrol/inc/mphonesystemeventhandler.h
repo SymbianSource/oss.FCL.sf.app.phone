@@ -95,11 +95,6 @@ class MPhoneSystemEventHandler
         */
         virtual void HandlePhoneStartupL() = 0;
 
-        /**
-        * Indicates when the keylock events
-        */
-        virtual void HandleKeyLockEnabled( TBool aKeylockEnabled ) = 0;
-        
     };
 
 #endif      // __MPHONESYSTEMEVENTHANDLER_H   

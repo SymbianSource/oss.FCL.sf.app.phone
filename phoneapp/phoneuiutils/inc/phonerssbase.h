@@ -37,7 +37,6 @@ enum TPhoneRssBase
     EPhoneExitEmergencyModeQuery,
     EPhoneIncomingCallLabel,
     EPhoneIncomingCallLabelShort,
-    EPhoneIncomingCallKeysLocked,
     EPhoneOutgoingVideoCallLabel,
     EPhoneOutgoingVideoCallLabelShort,
     EPhoneOutgoingCallLabel,

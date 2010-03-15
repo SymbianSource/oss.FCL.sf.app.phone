@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -24,9 +24,9 @@
 #include    <AknIndicatorContainer.h>
 #include    <aknnavilabel.h>
 #include    "UssdComms.h" 
-
 #include    "UssdAppUi.h"
 #include    "UssdNaviPane.h"
+#include    "UssdLogger.h"
  
 #include <AknUtils.h>
 // CONSTANTS
@@ -82,9 +82,11 @@ CUssdNaviPane* CUssdNaviPane::NewL( CUssdAppUi& aAppUi )
 //
 void CUssdNaviPane::ConstructL()
     {
+    _LOGSTRING( "CUssdNaviPane::ConstructL =>" )
     
     CreateExtraNaviLabelL();
 
+    User::LeaveIfError( iPeninputServer.Connect() );
     iCharacterSetConverter = CCnvCharacterSetConverter::NewL();
 
     iCharacterSetConverter->PrepareToConvertToOrFromL(
@@ -93,7 +95,7 @@ void CUssdNaviPane::ConstructL()
 
     iCharacterSetConverter->SetDowngradeForExoticLineTerminatingCharacters(
         CCnvCharacterSetConverter::EDowngradeExoticLineTerminatingCharactersToJustLineFeed );
-
+    _LOGSTRING( "CUssdNaviPane::ConstructL <=" )
     }
 
 // -----------------------------------------------------------------------------
@@ -104,6 +106,8 @@ void CUssdNaviPane::ConstructL()
 //
 CUssdNaviPane::~CUssdNaviPane()
     {
+    _LOGSTRING( "CUssdNaviPane::~CUssdNaviPane =>" )
+    iPeninputServer.Close();
     
     if ( iNaviPane && iNaviDecorator )
         {
@@ -117,7 +121,7 @@ CUssdNaviPane::~CUssdNaviPane()
     iCharacterSetConverter = NULL;
 
     iNaviLabel = NULL;
-
+    _LOGSTRING( "CUssdNaviPane::~CUssdNaviPane <=" )
     }
   
 // ----------------------------------------------------
@@ -150,6 +154,8 @@ void CUssdNaviPane::CreateExtraNaviLabelL()
 TInt CUssdNaviPane::UpdateMsgLengthL( const TDesC& aInputString, 
                                              CCoeControl* aControl )
     {
+    _LOGSTRING2( "CUssdNaviPane::UpdateMsgLengthL =>, aInputString=%S",
+    &aInputString )
     TInt maxLen(0);
     const TInt txtLen = aInputString.Length();
  
@@ -196,7 +202,12 @@ TInt CUssdNaviPane::UpdateMsgLengthL( const TDesC& aInputString,
         }
     
     iNaviLabel->SetTextL( *digitBuffer );
+    _LOGSTRING(
+    "CUssdNaviPane::UpdateMsgLengthL iPeninputServer.UpdateAppInfo" )
+    iPeninputServer.UpdateAppInfo( *digitBuffer, EAppIndicatorMsg );
     CleanupStack::PopAndDestroy( digitBuffer );
+    _LOGSTRING2( "CUssdNaviPane::UpdateMsgLengthL <=, maxLen=%d",
+    maxLen )
     
     return maxLen;
     }
@@ -210,6 +221,9 @@ TInt CUssdNaviPane::UpdateMsgLengthL( const TDesC& aInputString,
 //
 TBool CUssdNaviPane::NeedsToBeSentAsUnicodeL( const TDesC& aInputString ) const
     {
+    _LOGSTRING2(
+    "CUssdNaviPane::NeedsToBeSentAsUnicodeL =>, aInputString=%S",
+    &aInputString )
     
     TBool needsToBeSentAsUnicode = EFalse;
       
@@ -255,6 +269,9 @@ TBool CUssdNaviPane::NeedsToBeSentAsUnicodeL( const TDesC& aInputString ) const
         remainderOfInputString.Set( 
             remainderOfInputString.Right( returnValue ) );
         }
+    _LOGSTRING2(
+    "CUssdNaviPane::NeedsToBeSentAsUnicodeL <=, needsToBeSentAsUnicode=%d",
+    needsToBeSentAsUnicode )
     return needsToBeSentAsUnicode;
     }
 

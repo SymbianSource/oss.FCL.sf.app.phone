@@ -141,7 +141,6 @@ enum
     EPhoneViewGetSecurityModeStatus,
     EPhoneViewSetStatusPaneVisible, // 110
     EPhoneViewEnableKeyLock,
-    EPhoneViewEnableKeyLockWithoutNote,
     EPhoneViewLaunchFaxModem,
     EPhoneViewUpdateFSW,
     EPhoneViewIsQuery,
@@ -197,8 +196,6 @@ enum
     EPhoneViewSetEikonNotifiersDisabled, 
     EPhoneViewCancelAllNotications, 
     EPhoneViewSetVideoCallDTMFVisibilityFlag,
-    EPhoneViewIsKeyLockEnabled,
-    EPhoneViewDisableKeyLock,
     EPhoneViewLoadPlugins, // 170
     EPhoneViewOpenVirtualKeyBoard,
     EPhoneViewUpdateNoteSoftkeys,

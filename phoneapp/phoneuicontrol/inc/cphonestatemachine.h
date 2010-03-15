@@ -30,7 +30,6 @@
 
 // FORWARD DECLARATIONS
 class MPhoneState;
-class MPhoneStorage;
 
 // CLASS DECLARATION
 
@@ -101,13 +100,6 @@ class CPhoneStateMachine :
         */    
         IMPORT_C void SetCallId( const TInt aCallId );
 
-       
-        /**
-        * Instantiates phone storage.
-        * @return storage instance    
-        */    
-        IMPORT_C MPhoneStorage* PhoneStorage();        
-
     protected:
 
         /**
@@ -145,9 +137,6 @@ class CPhoneStateMachine :
 
         // Idle state which is hold in memory all the time
         MPhoneState* iIdleState;
-
-        // Phone's storage
-        MPhoneStorage* iPhoneStorage;
     };
 
 #endif      // CPHONESTATEMACHINE_H

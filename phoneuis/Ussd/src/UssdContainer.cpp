@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -18,26 +18,15 @@
 
 
 // INCLUDE FILES
-#include    "UssdComms.h"
-#include    "UssdNaviPane.h"
-#include    "UssdAppUi.h"
-#include    "UssdContainer.h"
-#include    "UssdEditorLines.h"
+
 #include    <ussd.rsg>
-#include    "UssdLayout.h"
 #include    <aknkeys.h>
-#include    "ussd.hrh"
 #include    <eikedwin.h>
 #include    <bldvariant.hrh>
 #include    <featmgr.h>
-
 #include    <centralrepository.h>
 #include    <telinternalcrkeys.h>
-#include    "telephonyvariant.hrh"
-
 #include <csxhelp/ussd.hlp.hrh>  // for help context
-#include    "UssdApp.h" // for applicationUID
-#include    <AknUtils.h>
 
 // For skinning.
 #include    <AknsBasicBackgroundControlContext.h>
@@ -45,7 +34,16 @@
 #include    <AknsUtils.h>
 #include    <txtglobl.h>
 
-
+#include    "telephonyvariant.hrh"
+#include    "UssdComms.h"
+#include    "UssdNaviPane.h"
+#include    "UssdAppUi.h"
+#include    "UssdContainer.h"
+#include    "UssdEditorLines.h"
+#include    "UssdLayout.h"
+#include    "ussd.hrh"
+#include    "UssdApp.h" // for applicationUID
+#include    "UssdLogger.h"
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -67,6 +65,7 @@ CUssdContainer::CUssdContainer( CUssdAppUi& aAppUi ): iAppUi( aAppUi )
 //
 void CUssdContainer::ConstructL( const TRect& aRect )
     {
+    _LOGSTRING( "CUssdContainer::ConstructL =>" )
     CreateWindowL();
 
     // Create background control context for skins.
@@ -100,12 +99,14 @@ void CUssdContainer::ConstructL( const TRect& aRect )
     ActivateL();
 
     iEditor->SetFocus( ETrue );
+    _LOGSTRING( "CUssdContainer::ConstructL <=" )
     }
 
 
 // Destructor
 CUssdContainer::~CUssdContainer()
     {
+    _LOGSTRING( "CUssdContainer::~CUssdContainer =>" ) 
     delete iLines;
 
     AknsUtils::DeregisterControlPosition( iEditor );
@@ -113,6 +114,7 @@ CUssdContainer::~CUssdContainer()
     delete iNaviPaneHandler;
 
     delete iBgContext; // For skinning, can be deleted, NULL if not exist.
+    _LOGSTRING( "CUssdContainer::~CUssdContainer <=" )
     }
 
 // -----------------------------------------------------------------------------
@@ -288,6 +290,9 @@ void CUssdContainer::Draw( const TRect& aRect ) const
 TKeyResponse CUssdContainer::OfferKeyEventL(
     const TKeyEvent& aKeyEvent, TEventCode aType )
     {
+    _LOGSTRING3(
+    "CUssdContainer::OfferKeyEventL =>,TKeyEvent::iCode=%d,TEventCode=%d",
+    aKeyEvent.iCode, aType )
     TKeyResponse response = EKeyWasNotConsumed;
 
     // Special key handling comes first.
@@ -335,7 +340,8 @@ TKeyResponse CUssdContainer::OfferKeyEventL(
             iAppUi.Cba()->SetCommandSetL( R_USSD_SOFTKEYS_OPTIONS_EXIT_OPTIONS );
             iAppUi.Cba()->DrawNow();
         }
-
+    _LOGSTRING2(
+    "CUssdContainer::OfferKeyEventL <=, response=%d", response )
     return response;
     }
 
@@ -482,6 +488,7 @@ CEikEdwin* CUssdContainer::CreateEdwinL()
 // ---------------------------------------------------------
 void CUssdContainer::UpdateNavipaneMsgLengthL()
     {
+    _LOGSTRING( "CUssdContainer::UpdateNavipaneMsgLengthL =>" )
 
     if ( iNaviPaneHandler )
         {
@@ -507,7 +514,7 @@ void CUssdContainer::UpdateNavipaneMsgLengthL()
         iEditor->SetMaxLength( maxLen );
 
         }
-
+    _LOGSTRING( "CUssdContainer::UpdateNavipaneMsgLengthL <=" )
     }
 
 // End of File

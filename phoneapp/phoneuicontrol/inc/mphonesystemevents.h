@@ -85,11 +85,6 @@ class MPhoneSystemEvents
         virtual void HandleIdleForegroundEventL() = 0;
 
         /**
-        * Indicates when the keylock events
-        */
-        virtual void HandleKeyLockEnabled( TBool aKeylockEnabled ) = 0;
-        
-        /**
         * Handle environment changes.
         * @param aChanges environment changes which may be reported by
         *  a change notifier through the RChangeNotifier interface.

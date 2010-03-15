@@ -78,11 +78,6 @@ class CPhoneStateIncoming : public CPhoneState
         */ 
         IMPORT_C void HandleNumberEntryClearedL();
 
-        /** 
-        * Handle keylock state change events
-        */ 
-        IMPORT_C void HandleKeyLockEnabled( TBool aKeylockEnabled );
-        
     protected:
 
         /**

@@ -170,11 +170,6 @@ class CPhoneState :
         IMPORT_C virtual void HandleIdleForegroundEventL();
 
         /**
-        * Indicates when the keylock events
-        */
-        IMPORT_C virtual void HandleKeyLockEnabled( TBool aKeylockEnabled );
-        
-        /**
         * Handle environment changes.
         * @param aChanges environment changes which may be reported by
         *  a change notifier through the RChangeNotifier interface.
@@ -288,42 +283,6 @@ class CPhoneState :
         IMPORT_C void SendGlobalErrorNoteL( TInt aResourceId );
 
         /**
-         * Get blocked key list
-         * @returns RArray<TInt>& lsit of blocked keys 
-         */
-        IMPORT_C const RArray<TInt>& GetBlockedKeyList() const;
-
-        /**
-         * Disable HW Keys if needed
-         */
-        IMPORT_C void DisableHWKeysL();
-
-        /**
-         * Disable Call UI
-         */
-        IMPORT_C void DisableCallUIL();
-
-        /**
-         * Enable Call UI
-         */
-        IMPORT_C void EnableCallUIL();
-
-        /**
-         * Disable HW Keys and Call UI if needed
-         */
-        IMPORT_C void CheckDisableHWKeysAndCallUIL();
-
-        /**
-         * Handle hold switch key event when there is an incoming or waiting call
-         */
-        IMPORT_C void HandleHoldSwitchL();
-        
-        /**
-         * Enable HW Keys and Call UI if needed
-         */
-        IMPORT_C void CheckEnableHWKeysAndCallUIL();
-        
-        /**
         * Fetches autolock information - is it set on or not
         * @return is autolock set on (ETrue) or off (EFalse)
         */
@@ -367,8 +326,6 @@ class CPhoneState :
         */
         TBool IsNoteDismissableL();
 
-        IMPORT_C void RetainPreviousKeylockStateL();
-        
         /**
         * Check if possible dialer extension is in focus
         * @return boolean value indicating if dialer extension is in focus

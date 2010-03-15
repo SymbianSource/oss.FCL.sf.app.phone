@@ -30,7 +30,6 @@ class MPhoneState;
 class MPEPhoneModel;
 class MPEEngineInfo;
 class CSpdiaControl;
-class MPhoneStorage;
 
 /**
 *  Describes the interface for setting and getting active state
@@ -87,11 +86,6 @@ class MPhoneStateMachine : public MPhoneEngineMessageSender
         */    
         virtual void SetCallId( TInt aCallId ) = 0;
         
-        /**
-        * Phone's Storage
-        */
-        virtual MPhoneStorage* PhoneStorage() = 0;        
-
     };
 
 #endif // MPHONESTATEMACHINE_H

@@ -30,7 +30,6 @@ class TPhoneCommandParam;
 class CPhoneTimer;
 class CEikonEnv;
 class CPhoneNote;
-class CPhoneUIDisabledNote;
 
 class CPhoneNoteController : public CBase, public MPhoneTimer
     {

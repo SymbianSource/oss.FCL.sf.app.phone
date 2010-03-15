@@ -32,9 +32,6 @@
 #include "phonerssbase.h"
 #include "tphonecmdparamglobalnote.h"
 #include "phoneui.hrh"
-#include "mphonestorage.h"
-#include "cphonecenrepproxy.h"
-#include <telephonyvariant.hrh>
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -296,9 +293,6 @@ void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndWait
     SetTouchPaneButtons( EPhoneWaitingCallButtons ); 
     SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
     
-    // Check if HW Keys or Call UI should be disabled
-    CheckDisableHWKeysAndCallUIL();
-
     // Go to Conference And Waiting state
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
     iStateMachine->ChangeState( EPhoneStateConferenceAndWaiting );
@@ -313,15 +307,6 @@ void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSing
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSingleL()");
 
-    if( /*FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-        */ 1 &&  iStateMachine->PhoneStorage()->IsScreenLocked() )
-        {
-        EnableCallUIL();
-        }
-    
-    // Reset blocked keys list
-    iStateMachine->PhoneStorage()->ResetBlockedKeysList();
-    
     if ( !IsNumberEntryUsedL() )
         {
         // Close menu bar, if number entry isnt open.
@@ -423,22 +408,6 @@ void CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL(
     }
 
 // -----------------------------------------------------------
-// CPhoneConferenceAndSingleAndWaiting::HandleKeyEventL
-// -----------------------------------------------------------
-//
-void CPhoneConferenceAndSingleAndWaiting::HandleKeyEventL(
-    const TKeyEvent& aKeyEvent,
-    TEventCode aEventCode )
-    {
-    if( EKeyDeviceF == aKeyEvent.iCode )
-        {
-        __PHONELOG( EBasic, EPhoneUIStates,
-            "CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL-deviceF" );
-        HandleHoldSwitchL();
-        }
-    }
-
-// -----------------------------------------------------------
 // CPhoneConferenceAndSingleAndWaiting::HandleErrorL
 // -----------------------------------------------------------
 //
@@ -509,9 +478,6 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
                 // Go to Incoming state
                 iCbaManager->UpdateIncomingCbaL( callStateData.CallId() );
 
-                // Check if HW Keys or Call UI should be disabled
-                CheckDisableHWKeysAndCallUIL();
-                
                 SetTouchPaneButtons( EPhoneIncomingCallButtons );
                 UpdateSilenceButtonDimming();
                 SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
@@ -534,9 +500,6 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
             SetTouchPaneButtons( EPhoneWaitingCallButtons );        
             SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
 
-            // Check if HW Keys or Call UI should be disabled
-            CheckDisableHWKeysAndCallUIL();
-
             iStateMachine->ChangeState( EPhoneStateWaitingInSingle );        
             }
             break;
@@ -544,9 +507,6 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
             {
             // Go to Two Singles And Waiting state
             UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
-
-            // Check if HW Keys or Call UI should be disabled
-            CheckDisableHWKeysAndCallUIL();
 
             SetTouchPaneButtons( EPhoneWaitingCallButtons );        
             iStateMachine->ChangeState( EPhoneStateTwoSinglesAndWaiting );

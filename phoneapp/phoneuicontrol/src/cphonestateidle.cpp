@@ -430,9 +430,6 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
     // Display incoming call
     DisplayIncomingCallL( aCallId );
 
-    // Disable HW keys and Call UI if needed
-    CheckDisableHWKeysAndCallUIL();
-    
     EndUiUpdate();
     
     EndTransEffect();
@@ -569,14 +566,10 @@ EXPORT_C TBool CPhoneStateIdle::HandleCommandL( TInt aCommand )
             break;
             
         case EPhoneCmdBack:
+            BeginTransEffectLC( ENumberEntryClose );
             HandleBackCommandL();
-            break;      
-     
-        case EPhoneViewOpenNumberEntry:    
-            BeginTransEffectLC( ENumberEntryCreate );
-            commandStatus = CPhoneState::HandleCommandL( aCommand );
-            EndTransEffect();        
-            break; 
+            EndTransEffect();
+            break;
             
         default:
             commandStatus = CPhoneState::HandleCommandL( aCommand );
@@ -606,9 +599,15 @@ EXPORT_C TBool CPhoneStateIdle::ProcessCommandL( TInt aCommand )
                ResolveResourceID( EPhoneNumberAcqOkMenubar ) );
            iViewCommandHandle->ExecuteCommandL( 
                EPhoneViewMenuBarOpen, &integerParam );
-	       commandStatus = ETrue;
+           commandStatus = ETrue;
            }
-           break;       
+           break;  
+                     
+       case EPhoneViewOpenNumberEntry:	
+           BeginTransEffectLC( ENumberEntryOpen );
+           commandStatus = CPhoneState::ProcessCommandL( aCommand );
+           EndTransEffect();
+           break;
            
        default:
            commandStatus = CPhoneState::ProcessCommandL( aCommand );
@@ -679,13 +678,9 @@ void CPhoneStateIdle::HandleBackCommandL()
             iViewCommandHandle->ExecuteCommandL( 
                 EPhoneViewActivatePreviousApp );
 
-            BeginTransEffectLC( ENumberEntryClose ); 
-
             // Remove number entry from screen
             iViewCommandHandle->ExecuteCommandL( 
                 EPhoneViewRemoveNumberEntry ); 
-
-            EndTransEffect(); 
 
             iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateFSW ); 
             previousApp = ETrue;   
@@ -694,14 +689,10 @@ void CPhoneStateIdle::HandleBackCommandL()
         
     if ( !previousApp )
         {
-        BeginTransEffectLC( ENumberEntryClose ); 
-
         // Remove number entry from screen
         iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewRemoveNumberEntry );
-        
-        EndTransEffect();
-        
+         
         // Do state-specific operation when number entry is cleared
         HandleNumberEntryClearedL();
         }  

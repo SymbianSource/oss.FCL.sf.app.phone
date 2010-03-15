@@ -30,7 +30,6 @@
 #include "mphoneneclearedhandler.h"
 #include "mphonenumberentryevents.h"
 #include "mphonelockinfo.h"
-#include "mphoneblockedkeys.h"
 
 // FORWARD DECLARATIONS
 
@@ -47,7 +46,6 @@ class MPhoneState :
     public MPhoneMenuAndCbaEvents,
     public MPhoneRemoteControlEvents,
     public MPhoneDivertIF,
-    public MPhoneBlockedKeys,
     public MPhoneNEClearedHandler,
     public MPhoneNumberEntryEvents,
     public MPhoneLockInfo

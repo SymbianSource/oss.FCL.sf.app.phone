@@ -122,6 +122,11 @@ class CPhoneStateStartup : public CPhoneState
         * if necessary.
         */
         void CreateAndShowNoteAfterIdle();
+        
+        /**
+        * Finishes phone application initialization
+        */        
+        void InitializationReadyL();
 
 
     protected: // Data

@@ -964,10 +964,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             retVal = R_PHONE_EXIT_EMERGENCY_MODE_QUERY;
             break;
 
-        case EPhoneIncomingCallKeysLocked:
-            retVal = R_NOTETEXT_USE_KEYGUARD_TO_UNLOCK;
-            break;
-
         case EPhoneIncomingCallLabel:
             retVal = R_PHONEUI_MTCAL_INCOMING_CALL;
             break;

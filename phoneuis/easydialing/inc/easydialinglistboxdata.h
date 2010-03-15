@@ -205,6 +205,9 @@ private:
     /** Default image for contacts with no own thumbnail. Owned. */
     CGulIcon* iDummyThumbnail;
     
+    /** Favourite icon. Owned. */
+    CGulIcon* iFavouriteIcon;
+    
     /** Pointer to listbox. Not owned. */
     CEasyDialingListBox* iControl;
     };

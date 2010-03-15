@@ -89,7 +89,7 @@ void CEasyDialingCenrepListener::ConstructL()
 // Returns key value
 // -----------------------------------------------------------------------------
 //
-TInt CEasyDialingCenrepListener::Value()
+TInt CEasyDialingCenrepListener::Value() const
     {
     return iEasyDialingSettingValue;
     }

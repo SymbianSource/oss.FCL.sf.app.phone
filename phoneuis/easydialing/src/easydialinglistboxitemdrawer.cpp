@@ -26,8 +26,8 @@
 #include <aknlistloadertfx.h>
 #include <aknlistboxtfxinternal.h>
 #include <aknlistboxtfx.h>
-
 #include <akntransitionutils.h>
+#include <aknutils.h>
 
 // EXTERNAL DATA STRUCTURES
 
@@ -155,32 +155,15 @@ void CEasyDialingListBoxItemDrawer::DrawItemText(
             aItemIsCurrent && highlightShown,
             colors );
     
-    //currently few themes doesnt support IsListSeperatorLines method therefore it is commented out
-    // for the time being in the below if loop
-    
-    if ( /*AknsDrawUtils::IsListSeperatorLines( AknsUtils::SkinInstance() ) &&*/ aItemTextRect.iTl.iY > iViewRect.iTl.iY )
+    if ( aItemTextRect.iBr.iY < iViewRect.iBr.iY && aItemIndex < iModel->NumberOfItems() - 1 )
         {
         if ( transApi )
             {
             transApi->StartDrawing( MAknListBoxTfxInternal::EListItem );
             }
-
-        TRgb lineColor;
-        TInt retVal = AknsUtils::GetCachedColor( AknsUtils::SkinInstance(), lineColor, KAknsIIDFsLineColors, 
-                EAknsCIFsLineColorsCG1);
-        // we are fetching lineColor from the skin.Incase, if there isn't any lineColor then we are using
-        //iMatchingBack as a backup line Color
-        if( retVal == KErrNone)
-            {
-            iGc->SetPenColor(lineColor);
-            }
-        else
-            {
-            iGc->SetPenColor(iMatchingBack);
-            }
-        iGc->SetPenStyle(CGraphicsContext::ESolidPen);
-        iGc->DrawLine( aItemTextRect.iTl, TPoint( aItemTextRect.iBr.iX, aItemTextRect.iTl.iY) );
         
+        AknListUtils::DrawSeparator( *iGc, aItemTextRect, iTextColor );
+
         if ( transApi )
             {
             transApi->StopDrawing();

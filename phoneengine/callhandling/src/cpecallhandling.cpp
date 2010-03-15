@@ -446,11 +446,11 @@ void CPECallHandling::SendMessage(
             CPESingleCall* call;
             call = static_cast<CPESingleCall*>( iCallArrayOwner->CallByCallId( aCallId ) );
                                  
+            MCCECall& connectedCall = call->Call();
+            CCPCall::TCallType callType = connectedCall.Parameters().CallType();
+ 
             if ( EPEStateConnected == call->GetCallState() )
-                {
-                MCCECall& connectedCall = call->Call();
-                CCPCall::TCallType callType = connectedCall.Parameters().CallType();
-                
+                {                
                 if ( callType == CCPCall::ECallTypePS ) 
                     {
                     TEFLOGSTRING( KTAMESINT, 
@@ -472,11 +472,11 @@ void CPECallHandling::SendMessage(
                         iModel.SendMessage( MEngineMonitor::EPEMessageColpNumberAvailable, aCallId );
                         }
                     }
-                
-                iModel.DataStore()->SetRemotePartyName( connectedCall.RemotePartyName(), aCallId );                
-                iModel.DataStore()->SetRemotePhoneNumber( connectedCall.RemoteParty().Left( KPEPhoneNumberMaxLength ), aCallId );
-                iModel.DataStore()->SetCallIndex(connectedCall.CallIndex(), aCallId );
                 }
+            // CNAP informations must be in incoming call
+            iModel.DataStore()->SetRemotePartyName( connectedCall.RemotePartyName(), aCallId );                
+            iModel.DataStore()->SetRemotePhoneNumber( connectedCall.RemoteParty().Left( KPEPhoneNumberMaxLength ), aCallId );
+            iModel.DataStore()->SetCallIndex( connectedCall.CallIndex(), aCallId );            
             break;
             }
                    

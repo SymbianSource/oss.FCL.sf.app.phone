@@ -57,13 +57,13 @@ class CEasyDialingCenrepListener
         * Gets the easydialing on/off cenrep key value
         * @return   The key value
         */
-        TInt Value();
+        TInt Value() const;
         
         /**
          * Sets the easydialing on/off cenrep key value
          * @param aValue Value to be set.
          */
-        void SetEasyDialingSettingsValue( const TInt aValue );        
+        void SetEasyDialingSettingsValue( const TInt aValue );
         
         /**
          * Handles cenrep notifications.

@@ -18,7 +18,6 @@
 
 // INCLUDES
 #include <featmgr.h>
-#include <telephonyvariant.hrh>
 #include "cphoneincoming.h"
 #include "phonerssbase.h"
 #include "phonelogger.h"
@@ -28,8 +27,6 @@
 #include "tphonecmdparamboolean.h"
 #include "phoneui.hrh"
 #include "mphonestatemachine.h"
-#include "mphonestorage.h"
-#include "cphonecenrepproxy.h"
 #include "tphonecmdparamcallstatedata.h"
 
 // ================= MEMBER FUNCTIONS =======================
@@ -228,29 +225,6 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
 
-    if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-            && !CPhoneCenRepProxy::Instance()->
-            IsTelephonyFeatureSupported( KTelephonyLVFlagAllowUnlockOnIncoming ) 
-            && ( IsKeyLockOn() || IsAutoLockOn() ) )
-        {
-        DisableCallUIL();
-        }
-    else
-        {
-        // if keys have been locked, disable keylock without information note
-        if ( IsKeyLockOn() )
-            {
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewDisableKeyLockWithoutNote );
-            }
-        }
-    
-    if( CPhoneCenRepProxy::Instance()->
-            IsTelephonyFeatureSupported( KTelephonyLVFlagDisableCallControlHardKeysWhileLocked ) 
-            && ( IsKeyLockOn() || IsAutoLockOn() ) )
-        {
-        DisableHWKeysL();
-        }
-    
     EndUiUpdate();
 
     if ( connectedCall > KErrNotFound )
@@ -277,6 +251,12 @@ void CPhoneIncoming::DisplayIncomingCallL(
 
     // Remove any phone dialogs if they are displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
+
+    // if keys have been locked, disable keylock without information note
+    if ( IsKeyLockOn() )
+        {
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewDisableKeyLockWithoutNote );
+        }
     
     // Indicate that the Phone needs to be sent to the background if
     // an application other than the top application is in the foreground

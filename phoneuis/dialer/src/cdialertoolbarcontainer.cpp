@@ -225,7 +225,12 @@ void CDialerToolbarContainer::HandleControlEventL( CCoeControl* aControl, TCoeEv
         // Revert this change as we do not want to use states
         // for "toggle button" type of functionality but to give one button
         // different functions depending on the situation.
+        // Must initiate button redraw so that the state change done here 
+        // is drawn too; the automatically changed state is drawn within 
+        // AknButton just before EEventStateChanged is reported 
+        // (in emulator button icon flashing can be seen).
         UpdateButtonStates();
+        aControl->DrawNow();
 
         // Handle the command attached to the button
         CAknButton* button = static_cast<CAknButton*>( aControl );

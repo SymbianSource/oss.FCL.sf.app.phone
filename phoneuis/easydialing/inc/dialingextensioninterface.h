@@ -181,7 +181,7 @@ public:
      * Tells if extension is currently enabled from settings.
      * @return  ETrue if extension is enabled, EFalse otherwise.
      */
-    virtual TBool IsEnabled() = 0;
+    virtual TBool IsEnabled() const = 0;
     
 private: // data
 

@@ -96,10 +96,6 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
 
-        virtual void HandleKeyEventL( 
-            const TKeyEvent& aKeyEvent,
-            TEventCode aEventCode );
-        
         /**
         * Opens menu bar.
         */    

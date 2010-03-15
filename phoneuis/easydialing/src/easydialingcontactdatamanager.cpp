@@ -186,7 +186,7 @@ HBufC* CEasyDialingContactDataManager::GetThumbnailIdL(
     }
 
 // ---------------------------------------------------------------------------
-// CEasyDialingContactDataManager::GetThumbnail 
+// CEasyDialingContactDataManager::GetThumbnailAndFav 
 // ---------------------------------------------------------------------------
 //
 TBool CEasyDialingContactDataManager::GetThumbnailAndFav(const TDesC& aId, CFbsBitmap*& aThumbnail, TBool& aFav)
@@ -262,14 +262,13 @@ TInt CEasyDialingContactDataManager::NumberOfFavsL()
 //
 MVPbkContactLink* CEasyDialingContactDataManager::FavLinkLC( TInt aIndex )
     {
-    if ( iFavsView )
+    if ( !iFavsView )
         {
-        return iFavsView->ContactAtL( aIndex ).CreateLinkLC();
+        // LC function should not return normally unless it has actually
+        // put something to cleanup stack
+        User::Leave( KErrNotFound );
         }
-    else
-        {
-        return NULL;
-        }
+    return iFavsView->ContactAtL( aIndex ).CreateLinkLC();
     }
 
 // ---------------------------------------------------------------------------
@@ -326,6 +325,24 @@ CEasyDialingContactDataManager::TNameOrder CEasyDialingContactDataManager::NameO
     }
 
 // ---------------------------------------------------------------------------
+// CEasyDialingContactDataManager::Pause
+// ---------------------------------------------------------------------------
+//
+void CEasyDialingContactDataManager::Pause( TBool aPause )
+    {
+    iPause = aPause;
+    
+    if ( !iPause && iWaitingContacts.Count() )
+        {
+        TRAPD( err, LoadNextContactDataL());
+        if ( err )
+            {
+            HandleError(err);
+            }
+        }
+    }
+
+// ---------------------------------------------------------------------------
 // CEasyDialingContactDataManager::InitReady
 // ---------------------------------------------------------------------------
 //
@@ -372,7 +389,7 @@ TInt CEasyDialingContactDataManager::FindContactIndex( MVPbkContactLink* aContac
 void CEasyDialingContactDataManager::LoadNextContactDataL()
     {
     LOGSTRING("CEasyDialingContactDataManager: LoadNextContactDataL");
-    if (!iImageOperation && !iContactOperation && iWaitingContacts.Count() && iStoreReady)
+    if ( !iImageOperation && !iContactOperation && iWaitingContacts.Count() && iStoreReady && !iPause )
         {
         // first we need to load the contact item
         CEasyDialingContactData* tn = iContactDataArray[iWaitingContacts[0]];
@@ -477,6 +494,7 @@ void CEasyDialingContactDataManager::Reset()
     iStoreContact = NULL;
     iWaitingContacts.Reset();
     iContactDataArray.ResetAndDestroy();
+    iPause = EFalse;
     }
 
 // ---------------------------------------------------------------------------

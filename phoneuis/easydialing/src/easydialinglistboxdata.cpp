@@ -246,6 +246,7 @@ CEasyDialingListBoxData::~CEasyDialingListBoxData()
     delete iArrowPointingLeft;
     delete iColorBitmap;
     delete iDummyThumbnail;
+    delete iFavouriteIcon;
     
     iContactDataManager = NULL;
     }
@@ -333,7 +334,12 @@ void CEasyDialingListBoxData::ConstructLD()
     AknIconUtils::CreateIconL( bm, mask, KPhonebook2EceBitmapFile,
             EMbmPhonebook2eceQgn_prop_pb_thumb_unknown, EMbmPhonebook2eceQgn_prop_pb_thumb_unknown_mask );
     iDummyThumbnail = CGulIcon::NewL( bm, mask );
-
+    
+    // Create the favourite icon bitmap and mask
+    AknIconUtils::CreateIconL( bm, mask, KFavouriteIconBitmapFile, 
+            EMbmPhonebook2Qgn_prop_pb_topc, EMbmPhonebook2Qgn_prop_pb_topc_mask );
+    
+    iFavouriteIcon = CGulIcon::NewL( bm, mask );
     }
 
 
@@ -561,8 +567,6 @@ void CEasyDialingListBoxData::DrawFavouriteIcon(
          TRect aNameRectUnMirrored,
          TRect aEffectiveRect) const
     {
-    CFbsBitmap* favouriteIcon;
-    CFbsBitmap* favouriteIconMask;
     TRect favouriteIconBoundingBox;
 
     favouriteIconBoundingBox = FavouriteIconBoundingBox( aNameRectUnMirrored );
@@ -582,14 +586,11 @@ void CEasyDialingListBoxData::DrawFavouriteIcon(
         }
     else
         {
-        // Create the bitmap and mask to draw.
-        TRAP_IGNORE( AknIconUtils::CreateIconL(favouriteIcon, favouriteIconMask, KFavouriteIconBitmapFile, 
-                EMbmPhonebook2Qgn_prop_pb_topc, EMbmPhonebook2Qgn_prop_pb_topc_mask ));
-
         // Set size for the bitmap and mask
-        AknIconUtils::SetSize(favouriteIcon, favouriteIconBoundingBox.Size());
-        AknIconUtils::SetSize(favouriteIconMask, favouriteIconBoundingBox.Size());
-        aGc.BitBltMasked( favouriteIconBoundingBox.iTl , favouriteIcon, sourceRect, favouriteIconMask, ETrue);
+        AknIconUtils::SetSize( iFavouriteIcon->Bitmap(), favouriteIconBoundingBox.Size() );
+        AknIconUtils::SetSize( iFavouriteIcon->Mask(), favouriteIconBoundingBox.Size() );
+        aGc.BitBltMasked( favouriteIconBoundingBox.iTl , iFavouriteIcon->Bitmap(), 
+                sourceRect, iFavouriteIcon->Mask(), ETrue);
         }
     }
 // -----------------------------------------------------------------------------
@@ -699,7 +700,7 @@ void CEasyDialingListBoxData::UpdateColorBitmapL( const TSize& aSize )
     destinationGc->DrawRect( TRect( TPoint( 0,0 ), aSize ) );
 
     // Colorbitmap is ready, cleanup
-    delete destinationGc;    
+    delete destinationGc;
     CleanupStack::PopAndDestroy(destinationDevice); 
     }
 
@@ -739,7 +740,7 @@ TRect ContactImageBoundingBox(const TRect& aItemRect)
             aItemRect.iTl.iX + leftMargin,
             aItemRect.iTl.iY + topMargin,
             aItemRect.iTl.iX + leftMargin + width,
-            aItemRect.iBr.iY - bottomMargin);  
+            aItemRect.iBr.iY - bottomMargin);
     }
 
 // -----------------------------------------------------------------------------
@@ -1036,11 +1037,11 @@ static TBool DrawPieceOfText(
         {
         if ( aHighLight )
             {
-            aGc.SetPenColor( aColors.iHighlightedText );                 
+            aGc.SetPenColor( aColors.iHighlightedText );
             }
         else 
             {
-            aGc.SetPenColor( aColors.iText );                   
+            aGc.SetPenColor( aColors.iText );
             }
         }
     

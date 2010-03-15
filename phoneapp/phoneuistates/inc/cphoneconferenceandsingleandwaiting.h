@@ -62,10 +62,6 @@ class CPhoneConferenceAndSingleAndWaiting : public CPhoneConferenceAndSingle
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
 
-        virtual void HandleKeyEventL( 
-            const TKeyEvent& aKeyEvent,
-            TEventCode aEventCode );
-        
         /**
         * HandleError
         * Implements error handling framework

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -104,9 +104,9 @@ void CUssdEditorLines::SizeChanged()
     {
     // Move rectangles to right position
     
-    for ( TInt i = 0;
-            i < iRects->Count() && i < UssdLayout::NumberOfEditorLines(); 
-            i++ )
+    for ( TInt i = 0; 
+          iRects && i < iRects->Count() && i < UssdLayout::NumberOfEditorLines(); 
+          i++ )
         {
         iRects->At( i )->LayoutRect( Rect() , 
             UssdLayout::MessageWritingLayoutElements6( i+1 ) );
@@ -151,7 +151,7 @@ void CUssdEditorLines::Draw( const TRect& /*aRect*/ ) const
     // Draw row lines by clearing rectangles corresponding to row locations.
     TInt count( iRects->Count() );
     TInt lines( UssdLayout::NumberOfEditorLines() );
-    for ( TInt i = 0; i < count && i < lines; i++ )
+    for ( TInt i = 0; iRects && i < count && i < lines; i++ )
         {
         gc.Clear( iRects->At( i )->Rect() );
         }

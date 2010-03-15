@@ -209,7 +209,7 @@ public: // from CDialingExtensionInterface
      * Tells if extension is currently enabled from settings.
      * @return  ETrue if extension is enabled, EFalse otherwise.
      */
-    TBool IsEnabled();
+    TBool IsEnabled() const;
     
 public:
     

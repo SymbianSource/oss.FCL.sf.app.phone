@@ -158,12 +158,6 @@ class CPhoneUIController :
         */
         IMPORT_C TBool ProcessCommandL( TInt aCommand );
 
-        /**
-        * Handles keylock events
-        * @param aCommand It is the code of the command to be handled.
-        */
-        IMPORT_C void HandleKeyLockEnabled( TBool aKeylockEnabled );
-        
         
     private:
         

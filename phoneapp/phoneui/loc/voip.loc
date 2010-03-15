@@ -580,4 +580,21 @@
 // r: 5.0
 #define qtn_ipcomm_creating_conn_failed_permanently "Connecting %U failed due to defective settings. Contact your service provider."
 
+// d: Prompt text for number entry.
+// d: Topmost row shows text in case of transfer dialer. 
+// l: heading_pane_t1  
+// w:
+// r: 5.0
+//
+#define qtn_dialer_unatt_transfer_input_field_text "Address:"
+
+// d: Text in the transfer Dialer Options menu. This is shown only
+// d: when user has entered characters to number entry. This item
+// d: performs the unattended transfer request.
+// l: list_single_pane_t1_cp2  
+// w:
+// r: 5.0
+//
+#define qtn_dialer_options_send_uatransfer_req "Send"
+
 // End of File

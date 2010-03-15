@@ -19,8 +19,6 @@
 // INCLUDES
 #include <StringLoader.h>
 #include <cpephonemodelif.h>
-#include <featmgr.h>
-#include <telephonyvariant.hrh>
 #include "cphoneconferenceandwaiting.h"
 #include "mphonestatemachine.h"
 #include "phoneviewcommanddefinitions.h"
@@ -34,8 +32,6 @@
 #include "phonerssbase.h"
 #include "tphonecmdparamglobalnote.h"
 #include "phoneui.hrh"
-#include "cphonecenrepproxy.h"
-#include "mphonestorage.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -171,22 +167,6 @@ void CPhoneConferenceAndWaiting::HandleKeyMessageL(
     }
 
 // -----------------------------------------------------------
-// CPhoneConferenceAndWaiting::HandleKeyEventL
-// -----------------------------------------------------------
-//
-void CPhoneConferenceAndWaiting::HandleKeyEventL(
-    const TKeyEvent& aKeyEvent,
-    TEventCode aEventCode )
-    {
-    if( EKeyDeviceF == aKeyEvent.iCode )
-        {
-        __PHONELOG( EBasic, EPhoneUIStates,
-            "CPhoneConferenceAndWaiting::HandleKeyMessageL-deviceF" );
-        HandleHoldSwitchL();
-        }
-    }
-
-// -----------------------------------------------------------
 // CPhoneConferenceAndWaiting::HandleErrorL
 // -----------------------------------------------------------
 //
@@ -285,15 +265,6 @@ void CPhoneConferenceAndWaiting::HandleConnectedL( TInt aCallId )
 void CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL()");
-    
-    if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke )
-        && iStateMachine->PhoneStorage()->IsScreenLocked() )
-        {
-        EnableCallUIL();
-        }
-    
-    // Reset blocked keys list
-    iStateMachine->PhoneStorage()->ResetBlockedKeysList();
     
     // Effect is shown when dialer exist.
     TBool effectStarted ( EFalse );
@@ -405,15 +376,6 @@ void CPhoneConferenceAndWaiting::HandleIdleL( TInt aCallId )
                 }
             }
         
-        if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-            && iStateMachine->PhoneStorage()->IsScreenLocked() )
-            {
-            EnableCallUIL();
-            }
-        
-        // Reset blocked keys list
-        iStateMachine->PhoneStorage()->ResetBlockedKeysList();
-
         if ( iViewCommandHandle->HandleCommandL( EPhoneViewIsConferenceInExpandedMode ) 
                 == EPhoneViewResponseSuccess )
             {
@@ -499,9 +461,6 @@ void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
                 SetNumberEntryVisibilityL(EFalse);   
                 }
             
-            // Check if HW Keys or Call UI should be disabled
-            CheckDisableHWKeysAndCallUIL();
-            
             SetTouchPaneButtons( EPhoneIncomingCallButtons );
             SetTouchPaneButtonEnabled( EPhoneCallComingCmdSilent );
             SetRingingTonePlaybackL( iRingingCallId );          
@@ -519,9 +478,6 @@ void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
             // Go to waiting in single state
             UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
             
-            // Check if HW Keys or Call UI should be disabled
-            CheckDisableHWKeysAndCallUIL();
-            
             SetTouchPaneButtons( EPhoneWaitingCallButtons );             
             iStateMachine->ChangeState( EPhoneStateWaitingInSingle );
             break;
@@ -534,9 +490,6 @@ void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
                 }
             // Go to two singles and waiting state
             UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
-            
-            // Check if HW Keys or Call UI should be disabled
-            CheckDisableHWKeysAndCallUIL();
             
             SetTouchPaneButtons( EPhoneWaitingCallButtons );               
 

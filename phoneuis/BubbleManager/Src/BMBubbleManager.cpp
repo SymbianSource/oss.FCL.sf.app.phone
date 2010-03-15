@@ -340,9 +340,6 @@ void CBubbleManager::SizeChanged()
     
     if ( iConfigFlags & EBMTouchCallhandling )
         {
-        MBubbleTouchPaneInterface* touchPaneIf =
-            static_cast<MBubbleTouchPaneInterface*> (iTouchPane);             
-        
         if ( iTouchPane->IsVisible() )
             {
             TInt variety = 0;
@@ -3521,6 +3518,8 @@ EXPORT_C void CBubbleManager::PreloadCallThemeImage( TBool aPreload )
     {
     __ASSERT_ALWAYS( ( iConfigFlags & EBMCallObjectDisplay ), 
                        Panic( EBMPanicFeatureNotSupported ) );
+    StartChanges();
+    iMainPaneControl->Reset();
     if ( aPreload )
         {
         iCallObjectManager->LoadCallThemeImage( 
@@ -3531,6 +3530,7 @@ EXPORT_C void CBubbleManager::PreloadCallThemeImage( TBool aPreload )
         {
         iCallObjectManager->ReleaseCallThemeImage();
         }        
+    EndChanges();
     }
 
 // ---------------------------------------------------------------------------

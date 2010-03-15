@@ -64,6 +64,8 @@ class CPhoneNote : public CAknNoteDialog
         
     protected:
 
+        void PreLayoutDynInitL();
+        
         TKeyResponse OfferKeyEventL( 
             const TKeyEvent& aKeyEvent,
             TEventCode aType );

@@ -42,7 +42,6 @@ SOURCE          cphoneincallindicator.cpp
 SOURCE          cphonekeycapturecontroller.cpp
 SOURCE          cphonemenucontroller.cpp
 SOURCE          cphonenote.cpp
-SOURCE          cphoneuidisablednote.cpp
 SOURCE          cphonenotecontroller.cpp
 SOURCE          cphoneprogressnote.cpp
 SOURCE          cphonequerycontroller.cpp
@@ -67,6 +66,10 @@ SOURCE          phonebubbleextensiondata.cpp
 SOURCE          cphonetoolbarcontroller.cpp
 SOURCE          cphoneeasydialingcontroller.cpp 
 SOURCE          cphonedtmfdialercontroller.cpp 
+SOURCE          phoneringingtonesrvplayerao.cpp
+SOURCE          phoneringingtonesrv.cpp
+SOURCE          phoneringingtonesrvsession.cpp
+SOURCE          phoneringingtoneclient.cpp
 
 /* Languages */
 LANG SC

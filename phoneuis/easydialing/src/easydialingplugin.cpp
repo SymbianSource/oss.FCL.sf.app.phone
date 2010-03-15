@@ -128,9 +128,11 @@ static HBufC* AllocWithoutHighlightSeparatorsLC( TDesC& aDesc );
 
 static TBool IsItuTCharacter( TChar aChar );
 
-// FORWARD DECLARATIONS
+static TInt Find( const MVPbkContactLink* aLink, const RPointerArray<MVPbkContactLink>& aArray );
 
-using namespace AknLayoutScalable_Avkon;
+template <class T>
+inline void CleanupResetAndDestroyPushL(T& aRef);
+
 
 
 // -----------------------------------------------------------------------------
@@ -283,7 +285,7 @@ CEasyDialingPlugin::~CEasyDialingPlugin()
 
 
 // -----------------------------------------------------------------------------
-// Initialize
+// InitializeL
 // Initialises easy dialing.
 // -----------------------------------------------------------------------------
 //
@@ -410,7 +412,7 @@ void CEasyDialingPlugin::InitPredictiveContactSearchL()
     }
 
 // -----------------------------------------------------------------------------
-// GetContactFields
+// SetSortOrderL
 // -----------------------------------------------------------------------------
 //
 void CEasyDialingPlugin::SetSortOrderL( CEasyDialingContactDataManager::TNameOrder aNameOrder )
@@ -432,7 +434,7 @@ void CEasyDialingPlugin::SetSortOrderL( CEasyDialingContactDataManager::TNameOrd
         fields.Append(R_VPBK_FIELD_TYPE_COMPANYNAME);
         }
     iPredictiveContactSearchHandler->ChangeSortOrderL( *iContactDataStores[0], fields );
-    CleanupStack::PopAndDestroy(); //fields
+    CleanupStack::PopAndDestroy( &fields );
     }
 
 // -----------------------------------------------------------------------------
@@ -712,6 +714,7 @@ void CEasyDialingPlugin::HandleStoreEventL( MVPbkContactStore& /* aContactStore 
                     {
                     // We get here if user e.g. leaves dialer open and goes to Contacts
                     // application and does some editing.
+                    iContactDataManager->Reload(); // to update thumbnails
                     AsyncActionLaunchL( ELaunchSearch );
                     }
                 }
@@ -847,7 +850,7 @@ void CEasyDialingPlugin::LaunchSearchL()
         {
         return;
         }
-   
+    
     iDiscardCompletingSearches = EFalse;
     iNewSearchNeeded = EFalse;
     
@@ -893,7 +896,7 @@ void CEasyDialingPlugin::LaunchSearchL()
 //
 void CEasyDialingPlugin::HandlePsResultsUpdate( RPointerArray<CPsClientData>& aResults, RPointerArray<CPsPattern>& aSeqs )
     {
-    if (iCenrepListener && iCenrepListener->Value() == 0)
+    if ( !IsEnabled() )
         {
         // Easydialing is off. We should arrive here only if user turned it off while a search was happening.
         Reset();
@@ -901,7 +904,7 @@ void CEasyDialingPlugin::HandlePsResultsUpdate( RPointerArray<CPsClientData>& aR
         }
     TRAPD( leaveError, HandlePsResultsUpdateL( aResults, aSeqs ) );
 
-    if( leaveError )
+    if ( leaveError )
         {
         OstTrace1( TRACE_ERROR, CEASYDIALINGPLUGIN_HANDLEPSRESULTSUPDATE, "HandlePsResultsUpdate failed: %d", leaveError );
         LOGSTRING1("EasyDialingPlugin: HandlePsResultsUpdate failed: %d", leaveError );
@@ -1007,61 +1010,92 @@ void CEasyDialingPlugin::HandlePsResultsUpdateL( RPointerArray<CPsClientData>& a
     OstTrace1( TRACE_NORMAL, CEASYDIALINGPLUGIN_HANDLEPSRESULTSUPDATEL_MATCHES, "Matching results from PCS: %d", numberOfPCSMatches );
     LOGSTRING1("EasyDialingPlugin: Matching results from PCS: %d", numberOfPCSMatches );
 
-    if ( numberOfPCSMatches > 0 )
+    // retrieve the name order before adding
+    CEasyDialingContactDataManager::TNameOrder nameOrder = iContactDataManager->NameOrder();
+
+    RPointerArray<MVPbkContactLink> favsFoundByPcs;
+    CleanupResetAndDestroyPushL( favsFoundByPcs );
+    
+    // Update the model
+    // ----------------
+    for ( TInt i = 0; i < numberOfPCSMatches; i++ )
         {
-        // retrieve the name order before adding
-        CEasyDialingContactDataManager::TNameOrder nameOrder = iContactDataManager->NameOrder();
+        TInt indexFromEnd = numberOfPCSMatches - i - 1;
 
-        // map results to old contact match data
-        for( TInt i = 0; i < numberOfPCSMatches; i++ )
+        MVPbkContactLink* link = iPredictiveContactSearchHandler->ConvertToVpbkLinkLC(
+                *(aResults[indexFromEnd]), *iContactManager );
+        if ( !iContactDataManager->IsFavL( link ) )
             {
-            TInt indexFromEnd = numberOfPCSMatches - i - 1;
-
-            MVPbkContactLink* link = iPredictiveContactSearchHandler->ConvertToVpbkLinkLC(
-                    *(aResults[indexFromEnd]), *iContactManager );
-            if ( !iContactDataManager->IsFavL( link ) )
-                {
-                // handle favourites separately, in another loop
-                HBufC* contactString = CreateContactStringLC( aResults[ indexFromEnd ], nameOrder );
-                CreateListBoxContactStringL( *contactString, link, matchThumbnails, EFalse );
-                CleanupStack::PopAndDestroy( contactString );
-                }
+            // handle favourites separately, in another loop
+            HBufC* contactString = CreateContactStringLC( aResults[ indexFromEnd ], nameOrder );
+            CreateListBoxContactStringL( *contactString, link, matchThumbnails, EFalse );
+            CleanupStack::PopAndDestroy( contactString );
             CleanupStack::PopAndDestroy( link );
-            
-            OstTraceExt2( TRACE_NORMAL, CEASYDIALINGPLUGIN_HANDLEPSRESULTSUPDATEL_SHOW_MATCH, "Contact #%d: '%S'", i+1, iContactStringCreationBuffer );
-            LOGSTRING2("EasyDialingPlugin: Contact #%d: '%S'", i+1, &iContactStringCreationBuffer );    
             }
-
-        TInt numberOfFavs( iContactDataManager->NumberOfFavsL() );
-        TBuf<KBufferMaxLen> results;
-        for ( TInt i = numberOfFavs - 1; i >= 0; i-- )
+        else
             {
-            // check if this fav matches the search
-            HBufC* favContactString = iContactDataManager->FavContactStringLC( i, nameOrder );
+            // favourites are handled later
+            favsFoundByPcs.AppendL( link );
+            CleanupStack::Pop( link );
+            }
+        
+        OstTraceExt2( TRACE_NORMAL, CEASYDIALINGPLUGIN_HANDLEPSRESULTSUPDATEL_SHOW_MATCH, "Contact #%d: '%S'", i+1, iContactStringCreationBuffer );
+        LOGSTRING2( "EasyDialingPlugin: Contact #%d: '%S'", i+1, &iContactStringCreationBuffer );
+        }
+
+    // Search synchronously through all the favourite contacts to ensure
+    // that all favourite matches are added to bottom even when number of mathces
+    // exceeds the maximum number set to PCS
+    TInt numberOfFavs( iContactDataManager->NumberOfFavsL() );
+    TBuf<KBufferMaxLen> results;
+    for ( TInt i = numberOfFavs - 1; i >= 0; i-- )
+        {
+        HBufC* favContactString = iContactDataManager->FavContactStringLC( i, nameOrder );
+        MVPbkContactLink* link = iContactDataManager->FavLinkLC( i );
+        
+        // Check if this fav contact was returned in aResults.
+        // It's at least theoretically possible that all matches in aResults
+        // are not matched when using LookupMatchL. PCS has completely separate logics
+        // for functions SearchL and LookupMatchL and especially with Chinese variant
+        // they may return different results.
+        TBool found = ( Find( link, favsFoundByPcs ) != KErrNotFound );
+        
+        // If this fav contact was not in aResults, then use LookupMatchL
+        // to check if this contact is still a match and was excluded from aResults
+        // because maximum number of results was exceeded.
+        if ( !found )
+            {
             results = KNullDesC;
             iPredictiveContactSearchHandler->LookupMatchL(
                     *iPredictiveSearchQuery, *favContactString, results );
-            if ( results.Length() > 0 )
-                {
-                // matches, add this fav to listbox.
-                MVPbkContactLink* link = iContactDataManager->FavLinkLC( i );
-                CreateListBoxContactStringL( *favContactString, link, matchThumbnails, ETrue );
-                CleanupStack::PopAndDestroy(); //link
-                }
-            CleanupStack::PopAndDestroy( favContactString );
+            found = ( results.Length() > 0 );
             }
-        
-        iNumberOfNames = iListBoxModel->Count();
+
+        if ( found )
+            {
+            // matches, add this fav to listbox.
+            CreateListBoxContactStringL( *favContactString, link, matchThumbnails, ETrue );
+            }
+
+        CleanupStack::PopAndDestroy(); // link
+        CleanupStack::PopAndDestroy( favContactString );
+        }
+    
+    CleanupStack::PopAndDestroy( &favsFoundByPcs ); // ResetAndDestroy
+    
+    // Update the view
+    // ---------------
+    iNumberOfNames = iListBoxModel->Count();
+    if ( iNumberOfNames )
+        {
         iContactListBox->SetRectToNumberOfItems( iNumberOfNames );
         iContactListBox->HandleItemAdditionL();
         // Scroll the list to bottom
         iContactListBox->ScrollToMakeItemVisible( iNumberOfNames-1 );
-
         iContactListBox->MakeVisible( ETrue );
         }
     else
         {
-        iNumberOfNames = 0;
         iContactListBox->MakeVisible( EFalse );
         }
 
@@ -1333,7 +1367,7 @@ TBool CEasyDialingPlugin::InitializeMenuPaneL( CEikMenuPane& aMenuPane, TInt aMe
         
         if ( iContactListBox->CurrentItemIndex() >= 0 ) 
             {
-            TInt index = iContactListBox->CurrentContactDataIndex(); 
+            TInt index = iContactListBox->CurrentContactDataIndex();
             
             voiceCall = iContactDataManager->VoiceCallAvailable( index );
             videoCall = iContactDataManager->VideoCallAvailable( index );
@@ -1413,7 +1447,7 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
     
     TBool ret(EFalse);
     
-    switch( aCommand )
+    switch ( aCommand )
         {
         case EEasyDialingOpenContact:
             
@@ -1495,9 +1529,9 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
 // Check if Easy dialing is enabled in the settings
 // -----------------------------------------------------------------------------
 //
-TBool CEasyDialingPlugin::IsEnabled()
+TBool CEasyDialingPlugin::IsEnabled() const
     {
-    return ( iCenrepListener->Value() != 0 );
+    return ( iCenrepListener && iCenrepListener->Value() != 0 );
     }
 
 // -----------------------------------------------------------------------------
@@ -1534,7 +1568,7 @@ void CEasyDialingPlugin::AsyncActionLaunchL( const TEasyDialingAction aAction )
     
     // This means that iInputBlocker is deleted by CAknInputBlock when
     // it's cancelled ( we get a callback where iInputBlocker is set to NULL).
-    iInputBlocker->SetCancelDelete( iInputBlocker );                         
+    iInputBlocker->SetCancelDelete( iInputBlocker );
     }
 
 // -----------------------------------------------------------------------------
@@ -1600,7 +1634,7 @@ void CEasyDialingPlugin::DoLaunchActionL( )
     HBufC* fullName = AllocWithoutHighlightSeparatorsLC( fullNameSeparators );
     
     VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector selector( 
-            VPbkFieldTypeSelectorFactory::EEmptySelector );   
+            VPbkFieldTypeSelectorFactory::EEmptySelector );
     
     switch ( iActionToBeLaunched ) 
         {
@@ -1626,7 +1660,7 @@ void CEasyDialingPlugin::DoLaunchActionL( )
                 selector = VPbkFieldTypeSelectorFactory::EVoiceCallSelector;
                 }
             
-            CleanupStack::PopAndDestroy( sPSettings );         
+            CleanupStack::PopAndDestroy( sPSettings );
             }
             break;
             
@@ -1691,6 +1725,18 @@ void CEasyDialingPlugin::HandleListBoxEventL( CEikListBox* /*aListBox*/, TListBo
 
         case KEasyDialingContactLongTapped:
             AsyncActionLaunchL( ELaunchCurrentContact );
+            break;
+            
+        // Pause contact data manager when panning and flicking listbox.
+        // This ensures smooth and responsive listbox touch handling.
+        case EEventFlickStarted:
+        case EEventPanningStarted:
+            iContactDataManager->Pause( ETrue );
+            break;
+            
+        case EEventFlickStopped:
+        case EEventPanningStopped:
+            iContactDataManager->Pause( EFalse );
             break;
             
         // We are not interested about the other listbox events.
@@ -1929,6 +1975,43 @@ static TBool IsItuTCharacter( TChar aChar )
          aChar == TChar('*') ||
          aChar == TChar('+');
     }
+
+// -----------------------------------------------------------------------------
+// Find contact link pointing to the same contact as given link
+// -----------------------------------------------------------------------------
+//
+static TInt Find( const MVPbkContactLink* aLink, const RPointerArray<MVPbkContactLink>& aArray )
+    {
+    TInt idx = KErrNotFound;
+    for ( TInt i = 0 ; i < aArray.Count() ; ++i )
+        {
+        if ( aArray[i]->IsSame( *aLink ) )
+            {
+            idx = i;
+            i = aArray.Count();
+            }
+        }
+    return idx;
+    }
+
+// -----------------------------------------------------------------------------
+// CleanupStack helpers for item owning RPointerArrays (etc)
+// -----------------------------------------------------------------------------
+//
+template <class T>
+class CleanupResetAndDestroy
+    {
+public:
+    inline static void PushL( T& aRef )
+        { CleanupStack::PushL( TCleanupItem(&ResetAndDestroy,&aRef) ); }
+private:
+    inline static void ResetAndDestroy( TAny *aPtr )
+        { static_cast<T*>(aPtr)->ResetAndDestroy(); }
+    };
+
+template <class T>
+inline void CleanupResetAndDestroyPushL( T& aRef )
+    { CleanupResetAndDestroy<T>::PushL(aRef); }
 
 //  End of File
 

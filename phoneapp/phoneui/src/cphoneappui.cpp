@@ -602,16 +602,20 @@ void CPhoneAppUI::HandleWsEventL(
                     return;     
                     }
                            
-                if ( iQwertyHandler->IsQwertyInput() )
+                // Check if key press is simulated by FEP or by touch dialer
+                TBool fepSimulated = keyEvent->iModifiers & EModifierSpecial;               
+                TInt modifierMask = ( EModifierNumLock | EModifierKeypad );
+                TBool dialerSimulated = ( ( keyEvent->iModifiers & modifierMask ) == modifierMask );
+                        
+                if ( !fepSimulated && !dialerSimulated && iQwertyHandler->IsQwertyInput() )
                     {
-                    TInt code = iQwertyHandler->NumericKeyCode( *keyEvent );
-                    TBool fepSimulated = keyEvent->iModifiers & EModifierSpecial; 
-                    if ( !fepSimulated && 
-                         ( ( code != EKeyNull && code != keyEvent->iCode ) ||
-                         ( code == EKeyNull && CPhoneKeys::IsNumericKey( 
-                                                             *keyEvent, 
-                                                             ( TEventCode ) aEvent.Type() ) ) )
-                         ) 
+                    TInt code = iQwertyHandler->NumericKeyCode( *keyEvent );                    
+                    if ( code == EKeyNull && CPhoneKeys::IsNumericKey( *keyEvent, ( TEventCode ) aEvent.Type() ) )
+                        {
+                        code = keyEvent->iCode;
+                        }
+                    
+                    if ( code != EKeyNull ) 
                         {
                         // Modify event according to keyboard layout
                         TWsEvent newWsEvent = aEvent;    
@@ -823,15 +827,6 @@ void CPhoneAppUI::HandleApplicationSpecificEventL(
     const TWsEvent& aEvent )
     {
     __LOGMETHODSTARTEND( EPhonePhoneapp, "CPhoneAppUI::HandleApplicationSpecificEventL" );
-    
-    if( aType == EEikKeyLockEnabled )
-        {
-        iPhoneUIController->HandleKeyLockEnabled( ETrue );
-        }
-    else if( aType == EEikKeyLockDisabled )
-        {
-        iPhoneUIController->HandleKeyLockEnabled( EFalse );
-        }
     
     CAknAppUi::HandleApplicationSpecificEventL( aType, aEvent );
     }

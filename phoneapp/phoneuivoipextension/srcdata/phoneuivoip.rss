@@ -853,7 +853,7 @@ RESOURCE MENU_PANE r_phoneuidialer_numberentry_not_empty_transfer_options_menu
         MENU_ITEM 
             {
             command = EPhoneCmdTransferDialerOk; 
-            txt = text_softkey_accept;
+            txt = qtn_dialer_options_send_uatransfer_req;
             }, 
         MENU_ITEM 
             {
@@ -909,7 +909,7 @@ RESOURCE CBA r_phoneui_transfer_dialer_softkeys_options_cancel
 //
 RESOURCE TBUF r_voip_dialer_tooltip_accept
     {
-    buf = text_softkey_accept;
+    buf = qtn_dialer_options_send_uatransfer_req;
     } 
 
 // -----------------------------------------------------------------------------
@@ -1365,6 +1365,17 @@ RESOURCE TBUF r_phone_voip_creating_conn_failed_permanently
     {
     buf = qtn_ipcomm_creating_conn_failed_permanently;
     } 
+
+//-----------------------------------------------------------------------------
+//
+//    r_voip_dialer_unatt_transfer_input_field_text "Address:"
+//
+// -----------------------------------------------------------------------------
+// 
+RESOURCE TBUF r_voip_dialer_unatt_transfer_input_field_text
+    {
+    buf = qtn_dialer_unatt_transfer_input_field_text;
+    }
 
 //-----------------------------------------------------------------------------
 //

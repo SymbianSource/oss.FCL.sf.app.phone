@@ -21,6 +21,8 @@
 #include "phoneui.hrh"
 #include <featmgr.h>
 
+#include <eikcba.h>
+
 // ================= MEMBER FUNCTIONS =======================
 // C++ default constructor can NOT contain any code, that
 // might leave.
@@ -37,6 +39,23 @@ CPhoneNote::CPhoneNote( CEikDialog** aSelfPtr, MEikCommandObserver& aCommandObse
 // 
 CPhoneNote::~CPhoneNote()
     {
+    }
+
+// ---------------------------------------------------------
+// CPhoneNote::PreLayoutDynInitL
+// ---------------------------------------------------------
+//
+void CPhoneNote::PreLayoutDynInitL()
+    {
+    CEikButtonGroupContainer& cba = ButtonGroupContainer();
+    CEikCba* eikCba = static_cast< CEikCba* >( cba.ButtonGroup() );
+    
+    if ( eikCba )
+        {
+        eikCba->EnableItemSpecificSoftkey( EFalse );
+        }
+    
+    CAknNoteDialog::PreLayoutDynInitL();
     }
 
 // ---------------------------------------------------------

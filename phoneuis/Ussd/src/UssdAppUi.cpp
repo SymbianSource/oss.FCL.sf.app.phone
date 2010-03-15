@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -15,24 +15,22 @@
 *
 */
 
-
 // INCLUDE FILES
-#include "UssdAppUi.h"
-#include "UssdContainer.h"
-#include "UssdComms.h"
 #include <ussd.rsg>
 #include <avkon.rsg>
-#include "ussd.hrh"
 #include <eikmenub.h>
 #include <eikedwin.h>
 #include <avkon.hrh>
 #include <bldvariant.hrh>
 #include <featmgr.h>
-
 #include <AknDef.h>
 #include <hlplch.h>   // For HlpLauncher
 
-
+#include "UssdAppUi.h"
+#include "UssdContainer.h"
+#include "UssdComms.h"
+#include "ussd.hrh"
+#include "UssdLogger.h"
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
@@ -41,11 +39,12 @@
 // -----------------------------------------------------------------------------
 void CUssdAppUi::ConstructL()
     {
+    _LOGSTRING( "CUssdAppUi::ConstructL =>" )
     // Sets up TLS, must be done before FeatureManager is used in USSD.
     FeatureManager::InitializeLibL();
 
     BaseConstructL(
-        EAknEnableSkin | EAknEnableMSK
+        EAknEnableSkin | EAknEnableMSK | EAknSingleClickCompatible
         );
 
     // Softkeys at start:
@@ -66,8 +65,8 @@ void CUssdAppUi::ConstructL()
     iAppContainer->ConstructL( ClientRect() );
     AddToStackL( iAppContainer );
     iIsAddedToStack = ETrue;
+    _LOGSTRING( "CUssdAppUi::ConstructL <=" )
     }
-
 
 // -----------------------------------------------------------------------------
 // CUssdAppUi::~CUssdAppUi
@@ -76,21 +75,20 @@ void CUssdAppUi::ConstructL()
 // -----------------------------------------------------------------------------
 CUssdAppUi::~CUssdAppUi()
     {
+    _LOGSTRING( "CUssdAppUi::~CUssdAppUi =>" )
     if ( iIsAddedToStack )
         {
         RemoveFromStack( iAppContainer );
         }
 
     delete iAppContainer;
-    iAppContainer = NULL;
 
     delete iComms;
-    iComms = NULL;
 
     // Frees the TLS! Must be done after FeatureManager is used.
     FeatureManager::UnInitializeLib();
+    _LOGSTRING( "CUssdAppUi::~CUssdAppUi <=" )
     }
-
 
 // -----------------------------------------------------------------------------
 // CUssdAppUi::HandleCommandL
@@ -98,6 +96,8 @@ CUssdAppUi::~CUssdAppUi()
 // -----------------------------------------------------------------------------
 void CUssdAppUi::HandleCommandL( TInt aCommand )
     {
+    _LOGSTRING2( "CUssdAppUi::HandleCommandL =>, aCommand=%d", 
+    aCommand )
     switch ( aCommand )
         {
         case EAknCmdExit:
@@ -145,8 +145,8 @@ void CUssdAppUi::HandleCommandL( TInt aCommand )
         default:
             break;
         }
+    _LOGSTRING( "CUssdAppUi::HandleCommandL <=" )
     }
-
 
 // -----------------------------------------------------------------------------
 // CUssdAppUi::HandleResourceChangeL
@@ -167,6 +167,8 @@ void CUssdAppUi::HandleResourceChangeL( TInt aType )
 // -----------------------------------------------------------------------------
 void CUssdAppUi::HandleForegroundEventL( TBool aForeground )
     {
+    _LOGSTRING2( "CUssdAppUi::HandleForegroundEventL =>, aForeground=%d",
+    aForeground )
     if ( iComms )
         {
         if ( aForeground )
@@ -202,8 +204,8 @@ void CUssdAppUi::HandleForegroundEventL( TBool aForeground )
         }
     
     CAknAppUi::HandleForegroundEventL( aForeground );
+    _LOGSTRING( "CUssdAppUi::HandleForegroundEventL <=" )
     }
-
 
 // -----------------------------------------------------------------------------
 // CUssdAppUi::DynInitMenuPaneL
@@ -235,7 +237,6 @@ void CUssdAppUi::DynInitMenuPaneL(
 
     // If help not defined, do nothing
     }
-
 
 // -----------------------------------------------------------------------------
 // CUssdAppUi::SetSofkeySendVisibleL

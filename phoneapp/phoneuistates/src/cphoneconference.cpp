@@ -954,9 +954,6 @@ void CPhoneConference::HandleIncomingL( TInt aCallId )
     // Close fast swap window if it's displayed
     CEikonEnv::Static()->DismissTaskList();
 
-    // Check if HW Keys or Call UI should be disabled
-    CheckDisableHWKeysAndCallUIL();
-    
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
     
     // Display incoming call

@@ -42,7 +42,6 @@
 #include "phonelogger.h"
 #include "cphonecenrepproxy.h"
 #include "cphonepubsubproxy.h"
-#include "mphonestorage.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -328,22 +327,6 @@ void CPhoneSingleAndWaiting::HandleKeyMessageL(
     }
 
 // -----------------------------------------------------------
-// CPhoneSingleAndWaiting::HandleKeyEventL
-// -----------------------------------------------------------
-//
-void CPhoneSingleAndWaiting::HandleKeyEventL(
-    const TKeyEvent& aKeyEvent,
-    TEventCode aEventCode )
-    {
-    if( EKeyDeviceF == aKeyEvent.iCode )
-        {
-        __PHONELOG( EBasic, EPhoneUIStates,
-            "CPhoneSingleAndWaiting::HandleKeyMessageL-deviceF" );
-        HandleHoldSwitchL();
-        }
-    }
-
-// -----------------------------------------------------------
 // CPhoneSingleAndWaiting::HandleIdleL
 // -----------------------------------------------------------
 //
@@ -427,9 +410,6 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
                 SetNumberEntryVisibilityL(EFalse);
                 }
 
-            // Check if HW Keys or Call UI should be disabled
-            CheckDisableHWKeysAndCallUIL();
-            
             SetTouchPaneButtons( EPhoneIncomingCallButtons );
             SetTouchPaneButtonEnabled( EPhoneCallComingCmdSilent );
             
@@ -493,16 +473,6 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
                 }
             }
         
-        // Enable call UI
-        if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-            && iStateMachine->PhoneStorage()->IsScreenLocked() )
-            {
-            EnableCallUIL();
-            }
-
-        // Reset blocked keys list
-        iStateMachine->PhoneStorage()->ResetBlockedKeysList();
-
         SetTouchPaneButtons( EPhoneIncallButtons );
         EndUiUpdate();
         if( effectStarted )
@@ -627,9 +597,6 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
         BeginTransEffectLC( ENumberEntryOpen );
         effectStarted = ETrue;
         }
-    
-    // Reset blocked keys list
-    iStateMachine->PhoneStorage()->ResetBlockedKeysList();
     
     BeginUiUpdateLC();
 

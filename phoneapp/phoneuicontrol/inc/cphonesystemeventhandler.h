@@ -75,8 +75,6 @@ class CPhoneSystemEventHandler :
         
         void HandlePhoneFocusLostEventL();
 
-        void HandleKeyLockEnabled( TBool aKeylockEnabled );
-        
     public: // From MPhonePubSubObserver
 
         /**

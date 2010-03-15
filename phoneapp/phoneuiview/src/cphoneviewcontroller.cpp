@@ -137,8 +137,8 @@
 #include <easydialingcommands.hrh>
 
 // Kastor effect IDs, aknskincontent/101f84b9.sel
-const TInt KTouchDialerOpenEffect  = 1505;
-const TInt KTouchDialerCloseEffect = 1506;
+const TInt KTouchDialerOpenEffect  = 3;
+const TInt KTouchDialerCloseEffect = 5;
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -500,10 +500,6 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             iKeyLock.EnableKeyLock();
             break;
 
-        case EPhoneViewEnableKeyLockWithoutNote:
-            iKeyLock.EnableWithoutNote();
-            break;
-            
         case EPhoneViewDisableKeyLockWithoutNote:
             iKeyLock.DisableWithoutNote();
             break;
@@ -632,12 +628,6 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             iToolbarController->HideToolbar();
             }
             break;  
-
-        case EPhoneViewDisableKeyLock:
-            {
-            DisableKeyLock();
-            }
-            break;
 
         case EPhoneViewLaunchMultimediaSharing:
             {
@@ -1434,17 +1424,17 @@ EXPORT_C void CPhoneViewController::ExecuteCommand(
                 TBool idleInFore = ForegroundApplicationWindowGroupId() ==  IdleWindowGroupId() ?
                         ETrue : EFalse;
                 
-                if ( isForeground && // Newer run effect if not at front
+                if ( ( isForeground && // Newer run effect if not at front
                      ( ( type == EPhoneTransEffectDialerCreate && !iDialerActive ) ||
                        ( type == EPhoneTransEffectDialerOpen && !iDialerActive &&
-                         iBubbleWrapper->IsNumberEntryUsed() ) ||
+                         iBubbleWrapper->IsNumberEntryUsed() )) ||
                        ( type == EPhoneTransEffectDialerClose && iDialerActive ) ) )
                     {
                     HandleTransitionEffect( type );
                     }
-                // In case transition is from idle to dialer show transition effects as well.
-                else if ( idleInFore && !iDialerActive &&
-                          type == EPhoneTransEffectDialerCreate )
+                // In case transition is from idle to dialer show transition effects as well.                 
+                 else if ( idleInFore && !iDialerActive &&
+                          type == EPhoneTransEffectDialerOpen )
                     {
                     HandleTransitionEffect( type );
                     }
@@ -1629,12 +1619,6 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
               EPhoneViewResponseFailed;
           }
           break;
-
-        case EPhoneViewIsKeyLockEnabled:
-            viewResponse = IsKeyLockEnabled() ?
-                EPhoneViewResponseSuccess :
-                EPhoneViewResponseFailed;
-            break;          
 
     // Dialer specific commands start
 
@@ -2748,30 +2732,6 @@ void CPhoneViewController::SetGlobalNotifiersDisabledL(
         booleanParam->Boolean() );
     }
 
-// ---------------------------------------------------------
-// CPhoneViewController::IsKeyLockEnabled
-// ---------------------------------------------------------
-//
-TBool CPhoneViewController::IsKeyLockEnabled()
-    {
-    TBool keylock;
-    keylock = iKeyLock.IsKeyLockEnabled();
-    __PHONELOG1( EBasic, EPhoneUIView,
-        "CPhoneViewController::IsKeyLockEnabled(%d)", keylock );
-    return keylock;
-    }
-
-// ---------------------------------------------------------
-// CPhoneViewController::DisableKeyLock
-// ---------------------------------------------------------
-//
-void CPhoneViewController::DisableKeyLock()
-    {
-    __PHONELOG( EBasic, EPhoneUIView,
-        "CPhoneViewController::DisableKeyLock()");
-    return iKeyLock.DisableWithoutNote();
-    }
-
 // CPhoneViewController::CancelAllNotications
 // ---------------------------------------------------------------------------
 //
@@ -3700,10 +3660,7 @@ void CPhoneViewController::SwitchLayoutToFlatStatusPaneL( TBool aSwitch )
              currentLayout == R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL )
             {
             SwapEmptyIndicatorPaneInSecureStateL( EFalse );
-
-            //  do Pop for navipane
-            iAudioController->DeactivateVolumeControl();
-
+            
             if ( !Layout_Meta_Data::IsLandscapeOrientation() )
                 {
                 iStatusPane->StatusPane().SwitchLayoutL

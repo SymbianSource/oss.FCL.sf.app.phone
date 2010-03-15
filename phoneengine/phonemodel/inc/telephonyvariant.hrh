@@ -90,11 +90,6 @@
 #define KTelephonyLVFlagAdvancedENCheck 0x00000200
 
 /**
-* KTelephonyLVFlagDisableCallControlHardKeysWhileLocked 
-*/
-#define KTelephonyLVFlagDisableCallControlHardKeysWhileLocked 0x00000400 
-
-/**
 * KTelephonyLVFlagUssdTone defines if the USSD tone play functionality is 
 * enabled.
 * When the flag is set, tone is played when USSD message is received. 
@@ -110,11 +105,6 @@
 * @since Series 60 3.1
 */
 #define KTelephonyLVFlagArbitraryVideoScaling 0x00001000
-
-/**
-* KTelephonyLVFlagAllowUnlockOnIncoming 
-*/
-#define KTelephonyLVFlagAllowUnlockOnIncoming 0x00002000 
 
 /**
 * KTelephonyLVFlagMannerMode defines if the manner mode is enabled.

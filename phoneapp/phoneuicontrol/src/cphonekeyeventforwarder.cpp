@@ -272,30 +272,27 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventBeforeControlStackL(
         "CPhoneKeyEventForwarder::OfferKeyEventBeforeControlStackL");
 
     TKeyResponse response( EKeyWasNotConsumed );
-    if( !IsKeyBlocked( aKeyEvent ) )
-        {
-        // Handle key events before FEP
-        // This is must becouse FEP consumes * key and when
-        // editor is in alphanumeric mode FEP consumes all alphanumeric
-        // keys
-        switch( aType )
-            {
-             // EEventKeyDown
-            case EEventKeyDown:
-                response = HandleEventKeyDownBeforeControlStackL( aKeyEvent );
-                break;
-            // EEventKey
-            case EEventKey:
-                response = HandleEventKeyBeforeControlStackL( aKeyEvent );
-                break;
-            // EEventKeyUp
-            case EEventKeyUp:
-                response = HandleEventKeyUpBeforeControlStackL( aKeyEvent );
-                break;
-            default:
-                break;
-            }
 
+    // Handle key events before FEP
+    // This is must becouse FEP consumes * key and when
+    // editor is in alphanumeric mode FEP consumes all alphanumeric
+    // keys
+    switch( aType )
+        {
+         // EEventKeyDown
+        case EEventKeyDown:
+            response = HandleEventKeyDownBeforeControlStackL( aKeyEvent );
+            break;
+        // EEventKey
+        case EEventKey:
+            response = HandleEventKeyBeforeControlStackL( aKeyEvent );
+            break;
+        // EEventKeyUp
+        case EEventKeyUp:
+            response = HandleEventKeyUpBeforeControlStackL( aKeyEvent );
+            break;
+        default:
+            break;
         }
     return response;
     }
@@ -313,23 +310,20 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventAfterControlStackL(
     __LOGMETHODSTARTEND( EPhoneControl,
         "CPhoneKeyEventForwarder::OfferKeyEventAfterControlStackL");
     
-	if( !IsKeyBlocked( aKeyEvent ) )
+    // Send key to editor
+    iStateMachine->State()->HandleKeyEventL( aKeyEvent, aType );
+    
+    if( EEventKeyUp == aType 
+            && EKeyNull != iKeyPressedDown )
         {
-        // Send key to editor
-        iStateMachine->State()->HandleKeyEventL( aKeyEvent, aType );
-        
-        if( EEventKeyUp == aType 
-                && EKeyNull != iKeyPressedDown )
-            {
-            // Handle short key press
-            iStateMachine->State()->HandleKeyMessageL( 
-                MPhoneKeyEvents::EPhoneKeyShortPress, 
-                TKeyCode( iKeyPressedDown ) );
+        // Handle short key press
+        iStateMachine->State()->HandleKeyMessageL( 
+            MPhoneKeyEvents::EPhoneKeyShortPress, 
+            TKeyCode( iKeyPressedDown ) );
 
-            // Reset key code
-            iScanCode = EStdKeyNull;
-            iKeyPressedDown = EKeyNull;
-            }
+        // Reset key code
+        iScanCode = EStdKeyNull;
+        iKeyPressedDown = EKeyNull;
         }
 
     return EKeyWasNotConsumed;
@@ -545,33 +539,6 @@ void CPhoneKeyEventForwarder::ConvertKeyCode( TUint& aCode,
 
     __PHONELOG1( EBasic, EPhoneControl,
         "CPhoneKeyEventHandler::ConvertKeyCode aCode (%d)", aCode );
-    }
-
-// -----------------------------------------------------------------------------
-// CPhoneKeyEventForwarder::IsKeyBlocked
-// -----------------------------------------------------------------------------
-//
-TBool CPhoneKeyEventForwarder::IsKeyBlocked( const TKeyEvent& aKeyEvent ) const
-    {
-    TBool ret = EFalse;
-    
-    // Check blocked keys
-    const RArray<TInt>& keyScanCodeList = iStateMachine->State()->GetBlockedKeyList();
-    TInt count = keyScanCodeList.Count();
-    if( count )
-        {
-        for( TInt i = 0; i < count; i++ )
-            {
-            if( keyScanCodeList[i] == aKeyEvent.iScanCode )
-                {
-                ret = ETrue;
-                }
-            }
-        }
-    __PHONELOG1( EBasic, EPhoneControl,
-        "CPhoneKeyEventHandler::IsKeyBlocked return (%d)", ret );
-    
-    return ret;
     }
 
 //  End of File

@@ -412,9 +412,6 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
     // Set touch controls
     SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
     
-    // Check if HW Keys or Call UI should be disabled
-    CheckDisableHWKeysAndCallUIL();
-    
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
 
     EndUiUpdate();

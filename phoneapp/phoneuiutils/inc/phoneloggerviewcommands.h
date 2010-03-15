@@ -257,8 +257,6 @@ public:
 		EPhoneViewSetStatusPaneVisible,
 		/** EPhoneViewEnableKeyLock */
 		EPhoneViewEnableKeyLock,
-		/** EPhoneViewEnableKeyLockWithoutNote */
-		EPhoneViewEnableKeyLockWithoutNote,
 		/** EPhoneViewLaunchFaxModem */
 		EPhoneViewLaunchFaxModem,
 		/** EPhoneViewUpdateFSW */
@@ -369,10 +367,6 @@ public:
 		EPhoneViewCancelAllNotications,
 		/** EPhoneViewSetVideoCallDTMFVisibilityFlag */
 		EPhoneViewSetVideoCallDTMFVisibilityFlag,
-		/** EPhoneViewIsKeyLockEnabled */
-		EPhoneViewIsKeyLockEnabled,
-		/** EPhoneViewDisableKeyLock */
-		EPhoneViewDisableKeyLock,
 		/** EPhoneViewLoadPlugins */
 		EPhoneViewLoadPlugins,
 		/** PhoneViewServiceSelection */

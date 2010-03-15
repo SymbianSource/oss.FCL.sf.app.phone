@@ -196,15 +196,6 @@ void CPhoneSystemEventHandler::HandleIdleForegroundEventL()
     iStateMachine->State()->HandleIdleForegroundEventL();
     }
 
-// ---------------------------------------------------------
-// CPhoneSystemEventHandler::HandleKeyLockEnabled
-// ---------------------------------------------------------
-//
-void CPhoneSystemEventHandler::HandleKeyLockEnabled( TBool aKeylockEnabled )
-    {
-    iStateMachine->State()->HandleKeyLockEnabled( aKeylockEnabled );
-    }
-
 // -----------------------------------------------------------
 // CPhoneSystemEventHandler::HandleEnvironmentChangeL
 // -----------------------------------------------------------

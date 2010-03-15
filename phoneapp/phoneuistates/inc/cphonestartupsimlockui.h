@@ -55,6 +55,17 @@ public:
          const TInt aMessage, 
          TInt aCallId );       
 
+
+    // From MPhonePubSubObserver
+    /**
+     * This function is called when there is property value change.
+     * @param aCategory Category of the property
+     * @param aKey Property key that is changed
+     * @param aValue New property value
+     */
+    IMPORT_C virtual void HandlePropertyChangedL( const TUid& aCategory,
+            const TUint aKey, const TInt aValue );       
+
 private:
 
     /**
@@ -79,16 +90,6 @@ private:
      * Takes care of the SimLock Exit Scenario
      */
     void ExitSimLockModeL();
-
-    // From MPhonePubSubObserver
-    /**
-     * This function is called when there is property value change.
-     * @param aCategory Category of the property
-     * @param aKey Property key that is changed
-     * @param aValue New property value
-     */
-    IMPORT_C virtual void HandlePropertyChangedL( const TUid& aCategory,
-            const TUint aKey, const TInt aValue );   
 
     /**
      * Handles startup of the phone application 
