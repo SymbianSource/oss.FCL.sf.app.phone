@@ -134,8 +134,8 @@ TBool CPhoneStateSingleVoIP::HandleCommandL( TInt aCommand )
         {
         case EPhoneNumberAcqCmdInternetCall:
             StateUtils().SelectServiceAndDialL();
-        	break;
-     	
+            break;
+        
         case EPhoneNumberAcqCmdSendCommand:
             StartCallingL();
             break;
@@ -194,9 +194,9 @@ void CPhoneStateSingleVoIP::HandleKeyMessageL(
             }
             break;
             
-		default:
-			CPhoneSingleCall::HandleKeyMessageL( aMessage, aKeyCode );
-			break;
+        default:
+            CPhoneSingleCall::HandleKeyMessageL( aMessage, aKeyCode );
+            break;
         }
     }
 
@@ -205,18 +205,18 @@ void CPhoneStateSingleVoIP::HandleKeyMessageL(
 // -----------------------------------------------------------
 //
 void CPhoneStateSingleVoIP::StartCallingL()
-	{
+    {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneStateSingleVoIP::StartCallingL()" )
     
     TUint serviceId( 0 );
     CPhoneStateUtilsVoip& utililty = StateUtils();
-	if ( utililty.IsVoipPreferredCall( serviceId ) )
-		{
-		utililty.SelectServiceAndDialL( KNullDesC, serviceId );			
-		}
-	else
-		{
+    if ( utililty.IsVoipPreferredCall( serviceId ) )
+        {
+        utililty.SelectServiceAndDialL( KNullDesC, serviceId );         
+        }
+    else
+        {
         if ( utililty.IsVoipNumber() )
             {
             utililty.SelectServiceAndDialL();
@@ -246,8 +246,8 @@ void CPhoneStateSingleVoIP::StartCallingL()
                 CleanupStack::PopAndDestroy( phoneNumber );
                 }
             }
-		}
-	}
+        }
+    }
 
 // -----------------------------------------------------------
 // CPhoneStateSingleVoIP::LaunchUnattendedTransferAcceptanceQueryL

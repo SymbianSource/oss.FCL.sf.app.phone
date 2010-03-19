@@ -34,6 +34,9 @@
 #include "cphonemainresourceresolver.h"
 #include "cphonestatemachinevoip.h"
 #include "tphonecmdparamstring.h"
+// <-- QT PHONE START --> 
+#include "phoneviewcommanddefinitions.h"
+// <-- QT PHONE END --> 
 
 
 

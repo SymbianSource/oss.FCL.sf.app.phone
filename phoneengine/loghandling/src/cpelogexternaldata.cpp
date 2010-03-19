@@ -227,7 +227,7 @@ void CPELogExternalData::UpdateLastCallTimerByLine
             TEFLOGSTRING( KTAREQOUT, 
             "LOG CPELogExternalData::UpdateLastCallTimerByLine > CRepository::Set(KLogsLastCallTimerLine2)" );
 
-	        errorCode = iRepository->Set( KLogsLastCallTimerLine2, aLogInfo.Duration().Int() );
+            errorCode = iRepository->Set( KLogsLastCallTimerLine2, aLogInfo.Duration().Int() );
             }
             break;
         default:
@@ -238,7 +238,7 @@ void CPELogExternalData::UpdateLastCallTimerByLine
     if ( errorCode != KErrNone )
        {
        TEFLOGSTRING2( KTAERROR, "LOG CPELogExternalData::UpdateLastCallTimerByLine(): FAILED. ErrorCode: %d", errorCode );
-	   }
+       }
    
     }
 
@@ -303,8 +303,8 @@ void CPELogExternalData::IncreaseMissedCallValue( const TInt aCallId )
         TEFLOGSTRING2( KTAREQOUT, 
             "LOG CPELogExternalData::IncreaseMissedCallValue > CRepository::Set. value = %d"
             , value );
-	    errorCode = iRepository->Set( KLogsNewMissedCalls, value );
-	    iOwner.ResetMissedCalls( aCallId );
+        errorCode = iRepository->Set( KLogsNewMissedCalls, value );
+        iOwner.ResetMissedCalls( aCallId );
         }
     else
         {

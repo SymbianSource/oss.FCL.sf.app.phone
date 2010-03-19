@@ -21,7 +21,9 @@
 #include <mpeengineinfo.h>
 #include <StringLoader.h>
 
-#include <ccherror.h>
+// <-- QT PHONE START -->
+//#include <ccherror.h>
+// <-- QT PHONE END -->
 
 #include <spsettings.h>
 #include <spentry.h>
@@ -375,14 +377,15 @@ void CPhoneVoIPErrorMessagesHandler::GetRemoteInfoDataL(
 // -----------------------------------------------------------
 //
 void CPhoneVoIPErrorMessagesHandler::ShowRegistrationErrorNotesL( 
-    TInt aErrorCode )
+    TInt /*aErrorCode*/ )
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
               "CPhoneVoIPErrorMessagesHandler::ShowRegistrationErrorNotesL()" );
     // Dismiss service enabling wait note
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalWaitNote );
     
-    switch ( aErrorCode )
+    // <-- QT PHONE START -->
+    /*switch ( aErrorCode )
         {
         case KCCHErrorAccessPointNotDefined:
             {
@@ -423,7 +426,6 @@ void CPhoneVoIPErrorMessagesHandler::ShowRegistrationErrorNotesL(
                 serviceId );
             break;
             }
-        case KCCHErrorLoginFailed: 
         default:
             {
             TUint32 serviceId = 
@@ -432,7 +434,8 @@ void CPhoneVoIPErrorMessagesHandler::ShowRegistrationErrorNotesL(
                serviceId );
             break;
             }
-        }
+        }*/
+    // <-- QT PHONE END -->
     }
 
 // ---------------------------------------------------------

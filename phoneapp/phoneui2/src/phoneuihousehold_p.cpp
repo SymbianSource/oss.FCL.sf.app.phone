@@ -1,0 +1,419 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Household private class.
+*
+*/
+
+#include <exception> // must be before e32base.h so uncaught_exception gets defined
+#include <starterclient.h>
+#include <telinternalpskeys.h>
+// <-- QT PHONE START --> 
+//#include <activeidle2domainpskeys.h>
+#include <QLocale>
+#include <QTranslator>
+// <-- QT PHONE END --> 
+#include <telremotepartyinformationpskeys.h>
+#include <telinformationpskeys.h>
+#include <UikonInternalPSKeys.h>
+#include <startupdomainpskeys.h>
+#include <featmgr.h>        // for FeatureManager
+//#include <phoneui.hrh>
+#include <hbmainwindow.h>
+#include "phoneconstants.h"
+#include "cphonelogger.h"
+#include "cphonepubsubproxy.h"
+#include "cphoneqwertyhandler.h"
+#include "cphoneuicontroller.h"
+#include "phoneuihousehold_p.h"
+#include "phoneuiqtviewadapter.h"
+#include "phoneuiqtview.h"
+#include "phoneuikeyeventadapter.h"
+#include "phoneuicommandadapter.h"
+#include "phonenotecontroller.h"
+//#include "qtcall.h"
+
+PhoneUiHouseHoldPrivate::PhoneUiHouseHoldPrivate(HbMainWindow &window) :
+    iAppsReady (0), iStartupSignalRecoveryId (0), iLightIdleReached (EFalse),
+    iOnScreenDialer (EFalse), iQwertyHandler (0), iPhoneUIController (0),
+    m_window (window)
+{
+    qDebug("phoneui - Start phoneapp");
+    
+    TRAPD( error, ConstructL() );
+    qt_symbian_throwIfError(error);
+}
+
+PhoneUiHouseHoldPrivate::~PhoneUiHouseHoldPrivate()
+{
+    delete iKeyEventAdapter;
+    delete iCommandAdapter;
+    delete iPhoneUIController;
+    delete iViewAdapter;
+}
+
+TInt PhoneUiHouseHoldPrivate::DoStartupSignalL( TAny* aAny )
+{
+    PhoneUiHouseHoldPrivate* appUi =
+        static_cast< PhoneUiHouseHoldPrivate* >( aAny );
+    
+    return
+        !appUi->iLightIdleReached ?
+            appUi->DoStartupSignalIdleL() :
+            appUi->DoStartupSignalSecurityL();
+}
+
+TInt PhoneUiHouseHoldPrivate::DoStartupSignalIdleL()
+    {
+    TBool idleReached = EFalse;
+    
+// <-- QT PHONE START --> 
+    // Check if Idle application has been started.
+  const TInt idleUid = 0x20022F35; /*CPhonePubSubProxy::Instance()->Value(
+            KPSUidAiInformation,
+            KActiveIdleUid );*/
+// <-- QT PHONE END --> 
+    qDebug("phoneui::DoStartupSignalIdleL() idleUID=%d", idleUid);
+    
+    if ( idleUid != 0 && idleUid != KErrNotFound )
+        {
+        // Idle application has already started
+        if ( !( iAppsReady & EPhoneIdleStartedUp ) )
+            {
+            qDebug("phoneui::DoStartupSignalIdleL() Idle App started ");
+            iAppsReady += EPhoneIdleStartedUp;
+            
+            // Remove Phone application from Fast Swap Window.
+//            iPhoneViewController->SetHiddenL( ETrue );
+            
+            // Set Idle's UID to PubSub.
+            CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                KPSUidUikon,
+                KUikVideoCallTopApp,
+                idleUid );
+                
+// <-- QT PHONE START -->             
+            // hack to make sure EPhonePhase1Ok is set - to be fixed properly
+            idleReached = true;
+            qDebug("phoneui::DoStartupSignalIdleL() Phone and Idle apps have both been started");    
+            CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                KPSUidStartup,
+                KPSPhonePhase1Ok,
+                EPhonePhase1Ok );
+// <-- QT PHONE END -->                         
+            }
+        }
+    else
+        {
+// <-- QT PHONE START --> 
+        /*qDebug("phoneui::DoStartupSignalIdleL() NotifyChangeL(KPSUidAiInformation,KActiveIdleUid) ");
+        CPhonePubSubProxy::Instance()->NotifyChangeL(
+            KPSUidAiInformation,
+            KActiveIdleUid,
+            this );*/
+// <-- QT PHONE END --> 
+        }
+
+// <-- QT PHONE START -->
+/*    const TInt current = CPhonePubSubProxy::Instance()->Value(
+        KPSUidStartup,
+        KPSGlobalSystemState );
+
+    qDebug("phoneui::DoStartupSignalIdleL() System state=%d ", current);
+    if ( current == ESwStateSelfTestOK ||
+        current == ESwStateCriticalPhaseOK )
+        {                       
+        // Check that both the Phone and Idle applications are ready
+        idleReached = ( iAppsReady & EPhoneStartedUp ) &&
+             ( iAppsReady & EPhoneIdleStartedUp );
+
+        if ( idleReached )
+            {
+            qDebug("phoneui::DoStartupSignalIdleL() Phone and Idle apps have both been started");    
+            CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                KPSUidStartup,
+                KPSPhonePhase1Ok,
+                EPhonePhase1Ok );
+            }
+        }
+    else 
+        {
+        idleReached = ( iAppsReady & EPhoneIdleStartedUp ) && 
+            ( current == ESwStateEmergencyCallsOnly ||
+            current == ESwStateNormalRfOn ||
+            current == ESwStateNormalRfOff ||
+            current == ESwStateNormalBTSap );
+
+        
+        }
+*/        
+// <-- QT PHONE END -->         
+
+    if ( idleReached )
+        {
+        qDebug("phoneui::DoStartupSignalIdleL() Idle reached!");
+        // Now err == KErrNone and it means that
+        // we have succeeded in signalling.
+        CPhoneRecoverySystem::Instance()->EnablePreconditionL();
+
+        // Update the Phone light idle flag
+        iLightIdleReached = ETrue;
+
+        // Notify the UI controller that the phone is ready
+        iPhoneUIController->HandlePhoneStartupL();
+        }
+    else 
+        {
+        qDebug("phoneui::DoStartupSignalIdleL() Idle is not reached yet!");
+        // Idle has not been reached yet. Indicate to the recovery
+        // system that this iteration has failed so that it will
+        // try again at a later time.
+        User::Leave( KErrNotReady );
+        }
+
+    return KErrNone;
+    }
+
+TInt PhoneUiHouseHoldPrivate::DoStartupSignalSecurityL()
+    {
+    TInt err = KErrNone;    
+    return err;
+    }
+
+// <-- QT PHONE START -->
+void PhoneUiHouseHoldPrivate::HandlePropertyChangedL(
+        const TUid& aCategory, const TUint /*aKey*/, const TInt /*aValue*/)
+{
+    qDebug("phoneui::HandlePropertyChangedL()");
+    
+ 
+    /*if ( aCategory == KPSUidAiInformation )
+        {
+        // Call state event
+        if ( aKey == KActiveIdleUid )
+            {
+            
+            TInt idleUid = aValue;
+            
+            // If idle startup is ok.
+            if ( idleUid != 0 )
+                {
+                // If idle startup is ok for the first time, then recover
+                // the Start signal processing
+                if ( !( iAppsReady & EPhoneIdleStartedUp ) )
+                    {            
+                    qDebug("phoneui::HandlePropertyChangedL() Idle App started!");
+                    iAppsReady += EPhoneIdleStartedUp;
+                    // Try to update the startup signal again
+                    CPhoneRecoverySystem::Instance()->RecoverNow(
+                        iStartupSignalRecoveryId, 
+                        CTeleRecoverySystem::EPhonePriorityHigh );    
+                    // Remove Phone application from Fast Swap Window.
+//                    iPhoneViewController->SetHiddenL( ETrue );
+                    // Set Idle's UID to PubSub.
+                    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                        KPSUidUikon,
+                        KUikVideoCallTopApp,
+                        idleUid );
+                    }
+                }
+            }
+        }*/
+// <-- QT PHONE END --> 
+    if ( aCategory == KPSUidStartup )
+        {
+        
+        const TInt startupState = CPhonePubSubProxy::Instance()->Value(
+            KPSUidStartup,
+            KPSGlobalSystemState );
+        
+        qDebug("phoneui::HandlePropertyChangedL() StartupState value=%d", startupState );
+       
+        if ( startupState == ESwStateCriticalPhaseOK ||
+            startupState == ESwStateEmergencyCallsOnly ||
+            startupState == ESwStateNormalRfOn ||
+            startupState == ESwStateNormalRfOff ||
+            startupState == ESwStateNormalBTSap )
+            {
+            qDebug("phoneui::HandlePropertyChangedL() Try to update the startup signal again..." );
+            // Try to update the startup signal again
+            CPhoneRecoverySystem::Instance()->RecoverNow(
+                iStartupSignalRecoveryId, 
+                CTeleRecoverySystem::EPhonePriorityHigh );    
+            }
+        }
+}
+
+void PhoneUiHouseHoldPrivate::ConstructL()
+{
+    new( ELeave ) CPhoneLogger( KUidPhoneUILoggerSingleton );
+    FeatureManager::InitializeLibL();
+    
+    QString locale = QLocale::system ().name ();
+    QTranslator translator;
+    QString path = QString("z:\\resource\\qt\\translations\\");
+    QString filename = QString("telephone_");
+    bool ret = translator.load(QString(path + filename + locale));
+	qDebug() <<"PhoneUiHouseHoldPrivate::ConstructL() translator.load:" <<ret;
+    qApp->installTranslator(&translator);
+    
+    PhoneUIQtView *view = new PhoneUIQtView(m_window);
+    iViewAdapter = new PhoneUIQtViewAdapter(*view);
+    iPhoneUIController = CPhoneUIController::NewL(iViewAdapter);
+    
+    m_window.addView (view);
+    m_window.setCurrentView (view);
+    m_window.scene ()->setFocusItem (view);
+    iQwertyHandler = CPhoneQwertyHandler::NewL();
+    iKeyEventAdapter = new PhoneUIKeyEventAdapter (*iPhoneUIController);
+    iCommandAdapter = new PhoneUiCommandAdapter (*iPhoneUIController);
+    QObject::connect(view, SIGNAL(dialpadIsAboutToClose()), iViewAdapter, SLOT(dialpadClosed()));
+    QObject::connect(view, SIGNAL(keyReleased(QKeyEvent *)), iViewAdapter, SLOT(keyReleased (QKeyEvent *)));
+    QObject::connect(view, SIGNAL(keyPressed (QKeyEvent *)), iKeyEventAdapter, SLOT(keyPressed (QKeyEvent *)));
+    QObject::connect(view, SIGNAL(keyReleased (QKeyEvent *)), iKeyEventAdapter, SLOT(keyReleased (QKeyEvent *)));
+    QObject::connect(view, SIGNAL(command (int)), iCommandAdapter, SLOT(handleCommand (int)),
+                     Qt::QueuedConnection); // async to enable deletion of widget during signal handling
+    
+    QObject::connect(iViewAdapter->noteController(), SIGNAL(command (int)), 
+                     iCommandAdapter, SLOT(handleCommand (int))); 
+    
+    // Disable default Send key functionality in application framework 
+    CAknAppUi *appUi = static_cast<CAknAppUi*>(CEikonEnv::Static()->AppUi());
+    appUi->SetKeyEventFlags( CAknAppUiBase::EDisableSendKeyShort | 
+                             CAknAppUiBase::EDisableSendKeyLong );
+    
+    // CLI Name.
+    TInt err = RProperty::Define( 
+        KPSUidTelRemotePartyInformation,
+        KTelCLIName,
+        RProperty::EText,
+        KPhoneReadPolicy,
+        KPhoneWritePolicy );
+      
+    // CLI Number.
+    err = RProperty::Define( 
+        KPSUidTelRemotePartyInformation,
+        KTelCLINumber,
+        RProperty::EText,
+        KPhoneReadPolicy,
+        KPhoneWritePolicy );
+
+    // Define the top application system property
+    err = RProperty::Define( 
+        KPSUidUikon,
+        KUikVideoCallTopApp,
+        RProperty::EInt,
+        KPhoneReadPolicy,
+        KPhoneWritePolicy );
+
+
+    // Startup event signalling
+    // Define the telephony application system property 
+ 
+     err = RProperty::Define( 
+        KPSUidTelInformation,
+        KTelPhoneUid,
+        RProperty::EInt,
+        KPhoneReadPolicy,
+        KPhoneWritePolicy );  
+
+// DefineNewPSKeys:
+
+    // UID: KPSUidTelInternalInformation:
+    err = RProperty::Define( 
+        KPSUidTelInternalInformation,
+        KTelRemotePartyContactInfo,
+        RProperty::EByteArray,
+        KPhoneReadPolicy,
+        KPhoneWritePolicy );    
+               
+    // VT UID.
+    err = RProperty::Define( 
+        KPSUidTelInternalInformation,
+        KTelVideoCallUid,
+        RProperty::EInt,
+        KPhoneReadPolicy,
+        KPhoneWritePolicy );
+
+    // TELINTERNALPSKEY CHANGE 
+    // Move to AudioHandling
+    // UID: KPSUidTelAudioPreference
+    // Call Audio Routing
+    err = RProperty::Define( 
+        KPSUidTelAudioPreference, 
+        KTelAudioOutput, 
+        RProperty::EInt,
+        KPhoneReadPolicyAlwaysPass,
+        KPhoneWritePolicy );
+
+    // UID: KPSUidNEInformation
+    err = RProperty::Define( 
+        KPSUidNEInformation, 
+        KTelNumberEntryInfo, 
+        RProperty::EInt,
+        KPhoneReadPolicyAlwaysPass,
+        KPhoneWritePolicy );
+
+
+    // Add DoStartupSignalL to the recovery system 
+    iStartupSignalRecoveryId = 
+        CPhoneRecoverySystem::Instance()->AddL( 
+            TCallBack( DoStartupSignalL, this ),
+            CTeleRecoverySystem::EPhonePriorityHigh,
+            CTeleRecoverySystem::EPhoneStateIdle );
+
+    // Call DoStartupSignalL within recovery system
+    const TInt startupState = CPhonePubSubProxy::Instance()->Value(
+        KPSUidStartup,
+        KPSGlobalSystemState );
+
+    qDebug("phoneui::main() startupState value=%d", startupState );
+
+    if ( startupState == ESwStateCriticalPhaseOK ||
+        startupState == ESwStateEmergencyCallsOnly ||
+        startupState == ESwStateNormalRfOn ||
+        startupState == ESwStateNormalRfOff ||
+        startupState == ESwStateNormalBTSap )
+        {
+        qDebug("phoneui::main() Notify Starter that phone is ready...");    
+        CPhoneRecoverySystem::Instance()->RecoverNow(
+            iStartupSignalRecoveryId, 
+            CTeleRecoverySystem::EPhonePriorityHigh );
+        }
+    else
+        {        
+        qDebug("phoneui::main() Startup not ready yet. Start listening...");
+        CPhonePubSubProxy::Instance()->NotifyChangeL(
+            KPSUidStartup,
+            KPSGlobalSystemState,
+            this );
+        }
+
+    if ( err == KErrNone || err == KErrAlreadyExists )
+        {
+        // Indicate to the system that the Phone has been started
+        CPhonePubSubProxy::Instance()->ChangePropertyValue(
+            KPSUidTelInformation,
+            KTelPhoneUid,
+            KUidPhoneApplication.iUid );
+        }
+
+    // Update the Apps ready flag
+    iAppsReady += EPhoneStartedUp;
+    
+    if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) )     
+        {
+        iOnScreenDialer = ETrue;
+        }
+}
+

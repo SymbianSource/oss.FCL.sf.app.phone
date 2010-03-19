@@ -1,7 +1,0 @@
-EXPORTS
-	?CreateCntFactoryL@@YAPAVCPhCntFactory@@XZ @ 1 NONAME ; class CPhCntFactory * CreateCntFactoryL(void)
-	??0CCntRawPhoneNumberExtractor@@QAE@XZ @ 2 NONAME ; CCntRawPhoneNumberExtractor::CCntRawPhoneNumberExtractor(void)
-	??1CPhoneCntSaveAddToName@@UAE@XZ @ 3 NONAME ; CPhoneCntSaveAddToName::~CPhoneCntSaveAddToName(void)
-	?HandlePbkOperationL@CPhoneCntSaveAddToName@@UAEXABV?$TBuf@$0GE@@@HW4TCntNumberType@@@Z @ 4 NONAME ; void CPhoneCntSaveAddToName::HandlePbkOperationL(class TBuf<100> const &, int, enum TCntNumberType)
-	?HandlePbkOperationL@CPhoneCntSaveAddToName@@UAEXABV?$TBuf@$0GE@@@H@Z @ 5 NONAME ; void CPhoneCntSaveAddToName::HandlePbkOperationL(class TBuf<100> const &, int)
-

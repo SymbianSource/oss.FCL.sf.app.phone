@@ -24,4 +24,4 @@ DEFAULT
 
 PRJ_EXPORTS
 
-../inc/CTelDMHandler.h     APP_LAYER_PLATFORM_EXPORT_PATH(cteldmhandler.h)
+../inc/cteldmhandler.h     APP_LAYER_PLATFORM_EXPORT_PATH(cteldmhandler.h)

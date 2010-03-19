@@ -21,7 +21,9 @@
 #include "cpeloginfo.h"
 #include "cpeloghandling.h"
 #include "cpeloghandlingcommand.h"
-#include <PbkFields.hrh>
+// <-- QT PHONE START -->
+//#include <pbkfields.hrh>
+// <-- QT PHONE END -->
 #include <talogger.h>
 #include <logcli.h>
 #include <LogsApiConsts.h>
@@ -304,30 +306,35 @@ void CPELogEvent::SetPhoneNumberId()
     TBuf<KPhonebookTypeIdLength> subject;
     subject.Zero();
 
+// <-- QT PHONE START -->
+    
     switch ( iLogInfo->PhoneNumberId() )
         {
         case EPEMobileNumber:
-            subject.AppendNum( EPbkFieldIdPhoneNumberMobile );
+            subject.AppendNum( EPEUnknownNumber );
             break;
         case EPETelephoneNumber:
-            subject.AppendNum( EPbkFieldIdPhoneNumberGeneral );
+            subject.AppendNum( EPEUnknownNumber );
             break;
         case EPEPager:
-            subject.AppendNum( EPbkFieldIdPagerNumber );
+            subject.AppendNum( EPEUnknownNumber );
             break;
         case EPEFaxNumber:
-            subject.AppendNum( EPbkFieldIdFaxNumber );
+            subject.AppendNum( EPEUnknownNumber );
             break; 
         case EPEAssistantNumber:
-            subject.AppendNum( EPbkFieldIdAssistantNumber);
+            subject.AppendNum( EPEUnknownNumber);
             break;
         case EPECarNumber:
-            subject.AppendNum( EPbkFieldIdCarNumber);
+            subject.AppendNum( EPEUnknownNumber);
             break;
         default:
-            subject.AppendNum( EPbkFieldIdNone );
+            subject.AppendNum( EPEUnknownNumber );
             break;
         }
+        
+// <-- QT PHONE END -->
+    
 
     if ( subject.Length() > 0 )
         {

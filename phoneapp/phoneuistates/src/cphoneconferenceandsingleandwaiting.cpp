@@ -34,7 +34,7 @@
 #include "phoneui.hrh"
 #include "mphonestorage.h"
 #include "cphonecenrepproxy.h"
-#include <TelephonyVariant.hrh>
+#include <telephonyvariant.hrh>
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -62,8 +62,10 @@ CPhoneConferenceAndSingleAndWaiting::~CPhoneConferenceAndSingleAndWaiting()
         {
         TPhoneCmdParamBoolean dtmfSendFlag;
         dtmfSendFlag.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
-    	&dtmfSendFlag );
+// <-- QT PHONE START -->
+        iViewCommandHandle->ExecuteCommand( EPhoneViewSetDtmfOptionsFlag, 
+            &dtmfSendFlag );
+// <-- QT PHONE END -->
         }
     }
 
@@ -139,7 +141,7 @@ void CPhoneConferenceAndSingleAndWaiting::OpenMenuBarL()
     TPhoneCmdParamBoolean dtmfSendFlag;
     dtmfSendFlag.SetBoolean( ETrue );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
-    	&dtmfSendFlag );
+        &dtmfSendFlag );
   
 
     TPhoneCmdParamCallStateData callStateData;
@@ -384,7 +386,7 @@ void CPhoneConferenceAndSingleAndWaiting::HandleConferenceIdleL()
 
     MakeTransitionAccordingToActiveCallsL();
     
-    EndUiUpdate();    	    
+    EndUiUpdate();          
     }
 
 // --------------------------------------------------------------
@@ -402,15 +404,15 @@ void CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL(
         // send-key
         case EKeyYes:
             if( IsNumberEntryVisibleL() )
- 				{
-                CallFromNumberEntryL();    	 					
- 				}
- 			else
-	 			{
+                {
+                CallFromNumberEntryL();                         
+                }
+            else
+                {
                 // Not allowed to answer
                 SendGlobalWarningNoteL( 
-                    EPhoneNoteTextCallNotAllowed );		 				
-	 			}
+                    EPhoneNoteTextCallNotAllowed );                     
+                }
             break;
             
         default:
@@ -426,7 +428,7 @@ void CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL(
 //
 void CPhoneConferenceAndSingleAndWaiting::HandleKeyEventL(
     const TKeyEvent& aKeyEvent,
-    TEventCode aEventCode )
+    TEventCode /*aEventCode*/ )
     {
     if( EKeyDeviceF == aKeyEvent.iCode )
         {

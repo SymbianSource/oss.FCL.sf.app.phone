@@ -22,7 +22,9 @@
 
 //  INCLUDES
 #include <e32base.h>
+// <-- QT PHONE START --> 
 #include <mphonedevicemodeobserver.h>
+// <-- QT PHONE END --> 
 
 // FORWARD DECLARATIONS
 class MPECallHandling;
@@ -70,7 +72,7 @@ NONSHARABLE_CLASS( CPEDeviceModeHandler ) : public CBase, public MPhoneDeviceMod
         /**
         * Constructor.
         */
-		CPEDeviceModeHandler(           
+        CPEDeviceModeHandler(           
             MPECallHandling& aCallHandling,
             CPEMessageHandler& aMessageHandler );
 

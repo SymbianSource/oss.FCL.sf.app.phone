@@ -97,9 +97,9 @@ EXPORT_C CPhoneMainResourceResolver* CPhoneMainResourceResolver::Instance()
         {
         TRAPD( err, instance = CPhoneMainResourceResolver::NewL() );
         if ( err )
-	        {
-	        Panic( EPhoneUtilsCouldNotCreateSingleton );	
-	        }
+            {
+            Panic( EPhoneUtilsCouldNotCreateSingleton );    
+            }
         }
     return instance;
     }

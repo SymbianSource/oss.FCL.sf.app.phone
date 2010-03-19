@@ -41,6 +41,9 @@
 #include "cphonepubsubproxy.h"
 #include "cphonekeys.h"
 #include "tphonecmdparamaudiooutput.h"
+// <-- QT PHONE START -->
+#include "phoneresourceids.h"
+// <-- QT PHONE END -->
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -177,7 +180,6 @@ void CPhoneEmergency::HandlePhoneEngineMessageL(
 
                 if ( !isProgressNoteVisible.Boolean() )
                     {
-                    ShowNoteL( EPhoneEmergencyConnectWaitNote );
                     UpdateSetupCbaL();
                     }
                  }
@@ -232,6 +234,9 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
                 // Continue displaying current app but set up the
                 // idle screen in the background
                 SetupIdleScreenInBackgroundL();
+
+                // Update toolbar
+                iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateToolbar );
                 }
 
             else if ( iOnScreenDialer && IsNumberEntryContentStored() )
@@ -249,6 +254,8 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
                 {
                 // Show the number entry if it exists
                 SetNumberEntryVisibilityL(ETrue);
+                // Update toolbar
+                iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateToolbar );
                 }
 
             else
@@ -277,15 +284,15 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
                 {
                 SetDefaultFlagsL();
                 }
-
-            // As long as security note is not shown with feature flag
+            
+            // As long as security note is not shown with feature flag 
             // KFeatureIdFfSimlessOfflineSupport undef it is ok to do SetupIdleScreenInBackgroundL.
-            if ( ( !IsNumberEntryUsedL() ) &&
-                 !( IsSimStateNotPresentWithSecurityModeEnabled() &&
+            if ( ( !IsNumberEntryUsedL() ) && 
+                 !( IsSimStateNotPresentWithSecurityModeEnabled() && 
                     !FeatureManager::FeatureSupported( KFeatureIdFfSimlessOfflineSupport ) ) )
                 {
                 UpdateCbaL( EPhoneEmptyCBA );
-
+                
                 TPhoneCmdParamBoolean securityMode;
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &securityMode );
                 if ( !securityMode.Boolean() )
@@ -294,7 +301,7 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
                     SetupIdleScreenInBackgroundL();
                     }
                 }
-
+            
             iStateMachine->ChangeState( EPhoneStateIdle );
             }
         }
@@ -374,11 +381,59 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
         // Enable the volume display
         iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNaviPaneAudioVolume );
 
+        
+// <-- QT PHONE START -->
+        BeginUiUpdateLC();
+        
+        TPhoneCmdParamEmergencyCallHeaderData emergencyHeaderParam;
+        // Set call header
+        TBuf<KPhoneCallHeaderLabelMaxLength> headerText( KNullDesC );
+        StringLoader::Load(
+            headerText,
+            CPhoneMainResourceResolver::Instance()->ResolveResourceID(
+                EPhoneEmergencyCallHeader ),
+            CCoeEnv::Static() );
+        emergencyHeaderParam.SetHeaderText( headerText );
+
+        // Set call header ciphering status
+        emergencyHeaderParam.SetCiphering(
+            iStateMachine->PhoneEngineInfo()->IsSecureCall( aCallId ) );
+        emergencyHeaderParam.SetCipheringIndicatorAllowed(
+            iStateMachine->PhoneEngineInfo()->SecureSpecified() );
+
+        // Notify the view
+        iViewCommandHandle->ExecuteCommandL(
+            EPhoneViewCreateEmergencyCallHeader,
+            aCallId,
+            &emergencyHeaderParam );
+
+        TPhoneCmdParamCallHeaderData headerParam;
+        headerParam.SetCallState( EPEStateDialing );
+        
+        StringLoader::Load(
+            headerText,
+            CPhoneMainResourceResolver::Instance()->ResolveResourceID(
+                    EPhoneAttemptingEmergencyText ),
+            CCoeEnv::Static() );
+        headerParam.SetLabelText( headerText );
+        
+        iViewCommandHandle->ExecuteCommandL(
+            EPhoneViewUpdateBubble,
+            aCallId,
+            &headerParam );
+
         SetTouchPaneButtons( EPhoneEmergencyCallButtons );
+        
+        TPhoneCmdParamBoolean val;
+        val.SetBoolean(EFalse);
+        iViewCommandHandle->ExecuteCommand(
+            EPhoneViewBackButtonVisible, &val );
+        
+        EndUiUpdate();        
 
-        ShowNoteL( EPhoneEmergencyConnectWaitNote );
-
+        // ShowNoteL( EPhoneEmergencyConnectWaitNote );
         UpdateSetupCbaL();
+// <-- QT PHONE END -->        
         }
     }
 // -----------------------------------------------------------
@@ -422,7 +477,8 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
     // Remove emergency connecting note
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNote );
 
-    TPhoneCmdParamEmergencyCallHeaderData emergencyHeaderParam;
+// <-- QT PHONE START -->    
+    /*TPhoneCmdParamEmergencyCallHeaderData emergencyHeaderParam;
     // Set call header
     TBuf<KPhoneCallHeaderLabelMaxLength> headerText( KNullDesC );
     StringLoader::Load(
@@ -454,10 +510,18 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
         aCallId,
         &headerParam );
 
-    EndUiUpdate();
+    EndUiUpdate();*/
+// <-- QT PHONE END -->
 
-    //Make sure that toolbar is not shown
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewHideToolbar );
+    TPhoneCmdParamCallHeaderData headerParam;
+    headerParam.SetCallState( EPEStateConnecting );
+    // Notify the view
+    iViewCommandHandle->ExecuteCommandL(
+        EPhoneViewUpdateBubble,
+        aCallId,
+        &headerParam );
+
+    SetToolbarButtonLoudspeakerEnabled();
 
     UpdateInCallCbaL();
     }
@@ -480,7 +544,15 @@ void CPhoneEmergency::HandleConnectedL( TInt aCallId )
         aCallId,
         &emergencyHeaderParam );
 
+// <-- QT PHONE START -->
+    TPhoneCmdParamBoolean val;
+    val.SetBoolean(ETrue);
+    iViewCommandHandle->ExecuteCommand(
+        EPhoneViewBackButtonVisible, &val );
+// <-- QT PHONE END -->
+
     EndUiUpdate();
+    SetToolbarDimming( ETrue );
     UpdateInCallCbaL();
     }
 
@@ -522,7 +594,8 @@ void CPhoneEmergency::OpenMenuBarL()
 void CPhoneEmergency::UpdateInCallCbaL()
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneEmergency::UpdateInCallCbaL() ");
-    TInt resourceId = EPhoneCallHandlingEmergencyCBA;
+// <-- QT PHONE START -->    
+    /*TInt resourceId = EPhoneCallHandlingEmergencyCBA;
     const TPEAudioOutput audioOutput =
         iStateMachine->PhoneEngineInfo()->AudioOutput();
     const TBool btAvailable =
@@ -534,7 +607,7 @@ void CPhoneEmergency::UpdateInCallCbaL()
 
     if ( IsNumberEntryVisibleL() )
         {
-        if ( IsDTMFEditorVisibleL() )
+        if ( IsDTMFDialerVisibleL() )
             {
             resourceId = EPhoneDtmfDialerCBA;
             }
@@ -545,11 +618,7 @@ void CPhoneEmergency::UpdateInCallCbaL()
         }
     else if ( iDeviceLockOn || SimState() != EPESimUsable || iStartupInterrupted )
         {
-        if ( TouchCallHandlingSupported() )
-        	{
-            resourceId = EPhoneCallHandlingEmergencyInCallNoOptions;
-            }
-        else if ( audioOutput == EPEWiredAudioAccessory || IsSwivelClosed())
+        if ( audioOutput == EPEWiredAudioAccessory || IsSwivelClosed() )
             {
             resourceId = EPhoneCallHandlingEmergencyNoOptionsNoIhfCBA;
             }
@@ -564,21 +633,24 @@ void CPhoneEmergency::UpdateInCallCbaL()
         }
     else
         {
-        if ( UseEmergencyNoIhfCBA( audioOutput ) )
+        if ( audioOutput == EPEWiredAudioAccessory || IsSwivelClosed() )
             {
             resourceId = EPhoneCallHandlingEmergencyNoIhfCBA;
             }
-        else if ( UseHandsetEmergencyCBA( audioOutput ) )
+        else if ( ( audioOutput == EPELoudspeaker ) ||
+                  ( audioOutput == EPEBTAudioAccessory ) )
             {
             resourceId = EPhoneCallHandlingEmergencyHandsetCBA;
             }
-        else if ( ( audioOutput == EPEHandset ) 
-        		&& ( btAvailable ) )
+        else if ( ( audioOutput == EPEHandset ) &&
+                  ( btAvailable ) )
             {
             resourceId = EPhoneCallHandlingInCallBtaaCBA;
             }
-        }
-
+        }*/
+    
+    TInt resourceId = EPhoneCallHandlingEmergencyCBA;        
+// <-- QT PHONE END -->        
     iCbaManager->SetCbaL( resourceId );
     }
 
@@ -679,7 +751,6 @@ TBool CPhoneEmergency::HandleCommandL( TInt aCommand )
 
                  if ( !isProgressNoteVisible.Boolean() )
                      {
-                     ShowNoteL( EPhoneEmergencyConnectWaitNote );
                      UpdateSetupCbaL();
                      }
                  }
@@ -774,16 +845,16 @@ void CPhoneEmergency::HandleKeyEventL(
         }
     else
         {
-		 if ( iDeviceLockOn && CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) )
-			{
-			// Send the key event to the phone engine
-			SendKeyEventL( aKeyEvent, aEventCode );
-			}
-		else
-			{
-			// Handle numeric keys when key events are received in idle state
-			CPhoneState::HandleKeyEventL( aKeyEvent, aEventCode );
-			}
+         if ( iDeviceLockOn && CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) )
+            {
+            // Send the key event to the phone engine
+            SendKeyEventL( aKeyEvent, aEventCode );
+            }
+        else
+            {
+            // Handle numeric keys when key events are received in idle state
+            CPhoneState::HandleKeyEventL( aKeyEvent, aEventCode );
+            }
         }
     }
 
@@ -872,14 +943,13 @@ void CPhoneEmergency::SetStartupInterrupted( const TBool aStartupInterrupted )
 void CPhoneEmergency::UpdateSetupCbaL()
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneEmergency::UpdateSetupCbaL() ");
-
-    TInt resourceId = EPhoneCallHandlingCallSetupCBA;
+// <-- QT PHONE START -->
+    /*TInt resourceId = EPhoneCallHandlingCallSetupCBA;
 
     const TPEAudioOutput audioOutput =
         iStateMachine->PhoneEngineInfo()->AudioOutput();
 
-    if ( !( TouchCallHandlingSupported() ) 
-    		&& iCallSetup && audioOutput != EPENotActive )
+    if ( iCallSetup && audioOutput != EPENotActive)
         {
         if ( audioOutput == EPELoudspeaker )
             {
@@ -900,7 +970,11 @@ void CPhoneEmergency::UpdateSetupCbaL()
 
         iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateNoteSoftkeys,
                 &integerParam );
-        }
+        }*/
+
+   TInt resourceId = EPhoneCallHandlingEmergencyCBA;        
+   iCbaManager->SetCbaL( resourceId );
+// <-- QT PHONE END -->        
     }
 
 // ---------------------------------------------------------
@@ -930,7 +1004,7 @@ EXPORT_C TBool CPhoneEmergency::HandleRemConCommandL(
     TBool handled = EFalse;
 
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneEmergency::MrccatoCommand() ");
-
+    
     switch ( aOperationId )
         {
          case ERemConCoreApiMute:
@@ -949,59 +1023,49 @@ EXPORT_C TBool CPhoneEmergency::HandleRemConCommandL(
 // --------------------------------------------------------------
 //
 TBool CPhoneEmergency::TouchCallHandlingSupported () const
-	{
-	if ( FeatureManager::FeatureSupported ( KFeatureIdTouchCallHandling ) )
-		{
-		return ETrue;
-		}
-	else 
-		{
-		return EFalse;
-		}
-	}
+    {
+    if ( FeatureManager::FeatureSupported ( KFeatureIdTouchCallHandling ) )
+        {
+        return ETrue;
+        }
+    else 
+        {
+        return EFalse;
+        }
+    }
 
 // --------------------------------------------------------------
 // CPhoneEmergency::UseEmergencyNoIhfCBA
 // --------------------------------------------------------------
 //
 TBool CPhoneEmergency::UseEmergencyNoIhfCBA( const TPEAudioOutput& aAudioOutput ) const
-	{
-	if ( !( TouchCallHandlingSupported() ) 
-		&& ( ( aAudioOutput == EPEWiredAudioAccessory ) || ( IsSwivelClosed() ) ) )
-		{
-		return ETrue;
-		}
-	else 
-		{
-		return EFalse;
-		}
-	}
+    {
+    if ( !( TouchCallHandlingSupported() ) 
+        && ( ( aAudioOutput == EPEWiredAudioAccessory ) || ( IsSwivelClosed() ) ) )
+        {
+        return ETrue;
+        }
+    else 
+        {
+        return EFalse;
+        }
+    }
 
 // --------------------------------------------------------------
 // CPhoneEmergency::UseHandsetEmergencyCBA
 // --------------------------------------------------------------
 //
 TBool CPhoneEmergency::UseHandsetEmergencyCBA( const TPEAudioOutput& aAudioOutput ) const
-    {
-	if ( !( TouchCallHandlingSupported() ) 
-		&& ( ( aAudioOutput == EPELoudspeaker ) || ( aAudioOutput == EPEBTAudioAccessory ) ) )
-		{
-		return ETrue;
-		}
-	else 
-		{
-		return EFalse;
-		}
-    }
-
-// --------------------------------------------------------------
-// CPhoneEmergency::HandlePhoneStartupL
-// --------------------------------------------------------------
-//
-void CPhoneEmergency::HandlePhoneStartupL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneEmergency::HandlePhoneStartupL( ) ");
-    iStartupInterrupted = EFalse;
-    }
+{
+    if ( !( TouchCallHandlingSupported() ) 
+        && ( ( aAudioOutput == EPELoudspeaker ) || ( aAudioOutput == EPEBTAudioAccessory ) ) )
+        {
+        return ETrue;
+        }
+    else 
+        {
+        return EFalse;
+        }
+}
 
 // End of File

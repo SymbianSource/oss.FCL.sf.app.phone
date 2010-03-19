@@ -1,0 +1,28 @@
+
+BubbleParticipantListItem[layoutOption="collapsed"] {
+    layout:collapsed;
+}
+
+BubbleParticipantListItem[layoutOption="expanded"] {
+    layout:expanded;
+}
+
+BubbleParticipantListItem::icon {
+    fixed-width: 5un;
+    fixed-height: 5un;
+}
+
+BubbleParticipantListItem::button-1 {
+    fixed-height: 10un;
+}
+
+BubbleParticipantListItem::button-2 {
+    fixed-height: 10un;
+}
+
+BubbleParticipantListItem::background{
+	left:0.0;
+	right:0.0;
+	top:0.0;
+	bottom:0.0;
+}

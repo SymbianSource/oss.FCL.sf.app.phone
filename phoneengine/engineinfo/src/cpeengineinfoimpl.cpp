@@ -22,7 +22,7 @@
 #include <pepanic.pan>
 #include <telinternalpskeys.h>
 #include <cphcltdialdata.h>
-#include <PhCltTypes.h>
+#include <phclttypes.h>
 #include <talogger.h>
 
 // ================= MEMBER FUNCTIONS ==========================================
@@ -35,6 +35,10 @@
 //
 CPEEngineInfoImpl::CPEEngineInfoImpl()
     : iCurrentCalls( KPEMaximumNumberOfCalls )
+// <-- QT PHONE START -->
+    ,iContactId( KErrNotFound )
+// <-- QT PHONE END -->
+
     {
     iCallCommandInfo.iPhoneNumber = KNullDesC;
     iCallCommandInfo.iCallId = 0;
@@ -99,6 +103,11 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iBasicInfo.iDataPortName = KNullDesC;
     iBasicInfo.iSwitchToOngoing = EFalse;
     iConferenceCallInfo.iConferenceCallState = EPEStateConferenceIdle;
+    
+    // <-- QT PHONE START --> 
+    //TODO remove after profile information is available
+    iBasicInfo.iRingingVolume = 10;
+    // <-- QT PHONE END --> 
     }
 
 // -----------------------------------------------------------------------------
@@ -660,10 +669,10 @@ const TBool& CPEEngineInfoImpl::PhoneNumberIsServiceCode() const
 // -----------------------------------------------------------------------------
 //
 const TPECallOrigin& CPEEngineInfoImpl::CallOriginCommand() const
-	{
-	return iCallCommandInfo.iCallOrigin;
-	}
-        	
+    {
+    return iCallCommandInfo.iCallOrigin;
+    }
+            
 // CPEEngineInfoImpl::ProfileId
 // Gets the profile id from the TPEBasicInfo structure.
 // -----------------------------------------------------------------------------
@@ -1275,7 +1284,7 @@ void CPEEngineInfoImpl::SetCallDuration(
     {
     iBasicInfo.iLastCallDuration = aCallDuration; 
     }
-	
+    
 // -----------------------------------------------------------------------------
 // CPEEngineInfoImpl::SetDtmfPostFix
 // Sets dtmf postfix value to TPEBasicInfo-structure
@@ -1402,9 +1411,9 @@ void CPEEngineInfoImpl::SetPhoneNumberIsServiceCode(
 // -----------------------------------------------------------------------------
 //
 void CPEEngineInfoImpl::SetCallOriginCommand( const TPECallOrigin& aOrigin )
-	{
-	iCallCommandInfo.iCallOrigin = aOrigin;
-	}
+    {
+    iCallCommandInfo.iCallOrigin = aOrigin;
+    }
 
 // -----------------------------------------------------------------------------
 // CPEEngineInfoImpl::SetProfileId
@@ -2546,7 +2555,7 @@ void CPEEngineInfoImpl::SetRemoteCompanyName(
 // -----------------------------------------------------------------------------
 //
 void CPEEngineInfoImpl::SetRemoteColpNumber(
-    const TPEPhoneNumber& aColpNumber, 
+    TPEPhoneNumber& aColpNumber, 
     const TInt aCallId )
     {
     return ( *iRemoteInfo )[ aCallId ]->SetColpNumber( aColpNumber );
@@ -2615,5 +2624,27 @@ TBool CPEEngineInfoImpl::CheckIfCallStateExists( const TPEState& aCallState )
       }
     return stateExists;
     }
+// <-- QT PHONE START -->
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::SetContactId
+// -----------------------------------------------------------------------------
+//
+void CPEEngineInfoImpl::SetContactId2( const TInt aContactId )
+{
+    TEFLOGSTRING2( KTAINT, 
+        "PE CPEEngineInfo::SetContactId: aContactId: %d", aContactId );
+    iContactId = aContactId;    
+}
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::ContactId
+// -----------------------------------------------------------------------------
+//
+TInt CPEEngineInfoImpl::ContactId2 () const
+    {
+    TEFLOGSTRING2( KTAINT, "ContactId: %d", iContactId );
+    return iContactId;      
+    }
+// <-- QT PHONE END -->
 
 // End of File

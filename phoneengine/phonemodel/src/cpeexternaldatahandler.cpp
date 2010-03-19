@@ -26,14 +26,16 @@
 #include <ctsydomainpskeys.h>
 #include <mpedatastore.h>
 #include <pepanic.pan>
-#include <SettingsInternalCRKeys.h>
+#include <settingsinternalcrkeys.h>
 #include <talogger.h>
 #include <telephonyvariant.hrh>
 #include <telinternalcrkeys.h>
 
 
 // CONSTANTS
-const TInt KPrefixLength = 10;
+// <-- QT PHONE START -->
+//const TInt KPrefixLength = 10;
+// <-- QT PHONE END -->
 
 CPEExternalDataHandler* CPEExternalDataHandler::NewL( MPEPhoneModelInternal& aModel )
     {
@@ -86,18 +88,24 @@ void CPEExternalDataHandler::ConstructL(
 
     // Instantiate monitor objects
     iAudioOutputPreferenceMonitor = CPEAudioOutputPreferenceMonitor::NewL( aModel );
-    iCallDurationDisplay = CPECallDurationDisplaySettingMonitor::NewL();
+    // <-- QT PHONE START -->
     iEarVolumeSetting = CPEIncallEarVolumeSettingMonitor::NewL( aModel );
     iLoudspeakerVolumeSetting = CPEIncallLoudspeakerVolumeSettingMonitor::NewL( aModel );
-    iNetworkRegistrationStatus = CPENetworkRegistrationStatusMonitor::NewL( aModel );
+    iCallDurationDisplay = CPECallDurationDisplaySettingMonitor::NewL(); 
     iProfileSettings = CPEProfileSettingMonitor::NewL( aModel );
+    
+    //TODO
+    /*
+    iNetworkRegistrationStatus = CPENetworkRegistrationStatusMonitor::NewL( aModel );
     iAccessoryModeMonitor = CPEAccessoryModeMonitor::NewL(); 
 
     // Instantiate repository objects for later use
-    iAccessorySettingsRepository = CRepository::NewL( KCRUidAccessorySettings );
-    iTelephonySettingsRepository = CRepository::NewL( KCRUidTelephonySettings );
+    iAccessorySettingsRepository = CRepository::NewL( KCRUidAccessorySettings );*/
+    //iTelephonySettingsRepository = CRepository::NewL( KCRUidTelephonySettings );
     iTelephonyVariationRepository = CRepository::NewL( KCRUidTelVariation );
-    iCoreApplicationRepository = CRepository::NewL( KCRUidCoreApplicationUIs ); 
+    //iCoreApplicationRepository = CRepository::NewL( KCRUidCoreApplicationUIs ); 
+    TEFLOGSTRING( KTAOBJECT, "PE CPEExternalDataHandler::BaseConstructL 2" );
+    // <-- QT PHONE END -->
     }
 
 // -----------------------------------------------------------------------------
@@ -112,8 +120,42 @@ TInt CPEExternalDataHandler::Get(
     {
     TInt errorCode( KErrNotFound );
 
+    // <-- QT PHONE START -->
+    //TODO
+
+    if ( EPETelephonyVariationFlags == aSetting )
+        {
+        errorCode = iTelephonyVariationRepository->Get( KTelVariationFlags, aValue );
+        TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPETelephonyVariationFlags, error code: %d", errorCode );
+        }
+    else if ( EPEAudioOutputPreference == aSetting )
+        {
+        errorCode = iAudioOutputPreferenceMonitor->Get( aValue );
+        TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPEAudioOutputPreference, error code: %d", errorCode );
+        }
+    else if ( EPEIncallEarVolumeSetting == aSetting )
+        {
+        errorCode = iEarVolumeSetting->Get( aValue );
+        TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPEIncallEarVolumeSetting, error code: %d", errorCode );
+        }
+    else if ( EPEIncallLoudspeakerVolumeSetting == aSetting )
+        {
+        errorCode = iLoudspeakerVolumeSetting->Get( aValue );
+        TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPEIncallLoudspeakerVolumeSetting, error code: %d", errorCode );
+        }
+    else if ( EPECallDurationDisplaySetting == aSetting )
+        {
+        errorCode = iCallDurationDisplay->Get( aValue );
+        TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPECallDurationDisplaySetting, error code: %d", errorCode );
+        }
+    else
+        {
+        errorCode = KErrNone;
+        aValue = 0;        
+        }
+    
     // Process Common id
-    switch ( aSetting )
+    /*switch ( aSetting )
         {
         case EPEAutomaticAnswerHeadsetSetting:
             {
@@ -149,12 +191,6 @@ TInt CPEExternalDataHandler::Get(
             {
             errorCode = iAudioOutputPreferenceMonitor->Get( aValue );
             TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPEAudioOutputPreference, error code: %d", errorCode );
-            break;
-            }
-        case EPECallDurationDisplaySetting:
-            {
-            errorCode = iCallDurationDisplay->Get( aValue );
-            TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPECallDurationDisplaySetting, error code: %d", errorCode );
             break;
             }
         case EPEDialPrefixChangeSetting:
@@ -210,8 +246,8 @@ TInt CPEExternalDataHandler::Get(
                 "PE CPEEXTERNALDATAHANDLER::GET UNKNOWN SETTING ID ! %d", aSetting );
             break;
             }
-        }
-
+        }*/
+    // <-- QT PHONE END -->
     return errorCode;
     }
 
@@ -222,13 +258,16 @@ TInt CPEExternalDataHandler::Get(
 // -----------------------------------------------------------------------------
 //
 TInt CPEExternalDataHandler::GetText(
-        const TPEExternalDataId aSetting,
+        const TPEExternalDataId /*aSetting*/,
         TDesC& aValue ) const
     {
     TInt errorCode( KErrNotFound );
-
+    // <-- QT PHONE START -->
+    //TODO
+    aValue = KNullDesC;
+    errorCode = KErrNone;
     // Process Common id
-    switch ( aSetting )
+    /*switch ( aSetting )
         {
         case EPEDialPrefixTextSetting:
             {
@@ -249,8 +288,8 @@ TInt CPEExternalDataHandler::GetText(
                 "PE CPEEXTERNALDATAHANDLER::GETTEXT UNKNOWN SETTING ID ! %d", aSetting );
             break;
             }
-        }
-
+        }*/
+    // <-- QT PHONE END -->
     return errorCode;
     }
 
@@ -260,15 +299,17 @@ TInt CPEExternalDataHandler::GetText(
 // -----------------------------------------------------------------------------
 //
 TInt CPEExternalDataHandler::GetAutomaticAnswer(
-        TUint32 aSetting,
+        TUint32 /*aSetting*/,
         TInt& aValue ) const
     {
     TInt errorCode( KErrNotFound );
     
     TEFLOGSTRING( KTAINT, "CPEExternalDataHandler::GetAutomaticAnswer" );
-   
-    errorCode = iAccessorySettingsRepository->Get( aSetting, aValue );
-     
+    // <-- QT PHONE START -->
+    //errorCode = iAccessorySettingsRepository->Get( aSetting, aValue );
+    errorCode = KErrNone;
+    aValue = 0;
+    // <-- QT PHONE END -->
     return errorCode;
     }
 
@@ -285,6 +326,7 @@ TInt CPEExternalDataHandler::Set(
 
     switch ( aSetting )
         {
+        // <-- QT PHONE START -->
         case EPEIncallEarVolumeSetting:
             {
             errorCode = iEarVolumeSetting->Set( aValue );
@@ -295,6 +337,7 @@ TInt CPEExternalDataHandler::Set(
             errorCode = iLoudspeakerVolumeSetting->Set( aValue );
             break;
             }
+        // <-- QT PHONE END -->
         case EPEEmergencyCallInfo:
             {
             errorCode = RProperty::Set( KPSUidCtsyEmergencyCallInfo, 

@@ -21,7 +21,7 @@
 #include    <e32base.h>                     
 #include    <mmtsy_names.h>                 
 #include    "phoneanimdllstd.h"             
-#include    "CPhoneBlacklistAnim.h"         
+#include    "CPhoneBlacklistAnim.h"
 
 // CONSTANTS
 // Amount of retries to be performed.

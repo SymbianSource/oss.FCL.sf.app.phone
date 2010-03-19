@@ -120,18 +120,18 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleKeyMessageL(
         {
         // send-key
         case EKeyYes:
-			if( IsNumberEntryVisibleL() )
-				{
-            	CPhoneState::CallFromNumberEntryL();    						
-				}
-			else
-				{
-				// Number entry is behind waiting call bubble
-				// We can't answer to waiting call in this state
-				// so display Not allowed -note.						
+            if( IsNumberEntryVisibleL() )
+                {
+                CPhoneState::CallFromNumberEntryL();                            
+                }
+            else
+                {
+                // Number entry is behind waiting call bubble
+                // We can't answer to waiting call in this state
+                // so display Not allowed -note.                        
                 CPhoneState::SendGlobalErrorNoteL( 
                     EPhoneNoteTextNotAllowed );
-				}
+                }
             break;
             
         // end-key
@@ -197,40 +197,24 @@ void CPhoneSingleAndCallSetupAndWaiting::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnecting:
-            {
             iAlerting = ETrue;
             HandleConnectingL( aCallId );
-            }
             break;
         
         case MEngineMonitor::EPEMessageConnected:
-            {
             HandleConnectedL( aCallId );
-            }
             break;
         
         case MEngineMonitor::EPEMessageIdle:
-            {
             HandleIdleL( aCallId );
-            }
             break;
                     
         case MEngineMonitor::EPEMessageRemoteBusy:
-            {
             // If call setup failed then stop capturing keys.
             // Flow through to default branch.
-            CaptureKeysDuringCallNotificationL( EFalse );
-            }
-            
-        case MEngineMonitor::EPEMessageColpNumberAvailable:
-            {
-            HandleColpNoteL( aCallId );            
-            }
-            break;   
+            CaptureKeysDuringCallNotificationL( EFalse );     
         default:
-            {
             CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
-            }
             break;
         }
     }
@@ -465,6 +449,8 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
     
+    HandleColpNoteL( aCallId );
+
     if ( aCallId != iWaitingCallId )
         {
         // Alerting call is connected
@@ -576,8 +562,8 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToSingleAndAlertingL( TInt a
     SetTouchPaneButtons( EPhoneCallSetupButtons );
     
     EndUiUpdate();
-	// Go to Single And Alerting state
-	UpdateCbaL( EPhoneCallHandlingInCallCBA );
+    // Go to Single And Alerting state
+    UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateAlertingInSingle );        
     }
 
@@ -585,10 +571,12 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToSingleAndAlertingL( TInt a
 // CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL
 // -----------------------------------------------------------
 //
-void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL( TInt aCallId )
+// <-- QT PHONE START --> 
+void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL( TInt /*aCallId*/ )
+// <-- QT PHONE END --> 
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
-	    "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL()");
+        "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL()");
 
     BeginUiUpdateLC();
     
@@ -606,10 +594,12 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL( TInt aCallId 
 // CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL
 // -----------------------------------------------------------
 //
-void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL( TInt aCallId )
+// <-- QT PHONE START --> 
+void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL( TInt /*aCallId*/ )
+// <-- QT PHONE END --> 
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
-	    "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL()");
+        "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL()");
 
     BeginUiUpdateLC();
     

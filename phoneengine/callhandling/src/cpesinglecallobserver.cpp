@@ -127,7 +127,7 @@ EXPORT_C void CPESingleCallObserver::CallStateChanged( const CCPCall::TCallState
             {
             SetCallState( EPEStateHeld );
             SendMessage( MEngineMonitor::EPEMessageHeld );
-            break;	
+            break;  
             }
         case CCPCall::EStateAnswering:
             {

@@ -127,17 +127,17 @@ void CPEProfileSettingMonitor::GetProfileSettingsL()
     iModel.DataStore()->SetTextToSpeech( toneSettings.iTextToSpeech );
                   
     TProfileKeypadVolume keypadVolume = toneSettings.iKeypadVolume;
-    	
+        
     if ( keypadVolume < EProfileKeypadVolumeOff 
         || keypadVolume > EProfileKeypadVolumeLevel3 )
-	    {
+        {
         // Value is out of range - use default
-		keypadVolume = EProfileKeypadVolumeLevel2; // default value
-	    }
-	
-	const TInt KKeypadVolume[4] = {0, 2, 5, 10}; // Previous PE settings
-	TInt volume = KKeypadVolume[ keypadVolume ];
-	iModel.DataStore()->SetKeypadVolume( volume );
+        keypadVolume = EProfileKeypadVolumeLevel2; // default value
+        }
+    
+    const TInt KKeypadVolume[4] = {0, 2, 5, 10}; // Previous PE settings
+    TInt volume = KKeypadVolume[ keypadVolume ];
+    iModel.DataStore()->SetKeypadVolume( volume );
 
     //  Get alert for group Ids
     iModel.DataStore()->SetAlertForGroup( activeProfile->AlertForL() );
@@ -145,8 +145,8 @@ void CPEProfileSettingMonitor::GetProfileSettingsL()
     // Pop( activeProfile ) does not recognize ActiveProfileLC created 
     // item because of casting. However, functionality and cleanup works OK.
     CleanupStack::Pop(); // activeProfile
-	activeProfile->Release();
-	__UHEAP_MARKEND;
+    activeProfile->Release();
+    __UHEAP_MARKEND;
     }
 
 // -----------------------------------------------------------------------------

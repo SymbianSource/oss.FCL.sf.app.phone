@@ -58,18 +58,18 @@ class CPEConferenceCall
         /**
         * Two-phased constructor.
         */
-    	IMPORT_C static CPEConferenceCall* NewL( 
-    	    MPEMessageSender& aOwner,
-        	CCCE& aConvergedCallEngine );
-    	
-    	/**
+        IMPORT_C static CPEConferenceCall* NewL( 
+            MPEMessageSender& aOwner,
+            CCCE& aConvergedCallEngine );
+        
+        /**
         * Two-phased constructor.
         * Conference call is made outof telephony control
         */
         IMPORT_C static CPEConferenceCall* NewL( 
             MPEMessageSender& aOwner,
             MCCEConferenceCall& aCall );
-        	
+            
         /**
         * Destructor.
         */
@@ -97,7 +97,7 @@ class CPEConferenceCall
         
    public: // From MCCEConferenceCallObserver
    
-	    /**
+        /**
         * A ConferenceCall event has occurred.
         *
         * @param aEvent Occurred event.
@@ -197,9 +197,9 @@ class CPEConferenceCall
         */
         void GoOneToOneL( MCCECall& aCall );
 
-	protected:
-	
-		/**
+    protected:
+    
+        /**
         * C++ default constructor.
         */
         CPEConferenceCall( MPEMessageSender& aOwner, MCCEConferenceCall& aCall );

@@ -314,13 +314,13 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
             {
             // Show the number entry if it exists
             SetNumberEntryVisibilityL(ETrue);
-	        }
-	    else
-    	    {
-    	    // Set incall CBAs
-    	    UpdateCbaL( EPhoneCallHandlingInCallCBA );    
-    	    }
-	        
+            }
+        else
+            {
+            // Set incall CBAs
+            UpdateCbaL( EPhoneCallHandlingInCallCBA );    
+            }
+            
         SetTouchPaneButtons( EPhoneIncallButtons );    
         // UnCapture keys callsetup fails
         CaptureKeysDuringCallNotificationL( EFalse );
@@ -329,13 +329,13 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
         }
     else
         {
-    	// Display call termination note, if necessary
-    	DisplayCallTerminationNoteL();
+        // Display call termination note, if necessary
+        DisplayCallTerminationNoteL();
 
         // Single call was terminated
         SetTouchPaneButtons( EPhoneCallSetupButtons );
         SetToolbarDimming( ETrue );
-		SetToolbarButtonLoudspeakerEnabled();
+        SetToolbarButtonLoudspeakerEnabled();
         // Update call setup CBAs
         UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
         iStateMachine->ChangeState( EPhoneStateCallSetup );            

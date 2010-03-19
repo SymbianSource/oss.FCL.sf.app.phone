@@ -35,8 +35,10 @@
 // CONSTANTS
 
 //Avkon P&S keys
-const TUid KCRUidAvkon = { 0x101F876E };
-const TUint32 KAknKeyBoardLayout = 0x0000000B;
+// <-- QT PHONE START-->
+//const TUid KCRUidAvkon = { 0x101F876E };
+//const TUint32 KAknKeyBoardLayout = 0x0000000B;
+// <-- QT PHONE END-->
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -227,10 +229,13 @@ TBool CPhoneKeyEventForwarder::ConvertHalfQwertySpecialChar( TUint& aCode,
         "CPhoneKeyEventForwarder::ConvertHalfQwertySpecialChar");
 
     TBool ret( EFalse );
-    TInt keyboard( CPhonePubSubProxy::Instance()->Value(
+// <-- QT PHONE START-->    
+    /*TInt keyboard( CPhonePubSubProxy::Instance()->Value(
           KCRUidAvkon,
-          KAknKeyBoardLayout ) );
-
+          KAknKeyBoardLayout ) );*/
+    TInt keyboard(KErrNotFound);
+// <-- QT PHONE END-->
+    
     if( keyboard == EPtiKeyboardHalfQwerty )
         {
         switch ( aKeyEvent.iScanCode )
@@ -313,7 +318,7 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventAfterControlStackL(
     __LOGMETHODSTARTEND( EPhoneControl,
         "CPhoneKeyEventForwarder::OfferKeyEventAfterControlStackL");
     
-	if( !IsKeyBlocked( aKeyEvent ) )
+    if( !IsKeyBlocked( aKeyEvent ) )
         {
         // Send key to editor
         iStateMachine->State()->HandleKeyEventL( aKeyEvent, aType );

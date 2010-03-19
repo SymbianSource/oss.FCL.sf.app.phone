@@ -128,20 +128,20 @@ void CPhoneGsmInCall::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageOutCallForwToC: // fall through
         case MEngineMonitor::EPEMessageForwardUnconditionalModeActive: // fall through
         case MEngineMonitor::EPEMessageForwardConditionallyModeActive:
-			{
-			CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
-				CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
-													   *iViewCommandHandle,
-													   *this );
-			CleanupStack::PushL( gsmMsgHandler );
-			gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
-			CleanupStack::PopAndDestroy( gsmMsgHandler );
-			
+            {
+            CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
+                CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
+                                                       *iViewCommandHandle,
+                                                       *this );
+            CleanupStack::PushL( gsmMsgHandler );
+            gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
+            CleanupStack::PopAndDestroy( gsmMsgHandler );
+            
             // Needed also in non-touch, if call waiting request (*43#) 
             // is sent during active call at least.
-    	    UpdateCbaL( EPhoneCallHandlingInCallCBA );
-			}
-			break;
+            UpdateCbaL( EPhoneCallHandlingInCallCBA );
+            }
+            break;
 
         default:
             CPhoneStateInCall::HandlePhoneEngineMessageL( 
@@ -170,7 +170,7 @@ EXPORT_C TBool CPhoneGsmInCall::HandleCommandL( TInt aCommand )
         
         // 'Replace' from menu            
         case EPhoneInCallCmdReplace:
-        	ReplaceCallL();
+            ReplaceCallL();
             break;
         
         case EPhoneInCallCmdSwap:
@@ -218,23 +218,26 @@ void CPhoneGsmInCall::ReplaceCallL()
 // CPhoneGsmInCall::HandleColpNoteL
 // -----------------------------------------------------------
 //
-void CPhoneGsmInCall::HandleColpNoteL( TInt aCallId )
+void CPhoneGsmInCall::HandleColpNoteL( 
+    TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneGsmInCall::HandleColpNoteL() ");
 
     MPEEngineInfo* EngineInfo = CPhoneState::iStateMachine->PhoneEngineInfo();
-    
-    TPhoneCmdParamGlobalNote globalNoteParam;
-    globalNoteParam.SetText(  EngineInfo->RemoteColpNumber( aCallId ) ); 
-    globalNoteParam.SetType( EAknGlobalInformationNote );
-    globalNoteParam.SetTextResourceId( 
+
+    if ( EngineInfo->RemoteColpNumber( aCallId ).Length() )
+        {
+        TPhoneCmdParamGlobalNote globalNoteParam;
+        globalNoteParam.SetText(  EngineInfo->RemoteColpNumber( aCallId ) ); 
+        globalNoteParam.SetType( EAknGlobalInformationNote );
+        globalNoteParam.SetTextResourceId( 
             CPhoneMainResourceResolver::Instance()->
-	        ResolveResourceID( EPhoneColpConnected ) );
-    globalNoteParam.SetTone( EAvkonSIDInformationTone );
-	        
-    iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewShowGlobalNote, &globalNoteParam );
-    
+            ResolveResourceID( EPhoneColpConnected ) );
+        globalNoteParam.SetTone( EAvkonSIDInformationTone );
+            
+        iViewCommandHandle->ExecuteCommandL( 
+                EPhoneViewShowGlobalNote, &globalNoteParam );
+        }
     }
 
 // -----------------------------------------------------------
@@ -387,7 +390,7 @@ EXPORT_C void CPhoneGsmInCall::SetDivertIndication( const TBool aDivertIndicatio
     CPhoneState::SetDivertIndication( aDivertIndication );    
     
     TRAP_IGNORE( HandeDivertIndicationL() );
-	}
+    }
 
 // ---------------------------------------------------------
 // CPhoneGsmInCall::HandeDivertIndicationL
@@ -406,12 +409,18 @@ void CPhoneGsmInCall::HandeDivertIndicationL()
        {
        TPhoneCmdParamCallHeaderData divertData;
     
-       divertData.SetCallFlag( CBubbleManager::EDiverted );
+// <-- QT PHONE START --> 
+//       divertData.SetCallFlag( CBubbleManager::EDiverted );
+        divertData.SetDiverted( ETrue );
+// <-- QT PHONE END --> 
        
        GetRemoteInfoDataL( ringingCallId, remoteInfoText );
        divertData.SetCLIText( 
                   remoteInfoText,
-                  CBubbleManager::ERight );
+// <-- QT PHONE START -->
+//                  CBubbleManager::ERight );
+                  TPhoneCmdParamCallHeaderData::ERight );
+// <-- QT PHONE END --> 
        
        divertData.SetCiphering(
            iStateMachine->PhoneEngineInfo()->IsSecureCall( ringingCallId ) );

@@ -42,7 +42,7 @@ public:
 public:
     TInt Set( TInt aValue );
 protected: // From base class
-	virtual void UpdateL();
+    virtual void UpdateL();
 protected:
     CPEIncallLoudspeakerVolumeSettingMonitor( MPEPhoneModelInternal& aModel );
     void ConstructL();    

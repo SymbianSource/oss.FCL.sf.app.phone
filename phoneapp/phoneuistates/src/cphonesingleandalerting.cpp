@@ -102,26 +102,15 @@ void CPhoneSingleAndAlerting::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnected:
-            {
             HandleConnectedL( aCallId );
             break;
-            }
+            
         case MEngineMonitor::EPEMessageIdle:
-            {
             HandleIdleL( aCallId );
-            }
             break;
             
-        case MEngineMonitor::EPEMessageColpNumberAvailable:
-            {
-            HandleColpNoteL( aCallId );            
-            }
-            break;         
-            
         default:
-            {
             CPhoneAlerting::HandlePhoneEngineMessageL( aMessage, aCallId );
-            }
             break;
         }
     }
@@ -226,7 +215,7 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         
         
         // Set Two singles softkeys
-	    UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
+        UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
         
         // Go to two singles state
         iStateMachine->ChangeState( EPhoneStateTwoSingles );
@@ -242,7 +231,9 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         TPhoneCmdParamBoolean holdFlag;
         holdFlag.SetBoolean( EFalse );
         iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-        }    
+        }
+        
+    CPhoneGsmInCall::HandleColpNoteL( aCallId );
     }
 // -----------------------------------------------------------
 // CPhoneSingleAndAlerting::HandleIdleL
@@ -327,7 +318,7 @@ void CPhoneSingleAndAlerting::OpenMenuBarL()
 void CPhoneSingleAndAlerting::UpdateInCallCbaL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneSingleAndAlerting::UpdateInCallCbaL() ");
- 	UpdateCbaL( EPhoneCallHandlingInCallCBA );
+    UpdateCbaL( EPhoneCallHandlingInCallCBA );
     }
     
         

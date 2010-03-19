@@ -16,9 +16,12 @@
 */
 
 // INCLUDES
-#include <phoneui.rsg>
-#include <avkon.rsg>
-#include <phoneuivoip.rsg>
+// <-- QT PHONE START --> 
+//#include <phoneui.rsg>
+#include "phoneresourceids.h"
+//#include <avkon.rsg>
+//#include <phoneuivoip.rsg>
+// <-- QT PHONE END --> 
 #include <StringLoader.h>
 #include <avkon.rsg>
 #include <mpeengineinfo.h>
@@ -85,7 +88,7 @@ void CPhoneVccHandler::ConstructL()
     {
     iPropListener = CVccUiPsPropertyListener::NewL( KVccPropKeyHoStatus );
     iPropListener->AddObserverL( *this );
- 	iPropListener->Start();
+    iPropListener->Start();
     }
 
 // -----------------------------------------------------------
@@ -316,7 +319,7 @@ void CPhoneVccHandler::HandoverInProgressNoteL( TInt aCommand )
 // -----------------------------------------------------------------------------
 //
 void CPhoneVccHandler::VccPropertyChangedL( const TUint aKeyId,
-                                    const TInt aValue )	
+                                    const TInt aValue ) 
     {            
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneVccHandler::VccPropertyChangedL() ");
@@ -326,13 +329,13 @@ void CPhoneVccHandler::VccPropertyChangedL( const TUint aKeyId,
 
     
     if( aKeyId == KVccPropKeyHoStatus )
-  		{
-  		switch( aValue )
-  			{				
-  			case EVccCsToPsHoFailure:
-  			case EVccPsToCsHoFailure:
-  			    {
-  			    __PHONELOG( EBasic, PhoneUIVoIPExtension,
+        {
+        switch( aValue )
+            {               
+            case EVccCsToPsHoFailure:
+            case EVccPsToCsHoFailure:
+                {
+                __PHONELOG( EBasic, PhoneUIVoIPExtension,
                     "CPhoneVccHandler::VccPropertyChangedL VccPropertyChangedL -- HO fail" );
                 // Remove handover note if handover is in progress
                 if( !iVccHoReady )
@@ -352,8 +355,8 @@ void CPhoneVccHandler::VccPropertyChangedL( const TUint aKeyId,
                     "CPhoneVccHandler::VccPropertyChangedL VccPropertyChangedL -- HO Success" );   
                 iVccHoReady = ETrue;
                 RemoveHandoverNoteL();
-  			    }
-  				break;
+                }
+                break;
             case EVccCsToPsHoStarted:
                 {
                 __PHONELOG( EBasic, PhoneUIVoIPExtension,
@@ -456,13 +459,13 @@ void CPhoneVccHandler::VccPropertyChangedL( const TUint aKeyId,
                 break;
                 }
                     
-  			default:
+            default:
 
                 __PHONELOG( EBasic, PhoneUIVoIPExtension,
                         "CPhoneVccHandler::VccPropertyChangedL VccPropertyChangedL -- default" );
-        		break;
-  			}		
-  		}
+                break;
+            }       
+        }
     }
 // ---------------------------------------------------------------------------
 // Gets HO notification tone setting value

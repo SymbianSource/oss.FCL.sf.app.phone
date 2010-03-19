@@ -20,7 +20,7 @@
 // INCLUDES
 #include "cpeaudiofactory.h"
 #include "cpeaudiotoneutilityimpl.h"
-#include <TelephonyAudioRouting.h> 
+#include <TelephonyAudioRouting.h>
 
 // EXTERNAL DATA STRUCTURES
 // None.
@@ -64,8 +64,8 @@ EXPORT_C CPEAudioFactory* CPEAudioFactory::NewLC()
 // -----------------------------------------------------------------------------
 //  
 EXPORT_C CPEAudioFactory::CPEAudioFactory()
-	{
-	}
+    {
+    }
 
 // -----------------------------------------------------------------------------
 // CPEAudioFactory::CreateTelephonyAudioRoutingL

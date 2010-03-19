@@ -309,10 +309,10 @@ const TInt KEmergencyCallId = 7;
 const TInt KConferenceCallId = 8;
 
 // LifeTimer const
-const TInt KPhoneLifeTimerHoursLength 	= 6;
+const TInt KPhoneLifeTimerHoursLength   = 6;
 const TInt KPhoneLifeTimerMinutesLength = 2;
-const TInt KTimerTextLength				= 64;
-const TInt KTimerMinuteSeparator		= 2;
+const TInt KTimerTextLength             = 64;
+const TInt KTimerMinuteSeparator        = 2;
 
 //AudioVolume const
 // CONSTANTS

@@ -31,11 +31,13 @@
 #include "phonelogger.h"
 #include "cphonecenrepproxy.h"
 
-#include <phoneui.rsg>
-#include <callhandlingui.rsg>
-#include <phoneuitouch.rsg>
+// <-- QT PHONE START --> 
+#include "phoneresourceids.h"
+//#include <phoneui.rsg>
+//#include <callhandlingui.rsg>
+//#include <phoneuitouch.rsg>
+// <-- QT PHONE END --> 
 #include "tphonetouchbuttonconfig.h"
-
 #include <data_caging_path_literals.hrh>
 
 // ================= MEMBER FUNCTIONS =======================
@@ -154,9 +156,9 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
                 retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
                 }
             else if ( iVariationFlags & EVideoCallMenu )
-	            {
-	            retVal = R_PHONEUI_NUMBERACQ_VIDEOCALL_MENUBAR;
-	            }
+                {
+                retVal = R_PHONEUI_NUMBERACQ_VIDEOCALL_MENUBAR;
+                }
             else
                 {
                 retVal = R_PHONEUI_NUMBERACQ_MENUBAR;
@@ -165,14 +167,14 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneNumberAcqOkMenubar:
-        	if ( iVariationFlags & EVideoCallMenu )
-	        	{
-	        	retVal = R_PHONEUI_NUMBERACQ_OK_VIDEOCALL_MENUBAR;
-	        	}
-        	else
-	        	{
-	        	retVal = R_PHONEUI_NUMBERACQ_OK_MENUBAR;
-	        	}
+            if ( iVariationFlags & EVideoCallMenu )
+                {
+                retVal = R_PHONEUI_NUMBERACQ_OK_VIDEOCALL_MENUBAR;
+                }
+            else
+                {
+                retVal = R_PHONEUI_NUMBERACQ_OK_MENUBAR;
+                }
             break;
 
         case EPhoneCallHandlingMenubar:
@@ -520,9 +522,9 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
                 retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
                 }
             else if ( iVariationFlags & EVideoCallMenu )
-	            {
-	            retVal = R_PHONE_INCALL_VIDEOCALL_MENUBAR_WITH_NUMBERENTRY;
-	            }
+                {
+                retVal = R_PHONE_INCALL_VIDEOCALL_MENUBAR_WITH_NUMBERENTRY;
+                }
             else
                 {
                 retVal = R_PHONE_INCALL_MENUBAR_WITH_NUMBERENTRY;
@@ -631,9 +633,9 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
                 retVal = R_PHONEUI_INCALL_DIALER_CBA;
                 }
             else
-	            {
-	            retVal = R_PHONEUI_CALLHANDLING_INCALL_NOIHF_CBA;
-	            }
+                {
+                retVal = R_PHONEUI_CALLHANDLING_INCALL_NOIHF_CBA;
+                }
             break;
 
         case EPhoneCallHandlingInCallUnmuteCBA:
@@ -653,10 +655,14 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
 
         case EPhoneCallHandlingInCallHandsetCBA:
             if ( iVariationFlags & EOnscreenDialer )
+// <-- QT PHONE START -->                
+/* 
                 {
                 retVal = R_PHONEUI_INCALL_DIALER_CBA;
                 }
             else
+*/
+// <-- QT PHONE END -->                
                 {
                 retVal = R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA;
                 }
@@ -664,10 +670,14 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
 
         case EPhoneCallHandlingInCallBtaaCBA:
             if ( iVariationFlags & EOnscreenDialer )
+// <-- QT PHONE START -->                
+/* 
                 {
                 retVal = R_PHONEUI_INCALL_DIALER_CBA;
                 }
             else
+*/
+// <-- QT PHONE END -->                
                 {
                 retVal = R_PHONEUI_CALLHANDLING_INCALL_BTAA_CBA;
                 }
@@ -675,11 +685,14 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallHandlingEmergencyCBA:
-            if ( iVariationFlags & EOnscreenDialer )
+// <-- QT PHONE START -->        
+/*            if ( iVariationFlags & EOnscreenDialer )
                 {
                 retVal = R_PHONEUI_INCALL_DIALER_CBA;
                 }
             else
+*/            
+// <-- QT PHONE END -->              
                 {
                 retVal = R_PHONEUI_CALLHANDLING_EMERGENCY_CBA;
                 }
@@ -948,7 +961,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
         case EPhoneEmergencyConnectWaitNote:
             if ( iVariationFlags & EOnscreenDialer )
                 {
-                retVal = R_PHONE_EMERGENCY_NETWORK_CONNECT_WAIT_NOTE_DIALER;
+                retVal = R_PHONE_EMERGENCY_NETWORK_CONNECT_WAIT_NOTE_EMPTY_DIALER;
                 }
             else
                 {
@@ -993,7 +1006,9 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallDurationFormatString:
-            retVal = R_QTN_TIME_DURAT_LONG_WITH_ZERO;
+// <-- QT PHONE START --> 
+            retVal = R_PHONEUI_TIME_DURAT_LONG_WITH_ZERO;
+// <-- QT PHONE END --> 
             break;
 
         case EPhoneDtmfNumberQuery:
@@ -1148,8 +1163,8 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneInformationRemoteCreateConferenceNote:
-        	retVal = R_INCAL_REMOTE_CREATE_CONFERENCE_TEXT;
-        	break;
+            retVal = R_INCAL_REMOTE_CREATE_CONFERENCE_TEXT;
+            break;
 
         case EPhoneInformationCallOnHold:
             retVal = R_PHONE_SS_NOTIFICATION_INCAL_INFO_HOLD_TEXT;
@@ -1168,12 +1183,12 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneInformationCallOnHoldNoCli:
-        	retVal = R_INCAL_INFO_HOLD_NOCLI_TEXT;
-        	break;
+            retVal = R_INCAL_INFO_HOLD_NOCLI_TEXT;
+            break;
 
         case EPhoneInformationConferenceActiveted:
-        	retVal = R_MULTC_INFO_CONFERENCE_TEXT;
-        	break;
+            retVal = R_MULTC_INFO_CONFERENCE_TEXT;
+            break;
 
         case EPhoneCallOnHold:
             retVal = R_PHONEUI_INCALL_CALL_HELD;
@@ -1228,72 +1243,72 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCLIPayphone:
-        	retVal = R_PHONE_MTCAL_CLI_PAYPHONE;
-        	break;
+            retVal = R_PHONE_MTCAL_CLI_PAYPHONE;
+            break;
 
         case EPhoneOutgoingCallsBarredWithinCUG:
-        	retVal = R_PHONE_ERROR_CALL_BARRED_IN_CUG;
-        	break;
+            retVal = R_PHONE_ERROR_CALL_BARRED_IN_CUG;
+            break;
 
         case EPhoneNoCUGSelected:
-        	retVal = R_PHONE_ERROR_SELECT_CUG;
-        	break;
+            retVal = R_PHONE_ERROR_SELECT_CUG;
+            break;
 
         case EPhoneUnknownCUGIndex:
-        	retVal = R_PHONE_ERROR_CUG_UNKNOWN;
-        	break;
+            retVal = R_PHONE_ERROR_CUG_UNKNOWN;
+            break;
 
         case EPhoneCUGIndexIncompatible:
-        	retVal = R_PHONE_ERROR_NOT_POSSIBLE_IN_CUG;
-        	break;
+            retVal = R_PHONE_ERROR_NOT_POSSIBLE_IN_CUG;
+            break;
 
         case EPhoneCUGCallsFailure:
-        	retVal = R_PHONE_ERROR_CHECK_CUG;
-        	break;
+            retVal = R_PHONE_ERROR_CHECK_CUG;
+            break;
 
         case EPhoneCLIRNotSubscribed:
-        	retVal = R_PHONE_ERROR_CHECK_CLIR;
-        	break;
+            retVal = R_PHONE_ERROR_CHECK_CLIR;
+            break;
 
         case EPhoneSSNotifCLIRSupprReject:
-        	retVal = R_PHONE_SS_NOTIFICATION_CLIR_SUPPR_REJECT_TEXT;
-        	break;
+            retVal = R_PHONE_SS_NOTIFICATION_CLIR_SUPPR_REJECT_TEXT;
+            break;
 
         case EPhoneWlanMacAddress:
-        	retVal = R_PHONE_WLAN_MAC_STRING;
-        	break;
+            retVal = R_PHONE_WLAN_MAC_STRING;
+            break;
 
         case EPhoneColpConnected:
-        	retVal = R_PHONE_TEXT_COLP_CONNECTED;
-        	break;
+            retVal = R_PHONE_TEXT_COLP_CONNECTED;
+            break;
 
         case EPhoneBtLoopbackEnabled:
-        	retVal = R_PHONE_BT_LOOPBACK_ENABLED_STRING;
-        	break;
+            retVal = R_PHONE_BT_LOOPBACK_ENABLED_STRING;
+            break;
 
         case EPhoneBtLoopbackDisabled:
-        	retVal = R_PHONE_BT_LOOPBACK_DISABLED_STRING;
-        	break;
+            retVal = R_PHONE_BT_LOOPBACK_DISABLED_STRING;
+            break;
 
         case EPhoneLineBlockingNote:
-        	retVal = R_PHONE_LINE_BLOCKING_NOTE;
-        	break;
+            retVal = R_PHONE_LINE_BLOCKING_NOTE;
+            break;
 
         case EPhoneSwitchToVideoQuery:
-        	retVal = R_PHONE_INCALL_QUERY_SWITCH_TO_VIDEO;
-        	break;
+            retVal = R_PHONE_INCALL_QUERY_SWITCH_TO_VIDEO;
+            break;
 
         case EPhoneSwitchToVoiceQuery:
-        	retVal = R_PHONE_INCALL_QUERY_SWITCH_TO_VOICE;
-			break;
+            retVal = R_PHONE_INCALL_QUERY_SWITCH_TO_VOICE;
+            break;
 
         case EPhoneInformationNoNetworkSupportForVideoCallNote:
-        	retVal =  R_PHONE_INCALL_INFO_NO_NETWORK_SUPPORT;
-        	break;
+            retVal =  R_PHONE_INCALL_INFO_NO_NETWORK_SUPPORT;
+            break;
 
         case EPhoneInformationVideoCallNotAllowedDuringRestoreNote:
-        	retVal =  R_PHONE_INCALL_INFO_VIDEO_CALL_NOT_ALLOWED_DURING_RESTORE;
-        	break;
+            retVal =  R_PHONE_INCALL_INFO_VIDEO_CALL_NOT_ALLOWED_DURING_RESTORE;
+            break;
 
         case EPhoneSimRejected:
             retVal = R_PHONEUI_SIM_REJECTED;
@@ -1328,8 +1343,8 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneAlertingVideoCallMenubar:
-        	retVal = R_PHONEUI_ALERTINGVIDEOCALL_MENUBAR;
-        	break;
+            retVal = R_PHONEUI_ALERTINGVIDEOCALL_MENUBAR;
+            break;
 
         case EPhoneCallHandlingIncomingSliderCBA:
             retVal = R_PHONEUI_CALLCOMING_SOFTKEYS_WHEN_SLIDER;
@@ -1481,25 +1496,25 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             retVal = R_CALL_INFO_SERVICE_NOT_AVAILABLE;
             break;
 
-    	case EPhoneDtmfNumberListQuery:
-    	    retVal = R_PHONE_DTMF_LIST_QUERY;
-    	    break;
+        case EPhoneDtmfNumberListQuery:
+            retVal = R_PHONE_DTMF_LIST_QUERY;
+            break;
 
         case EPhoneNoteTTYNoAudioControl:
-        	retVal = R_PHONE_TTY_INFO_NO_AUDIO_CONTROL;
-        	break;
+            retVal = R_PHONE_TTY_INFO_NO_AUDIO_CONTROL;
+            break;
 
-    	case EPhoneAddtoContactsListQuery:
-    	    retVal = R_DIALER_ADD_TO_CONTACTS_SELECTION_LIST_QUERY;
-    	    break;
+        case EPhoneAddtoContactsListQuery:
+            retVal = R_DIALER_ADD_TO_CONTACTS_SELECTION_LIST_QUERY;
+            break;
 
-    	case EPhoneDtmfDialerCBA:
-    	    retVal = R_PHONEUI_DTMFDIALER_SOFTKEYS_OPTIONS_CANCEL;
-    	    break;
+        case EPhoneDtmfDialerCBA:
+            retVal = R_PHONEUI_DTMFDIALER_SOFTKEYS_OPTIONS_CANCEL;
+            break;
 
-    	case EPhoneDtmfDialerNumberEntryPromptText:
-    	    retVal = R_PHONEUI_DIALER_NUMBERENTRY_PROMPT_TEXT;
-    	    break;
+        case EPhoneDtmfDialerNumberEntryPromptText:
+            retVal = R_PHONEUI_DIALER_NUMBERENTRY_PROMPT_TEXT;
+            break;
 
         case EPhoneCall:
             retVal = R_PHONEUI_MTCAL_CALL;
@@ -1510,20 +1525,29 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneInfoClirChange:
-        	retVal = R_NOTE_TEXT_CLIR_CHANGE;
-        	break;
+            retVal = R_NOTE_TEXT_CLIR_CHANGE;
+            break;
 
         case EPhoneInfoCugInUse:
             retVal = R_NOTE_TEXT_CUG_IN_USE;
             break;
-            
+
         case EPhoneCallHandlingEmergencyInCallNoOptions:
             retVal = R_PHONEUI_CALLHANDLING_EMERGENCY_INCALL_NO_OPTIONS;
             break;
+// <-- QT PHONE START -->
+        case EPhoneIncallHeldButtons:
+            retVal = R_PHONEUI_INCALL_HELD_BUTTONS;
+            break;
+            
+        case EPhoneAttemptingEmergencyText:
+            retVal = R_PHONEUI_ATTEMPTING_EMERGENCY_CALL_TEXT;
+            break;
+// <-- QT PHONE END -->
 
         default:
-        	Panic( EPhoneUtilsResourcePhoneappNotFound );
-        	break;
+            Panic( EPhoneUtilsResourcePhoneappNotFound );
+            break;
         }
     return retVal;
     }

@@ -165,34 +165,29 @@ class CPhoneEmergency : public CPhoneGsmInCall
                     TRemConCoreApiButtonAction aButtonAct );
         
     private:
-    	
-    	/**
-		* Check whether UseEmergencyNoIhfCBA set should be used or not. 
-		* @param aAudioOutput current audio output type.
+        
+        /**
+        * Check whether UseEmergencyNoIhfCBA set should be used or not. 
+        * @param aAudioOutput current audio output type.
         * @return ETrue if UseEmergencyNoIhfCBA should be used,
         * EFalse otherwise.
-		*/
-    	TBool UseEmergencyNoIhfCBA( const TPEAudioOutput& aAudioOutput ) const;
-    	
-    	/**
-		* Check whether UseHandsetEmergencyCBA set should be used or not.
-		* @param aAudioOutput current audio output type.
+        */
+        TBool UseEmergencyNoIhfCBA( const TPEAudioOutput& aAudioOutput ) const;
+        
+        /**
+        * Check whether UseHandsetEmergencyCBA set should be used or not.
+        * @param aAudioOutput current audio output type.
         * @return ETrue if UseHandsetEmergencyCBA should be used,
         * EFalse otherwise.
-		*/
-    	TBool UseHandsetEmergencyCBA( const TPEAudioOutput& aAudioOutput ) const;
-    	
-    	/**
-		* Check whether the touch call handling is supported or not.
-		* @return ETrue if KFeatureIdTouchCallHandling is supported,
-		* EFalse otherwise.
-		*/
-    	TBool TouchCallHandlingSupported () const;
-    	
-       /**
-       * Update status of startup if startup finish during emergency call
-       */
-       void HandlePhoneStartupL();
+        */
+        TBool UseHandsetEmergencyCBA( const TPEAudioOutput& aAudioOutput ) const;
+        
+        /**
+        * Check whether the touch call handling is supported or not.
+        * @return ETrue if KFeatureIdTouchCallHandling is supported,
+        * EFalse otherwise.
+        */
+        TBool TouchCallHandlingSupported () const;
          
     private:
         /**

@@ -23,7 +23,7 @@
 #include    <utility.h>
 #include    <mdaaudiotoneplayer.h>
 #include    <talogger.h>
-#include    <AudioPreference.h> 
+#include    <AudioPreference.h>
 
 // EXTERNAL DATA STRUCTURES
 // None
@@ -32,7 +32,9 @@
 // None
 
 // CONSTANTS
-const TInt KDtmfSilent = 0;
+// <-- QT PHONE START --> 
+//const TInt KDtmfSilent = 0;
+// <-- QT PHONE END --> 
 const TInt KDtmfPauseAfterTone = 100000;
 const TInt KDtmfToneZero = 0;
 const TInt KBufSize = 10;

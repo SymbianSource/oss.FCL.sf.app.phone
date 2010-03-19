@@ -36,59 +36,59 @@
 // DATA TYPES
 NONSHARABLE_STRUCT( TPECallCommandInfo )                  // For Mobile Originated Call Commands
     {
-	TChar iKeyCode;                         // pressed key code
-	TInt iAudioMute;                        // state of microphone ( 0 = false, 1 = true )
-	TInt iAudioVolume;                      // Audio volume
-	TPEAudioOutput iAudioOutput;            // audio output path
-	TBool iShowNote;                        // Status of call audio route info note.
-	TInt iCallId;                           // Calls ID
-	TPEDtmfString iDtmfString;              // Dtmf string to be sent.
-	TPEPhoneNumber iPhoneNumber;            // Dialed Phonenumber, set by client
-	TPECallType iCallType;                  // Type of the attempted call
-	TUint32 iServiceId;                     // ServiceId	
-	TPECallOrigin iCallOrigin;              // Origin of the attempted call (Phone, client or SAT)
-	RMobileCall::TMobileCallIdRestriction iIdRestrict; // Call Id restriction setting to be used for this call
-	TPEPhoneNumber iEmergencyNumber;        // For checking is this number emergency number.
-	TPEUserToUserInfo iUserToUserInfo;      // User to user information.
-	TPEPhoneNumber iSwitchToNumber;         // Dialed Phonenumber, set by client
-	TPEPhoneNumber iTransferToAddress;      // Unattended transfer target address	
+    TChar iKeyCode;                         // pressed key code
+    TInt iAudioMute;                        // state of microphone ( 0 = false, 1 = true )
+    TInt iAudioVolume;                      // Audio volume
+    TPEAudioOutput iAudioOutput;            // audio output path
+    TBool iShowNote;                        // Status of call audio route info note.
+    TInt iCallId;                           // Calls ID
+    TPEDtmfString iDtmfString;              // Dtmf string to be sent.
+    TPEPhoneNumber iPhoneNumber;            // Dialed Phonenumber, set by client
+    TPECallType iCallType;                  // Type of the attempted call
+    TUint32 iServiceId;                     // ServiceId    
+    TPECallOrigin iCallOrigin;              // Origin of the attempted call (Phone, client or SAT)
+    RMobileCall::TMobileCallIdRestriction iIdRestrict; // Call Id restriction setting to be used for this call
+    TPEPhoneNumber iEmergencyNumber;        // For checking is this number emergency number.
+    TPEUserToUserInfo iUserToUserInfo;      // User to user information.
+    TPEPhoneNumber iSwitchToNumber;         // Dialed Phonenumber, set by client
+    TPEPhoneNumber iTransferToAddress;      // Unattended transfer target address   
     TInt iForwardToAddressIndex;            // Array index for a address to be forwarded
     };
 
 NONSHARABLE_STRUCT( TPEBasicInfo )                         // Contains information of the phone related variables 
     {
-	TBool iAudioMute;                       // state of microphone.					
-	TBool iTwoDigitSupportStatus;           // Two Digit support status
-	TBool iALSLineSupport;                  // ALS line support.				
-	TInt iAudioOutputPreference;            // Audio output preference (private/public) - TODO: change type to enum when available
-	TInt iAudioVolume;                      // Audio volume					
-	TInt iKeypadVolume;                     // Keypad volume					
-	TInt iLastCallDuration;                 // Call duration (seconds)					
-	TInt iPersonalToneStatus;               // Personal tone status					
-	TInt iProfileId;                        // the id number of the profile					
-	TInt iRingingVolume;                    // Current ringing volume					
-	TBool iTextToSpeech;                    // Current text-to-speech setting
-	TBool iPhoneNumberIsServiceCode;        // flag indicating if the phone number is a service code
-	TNWNetworkRegistrationStatus iNetworkRegistrationStatus;					
+    TBool iAudioMute;                       // state of microphone.                 
+    TBool iTwoDigitSupportStatus;           // Two Digit support status
+    TBool iALSLineSupport;                  // ALS line support.                
+    TInt iAudioOutputPreference;            // Audio output preference (private/public) - TODO: change type to enum when available
+    TInt iAudioVolume;                      // Audio volume                 
+    TInt iKeypadVolume;                     // Keypad volume                    
+    TInt iLastCallDuration;                 // Call duration (seconds)                  
+    TInt iPersonalToneStatus;               // Personal tone status                 
+    TInt iProfileId;                        // the id number of the profile                 
+    TInt iRingingVolume;                    // Current ringing volume                   
+    TBool iTextToSpeech;                    // Current text-to-speech setting
+    TBool iPhoneNumberIsServiceCode;        // flag indicating if the phone number is a service code
+    TNWNetworkRegistrationStatus iNetworkRegistrationStatus;                    
     CCCECallParameters::TCCELineType iALSLine;        // includes active als line.                  
-	TPEContactFileName iRingingToneName1;   // Current ringingtone name					
-	TPEContactFileName iRingingToneName2;
-	TPEContactFileName iVideoCallRingingTone; // Video call ringingtone name									
-	TPEDtmfString iDtmfString;              // Dtmf string.					
-	TPEErrorInfo iErrorInfo;                // possible error code					
-	TPELifeTimeData iLifeTimeData;					
-	TPEPhoneIdentityParameters iPhoneIdentityParameters; // the phone identity parameters					
-	TPEProfileName iProfileName;            // the name of the profile					
-	TProfileRingingType iRingingType;       // Includes current ringing type 					
-	TPEVoiceMailBoxNumberInfo iVMBXNumbers; // Voice mail box numbers
-	TPEPhoneAudioRouteParameters iPhoneAudioRouteParameters; // the phone audio route parameters
-	TCCPTone iInbandTone;                   // Inband tone needed to play in a call state transition or error
-	TPEActiveForwardInfo iActiveForward;    // active forward information.
-	TPEBarringInfo iBarringInfo;            // includes call barring information.
-	TPESimState iSimState;
-	TPESSCommandInfo iSSCommandInfo;        // Contains information of the Suplementary Services command.
+    TPEContactFileName iRingingToneName1;   // Current ringingtone name                 
+    TPEContactFileName iRingingToneName2;
+    TPEContactFileName iVideoCallRingingTone; // Video call ringingtone name                                    
+    TPEDtmfString iDtmfString;              // Dtmf string.                 
+    TPEErrorInfo iErrorInfo;                // possible error code                  
+    TPELifeTimeData iLifeTimeData;                  
+    TPEPhoneIdentityParameters iPhoneIdentityParameters; // the phone identity parameters                   
+    TPEProfileName iProfileName;            // the name of the profile                  
+    TProfileRingingType iRingingType;       // Includes current ringing type                    
+    TPEVoiceMailBoxNumberInfo iVMBXNumbers; // Voice mail box numbers
+    TPEPhoneAudioRouteParameters iPhoneAudioRouteParameters; // the phone audio route parameters
+    TCCPTone iInbandTone;                   // Inband tone needed to play in a call state transition or error
+    TPEActiveForwardInfo iActiveForward;    // active forward information.
+    TPEBarringInfo iBarringInfo;            // includes call barring information.
+    TPESimState iSimState;
+    TPESSCommandInfo iSSCommandInfo;        // Contains information of the Suplementary Services command.
     TBool iSecureSpecified;                 // Secure specified status
-	TName iDataPortName;                    // the name of data port currently on-loan
+    TName iDataPortName;                    // the name of data port currently on-loan
     TBool iSwitchToOngoing;                 // Switch to operation status
     };
 
@@ -252,7 +252,7 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         * @return TBool the secure status (on/off)
         */
         TBool IsSecureCall( const TInt aCallId ) const;
-		
+        
         /**
         * Gets dtmf postfix
         * @param aCallId is the call identification number.
@@ -618,7 +618,7 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          
          /**
          * Checks if given state can be found.
-		 * @param aCallState state to be checked.
+         * @param aCallState state to be checked.
          */
           TBool CheckIfCallStateExists( const TPEState& aCallState );
 
@@ -1258,7 +1258,7 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         * @param aCallId, is the call identification number.
         */
         void SetRemoteColpNumber(
-            const TPEPhoneNumber& aColpNumber, 
+            TPEPhoneNumber& aColpNumber, 
             const TInt aCallId );
 
         /**
@@ -1505,8 +1505,8 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * @see MPEDataStore::UserToUserInformation
          * @since S60 5.0
          */
-		void SetUserToUserInformation( const TPEUserToUserInfo& aUUI );
-		
+        void SetUserToUserInformation( const TPEUserToUserInfo& aUUI );
+        
         /**
          * Sets remote party name given by network to TPECallInfo structure.
          * @param aName Remote party name.
@@ -1529,7 +1529,20 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * @see MPEDataStore::SetCallOrigin          
          */
         void SetCallOrigin( TPECallOrigin aOrigin, TInt aCallId );
-                
+      
+// <-- QT PHONE START -->
+        /**
+        * Sets call Phonebook contact identifier.
+        * @param aContactId is the contact identifier for a call
+        */
+        void SetContactId2( const TInt aContactId );
+
+        /**
+         * Returns Phonebook contact identifier.
+         */
+        TInt ContactId2() const;
+// <-- QT PHONE END -->
+          
     private:
           /**
         * C++ default constructor.
@@ -1561,13 +1574,19 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         TFixedArray<TBool, KPEMaxAudioOutputs> iAvailableAudioOutputs;
 
         // Contains the group id's which are active for ringtone
-    	RArray< TContactItemId > iAlertForGroup;
+        RArray< TContactItemId > iAlertForGroup;
 
         /**
          * CCE call dial parameters
          */
         CCCECallParameters *iCallParams;
 
+// <-- QT PHONE START -->
+        /**
+         * Phonebook contact identifier.
+         */
+        TInt iContactId;
+// <-- QT PHONE END -->
     };
 
 

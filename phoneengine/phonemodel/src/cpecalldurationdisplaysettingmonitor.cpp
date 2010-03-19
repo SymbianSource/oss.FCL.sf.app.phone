@@ -30,12 +30,12 @@ CPECallDurationDisplaySettingMonitor* CPECallDurationDisplaySettingMonitor::NewL
         // None
         )
     {
-	TEFLOGSTRING(KTAOBJECT, "CPECallDurationDisplaySettingMonitor::NewL");
-	CPECallDurationDisplaySettingMonitor* me = new ( ELeave ) CPECallDurationDisplaySettingMonitor();
-	CleanupStack::PushL( me );
-	me->ConstructL();
-	CleanupStack::Pop( me );
-	return ( me );
+    TEFLOGSTRING(KTAOBJECT, "CPECallDurationDisplaySettingMonitor::NewL");
+    CPECallDurationDisplaySettingMonitor* me = new ( ELeave ) CPECallDurationDisplaySettingMonitor();
+    CleanupStack::PushL( me );
+    me->ConstructL();
+    CleanupStack::Pop( me );
+    return ( me );
     }
 
 // Destructor

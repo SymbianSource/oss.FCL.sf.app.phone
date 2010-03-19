@@ -28,9 +28,10 @@
 // might leave.
 // -----------------------------------------------------------------------------
 //
+// <-- QT PHONE START --> 
 TPhTouchPaneWrapper::TPhTouchPaneWrapper( 
-        MBubbleTouchPaneInterface& aTouchPane ) :
-        iTouchPane( aTouchPane )    
+        /*MBubbleTouchPaneInterface& aTouchPane*/ ) :
+        //iTouchPane( aTouchPane )    
     {
     }
 
@@ -40,9 +41,9 @@ TPhTouchPaneWrapper::TPhTouchPaneWrapper(
 // ---------------------------------------------------------
 //
 TInt TPhTouchPaneWrapper::NumberOfButtonsInPane() const
-   	{
-   	return iTouchPane.NumberOfButtonsInPane();
-   	}
+    {
+    return KErrNotSupported; //iTouchPane.NumberOfButtonsInPane();
+    }
 
 // ---------------------------------------------------------
 // TPhTouchPaneWrapper::ButtonCommandId
@@ -50,21 +51,21 @@ TInt TPhTouchPaneWrapper::NumberOfButtonsInPane() const
 // ---------------------------------------------------------
 //
 TInt TPhTouchPaneWrapper::ButtonCommandId( 
-        TInt aButtonIndex ) const
+        TInt /*aButtonIndex*/ ) const
     {
-   	return iTouchPane.ButtonCommandId( aButtonIndex );
-   	}
+    return KErrNotSupported; //iTouchPane.ButtonCommandId( aButtonIndex );
+    }
 
 // ---------------------------------------------------------
 // TPhTouchPaneWrapper::SetButtonDimmed
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-void TPhTouchPaneWrapper::SetButtonDimmed( TInt aCommand, TBool aDimmed )
+void TPhTouchPaneWrapper::SetButtonDimmed( TInt /*aCommand*/, TBool /*aDimmed*/ )
    {
-   iTouchPane.SetButtonDimmed( aCommand, aDimmed );   
+   //iTouchPane.SetButtonDimmed( aCommand, aDimmed );   
    }
 
-
+// <-- QT PHONE END --> 
 
 //  End of File

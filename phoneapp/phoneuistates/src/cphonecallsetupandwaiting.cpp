@@ -20,7 +20,9 @@
 #include <pevirtualengine.h>
 #include <StringLoader.h>
 #include <MediatorDomainUIDs.h>
-#include <videotelcontrolmediatorapi.h>
+// <-- QT PHONE START --> 
+//#include <videotelcontrolmediatorapi.h>
+// <-- QT PHONE END --> 
 
 #include "cphonecallsetupandwaiting.h"
 #include "tphonecmdparamboolean.h"

@@ -65,7 +65,7 @@ NONSHARABLE_CLASS( CPECenRepMonitor )
         * this method. Most common approach would be to save the data to internal
         * data store and send a message via phone model if neccessary.
         */
-    	virtual void UpdateL() = 0;
+        virtual void UpdateL() = 0;
 
     public:
 

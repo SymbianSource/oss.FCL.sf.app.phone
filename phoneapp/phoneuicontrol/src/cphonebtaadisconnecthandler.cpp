@@ -283,7 +283,7 @@ void CPhoneBtaaDisconnectHandler::TerminateAllCallsL()
 void CPhoneBtaaDisconnectHandler::ShowQueryL( TInt aResourceId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneBtaaDisconnectHandler::ShowQueryL( ) ");
-	//__ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
+    //__ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
     TPhoneCmdParamQuery queryParam;
     queryParam.SetQueryType( EPhoneGlobalQueryDialog );
   

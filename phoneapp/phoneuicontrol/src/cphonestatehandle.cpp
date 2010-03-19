@@ -100,7 +100,9 @@ EXPORT_C CPhoneStateHandle* CPhoneStateHandle::Instance()
 // CPhoneStateHandle::StateMachine
 // ---------------------------------------------------------
 //
-MPhoneStateMachine* CPhoneStateHandle::StateMachine()
+// <-- QT PHONE START --> 
+EXPORT_C MPhoneStateMachine* CPhoneStateHandle::StateMachine()
+// <-- QT PHONE END --> 
     {   
     __ASSERT_DEBUG( Instance(), Panic( EPhoneCtrlSingletonNotInitialized ) );
     return iPhoneStateMachine;
@@ -126,7 +128,7 @@ void CPhoneStateHandle::ConstructL(
     {
     TFileName fileName( KDriveZ );
     fileName.Append( KDC_SHARED_LIB_DIR );
-    fileName.Append( aFileName );	
+    fileName.Append( aFileName );   
     LoadLibraryHandleL( fileName, aFactoryUid );
     }
 
@@ -176,8 +178,8 @@ void CPhoneStateHandle::LoadLibraryHandleL(
     
     // Create the phone error messages handler    
     iPhoneErrorMessagesHandler = 
-    	iStateMachineFactory->CreatePhoneErrorMessagesHandlerL( 
-    						iViewCommandHandle, iPhoneStateMachine );
+        iStateMachineFactory->CreatePhoneErrorMessagesHandlerL( 
+                            iViewCommandHandle, iPhoneStateMachine );
     }
 
 // End of File

@@ -93,7 +93,7 @@ class CPhoneSingleCall : public CPhoneGsmInCall
         IMPORT_C TInt CallId() const;
     private:
     
-    	void OpenVideoCallMenuBarL();
+        void OpenVideoCallMenuBarL();
     
         void HandleHeldL( TInt aCallId );
         

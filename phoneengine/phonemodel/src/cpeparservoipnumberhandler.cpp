@@ -111,7 +111,7 @@ void CPEParserVoipNumberHandler::ProcessDialToVoipNumberL(
     
     TPECallType processType = iDataStore.CallTypeCommand();
  
-    // Remove possible + or w chartes.		
+    // Remove possible + or w chartes.      
     TPEPhoneNumber postfix = FilterPostfix( aDtmfPostfix );
     if( postfix.Length() )
         {
@@ -126,8 +126,11 @@ void CPEParserVoipNumberHandler::ProcessDialToVoipNumberL(
   
     // Temporary hack for enabling client calls with service id 3
     // Proper solution to be done to CallUi and AIW dial data
+        
+
     TUint32 serviceId = iDataStore.ServiceIdCommand();
     iServiceHandling.EnableServiceL( serviceId );
+
     }
 
 // -----------------------------------------------------------------------------

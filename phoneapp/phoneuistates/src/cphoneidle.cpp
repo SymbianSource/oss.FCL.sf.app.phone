@@ -106,12 +106,12 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
             break;
 
         case MEngineMonitor::EPEMessageIssuedSSRequest: // fall through 
-        	// Note that after the sending of SS 
-			// strings the view stays in Dialer.
+            // Note that after the sending of SS 
+            // strings the view stays in Dialer.
             if ( !iOnScreenDialer )  
-        		{
-            	SetupIdleScreenInBackgroundL();
-        		}
+                {
+                SetupIdleScreenInBackgroundL();
+                }
         case MEngineMonitor::EPEMessageIssuingSSRequest: // fall through
         case MEngineMonitor::EPEMessageCallBarred: // fall through
         case MEngineMonitor::EPEMessageShowVersion: // fall through
@@ -121,16 +121,16 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageOutCallForwToC: // fall through
         case MEngineMonitor::EPEMessageForwardUnconditionalModeActive: // fall through
         case MEngineMonitor::EPEMessageForwardConditionallyModeActive:
-			{
-			CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
-				CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
-													   *iViewCommandHandle,
-													   *this );
-			CleanupStack::PushL( gsmMsgHandler );
-			gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
-			CleanupStack::PopAndDestroy( gsmMsgHandler );
-			}
-			break;
+            {
+            CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
+                CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
+                                                       *iViewCommandHandle,
+                                                       *this );
+            CleanupStack::PushL( gsmMsgHandler );
+            gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
+            CleanupStack::PopAndDestroy( gsmMsgHandler );
+            }
+            break;
 
         default:
             CPhoneStateIdle::HandlePhoneEngineMessageL( 

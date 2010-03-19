@@ -18,7 +18,7 @@
 
 // INCLUDES
 #include <featmgr.h>
-#include <StringLoader.h> 
+#include <StringLoader.h>
 #include <ScreensaverInternalPSKeys.h>
 #include <AknUtils.h>
 #include <mpeengineinfo.h>
@@ -44,7 +44,7 @@
 #include "phonelogger.h"
 #include "phoneui.pan"
 #include "cphonedtmfwaitchartimer.h"
-#include "tphonecmdparamaudiooutput.h"
+#include "tphonecmdparamAudioOutput.h"
 #include "cphonekeys.h"
 
 // ================= MEMBER FUNCTIONS =======================
@@ -188,6 +188,16 @@ EXPORT_C TBool CPhoneStateCallSetup::HandleCommandL( TInt aCommand )
         case EPhoneDtmfDialerCancel:
             CloseDTMFEditorL();
             break;
+
+// <-- QT PHONE START -->            
+        case EPhoneInCallCmdMute: // fall through
+        case EPhoneInCallCmdUnmute:
+            iStateMachine->PhoneEngineInfo()->SetAudioMuteCommand( 
+                ( aCommand == EPhoneInCallCmdMute ) );
+            iStateMachine->SendPhoneEngineMessage( 
+                MPEPhoneModel::EPEMessageSetAudioMute );
+            break;
+// <-- QT PHONE END -->            
                                    
         default:
             commandStatus = CPhoneState::HandleCommandL( aCommand );
@@ -586,12 +596,14 @@ void CPhoneStateCallSetup::HandleConnectedL( TInt aCallId )
     
     // Update the single call
     CPhoneState::UpdateSingleActiveCallL( aCallId );
-        
-    // Complete sat request
+    
+// <-- QT PHONE START --> 
+/*  // Complete sat request
     if ( iStateMachine->PhoneEngineInfo()->CallOrigin( aCallId ) == EPECallOriginSAT )
         {
         CompleteSatRequestL( aCallId );
-        }
+        }*/
+// <-- QT PHONE END --> 
         
     // Update touch buttons
     SetTouchPaneButtons( EPhoneIncallButtons );        

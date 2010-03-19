@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  This file contains the header file of the CPEParserSSCallHandler 
-*		 		 class
+*                class
 *
 */
 
@@ -21,7 +21,7 @@
 #define CPEPARSERSSCALLHANDLER_H
 
 //INCLUDES
-#include <CPhoneGsmSsCallHandler.h>
+#include <cphonegsmsscallhandler.h>
 #include <pevirtualengine.h>
 
 // CONSTANTS

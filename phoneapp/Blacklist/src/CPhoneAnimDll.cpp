@@ -21,8 +21,8 @@
 
 // INCLUDE FILES
 #include    "phoneanimdllstd.h"         
-#include    "CPhoneAnimDll.h"           
-#include    "CPhoneBlacklistAnim.h"     
+#include    "CPhoneAnimDll.h"
+#include    "CPhoneBlacklistAnim.h"
 
 // ================= MEMBER FUNCTIONS =======================
 

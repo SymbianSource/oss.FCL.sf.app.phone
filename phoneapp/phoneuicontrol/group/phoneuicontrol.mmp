@@ -19,7 +19,10 @@
 #include <platform_paths.hrh>
 
 // Capability assignment.
-CAPABILITY CAP_APPLICATION MultiMediaDD NetworkControl PowerMgmt DRM DiskAdmin
+// <-- QT PHONE START --> 
+CAPABILITY CAP_GENERAL_DLL
+//CAPABILITY CAP_APPLICATION MultiMediaDD NetworkControl PowerMgmt DRM DiskAdmin
+// <-- QT PHONE END --> 
 
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
@@ -57,10 +60,14 @@ SOURCE          cphonecbamanager.cpp
 /* Languages */
 LANG SC
 
+
 USERINCLUDE     ../inc
-USERINCLUDE     ../../phoneuiview/inc
+// <-- QT PHONE START --> 
+USERINCLUDE     ../../phoneuiqtviewadapter/inc
+//USERINCLUDE     ../../phoneuiview/inc
+// <-- QT PHONE END --> 
 USERINCLUDE     ../../phoneuiutils/inc
-USERINCLUDE     ../../phoneui/srcdata
+USERINCLUDE     ../../phoneui2/srcdata
 USERINCLUDE     ../../phoneuistates/inc
 USERINCLUDE     ../../phonemediatorcenter/inc
 
@@ -74,7 +81,10 @@ LIBRARY         efsrv.lib
 LIBRARY         engineinfo.lib
 LIBRARY         ws32.lib 
 LIBRARY         fbscli.lib
-LIBRARY         commonengine.lib //StringLoader 
+// <-- QT PHONE START --> 
+LIBRARY         phonestringloader.lib
+//LIBRARY         commonengine.lib //StringLoader 
+// <-- QT PHONE END --> 
 LIBRARY         featmgr.lib // FeatureManager
 LIBRARY         connmon.lib // RConnectionMonitor
 LIBRARY         avkon.lib // AknTextUtils
@@ -85,7 +95,6 @@ LIBRARY         remconinterfacebase.lib
 LIBRARY         phonecmdhandler.lib
 // Soft reject
 LIBRARY         eikcore.lib // CCharFormatLayer, CParaFormatLayer
-LIBRARY         sendui.lib // CMessageData
 
 // Profiles
 LIBRARY         profileeng.lib

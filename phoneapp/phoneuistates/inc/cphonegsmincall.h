@@ -119,11 +119,11 @@ class CPhoneGsmInCall : public CPhoneStateInCall
         
     private:
     
-    	void ReplaceCallL();
-    	/**
+        void ReplaceCallL();
+        /**
         * Handles divert indication 
         */
-    	void HandeDivertIndicationL();
+        void HandeDivertIndicationL();
     };
 
 #endif // CPHONEGSMINCALL_H

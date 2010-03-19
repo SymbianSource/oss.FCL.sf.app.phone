@@ -22,8 +22,10 @@
 // INCLUDES
 #include <telmenuextension.h>
 #include <spdefinitions.h>
-#include "mphonebuttoncustomization.h"
-
+// <-- QT PHONE START --> 
+//#include "mphonebuttoncustomization.h"
+// <-- QT PHONE END -->
+ 
 // FORWARD DECLARATIONS
 class CPhMenuExtensionWrapper;
 
@@ -45,7 +47,8 @@ NONSHARABLE_CLASS( CPhoneExtensionHandler ): public CBase
          * Creates the extension handler class
          */
         static CPhoneExtensionHandler* NewL();
-        
+
+// <-- QT PHONE START -->         
         /**
          * Customizes touch pane buttons.
          * @param aServiceId Service id of the call.
@@ -53,10 +56,11 @@ NONSHARABLE_CLASS( CPhoneExtensionHandler ): public CBase
          * @param aTouchPane Interface to add and dimm
          *                   bubble touch pane buttons.
          */
-        void CustomizeTouchPaneButtonsL(
+        /*void CustomizeTouchPaneButtonsL(
                 TUint aServiceId,
                 RArray<CTelMenuExtension::TCallInfo>& aArray,
-                MBubbleTouchPaneInterface& aTouchPane );
+                MBubbleTouchPaneInterface& aTouchPane );*/
+// <-- QT PHONE END --> 
                         
         /**
          * Modifies menu when there is active call.
@@ -87,7 +91,7 @@ NONSHARABLE_CLASS( CPhoneExtensionHandler ): public CBase
         
         void ConstructL();
         
-    private:            	
+    private:                
         
         
         /**

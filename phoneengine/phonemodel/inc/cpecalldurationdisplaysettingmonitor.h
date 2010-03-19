@@ -38,7 +38,7 @@ public:
     static CPECallDurationDisplaySettingMonitor* NewL();
     ~CPECallDurationDisplaySettingMonitor();
 protected: // From base class
-	virtual void UpdateL();
+    virtual void UpdateL();
 protected:
     CPECallDurationDisplaySettingMonitor();
     void ConstructL();

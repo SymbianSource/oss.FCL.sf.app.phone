@@ -29,7 +29,10 @@
 #include "phonerssgsm.h"
 #include "phonerssbase.h"
 #include "phonelogger.h"
-#include <phoneui.rsg>
+// <-- QT PHONE START -->
+//#include <phoneui.rsg>
+#include "phoneresourceids.h"
+// <-- QT PHONE END --> 
 
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -53,8 +56,10 @@ EXPORT_C void CPhoneResourceResolverGSM::ConstructL()
     {
     
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneResourceResolverGSM::ConstructL");
-      
-    BaseConstructL();
+
+// <-- QT PHONE START -->    
+//    BaseConstructL();
+// <-- QT PHONE END -->    
     
     // Register resolver
     CPhoneMainResourceResolver::Instance()->RegisterResolver( this );
@@ -78,6 +83,15 @@ CPhoneResourceResolverGSM* CPhoneResourceResolverGSM::NewL()
 // Destructor
 EXPORT_C CPhoneResourceResolverGSM::~CPhoneResourceResolverGSM()
     {   
+// <-- QT PHONE START -->    
+    // Remove resource file
+    /*iEnv.DeleteResourceFile( iResourceOffset );
+    if ( FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
+        {
+        iEnv.DeleteResourceFile( iCUIResourceOffset );
+        iEnv.DeleteResourceFile( iPTCHResourceOffset );
+        }*/
+// <-- QT PHONE END -->    
     }
 
 // -----------------------------------------------------------------------------

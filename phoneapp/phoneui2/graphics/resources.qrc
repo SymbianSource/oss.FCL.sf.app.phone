@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/" >   
+        <file>qtg_large_tb_silence.svg</file>
+        <file>qtg_large_tb_loudsp_mute.svg</file>
+        <file>qtg_large_tb_loudsp_unmute.svg</file>
+        <file>qtg_large_tb_dialler.svg</file>
+        <file>qtg_large_tb_mute.svg</file>
+        <file>qtg_large_tb_unmute.svg</file>
+        <file>qtg_large_tb_contacts.svg</file>
+        <file>qtg_large_tb_join.svg</file>        
+        <file>qtg_large_comp_message.svg</file>                
+        <file>qgn_indi_button_swap.svg</file>        
+        <file>qtg_mono_answer_call.svg</file>
+        <file>qtg_mono_reject_call.svg</file>
+        <file>qtg_mono_end_call.svg</file>
+        <file>qtg_mono_hold_call.svg</file>
+        <file>qtg_mono_join_call.svg</file>
+        <file>qtg_mono_private_call.svg</file>
+        <file>qtg_mono_drop_call.svg</file>
+        <file>qtg_mono_replace_call.svg</file>
+    </qresource>
+</RCC>

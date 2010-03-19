@@ -27,44 +27,44 @@ struct TStringTable;
 
 /** A String table */
 class PhoneStateStringsGSM 
-	{
+    {
 public:
-	enum TStrings
-		{
-		// GSM States - start at KPhoneStateProtocolFirst
-		/** EPhoneStateAlerting */
-		EPhoneStateAlerting,
-		/** EPhoneStateAlertingInSingle */
-		EPhoneStateAlertingInSingle,
-		/** EPhoneStateWaitingInSingle */
-		EPhoneStateWaitingInSingle,
-		/** EPhoneStateTwoSingles */
-		EPhoneStateTwoSingles,
-		/** EPhoneStateCallSetupInSingle */
-		EPhoneStateCallSetupInSingle,
-		/** EPhoneStateConference */
-		EPhoneStateConference,
-		/** EPhoneStateConferenceAndCallSetup */
-		EPhoneStateConferenceAndCallSetup,
-		/** EPhoneStateConferenceAndSingle */
-		EPhoneStateConferenceAndSingle,
-		/** EPhoneStateConferenceAndWaiting */
-		EPhoneStateConferenceAndWaiting,
-		/** EPhoneStateSingleAndCallSetupAndWaiting */
-		EPhoneStateSingleAndCallSetupAndWaiting,
-		/** EPhoneStateCallSetupAndWaiting */
-		EPhoneStateCallSetupAndWaiting,
-		/** EPhoneStateTwoSinglesAndWaiting */
-		EPhoneStateTwoSinglesAndWaiting,
-		/** EPhoneStateConferenceAndSingleAndWaiting */
-		EPhoneStateConferenceAndSingleAndWaiting,
-		/** EPhoneStateConferenceAndWaitingAndCallSetup */
-		EPhoneStateConferenceAndWaitingAndCallSetup,
-		/** EPhoneStateLastGSMState */
-		EPhoneStateLastGSMState
-		};
-	static const TStringTable Table;	
-	};
+    enum TStrings
+        {
+        // GSM States - start at KPhoneStateProtocolFirst
+        /** EPhoneStateAlerting */
+        EPhoneStateAlerting,
+        /** EPhoneStateAlertingInSingle */
+        EPhoneStateAlertingInSingle,
+        /** EPhoneStateWaitingInSingle */
+        EPhoneStateWaitingInSingle,
+        /** EPhoneStateTwoSingles */
+        EPhoneStateTwoSingles,
+        /** EPhoneStateCallSetupInSingle */
+        EPhoneStateCallSetupInSingle,
+        /** EPhoneStateConference */
+        EPhoneStateConference,
+        /** EPhoneStateConferenceAndCallSetup */
+        EPhoneStateConferenceAndCallSetup,
+        /** EPhoneStateConferenceAndSingle */
+        EPhoneStateConferenceAndSingle,
+        /** EPhoneStateConferenceAndWaiting */
+        EPhoneStateConferenceAndWaiting,
+        /** EPhoneStateSingleAndCallSetupAndWaiting */
+        EPhoneStateSingleAndCallSetupAndWaiting,
+        /** EPhoneStateCallSetupAndWaiting */
+        EPhoneStateCallSetupAndWaiting,
+        /** EPhoneStateTwoSinglesAndWaiting */
+        EPhoneStateTwoSinglesAndWaiting,
+        /** EPhoneStateConferenceAndSingleAndWaiting */
+        EPhoneStateConferenceAndSingleAndWaiting,
+        /** EPhoneStateConferenceAndWaitingAndCallSetup */
+        EPhoneStateConferenceAndWaitingAndCallSetup,
+        /** EPhoneStateLastGSMState */
+        EPhoneStateLastGSMState
+        };
+    static const TStringTable Table;    
+    };
 
 #endif // STRINGTABLE_PhoneStateStringsGSM
 

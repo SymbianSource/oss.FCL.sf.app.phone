@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  CVideoDTMFDialer class provides dialer keypad 
-*  			     functionalities
+*                functionalities
 *
 */
 
@@ -43,8 +43,8 @@ class CEikonEnv;
 *
 *   In Video Telephony dialer offers touch keypad for enter as DTMFs 
 *   and client's CCoeControl is used to show video and keypad. 
-*	Video DTMF dialer does not implement menu or command buttons, 
-*	only keypad which presses are forwarded to host application as key events.  
+*   Video DTMF dialer does not implement menu or command buttons, 
+*   only keypad which presses are forwarded to host application as key events.  
 *
 *   From host application dialer requires:
 *   - View/container as CCoeControl

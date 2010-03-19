@@ -116,11 +116,11 @@ class CPhoneConference : public CPhoneGsmInCall
         virtual void DefineAndSetHoldFlagL();
   
         virtual void HandleCreateNumberEntryL( 
-			const TKeyEvent& aKeyEvent,
+            const TKeyEvent& aKeyEvent,
             TEventCode aEventCode );
 
         void UpdateConferenceSecurityStatusL( TInt aCallId );
-		
+        
         
      private:
               

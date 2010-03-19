@@ -29,7 +29,6 @@
 #include    "mpecallhandling.h"
 #include    "cpecceobserver.h"
 #include    "cpesystemcallstate.h"
-#include    "tpematcher.h"
 
 #include    <gsmerror.h>
 #include    <mpedatastore.h>
@@ -38,10 +37,8 @@
 #include    <PSVariables.h>
 #include    <ctsydomainpskeys.h>
 #include    <mccecall.h>
-#include    <PsetSAObserver.h>
+#include    <psetsaobserver.h>
 #include    <cccecallparameters.h>
-#include    <centralrepository.h>
-#include    <telconfigcrkeys.h>
 
 // EXTERNAL DATA STRUCTURES
 // None
@@ -50,7 +47,7 @@
 // None
 
 // CONSTANTS
-const TInt KPEMatchDefault = 7;
+// None
 
 // MACROS
 // None
@@ -95,7 +92,6 @@ EXPORT_C CPECallHandling::~CPECallHandling()
     {  
     TEFLOGSTRING( KTAOBJECT, "CALL CPECallHandling::~CPECallHandling() start");
     
-    delete iRepository;
     delete iSystemCallState;
     delete iDtmfHandling;
     
@@ -167,8 +163,6 @@ void CPECallHandling::ConstructL()
     iCallOpenParams = CCCECallParameters::NewL();
     
     iSystemCallState = CPESystemCallState::NewL( *iCallArrayOwner, *iModel.DataStore() );
-    
-    iRepository = CRepository::NewL( KCRUidTelConfiguration );
     
     TEFLOGSTRING( KTAOBJECT, "CALL CPECallHandling::BaseConstructL() complete");
     }
@@ -448,8 +442,7 @@ void CPECallHandling::SendMessage(
             
             if( connectedCall )
                 {
-                MCCECall& call = connectedCall->Call();
-                CCPCall::TCallType callType = call.Parameters().CallType();
+                CCPCall::TCallType callType = connectedCall->Call().Parameters().CallType();
                 
                 if ( callType == CCPCall::ECallTypePS ) 
                     {
@@ -465,20 +458,14 @@ void CPECallHandling::SendMessage(
                         "CALL CPECallHandling::SendMessage -> EPEMessageRemotePartyInfoChanged->update call type to CS");
                     iCallOpenParams->SetCallType( CCPCall::ECallTypeCSVoice );
                     iModel.DataStore()->SetServiceIdCommand( 1 );
-                    iModel.DataStore()->SetCallType( EPECallTypeCSVoice, aCallId );  
-                    SetColpNumber( aCallId, call );
+                    iModel.DataStore()->SetCallType( EPECallTypeCSVoice, aCallId );    
                     }
-                
-                iModel.DataStore()->SetRemotePartyName( call.RemotePartyName(), aCallId );                
-                iModel.DataStore()->SetRemotePhoneNumber( call.RemoteParty(), aCallId );
-                iModel.DataStore()->SetCallIndex(call.CallIndex(), aCallId );
                 }
-            break;
             }
-                   
+       // Flow throught
+            
         case MEngineMonitor::EPEMessageIncoming:
             {
-            TEFLOGSTRING( KTAMESINT, "CALL CPECallHandling::SendMessage -> EPEMessageIncoming");
             CPESingleCall* callData = iCallArrayOwner->GetCallObject( aCallId );
             if( callData )
                 {
@@ -2431,41 +2418,6 @@ void  CPECallHandling::SetCallOrigin( const TInt aCallId, const MCCECall& aCall 
             }                    
         }                
     }
-
-// -----------------------------------------------------------------------------
-// CPECallHandling::SetColpNumber
-// -----------------------------------------------------------------------------
-//
-void CPECallHandling::SetColpNumber( TInt aCallId, const MCCECall& aCall ) const
-    {
-    TEFLOGSTRING( KTAINT, "CALL CPECallHandling::SetColpNumber" );
-    
-    TInt errorCode( KErrNone );
-    TInt value( KPEMatchDefault );
-    TPEMatcher matcher;    
-    
-    const TPEPhoneNumber& origRemoteNumber = iModel.DataStore()->RemotePhoneNumber( aCallId );    
-    const TPEPhoneNumber& remoteNumber = aCall.RemoteParty();
-    
-    errorCode = iRepository->Get( KTelMatchDigits, value );
-
-    if ( !errorCode == KErrNone )
-        {
-        TEFLOGSTRING( KTAOBJECT, "Reading KTelMatchDigits failed, use default value for matching");
-        }    
-    
-    //check if remote number is different from dialled number
-    if ( !matcher.numbersMatch( origRemoteNumber, remoteNumber, value ) )
-        {
-        //set COLP number        
-        iModel.DataStore()->SetRemoteColpNumber( remoteNumber, aCallId );
-        
-        TEFLOGSTRING3( KTAMESINT, 
-                "CPECallHandling::SetColpNumber, colp number: '%S', call id: %d", 
-                &remoteNumber, aCallId );
-        }        
-    }
-        
 
 
 //  End of File 

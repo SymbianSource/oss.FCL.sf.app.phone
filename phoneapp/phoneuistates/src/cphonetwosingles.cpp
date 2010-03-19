@@ -237,7 +237,7 @@ void CPhoneTwoSingles::HandleIdleL( TInt aCallId )
 
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
 
-    	    SetTouchPaneButtons( EPhoneIncallButtons );         
+            SetTouchPaneButtons( EPhoneIncallButtons );         
             // Go to single state
             // CBA updates in above if-else conditions
             iStateMachine->ChangeState( EPhoneStateSingle ); 
@@ -296,6 +296,10 @@ void CPhoneTwoSingles::HandleConnectedL( TInt aCallId )
     callHeaderParam.SetCallState( EPEStateConnected );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
+    
+    // <-- QT PHONE START --> 
+    SetTouchPaneButtons( EPhoneIncallButtons );
+    // <-- QT PHONE END -->
     }
     
 // -----------------------------------------------------------
@@ -322,6 +326,10 @@ void CPhoneTwoSingles::HandleHeldL( TInt aCallId )
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
+    
+    // <-- QT PHONE START --> 
+    SetTouchPaneButtons( EPhoneIncallButtons );
+    // <-- QT PHONE END -->
     }
     
 // -----------------------------------------------------------
@@ -355,7 +363,11 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
         conferenceText, 
         callLabelId, 
         CCoeEnv::Static() );
-    callHeaderParam.SetCLIText( conferenceText, CBubbleManager::ERight );
+// <-- QT PHONE START --> 
+    callHeaderParam.SetCLIText( conferenceText, TPhoneCmdParamCallHeaderData::ERight );
+    
+    callHeaderParam.SetCallState(EPEStateConnectedConference);
+// <-- QT PHONE END --> 
     BeginUiUpdateLC();
     
     callHeaderParam.SetCiphering(
@@ -422,7 +434,10 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
     EndUiUpdate();
 
     // Go to incoming state
-    UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
+// <-- QT PHONE START -->    
+    iCbaManager->SetCbaL( EPhoneCallHandlingIncomingSoftRejectCBA );
+// <-- QT PHONE END -->    
+    
     iStateMachine->ChangeState( EPhoneStateTwoSinglesAndWaiting );        
     }
 
@@ -480,7 +495,7 @@ void CPhoneTwoSingles::DisplayIncomingCallL(
 EXPORT_C void CPhoneTwoSingles::UpdateInCallCbaL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneTwoSingles::UpdateInCallCbaL() ");
-	UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
+    UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
     }
 
 // End of File

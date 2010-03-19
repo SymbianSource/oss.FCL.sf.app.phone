@@ -22,7 +22,7 @@
 #include    "cpeaudioinbandtoneplayer.h"
 #include    "cpeaudiofactory.h"
 #include    "cpeaudiotoneutility.h"
-#include    <AudioPreference.h> 
+#include    <AudioPreference.h>
 #include    <barsc.h> 
 #include    <barsread.h>
 #include    <data_caging_path_literals.hrh> 
@@ -352,7 +352,7 @@ void CPEAudioInbandTonePlayer::PlayInbandTone(
             TEFLOGSTRING2( KTAINT, "AUD CPEAudioInbandTonePlayer::PlayInbandTone: No InbandTone defined to play with: %d", aTone );
             __ASSERT_DEBUG( EFalse, Panic( EPEPanicNotCompleted ) );
             break;
-    	}
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -413,7 +413,7 @@ void CPEAudioInbandTonePlayer::PlayCurrentTone()
                     break;
                 case ECCPToneRadioPathNotAvailable:
                     iCurrent->SetRepeats( 
-						KPhoneInbandToneRepeatOnce, 
+                        KPhoneInbandToneRepeatOnce, 
                         TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
                     iCurrent->SetPriority(
                         KAudioPriorityNetMsg,
@@ -453,7 +453,7 @@ void CPEAudioInbandTonePlayer::PlayCurrentTone()
                     break;
                 case ECCPCallWaiting:
                     iCurrent->SetRepeats( 
-                   		KPhoneInbandToneNoRepeat, 
+                        KPhoneInbandToneNoRepeat, 
                         TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
                     iCurrent->SetPriority(
                         KAudioPriorityNetMsg,
@@ -481,7 +481,7 @@ void CPEAudioInbandTonePlayer::PlayCurrentTone()
                     if ( iRingingType == EProfileRingingTypeRingingOnce )
                         {
                         iCurrent->SetRepeats( 
-                        	KPhoneInbandToneNoRepeat, 
+                            KPhoneInbandToneNoRepeat, 
                             TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
                         }
                     break;
@@ -494,8 +494,8 @@ void CPEAudioInbandTonePlayer::PlayCurrentTone()
                         KAudioPriorityPhoneCall,
                         static_cast < TMdaPriorityPreference > ( KAudioPrefIncomingCall ) );
                     iCurrent->SetRepeats( 
-						KPhoneInbandToneNoRepeat, 
-                    	TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
+                        KPhoneInbandToneNoRepeat, 
+                        TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
                     iCurrent->SetVolumeRamp( TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
                     break;
                 default:

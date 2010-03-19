@@ -28,19 +28,19 @@
 #include <featmgr.h>
 #include <mpedatastore.h>
 #include <nwdefs.h>
-#include <PsetCallBarring.h>
-#include <PsetCallDiverting.h>
-#include <PsetCallWaiting.h>
-#include <PsetCli.h>
-#include <PsetContainer.h>
-#include <PsetContainer.h>
-#include <PsuiBarringObs.h>
-#include <PsuiBarringObs.h>
-#include <PsuiCliObserver.h>
-#include <PsuiContainer.h>
-#include <PsuiDivertObs.h>
-#include <PsuiWaitingObs.h>
-#include <PsuiWaitingObs.h>
+#include <psetcallbarring.h>
+#include <psetcalldiverting.h>
+#include <psetcallwaiting.h>
+#include <psetcli.h>
+#include <psetcontainer.h>
+#include <psetcontainer.h>
+#include <psuibarringobs.h>
+#include <psuibarringobs.h>
+#include <psuicliobserver.h>
+#include <psuicontainer.h>
+#include <psuidivertobs.h>
+#include <psuiwaitingobs.h>
+#include <psuiwaitingobs.h>
 #include <talogger.h>
 
 
@@ -893,7 +893,7 @@ void CPEParserSSHandler::ProcessWaitingL(
             iModel.SendMessage( MEngineMonitor::EPEMessageIssuedSSRequest );
             break;
         case EInterrogate:
-		    TEFLOGSTRING( KTAMESINT, "PE CPEParserSSHandler::ProcessWaitingL EInterrogate" );
+            TEFLOGSTRING( KTAMESINT, "PE CPEParserSSHandler::ProcessWaitingL EInterrogate" );
             iWaiting->GetCallWaitingStatusL();
             iSupplementaryServicesCommandInfo.action = EPESSInterrogation;
             iModel.DataStore()->SetSSCommandInfo( iSupplementaryServicesCommandInfo );

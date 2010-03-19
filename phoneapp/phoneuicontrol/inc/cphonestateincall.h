@@ -231,12 +231,12 @@ class CPhoneStateInCall : public CPhoneState
         */
         void LaunchNewCallSearchDialogL();
               
-		/**
+        /**
         * Sends command to view for 'Lock keypad'
         */
         void LockKeypadL();
         
-		/**
+        /**
         * Handle successful single item fetch.
         */
         void HandleSuccessFetchedNumberL();
@@ -285,12 +285,12 @@ class CPhoneStateInCall : public CPhoneState
         
     private:
     
-    	/**
-    	* Special timer for preventing recursive calls
-    	* which would otherwise occur with multiple
-    	* wait characters in a DTMF string.
-    	*/
-    	CPhoneDtmfWaitCharTimer* iDtmfWaitCharTimer;
+        /**
+        * Special timer for preventing recursive calls
+        * which would otherwise occur with multiple
+        * wait characters in a DTMF string.
+        */
+        CPhoneDtmfWaitCharTimer* iDtmfWaitCharTimer;
   
     
     };

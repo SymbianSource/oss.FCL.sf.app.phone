@@ -84,7 +84,7 @@ EXPORT_C CPhoneQwertyHandler* CPhoneQwertyHandler::NewL()
 // Destructor
 EXPORT_C CPhoneQwertyHandler::~CPhoneQwertyHandler()
     {
-	iLangSettingMonitor->RemoveObserver( *this );
+    iLangSettingMonitor->RemoveObserver( *this );
     delete iLangSettingMonitor;
     iLangSettingMonitor = NULL;
     iQwertyModeMonitor->RemoveObserver( *this );

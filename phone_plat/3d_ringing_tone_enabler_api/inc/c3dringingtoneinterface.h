@@ -77,10 +77,10 @@ class C3DRingingToneInterface : public CBase
         * @param aValue Attribute integer value.
         * @return KErrNone, attribute set, no errors
         *         KErrArgument, attribute not set, argument error
-        *		  Some system wide Symbian error, attribute not set
+        *         Some system wide Symbian error, attribute not set
         */
         virtual TInt SetAttr( T3DRingingToneInterfaceAttr aAttributeKey, 
-        					  TInt aValue ) = 0;
+                              TInt aValue ) = 0;
 
         /**
         * Set 3D ringing tone interface attribute with specific 
@@ -89,10 +89,10 @@ class C3DRingingToneInterface : public CBase
         * @param aValue Attribute string value.
         * @return KErrNone, attribute set, no errors
         *         KErrArgument, attribute not set, argument error
-        *		  Some system wide Symbian error, attribute not set
+        *         Some system wide Symbian error, attribute not set
         */
         virtual TInt SetAttr( T3DRingingToneInterfaceAttr aAttributeKey, 
-        					  const TDesC& aValue ) = 0;
+                              const TDesC& aValue ) = 0;
 
         /**
         * Set 3D ringing tone interface attribute value any of type.
@@ -102,7 +102,7 @@ class C3DRingingToneInterface : public CBase
         * @param aValue Attribute value can be any.
         * @return KErrNone, attribute set, no errors
         *         KErrArgument, attribute not set, argument error
-        *		  Some system wide Symbian error, attribute not set
+        *         Some system wide Symbian error, attribute not set
         */
         virtual TInt SetAttr( TInt aAttributeKey, TAny* aValue ) = 0;
 

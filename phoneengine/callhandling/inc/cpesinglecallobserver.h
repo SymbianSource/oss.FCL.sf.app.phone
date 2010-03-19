@@ -52,38 +52,38 @@ class CPESingleCallObserver
         : public CPECall, 
           public MCCECallObserver
     {
-	protected: //Constructors and descructor
-	    /**
-	    * C++ default constructor.
-	    */
-	    CPESingleCallObserver( MPEMessageSender& aOwner );
+    protected: //Constructors and descructor
+        /**
+        * C++ default constructor.
+        */
+        CPESingleCallObserver( MPEMessageSender& aOwner );
 
-	    /**
-	    * Destructor.
-	    */
-	    virtual ~CPESingleCallObserver();
+        /**
+        * Destructor.
+        */
+        virtual ~CPESingleCallObserver();
 
-	public:    // from MCCECallObserver
-	
-	    /**
+    public:    // from MCCECallObserver
+    
+        /**
         * Call errors are notified using this interface. 
         *
         * @since S60 v3.2
         * @param aError Occurred error as integer,
         * return none
         */
-    	IMPORT_C void ErrorOccurred( const TCCPError aError );
-	    
-	    /**
-	    * Call state notificfation. 
-	    * TODO: The observer need to verify the correctness of given state.
-	    * CCE will do at least basic call state change checking but also the client 
-	    * needs to verify the correctness.
-	    *
-	    * @since S60 v3.2
-	    * @param aState New state of the call
-	    * return none
-	    */
+        IMPORT_C void ErrorOccurred( const TCCPError aError );
+        
+        /**
+        * Call state notificfation. 
+        * TODO: The observer need to verify the correctness of given state.
+        * CCE will do at least basic call state change checking but also the client 
+        * needs to verify the correctness.
+        *
+        * @since S60 v3.2
+        * @param aState New state of the call
+        * return none
+        */
         IMPORT_C void CallStateChanged( const CCPCall::TCallState aState );
 
         /**
@@ -95,49 +95,49 @@ class CPESingleCallObserver
         */
         IMPORT_C void CallStateChangedWithInband( const CCPCall::TCallState aState );
 
-	    /**
-	    * An event for the call has occurred. 
-	    * TODO: the observer need to verify event correcness.
-	    *
-	    * @since S60 v3.2
-	    * @param aEvent Occurred call event
-	    * return none
-	    */
+        /**
+        * An event for the call has occurred. 
+        * TODO: the observer need to verify event correcness.
+        *
+        * @since S60 v3.2
+        * @param aEvent Occurred call event
+        * return none
+        */
         IMPORT_C void CallEventOccurred( const MCCECallObserver::TCCECallEvent aEvent );
-	    
-	    /**
-	    * Notifies observer the change in call duration.
-	    *
-	    * @since S60 v3.2
-	    * @param aDuration Duration of the call in seconds
-	    * return none
-	    */
+        
+        /**
+        * Notifies observer the change in call duration.
+        *
+        * @since S60 v3.2
+        * @param aDuration Duration of the call in seconds
+        * return none
+        */
         IMPORT_C void CallDurationChanged( const TTimeIntervalSeconds aDuration );
-	    
-	    /**
-	    * Notifies observer about the changes in call control caps.
-	    *
-	    * @since S60 v3.2
-	    * @param aCaps Contains updated call control capability flags
-	    * return none
-	    */
+        
+        /**
+        * Notifies observer about the changes in call control caps.
+        *
+        * @since S60 v3.2
+        * @param aCaps Contains updated call control capability flags
+        * return none
+        */
         IMPORT_C void CallCapsChanged( const MCCECallObserver::TCCECallControlCaps aCaps );
-	    
-	    /**
-	    * Notifies observer about transfer made by remote end
-	    *
-	    * @since S60 v3.2
-	    * @param aAttended ETrue: if transfer type is attended, EFalse: type is unattended
-	    * @param aDestination Address where the call is to be transferred. Given as received in CCE 
-	    * observer needs to verify the address, e.g. it can be KNullDesC.
-	    * TODO anonymous transfer target - quess cannot be occurring? 
-	    * A-B -> B-C, C has requested anonymity in network???
-	    */
+        
+        /**
+        * Notifies observer about transfer made by remote end
+        *
+        * @since S60 v3.2
+        * @param aAttended ETrue: if transfer type is attended, EFalse: type is unattended
+        * @param aDestination Address where the call is to be transferred. Given as received in CCE 
+        * observer needs to verify the address, e.g. it can be KNullDesC.
+        * TODO anonymous transfer target - quess cannot be occurring? 
+        * A-B -> B-C, C has requested anonymity in network???
+        */
         IMPORT_C void HandleTransfer( const TBool aAttended, 
-	                                  const TDesC& aDestination );
+                                      const TDesC& aDestination );
        
     public:    //New functions 
-	                 
+                     
         /**
         * Returns call duration time
         * @param aDuration the duration value of the call

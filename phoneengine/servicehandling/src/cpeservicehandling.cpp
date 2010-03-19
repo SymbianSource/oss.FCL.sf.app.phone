@@ -75,73 +75,82 @@ EXPORT_C CPEServiceHandling* CPEServiceHandling::NewLC( MPEPhoneModelInternal& a
 EXPORT_C CPEServiceHandling::~CPEServiceHandling()
     {
     TEFLOGSTRING( KTAOBJECT, "PE CPEServiceHandling::~CPEServiceHandling" );
-    delete iCchClient;
+    // <-- QT PHONE START -->
+    // delete iCchClient;
+    // <-- QT PHONE END -->
     }
 
+// <-- QT PHONE START -->
 // ---------------------------------------------------------------------------
 // CPEServiceHandling::EnableService
 // ---------------------------------------------------------------------------
 //
-void CPEServiceHandling::EnableServiceL( TInt aServiceId )
-	{
+void CPEServiceHandling::EnableServiceL( TInt /*aServiceId*/ )
+    {
     TEFLOGSTRING( KTAREQIN, "PE CPEServiceHandling::EnableServiceL" );
-	
-    if ( !iCchClient )
+        
+    /*if ( !iCchClient )
         {
         iCchClient = CCch::NewL();
         }
 
-	CCchService* service = iCchClient->GetService( aServiceId );
-	
-	TInt error( KErrNotFound );
-	if( service )
-		{
-		iCurrentServiceId = aServiceId;
-		
-		TCchServiceStatus serviceStatus;
- 		error = service->GetStatus( ECCHVoIPSub, serviceStatus );
-		TCCHSubserviceState state = serviceStatus.State();
-	
-		if( error == KErrNone )
-		    {
-		    if ( serviceStatus.Error() == KErrNone )
-		        {
-		        error = EnableServiceIfNeeded( state, *service );
-		        }
-		    else
-		        {
-		        TEFLOGSTRING2( KTAERROR,
-		                "PE CPEServiceHandling::EnableServiceL, error: %d"
-		                , serviceStatus.Error() );
-		        SendErrorMessage( serviceStatus.Error());
-		        }
-    		}
-		}
-	
-	if ( error != KErrNone )
-	    {
-	    if ( error == KErrNotFound )
-	         {
-	         iModel.SendMessage( MEngineMonitor::EPEMessageNoService );
-	         }
-	     else
-	         {
-	         TEFLOGSTRING2( KTAERROR,
-	                  "PE CPEServiceHandling::EnableServiceL, Error: %d"
-	                  , error );
-	         SendErrorMessage( error );
-	         }
-	    }
-	
-	TEFLOGSTRING2( KTAINT, 
-            "PE CPEServiceHandling::EnableServiceL, error: %d", error );		
-	}
+    CCchService* service = iCchClient->GetService( aServiceId );
+    
+    TInt error( KErrNotFound );
+    if( service )
+        {
+        iCurrentServiceId = aServiceId;
+        
+        TCchServiceStatus serviceStatus;
+        error = service->GetStatus( ECCHVoIPSub, serviceStatus );
+        TCCHSubserviceState state = serviceStatus.State();
+    
+        if( error == KErrNone )
+            {
+            if ( serviceStatus.Error() == KErrNone )
+                {
+                error = EnableServiceIfNeeded( state, *service );
+                }
+            else
+                {
+                TEFLOGSTRING2( KTAERROR,
+                        "PE CPEServiceHandling::EnableServiceL, error: %d"
+                        , serviceStatus.Error() );
+                SendErrorMessage( serviceStatus.Error());
+                }
+            }
+        }
+    
+    if ( error != KErrNone )
+        {
+        if ( error == KErrNotFound )
+             {
+             iModel.SendMessage( MEngineMonitor::EPEMessageNoService );
+             }
+         else
+             {
+             TEFLOGSTRING2( KTAERROR,
+                      "PE CPEServiceHandling::EnableServiceL, Error: %d"
+                      , error );
+             SendErrorMessage( error );
+             }
+        }
+    
+    TEFLOGSTRING2( KTAINT, 
+            "PE CPEServiceHandling::EnableServiceL, error: %d", error );*/
 
+    User::LeaveIfError( 0 );
+    iModel.SendMessage( MEngineMonitor::EPEMessageServiceEnabled );
+    
+    // <-- QT PHONE END -->
+    }
+
+// <-- QT PHONE START -->
 // ---------------------------------------------------------------------------
 // CPEServiceHandling::EnableServiceIfNeeded
 // ---------------------------------------------------------------------------
 //
-TInt CPEServiceHandling::EnableServiceIfNeeded( 
+/*TInt CPEServiceHandling::EnableServiceIfNeeded( 
         const TCCHSubserviceState& aState, 
         CCchService& aService )
     {
@@ -188,63 +197,65 @@ TInt CPEServiceHandling::EnableServiceIfNeeded(
 //
 void CPEServiceHandling::ServiceStatusChanged(
     TInt aServiceId,
-	const TCCHSubserviceType aType,
-	const TCchServiceStatus& aServiceStatus )
-	{
-	TEFLOGSTRING( KTAINT, "PE CPEServiceHandling::ServiceStatusChanged <" );
-	
-	if( aServiceId == iCurrentServiceId && aType == ECCHVoIPSub )
-	    {
-    	TEFLOGSTRING3( KTAINT,
-    	        "PE CPEServiceHandling::ServiceStatusChanged, state: %d, error: %d"
-    	        , aServiceStatus.State()
-    	        , aServiceStatus.Error() );
+    const TCCHSubserviceType aType,
+    const TCchServiceStatus& aServiceStatus )
+    {
+    TEFLOGSTRING( KTAINT, "PE CPEServiceHandling::ServiceStatusChanged <" );
+    
+    if( aServiceId == iCurrentServiceId && aType == ECCHVoIPSub )
+        {
+        TEFLOGSTRING3( KTAINT,
+                "PE CPEServiceHandling::ServiceStatusChanged, state: %d, error: %d"
+                , aServiceStatus.State()
+                , aServiceStatus.Error() );
 
-       	CCchService* service = iCchClient->GetService( aServiceId );
-       	if( service )
-       	    {
-    	    if( aServiceStatus.Error() != KErrNone )
-    	        {
-    	        TEFLOGSTRING( KTAERROR, 
-    	                "PE CPEServiceHandling::ServiceStatusChanged, error" );
-    	        SendErrorMessage( aServiceStatus.Error());
-    	        CancelServiceEnabling();
-    	        }
-    	    else 
-    	        {
-    	        if( aServiceStatus.State() == ECCHEnabled )
-    	            {
+        CCchService* service = iCchClient->GetService( aServiceId );
+        if( service )
+            {
+            if( aServiceStatus.Error() != KErrNone )
+                {
+                TEFLOGSTRING( KTAERROR, 
+                        "PE CPEServiceHandling::ServiceStatusChanged, error" );
+                SendErrorMessage( aServiceStatus.Error());
+                CancelServiceEnabling();
+                }
+            else 
+                {
+                if( aServiceStatus.State() == ECCHEnabled )
+                    {
                     TEFLOGSTRING( KTAINT, 
                              "PE CPEServiceHandling::ServiceStatusChanged, enabled" );
                     iModel.SendMessage( MEngineMonitor::EPEMessageServiceEnabled );
-    	            }
+                    }
 
 
-    	        // Notify UI, that service is disabled.
-    	        else if( aServiceStatus.State() == ECCHDisabled ) 
+                // Notify UI, that service is disabled.
+                else if( aServiceStatus.State() == ECCHDisabled ) 
                      {
                      TEFLOGSTRING( KTAERROR, 
                               "PE CPEServiceHandling::ServiceStatusChanged, disabled" );
                      iModel.SendMessage( MEngineMonitor::EPEMessageServiceDisabled );
                      }
-    	        }
-    	    
-    	    // don't remove observer, if state are connecting or disconnecting
-    	    if ( aServiceStatus.State() != ECCHConnecting && 
-    	         aServiceStatus.State() != ECCHDisconnecting )
-    	        {
-    	        service->RemoveObserver( *this );
-    	        }
-       	    }//if( service )
-       	else
-       	    {
+                }
+            
+            // don't remove observer, if state are connecting or disconnecting
+            if ( aServiceStatus.State() != ECCHConnecting && 
+                 aServiceStatus.State() != ECCHDisconnecting )
+                {
+                service->RemoveObserver( *this );
+                }
+            }//if( service )
+        else
+            {
             TEFLOGSTRING( KTAERROR, 
                     "PE CPEServiceHandling::ServiceStatusChanged, no service" );
-       	    }
-	    }
-	TEFLOGSTRING( KTAINT, "PE CPEServiceHandling::ServiceStatusChanged >" );
-	}
-	
+            }
+        }
+    TEFLOGSTRING( KTAINT, "PE CPEServiceHandling::ServiceStatusChanged >" );
+    }*/
+
+
+    
 // ---------------------------------------------------------------------------
 // CPEServiceHandling::CancelServiceEnabling
 // ---------------------------------------------------------------------------
@@ -253,7 +264,7 @@ void CPEServiceHandling::CancelServiceEnabling() const
     {
     TEFLOGSTRING( KTAREQIN, "PE CPEServiceHandling::CancelServiceEnabling" );
     
-    if ( iCchClient )
+    /*if ( iCchClient )
         {
         CCchService* service = iCchClient->GetService( iCurrentServiceId );
         
@@ -271,14 +282,14 @@ void CPEServiceHandling::CancelServiceEnabling() const
                 service->Disable( ECCHUnknown );
                 }
             }
-        }
+        }*/
     }
-		
+        
 // -----------------------------------------------------------------------------
 // CPEServiceHandling::SendErrorMessage
 // -----------------------------------------------------------------------------
 //
-void CPEServiceHandling::SendErrorMessage(
+/*void CPEServiceHandling::SendErrorMessage(
         TInt aErrorCode )
     {
     TEFLOGSTRING2( KTAINT, 
@@ -287,7 +298,7 @@ void CPEServiceHandling::SendErrorMessage(
 
     iModel.DataStore()->SetErrorCode( aErrorCode );
     iModel.SendMessage( MEngineMonitor::EPEMessageServiceHandlingError );
-    }
+    }*/
 
 // -----------------------------------------------------------------------------
 // CPEServiceHandling::DisableService
@@ -297,14 +308,16 @@ void CPEServiceHandling::DisableService() const
     {
     TEFLOGSTRING( KTAREQIN, "PE CPEServiceHandling::DisableService" );
 
-    CCchService* service = iCchClient->GetService( iCurrentServiceId );
+    /*CCchService* service = iCchClient->GetService( iCurrentServiceId );
     
     if ( service )
         {
         TEFLOGSTRING( KTAREQOUT,
           "PE CPEServiceHandling::DisableService, CCchService->Disable" );
         service->Disable( ECCHUnknown );
-        }
-    }
+        }*/
+    } 
+
+// <-- QT PHONE END -->
 
 //  End of File

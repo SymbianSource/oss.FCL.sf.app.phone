@@ -76,7 +76,7 @@ class CPhoneStateStartup : public CPhoneState
          */
         IMPORT_C virtual void HandleIdleForegroundEventL();
 
-		protected:
+        protected:
 
         /**
         * ConstructL()

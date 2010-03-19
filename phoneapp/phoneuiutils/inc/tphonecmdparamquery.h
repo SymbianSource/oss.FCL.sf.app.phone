@@ -161,12 +161,13 @@ class TPhoneCmdParamQuery : public TPhoneUICommandParam
         * @param aParamId command id
         */
         IMPORT_C void SetCommandParamId( TPhoneCommandParam::TPhoneParamId aParamId );
-
+        // <-- QT PHONE START -->
         /**
-        * Sets the timeout.
+        * Sets the timeout in milliseconds.
         * Query will destroyed after this time 
         * @param aTimeOut is integer value
         */
+        // <-- QT PHONE END -->
         IMPORT_C void SetTimeOut( TInt aTimeOut );
 
 

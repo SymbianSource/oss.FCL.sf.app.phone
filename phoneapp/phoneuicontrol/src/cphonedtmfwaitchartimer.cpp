@@ -31,23 +31,23 @@
 // -----------------------------------------------------------------------------
 //
 CPhoneDtmfWaitCharTimer::CPhoneDtmfWaitCharTimer( MPhoneStateMachine* aStateMachine ) :
-	iTimer( NULL ),
-	iStateMachine( aStateMachine )
-	{
-		
-	}
+    iTimer( NULL ),
+    iStateMachine( aStateMachine )
+    {
+        
+    }
 
 // Destructor
 CPhoneDtmfWaitCharTimer::~CPhoneDtmfWaitCharTimer()
     {
     if( iTimer )
-	    {
-		if( iTimer->IsActive() )
-			{
-			iTimer->CancelTimer();				
-			}
-	    }
-	    delete iTimer;
+        {
+        if( iTimer->IsActive() )
+            {
+            iTimer->CancelTimer();              
+            }
+        }
+        delete iTimer;
     }
 
 // -----------------------------------------------------------
@@ -86,7 +86,7 @@ void CPhoneDtmfWaitCharTimer::ConstructL()
 void CPhoneDtmfWaitCharTimer::HandleTimeOutL()
     {
     __LOGMETHODSTARTEND( EPhoneControl, 
-    	"CPhoneDtmfWaitCharTimer::HandleTimeOutL( ) ");
+        "CPhoneDtmfWaitCharTimer::HandleTimeOutL( ) ");
     
     iStateMachine->SendPhoneEngineMessage( 
         MPEPhoneModel::EPEMessageContinueDTMFSending );
@@ -97,20 +97,20 @@ void CPhoneDtmfWaitCharTimer::HandleTimeOutL()
 // ---------------------------------------------------------
 //
 void CPhoneDtmfWaitCharTimer::ButtonPressedL()
-	{
-	if( !iTimer )
-		{
-		iTimer = CPhoneTimer::NewL();			
-		}
-	else
-		{
-		if( iTimer->IsActive() )
-			{
-			iTimer->CancelTimer();				
-			}
-		}	
-	
-	iTimer->After( KDtmfWaitNoteTimeoutValue, this );	
-	}
+    {
+    if( !iTimer )
+        {
+        iTimer = CPhoneTimer::NewL();           
+        }
+    else
+        {
+        if( iTimer->IsActive() )
+            {
+            iTimer->CancelTimer();              
+            }
+        }   
+    
+    iTimer->After( KDtmfWaitNoteTimeoutValue, this );   
+    }
 
 // End of File

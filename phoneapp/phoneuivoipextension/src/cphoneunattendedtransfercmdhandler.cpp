@@ -140,11 +140,7 @@ void CPhoneUnattendedTransferCmdHandler::HandleCommandL( TInt aCommand )
             iStateMachine.SendPhoneEngineMessage( 
                 MPEPhoneModel::EPEMessageDoUnattendedTransfer );
             
-            if ( KErrNone == iStateMachine.PhoneEngineInfo()->
-                    ErrorInfo().iErrorCode )
-                {
-                ShowWaitingAcceptanceNoteL();
-                }
+            ShowWaitingAcceptanceNoteL();
             }
             break;
         
@@ -263,10 +259,7 @@ void CPhoneUnattendedTransferCmdHandler::DoUnattendedTransferL()
     iStateMachine.SendPhoneEngineMessage( 
         MPEPhoneModel::EPEMessageDoUnattendedTransfer );
     
-    if ( KErrNone == iStateMachine.PhoneEngineInfo()->ErrorInfo().iErrorCode )
-        {
-        ShowWaitingAcceptanceNoteL();
-        }
+    ShowWaitingAcceptanceNoteL();
     CleanupStack::PopAndDestroy( content );
     }
 

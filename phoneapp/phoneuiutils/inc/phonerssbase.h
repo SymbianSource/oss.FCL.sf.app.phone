@@ -383,12 +383,16 @@ enum TPhoneRssBase
     EPhoneWaitingCallButtons,
     EPhoneCallSetupAndSingleButtons,
     
-    // Video call error notes
+// Video call error notes
     EPhoneNotePhoneOutOf3GCoverage, // cause 3,31,69
     EPhoneNoteVideoCallOnlyPossibleUnder3GCoverage, // cause 50
     EPhoneNoteUnableToMakeVideoCallNotSupportedByOtherPhone, // cause 57,88 
     EPhoneNoteCalledNumberHasBarredIncomingCalls, // cause 21
-
+    
+// <-- QT PHONE START -->
+    EPhoneIncallHeldButtons,
+    EPhoneAttemptingEmergencyText,
+// <-- QT PHONE END -->
     // Last
     EPhoneRssBaseLast
     };

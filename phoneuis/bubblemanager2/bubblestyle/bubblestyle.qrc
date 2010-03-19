@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/qgn_indi_call_diverted.svg</file>
+        <file alias="bubbleparticipantlistitem.widgetml">layout/bubbleparticipantlistitem.widgetml</file>
+        <file alias="bubbleparticipantlistitem.css">layout/bubbleparticipantlistitem.css</file>
+        <file alias="bubbleheadingwidget.widgetml">layout/bubbleheadingwidget.widgetml</file>
+        <file alias="bubbleheadingwidget.css">layout/bubbleheadingwidget.css</file>
+        <file alias="pri_large_red_handset.svg">resources/pri_large_red_handset.svg</file>
+        <file alias="pri_large_green_handset.svg">resources/pri_large_green_handset.svg</file>
+        <file alias="pri_large_yellow_handset.svg">resources/pri_large_yellow_handset.svg</file>
+        <file alias="qtg_large_voip_dialled_call.svg">resources/qtg_large_voip_dialled_call.svg</file>
+        <file alias="qtg_large_voip_missed_call.svg">resources/qtg_large_voip_missed_call.svg</file>
+        <file alias="qtg_large_voip_received_call.svg">resources/qtg_large_voip_received_call.svg</file>
+        <file alias="qtg_large_video_dialled_call.svg">resources/qtg_large_video_dialled_call.svg</file>
+        <file alias="qtg_large_video_missed_call.svg">resources/qtg_large_video_missed_call.svg</file>
+        <file alias="qtg_large_video_received_call.svg">resources/qtg_large_video_received_call.svg</file> 
+    </qresource>
+</RCC>

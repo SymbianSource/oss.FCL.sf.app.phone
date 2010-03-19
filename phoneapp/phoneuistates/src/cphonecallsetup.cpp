@@ -18,7 +18,9 @@
 
 // INCLUDES
 #include <MediatorDomainUIDs.h>
-#include <videotelcontrolmediatorapi.h>
+// <-- QT PHONE START --> 
+//#include <videotelcontrolmediatorapi.h>
+// <-- QT PHONE END --> 
 #include "cphonecallsetup.h"
 #include "mphonestatemachine.h"
 #include "tphonecmdparamboolean.h"

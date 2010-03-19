@@ -50,10 +50,10 @@
 #include <coreapplicationuisdomainpskeys.h>
 #include <cpeclientinformation.h>
 #include <cpegsmaudiodata.h>
-#include <CPhoneGsmHandlerContainer.h>
-#include <CPhoneGsmOptionContainerBase.h>
-#include <CPhoneGsmParserBase.h>
-#include <CPhoneGsmParserResult.h>
+#include <cphonegsmhandlercontainer.h>
+#include <cphonegsmoptioncontainerbase.h>
+#include <cphonegsmparserbase.h>
+#include <cphonegsmparserresult.h>
 #include <featmgr.h>
 #include <mccecall.h>
 #include <mpeaudiodata.h>
@@ -63,8 +63,8 @@
 #include <mpeloghandling.h>
 #include <pathinfo.h>
 #include <pepanic.pan>
-#include <PhCltTypes.h>
-#include <PhoneGsmParser.h>
+#include <phclttypes.h>
+#include <phonegsmparser.h>
 #include <ProfileEngineDomainConstants.h>
 #include <talogger.h>
 #include <w32std.h>
@@ -1376,52 +1376,52 @@ void CPEMessageHandler::CheckAndHideIdentity(
         iDataStore.SetRemotePhoneNumberType( EPEEmergencyNumber, aCallId );
         }
     else if( iDataStore.CallDirection( aCallId ) != RMobileCall::EMobileOriginated )
-		{
-		switch( tempIdentity )
-			{
-			case RMobileCall::ERemoteIdentitySuppressed:
-				{
-				// It is neccessary to perform an additional check for available
-				// remote party phone number to comply with Italian operator
-				// requirement: "If CLIR is active but network still provides
-				// the device with a phone number, it should not be blocked
-				// but passed to a client when requested."
-				if( iDataStore.RemotePhoneNumber( aCallId ).Length() == 0 )
-					{
-					HideIdentification( EPEPrivateNumber, aCallId );
-					}
-				else
-				    {
-				    // Align remote identity with remote phone number availability.
-				    iDataStore.SetRemoteIdentity( RMobileCall::ERemoteIdentityAvailable, aCallId );
-				    }
-				break;
-				}
-			case RMobileCall::ERemoteIdentityAvailableNoCliRejectedByUser:
-				{
-				HideIdentification( EPEPrivateNumber, aCallId );
-				break;
-				}
-			case RMobileCall::ERemoteIdentityUnknown:
-			case RMobileCall::ERemoteIdentityAvailableNoCliInteractionWithOtherService:
-			case RMobileCall::ERemoteIdentityUnavailableNoCliInteractionWithOtherService:
-			case RMobileCall::ERemoteIdentityAvailableNoCliCoinOrPayphone:
-			case RMobileCall::ERemoteIdentityUnavailableNoCliCoinOrPayphone:
-			case RMobileCall::ERemoteIdentityAvailableNoCliUnavailable:
-				{
-				HideIdentification( EPEUnknownNumber, aCallId );
-				break;
-				}
-			case RMobileCall::ERemoteIdentityAvailable:
-			default:
-				{
-				TEFLOGSTRING( KTAINT,
-					"PE CPEMessageHandler::CheckAndHideIdentity, CLI available" );
-				break;
-				}
-			}
-		}
-	}
+        {
+        switch( tempIdentity )
+            {
+            case RMobileCall::ERemoteIdentitySuppressed:
+                {
+                // It is neccessary to perform an additional check for available
+                // remote party phone number to comply with Italian operator
+                // requirement: "If CLIR is active but network still provides
+                // the device with a phone number, it should not be blocked
+                // but passed to a client when requested."
+                if( iDataStore.RemotePhoneNumber( aCallId ).Length() == 0 )
+                    {
+                    HideIdentification( EPEPrivateNumber, aCallId );
+                    }
+                else
+                    {
+                    // Align remote identity with remote phone number availability.
+                    iDataStore.SetRemoteIdentity( RMobileCall::ERemoteIdentityAvailable, aCallId );
+                    }
+                break;
+                }
+            case RMobileCall::ERemoteIdentityAvailableNoCliRejectedByUser:
+                {
+                HideIdentification( EPEPrivateNumber, aCallId );
+                break;
+                }
+            case RMobileCall::ERemoteIdentityUnknown:
+            case RMobileCall::ERemoteIdentityAvailableNoCliInteractionWithOtherService:
+            case RMobileCall::ERemoteIdentityUnavailableNoCliInteractionWithOtherService:
+            case RMobileCall::ERemoteIdentityAvailableNoCliCoinOrPayphone:
+            case RMobileCall::ERemoteIdentityUnavailableNoCliCoinOrPayphone:
+            case RMobileCall::ERemoteIdentityAvailableNoCliUnavailable:
+                {
+                HideIdentification( EPEUnknownNumber, aCallId );
+                break;
+                }
+            case RMobileCall::ERemoteIdentityAvailable:
+            default:
+                {
+                TEFLOGSTRING( KTAINT,
+                    "PE CPEMessageHandler::CheckAndHideIdentity, CLI available" );
+                break;
+                }
+            }
+        }
+    }
     
 // -----------------------------------------------------------------------------
 // CPEMessageHandler::FindCallInfo
@@ -1515,7 +1515,16 @@ void CPEMessageHandler::SetPhoneNumberForCallLogging(
             RemovePreAndPostFix( number );
   
             iDataStore.SetRemotePhoneNumber( number, aCallId );
-            }            
+            }
+        
+        // The Colp number is stored to remoteparty in connected state.
+        TPEPhoneNumber colpNumber = iCallInfo->iRemoteParty.iRemoteNumber.iTelNumber;
+        RemovePreAndPostFix( colpNumber );
+        iDataStore.SetRemoteColpNumber( colpNumber, aCallId ); 
+        TEFLOGSTRING3( 
+            KTAMESINT, 
+            "PE CPEMessageHandler::SetPhoneNumberForCallLogging, colp number: '%S', call id: %d", 
+            &colpNumber, aCallId );
         }
     else if ( iDataStore.CallDirection( aCallId ) == RMobileCall::EMobileTerminated )
         {
@@ -1723,7 +1732,7 @@ TInt CPEMessageHandler::HandleConnectedState(
                 {
 
                 dtmfString = iDataStore.DtmfPostFix( aCallId );
-				
+                
                 if ( dtmfString.Length() > 0 )
                     {
                     iDataStore.SetDtmfStringCommand( dtmfString );
@@ -1741,6 +1750,9 @@ TInt CPEMessageHandler::HandleConnectedState(
     // logging works OK (see CPEMessageHandler::SetPhoneNumberForCallLogging).  
     iDataStore.SetPhoneNumber( KNullDesC() );
     
+    // COLP number is updated in connected state 
+    UpdateRemotePartyInfo();
+   
     return ECCPErrorNone;
     }
 
@@ -2890,14 +2902,9 @@ TInt CPEMessageHandler::HandleServiceEnabled()
 // CPEMessageHandler::HandleRemotePartyInfoChanged
 // -----------------------------------------------------------------------------
 //
-void CPEMessageHandler::HandleRemotePartyInfoChanged( const TInt aCallId )
-    {        
-    UpdateRemotePartyInfo(); 
-    
-    if ( iDataStore.RemoteColpNumber( aCallId ).Length() )
-        {
-        iModel.SendMessage( MEngineMonitor::EPEMessageColpNumberAvailable );
-        }
+void CPEMessageHandler::HandleRemotePartyInfoChanged()
+    {
+    UpdateRemotePartyInfo();      
     }
 
 
@@ -2931,8 +2938,6 @@ TInt CPEMessageHandler::HandleUnattendedTransfer()
     TInt errorCode = iCallHandling.DoUnattendedTransfer( 
             iDataStore.TransferTargetCommand() );
      
-    iDataStore.SetErrorCode( errorCode );
-    
     return errorCode;
     }
 
@@ -2990,5 +2995,23 @@ void CPEMessageHandler::UpdateRemotePartyInfo( )
         mediatorUpdater->UpdateRemotePartyInfo();
         }
     }
-	
+
+    // <-- QT PHONE START -->
+// -----------------------------------------------------------------------------
+// CPEMessageHandler::HandleDialCall
+// Handles dial message from dial service
+// 
+// -----------------------------------------------------------------------------
+// 
+TInt CPEMessageHandler::HandleDialServiceCall(
+    const TBool /*aClientCall*/ )
+    {
+    TEFLOGSTRING( KTAINT, "PE CPEMessageHandler::HandleDialCall" );
+    TInt errorCode( ECCPErrorNone );
+    //TODO 
+    iModel.HandleInternalMessage( MPEPhoneModel::EPEMessageDialServiceCall );
+    return errorCode;
+    }
+// <-- QT PHONE END -->
+
 //  End of File  

@@ -47,19 +47,22 @@ void CPhoneQwertyModeMonitor::ConstructL()
     // Current Call state.
     iQwertyMode = GetQwertyMode();
 
-    CPhonePubSubProxy::Instance()->NotifyChangeL(
+// <-- QT PHONE START-->
+/*    CPhonePubSubProxy::Instance()->NotifyChangeL(
         KCRUidAvkon, 
         KAknQwertyInputModeActive,
-        this );
+        this );*/
+     
 
      iKeyboard = GetKeyboard();
     
 #ifdef RD_INTELLIGENT_TEXT_INPUT
-    CPhonePubSubProxy::Instance()->NotifyChangeL(
+/*    CPhonePubSubProxy::Instance()->NotifyChangeL(
         KCRUidAvkon, 
         KAknKeyBoardLayout,
-        this );
+        this );*/
 #endif
+// <-- QT PHONE END-->
     }
 
 // -----------------------------------------------------------------------------
@@ -171,9 +174,10 @@ TInt CPhoneQwertyModeMonitor::Keyboard() const
 TInt CPhoneQwertyModeMonitor::GetQwertyMode() const
     {
     // Get call state.
-    TInt qwertyMode( CPhonePubSubProxy::Instance()->Value(
+    /*TInt qwertyMode( CPhonePubSubProxy::Instance()->Value(
         KCRUidAvkon,
-        KAknQwertyInputModeActive ) );
+        KAknQwertyInputModeActive ) );*/
+    TInt qwertyMode(0);
     
     return qwertyMode;
     }
@@ -185,9 +189,12 @@ TInt CPhoneQwertyModeMonitor::GetQwertyMode() const
 TInt CPhoneQwertyModeMonitor::GetKeyboard() const
     {
     // Get call state.
-    TInt keyboard( CPhonePubSubProxy::Instance()->Value(
+// <-- QT PHONE START-->    
+/*    TInt keyboard( CPhonePubSubProxy::Instance()->Value(
         KCRUidAvkon,
-        KAknKeyBoardLayout ) );
+        KAknKeyBoardLayout ) );*/
+    TInt keyboard(0);
+// <-- QT PHONE END-->    
     
     return keyboard;
     }

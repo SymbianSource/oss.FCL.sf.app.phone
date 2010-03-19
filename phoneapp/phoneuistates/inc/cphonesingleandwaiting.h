@@ -113,16 +113,16 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
             
      private:
      
-     	/**
-     	* Unholds the call.
-     	* @param aCallId - call id to unhold
-     	*/
+        /**
+        * Unholds the call.
+        * @param aCallId - call id to unhold
+        */
         void HandleUnholdL( TInt aCallId );
      
-     	/**
-     	* Performs a state transition to Two Singles.
-     	* @param aCallId - call id that got connected
-     	*/
+        /**
+        * Performs a state transition to Two Singles.
+        * @param aCallId - call id that got connected
+        */
         void MakeStateTransitionToTwoSinglesL( TInt aCallId );
         
         /**
@@ -165,6 +165,13 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
         * @param aCallId: the call id of the call
         */
         void HandleDisconnectingL( TInt aCallId );
+
+// <-- QT PHONE START -->
+        /**
+        *  Handles received EPhoneCmdUpdateUiControls command.
+        */
+        void UpdateUiControlsL();
+// <-- QT PHONE END -->        
         
     private: //Data
             

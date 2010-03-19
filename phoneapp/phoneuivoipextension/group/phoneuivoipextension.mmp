@@ -23,7 +23,10 @@
 #include <platform_paths.hrh>
 
 // Capability assignment.
-CAPABILITY CAP_APPLICATION MultiMediaDD PowerMgmt NetworkControl DRM DiskAdmin
+// <-- QT PHONE START --> 
+CAPABILITY CAP_GENERAL_DLL
+//CAPABILITY CAP_APPLICATION MultiMediaDD NetworkControl PowerMgmt DRM DiskAdmin
+// <-- QT PHONE END --> 
 
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
@@ -48,39 +51,33 @@ SOURCE          cphonevoiperrormessageshandler.cpp
 SOURCE          cphonemenuextensionwrapper.cpp
 SOURCE          cphoneextensionhandler.cpp
 SOURCE          tphonecmdparamselector.cpp
-SOURCE          tphonetouchpanewrapper.cpp
+// <-- QT PHONE START -->
+//SOURCE          tphonetouchpanewrapper.cpp
+// <-- QT PHONE END -->
 SOURCE          cphonetransferdialercontroller.cpp
 SOURCE          cphoneviewcustomizationvoip.cpp
 SOURCE          cphonestateutilsvoip.cpp
 SOURCE          cphoneunattendedtransfercmdhandler.cpp
-SOURCE          cphonevcchandler.cpp
+// <-- QT PHONE START -->
+//SOURCE          cphonevcchandler.cpp
+// <-- QT PHONE END -->
 SOURCE          cphonenewcallcmdhandler.cpp
 SOURCE          cphonecallforwardqueryhandler.cpp
 
-USERINCLUDE     ../inc
-USERINCLUDE     ../../phoneuicontrol/inc
-USERINCLUDE     ../../phoneuistates/inc
-USERINCLUDE     ../../phoneuiview/inc
-USERINCLUDE     ../../phoneui/inc
-USERINCLUDE     ../../phoneuiutils/inc
-USERINCLUDE     ../../phoneui/srcdata
-USERINCLUDE     ../../phoneui/loc
-
-APP_LAYER_SYSTEMINCLUDE         // Application layer domain APIs
-SYSTEMINCLUDE   ../../../inc    // Telephony internal headers
-
-
+// <-- QT PHONE START -->
+/* Languages */
+/*LANG SC
 
 #ifndef __SECURE_DATA__ 
-
-/* Languages */
- LANG SC
 SOURCEPATH      ../srcdata
+
 // load protocol specific resources
 RESOURCE        phoneuivoip.rss
 #else
 // Resources
+
 SOURCEPATH      ../srcdata
+
 START RESOURCE  phoneuivoip.rss
 TARGETPATH APP_RESOURCE_DIR 
 HEADER
@@ -88,11 +85,32 @@ LANGUAGE_IDS
 END  // RESOURCE
 
 #endif // __SECURE_DATA__
+*/
+// <-- QT PHONE END -->
 
+USERINCLUDE     ../inc
+USERINCLUDE     ../../phoneuicontrol/inc
+USERINCLUDE     ../../phoneuistates/inc
+// <-- QT PHONE START -->
+USERINCLUDE     ../../phoneuiqtviewadapter/inc
+//USERINCLUDE     ../../phoneuiview/inc
+// <-- QT PHONE END -->
+USERINCLUDE     ../../phoneui/inc
+USERINCLUDE     ../../phoneuiutils/inc
+USERINCLUDE     ../../phoneui2/srcdata
+USERINCLUDE     ../../phoneui2/loc
+
+APP_LAYER_SYSTEMINCLUDE         // Application layer domain APIs
+SYSTEMINCLUDE   ../../../inc    // Telephony internal headers
 
 LIBRARY         bafl.lib
-LIBRARY         cch.lib 
-LIBRARY         commonengine.lib //StringLoader 
+// <-- QT PHONE START -->
+//LIBRARY         cch.lib 
+// <-- QT PHONE END -->
+// <-- QT PHONE START --> 
+LIBRARY         phonestringloader.lib
+//LIBRARY         commonengine.lib //StringLoader 
+// <-- QT PHONE END -->
 LIBRARY         cone.lib
 LIBRARY         ecom.lib
 LIBRARY         eikcoctl.lib // CEikMenuPane
@@ -106,6 +124,8 @@ LIBRARY         phoneuistates.lib
 LIBRARY         phoneuiutils.lib
 LIBRARY         serviceprovidersettings.lib
 LIBRARY         serviceselector.lib
-LIBRARY         vccuipropertyhandler.lib //For VCC Usage
+// <-- QT PHONE START -->
+//LIBRARY         vccuipropertyhandler.lib //For VCC Usage
+// <-- QT PHONE END -->
 LIBRARY         ws32.lib
 

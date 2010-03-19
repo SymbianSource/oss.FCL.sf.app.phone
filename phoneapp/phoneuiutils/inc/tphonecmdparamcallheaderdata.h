@@ -23,9 +23,14 @@
 //  INCLUDES
 
 #include <w32std.h>
+// <-- QT PHONE START -->
+#include <cntdef.h>
+// <-- QT PHONE START -->
 #include "tphonecommandparam.h"
 #include "phoneconstants.h"
-#include "bmbubblemanager.h"
+// <-- QT PHONE START -->
+//#include "bmbubblemanager.h"
+// <-- QT PHONE START -->
 
 // DATA TYPES
 
@@ -44,6 +49,14 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
             EPhoneParticipantCLIText,
             EPhoneParticipantCNAPText,                
             };
+
+// <-- QT PHONE START -->         
+        enum TPhoneTextClippingDirection
+            {
+            ERight,
+            ELeft
+            };
+// <-- QT PHONE END --> 
            
     public:  
         
@@ -95,29 +108,45 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         * @param aCLI is the CLI text
         * @param aDirection Clipping direction of the CLI text.
         */
+// <-- QT PHONE START --> 
+//        IMPORT_C void SetCLIText( const TDesC& aCLIText, 
+//                                  CBubbleManager::TPhoneClippingDirection aDirection );
         IMPORT_C void SetCLIText( const TDesC& aCLIText, 
-                                  CBubbleManager::TPhoneClippingDirection aDirection );
+                                  TPhoneTextClippingDirection aDirection );
+// <-- QT PHONE END --> 
 
         /**
         * Sets the call header CNAP text
         * @param aCNAP is the CNAP text
         * @param aDirection Clipping direction of the CNAP text.
         */
+// <-- QT PHONE START -->
+//        IMPORT_C void SetCNAPText( const TDesC& aCNAPText,
+//                CBubbleManager::TPhoneClippingDirection aDirection );
         IMPORT_C void SetCNAPText( const TDesC& aCNAPText,
-                CBubbleManager::TPhoneClippingDirection aDirection );
+                                   TPhoneTextClippingDirection aDirection );
+// <-- QT PHONE END -->
 
         /**
         * Sets the call header picture
         * @param aPicture is the picture data
         */
         IMPORT_C void SetPicture( const TDesC& aPicture );
-        
+
+// <-- QT PHONE START -->         
         /**
         * Sets the call flag
         * @param call flag
         */
-        IMPORT_C void SetCallFlag( 
-            CBubbleManager::TPhoneCallTypeFlags aCallFlag );
+//        IMPORT_C void SetCallFlag(
+//          CBubbleManager::TPhoneCallTypeFlags aCallFlag );
+
+        /**
+        * Sets the call header diverted status.
+        * @param call flag
+        */
+        IMPORT_C void SetDiverted( TBool aDiverted );
+// <-- QT PHONE END --> 
             
         /**
         * Sets the call header line2 status.
@@ -129,8 +158,10 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         * Adds the call flag
         * @param call flag
         */
-        IMPORT_C void AddCallFlag( 
-            CBubbleManager::TPhoneCallTypeFlags aCallFlag );
+// <-- QT PHONE START -->
+//        IMPORT_C void AddCallFlag( 
+//            CBubbleManager::TPhoneCallTypeFlags aCallFlag );
+// <-- QT PHONE END -->
 
         /**
         * Returns the call header label text
@@ -178,13 +209,15 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
          * Returns the clipping direction of the CLI text.
          * @return  Clipping direction of the CLI text.
          */
-        IMPORT_C CBubbleManager::TPhoneClippingDirection CLITextClippingDirection() const;
+// <-- QT PHONE START -->         
+        IMPORT_C TPhoneTextClippingDirection CLITextClippingDirection() const;
 
         /**
          * Returns the clipping direction of the CNAP text.
          * @return  Clipping direction of the CNAP text.
          */
-        IMPORT_C CBubbleManager::TPhoneClippingDirection CNAPTextClippingDirection() const;
+        IMPORT_C TPhoneTextClippingDirection CNAPTextClippingDirection() const;
+// <-- QT PHONE END -->         
         
         /**
         * Returns the call header CNAP text.
@@ -198,11 +231,19 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         */
         IMPORT_C const TDesC& Picture() const;
         
+// <-- QT PHONE START -->         
         /**
         * Returns the call flag
         * @return Returns the call flag
         */
-        IMPORT_C TUint32 CallFlag() const;
+//      IMPORT_C TUint32 CallFlag() const;
+
+        /**
+        * Returns call diverted status.
+        * @return Returns ETrue if diverted call.
+        */
+        IMPORT_C TBool Diverted() const;
+// <-- QT PHONE END -->         
         
         /**
         * Returns the call header line 2 active.
@@ -318,7 +359,7 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         /**
         * Call header short label text
         */
-    	TBuf<KPhoneCallHeaderLabelMaxLength> iShortLabelText;
+        TBuf<KPhoneCallHeaderLabelMaxLength> iShortLabelText;
 
         /**
         * Call header call state
@@ -348,12 +389,17 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         /**
          * Clipping direction of the CLI text.
          */
-        CBubbleManager::TPhoneClippingDirection iCLITextClippingDirection;
-        
+// <-- QT PHONE START -->         
+        TPhoneTextClippingDirection iCLITextClippingDirection;
+// <-- QT PHONE END -->
+       
         /**
          * Clipping direction of the CLI text.
          */
-        CBubbleManager::TPhoneClippingDirection iCNAPTextClippingDirection;
+// <-- QT PHONE START -->
+//        CBubbleManager::TPhoneClippingDirection iCNAPTextClippingDirection;
+        TPhoneTextClippingDirection iCNAPTextClippingDirection;
+// <-- QT PHONE END -->
         
         /**
         * Call header CNAP Text
@@ -365,10 +411,13 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         */
         TPtrC iPicture;
         
+// <-- QT PHONE START -->         
         /**
-        * Call flag
+        * Call flag.
         */
-        TUint32     iCallFlag;
+//        TUint32     iCallFlag;
+// <-- QT PHONE END -->         
+
         
         TBool iLine2;
         
@@ -413,6 +462,13 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
          * Remote phone number
          */
         TPtrC iRemotePhoneNumber;
+
+// <-- QT PHONE START -->                 
+        /**
+         * Call divert status.
+         */
+        TBool iDiverted;        
+// <-- QT PHONE END -->         
     };
 
 #endif // __TPHONECMDPARAMCALLHEADERDATA_H   

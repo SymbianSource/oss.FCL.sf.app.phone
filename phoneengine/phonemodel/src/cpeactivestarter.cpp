@@ -61,7 +61,7 @@ CPEActiveStarter::CPEActiveStarter(
     : CActive( CActive::EPriorityStandard ), 
       iActiveStarter ( aActiveStarter )
     {
-    	
+        
     CActiveScheduler::Add( this );
     
     }
@@ -73,8 +73,8 @@ CPEActiveStarter::CPEActiveStarter(
 //
 CPEActiveStarter* CPEActiveStarter::NewL( 
     MPEActiveStarter* aActiveStarter )
-	{
-		
+    {
+        
     return new( ELeave ) CPEActiveStarter( aActiveStarter );
     
     }

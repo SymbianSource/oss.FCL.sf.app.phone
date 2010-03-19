@@ -41,7 +41,7 @@ public:
 public:
     TInt Set( TInt aValue );
 protected: // From base class
-	virtual void UpdateL();
+    virtual void UpdateL();
 protected:
     CPEIncallEarVolumeSettingMonitor( MPEPhoneModelInternal& aModel );
     void ConstructL();    

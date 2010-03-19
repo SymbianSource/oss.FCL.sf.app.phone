@@ -144,7 +144,7 @@ void CPhoneStateStartup::HandlePEConstructionReadyL( TInt /*aCallId*/ )
     if ( iPhoneReady )
         {
         // Security mode check. 
-	    TPhoneCmdParamBoolean isSecurityMode;      
+        TPhoneCmdParamBoolean isSecurityMode;      
         iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );        
         if ( !isSecurityMode.Boolean() && !IsSimOk() )
             {
@@ -233,7 +233,7 @@ EXPORT_C void CPhoneStateStartup::HandlePhoneStartupL()
     if ( iPEReady )
         {
         // Security mode check.
-	    TPhoneCmdParamBoolean isSecurityMode;      
+        TPhoneCmdParamBoolean isSecurityMode;      
         iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
         if ( !isSecurityMode.Boolean() && !IsSimOk() )
             {

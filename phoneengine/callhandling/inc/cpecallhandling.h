@@ -54,7 +54,6 @@ class CPsetSAObserver;
 class CCCECallParameters;
 class CPECCEObserver;
 class CPESystemCallState;
-class CRepository;
 
 // CLASS DECLARATION
 
@@ -649,14 +648,6 @@ class CPECallHandling
          * @param aCall reference to call object
          */
         void SetCallOrigin( const TInt aCallId, const MCCECall& aCall ) const;
-        
-        /**
-         * Set COLP number to datastore if remote party number is 
-         * different from dialled number.
-         * @param aCallid.
-         * @param aCall reference to call object
-         */
-        void SetColpNumber( TInt aCallId, const MCCECall& aCall ) const;
 
     protected:
         // Phone model instance which owns this object.
@@ -698,8 +689,6 @@ class CPECallHandling
         CPECCEObserver* iCCEObserver;
         // System Call State
         CPESystemCallState* iSystemCallState;
-        
-        CRepository* iRepository;
     };
 
 #endif    // CPECALLHANDLING_H

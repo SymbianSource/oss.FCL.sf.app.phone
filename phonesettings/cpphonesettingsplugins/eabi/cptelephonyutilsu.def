@@ -1,0 +1,65 @@
+EXPORTS
+	_ZN12CpPhoneNotes10cancelNoteEi @ 1 NONAME
+	_ZN12CpPhoneNotes11qt_metacallEN11QMetaObject4CallEiPPv @ 2 NONAME
+	_ZN12CpPhoneNotes11qt_metacastEPKc @ 3 NONAME
+	_ZN12CpPhoneNotes14showGlobalNoteERiRK7QStringN12HbMessageBox14MessageBoxTypeE @ 4 NONAME
+	_ZN12CpPhoneNotes16staticMetaObjectE @ 5 NONAME DATA 16
+	_ZN12CpPhoneNotes19getStaticMetaObjectEv @ 6 NONAME
+	_ZN12CpPhoneNotes19showGlobalErrorNoteERii @ 7 NONAME
+	_ZN12CpPhoneNotes20progressNoteCanceledEv @ 8 NONAME
+	_ZN12CpPhoneNotes20showBasicServiceListERK7QStringRK5QListIhE @ 9 NONAME
+	_ZN12CpPhoneNotes21launchNextNoteIfReadyEv @ 10 NONAME
+	_ZN12CpPhoneNotes21showCallDivertDetailsERK21PSCallDivertingStatus @ 11 NONAME
+	_ZN12CpPhoneNotes22activeNoteAboutToCloseEv @ 12 NONAME
+	_ZN12CpPhoneNotes22showGlobalProgressNoteERiRK7QString @ 13 NONAME
+	_ZN12CpPhoneNotes26handleProgressNoteCanceledEv @ 14 NONAME
+	_ZN12CpPhoneNotes30showBasicServiceCallDivertListERK7QStringRK5QListIP21PSCallDivertingStatusERiN16CpTelephonyUtils14CallDivertTypeERSB_ @ 15 NONAME
+	_ZN12CpPhoneNotes8instanceEv @ 16 NONAME
+	_ZN12CpPhoneNotesC1Ev @ 17 NONAME
+	_ZN12CpPhoneNotesC2Ev @ 18 NONAME
+	_ZN12CpPhoneNotesD0Ev @ 19 NONAME
+	_ZN12CpPhoneNotesD1Ev @ 20 NONAME
+	_ZN12CpPhoneNotesD2Ev @ 21 NONAME
+	_ZN17CpSettingsWrapper11qt_metacallEN11QMetaObject4CallEiPPv @ 22 NONAME
+	_ZN17CpSettingsWrapper11qt_metacastEPKc @ 23 NONAME
+	_ZN17CpSettingsWrapper16showCallDurationEv @ 24 NONAME
+	_ZN17CpSettingsWrapper16staticMetaObjectE @ 25 NONAME DATA 16
+	_ZN17CpSettingsWrapper18readSoftRejectTextER7QStringRb @ 26 NONAME
+	_ZN17CpSettingsWrapper19getStaticMetaObjectEv @ 27 NONAME
+	_ZN17CpSettingsWrapper19setShowCallDurationEb @ 28 NONAME
+	_ZN17CpSettingsWrapper19writeSoftRejectTextERK7QStringb @ 29 NONAME
+	_ZN17CpSettingsWrapper51isFeatureCallWaitingDistiquishNotProvisionedEnabledEv @ 30 NONAME
+	_ZN17CpSettingsWrapperC1EP7QObject @ 31 NONAME
+	_ZN17CpSettingsWrapperC2EP7QObject @ 32 NONAME
+	_ZN17CpSettingsWrapperD0Ev @ 33 NONAME
+	_ZN17CpSettingsWrapperD1Ev @ 34 NONAME
+	_ZN17CpSettingsWrapperD2Ev @ 35 NONAME
+	_ZN5Tools11qt_metacallEN11QMetaObject4CallEiPPv @ 36 NONAME
+	_ZN5Tools11qt_metacastEPKc @ 37 NONAME
+	_ZN5Tools12loadCpPluginERK7QString @ 38 NONAME
+	_ZN5Tools13voipSupportedEv @ 39 NONAME
+	_ZN5Tools14unloadCpPluginERK7QString @ 40 NONAME
+	_ZN5Tools14videoSupportedEv @ 41 NONAME
+	_ZN5Tools16staticMetaObjectE @ 42 NONAME DATA 16
+	_ZN5Tools19getStaticMetaObjectEv @ 43 NONAME
+	_ZN5Tools20errorCodeTextMappingEiR7QString @ 44 NONAME
+	_ZN5Tools28convertEtelMobileServiceCodeEi @ 45 NONAME
+	_ZNK12CpPhoneNotes10metaObjectEv @ 46 NONAME
+	_ZNK12CpPhoneNotes17formatPhoneNumberE7QString @ 47 NONAME
+	_ZNK12CpPhoneNotes21basicServiceGroupNameEN16CpTelephonyUtils18BasicServiceGroupsE @ 48 NONAME
+	_ZNK12CpPhoneNotes28convertEtelMobileServiceCodeEi @ 49 NONAME
+	_ZNK17CpSettingsWrapper10metaObjectEv @ 50 NONAME
+	_ZNK17CpSettingsWrapper14isPhoneOfflineEv @ 51 NONAME
+	_ZNK17CpSettingsWrapper15readCenrepValueElm @ 52 NONAME
+	_ZNK17CpSettingsWrapper16readCenrepStringElm @ 53 NONAME
+	_ZNK17CpSettingsWrapper16writeCenrepValueElmRK8QVariant @ 54 NONAME
+	_ZNK17CpSettingsWrapper23numberGroupingSupportedEv @ 55 NONAME
+	_ZNK5Tools10metaObjectEv @ 56 NONAME
+	_ZTI12CpPhoneNotes @ 57 NONAME
+	_ZTI17CpSettingsWrapper @ 58 NONAME
+	_ZTI5Tools @ 59 NONAME
+	_ZTV12CpPhoneNotes @ 60 NONAME
+	_ZTV17CpSettingsWrapper @ 61 NONAME
+	_ZTV5Tools @ 62 NONAME
+	_ZN12CpPhoneNotes11noteShowingEv @ 63 NONAME
+

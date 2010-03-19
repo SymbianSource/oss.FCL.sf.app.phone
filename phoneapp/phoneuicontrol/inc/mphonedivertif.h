@@ -40,8 +40,8 @@ class MPhoneDivertIF
         /**
         * Setter for divert indication showing in bubble.
         * @param aDivertIndication ETrue to show divert indication,
-        * 		 EFalse to not. Usually setting EFalse isn't necessary
-        *		 as it's a default value in bubble creation.
+        *        EFalse to not. Usually setting EFalse isn't necessary
+        *        as it's a default value in bubble creation.
         */
         virtual void SetDivertIndication(
             const TBool aDivertIndication ) = 0;            

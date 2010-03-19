@@ -22,6 +22,9 @@
 
 //  INCLUDES
 #include <pevirtualengine.h>
+// <-- QT PHONE START -->
+#include "mpecallsettersif.h" 
+// <-- QT PHONE END --> 
 
 // CONSTANTS
 // None
@@ -40,7 +43,9 @@ class MPEClientInformation;
 *  @lib phoneengine.lib
 *  @since Series 60 4.0
 */
-NONSHARABLE_CLASS( MPEEngineInfo )
+// <-- QT PHONE START --> 
+NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
+// <-- QT PHONE END --> 
     {
 
     public:
@@ -640,7 +645,7 @@ NONSHARABLE_CLASS( MPEEngineInfo )
          * Returns address choices from received call forward request 
          * or NULL if addresses are not available.
          * 
-		 * @param   aCallId     Call identification number.
+         * @param   aCallId     Call identification number.
          * @return  Address array.
          */
         virtual const CDesC8Array* ForwardAddressChoices( TInt aCallId ) const = 0;
@@ -686,9 +691,9 @@ NONSHARABLE_CLASS( MPEEngineInfo )
         */
         virtual TBool IsSwitchToOperationOngoing() const = 0;
         
-		/**
+        /**
         * Checks if given state can be found.
-		* @param aCallState state to be checked.
+        * @param aCallState state to be checked.
         */
         virtual TBool CheckIfCallStateExists( const TPEState& aCallState )= 0;
         
@@ -698,6 +703,12 @@ NONSHARABLE_CLASS( MPEEngineInfo )
          */
         virtual TPECallOrigin CallOrigin( const TInt aCallId ) const = 0;
         
+// <-- QT PHONE START --> 
+        /**
+         * Returns Phonebook contact identifier.
+         */
+        virtual TInt ContactId2 () const = 0;
+// <-- QT PHONE END -->  
     }; // MPEEngineInfo
     
 #endif      //MPEENGINEINFO_H

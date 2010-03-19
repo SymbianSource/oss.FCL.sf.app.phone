@@ -99,7 +99,7 @@ class CPhoneStateIdle : public CPhoneState
         /**
         * Indicates when the Phone app has lost focus.
         */
-		IMPORT_C virtual void HandlePhoneFocusLostEventL();
+        IMPORT_C virtual void HandlePhoneFocusLostEventL();
 
     protected:
 

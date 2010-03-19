@@ -23,7 +23,9 @@
 #include <hwrmdomainpskeys.h>
 #include <UikonInternalPSKeys.h>
 #include <mpeengineinfo.h>
+// <-- QT PHONE START --> 
 #include <videotelcontrolmediatorapi.h>
+// <-- QT PHONE END --> 
 #include <MediatorDomainUIDs.h>
 #include <bldvariant.hrh>
 
@@ -33,7 +35,9 @@
 #include "tphonecmdparamstring.h"
 #include "tphonecmdparamnote.h"
 #include "tphonecmdparamquery.h"
-#include "tphonecmdparamsingleitemfetch.h"
+// <-- QT PHONE START -->
+//#include "tphonecmdparamsingleitemfetch.h"
+// <-- QT PHONE END -->
 #include "tphonecmdparamcallstatedata.h"
 #include "tphonecmdparamsfidata.h"
 #include "mphonestatemachine.h"
@@ -572,14 +576,17 @@ EXPORT_C TBool CPhoneStateInCall::HandleCommandL( TInt aCommand )
     switch( aCommand )
         {
         case EPhoneInCallCmdDialer:
-            BeginTransEffectLC( ENumberEntryCreate );
+            // <-- QT PHONE START -->
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewOpenDialer );
+            /*BeginTransEffectLC( ENumberEntryCreate );
             if ( !IsNumberEntryUsedL() )
                 {
                 CreateNumberEntryL();
                 }
             SetNumberEntryVisibilityL(ETrue ); 
-            EndTransEffect();
-          break;
+            EndTransEffect();*/
+            // <-- QT PHONE END -->
+            break;
         case EPhoneCmdOptions:
             OpenMenuBarL();
             break;
@@ -1471,6 +1478,8 @@ void CPhoneStateInCall::HandleEndKeyPressL( TPhoneKeyEventMessages aMessage )
         if( IsVideoCall( callStateData.CallId() ) )
             {
             // Video call can be released only after we get response to VT Shutdown Command
+// <-- QT PHONE START -->
+ 
             CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( 
                 KMediatorVideoTelephonyDomain,
                 KCatPhoneToVideotelCommands, 
@@ -1480,6 +1489,8 @@ void CPhoneStateInCall::HandleEndKeyPressL( TPhoneKeyEventMessages aMessage )
                     KPhoneToVideotelCmdVersionBuild ),
                 KNullDesC8,
                 CPhoneTerminateAllConnectionsCommand::NewL( *iStateMachine ) );
+
+// <-- QT PHONE END --> 
             }
         else
             {

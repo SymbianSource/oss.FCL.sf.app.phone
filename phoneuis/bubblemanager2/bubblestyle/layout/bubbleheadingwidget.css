@@ -1,0 +1,60 @@
+
+BubbleHeadingWidget[layoutOption="three_lines"]
+{
+    layout: three_lines_layout;
+}
+
+BubbleHeadingWidget[layoutOption="two_lines"]
+{
+    layout: two_lines_layout;
+}
+
+BubbleHeadingWidget[layoutOption="one_line"]
+{
+    layout: one_line_layout;
+}
+
+BubbleHeadingWidget:text_line_1
+{
+    preferred-height: 4un;
+}
+
+BubbleHeadingWidget:text_line_2[layoutOption!="one_line"]
+{
+    preferred-height: 4un;
+}
+
+BubbleHeadingWidget:text_line_2[layoutOption="one_line"]
+{
+    preferred-height: 4un;
+    fixed-width:  23un;
+}
+
+BubbleHeadingWidget:text_line_3
+{
+    preferred-height: 4un;
+}
+
+BubbleHeadingWidget:status_icon[layoutOption!="one_line"]
+{
+    fixed-width:   8un;
+    fixed-height:  8un;
+}
+
+BubbleHeadingWidget:number_type_icon[layoutOption!="one_line"]
+{
+    fixed-height: 3un;
+    fixed-width:  3un;
+}
+
+BubbleHeadingWidget:status_icon[layoutOption="one_line"]
+{
+    fixed-width:   8un;
+    fixed-height:  8un;
+}
+
+BubbleHeadingWidget:number_type_icon[layoutOption="one_line"]
+{
+    fixed-height: 3un;
+    fixed-width:  3un;
+}

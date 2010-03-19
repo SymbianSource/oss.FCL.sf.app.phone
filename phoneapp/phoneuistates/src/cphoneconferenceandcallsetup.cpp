@@ -57,8 +57,10 @@ CPhoneConferenceAndCallSetup::~CPhoneConferenceAndCallSetup()
         {
         TPhoneCmdParamBoolean dtmfSendFlag;
         dtmfSendFlag.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
-    	    &dtmfSendFlag );
+// <-- QT PHONE START -->
+        iViewCommandHandle->ExecuteCommand( EPhoneViewSetDtmfOptionsFlag, 
+            &dtmfSendFlag );
+// <-- QT PHONE END -->         
         }
     }
 
@@ -107,41 +109,25 @@ void CPhoneConferenceAndCallSetup::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnecting:
-            {
             iAlerting = ETrue;
             HandleConnectingL( aCallId );
-            }
             break;
             
         case MEngineMonitor::EPEMessageConnected:
-            {
             HandleConnectedL( aCallId );
-            }
             break;
             
         case MEngineMonitor::EPEMessageIdle:
-            {
             HandleIdleL( aCallId );
-            }
             break;
             
         case MEngineMonitor::EPEMessageConferenceIdle:
-            {
             HandleConferenceIdleL();
-            }
             break;
             
-        case MEngineMonitor::EPEMessageColpNumberAvailable:
-            {
-            HandleColpNoteL( aCallId );            
-            }
-            break;         
-            
         default:
-            {
             CPhoneConference::HandlePhoneEngineMessageL( aMessage, 
                 aCallId );
-            }
             break;
         }
     }
@@ -216,7 +202,7 @@ void CPhoneConferenceAndCallSetup::OpenMenuBarL()
     TPhoneCmdParamBoolean dtmfSendFlag;
     dtmfSendFlag.SetBoolean( ETrue );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
-    	&dtmfSendFlag );
+        &dtmfSendFlag );
      
     if ( iOnScreenDialer &&  IsDTMFEditorVisibleL() )
         {
@@ -231,15 +217,15 @@ void CPhoneConferenceAndCallSetup::OpenMenuBarL()
         resourceId = EPhoneConfCallParticipantsDropMenubar;    
         }        
     else
-	    {
-	    resourceId = EPhoneAlertingAndConfHeldCallMenuBar;
-	    }
+        {
+        resourceId = EPhoneAlertingAndConfHeldCallMenuBar;
+        }
 
     TPhoneCmdParamInteger integerParam;
     integerParam.SetInteger( 
                 CPhoneMainResourceResolver::Instance()->
                 ResolveResourceID( resourceId ) );
-	    
+        
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
         &integerParam );
     }
@@ -327,7 +313,8 @@ void CPhoneConferenceAndCallSetup::HandleConnectedL( TInt aCallId )
     SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
     SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
     EndUiUpdate(); 
-    
+
+    HandleColpNoteL( aCallId );
     UpdateCbaL ( EPhoneCallHandlingNewCallSwapCBA );
    
     iStateMachine->ChangeState( EPhoneStateConferenceAndSingle );                     
@@ -359,8 +346,8 @@ void CPhoneConferenceAndCallSetup::HandleIdleL( TInt aCallId )
     
     if( conferenceExistsForCallId.Boolean() )
         {
-		// Remove 'Conference on hold' global note
-	    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalNote );
+        // Remove 'Conference on hold' global note
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalNote );
     
         // Remove conference member from conference bubble
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveFromConference, 
@@ -402,8 +389,8 @@ void CPhoneConferenceAndCallSetup::HandleIdleL( TInt aCallId )
             {
             // Show the number entry if it exists
             SetNumberEntryVisibilityL(ETrue);
-	        }
-	        
+            }
+            
         SetTouchPaneButtons( EPhoneConferenceButtons );
         EndUiUpdate();
         EndTransEffect(); 

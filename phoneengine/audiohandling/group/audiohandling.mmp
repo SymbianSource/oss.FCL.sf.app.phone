@@ -21,25 +21,25 @@
 TARGET          audiohandling.dll    
 TARGETTYPE      DLL                
 UID             0x1000008D 0x1000A832        
-VENDORID		VID_DEFAULT
+VENDORID        VID_DEFAULT
 
-CAPABILITY	CAP_GENERAL_DLL
+CAPABILITY  CAP_GENERAL_DLL
 
-//MACRO		UNIT_TESTING	//defined if running T_AudoHandlingMT tests
+//MACRO     UNIT_TESTING    //defined if running T_AudoHandlingMT tests
 SOURCEPATH      ../src
     
-SOURCE      	cpeaudiodata.cpp        
-SOURCE      	cpegsmaudiodata.cpp
-SOURCE	    	cpeaudiodtmftoneplayer.cpp
-SOURCE      	cpeaudioinbandtoneplayer.cpp
-SOURCE      	cpeaudioroutingmonitor.cpp
-SOURCE	    	peaudiohandlingpanic.cpp
+SOURCE          cpeaudiodata.cpp        
+SOURCE          cpegsmaudiodata.cpp
+SOURCE          cpeaudiodtmftoneplayer.cpp
+SOURCE          cpeaudioinbandtoneplayer.cpp
+SOURCE          cpeaudioroutingmonitor.cpp
+SOURCE          peaudiohandlingpanic.cpp
 SOURCE        cpecallaudioroutinghandler.cpp
-SOURCE      	cpeaudiofactory.cpp
+SOURCE          cpeaudiofactory.cpp
 SOURCE        cpeaudiotoneutilityimpl.cpp
 
-START RESOURCE	../data/defaultbeep.rss
-TARGETPATH		RESOURCE_FILES_DIR
+START RESOURCE  ../data/defaultbeep.rss
+TARGETPATH      RESOURCE_FILES_DIR
 HEADER
 END
 
@@ -53,7 +53,7 @@ SYSTEMINCLUDE   /epoc32/include/mmf/server
 SYSTEMINCLUDE   /epoc32/include/mmf/common
 
 LIBRARY         bafl.lib
-LIBRARY			cce.lib
+LIBRARY         cce.lib
 LIBRARY         telephonyaudiorouting.lib
 LIBRARY         efsrv.lib
 LIBRARY         engineinfo.lib

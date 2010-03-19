@@ -44,7 +44,7 @@ EXPORT_C CPhoneStateMachine::CPhoneStateMachine(
     iViewCommandHandle( aViewCommandHandle )
     {
     __ASSERT_ALWAYS( aViewCommandHandle,
-    	Panic( EPhoneCtrlParameterNotInitialized ) );
+        Panic( EPhoneCtrlParameterNotInitialized ) );
     }
 
 // -----------------------------------------------------------
@@ -55,35 +55,35 @@ EXPORT_C CPhoneStateMachine::CPhoneStateMachine(
 //
 EXPORT_C CPhoneStateMachine::~CPhoneStateMachine()
     {
-	if( iState == iIdleState )
-		{
-		delete iState;
-		iState = NULL;
-		iIdleState = NULL;			
-		}
-	else
-		{
-	    if( iState )
-		    {
-		    delete iState;
-		    iState = NULL;	    	
-		    }
-		if( iIdleState )
-			{
-		    delete iIdleState;
-		    iIdleState = NULL;			
-			}			
-		}
-	if( iPhoneEngine )
-		{
-	    delete iPhoneEngine;
-	    iPhoneEngine = NULL;			
-		}
-	if( iPhoneStorage )
-	    {
-	    delete iPhoneStorage;
-	    iPhoneStorage = NULL;
-	    }
+    if( iState == iIdleState )
+        {
+        delete iState;
+        iState = NULL;
+        iIdleState = NULL;          
+        }
+    else
+        {
+        if( iState )
+            {
+            delete iState;
+            iState = NULL;          
+            }
+        if( iIdleState )
+            {
+            delete iIdleState;
+            iIdleState = NULL;          
+            }           
+        }
+    if( iPhoneEngine )
+        {
+        delete iPhoneEngine;
+        iPhoneEngine = NULL;            
+        }
+    if( iPhoneStorage )
+        {
+        delete iPhoneStorage;
+        iPhoneStorage = NULL;
+        }
     }
 
 // ---------------------------------------------------------
@@ -95,7 +95,7 @@ EXPORT_C void CPhoneStateMachine::SetPhoneEngine(
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateMachine::SetPhoneEngine ");
     __ASSERT_ALWAYS( aPhoneEngine, 
-    	Panic( EPhoneCtrlParameterNotInitialized ) );
+        Panic( EPhoneCtrlParameterNotInitialized ) );
     
     iPhoneEngine = aPhoneEngine;
     }

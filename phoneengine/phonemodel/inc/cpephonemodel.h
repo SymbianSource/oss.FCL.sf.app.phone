@@ -46,6 +46,10 @@ class MCCEDtmfInterface;
 class CPEAudioFactory;
 class MPEServiceHandling;
 class CPERemotePartyInfoMediator;
+// <-- QT PHONE START --> 
+class PhoneServices;
+class ParserRecognizer;
+// <-- QT PHONE END --> 
 
 // CLASS DECLARATION
 
@@ -76,6 +80,10 @@ NONSHARABLE_CLASS( CPEPhoneModel )
             EPELogHandlingPhaseTwo,
             EPEContactHandlingPhaseTwo,
             EPEMediatorCommandHandler
+// <-- QT PHONE START --> 
+           ,EPEPhoneServices
+           ,EPEParserRecognizer
+// <-- QT PHONE END --> 
             };
 
         /**
@@ -321,6 +329,12 @@ NONSHARABLE_CLASS( CPEPhoneModel )
         
         // Mediator command handler
         CPERemotePartyInfoMediator* iMediatorCommunicationHandler;
+        
+// <-- QT PHONE START --> 
+        // Phone Services offered via Qt Highway
+        PhoneServices* iPhoneServices;
+        ParserRecognizer* iParserRecognizer;
+// <-- QT PHONE END --> 
 
     };
 

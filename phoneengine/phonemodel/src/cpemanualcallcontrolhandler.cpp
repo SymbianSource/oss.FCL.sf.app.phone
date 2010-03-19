@@ -146,7 +146,7 @@ void CPEManualCallControlHandler::HandleChldL(
             TEFLOGSTRING2( KTAERROR, 
                 "PE CPEManualCallControlHandler::HandleChldL, aChldCommand; %d"
                 ,aChldCommand );
-            __ASSERT_DEBUG(	EFalse, Panic( EPEPanicIllegalCommand ) );
+            __ASSERT_DEBUG( EFalse, Panic( EPEPanicIllegalCommand ) );
             break;
             }
         }
@@ -281,16 +281,16 @@ void CPEManualCallControlHandler::HandleChldOneXL( TInt aCallNo )
             {
             error = iMessageHandler.HandleAnswerCall( EFalse );
             TEFLOGSTRING2( KTAINT,
-            	"PE CPEManualCallControlHandler::HandleChldOneXL > HandleAnswerCall, Error code %d", 
-            	error );
+                "PE CPEManualCallControlHandler::HandleChldOneXL > HandleAnswerCall, Error code %d", 
+                error );
             }
         else if ( callState == EPEStateConnected )
             {
             iDataStore.SetCallId( CallIdByIndexL( aCallNo ) );
             error = iMessageHandler.HandleReleaseCall( ETPEHangUpNotResumeHeldCall );
             TEFLOGSTRING2( KTAINT,
-            	"PE CPEManualCallControlHandler::HandleChldOneXL > HandleReleaseCall, Error code %d", 
-            	error );
+                "PE CPEManualCallControlHandler::HandleChldOneXL > HandleReleaseCall, Error code %d", 
+                error );
             }
         }        
         
@@ -314,7 +314,7 @@ TInt CPEManualCallControlHandler::HandleChldTwo()
         {
         TEFLOGSTRING( 
             KTAERROR, 
-        	"PE CPEManualCallControlHandler::HandleChldTwo: Call found in EPEStateDialing or EPEStateConnecting,state > swap NOT ALLOWED" );
+            "PE CPEManualCallControlHandler::HandleChldTwo: Call found in EPEStateDialing or EPEStateConnecting,state > swap NOT ALLOWED" );
         }
     else
         {

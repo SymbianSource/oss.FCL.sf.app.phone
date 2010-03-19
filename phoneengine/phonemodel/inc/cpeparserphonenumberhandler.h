@@ -20,7 +20,7 @@
 #define CPEPARSERPHONENUMBERHANDLER_H
 
 //  INCLUDES
-#include <CPhoneGsmPhoneNumberHandler.h>
+#include <cphonegsmphonenumberhandler.h>
 #include <pevirtualengine.h>
 
 // CONSTANTS

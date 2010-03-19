@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service>
+    <name>infowidgetprovider</name>
+    <filepath>infowidgetprovider</filepath>
+    <description>Operator info widget.</description>
+    <interface>
+        <name>com.nokia.homescreen.widget</name>
+        <version>1.0</version>
+        <description>The info widget displays operator info.</description>
+        <capabilities></capabilities>
+        <customproperty key="title">Operator info widget</customproperty>
+    </interface>
+</service>

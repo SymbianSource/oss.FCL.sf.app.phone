@@ -111,16 +111,16 @@ void CPhoneStartup::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageOutCallForwToC: // fall through
         case MEngineMonitor::EPEMessageForwardUnconditionalModeActive: // fall through
         case MEngineMonitor::EPEMessageForwardConditionallyModeActive:
-			{
-			CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
-				CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
-													   *iViewCommandHandle,
-													   *this );
-			CleanupStack::PushL( gsmMsgHandler );
-			gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
-			CleanupStack::PopAndDestroy( gsmMsgHandler );
-			}
-			break;
+            {
+            CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
+                CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
+                                                       *iViewCommandHandle,
+                                                       *this );
+            CleanupStack::PushL( gsmMsgHandler );
+            gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
+            CleanupStack::PopAndDestroy( gsmMsgHandler );
+            }
+            break;
 
         default:
             CPhoneStateStartup::HandlePhoneEngineMessageL( 

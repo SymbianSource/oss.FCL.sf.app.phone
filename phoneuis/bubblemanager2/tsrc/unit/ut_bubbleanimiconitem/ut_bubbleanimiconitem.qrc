@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>data/qtg_indi_call_wait.svg</file>
+        <file>data/qtg_indi_call_connect.svg</file>
+    </qresource>
+</RCC>

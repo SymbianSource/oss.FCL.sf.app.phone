@@ -22,7 +22,7 @@
 #include    <startupdomainpskeys.h>
 
 #include    "phonelogger.h"
-#include  	"phoneui.pan"
+#include    "phoneui.pan"
 #include    "cphonetimer.h"
 #include    "ctelewaitingidle.h"
 
@@ -140,7 +140,7 @@ CTeleRecoverySystem::~CTeleRecoverySystem()
         delete iWaitingIdle;
         iWaitingIdle = NULL;  
         }
-		
+        
     delete iRecoveryItems;
     delete iTimer;
     delete iAllStepsTimer;
@@ -154,7 +154,7 @@ TPhoneRecoveryId CTeleRecoverySystem::AddL( TCallBack aCallBack,
     TPhoneRecoveryPriority aPriority, TRecoveryState aState )
     {
     __LOGMETHODSTARTEND( EPhoneUIUtils, "CTeleRecoverySystem::AddL()" ); 
-	__ASSERT_DEBUG( !iIsCallBack, Panic( EPhoneUtilsNoCallBack ) );   
+    __ASSERT_DEBUG( !iIsCallBack, Panic( EPhoneUtilsNoCallBack ) );   
 
     CheckStateForPrecondition( aState );
 
@@ -192,7 +192,7 @@ TPhoneRecoveryId CTeleRecoverySystem::AddL( TCallBack aCallBack,
 TPhoneRecoveryId CTeleRecoverySystem::Add( TCallBack aCallBack, 
     TPhoneRecoveryPriority aPriority, TRecoveryState aState )
     {
-	__LOGMETHODSTARTEND( EPhoneUIUtils, "CTeleRecoverySystem::AddL()" ); 
+    __LOGMETHODSTARTEND( EPhoneUIUtils, "CTeleRecoverySystem::AddL()" ); 
     TPhoneRecoveryId id = KNullId;
     TRAP_IGNORE( id = AddL( aCallBack, aPriority, aState ) );
     return id;
@@ -204,8 +204,8 @@ TPhoneRecoveryId CTeleRecoverySystem::Add( TCallBack aCallBack,
 //
 void CTeleRecoverySystem::Remove( TPhoneRecoveryId aId )
     {
-	__LOGMETHODSTARTEND( EPhoneUIUtils, "CTeleRecoverySystem::Remove()" ); 
-	__ASSERT_DEBUG( !iIsCallBack, Panic( EPhoneUtilsNoCallBack ) ); 
+    __LOGMETHODSTARTEND( EPhoneUIUtils, "CTeleRecoverySystem::Remove()" ); 
+    __ASSERT_DEBUG( !iIsCallBack, Panic( EPhoneUtilsNoCallBack ) ); 
 
     TInt count = iRecoveryItems->Count();
     
@@ -219,10 +219,10 @@ void CTeleRecoverySystem::Remove( TPhoneRecoveryId aId )
         if( iRecoveryItems->At( i ).iId == aId )
             {
             iRecoveryItems->Delete( i );
-		    __PHONELOG1( 
-		        EBasic, 
-		        EPhoneUIUtils, 
-		        "CTeleRecoverySystem::Delete itemIdx= %d:", i );
+            __PHONELOG1( 
+                EBasic, 
+                EPhoneUIUtils, 
+                "CTeleRecoverySystem::Delete itemIdx= %d:", i );
             return;
             }
         }
@@ -246,10 +246,10 @@ void CTeleRecoverySystem::SetState(
             {
             item.iState = aState;
             StartTimerIfRequired( aState ); 
-		    __PHONELOG1( 
-		        EBasic, 
-		        EPhoneUIUtils, 
-		        "CTeleRecoverySystem::SetState itemIdx= %d:", item.iId );      
+            __PHONELOG1( 
+                EBasic, 
+                EPhoneUIUtils, 
+                "CTeleRecoverySystem::SetState itemIdx= %d:", item.iId );      
             return;
             }
         }
@@ -319,11 +319,11 @@ TInt CTeleRecoverySystem::RecoverNow( TPhoneRecoveryId aId,
 // -----------------------------------------------------------------------------
 //   
 void CTeleRecoverySystem::RecoverAllNow()
-	{
+    {
     __LOGMETHODSTARTEND( EPhoneUIUtils, "CTeleRecoverySystem::RecoverAllNow()" );
     StartTimerIfIdle();
     StartAllStepsTimer();
-	}
+    }
 
 // -----------------------------------------------------------------------------
 // CTeleRecoverySystem::EnablePrecondition
@@ -356,11 +356,11 @@ void CTeleRecoverySystem::EnablePrecondition()
         CheckStateForPrecondition( item.iState );
         }
 
-	if ( IsIdle() )
-	    {
-	    iTimer->Cancel();
-	    StartTimer();		
-	    }
+    if ( IsIdle() )
+        {
+        iTimer->Cancel();
+        StartTimer();       
+        }
     }
     
 // -----------------------------------------------------------------------------
@@ -388,19 +388,19 @@ void CTeleRecoverySystem::RunL()
     if ( iStatus != KErrNone )
         {
         // If SIM is already available, just listen for SIM status.
-	    if ( iSimAvailable == ESimUsable )
-	        {            
-	        iRequest = EPhoneSIMStatus;
-	        }
-	    else
-	        {
-	        iRequest = EPhoneSIMPresent;
-	        }
+        if ( iSimAvailable == ESimUsable )
+            {            
+            iRequest = EPhoneSIMStatus;
+            }
+        else
+            {
+            iRequest = EPhoneSIMPresent;
+            }
 
         __PHONELOG1( 
-	        EBasic, 
-	        EPhoneUIUtils, 
-	        "CTeleRecoverySystem::RunL NewRq = %d ", (TInt) iRequest ); 
+            EBasic, 
+            EPhoneUIUtils, 
+            "CTeleRecoverySystem::RunL NewRq = %d ", (TInt) iRequest ); 
 
         IssueRequest();
         return;
@@ -418,10 +418,10 @@ void CTeleRecoverySystem::RunL()
             {
             iRequest = EPhoneSIMStatus;
             
-			__PHONELOG1( 
-		        EBasic, 
-		        EPhoneUIUtils, 
-		        "CTeleRecoverySystem::RunL NewRq = %d ", (TInt) iRequest ); 
+            __PHONELOG1( 
+                EBasic, 
+                EPhoneUIUtils, 
+                "CTeleRecoverySystem::RunL NewRq = %d ", (TInt) iRequest ); 
             }
         else
             {
@@ -507,7 +507,7 @@ TInt CTeleRecoverySystem::DoItemCallBack( TRecoveryItem& aItem )
     TInt err = KErrNone;    
     TRAPD( leaveErr, err = aItem.iCallBack.CallBack() );
 
-	__PHONELOG1( 
+    __PHONELOG1( 
         EBasic, 
         EPhoneUIUtils, 
         "CTeleRecoverySystem::DoItemCallBack Err = %d ", leaveErr );
@@ -713,16 +713,16 @@ void CTeleRecoverySystem::StartTimerIfRequired( TRecoveryState aNewState )
     __LOGMETHODSTARTEND( EPhoneUIUtils, "CTeleRecoverySystem::StartTimerIfRequired()");
     
     if ( IsIdle() )
-    	{
-	    if ( aNewState == EPhoneStateWaiting )
-	        {
-	        StartTimerIfIdle();
-	        }
-	    else if ( aNewState == EPhoneStateStarting )
-	        {
-	        StartAllStepsTimer();
-        	}    	
-  		}
+        {
+        if ( aNewState == EPhoneStateWaiting )
+            {
+            StartTimerIfIdle();
+            }
+        else if ( aNewState == EPhoneStateStarting )
+            {
+            StartAllStepsTimer();
+            }       
+        }
     }
     
 // -----------------------------------------------------------------------------
@@ -732,10 +732,10 @@ void CTeleRecoverySystem::StartTimerIfRequired( TRecoveryState aNewState )
 TBool CTeleRecoverySystem::IsIdle()
     {
     __LOGMETHODSTARTEND( EPhoneUIUtils, "CTeleRecoverySystem::IsIdle()");
-	TBool retVal(EFalse);
-	TInt error(0);
-  	TInt state(0);
-  	
+    TBool retVal(EFalse);
+    TInt error(0);
+    TInt state(0);
+    
     error = iIdleActive.Get(
         KPSUidStartup, 
         KPSIdlePhase1Ok, 
@@ -749,10 +749,10 @@ TBool CTeleRecoverySystem::IsIdle()
             delete iWaitingIdle;
             iWaitingIdle = NULL;  
             }
-    	retVal = ETrue;
+        retVal = ETrue;
         }
 
-    return retVal;    	
+    return retVal;      
     }
 
 // -----------------------------------------------------------------------------
@@ -784,7 +784,7 @@ void CTeleRecoverySystem::StartTimer()
         iTickCounter = KPhoneRecoveryCounterStart;
         iTimer->After( KPhoneRecoveryTickInterval, 
             TCallBack( HandleTimer, this ) );
-        }    	
+        }       
     }
 
 // -----------------------------------------------------------------------------
@@ -795,9 +795,9 @@ void CTeleRecoverySystem::StartAllStepsTimer()
     {
     __LOGMETHODSTARTEND( EPhoneUIUtils, "CTeleRecoverySystem::StartAllStepsTimer()");
     if ( !iAllStepsTimer->IsActive() )
-    	{
-    	iAllStepsTimer->After( 1, TCallBack( HandleAllStepsTimer, this ) );
-    	}
+        {
+        iAllStepsTimer->After( 1, TCallBack( HandleAllStepsTimer, this ) );
+        }
   }
 
 // -----------------------------------------------------------------------------
@@ -945,19 +945,19 @@ void CTeleRecoverySystem::IssueRequest()
             {                        
             iSimPresentProperty.Subscribe( iStatus );
 
-			__PHONELOG( 
-		        EBasic, 
-		        EPhoneUIUtils, 
-		        "CTeleRecoverySystem::DoItemCallBack IssueReq.2");
+            __PHONELOG( 
+                EBasic, 
+                EPhoneUIUtils, 
+                "CTeleRecoverySystem::DoItemCallBack IssueReq.2");
             }
         else
             {
-			__PHONELOG( 
-		        EBasic, 
-		        EPhoneUIUtils, 
-		        "CTeleRecoverySystem::DoItemCallBack IssueReq.3");
-		        
-		    __ASSERT_DEBUG( iRequest == EPhoneSIMStatus, Panic( EPhoneUtilsNoCallBack ) );
+            __PHONELOG( 
+                EBasic, 
+                EPhoneUIUtils, 
+                "CTeleRecoverySystem::DoItemCallBack IssueReq.3");
+                
+            __ASSERT_DEBUG( iRequest == EPhoneSIMStatus, Panic( EPhoneUtilsNoCallBack ) );
 
             iSimStatusProperty.Subscribe( iStatus );
             }
@@ -981,10 +981,10 @@ TBool CTeleRecoverySystem::IsSIMOk()
 
     if ( iSimAvailable != ESimUsable )
         {
-       	__PHONELOG( 
-		        EBasic, 
-		        EPhoneUIUtils, 
-		        "CTeleRecoverySystem::IsSIMOk Ret 0");
+        __PHONELOG( 
+                EBasic, 
+                EPhoneUIUtils, 
+                "CTeleRecoverySystem::IsSIMOk Ret 0");
         // SIM is not yet available.
         return EFalse;
         }
@@ -998,9 +998,9 @@ TBool CTeleRecoverySystem::IsSIMOk()
     simOk = ( value == ESimUsable ); 
 
     __PHONELOG1( 
-		    EBasic, 
-		    EPhoneUIUtils, 
-		    "CTeleRecoverySystem::IsSIMOk Ret: %d ",  (TInt) simOk);
+            EBasic, 
+            EPhoneUIUtils, 
+            "CTeleRecoverySystem::IsSIMOk Ret: %d ",  (TInt) simOk);
     
     return simOk;
     }
@@ -1019,10 +1019,10 @@ TInt CTeleRecoverySystem::CheckSIMAvailable()
         {
         iSimStatusProperty.Get( iSimAvailable );
 
-	    __PHONELOG1( 
-			    EBasic, 
-			    EPhoneUIUtils, 
-			    "CTeleRecoverySystem::CheckSIMAvailable %d ",  iSimAvailable );
+        __PHONELOG1( 
+                EBasic, 
+                EPhoneUIUtils, 
+                "CTeleRecoverySystem::CheckSIMAvailable %d ",  iSimAvailable );
 
         if ( iSimAvailable != ESimUsable )
 
@@ -1035,10 +1035,10 @@ TInt CTeleRecoverySystem::CheckSIMAvailable()
             // SIM is now available, start listening for SIM status.
             iRequest = EPhoneSIMStatus;
 
-		    __PHONELOG1( 
-				    EBasic, 
-				    EPhoneUIUtils, 
-				    "CTeleRecoverySystem::CheckSIMAvailable new rq %d ",  (TInt) iRequest );
+            __PHONELOG1( 
+                    EBasic, 
+                    EPhoneUIUtils, 
+                    "CTeleRecoverySystem::CheckSIMAvailable new rq %d ",  (TInt) iRequest );
 
             
             if ( iSimStatusProperty.Handle() )

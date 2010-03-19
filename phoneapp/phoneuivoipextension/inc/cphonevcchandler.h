@@ -108,7 +108,7 @@ NONSHARABLE_CLASS( CPhoneVccHandler ): public CBase,
         */
         void HandoverInProgressNoteL( TInt aCommand );
 
-		// From MVccPsPropertyListenerObserver        
+        // From MVccPsPropertyListenerObserver        
         /**
         *  Gets called when PS key is changed
         * @param aKeyId 
@@ -128,7 +128,7 @@ NONSHARABLE_CLASS( CPhoneVccHandler ): public CBase,
          TInt GetVccServiceIdL();
          
     private: // Data
-		        
+                
         /** 
          * Interface for setting and getting active state
          */

@@ -43,23 +43,23 @@ _STLIT8(K15, "EPhoneStateLastGSMState");
 
 // Intermediate
 const void * const KStringPointers[] =
-	{
-	(const void*)&K1,
-	(const void*)&K2,
-	(const void*)&K3,
-	(const void*)&K4,
-	(const void*)&K5,
-	(const void*)&K6,
-	(const void*)&K7,
-	(const void*)&K8,
-	(const void*)&K9,
-	(const void*)&K10,
-	(const void*)&K11,
-	(const void*)&K12,
-	(const void*)&K13,
-	(const void*)&K14,
-	(const void*)&K15
-	};
+    {
+    (const void*)&K1,
+    (const void*)&K2,
+    (const void*)&K3,
+    (const void*)&K4,
+    (const void*)&K5,
+    (const void*)&K6,
+    (const void*)&K7,
+    (const void*)&K8,
+    (const void*)&K9,
+    (const void*)&K10,
+    (const void*)&K11,
+    (const void*)&K12,
+    (const void*)&K13,
+    (const void*)&K14,
+    (const void*)&K15
+    };
 
 const TStringTable PhoneStateStringsGSM::Table = {15, KStringPointers, EFalse};
 

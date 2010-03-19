@@ -66,14 +66,15 @@ CPhoneSingleAndWaiting::CPhoneSingleAndWaiting(
 //
 CPhoneSingleAndWaiting::~CPhoneSingleAndWaiting()
     {
-    if( iViewCommandHandle )
+// <-- QT PHONE START -->
+    if ( iViewCommandHandle )
         {
         TPhoneCmdParamBoolean dtmfSendFlag;
         dtmfSendFlag.SetBoolean( EFalse );
-        TRAP_IGNORE( iViewCommandHandle->ExecuteCommandL( 
-                        EPhoneViewSetVideoCallDTMFVisibilityFlag,
-                        &dtmfSendFlag ); )
+        iViewCommandHandle->ExecuteCommand( EPhoneViewSetVideoCallDTMFVisibilityFlag,
+                &dtmfSendFlag );
         }
+// <-- QT PHONE END -->
     }
 
 // -----------------------------------------------------------
@@ -219,6 +220,12 @@ TBool CPhoneSingleAndWaiting::HandleCommandL( TInt aCommand )
                 MPEPhoneModel::EPEMessageReject );
             break;
 
+// <-- QT PHONE START -->
+        case EPhoneCmdUpdateUiControls:
+            UpdateUiControlsL();
+            break;
+// <-- QT PHONE END -->            
+
         default:
             commandStatus = CPhoneGsmInCall::HandleCommandL( aCommand );
             break;
@@ -333,7 +340,7 @@ void CPhoneSingleAndWaiting::HandleKeyMessageL(
 //
 void CPhoneSingleAndWaiting::HandleKeyEventL(
     const TKeyEvent& aKeyEvent,
-    TEventCode aEventCode )
+    TEventCode /*aEventCode*/ )
     {
     if( EKeyDeviceF == aKeyEvent.iCode )
         {
@@ -532,7 +539,9 @@ void CPhoneSingleAndWaiting::HandleHeldL( TInt aCallId )
     TInt callLabelId = CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( EPhoneCallOnHold );
 
-    StringLoader::Load( labelText, callLabelId, CCoeEnv::Static() );
+// <-- QT PHONE START --> 
+    StringLoader::Load( labelText, callLabelId, CCoeEnv::Static() );        
+// <-- QT PHONE END --> 
     callHeaderParam.SetLabelText( labelText );
 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId,
@@ -549,6 +558,10 @@ void CPhoneSingleAndWaiting::HandleHeldL( TInt aCallId )
         }
 
     UpdateInCallCbaL();
+    
+    // <-- QT PHONE START -->
+    SetTouchPaneButtons( EPhoneWaitingCallButtons ); 
+    // <-- QT PHONE END -->
     }
 
 // -----------------------------------------------------------
@@ -607,8 +620,13 @@ void CPhoneSingleAndWaiting::HandleUnholdL( TInt aCallId )
         HandleHoldNoteL( aCallId, EFalse );
         }
 
+    // <-- QT PHONE START -->
+    
     // Set CBAs
-    UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
+    UpdateInCallCbaL();
+    
+    SetTouchPaneButtons( EPhoneWaitingCallButtons ); 
+    // <-- QT PHONE END -->
     }
 
 // -----------------------------------------------------------
@@ -669,11 +687,13 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
 
         // If numberentry is not open just check NeedToSendToBackgroundL and
         // sendbackround if needed.
-        if ( NeedToSendToBackgroundL() )
+// <-- QT PHONE START -->        
+        /*if ( NeedToSendToBackgroundL() )
             {
             // Return phone to the background if send to background is needed.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-            }
+            }*/
+// <-- QT PHONE END -->            
         }
 
     // Close dtmf dialer if exist.
@@ -793,7 +813,20 @@ void CPhoneSingleAndWaiting::UpdateInCallCbaL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::UpdateInCallCbaL() ");
-     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
+// <-- QT PHONE START -->    
+    TPhoneCmdParamInteger callIdParam;
+    iViewCommandHandle->ExecuteCommandL( 
+            EPhoneViewGetExpandedBubbleCallId, &callIdParam );
+
+    if ( callIdParam.Integer()==iSingleCallId )
+        {
+        CPhoneGsmInCall::UpdateInCallCbaL();
+        } 
+    else 
+        {
+        iCbaManager->SetCbaL(  EPhoneCallHandlingCallWaitingCBA );
+        }
+// <-- QT PHONE END -->    
     }
 
 // -----------------------------------------------------------
@@ -838,5 +871,18 @@ void CPhoneSingleAndWaiting::HandleDisconnectingL( TInt aCallId )
             &booleanParam );
         }
     }
+
+// <-- QT PHONE START -->
+// -----------------------------------------------------------
+// CPhoneSingleAndWaiting::UpdateUiControlsL
+// -----------------------------------------------------------
+//
+void CPhoneSingleAndWaiting::UpdateUiControlsL()
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndWaiting::UpdateUiControlsL( ) ");
+    
+    UpdateInCallCbaL();
+    }
+// <-- QT PHONE END -->
 
 // End of File

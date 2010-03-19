@@ -72,7 +72,15 @@ class CPhoneTwoSinglesAndWaiting : public CPhoneTwoSingles
         * @param aErrorInfo: the error info
         */
         IMPORT_C virtual void HandleErrorL( 
-            const TPEErrorInfo& aErrorInfo ); 
+            const TPEErrorInfo& aErrorInfo );
+
+// <-- QT PHONE START -->        
+        /**
+        * Handles user selected UI commands.
+        * @param aCommand - selected command
+        */    
+        TBool HandleCommandL( TInt aCommand );
+// <-- QT PHONE END -->        
         
     protected:
 
@@ -110,6 +118,13 @@ class CPhoneTwoSinglesAndWaiting : public CPhoneTwoSingles
         * Handle state-specific behaviour when number entry is cleared
         */ 
         void HandleNumberEntryClearedL();
+        
+// <-- QT PHONE START -->
+        /**
+        *  Handles received EPhoneCmdUpdateUiControls command.
+        */
+        void UpdateUiControlsL();
+// <-- QT PHONE END -->        
         
         // call id of ringing call
         TInt iRingingCallId;

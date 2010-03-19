@@ -61,11 +61,18 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
         virtual void HandleKeyMessageL(
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
-     
+            
         virtual void HandleKeyEventL(
             const TKeyEvent& aKeyEvent,
             TEventCode aEventCode );
-        
+        // <-- QT PHONE START -->        
+        /**
+        * Handles user selected UI commands.
+        * @param aCommand - selected command
+        */    
+        TBool HandleCommandL( TInt aCommand );
+        // <-- QT PHONE END -->     
+
     protected:
 
         /**
@@ -99,6 +106,13 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
          void HandleDiallingL( TInt aCallId );
          
          void HandleWentOneToOneL( TInt aCallId );
+         
+         // <-- QT PHONE START -->
+         /**
+         *  Handles received EPhoneCmdUpdateUiControls command.
+         */
+         void UpdateUiControlsL();
+         // <-- QT PHONE END -->   
       
      private:
         TInt iRingingCallId;

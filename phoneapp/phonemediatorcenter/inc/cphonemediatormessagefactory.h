@@ -67,9 +67,9 @@ class CPhoneMediatorMessageFactory : public CBase
         
              
     private:
-    	
-    	// Reference to Engine Info
-    	MPEEngineInfo& iEngineInfo;
+        
+        // Reference to Engine Info
+        MPEEngineInfo& iEngineInfo;
 
     };
     

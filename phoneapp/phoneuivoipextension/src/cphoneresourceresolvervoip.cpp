@@ -19,7 +19,10 @@
 // INCLUDE FILES
 #include <bautils.h>
 #include <AknUtils.h>
-#include <phoneuivoip.rsg>
+// <-- QT PHONE START -->
+//#include <phoneuivoip.rsg>
+#include "phoneresourceids.h"
+// <-- QT PHONE END -->
 #include <data_caging_path_literals.hrh>
 #include "cphoneresourceresolvervoip.h"
 #include "cphonemainresourceresolver.h"
@@ -46,7 +49,8 @@ void CPhoneResourceResolverVoIP::ConstructL()
     {
     // Add resource file
     // Create path to default resource file name
-    TFileName path( KDriveZ );
+// <-- QT PHONE START -->    
+    /*TFileName path( KDriveZ );
     path.Append( KDC_APP_RESOURCE_DIR );
     path.Append( KPhoneResourceFileVoIP );
 
@@ -54,7 +58,8 @@ void CPhoneResourceResolverVoIP::ConstructL()
     BaflUtils::NearestLanguageFile( fsSession, path );
     iVoIPResourceOffset = iEnv.AddResourceFileL( path );
 
-    BaseConstructL();
+    LoadGSMResourcesL();*/
+// <-- QT PHONE END -->    
     
     // Register resolver
     CPhoneMainResourceResolver::Instance()->RegisterResolver( this );
@@ -78,7 +83,9 @@ CPhoneResourceResolverVoIP* CPhoneResourceResolverVoIP::NewL()
 // Destructor
 CPhoneResourceResolverVoIP::~CPhoneResourceResolverVoIP()
     {
-    iEnv.DeleteResourceFile( iVoIPResourceOffset );
+// <-- QT PHONE START -->    
+//    iEnv.DeleteResourceFile( iVoIPResourceOffset );
+// <-- QT PHONE END -->    
     }
 
 // -----------------------------------------------------------------------------
@@ -167,31 +174,31 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
             break;
             
         case EPhoneVoIPHoldFail:
-        	retVal = R_VOIP_HOLD_FAILED;
+            retVal = R_VOIP_HOLD_FAILED;
             break;
             
         case EPhoneVoIPHoldNumberFail:
-        	retVal = R_VOIP_HOLD_NUMBER_FAILED;
+            retVal = R_VOIP_HOLD_NUMBER_FAILED;
             break;
             
         case EPhoneVoIPResumeFail:
-    		retVal = R_VOIP_RESUME_FAILED;
+            retVal = R_VOIP_RESUME_FAILED;
             break;
             
         case EPhoneVoIPResumeNumberFail:
-    		retVal = R_VOIP_RESUME_NUMBER_FAILED;
+            retVal = R_VOIP_RESUME_NUMBER_FAILED;
             break;
             
-       	case EPhoneVoIPSwapFail:
-    		retVal = R_VOIP_SWAP_FAILED;
+        case EPhoneVoIPSwapFail:
+            retVal = R_VOIP_SWAP_FAILED;
             break;
         
         case EPhoneVoIPConferenceHoldFail:
-    		retVal = R_VOIP_CONFERENCE_HOLD_FAILED;
+            retVal = R_VOIP_CONFERENCE_HOLD_FAILED;
             break;
         
         case EPhoneVoIPConferenceResumeFail:
-    		retVal = R_VOIP_CONFERENCE_RESUME_FAILED;
+            retVal = R_VOIP_CONFERENCE_RESUME_FAILED;
             break;
 
         case EPhoneVoIPTransferFail:
@@ -204,7 +211,9 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
             retVal = R_VOIP_CALL_TYPE_INTERNET;
             break;
         case EPhoneVoIPNumberAcqXSPCall:
-            retVal = R_PHONEUI_NUMBERACQ_OPTIONS_CALL_MENU_ITEM_XSP;
+// <-- QT PHONE START -->    
+            //retVal = R_PHONEUI_NUMBERACQ_OPTIONS_CALL_MENU_ITEM_XSP;
+// <-- QT PHONE END -->
             break;
         case EPhoneVoIPUnattendedTransferOption:  
             retVal = R_VOIP_UNATTENDED_TRANSFER_OPTION;       
@@ -299,8 +308,8 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
             break;
         case EPhoneVoIPDefectiveSettings:
             retVal = R_PHONE_VOIP_CREATING_CONN_FAILED_PERMANENTLY;
-			break;
-		default:
+            break;
+        default:
             retVal = CPhoneResourceResolverGSM::ResolveResourceID( aResource );
             break;
         }

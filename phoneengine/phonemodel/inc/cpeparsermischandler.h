@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  This file contains the header file of the CPhoneGsmMiscHandler 
-*		 		 class
+*                class
 *
 */
 
@@ -21,7 +21,7 @@
 #define CPEPARSERMISCHANDLER_H
 
 //INCLUDES
-#include "CPhoneGsmMiscHandler.h"
+#include "cphonegsmmischandler.h"
 #include <pevirtualengine.h>
 
 // CONSTANTS

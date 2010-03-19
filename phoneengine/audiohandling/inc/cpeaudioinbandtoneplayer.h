@@ -72,7 +72,7 @@ class CPEAudioInbandTonePlayer
 
         /**
         * Plays given tone. Originates from CCP plugin.
-		* @param aTone inband tone needed to play
+        * @param aTone inband tone needed to play
         */
         void PlayInbandTone( TCCPTone aTone );
 
@@ -104,26 +104,26 @@ class CPEAudioInbandTonePlayer
 
         /**
         * Playes current tone.
-		* @since Series60_2.7
-		* @param None.
+        * @since Series60_2.7
+        * @param None.
         * @return None.
-		*/
+        */
         void PlayCurrentTone();
 
-		//From MMdaAudioToneObserver
+        //From MMdaAudioToneObserver
         /**
         * Handles completion of preparation.
-		* @since Series60_2.7
-		* @param aError Isn't used.
+        * @since Series60_2.7
+        * @param aError Isn't used.
         * @return None.
         */
         void MatoPrepareComplete( TInt aError );
 
-		//From MMdaAudioToneObserver
+        //From MMdaAudioToneObserver
         /**
         * Handles completion of playing.
-		* @since Series60_2.7
-		* @param aError Isn't used.
+        * @since Series60_2.7
+        * @param aError Isn't used.
         * @return None.
         */
         void MatoPlayComplete( TInt aError );
@@ -146,12 +146,12 @@ class CPEAudioInbandTonePlayer
 
         // Currently playing, NULL or tone sequence.
         CPEAudioToneUtility* iCurrent;
-		//Member variable for inband tone
-		TCCPTone iToneName;
+        //Member variable for inband tone
+        TCCPTone iToneName;
         // Owner of this object
         CPEAudioData& iOwner;
         // Current volume setting.
-		//NetworkBusy sequence
+        //NetworkBusy sequence
         HBufC8* iResourceBusySeq;
         //NetworkBusy sequence
         HBufC8* iResourceReorderSeq;

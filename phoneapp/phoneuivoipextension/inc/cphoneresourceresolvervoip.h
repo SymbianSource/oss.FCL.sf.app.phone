@@ -78,7 +78,7 @@ NONSHARABLE_CLASS( CPhoneResourceResolverVoIP ): public CPhoneResourceResolverGS
 
         TInt iVoIPResourceOffset;       
   
-	};
+    };
 
 #endif      // CPHONERESOURCERESOLVERVOIP_H   
             

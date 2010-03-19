@@ -67,10 +67,10 @@ EXPORT_C CPhoneStateMachineGSM::~CPhoneStateMachineGSM()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneStateMachineGSM::~CPhoneStateMachineGSM() ");
     if( iEmergencyState )
-	    {
-	    delete iEmergencyState;
-	    iEmergencyState = NULL;	    	
-	    }
+        {
+        delete iEmergencyState;
+        iEmergencyState = NULL;         
+        }
     Dll::FreeTls();
     }
 
@@ -99,7 +99,7 @@ EXPORT_C MPhoneState* CPhoneStateMachineGSM::State()
             // Possible that derived class has been deleted iState,
             // so this delete statement may be useless.
             delete iState;
-            iState = NULL;	            		
+            iState = NULL;                      
             }
         
         // State transition need to be made - construct new state and
@@ -108,163 +108,163 @@ EXPORT_C MPhoneState* CPhoneStateMachineGSM::State()
             {
             case EPhoneStateCallSetup:
                 TRAP( err, iState = CPhoneCallSetup::NewL( 
-                	this, iViewCommandHandle, iCustomization ));
+                    this, iViewCommandHandle, iCustomization ));
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateAlerting:
                 TRAP( err, iState = CPhoneAlerting::NewL(
-                	this, iViewCommandHandle, iCustomization ));
+                    this, iViewCommandHandle, iCustomization ));
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateSingle:
                 TRAP( err, iState = CPhoneSingleCall::NewL( 
-                	this, iViewCommandHandle, iCustomization ));
+                    this, iViewCommandHandle, iCustomization ));
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateWaitingInSingle:
                 TRAP( err, iState = CPhoneSingleAndWaiting::NewL( 
-                	this, iViewCommandHandle, iCustomization ));
+                    this, iViewCommandHandle, iCustomization ));
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateTwoSingles:
                 TRAP( err, iState = CPhoneTwoSingles::NewL( 
-                	this, iViewCommandHandle, iCustomization ));
+                    this, iViewCommandHandle, iCustomization ));
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateCallSetupInSingle:
                 TRAP( err, iState = CPhoneSingleAndCallSetup::NewL( 
-                	this, iViewCommandHandle, iCustomization ));
+                    this, iViewCommandHandle, iCustomization ));
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateAlertingInSingle:
                 TRAP( err, iState = CPhoneSingleAndAlerting::NewL( 
-                	this, iViewCommandHandle, iCustomization ));
+                    this, iViewCommandHandle, iCustomization ));
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateConference:
                 TRAP( err, iState = CPhoneConference::NewL( 
-                	this, iViewCommandHandle, iCustomization ));
+                    this, iViewCommandHandle, iCustomization ));
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateConferenceAndCallSetup:
                 TRAP( err, iState = CPhoneConferenceAndCallSetup::NewL( 
-                	this, iViewCommandHandle, iCustomization ) );
+                    this, iViewCommandHandle, iCustomization ) );
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
  
             case EPhoneStateConferenceAndSingle:
                 TRAP( err, iState = CPhoneConferenceAndSingle::NewL( 
-                	this, iViewCommandHandle, iCustomization ) );
+                    this, iViewCommandHandle, iCustomization ) );
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateConferenceAndWaiting:
                 TRAP( err, iState = CPhoneConferenceAndWaiting::NewL( 
-                	this, iViewCommandHandle, iCustomization ) );
+                    this, iViewCommandHandle, iCustomization ) );
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateSingleAndCallSetupAndWaiting:
                 TRAP( err, iState = CPhoneSingleAndCallSetupAndWaiting::NewL( 
-                	this, iViewCommandHandle, iCustomization ) );
+                    this, iViewCommandHandle, iCustomization ) );
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateCallSetupAndWaiting:
                 TRAP( err, iState = CPhoneCallSetupAndWaiting::NewL( 
-                	this, iViewCommandHandle, iCustomization ) );
+                    this, iViewCommandHandle, iCustomization ) );
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
 
             case EPhoneStateTwoSinglesAndWaiting:
                 TRAP( err, iState = CPhoneTwoSinglesAndWaiting::NewL( 
-                	this, iViewCommandHandle, iCustomization ) );
+                    this, iViewCommandHandle, iCustomization ) );
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateConferenceAndSingleAndWaiting:
                 TRAP( err, iState = CPhoneConferenceAndSingleAndWaiting::NewL( 
-                	this, iViewCommandHandle, iCustomization ));
+                    this, iViewCommandHandle, iCustomization ));
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateEmergency:
                 if( !iEmergencyStateConstructed )
-	                {
-	                TRAP( err, iEmergencyState = CPhoneEmergency::NewL( 
-	                	this, iViewCommandHandle, iCustomization ) );
-	                __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );						                	
-					iEmergencyStateConstructed = ETrue;
-	                }
+                    {
+                    TRAP( err, iEmergencyState = CPhoneEmergency::NewL( 
+                        this, iViewCommandHandle, iCustomization ) );
+                    __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );                                          
+                    iEmergencyStateConstructed = ETrue;
+                    }
                 static_cast< CPhoneEmergency* >( iEmergencyState )->
                     SetStartupInterrupted( iOldStateId == EPhoneStateStartup );
-				iState = iEmergencyState;
+                iState = iEmergencyState;
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateConferenceAndWaitingAndCallSetup:
                 TRAP( err, iState = 
-          			CPhoneConferenceAndWaitingAndCallSetup::NewL( 
-          				this, iViewCommandHandle, iCustomization ) );
+                    CPhoneConferenceAndWaitingAndCallSetup::NewL( 
+                        this, iViewCommandHandle, iCustomization ) );
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateIdle:
-            	if ( iOldStateId != EPhoneStateEmergency )
-	            	{
+                if ( iOldStateId != EPhoneStateEmergency )
+                    {
                     if( !iEmergencyStateConstructed )
-	                    {
-	                    TRAP( err, iEmergencyState = CPhoneEmergency::NewL( 
-	                    	this, iViewCommandHandle, iCustomization ) );
-	                    __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );						                	
-					    iEmergencyStateConstructed = ETrue;
-	                    }
-	            	}
-	            if( iIdleState == NULL )
-		            {
-	                TRAP( err, iIdleState = 
-	          			CPhoneIdle::NewL( this, iViewCommandHandle, iCustomization ) );
-	                __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
-		            }
-				iState = iIdleState;
+                        {
+                        TRAP( err, iEmergencyState = CPhoneEmergency::NewL( 
+                            this, iViewCommandHandle, iCustomization ) );
+                        __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );                                          
+                        iEmergencyStateConstructed = ETrue;
+                        }
+                    }
+                if( iIdleState == NULL )
+                    {
+                    TRAP( err, iIdleState = 
+                        CPhoneIdle::NewL( this, iViewCommandHandle, iCustomization ) );
+                    __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
+                    }
+                iState = iIdleState;
                 madeStateTransition = ETrue;
                 break;
                 
             case EPhoneStateIncoming:
                 TRAP( err, iState = 
-          			CPhoneIncoming::NewL( this, iViewCommandHandle, iCustomization ) );
+                    CPhoneIncoming::NewL( this, iViewCommandHandle, iCustomization ) );
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
 
             case EPhoneStateStartup:
                 TRAP( err, iState = 
-          			CPhoneStartup::NewL( this, iViewCommandHandle, 
-          			iOldStateId == EPhoneStateEmergency ) );
+                    CPhoneStartup::NewL( this, iViewCommandHandle, 
+                    iOldStateId == EPhoneStateEmergency ) );
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;

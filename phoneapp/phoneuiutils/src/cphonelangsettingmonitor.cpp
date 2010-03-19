@@ -51,10 +51,13 @@ void CPhoneLangSettingMonitor::ConstructL()
     {
     TInt language(1); // english
 
-    TInt err( CPhoneCenRepProxy::Instance()->GetInt(
+// <-- QT PHONE START-->
+    /*TInt err( CPhoneCenRepProxy::Instance()->GetInt(
         KCRUidAknFep,
         KAknFepInputTxtLang,
-        language ));
+        language ));*/
+    TInt err = KErrNone;
+// <-- QT PHONE END-->    
     
     if ( err == KErrNone )
         {

@@ -20,7 +20,10 @@
 #include <platform_paths.hrh>
 
 // Capability assignment.
-CAPABILITY CAP_APPLICATION MultiMediaDD PowerMgmt NetworkControl DRM DiskAdmin
+// <-- QT PHONE START --> 
+CAPABILITY CAP_GENERAL_DLL
+//CAPABILITY CAP_APPLICATION MultiMediaDD PowerMgmt NetworkControl DRM DiskAdmin
+// <-- QT PHONE END --> 
 
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
@@ -69,14 +72,20 @@ SOURCE          tphonecmdparamincallindicatordata.cpp
 SOURCE          tphonecmdparaminteger.cpp
 SOURCE          tphonecmdparamkeycapture.cpp
 SOURCE          tphonecmdparamkeyevent.cpp
-SOURCE          tphonecmdparammessageeditor.cpp
+// <-- QT PHONE START --> 
+//SOURCE          tphonecmdparammessageeditor.cpp
+// <-- QT PHONE END --> 
 SOURCE          tphonecmdparamnote.cpp
 SOURCE          tphonecmdparamprogressnote.cpp
 SOURCE          tphonecmdparamquery.cpp
-SOURCE          tphonecmdparamreconnectquery.cpp
+// <-- QT PHONE START -->
+//SOURCE          tphonecmdparamreconnectquery.cpp
+// <-- QT PHONE END -->
 SOURCE          tphonecmdparamringtone.cpp
 SOURCE          tphonecmdparamsfidata.cpp
-SOURCE          tphonecmdparamsingleitemfetch.cpp
+// <-- QT PHONE START -->
+//SOURCE          tphonecmdparamsingleitemfetch.cpp
+// <-- QT PHONE END -->
 SOURCE          tphonecmdparamspeeddial.cpp
 SOURCE          tphonecmdparamstring.cpp
 SOURCE          tphonecommandparam.cpp
@@ -88,7 +97,7 @@ SOURCE          tphonecmdparampointer.cpp
 SOURCE          tphonetouchbuttonconfig.cpp
 
 USERINCLUDE     ../../phoneuiutils/inc
-USERINCLUDE     ../../phoneui/srcdata
+USERINCLUDE     ../../phoneui2/srcdata
 
 APP_LAYER_SYSTEMINCLUDE         // Application layer domain APIs
 SYSTEMINCLUDE   ../../../inc    // Telephony internal headers
@@ -101,9 +110,12 @@ LIBRARY         featmgr.lib         // FeatureManager
 LIBRARY         cenrepnotifhandler.lib
 LIBRARY         centralrepository.lib
 LIBRARY         ptiengine.lib
-LIBRARY	        avkon.lib
+LIBRARY         avkon.lib
 LIBRARY         ws32.lib
-LIBRARY         cauiengine.lib
+// <-- QT PHONE START -->
+//LIBRARY         cauiengine.lib
+// <-- QT PHONE END -->
+
 #ifndef __WINS__
 LIBRARY         efsrv.lib
 #endif

@@ -138,7 +138,7 @@ enum
     EPhoneInCallCmdProcessSend, // NOT IN MENU!
     EPhoneInCallCmdDrop,
     EPhoneInCallCmdPrivate,
-    EPhoneInCallCmdCbaJoin,	// NOT IN MENU!
+    EPhoneInCallCmdCbaJoin, // NOT IN MENU!
     EPhoneInCallCmdDialer,
 
     // Enable video
@@ -178,7 +178,7 @@ enum
     EPhoneCmdSettingsUiExit,
     // Settings GUI - Data Parameters GUI (commands specific to DataParameters)
     EPhoneCmdDataParametersRestoreSettings,
-    EPhoneCmdRelease,	
+    EPhoneCmdRelease,   
     // DTMF specific
     EPhoneCmdDtmfSearch,
     EPhoneCmdDtmfOk,
@@ -210,8 +210,8 @@ enum
     EPhoneDialerCmdTouchInput,
     EPhoneDialerCmdSpeedDial,
     EPhoneDialerCmdEditText,
-    EPhoneDialerCallSettings,	
-    EPhoneDtmfDialerCancel,	
+    EPhoneDialerCallSettings,   
+    EPhoneDtmfDialerCancel, 
     EPhoneDtmfDialerExit,
     EPhoneIsDTMFDialerVisible,
     EPhoneDialerCmdHelp,
@@ -219,6 +219,10 @@ enum
     EPhoneIsCustomizedDialerVisible,
 
     EPhoneCmdVideoCallOutOfMemory,
+
+// <-- QT PHONE START -->
+    EPhoneCmdUpdateUiControls,
+// <-- QT PHONE END -->
    
     EPhoneCmdLast
     };

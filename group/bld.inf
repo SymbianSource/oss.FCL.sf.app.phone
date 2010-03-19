@@ -18,10 +18,10 @@
 
 #include "../phoneapp/group/bld.inf"
 #include "../phoneengine/group/bld.inf"
-#include "../phonesettings/group/bld.inf"
 #include "../phoneuis/group/bld.inf"
 #include "../phone_plat/group/bld.inf"
 #include "../phoneplugins/group/bld.inf"
+
 
 
 // End of File

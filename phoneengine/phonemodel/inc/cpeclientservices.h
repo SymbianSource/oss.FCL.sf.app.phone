@@ -22,8 +22,8 @@
 
 //INCLUDES
 #include <e32base.h>
-#include <RPhCltServer.h>
-#include  <CPhCltEmergencyCall.h>
+#include <rphcltserver.h>
+#include  <cphcltemergencycall.h>
 
 
 // FORWARD DECLARATIONS
@@ -62,11 +62,11 @@ NONSHARABLE_CLASS( CPEClientServices ) : public CBase
         /**
         * Two-phased constructor.
         */
-		 static CPEClientServices* NewL(
+         static CPEClientServices* NewL(
              MPEPhoneModelInternal& aModel,
              CPEMessageHandler& aMessageHandler, 
              MPECallHandling& aCallHandling,
-             CPEManualCallControlHandler& aManualCallControlHandler );	
+             CPEManualCallControlHandler& aManualCallControlHandler );  
         
     public:    //New functions
 
@@ -117,7 +117,7 @@ NONSHARABLE_CLASS( CPEClientServices ) : public CBase
         void ConstructL();
 
 
-    private:	//Data
+    private:    //Data
         // MPEPhoneModelInternal is used to send message to the phone application
         MPEPhoneModelInternal& iModel;
         // CPEMessageHandler object which owns this requester.

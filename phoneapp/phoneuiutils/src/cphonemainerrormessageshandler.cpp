@@ -98,9 +98,9 @@ EXPORT_C CPhoneMainErrorMessagesHandler* CPhoneMainErrorMessagesHandler::Instanc
         {
         TRAPD( err, instance = CPhoneMainErrorMessagesHandler::NewL() );
         if ( err )
-	        {
-	        Panic( EPhoneUtilsCouldNotCreateSingleton );	
-	        }
+            {
+            Panic( EPhoneUtilsCouldNotCreateSingleton );    
+            }
         }
     return instance;
     }

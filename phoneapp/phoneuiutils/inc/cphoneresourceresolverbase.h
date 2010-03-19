@@ -33,8 +33,8 @@ class CEikonEnv;
 *  Concrete resource resolver for common phoneapp resources.
 */
 class CPhoneResourceResolverBase : 
-	public CBase,
-	public MPhoneResourceResolver
+    public CBase,
+    public MPhoneResourceResolver
     {
     public: // Constructors and destructor
         
@@ -94,13 +94,13 @@ class CPhoneResourceResolverBase :
             EVideoCallMenu = 4
             };
         TInt iVariationFlags;
-		
-		CEikonEnv& iEnv;
+        
+        CEikonEnv& iEnv;
         
         TInt iCUIResourceOffset;
         TInt iPTCHResourceOffset;
-		
-		// Touch button config
+        
+        // Touch button config
         TPhoneTouchButtonConfig iTouchButtonConfig;
     };
 

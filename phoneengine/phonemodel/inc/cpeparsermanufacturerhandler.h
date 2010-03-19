@@ -21,7 +21,7 @@
 #define CPEPARSERMANUFACTURERHANDLER_H
 
 //INCLUDES
-#include <CPhoneGsmManufacturerHandler.h>
+#include <cphonegsmmanufacturerhandler.h>
 #include <pevirtualengine.h>
 
 // CONSTANTS

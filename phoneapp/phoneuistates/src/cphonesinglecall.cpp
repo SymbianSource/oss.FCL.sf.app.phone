@@ -25,9 +25,11 @@
 #include <mpeengineinfo.h>
 #include <cpephonemodelif.h>
 #include <connect/sbdefs.h>
+// <-- QT PHONE START --> 
 #include <videotelcontrolmediatorapi.h>
+// <-- QT PHONE END --> 
 #include <MediatorDomainUIDs.h>
-#include <TelephonyVariant.hrh>
+#include <telephonyvariant.hrh>
 
 #include "cphonesinglecall.h"
 #include "tphonecmdparamstring.h"
@@ -120,7 +122,7 @@ EXPORT_C void CPhoneSingleCall::ConstructL()
     
     // Update phone number availability for menu use
     PhoneNumberAvailableInPhoneEngineL( callStateData.CallId() );
-	  
+      
     }
 
 // -----------------------------------------------------------
@@ -301,23 +303,27 @@ EXPORT_C TBool CPhoneSingleCall::HandleCommandL( TInt aCommand )
         case EPhoneCmdYesSwitchToVoice:
             // Set current call id
             iStateMachine->SetCallId( iCallId );
-						if( IsVideoCall( iCallId ) )
-						{
-						   // Video call can be released only after we get response to VT Shutdown Command
-						   CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( KMediatorVideoTelephonyDomain,
-						                                                              KCatPhoneToVideotelCommands, 
-						                                                              EVtCmdReleaseDataport,
-						                                                              TVersion( KPhoneToVideotelCmdVersionMajor,
-						            	                                                    KPhoneToVideotelCmdVersionMinor, 
-						            	                                                    KPhoneToVideotelCmdVersionBuild ),
-						                                                              KNullDesC8,
-						                                                              CPhoneSwitchToVideoOrVoiceCommand::NewL( *iStateMachine ) );
-						}
-						else
-						{
-						  iStateMachine->SendPhoneEngineMessage(
-						      CPEPhoneModelIF::EPEMessageSwitchToVideoOrVoice );					
-						}
+                        if( IsVideoCall( iCallId ) )
+                        {
+                           // Video call can be released only after we get response to VT Shutdown Command
+// <-- QT PHONE START -->
+ 
+                           CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( KMediatorVideoTelephonyDomain,
+                                                                                      KCatPhoneToVideotelCommands, 
+                                                                                      EVtCmdReleaseDataport,
+                                                                                      TVersion( KPhoneToVideotelCmdVersionMajor,
+                                                                                            KPhoneToVideotelCmdVersionMinor, 
+                                                                                            KPhoneToVideotelCmdVersionBuild ),
+                                                                                      KNullDesC8,
+                                                                                      CPhoneSwitchToVideoOrVoiceCommand::NewL( *iStateMachine ) );
+
+// <-- QT PHONE END --> 
+                        }
+                        else
+                        {
+                          iStateMachine->SendPhoneEngineMessage(
+                              CPEPhoneModelIF::EPEMessageSwitchToVideoOrVoice );                    
+                        }
             break;
 
         case EPhoneVideoSharing:
@@ -431,6 +437,9 @@ void CPhoneSingleCall::HandleHeldL( TInt aCallId )
         }
 
     UpdateInCallCbaL();
+// <-- QT PHONE START -->
+    SetTouchPaneButtons( EPhoneIncallHeldButtons );
+// <-- QT PHONE END -->
     }
     
 // -----------------------------------------------------------
@@ -465,6 +474,9 @@ void CPhoneSingleCall::HandleConnectedL( TInt aCallId )
         }
 
     UpdateInCallCbaL();  
+// <-- QT PHONE START -->
+    SetTouchPaneButtons( EPhoneIncallButtons );
+// <-- QT PHONE END -->
     }
     
 // -----------------------------------------------------------
@@ -475,17 +487,28 @@ void CPhoneSingleCall::ToggleHoldL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::ToggleHoldL()");
-    TPhoneCmdParamBoolean hold;
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetHoldFlag, &hold );
-   
-    if( hold.Boolean() )
+
+    // <-- QT PHONE START --> 
+    TPECallControlCaps callControlCaps =
+        iStateMachine->PhoneEngineInfo()->CallControlCaps( iCallId );
+    
+    if ( callControlCaps & MCCECallObserver::ECCECapsHold  )
         {
-        SetCallResumeL();
+        iStateMachine->SetCallId( iCallId );         
+        iStateMachine->SendPhoneEngineMessage( 
+            CPEPhoneModelIF::EPEMessageHold );    
+        }
+    else if ( callControlCaps & MCCECallObserver::ECCECapsResume )
+        {
+        iStateMachine->SetCallId( iCallId );         
+        iStateMachine->SendPhoneEngineMessage( 
+            CPEPhoneModelIF::EPEMessageResume );    
         }
     else
         {
-        SetCallHoldL();
+        SendGlobalInfoNoteL( EPhoneNoteTextNotAllowed );    
         }
+    // <-- QT PHONE END -->
     }
         
 // -----------------------------------------------------------
@@ -506,14 +529,17 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
     AllowShowingOfWaitingCallHeaderL( dialerParam );    
 
     // Close fast swap window if it's displayed
-    CEikonEnv::Static()->DismissTaskList();
-
-    // Show incoming call buttons
-    SetTouchPaneButtons( EPhoneWaitingCallButtons );    
+// <-- QT PHONE START --> 
+//    CEikonEnv::Static()->DismissTaskList();
+ 
 
     // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
-
+    
+    // Show incoming call buttons
+    SetTouchPaneButtons( EPhoneWaitingCallButtons ); 
+// <-- QT PHONE END -->
+    
     if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
             && !CPhoneCenRepProxy::Instance()->
             IsTelephonyFeatureSupported( KTelephonyLVFlagAllowUnlockOnIncoming ) 
@@ -536,7 +562,7 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
         {
         DisableHWKeysL();
         }
-    
+        
     EndUiUpdate();
 
     // This query is required to dismiss
@@ -636,12 +662,14 @@ void CPhoneSingleCall::HandleDiallingL( TInt aCallId )
     BeginUiUpdateLC();
     
     SetNumberEntryVisibilityL(EFalse);
+
+    //QT PHONE START
+    // Display call setup 
+    DisplayCallSetupL( aCallId );
     
     // Show incoming call buttons
     SetTouchPaneButtons( EPhoneCallSetupAndSingleButtons );
-
-    // Display call setup 
-    DisplayCallSetupL( aCallId );
+    //QT PHONE END
 
     EndUiUpdate();
     
@@ -743,7 +771,7 @@ void CPhoneSingleCall::SwitchToVideoL()
         "CPhoneSingleCall::SwitchToVideoL()");
 
     if( FeatureManager::FeatureSupported( KFeatureIdCsVideoTelephony ) )
-    	{        
+        {        
         TInt networkMode( CPhonePubSubProxy::Instance()->Value( KPSUidNetworkInfo,
             KNWTelephonyNetworkMode ) );
         TBool restoreOngoing( CPhonePubSubProxy::Instance()->Value( KUidSystemCategory,

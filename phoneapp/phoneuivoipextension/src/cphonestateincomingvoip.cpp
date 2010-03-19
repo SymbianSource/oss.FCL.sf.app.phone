@@ -91,12 +91,12 @@ CPhoneStateIncomingVoIP* CPhoneStateIncomingVoIP::NewL(
 // -----------------------------------------------------------
 //
  void CPhoneStateIncomingVoIP::HandleLongHashL()
-	{
+    {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension,
-    	"CPhoneStateIncomingVoIP::HandleLongHashL( ) ");
+        "CPhoneStateIncomingVoIP::HandleLongHashL( ) ");
 
     CPhoneState::HandleLongHashL();
-	}
+    }
 
 
 // -----------------------------------------------------------
@@ -118,7 +118,7 @@ void CPhoneStateIncomingVoIP::HandleAudioPlayStoppedL()
             {
             resourceId = EPhoneNumberAcqCBA;
             }
-    	
+        
         iCbaManager->SetCbaL( resourceId );
         }
     else

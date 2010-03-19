@@ -146,8 +146,8 @@ void CPEAccessoryModeMonitor::DoCancel()
 void CPEAccessoryModeMonitor::RunL()
     {
     TEFLOGSTRING2(KTAINT, "CPEAccessoryModeMonitor::RunL %d", iStatus.Int() );
- 	
- 	switch ( iStatus.Int() )
+    
+    switch ( iStatus.Int() )
         {
         case KErrNone:
             {
@@ -161,7 +161,7 @@ void CPEAccessoryModeMonitor::RunL()
         case KErrNotSupported:
             break;
         default:
-        	// Issue request again if needed.
+            // Issue request again if needed.
              Start();
             break;
         }
@@ -178,10 +178,10 @@ void CPEAccessoryModeMonitor::Start()
     {
     TEFLOGSTRING(KTAINT, "CPEAccessoryModeMonitor::Start" );
     if ( !IsActive() )
-    	{
+        {
         iMode.NotifyAccessoryModeChanged( iStatus, iPolAccessoryMode );
-  		SetActive();                          
-    	}    
+        SetActive();                          
+        }    
     }
  
 //  End of File  

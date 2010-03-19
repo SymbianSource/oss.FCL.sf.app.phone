@@ -23,13 +23,21 @@
 #include <AknsItemID.h>
 #include <StringLoader.h>
 
-#include <phoneui.mbg>
-#include <phoneui.rsg>
-#include <phoneuivoip.rsg>
-#include <data_caging_path_literals.hrh> // For KDC_APP_BITMAP_DIR
+
+// <-- QT PHONE START -->
+//#include <phoneui.mbg>
+#include "phoneresourceids.h"
+//#include <phoneui.rsg>
+//#include <phoneuivoip.rsg>
+// <-- QT PHONE END -->
 
 #include "phoneui.pan"
 #include "phonelogger.h"
+// <-- QT PHONE START -->
+//#include "cphonebubblewrapper.h" // For KDC_APP_BITMAP_DIR
+#include <data_caging_path_literals.hrh>
+// <-- QT PHONE END -->
+
 #include "cphonetransferdialercontroller.h"
 #include "cphonemainresourceresolver.h"
 #include "phonerssvoip.h"
@@ -43,6 +51,8 @@ _LIT ( KPhoneMifFileName, "phoneui.mif" );
 // Number of buttons 
 const TInt KButtonCount = 2;
 
+// <-- QT PHONE START -->
+/*
 class TPhoneDialerToolbarButton 
     {
 public:
@@ -62,7 +72,9 @@ const TPhoneDialerToolbarButton bArray[KButtonCount] =
               EPhoneCmdTransferDialerSearch
             }                 
         };  
-
+        
+ */
+// <-- QT PHONE END -->
 // ================= MEMBER FUNCTIONS =======================
 
 // C++ default constructor can NOT contain any code, that
@@ -116,10 +128,13 @@ void CPhoneTransferDialerController::InitializeL( CAknToolbar& aToolbar )
         iToolbar = &aToolbar;
         // Create transfer specific buttons and add them to the 
         // toolbar starting from index 0
-        CAknButton* button( NULL );
-    
+ // <-- QT PHONE START --> 
+        //CAknButton* button( NULL );
+  
+ /*
         for( TInt i = 0; i < KButtonCount; i++ )
             {
+           
             TAknsItemID skinId = SkinId( bArray[i].iIconIndex );
             // Load tooltip text.
             HBufC* tooltipText = GetTooltipTextL( bArray[i].iCommandId );  
@@ -133,7 +148,9 @@ void CPhoneTransferDialerController::InitializeL( CAknToolbar& aToolbar )
             iToolbar->AddItemL( button, EAknCtButton, bArray[i].iCommandId, 0, i );
             CleanupStack::Pop( button );
             CleanupStack::PopAndDestroy( tooltipText );
-            }      
+            } 
+            */
+ // <-- QT PHONE END -->        
         iIsInitialized = ETrue;
         }
    
@@ -209,9 +226,9 @@ void CPhoneTransferDialerController::ShowButtons( TBool aShow )
     __ASSERT_DEBUG( iToolbar, Panic( EPhoneCtrlInvariant ) );
     for( TInt i = 0; i < KButtonCount; i++ )
         {
-        iToolbar->HideItem( bArray[ i ].iCommandId, !aShow, EFalse );
-        }    
-    
+// <-- QT PHONE START -->   
+        //iToolbar->HideItem( bArray[ i ].iCommandId, !aShow, EFalse );
+        }
     if ( aShow )
         {
         iToolbar->SetItemDimmed( EPhoneCmdTransferDialerOk, ETrue, EFalse ); 
@@ -219,7 +236,8 @@ void CPhoneTransferDialerController::ShowButtons( TBool aShow )
         iToolbar->SetItemDimmed( EPhoneDialerCmdClear, ETrue, EFalse ); 
         }
     
-    iToolbar->DrawDeferred();
+    //iToolbar->DrawDeferred();
+// <-- QT PHONE END --> 
     }
 
 // ---------------------------------------------------------------------------
@@ -293,12 +311,14 @@ HBufC* CPhoneTransferDialerController::GetTooltipTextL( TInt aCommandId ) const
 // CPhoneTransferDialerController::SkinId
 // ---------------------------------------------------------------------------
 //    
-TAknsItemID CPhoneTransferDialerController::SkinId( TInt aIconIndex ) const
+TAknsItemID CPhoneTransferDialerController::SkinId( TInt /*aIconIndex*/ ) const
     {
     TAknsItemID skinId;
-    
+ // <-- QT PHONE START -->
+ /*
     switch ( aIconIndex )
         {
+        
         case EMbmPhoneuiQgn_indi_button_send_dtmf:
             skinId = KAknsIIDQgnIndiButtonSendDtmf;
             break;
@@ -309,6 +329,8 @@ TAknsItemID CPhoneTransferDialerController::SkinId( TInt aIconIndex ) const
             skinId = KAknsIIDNone;        
             break;            
         }
-    
+  */
+  skinId = KAknsIIDNone; 
+// <-- QT PHONE END -->     
     return skinId;  
     }

@@ -62,7 +62,7 @@ EXPORT_C void TPhoneCmdParamGlobalNote::SetTextResourceId(
    TInt aTextResourceId )
    {
     __ASSERT_DEBUG( aTextResourceId, 
-    	Panic( EPhoneUtilsParameterNotInitialized ) );
+        Panic( EPhoneUtilsParameterNotInitialized ) );
    iTextResourceId = aTextResourceId;   
    }
 

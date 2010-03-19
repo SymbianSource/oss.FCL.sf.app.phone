@@ -118,7 +118,7 @@ EXPORT_C CPEGsmAudioData* CPEGsmAudioData::NewL
         ( 
         MPEPhoneModelInternal& aPhoneModel,
         RFs& aFsSession,
-        CPEAudioFactory& aAudioFactory	
+        CPEAudioFactory& aAudioFactory  
         )
     {
     CPEGsmAudioData* self = new ( ELeave ) 
@@ -151,7 +151,7 @@ EXPORT_C void CPEGsmAudioData::PlayDtmfTone
         const TChar& aTone //DTMF tone to play
         ) const
     {
-	TInt volume;  //DTMF tone volume
+    TInt volume;  //DTMF tone volume
     volume = iPhoneModel.DataStore()->KeypadVolume();
 
     TEFLOGSTRING3( KTAREQIN, 
@@ -159,7 +159,7 @@ EXPORT_C void CPEGsmAudioData::PlayDtmfTone
         &aTone, 
         volume );
 
-	iDtmfTonePlayer->SetVolume( volume );
+    iDtmfTonePlayer->SetVolume( volume );
     iDtmfTonePlayer->PlayDtmfTone( aTone );
     }
 
@@ -232,7 +232,7 @@ EXPORT_C void CPEGsmAudioData::HandleDTMFEvent( const MCCEDtmfObserver::TCCEDtmf
                 if ( DtmfLocalPlayAllowed() )
                     {
                     TEFLOGSTRING( KTAINT, "AUD CPEGsmAudioData::HandleDTMFEvent: PlayDtmfTone" );
-    			    PlayDtmfTone( aTone );
+                    PlayDtmfTone( aTone );
                     }
                 else
                     {
@@ -249,16 +249,16 @@ EXPORT_C void CPEGsmAudioData::HandleDTMFEvent( const MCCEDtmfObserver::TCCEDtmf
             case ECCEDtmfStringSendingCompleted:
             default:
                 TEFLOGSTRING( KTAINT, "AUD CPEGsmAudioData::HandleDTMFEvent: StopDtmfTonePlay" );
-    			//Stop tone playing
-    			StopDtmfTonePlay();
+                //Stop tone playing
+                StopDtmfTonePlay();
                 break;
             }
         }
     else
         {
         TEFLOGSTRING( KTAINT, "AUD CPEGsmAudioData::HandleDTMFEvent: Error case" );
-    	//Stop tone playing
-    	StopDtmfTonePlay();
+        //Stop tone playing
+        StopDtmfTonePlay();
         }
     }
 

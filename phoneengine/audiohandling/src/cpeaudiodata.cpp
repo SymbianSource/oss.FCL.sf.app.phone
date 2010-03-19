@@ -32,7 +32,7 @@
 #include "cpeaudiodtmftoneplayer.h"
 #include "cpeaudioroutingmonitor.h"
 #include "cpecallaudioroutinghandler.h"
-#include "cpeaudiofactory.h"	
+#include "cpeaudiofactory.h"    
 #include <telinternalpskeys.h>
 // CONSTANTS
 //Mute Value for volume
@@ -73,7 +73,7 @@ void CPEAudioData::ConstructL( CPEAudioFactory& aAudioFactory )
     RProperty::TType type( RProperty::EInt );
     TSecurityPolicy readPolicy( ECapability_None );
     TSecurityPolicy writePolicy( ECapabilityWriteDeviceData );
-    	
+        
     RProperty::Define( KPSUidTelMicrophoneMuteStatus, 
         KTelMicrophoneMuteState,
         type,
@@ -196,33 +196,33 @@ void CPEAudioData::SendMessage(
         "AUD CPEAudioData::SendMessage: aMessage = %d", aMessage );
    
    if ( aMessage == MEngineMonitor::EPEMessageAudioVolumeChanged )
-	   {
-	    // update volume
-	    if ( iPhoneModel.DataStore()->AudioOutput() == EPELoudspeaker )
-	        {
-	        iLoudspeakerVolume = iPhoneModel.DataStore()->AudioVolume();
-	        TEFLOGSTRING2( KTAINT, 
-	            "AUD CPEAudioData::SendMessage: iLoudspeakerVolume = %d", 
-	            iLoudspeakerVolume );
-	        }
-	    else 
-	        {
-	        iHeadSetVolume = iPhoneModel.DataStore()->AudioVolume();
-	        TEFLOGSTRING2( KTAINT, 
-	            "AUD CPEAudioData::SendMessage: iHeadSetVolume = %d", 
-	            iHeadSetVolume );
-	        }	
-    	   	
-       	if ( !iAudioOutputChanged )
+       {
+        // update volume
+        if ( iPhoneModel.DataStore()->AudioOutput() == EPELoudspeaker )
+            {
+            iLoudspeakerVolume = iPhoneModel.DataStore()->AudioVolume();
+            TEFLOGSTRING2( KTAINT, 
+                "AUD CPEAudioData::SendMessage: iLoudspeakerVolume = %d", 
+                iLoudspeakerVolume );
+            }
+        else 
+            {
+            iHeadSetVolume = iPhoneModel.DataStore()->AudioVolume();
+            TEFLOGSTRING2( KTAINT, 
+                "AUD CPEAudioData::SendMessage: iHeadSetVolume = %d", 
+                iHeadSetVolume );
+            }   
+            
+        if ( !iAudioOutputChanged )
             {
             // EPEMessageAudioVolumeChanged message must not be sent 
             // while audio output change is being processed
-            iPhoneModel.SendMessage( aMessage );	
+            iPhoneModel.SendMessage( aMessage );    
             }
-	   }
+       }
     else 
         {
-        iPhoneModel.SendMessage( aMessage );	
+        iPhoneModel.SendMessage( aMessage );    
         }        
     }
 
@@ -402,7 +402,7 @@ EXPORT_C void CPEAudioData::SetAudioVolumeSync(
             TEFLOGSTRING( KTAINT, 
                 "AUD CPEAudioData::SetAudioVolumeSync: EPEIncallEarVolumeSetting");
             }
-		}            
+        }            
  
     iPhoneModel.DataStore()->SetAudioVolume( aAudioVolume );
 
@@ -470,41 +470,41 @@ void CPEAudioData::SetTAROutput(
 #if defined(__WINSCW__ ) && !defined(UNIT_TESTING)
     iAudioRouting->SetShowNote( aShowNote );
     SendMessage( MEngineMonitor::EPEMessageAudioOutputChanged, aOutput);
-#else   	
-    CTelephonyAudioRouting::TAudioOutput output = iAudioRouting->Output();    	
+#else       
+    CTelephonyAudioRouting::TAudioOutput output = iAudioRouting->Output();      
      
     if ( output == aOutput ) 
-    	{
-    	// audio routing cannot changed
-    	TEFLOGSTRING2( KTAERROR, 
-    	    "AUD CPEAudioData::SetTAROutput: audio path already (%d)"
-    	    , aOutput );
-  		return;
-     	}
-    iAudioRouting->SetShowNote( aShowNote );     	    
-   	TRAPD( err, iAudioRouting->SetOutputL( aOutput ) );
+        {
+        // audio routing cannot changed
+        TEFLOGSTRING2( KTAERROR, 
+            "AUD CPEAudioData::SetTAROutput: audio path already (%d)"
+            , aOutput );
+        return;
+        }
+    iAudioRouting->SetShowNote( aShowNote );            
+    TRAPD( err, iAudioRouting->SetOutputL( aOutput ) );
     
-	if( err )
-		{
-		TEFLOGSTRING2( KTAERROR, 
-		    "AUD CPEAudioData::SetTAROutput:Leave.1 (%d)", err );
- 	    switch ( aOutput )
-		    {
-			case CTelephonyAudioRouting::ELoudspeaker:
-			case CTelephonyAudioRouting::EWiredAudioAccessory:   		    
-			case CTelephonyAudioRouting::EBTAudioAccessory:
-				// if leave try handset
-				TRAPD( err2, iAudioRouting->SetOutputL( CTelephonyAudioRouting::EHandset ) );
-				if( err2 )
-					{
-					TEFLOGSTRING2( KTAERROR, 
-					    "AUD CPEAudioData::SetTAROutput:Leave.2 (%d)", err );
- 					}				
-				break;
-		  	default:
-		        // None
-		    	break;     
-		    }
+    if( err )
+        {
+        TEFLOGSTRING2( KTAERROR, 
+            "AUD CPEAudioData::SetTAROutput:Leave.1 (%d)", err );
+        switch ( aOutput )
+            {
+            case CTelephonyAudioRouting::ELoudspeaker:
+            case CTelephonyAudioRouting::EWiredAudioAccessory:              
+            case CTelephonyAudioRouting::EBTAudioAccessory:
+                // if leave try handset
+                TRAPD( err2, iAudioRouting->SetOutputL( CTelephonyAudioRouting::EHandset ) );
+                if( err2 )
+                    {
+                    TEFLOGSTRING2( KTAERROR, 
+                        "AUD CPEAudioData::SetTAROutput:Leave.2 (%d)", err );
+                    }               
+                break;
+            default:
+                // None
+                break;     
+            }
         }
 #endif        
     }

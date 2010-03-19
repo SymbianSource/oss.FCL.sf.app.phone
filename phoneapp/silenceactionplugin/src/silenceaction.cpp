@@ -81,7 +81,7 @@ void CSilenceAction::ConstructL( )
 
     iPhoneClient = CPhCltCommandHandler::NewL();
 
-	LOG_1( _L("<-CSilenceAction::ConstructL: END") );
+    LOG_1( _L("<-CSilenceAction::ConstructL: END") );
     }
 
 //-----------------------------------------------------------------------------
@@ -94,9 +94,9 @@ void CSilenceAction::ActionMuteRingingTone( )
     if ( !IsActive() ) 
         {
         iPhoneClient->MuteRingingTone(iStatus);
-    	SetActive();
+        SetActive();
         }
-	LOG_1( _L("<-CSilenceAction::ActionMuteRingingTone: END") );
+    LOG_1( _L("<-CSilenceAction::ActionMuteRingingTone: END") );
     }
 //-----------------------------------------------------------------------------
 // CSilenceAction::RunL

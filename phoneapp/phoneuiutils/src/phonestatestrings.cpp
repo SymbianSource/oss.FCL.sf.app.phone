@@ -35,15 +35,15 @@ _STLIT8(K7, "EPhoneStateEmergency");
 
 // Intermediate
 const void * const KStringPointers[] =
-	{
-	(const void*)&K1,
-	(const void*)&K2,
-	(const void*)&K3,
-	(const void*)&K4,
-	(const void*)&K5,
-	(const void*)&K6,
-	(const void*)&K7
-	};
+    {
+    (const void*)&K1,
+    (const void*)&K2,
+    (const void*)&K3,
+    (const void*)&K4,
+    (const void*)&K5,
+    (const void*)&K6,
+    (const void*)&K7
+    };
 
 const TStringTable PhoneStateStrings::Table = {7, KStringPointers, EFalse};
 

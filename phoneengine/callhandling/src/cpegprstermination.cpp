@@ -16,10 +16,10 @@
 */
 
 
-
+// <-- QT PHONE START --> 
 // INCLUDE FILES
 #include "cpegprstermination.h"
-#include <ccoutlinterface.h>
+// #include<ccoutlinterface.h> <CCoUtlInterface.h>
 #include <talogger.h>
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -43,7 +43,7 @@ CPEGprsTermination::~CPEGprsTermination()
     {
     TEFLOGSTRING( KTAOBJECT, "cpecall: CPEGprsTermination::~CPEGprsTermination" );
     Cancel();
-    delete iInterface;
+    //delete iInterface;
     }
 
 // -----------------------------------------------------------------------------
@@ -54,14 +54,14 @@ void CPEGprsTermination::StartL()
     {
     TEFLOGSTRING( KTAINT, "cpecall: CPEGprsTermination::StartL" );
 
-    Cancel();
+    /*Cancel();
     delete iInterface;
     iInterface = NULL;
 
     iInterface = CCoUtlInterface::NewL();
     TEFLOGSTRING( KTAREQOUT, "cpecall: CPEGprsTermination::StartL CCoUtlInterface::Terminate()" );
     iInterface->Terminate( iStatus );
-    SetActive();
+    SetActive();*/
     }
 
 // -----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ void CPEGprsTermination::StartL()
 TBool CPEGprsTermination::IsTerminating() const
     {
     TEFLOGSTRING( KTAINT, "cpecall: CPEGprsTermination::IsTerminating" );
-    if ( !iInterface )
+    /*if ( !iInterface )
         {
         return EFalse;
         }
@@ -83,7 +83,9 @@ TBool CPEGprsTermination::IsTerminating() const
         return 
             ( current != CCoUtlInterface::EIdle ) &&
             ( current != CCoUtlInterface::EConfirm );
-        }
+        }*/
+    
+    return EFalse;
     }
 
 // -----------------------------------------------------------------------------
@@ -93,8 +95,8 @@ TBool CPEGprsTermination::IsTerminating() const
 void CPEGprsTermination::RunL()
     {
     TEFLOGSTRING2( KTAREQEND, "cpecall: CPEGprsTermination::RunL status: %d", iStatus.Int() );
-    delete iInterface;
-    iInterface = NULL;
+    /*delete iInterface;
+    iInterface = NULL;*/
     }
 
 // -----------------------------------------------------------------------------
@@ -104,10 +106,12 @@ void CPEGprsTermination::RunL()
 void CPEGprsTermination::DoCancel()
     {
     TEFLOGSTRING( KTAREQEND, "cpecall: CPEGprsTermination::DoCancel" );
-    if( iInterface )
+    /*if( iInterface )
         {
         iInterface->Cancel();
-        }
+        }*/
     }
 
+// <-- QT PHONE END -->
+ 
 //  End of File  

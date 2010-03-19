@@ -23,10 +23,10 @@
 #include    <telinternalpskeys.h>
 #include    "CTelDMHandlerImpl.h"
 #include    "CTelDMGripHandler.h"
-#include 	"CTelDMCommandHandler.h"
-#include 	"CTelDMCallStateListener.h"
-#include	"CTelDMAudioAccessoryListener.h"
-#include	"CTelDMDebug.h"
+#include    "CTelDMCommandHandler.h"
+#include    "CTelDMCallStateListener.h"
+#include    "CTelDMAudioAccessoryListener.h"
+#include    "CTelDMDebug.h"
  
 // MODULE DATA STRUCTURES
 
@@ -85,19 +85,19 @@ CTelDMHandlerImpl* CTelDMHandlerImpl::NewL()
 void CTelDMHandlerImpl::SetObserverL( MPhoneDeviceModeObserver* aCallHandler )
     {
     // Default
-   	RProperty::Set( 
-   		KPSUidTelAudioPreference,
+    RProperty::Set( 
+        KPSUidTelAudioPreference,
         KTelAudioOutput,
         EPSAudioPrivate );                
                         
     if ( !FeatureManager::FeatureSupported( KFeatureIdKeypadNoSlider ) )
         {
-      	iCallStateListener = CTelDMCallStateListener::NewL();
- 		iAccessory = CTelDMAudioAccessoryListener::NewL();
- 		// Disconnects and answers to calls 
+        iCallStateListener = CTelDMCallStateListener::NewL();
+        iAccessory = CTelDMAudioAccessoryListener::NewL();
+        // Disconnects and answers to calls 
         iCommandHandler = CTelDMCommandHandler::NewL( 
-        									*aCallHandler, 
-        									*iAccessory );
+                                            *aCallHandler, 
+                                            *iAccessory );
 
         iCallStateListener->AddObserverL( *iCommandHandler );
         

@@ -17,7 +17,9 @@
 
 
 #include <StringLoader.h>
-#include <activeidle2domainpskeys.h>
+// <-- QT PHONE START --> 
+//#include <activeidle2domainpskeys.h>
+// <-- QT PHONE END --> 
 #include <featmgr.h>
 #include <eikenv.h>
 
@@ -224,15 +226,18 @@ void CPhoneNumberEntryManager::HandleCreateNumberEntryL()
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::HandleCreateNumberEntryL() ");
     
-    const TBool autoLcokOn = iState->IsAutoLockOn();
-    const TBool idleVal = CPhonePubSubProxy::Instance()->Value( KPSUidAiInformation, KActiveIdleState );
+     const TBool autoLcokOn = iState->IsAutoLockOn();
+// <-- QT PHONE START --> 
+    const TBool idleVal = false;
+    //const TBool idleVal = CPhonePubSubProxy::Instance()->Value( KPSUidAiInformation, KActiveIdleState );
     const TBool queryActive = iState->IsAnyQueryActiveL();
     const TBool menuBarVisible = iState->IsMenuBarVisibleL();
     
     if( autoLcokOn || 
-        ( idleVal == EPSAiForeground ) ||
+        ( idleVal /*== EPSAiForeground*/ ) ||
         ( menuBarVisible || queryActive ) )
         {
+// <-- QT PHONE END -->         
         __PHONELOG( EBasic, EPhoneControl, 
              "CPhoneNumberEntryManager::HandleCreateNumberEntryL() NE NOT CREATED" );
         __PHONELOG2( EBasic, EPhoneControl, 

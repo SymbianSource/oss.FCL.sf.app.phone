@@ -217,8 +217,11 @@ TBool CPEParserPhoneNumberHandler::IsPhoneOffline()
         {
         isPhoneOffline = ETrue;
         }
-    
-    return isPhoneOffline;
+    // <-- QT PHONE START -->
+    //TODO
+    isPhoneOffline = EFalse;
+    return isPhoneOffline; //isPhoneOffline;
+    // <-- QT PHONE END -->
     }
 
     

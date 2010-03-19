@@ -24,13 +24,13 @@ DEFAULT
 
 PRJ_EXPORTS
 ../data/silence.rul\
-	/epoc32/RELEASE/winscw/UDEB/Z/private/10282BC4/Rules/silence.rul
+    /epoc32/release/winscw/udeb/z/private/10282bc4/rules/silence.rul
 
 ../data/silence.rul\
-	/epoc32/data/Z/private/10282BC4/Rules/silence.rul
+    /epoc32/data/z/private/10282bc4/rules/silence.rul
 
 ../data/silenceactionplugin_stub.SIS\
-    /epoc32/data/z/system/install/silenceactionplugin_stub.SIS
+    /epoc32/data/z/system/install/silenceactionplugin_stub.sis
     
 ../rom/silenceactionplugin.iby\
     CORE_APP_LAYER_IBY_EXPORT_PATH(silenceactionplugin.iby)

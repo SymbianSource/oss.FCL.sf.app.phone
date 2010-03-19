@@ -124,12 +124,12 @@ TBool CPhoneStateIdleVoIP::HandleCommandL( TInt aCommand )
     TBool commandStatus( ETrue );
 
     switch( aCommand )
-        {     	
+        {       
         case EPhoneNumberAcqCmdInternetCall:
             {
             StateUtils().SelectServiceAndDialL();
             }
-        	break;
+            break;
 
         default:
             commandStatus = CPhoneIdle::HandleCommandL( aCommand );
@@ -190,16 +190,18 @@ void CPhoneStateIdleVoIP::HandleSendCommandL()
 // -----------------------------------------------------------
 //
 void CPhoneStateIdleVoIP::HandleDialingL( TInt aCallId )
-	{
+    {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, "CPhoneStateIdleVoIP::HandleDialingL( ) ");
 
-	if( iStateMachine->PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP )
-		{
-		SetCallHeaderType( CBubbleManager::EVoIPCall );			
-		}
+    if( iStateMachine->PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP )
+        {
+// <-- QT PHONE START --> 
+        SetCallHeaderType( EPECallTypeVoIP );       
+// <-- QT PHONE END -->     
+        }
 
-	CPhoneIdle::HandleDialingL( aCallId );
-	}
+    CPhoneIdle::HandleDialingL( aCallId );
+    }
 
 
 // -----------------------------------------------------------

@@ -22,7 +22,10 @@
 #include <platform_paths.hrh>
 
 // Capability assignment.
-CAPABILITY CAP_APPLICATION MultiMediaDD PowerMgmt NetworkControl DRM DiskAdmin
+// <-- QT PHONE START --> 
+CAPABILITY CAP_GENERAL_DLL
+//CAPABILITY CAP_APPLICATION MultiMediaDD PowerMgmt NetworkControl DRM DiskAdmin
+// <-- QT PHONE END --> 
 
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
@@ -68,10 +71,13 @@ LANG SC
 
 USERINCLUDE     ../inc
 USERINCLUDE     ../../phoneuicontrol/inc
-USERINCLUDE     ../../phoneuiview/inc
+// <-- QT PHONE START --> 
+USERINCLUDE     ../../phoneuiqtviewadapter/inc
+//USERINCLUDE     ../../phoneuiview/inc
+// <-- QT PHONE END --> 
 USERINCLUDE     ../../phoneui/inc
 USERINCLUDE     ../../phoneuiutils/inc
-USERINCLUDE     ../../phoneui/srcdata
+USERINCLUDE     ../../phoneui2/srcdata
 USERINCLUDE     ../../phonemediatorcenter/inc
 
 APP_LAYER_SYSTEMINCLUDE         // Application layer domain APIs
@@ -79,7 +85,10 @@ SYSTEMINCLUDE   ../../../inc    // Telephony internal headers
 
 LIBRARY         avkon.lib // AknTextUtils
 LIBRARY         bafl.lib
-LIBRARY         commonengine.lib //StringLoader 
+// <-- QT PHONE START --> 
+LIBRARY         phonestringloader.lib
+//LIBRARY       commonengine.lib //StringLoader 
+// <-- QT PHONE END -->
 LIBRARY         cone.lib
 LIBRARY         engineinfo.lib
 LIBRARY         euser.lib

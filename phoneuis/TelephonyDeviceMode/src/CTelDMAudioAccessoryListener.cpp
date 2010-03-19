@@ -18,8 +18,8 @@
 
 //  INCLUDE FILES
 #include    "CTelDMAudioAccessoryListener.h"               // this
-#include	"CTelDMDebug.h"
-#include	<TelephonyAudioRouting.h>
+#include    "CTelDMDebug.h"
+#include    <TelephonyAudioRouting.h>
 
 //  CONSTANTS
 
@@ -48,9 +48,9 @@ CTelDMAudioAccessoryListener* CTelDMAudioAccessoryListener::NewL()
 CTelDMAudioAccessoryListener::~CTelDMAudioAccessoryListener( )
     {
     FLOG( _L( "CTelDMAudioAccessoryListener::~CTelDMAudioAccessoryListener()" ) )
-	delete iAudioRouting;
-	iOutputArray.Reset();
-	iOutputArray.Close();
+    delete iAudioRouting;
+    iOutputArray.Reset();
+    iOutputArray.Close();
     }
     
 // -----------------------------------------------------------------------------
@@ -59,7 +59,7 @@ CTelDMAudioAccessoryListener::~CTelDMAudioAccessoryListener( )
 // -----------------------------------------------------------------------------
 //
 CTelDMAudioAccessoryListener::CTelDMAudioAccessoryListener( ):
-					iIsActiveAccessory ( EFalse )
+                    iIsActiveAccessory ( EFalse )
     {
     }
 
@@ -71,7 +71,7 @@ CTelDMAudioAccessoryListener::CTelDMAudioAccessoryListener( ):
 void CTelDMAudioAccessoryListener::ConstructL()
     {
     FLOG( _L( "CTelDMAudioAccessoryListener::ConstructL<" ) )
-	// Audio route handler 
+    // Audio route handler 
     iAudioRouting = CTelephonyAudioRouting::NewL( *this );
     FLOG( _L( "CTelDMAudioAccessoryListener::ConstructL>" ) )
     }
@@ -83,73 +83,73 @@ void CTelDMAudioAccessoryListener::ConstructL()
 // -----------------------------------------------------------------------------
 //
 void CTelDMAudioAccessoryListener::AvailableOutputsChanged( CTelephonyAudioRouting& 
-											aTelephonyAudioRouting )
-	{
-	FLOG( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged<" ) )
-	iOutputArray.Reset();
+                                            aTelephonyAudioRouting )
+    {
+    FLOG( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged<" ) )
+    iOutputArray.Reset();
         
     TArray<CTelephonyAudioRouting::TAudioOutput> availableOutputs 
-    						= aTelephonyAudioRouting.AvailableOutputs();
+                            = aTelephonyAudioRouting.AvailableOutputs();
     
     // Stores available output
     for ( TInt i=0; i< availableOutputs.Count();i++ )
         {
         iOutputArray.Append( availableOutputs[i] );
         }
-	
-	FLOG( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged>" ) )	
-	}
+    
+    FLOG( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged>" ) )  
+    }
 // -----------------------------------------------------------------------------
 // CTelDMAudioAccessoryListener::OutputChanged
 //
 // -----------------------------------------------------------------------------
-//	
+//  
 void CTelDMAudioAccessoryListener::OutputChanged( CTelephonyAudioRouting& 
-									aTelephonyAudioRouting)
-	{
-	FLOG( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged<" ) )
-	CTelephonyAudioRouting::TAudioOutput output = aTelephonyAudioRouting.Output();
-	
-	    switch ( output )
+                                    aTelephonyAudioRouting)
+    {
+    FLOG( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged<" ) )
+    CTelephonyAudioRouting::TAudioOutput output = aTelephonyAudioRouting.Output();
+    
+        switch ( output )
         {
         // No active outputs available
         case CTelephonyAudioRouting::ENone:
-			iIsActiveAccessory = EFalse;
+            iIsActiveAccessory = EFalse;
             break;
- 		case CTelephonyAudioRouting::EHandset:
-			iIsActiveAccessory = EFalse;
- 		    break;
-		case CTelephonyAudioRouting::ELoudspeaker:
-			iIsActiveAccessory = EFalse;
-   		    break;
-   		// Active outputs available
-		case CTelephonyAudioRouting::EWiredAudioAccessory:
-			iIsActiveAccessory = ETrue;
- 		    break;
-		case CTelephonyAudioRouting::EBTAudioAccessory:
-			iIsActiveAccessory = ETrue;
- 		    break;
-      	case CTelephonyAudioRouting::ETTY:
-			iIsActiveAccessory = ETrue;
-        	break; 		    
-       	default:
+        case CTelephonyAudioRouting::EHandset:
+            iIsActiveAccessory = EFalse;
+            break;
+        case CTelephonyAudioRouting::ELoudspeaker:
+            iIsActiveAccessory = EFalse;
+            break;
+        // Active outputs available
+        case CTelephonyAudioRouting::EWiredAudioAccessory:
+            iIsActiveAccessory = ETrue;
+            break;
+        case CTelephonyAudioRouting::EBTAudioAccessory:
+            iIsActiveAccessory = ETrue;
+            break;
+        case CTelephonyAudioRouting::ETTY:
+            iIsActiveAccessory = ETrue;
+            break;          
+        default:
             break;     
         }
     FTRACE( FPrint( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged =%d"), 
-    														iIsActiveAccessory ))
-	FLOG( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged>" ) )
-	}
+                                                            iIsActiveAccessory ))
+    FLOG( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged>" ) )
+    }
 // -----------------------------------------------------------------------------
 // CTelDMAudioAccessoryListener::SetOutputComplete
 //
 // -----------------------------------------------------------------------------
-//	
+//  
 void CTelDMAudioAccessoryListener::SetOutputComplete( CTelephonyAudioRouting& 
-										/*aTelephonyAudioRouting*/, 
-										TInt /*aError*/)
-	{
-	
-	}
+                                        /*aTelephonyAudioRouting*/, 
+                                        TInt /*aError*/)
+    {
+    
+    }
 
 // -----------------------------------------------------------------------------
 // CTelDMAudioAccessoryListener::IsAnyActiveAccessory
@@ -157,11 +157,11 @@ void CTelDMAudioAccessoryListener::SetOutputComplete( CTelephonyAudioRouting&
 // -----------------------------------------------------------------------------
 //
 TBool CTelDMAudioAccessoryListener::IsAnyActiveAccessory()
-	{
-	FTRACE( FPrint( _L( "CTelDMAudioAccessoryListener::IsAnyActiveAccessory =%d"), 
-    														iIsActiveAccessory ))
-	return iIsActiveAccessory;
-	}
+    {
+    FTRACE( FPrint( _L( "CTelDMAudioAccessoryListener::IsAnyActiveAccessory =%d"), 
+                                                            iIsActiveAccessory ))
+    return iIsActiveAccessory;
+    }
 
 // -----------------------------------------------------------------------------
 // CTelDMAudioAccessoryListener::IsAccessoryAttached
@@ -170,21 +170,21 @@ TBool CTelDMAudioAccessoryListener::IsAnyActiveAccessory()
 //
 TBool CTelDMAudioAccessoryListener::IsAccessoryAttached()
     {
-    			
+                
     TBool accessroryAttached = EFalse;
     
     for ( TInt i=0; i < iOutputArray.Count();i++ )
         {
         if ( iOutputArray[i] == CTelephonyAudioRouting::EWiredAudioAccessory ||
-        	 iOutputArray[i] == CTelephonyAudioRouting::EBTAudioAccessory ||
-        	 iOutputArray[i] == CTelephonyAudioRouting::ETTY )
+             iOutputArray[i] == CTelephonyAudioRouting::EBTAudioAccessory ||
+             iOutputArray[i] == CTelephonyAudioRouting::ETTY )
             {
             accessroryAttached = ETrue;
             break;                
             } 
         }
     FTRACE( FPrint( _L( "CTelDMAudioAccessoryListener::IsAccessoryAttached =%d"), 
-    														accessroryAttached ))
+                                                            accessroryAttached ))
     return accessroryAttached;
     }
     

@@ -76,11 +76,11 @@ class CPhoneStateMachineGSM : public CPhoneStateMachine
         // Phone customization
         MPhoneCustomization* iCustomization;
         
- 	private: // Data
- 	
-		// Is emergency object instantiated - needed to prevent multiple instantiation
- 		TBool iEmergencyStateConstructed;
- 	
+    private: // Data
+    
+        // Is emergency object instantiated - needed to prevent multiple instantiation
+        TBool iEmergencyStateConstructed;
+    
          // Emergency state which is hold in memory all the time.
         MPhoneState* iEmergencyState;         
     };

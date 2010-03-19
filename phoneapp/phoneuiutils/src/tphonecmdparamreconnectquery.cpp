@@ -31,7 +31,7 @@
 // -----------------------------------------------------------------------------
 //
 EXPORT_C TPhoneCmdParamReconnectQuery::TPhoneCmdParamReconnectQuery( 
-	MCaUiReconnectQueryObserver& aObserver ):
+    MCaUiReconnectQueryObserver& aObserver ):
     TPhoneCommandParam(),
     iObserver( aObserver ),
     iContactMatcher( NULL ),
@@ -47,8 +47,8 @@ EXPORT_C TPhoneCmdParamReconnectQuery::TPhoneCmdParamReconnectQuery(
 //
 EXPORT_C void TPhoneCmdParamReconnectQuery::SetContactMatcher( CPhCntMatcher* aPhCntMatcher )
     {
-   	__ASSERT_DEBUG( aPhCntMatcher, 
-   		Panic( EPhoneUtilsParameterNotInitialized ) );
+    __ASSERT_DEBUG( aPhCntMatcher, 
+        Panic( EPhoneUtilsParameterNotInitialized ) );
     iContactMatcher = aPhCntMatcher;   
     }
 
@@ -78,33 +78,33 @@ EXPORT_C void TPhoneCmdParamReconnectQuery::SetIncludeVideoOption(
 EXPORT_C MCaUiReconnectQueryObserver& TPhoneCmdParamReconnectQuery::ReconnectQueryObserver() const
     {
     return iObserver;
-	}
+    }
 
 // ---------------------------------------------------------
 // TPhoneCmdParamReconnectQuery::ContactMatcher
 // ---------------------------------------------------------
 //
 EXPORT_C CPhCntMatcher* TPhoneCmdParamReconnectQuery::ContactMatcher() const
-	{
-   	return iContactMatcher;
-   	}
+    {
+    return iContactMatcher;
+    }
 
 // ---------------------------------------------------------
 // TPhoneCmdParamReconnectQuery::PhoneNumber
 // ---------------------------------------------------------
 //
 EXPORT_C const TPtrC TPhoneCmdParamReconnectQuery::PhoneNumber() const
-   	{
-   	return iPhoneNumber;
-   	}
+    {
+    return iPhoneNumber;
+    }
 
 // ---------------------------------------------------------
 // TPhoneCmdParamReconnectQuery::IncludeVideoCallOption
 // ---------------------------------------------------------
 //
 EXPORT_C TBool TPhoneCmdParamReconnectQuery::IncludeVideoCallOption() const
-   	{
-   	return iIncludeVideoCallOption;
-   	}
+    {
+    return iIncludeVideoCallOption;
+    }
 
 //  End of File  

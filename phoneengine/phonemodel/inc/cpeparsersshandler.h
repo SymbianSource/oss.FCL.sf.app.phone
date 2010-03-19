@@ -22,10 +22,10 @@
 #define CPEPARSERSSHANDLER_H
 
 //  INCLUDES
-#include <CPhoneGsmSsHandler.h>
+#include <cphonegsmsshandler.h>
 #include <pevirtualengine.h>
 #include <nwdefs.h>
-#include <MPsetRequestObs.h>
+#include <mpsetrequestobs.h>
 
 // FORWARD DECLARATIONS
 class CPEMessageHandler;

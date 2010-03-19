@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2008 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,7 +21,9 @@
 #include <mpeengineinfo.h>
 #include <mpeclientinformation.h>
 #include <MediatorDomainUIDs.h>
-#include <videotelcontrolmediatorapi.h>
+// <-- QT PHONE START --> 
+//#include <videotelcontrolmediatorapi.h>
+// <-- QT PHONE END --> 
 #include "cphonealerting.h"
 #include "mphonestatemachine.h"
 #include "tphonecmdparamboolean.h"
@@ -177,22 +179,17 @@ EXPORT_C void CPhoneAlerting::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnected:
-            {
             HandleConnectedL( aCallId );
-            }
             break;
         
         case MEngineMonitor::EPEMessageDisconnecting:
-            {
             HandleDisconnectingL( aCallId );
-            }
             break;
         
         case MEngineMonitor::EPEMessageRemoteTerminated:
-            {
             iViewCommandHandle->ExecuteCommandL( 
-                EPhoneViewHideNaviPaneAudioVolume );            
-            }
+                EPhoneViewHideNaviPaneAudioVolume );
+            CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
             break;
         
         case MEngineMonitor::EPEMessageIncoming:
@@ -226,12 +223,6 @@ EXPORT_C void CPhoneAlerting::HandlePhoneEngineMessageL(
                 }
             }
             break;
-        case MEngineMonitor::EPEMessageColpNumberAvailable:
-            {
-            HandleColpNoteL( aCallId );
-            return;
-            }
-            break;            
         
         default:
             break;
@@ -251,22 +242,24 @@ EXPORT_C void CPhoneAlerting::HandleConnectedL( TInt aCallId )
     // Keep Phone in the foreground
     TPhoneCmdParamBoolean booleanParam;
     booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL(
+    iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
 
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     BeginUiUpdateLC();
-
+        
     // Update the single call
     UpdateSingleActiveCallL( aCallId );
 
-    SetTouchPaneButtons( EPhoneIncallButtons );
+    SetTouchPaneButtons( EPhoneIncallButtons ); 
 
     SetToolbarDimming( EFalse );
-
+        
     EndUiUpdate();
+    
+    HandleColpNoteL( aCallId );
     
     // Go to single state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );    
@@ -385,12 +378,14 @@ EXPORT_C void CPhoneAlerting::HandleDisconnectingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,  
             "CPhoneAlerting::HandleDisconnectingL()" );
-    
-    if ( iStateMachine->PhoneEngineInfo()->CallOrigin( aCallId ) == EPECallOriginSAT )
+
+// <-- QT PHONE START --> 
+    /*if ( iStateMachine->PhoneEngineInfo()->CallOrigin( aCallId ) == EPECallOriginSAT )
         {
         // User has hangup alerting SAT call, complete sat request
         CompleteSatRequestL( aCallId );
-        }
+        }*/
+// <-- QT PHONE END --> 
     
     CPhoneGsmInCall::HandleDisconnectingL( aCallId );
     }

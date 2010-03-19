@@ -23,10 +23,13 @@
 //  INCLUDES
 #include <pevirtualengine.h>
 #include "DosSvrServices.h"
-#include <CPhCltCommandHandler.h>
+#include <cphcltcommandhandler.h>
 #include <cphcltdialdata.h>
 
 #include "mpecallhandling.h"
+// <-- QT PHONE START -->
+#include "mpecallcontrolif.h" 
+// <-- QT PHONE END --> 
 
 // CONSTANTS
 const TInt KModeNormal = 0;  // Normal System mode  
@@ -104,7 +107,9 @@ class MPEServiceHandling;
 *  @lib phoneenginebase.dll
 *  @since S60_5.0
 */
-NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase
+// <-- QT PHONE START --> 
+NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase, public MPECallControlIF
+// <-- QT PHONE END --> 
     {
     public:  // Destructor
 
@@ -504,11 +509,10 @@ NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase
         TInt HandleServiceEnabled();
         
         /**
-         * Handles remote party information changed   
-         * @param aCallId is the identification number of the call.               
+         * Handles remote party information changed         
          * @since Series60_5.2         
          */
-        void HandleRemotePartyInfoChanged( const TInt aCallId );
+        void HandleRemotePartyInfoChanged( );
 
         /**
         * Handles swap message from the phone application 
@@ -592,7 +596,15 @@ NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase
         * Handle disable service
         */     
         void HandleDisableService();
-   
+
+// <-- QT PHONE START -->   
+        /**
+        * Handle dial service call
+        */ 
+        TInt HandleDialServiceCall(
+            const TBool aClientCall );
+// <-- QT PHONE END -->
+        
     private: // New functions
         
         /**
@@ -826,8 +838,8 @@ NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase
         //Client Information, member variable because emergency call from phone client
         //is not allowed to allocate memory. 
         CPEClientInformation* iClientInformation;
-		// Dial Data
-		CPhCltDialData* iClientDialData;
+        // Dial Data
+        CPhCltDialData* iClientDialData;
         // Instances will contain the results of the parsing
         CPhoneGsmParserResult* iResult;
         // Handles emergency number from the parser.

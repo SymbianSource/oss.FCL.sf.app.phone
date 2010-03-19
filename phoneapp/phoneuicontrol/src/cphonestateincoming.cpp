@@ -27,7 +27,9 @@
 #include <ScreensaverInternalPSKeys.h>
 #include <mpeengineinfo.h>
 #include <MediatorDomainUIDs.h>
+// <-- QT PHONE START -->
 #include <videotelcontrolmediatorapi.h>
+// <-- QT PHONE END -->
 
 #include "cphonepubsubproxy.h"
 #include "phoneui.pan"
@@ -256,7 +258,7 @@ void CPhoneStateIncoming::HandleSendL()
             MPEPhoneModel::EPEMessagePhoneNumberEdited );
     
     if ( phoneNumber->Des().Length() < KPhoneValidPhoneNumberLength 
-    		&& iStateMachine->PhoneEngineInfo()->PhoneNumberIsServiceCode() ) 
+            && iStateMachine->PhoneEngineInfo()->PhoneNumberIsServiceCode() ) 
         {
         // Send a manual control sequence by providing number
         // information with dial command
@@ -443,7 +445,7 @@ EXPORT_C void CPhoneStateIncoming::HandleAudioPlayStoppedL()
         {
         resourceId = EPhoneCallHandlingIncomingSoftRejectCBA;
         }
-	iCbaManager->SetCbaL( resourceId );
+    iCbaManager->SetCbaL( resourceId );
     }
 
 // -----------------------------------------------------------
@@ -647,15 +649,18 @@ void CPhoneStateIncoming::DisconnectWaitingCallL()
     if( IsVideoCall( iRingingCallId ) )
         {
         // Video call can be released only after we get response to VT Shutdown Command
-        CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( 
-                KMediatorVideoTelephonyDomain,
-                         KCatPhoneToVideotelCommands, 
-                         EVtCmdReleaseDataport,
-               TVersion( KPhoneToVideotelCmdVersionMajor,
-                         KPhoneToVideotelCmdVersionMinor, 
-                         KPhoneToVideotelCmdVersionBuild ),
-               KNullDesC8,
-               CPhoneReleaseCommand::NewL( *iStateMachine ) );
+// <-- QT PHONE START -->
+ 
+        CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( KMediatorVideoTelephonyDomain,
+                                                                             KCatPhoneToVideotelCommands, 
+                                                                             EVtCmdReleaseDataport,
+                                                                   TVersion( KPhoneToVideotelCmdVersionMajor,
+                                                                             KPhoneToVideotelCmdVersionMinor, 
+                                                                             KPhoneToVideotelCmdVersionBuild ),
+                                                                   KNullDesC8,
+                                                                   CPhoneReleaseCommand::NewL( *iStateMachine ) );
+
+// <-- QT PHONE END --> 
         }
     else
         {
@@ -881,25 +886,25 @@ EXPORT_C void CPhoneStateIncoming::HandleKeyLockEnabled( TBool aKeylockEnabled )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIncoming::HandleKeyLockEnabledL( ) ");
     if( !FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke )
-		&& CPhoneCenRepProxy::Instance()->
-			IsTelephonyFeatureSupported( KTelephonyLVFlagDisableCallControlHardKeysWhileLocked ) )
-		{
-    	if( aKeylockEnabled )
-        	{
-	        // Keylock enabled
+        && CPhoneCenRepProxy::Instance()->
+            IsTelephonyFeatureSupported( KTelephonyLVFlagDisableCallControlHardKeysWhileLocked ) )
+        {
+        if( aKeylockEnabled )
+            {
+            // Keylock enabled
             if( iStateMachine->PhoneStorage()->IsBlockedKeysListEmpty() )
                 {
                 // Disable HW Keys if needed
                 DisableHWKeysL();
                 }
-	        }
-	    else
-	        {
-	        // Keylock disabled
+            }
+        else
+            {
+            // Keylock disabled
             // Reset blocked keys list
             iStateMachine->PhoneStorage()->ResetBlockedKeysList();
-	        }
-		}
+            }
+        }
     }
 
 // End of File

@@ -45,10 +45,10 @@ NONSHARABLE_CLASS( CPESimStateMonitor ) : public CActive
 
     // Monitored Sim event given to constructor
     enum TEvent
-	    {
-	    EEventSimStatus,
-	    EEventSimChanged
-	    };
+        {
+        EEventSimStatus,
+        EEventSimChanged
+        };
 
     public: // Constructors and destructor
 

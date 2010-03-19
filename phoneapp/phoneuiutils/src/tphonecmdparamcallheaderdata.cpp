@@ -39,7 +39,9 @@ EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneCmdParamCallHeaderData() :
     iCLIText( KNullDesC ),
     iCNAPText( KNullDesC ),
     iPicture( KNullDesC ),
-    iCallFlag( CBubbleManager::ENormal ),
+// <-- QT PHONE START -->         
+//    iCallFlag( CBubbleManager::ENormal ),
+// <-- QT PHONE END -->         
     iLine2 ( EFalse ),
     iThumbnail( NULL ),
     iCallerText( KNullDesC ),
@@ -47,6 +49,9 @@ EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneCmdParamCallHeaderData() :
     iCipheringIndicatorAllowed( ETrue ),
     iContactLink( KNullDesC8 ),
     iRemotePhoneNumber( KNullDesC )
+// <-- QT PHONE START -->         
+    ,iDiverted( EFalse )
+// <-- QT PHONE END -->         
     {
     iParamId = EPhoneParamIdCallHeaderData;
     }
@@ -59,9 +64,9 @@ EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneCmdParamCallHeaderData() :
 //
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetLabelText( 
    const TDesC& aLabelText )
-	{
-	iLabelText = aLabelText;
-	}
+    {
+    iLabelText = aLabelText;
+    }
 
 // ---------------------------------------------------------
 // TPhoneCmdParamCallHeaderData::SetShortLabelText
@@ -72,7 +77,7 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetLabelText(
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetShortLabelText( 
    const TDesC& aShortLabelText )
     {
-	iShortLabelText = aShortLabelText;
+    iShortLabelText = aShortLabelText;
     }
 
 // ---------------------------------------------------------
@@ -128,7 +133,9 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetCiphering(
 //
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetCLIText( 
    const TDesC& aCLIText,
-   CBubbleManager::TPhoneClippingDirection aDirection )
+// <-- QT PHONE START -->         
+   TPhoneTextClippingDirection aDirection )
+// <-- QT PHONE END -->         
    {
    iCLIText = aCLIText;
    iCLITextClippingDirection = aDirection; 
@@ -142,7 +149,9 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetCLIText(
 //
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetCNAPText( 
    const TDesC& aCNAPText,
-   CBubbleManager::TPhoneClippingDirection aDirection )
+// <-- QT PHONE START -->         
+   TPhoneTextClippingDirection aDirection )
+// <-- QT PHONE END -->         
    {
    iCNAPText = aCNAPText;
    iCNAPTextClippingDirection = aDirection; 
@@ -166,11 +175,13 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetPicture(
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C void TPhoneCmdParamCallHeaderData::SetCallFlag(
-    const CBubbleManager::TPhoneCallTypeFlags aCallFlag )
+// <-- QT PHONE START -->         
+EXPORT_C void TPhoneCmdParamCallHeaderData::SetDiverted(
+    TBool aDiverted )
     {
-    iCallFlag = aCallFlag;        
+    iDiverted = aDiverted;        
     }
+// <-- QT PHONE END -->         
 
 // ---------------------------------------------------------
 // TPhoneCmdParamCallHeaderData::AddCallFlag
@@ -178,16 +189,18 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetCallFlag(
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C void TPhoneCmdParamCallHeaderData::AddCallFlag(
+// <-- QT PHONE START -->
+/*EXPORT_C void TPhoneCmdParamCallHeaderData::AddCallFlag(
     const CBubbleManager::TPhoneCallTypeFlags aCallFlag )
     {
     iCallFlag |= aCallFlag;
-    }
+    }*/
+// <-- QT PHONE END -->
 
 // ---------------------------------------------------------
 // TPhoneCmdParamCallHeaderData::SetLine2
 // ---------------------------------------------------------
-//	
+//  
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetLine2(
     TBool aLine2 )
    {
@@ -277,7 +290,9 @@ EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::CLIText() const
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C CBubbleManager::TPhoneClippingDirection 
+// <-- QT PHONE START -->         
+EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection 
+// <-- QT PHONE END -->         
 TPhoneCmdParamCallHeaderData::CLITextClippingDirection() const
     {
     return iCLITextClippingDirection;
@@ -289,7 +304,9 @@ TPhoneCmdParamCallHeaderData::CLITextClippingDirection() const
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C CBubbleManager::TPhoneClippingDirection 
+// <-- QT PHONE START -->         
+EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection 
+// <-- QT PHONE END -->         
 TPhoneCmdParamCallHeaderData::CNAPTextClippingDirection() const
     {
     return iCNAPTextClippingDirection;
@@ -323,11 +340,12 @@ EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::Picture() const
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C TUint32
-    TPhoneCmdParamCallHeaderData::CallFlag() const
+// <-- QT PHONE START -->         
+EXPORT_C TBool TPhoneCmdParamCallHeaderData::Diverted() const
     {
-    return iCallFlag;        
+    return iDiverted;        
     }
+// <-- QT PHONE END -->         
 
 // ---------------------------------------------------------
 // TPhoneCmdParamCallHeaderData::Line2

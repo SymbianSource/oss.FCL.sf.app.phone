@@ -29,9 +29,9 @@ UID             0x1000008d 0x1020299B
 SOURCEPATH      ../src
 SOURCE          CTelDMHandlerImpl.cpp
 SOURCE          CTelDMGripHandler.cpp
-SOURCE			CTelDMCallStateListener.cpp
-SOURCE			CTelDMCommandHandler.cpp
-SOURCE 			CTelDMAudioAccessoryListener.cpp
+SOURCE          CTelDMCallStateListener.cpp
+SOURCE          CTelDMCommandHandler.cpp
+SOURCE          CTelDMAudioAccessoryListener.cpp
     
 USERINCLUDE     ../inc
 APP_LAYER_SYSTEMINCLUDE

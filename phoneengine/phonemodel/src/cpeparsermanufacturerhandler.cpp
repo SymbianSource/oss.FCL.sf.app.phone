@@ -44,13 +44,13 @@ CPEParserManufacturerHandler::CPEParserManufacturerHandler(
             iCallHandling( aCallHandling ),
             iFsSession( aFsSession )
     {
-	TEFLOGSTRING( KTAOBJECT, "PE CPEParserManufacturerHandler::CPEParserManufacturerHandler()" );
+    TEFLOGSTRING( KTAOBJECT, "PE CPEParserManufacturerHandler::CPEParserManufacturerHandler()" );
     }
 
 // Destructor
 CPEParserManufacturerHandler::~CPEParserManufacturerHandler()
     {    
-	TEFLOGSTRING( KTAOBJECT, "PE CPEParserManufacturerHandler::~CPEParserManufacturerHandler()" );
+    TEFLOGSTRING( KTAOBJECT, "PE CPEParserManufacturerHandler::~CPEParserManufacturerHandler()" );
     }
 
 // -----------------------------------------------------------------------------
@@ -60,28 +60,28 @@ CPEParserManufacturerHandler::~CPEParserManufacturerHandler()
 void CPEParserManufacturerHandler::ProcessCommandL( 
         TUint aCommand )       // aCommand command enumeration.
     {
-	TEFLOGSTRING( KTAINT, "PE CPEParserManufacturerHandler::ProcessCommandL" );
+    TEFLOGSTRING( KTAINT, "PE CPEParserManufacturerHandler::ProcessCommandL" );
 
     switch ( aCommand )
         {
         case EShowVersion: // *#0000#
             {
             TEFLOGSTRING( KTAINT, "PE CPEParserManufacturerHandler::ProcessCommandL, EShowVersion" );
-			
-			TPEPhoneIdentityParameters phoneIdentity;
+            
+            TPEPhoneIdentityParameters phoneIdentity;
             phoneIdentity = iModel.DataStore()->PhoneIdentityParameters();
             if ( GetSwVersionAndPhoneModelL( phoneIdentity.iRevision ) == KErrNone )
-				{
-				iModel.DataStore()->SetPhoneIdentityParameters( phoneIdentity );
-				iModel.SendMessage( MEngineMonitor::EPEMessageShowVersion );
-				}
-			else
-				{
-				iModel.SendMessage( MEngineMonitor::EPEMessageError );
-				TEFLOGSTRING( KTAERROR, 
-				    "PE CPEGSMPARSERMANUFACTURERHANDLER::PROCESSCOMMANDL: FAILED TO RETRIEVE SW VERSION" );
-				}
-			break;
+                {
+                iModel.DataStore()->SetPhoneIdentityParameters( phoneIdentity );
+                iModel.SendMessage( MEngineMonitor::EPEMessageShowVersion );
+                }
+            else
+                {
+                iModel.SendMessage( MEngineMonitor::EPEMessageError );
+                TEFLOGSTRING( KTAERROR, 
+                    "PE CPEGSMPARSERMANUFACTURERHANDLER::PROCESSCOMMANDL: FAILED TO RETRIEVE SW VERSION" );
+                }
+            break;
             }
         case EBadPinChange:    
             {
@@ -218,17 +218,17 @@ TInt CPEParserManufacturerHandler::GetSwVersionAndPhoneModelL(
     TInt errorCode = SysUtil::GetSWVersion( aSwVersion ) ;
     
     TEFLOGSTRING2( KTAINT,
-    	"PE CPEParserManufacturerHandler::GetSwVersionAndPhoneModelL > SysUtil::GetSWVersion, error code: %d",
-    	errorCode );
+        "PE CPEParserManufacturerHandler::GetSwVersionAndPhoneModelL > SysUtil::GetSWVersion, error code: %d",
+        errorCode );
 
     if ( errorCode == KErrNone )
-	    {
-	    // Remove needless lines
-	    RemoveLinesAfterThreeLines( aSwVersion );
-		// Add phone model
-		AppendPhoneModelL( aSwVersion );
-	    }
-	    
+        {
+        // Remove needless lines
+        RemoveLinesAfterThreeLines( aSwVersion );
+        // Add phone model
+        AppendPhoneModelL( aSwVersion );
+        }
+        
     return errorCode;  
     }
 
@@ -238,10 +238,10 @@ TInt CPEParserManufacturerHandler::GetSwVersionAndPhoneModelL(
 // -----------------------------------------------------------------------------
 //
 void CPEParserManufacturerHandler::RemoveLinesAfterThreeLines( 
-	TDes& aSwVersion ) 
-	{
-	TEFLOGSTRING( KTAINT, "PE CPEParserManufacturerHandler::RemoveLinesAfterThreeLines" );
-	
+    TDes& aSwVersion ) 
+    {
+    TEFLOGSTRING( KTAINT, "PE CPEParserManufacturerHandler::RemoveLinesAfterThreeLines" );
+    
     TInt lineFeedCount = 0;
     
     const TInt swVersionLength( aSwVersion.Length() );
@@ -256,39 +256,39 @@ void CPEParserManufacturerHandler::RemoveLinesAfterThreeLines(
                 
                 // Dont delete the last line feed characted, thats why
                 // i + 1.
-				aSwVersion.Delete( i + 1, charsToDelete );
+                aSwVersion.Delete( i + 1, charsToDelete );
                 return;
                 }
             }
         }
-	}
+    }
     
 // -----------------------------------------------------------------------------
 // CPEParserManufacturerHandler::AppendPhoneModelL
 // Reads phone model info from disk and appends it to aSwVersion.
 // -----------------------------------------------------------------------------
 //
-void CPEParserManufacturerHandler::AppendPhoneModelL( 	
-	TDes& aSwVersion ) 
-	{	
-	RFile file;
-	User::LeaveIfError( file.Open( iFsSession, 
-		                           KPESalesModelFileName, 
-		                           EFileShareReadersOnly | EFileRead ) );
-	CleanupClosePushL( file );
-	
-	HBufC* model = HBufC::NewLC( KPESalesModelNameMaxLength );
-	TPtr ptr = model->Des();
+void CPEParserManufacturerHandler::AppendPhoneModelL(   
+    TDes& aSwVersion ) 
+    {   
+    RFile file;
+    User::LeaveIfError( file.Open( iFsSession, 
+                                   KPESalesModelFileName, 
+                                   EFileShareReadersOnly | EFileRead ) );
+    CleanupClosePushL( file );
+    
+    HBufC* model = HBufC::NewLC( KPESalesModelNameMaxLength );
+    TPtr ptr = model->Des();
 
-	// Read the data from file.
-	TFileText reader;
-	reader.Set( file );
-	User::LeaveIfError( reader.Read( ptr ) );
+    // Read the data from file.
+    TFileText reader;
+    reader.Set( file );
+    User::LeaveIfError( reader.Read( ptr ) );
 
-	// Append the phone model to aSwVersion
+    // Append the phone model to aSwVersion
     aSwVersion.Append( *model );
-	
-	CleanupStack::PopAndDestroy( 2 ); // model, file
-	}
+    
+    CleanupStack::PopAndDestroy( 2 ); // model, file
+    }
 
 // End of File

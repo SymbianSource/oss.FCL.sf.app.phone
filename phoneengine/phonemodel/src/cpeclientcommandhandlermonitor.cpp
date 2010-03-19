@@ -24,7 +24,7 @@
 #include "mpecallhandling.h"
 #include "mpephonemodelinternal.h"
 #include <mpedatastore.h>
-#include <RPhCltServer.h>
+#include <rphcltserver.h>
 #include <talogger.h>
 #include <telephonyvariant.hrh>
 

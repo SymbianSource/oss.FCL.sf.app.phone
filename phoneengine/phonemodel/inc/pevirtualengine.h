@@ -28,11 +28,11 @@
 #include <fbs.h>
 #include <mccecall.h>
 #include <mmtsy_names.h>
-#include <NetworkHandlingDomainPSKeys.h>
-#include <PhCltTypes.h>
+#include <networkhandlingdomainpskeys.h>
+#include <phclttypes.h>
 #include <Profile.hrh>
 #include <rmmcustomapi.h>
-#include <RSSSettings.h>
+#include <rsssettings.h>
 #include <sysutil.h>
 
 
@@ -99,8 +99,8 @@ const TInt KPEMessagesFromPhoneEngineVariantFirst = KPEMessagesFromPhoneEngineGs
 // Lifetimer data in hours and minutes
 NONSHARABLE_STRUCT( TPELifeTimeData )                      
     {
-	TUint32 iHours;                         //range 0-999999 
-	TUint8 iMinutes;                        //range 0-59
+    TUint32 iHours;                         //range 0-999999 
+    TUint8 iMinutes;                        //range 0-59
     };
 
 // Used when initializing number variables with non negative value range.
@@ -231,13 +231,13 @@ enum
 
 NONSHARABLE_STRUCT( TPEErrorInfo )
     {
-	//Symbian OS error code
-	TInt iErrorCode;
-	//Call Id number, equals KPECallIdNotUsed if call id is not available or is
-	//invalid for this error condition
-	TInt iCallId;
-	// Error type( Cch or Ccp )
-	TPEErrorType iErrorType;
+    //Symbian OS error code
+    TInt iErrorCode;
+    //Call Id number, equals KPECallIdNotUsed if call id is not available or is
+    //invalid for this error condition
+    TInt iCallId;
+    // Error type( Cch or Ccp )
+    TPEErrorType iErrorType;
     };
     
 enum TPECallType
@@ -312,27 +312,27 @@ enum TPERxTimeSlots
 NONSHARABLE_STRUCT( TPEVoiceMailBoxNumberInfo )
     {
     TPEPhoneNumber iVMBXL1; // Line 1 VoiceMailBoxNumber
-	TPEPhoneNumber iVMBXL2; // Line 2 VoiceMailBoxNumber
-	TPEPhoneNumber iDTMFVMBXL1; // Line 1 DTMFVoiceMailBoxNumber
-	TPEPhoneNumber iDTMFVMBXL2; // Line 2 DTMFVoiceMailBoxNumber
+    TPEPhoneNumber iVMBXL2; // Line 2 VoiceMailBoxNumber
+    TPEPhoneNumber iDTMFVMBXL1; // Line 1 DTMFVoiceMailBoxNumber
+    TPEPhoneNumber iDTMFVMBXL2; // Line 2 DTMFVoiceMailBoxNumber
     };
 
 
 // Contains information of PhoneIdentity paramteres
 NONSHARABLE_STRUCT( TPEPhoneIdentityParameters )
     {
-	TPEManufacturer iManufacturer;
-	TPEModel iModel;
-	TPERevision iRevision;
-	TPESerialNumber iSerialNumber;
+    TPEManufacturer iManufacturer;
+    TPEModel iModel;
+    TPERevision iRevision;
+    TPESerialNumber iSerialNumber;
     };
 
 // Contains information of call audio route parameters
 NONSHARABLE_STRUCT( TPEPhoneAudioRouteParameters )
     {
-	TPEAudioOutput iAudioOutput;
-	TPEAudioOutput iPreviousOutput;
-	TBool iShowNote;
+    TPEAudioOutput iAudioOutput;
+    TPEAudioOutput iPreviousOutput;
+    TBool iShowNote;
     };
 
 // Enumerate definitions for MMI Service Codes from MMETel API:
@@ -419,8 +419,7 @@ NONSHARABLE_CLASS( MEngineMonitor )
 
         EPEMessageRemoteForwarding,
         EPEMessageMovedPermanently,        
-        EPEMessageMultipleChoices,     
-        EPEMessageColpNumberAvailable,
+        EPEMessageMultipleChoices,        
 
         // Contact messages                   3000 - 3999
         EPEMessageThumbnailLoadingCompleted  = 3000,
@@ -846,7 +845,9 @@ public:
 
         EPEMessageDoUnattendedTransfer,
         EPEMessageForwardCallToAddress,
-
+// <-- QT PHONE START --> 
+        EPEMessageDialServiceCall,
+// <-- QT PHONE END --> 
         // Contact messages                   3000 - 3999
 
         // Error messages                     4000 - 4999

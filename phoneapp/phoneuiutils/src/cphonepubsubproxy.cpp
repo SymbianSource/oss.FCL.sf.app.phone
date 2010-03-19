@@ -53,9 +53,9 @@ EXPORT_C CPhonePubSubProxy* CPhonePubSubProxy::Instance()
         {
         TRAPD( err, instance = CPhonePubSubProxy::NewL() );
         if ( err )
-	        {
-	        Panic( EPhoneUtilsCouldNotCreateSingleton );	
-	        }
+            {
+            Panic( EPhoneUtilsCouldNotCreateSingleton );    
+            }
         }
     return instance;
     }

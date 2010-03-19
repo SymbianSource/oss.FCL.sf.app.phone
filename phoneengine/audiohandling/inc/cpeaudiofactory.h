@@ -53,7 +53,7 @@ class MMdaAudioToneObserver;
 */  
 
 NONSHARABLE_CLASS( CPEAudioFactory ) : public CBase
-	{
+    {
     public: 
         
         IMPORT_C static CPEAudioFactory* NewLC();
@@ -74,11 +74,11 @@ NONSHARABLE_CLASS( CPEAudioFactory ) : public CBase
          */
         IMPORT_C virtual CPEAudioToneUtility* CreateAudioToneUtilityL(
             MMdaAudioToneObserver& aToneObserver );
-	
+    
 protected:
         IMPORT_C CPEAudioFactory();
-	};    
-	     
+    };    
+         
 #endif      // CPEAudioFactory_H  
             
 // End of File

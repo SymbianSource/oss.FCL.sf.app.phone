@@ -15,8 +15,7 @@
 *
 */
 
-
-#include "../telbranding/group/bld.inf"
+#include "../csplugin/group/bld.inf"
 
 
 // End of File

@@ -27,27 +27,27 @@ struct TStringTable;
 
 /** A String table */
 class PhoneStateStrings 
-	{
+    {
 public:
-	enum TStrings
-		{
-		/** EPhoneStateNull */
-		EPhoneStateNull,
-		/** EPhoneStateStartup */
-		EPhoneStateStartup,
-		/** EPhoneStateIdle */
-		EPhoneStateIdle,
-		/** EPhoneStateCallSetup */
-		EPhoneStateCallSetup,
-		/** EPhoneStateSingle */
-		EPhoneStateSingle,
-		/** EPhoneStateIncoming */
-		EPhoneStateIncoming,
-		/** EPhoneStateEmergency */
-		EPhoneStateEmergency
-		};
-	static const TStringTable Table;	
-	};
+    enum TStrings
+        {
+        /** EPhoneStateNull */
+        EPhoneStateNull,
+        /** EPhoneStateStartup */
+        EPhoneStateStartup,
+        /** EPhoneStateIdle */
+        EPhoneStateIdle,
+        /** EPhoneStateCallSetup */
+        EPhoneStateCallSetup,
+        /** EPhoneStateSingle */
+        EPhoneStateSingle,
+        /** EPhoneStateIncoming */
+        EPhoneStateIncoming,
+        /** EPhoneStateEmergency */
+        EPhoneStateEmergency
+        };
+    static const TStringTable Table;    
+    };
 
 #endif // STRINGTABLE_PhoneStateStrings
 

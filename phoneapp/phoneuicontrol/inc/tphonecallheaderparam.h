@@ -20,7 +20,9 @@
 #define TPHONECALLHEADERPARAM_H
 
 //INCLUDES
-#include    <bmbubblemanager.h>
+// <-- QT PHONE START -->
+// #include    <bmbubblemanager2.h>
+// <-- QT PHONE END -->
 
 #include    "mpeengineinfo.h"
 #include    "tphonecmdparamcallheaderdata.h"
@@ -86,18 +88,20 @@ class TPhoneCallHeaderParam
                 const TBool aWaitingCall,
                 const TBool aVideoCall,
                 TPhoneCmdParamCallHeaderData* aCallHeaderData );
-        
+
+// <-- QT PHONE START -->        
         /**
         * Sets the call header type used in the call bubble.
         * @param aCallHeaderType, call header type.
         */    
         void SetCallHeaderType( 
-                const CBubbleManager::TPhoneCallTypeFlags aCallHeaderType );
+                TInt aCallHeaderType );
         /**
         * Returns the set call header type. Used for constructing right type
         * of call bubble.
         */
-        CBubbleManager::TPhoneCallTypeFlags CallHeaderType() const;
+        TInt CallHeaderType() const;
+// <-- QT PHONE END -->
             
         /**
         * Setter for divert indication showing in bubble.
@@ -171,7 +175,10 @@ class TPhoneCallHeaderParam
         void GetCNAPText( 
                const TInt aCallId,
                TDes& aData, 
-               CBubbleManager::TPhoneClippingDirection& aDirection ) const;
+// <-- QT PHONE START -->
+//               CBubbleManager::TPhoneClippingDirection& aDirection ) const;
+               TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection& aDirection ) const;
+// <-- QT PHONE END -->
         
         /**
         * Check if contact is available(RemoteName or RemoteCompanyName),
@@ -251,7 +258,9 @@ class TPhoneCallHeaderParam
         
         MPhoneCallHeaderManagerUtility& iManagerUtility;
         MPhoneStateMachine& iStateMachine;
-        CBubbleManager::TPhoneCallTypeFlags iCallHeaderType;
+// <-- QT PHONE START -->
+        TInt iCallHeaderType;
+// <-- QT PHONE END -->
         TBool iSetDivertIndication;
             
     };

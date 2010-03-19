@@ -38,7 +38,7 @@ EXPORT_C TPhoneCommandParam::TPhoneCommandParam()
 //
 EXPORT_C TPhoneCommandParam::TPhoneParamId TPhoneCommandParam::ParamId() const
     {
-   	__ASSERT_DEBUG( iParamId, Panic( EPhoneUtilsInvariant ) );
+    __ASSERT_DEBUG( iParamId, Panic( EPhoneUtilsInvariant ) );
     return iParamId;
     }
 

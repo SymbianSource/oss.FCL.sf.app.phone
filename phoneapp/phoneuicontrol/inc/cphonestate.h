@@ -24,7 +24,9 @@
 #include <w32std.h>
 #include <remconcoreapitargetobserver.h>
 #include <MProfileEngine.h>
-#include <bmbubblemanager.h>
+// <-- QT PHONE START -->
+//#include <bmbubblemanager.h>
+// <-- QT PHONE START -->
 
 #include "mphonestate.h"
 #include "mphoneviewcommandhandle.h"
@@ -448,15 +450,15 @@ class CPhoneState :
             TInt aCallId,
             TInt aWaitingCall );
 
-		/**
+        /**
         * Sets call header texts for call coming in
         * @param aCallid call id
         * @param aWaitingCall waiting call indication
-		* @param aCallHeaderData - Call header parameter into which the text
+        * @param aCallHeaderData - Call header parameter into which the text
         *                          will be set.
         */
         IMPORT_C void SetCallHeaderTextsForCallComingInL(
-			TInt aCallId,
+            TInt aCallId,
             TBool aWaitingCall,
             TPhoneCmdParamCallHeaderData* aCallHeaderData );
 
@@ -643,7 +645,9 @@ class CPhoneState :
         /**
         * Sets the call header type used in the call bubble.
         */
-        IMPORT_C void SetCallHeaderType( const CBubbleManager::TPhoneCallTypeFlags aCallHeaderType );
+// <-- QT PHONE START -->
+        IMPORT_C void SetCallHeaderType( TInt aCallHeaderType );
+// <-- QT PHONE END -->
 
         /**
         * Handles situation when hash key has been kept down long
@@ -827,7 +831,7 @@ class CPhoneState :
          */
          void NumberEntryClearL();
          
-		  
+          
          /**
          * Dims silence touch button if call is not alerting.
          * @param None
@@ -987,7 +991,6 @@ class CPhoneState :
         * Shows WLAN MAC address note
         */
         void ShowWlanMacAddressL();
-
 
         /**
         * Check if ALS line change is possible

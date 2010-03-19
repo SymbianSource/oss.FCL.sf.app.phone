@@ -164,7 +164,6 @@ class CPhoneUIController :
         */
         IMPORT_C void HandleKeyLockEnabled( TBool aKeylockEnabled );
         
-        
     private:
         
         /**

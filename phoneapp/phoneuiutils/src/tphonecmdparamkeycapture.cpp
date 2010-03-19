@@ -18,7 +18,7 @@
 
 // INCLUDE FILES
 
-#include "tphonecmdparamKeycapture.h"   
+#include "tphonecmdparamKeycapture.h"
 
 // ================= MEMBER FUNCTIONS =======================
 

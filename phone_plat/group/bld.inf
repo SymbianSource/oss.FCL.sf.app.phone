@@ -16,25 +16,26 @@
 *
 */
 
-
-
 #include "../3d_ringing_tone_enabler_api/group/bld.inf"
 #include "../telephony_comms_information_api/group/bld.inf"
 #include "../telephony_information_api/group/bld.inf"
 #include "../telephony_device_mode_api/group/bld.inf"
 
 #include "../telephony_remote_party_information_api/group/bld.inf"
-
 #include "../telephony_video_mailbox_settings_api/group/bld.inf"
-#include "../telephony_configuration_api/group/bld.inf"
 
+// <-- QT PHONE START --> 
+//#include "../telephony_configuration_api/group/bld.inf"
+//#include "../dialer_keypad_api/group/bld.inf"
+//#include "../telephony_bubble_extension_api/group/bld.inf"
+// <-- QT PHONE END --> 
+
+#include "../telephony_menu_extension_api/group/bld.inf"
 #include "../telephony_microphone_mute_status_api/group/bld.inf"
-#include "../dialer_keypad_api/group/bld.inf"
 #include "../telephony_logging_extension_api/group/bld.inf"
 #include "../telephony_matching_extension_api/group/bld.inf"
-#include "../telephony_bubble_extension_api/group/bld.inf"
-#include "../telephony_menu_extension_api/group/bld.inf"
 #include "../phone_application_commands_api/group/bld.inf"
 #include "../phone_application_voip_commands_api/group/bld.inf"
 #include "../telephony_mediator_api/group/bld.inf"
 #include "../video_telephony_mediator_api/group/bld.inf"
+#include "../video_telephony_control_mediator_api/group/bld.inf"

@@ -12,12 +12,12 @@
 * Contributors:
 *
 * Description: 
-* 		Class that does processing for Phone Engine messages that are common
-*		for all GSM states. Most of the GSM states are intressed of these 
-*		messages but due to the class architecture they don't have any single
-*		state class to be put into. This class exists to minimize duplicate
-*		code so that not every GSM class need to implement these same handlings
-*		for the same messages.
+*       Class that does processing for Phone Engine messages that are common
+*       for all GSM states. Most of the GSM states are intressed of these 
+*       messages but due to the class architecture they don't have any single
+*       state class to be put into. This class exists to minimize duplicate
+*       code so that not every GSM class need to implement these same handlings
+*       for the same messages.
 *
 */
 
@@ -42,16 +42,16 @@ class MPhoneStateMachine;
 *
 */
 class CPhoneErrorMessagesHandler : public CBase, 
-								   public MPhoneErrorMessagesHandler
+                                   public MPhoneErrorMessagesHandler
     {
     public:
-    	/**
+        /**
         * Creates the error handler instance
         * @return an instance of class CPhoneErrorMessagesHandler
         */
         static CPhoneErrorMessagesHandler* NewL( 
-        		MPhoneViewCommandHandle* aViewCommandHandle,
-        		MPhoneStateMachine* aStateMachine ); 
+                MPhoneViewCommandHandle* aViewCommandHandle,
+                MPhoneStateMachine* aStateMachine ); 
     
     public: //From MPhoneErrorMessagesHandler
         /**
@@ -66,25 +66,25 @@ class CPhoneErrorMessagesHandler : public CBase,
         */
         IMPORT_C void ShowErrorSpecificNoteL( const TPEErrorInfo& aErrorInfo );
         
-    protected:		
+    protected:      
         /**
         * By default EPOC constructor is private.
         */
         IMPORT_C CPhoneErrorMessagesHandler( 
-        			MPhoneViewCommandHandle* aViewCommandHandle,
-        			MPhoneStateMachine* aStateMachine );
-        		
+                    MPhoneViewCommandHandle* aViewCommandHandle,
+                    MPhoneStateMachine* aStateMachine );
+                
         /**
         * Two phase construction - Second phase.
         * @return None
         */
         void ConstructL();
-	
+    
         /**
         * Show global InfoNote
         * @param aResourceId resource id to be resolved
         */
-		IMPORT_C void SendGlobalInfoNoteL( TInt aResourceId );
+        IMPORT_C void SendGlobalInfoNoteL( TInt aResourceId );
  
         /**
         * Show global ErrorNote
@@ -99,7 +99,7 @@ class CPhoneErrorMessagesHandler : public CBase,
         IMPORT_C void SendGlobalWarningNoteL( TInt aResourceId );
         
 
-	private:        
+    private:        
         /**
         * Return SimState.
         */
@@ -111,14 +111,14 @@ class CPhoneErrorMessagesHandler : public CBase,
         TBool IsVideoCall( const TInt aCallId ) const;
  
     protected:
-		
-		/**
-		* Handle for sending view commands.
-		*/
-		MPhoneViewCommandHandle* iViewCommandHandle;
-		
-		MPhoneStateMachine* iStateMachine;
-	          
+        
+        /**
+        * Handle for sending view commands.
+        */
+        MPhoneViewCommandHandle* iViewCommandHandle;
+        
+        MPhoneStateMachine* iStateMachine;
+              
     };
 
 #endif // __CPHONEERRORMESSAGESHANDLER_H

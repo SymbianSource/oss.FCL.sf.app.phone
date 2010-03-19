@@ -1217,7 +1217,7 @@ RESOURCE AVKON_LIST_QUERY r_phone_voip_multiple_choices_list_query
             control = AVKON_LIST_QUERY_CONTROL
                 {
                 listtype = EAknCtSinglePopupMenuListBox;
-	              heading = qtn_voip_rel2_popup_title_forward_call_to;
+                  heading = qtn_voip_rel2_popup_title_forward_call_to;
                 listbox = AVKON_LIST_QUERY_LIST
                     {
                     };

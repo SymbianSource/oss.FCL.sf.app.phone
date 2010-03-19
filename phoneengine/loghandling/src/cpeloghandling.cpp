@@ -186,15 +186,15 @@ EXPORT_C TInt CPELogHandling::SaveCallEntry
          CallIdCheck::IsVideo( aCallId )
        ) 
         {
-		CPELogInfo* logInfo( NULL );
+        CPELogInfo* logInfo( NULL );
         TRAP( errorCode, logInfo = CPELogInfo::NewL(); );
             
         if ( logInfo )
             {
             // continue gathering log data
             
-		    // set phonenumber and/or voip address
-			SetRemoteContact( aCallId, *logInfo );
+            // set phonenumber and/or voip address
+            SetRemoteContact( aCallId, *logInfo );
             logInfo->SetEventData( aCallId, iDataStore ); 
             TRAP_IGNORE( 
                 // Contact link can be big, not critical for basic functionality.

@@ -22,7 +22,9 @@
 #include "mphonestatemachine.h"
 
 #include <featmgr.h>
-#include <callhandlingui.rsg>
+// <-- QT PHONE START -->
+//#include <callhandlingui.rsg>
+// <-- QT PHONE END -->
 
 #include "phonerssbase.h"
 #include "phoneui.pan"
@@ -147,14 +149,14 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
                     EPhoneViewGetCountOfActiveCalls, &activeCallCount );
             
             TPhoneCmdParamCallStateData callStateData;
-		    callStateData.SetCallState( EPEStateRinging );
+            callStateData.SetCallState( EPEStateRinging );
             iViewCommandHandle.HandleCommandL(
                     EPhoneViewGetCallIdByState, &callStateData );
-		    
+            
             TInt incomingCall = callStateData.CallId();
 
             if( dtmfEditorVisible )
-            	{
+                {
                 resourceId = EPhoneDtmfDialerCBA;
                 }                    
             else if( activeCallCount.Integer() == ENoActiveCalls )
@@ -162,10 +164,10 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
                 resourceId = EPhoneNumberAcqCBA;
                 }
             else if ( activeCallCount.Integer() > ENoActiveCalls &&  
-            		  incomingCall > KErrNotFound )
-				{
-				resourceId = EPhoneCallHandlingCallWaitingCBA;
-				}
+                      incomingCall > KErrNotFound )
+                {
+                resourceId = EPhoneCallHandlingCallWaitingCBA;
+                }
             else
                 {
                 resourceId = EPhoneInCallNumberAcqCBA;
@@ -173,9 +175,8 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
             }
         }
 
-    // Check if Audio is muted
-    else if ( iStateMachine.PhoneEngineInfo()->AudioMute() &&
-        !FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ))
+    // Check is Audio muted
+    else if ( iStateMachine.PhoneEngineInfo()->AudioMute() )
         {
         resourceId = EPhoneCallHandlingInCallUnmuteCBA;
         }
@@ -269,10 +270,10 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
     TBool softRejectActivated( ETrue );
     // VoIP calls do not support sms sending
     if ( iStateMachine.PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP 
-    	|| iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ).Length() == 0 )
-    	{
-    	softRejectActivated = EFalse;
-    	}
+        || iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ).Length() == 0 )
+        {
+        softRejectActivated = EFalse;
+        }
     TPhoneCmdParamBoolean softRejectParam;
     softRejectParam.SetBoolean( softRejectActivated );
     iViewCommandHandle.ExecuteCommandL( EPhoneViewSetSoftRejectFlag,
@@ -454,10 +455,12 @@ void CPhoneCbaManager::SetRingtoneSilencedStatus( const TBool aSilencedStatus )
 // -----------------------------------------------------------
 //
 TInt CPhoneCbaManager::GetIncomingCallSilenceCBA( 
-        const TBool aSoftRejectActivated )
+        const TBool /*aSoftRejectActivated*/ )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneCbaManager::GetIncomingCallSilenceCBA ()" );
-    TInt ret = EPhoneCallHandlingIncomingSoftRejectCBA;
+// <-- QT PHONE START -->
+    TInt ret = EPhoneCallHandlingIncomingCBA;
+    /*TInt ret = EPhoneCallHandlingIncomingSoftRejectCBA;
     
     //Get incoming call touchpane button set
     TPhoneCmdParamInteger touchpaneButtonsParam;
@@ -482,8 +485,9 @@ TInt CPhoneCbaManager::GetIncomingCallSilenceCBA(
 
     // reset the iRingtoneSilence so it won't cause any problems with
     // next calls.
-    SetRingtoneSilencedStatus( EFalse );
-
+    SetRingtoneSilencedStatus( EFalse );*/
+    
+// <-- QT PHONE END -->
     return ret;
     }
 
