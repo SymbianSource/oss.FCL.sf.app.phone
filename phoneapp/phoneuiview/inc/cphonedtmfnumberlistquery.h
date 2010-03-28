@@ -49,9 +49,9 @@ class CPhoneDtmfNumberListQuery : public CAknListQueryDialog
         * @return CPhoneDtmfNumberListQuery* object  
         */
         static CPhoneDtmfNumberListQuery* 
-            CPhoneDtmfNumberListQuery::NewL( MEikCommandObserver& aCommandObserver,
-                                             MPhoneQueryObserver& aQueryObserver,
-                                             HBufC*& aSelectedDtmfNumber );
+            NewL( MEikCommandObserver& aCommandObserver,
+                  MPhoneQueryObserver& aQueryObserver,
+                  HBufC*& aSelectedDtmfNumber );
         
         /**
         * Destructor.

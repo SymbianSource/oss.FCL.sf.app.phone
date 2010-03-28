@@ -137,8 +137,7 @@ class CBubbleOutlookConference : public CBubbleOutlook
        /**
         * From CCoeControl
         */ 
-        void CBubbleOutlookConference::HandlePointerEventL
-            ( const TPointerEvent& aPointerEvent );
+        void HandlePointerEventL( const TPointerEvent& aPointerEvent );
 
     private:
     

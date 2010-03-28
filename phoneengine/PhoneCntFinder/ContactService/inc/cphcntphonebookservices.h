@@ -117,7 +117,7 @@ public:
      * @since S60 v3.2
      * @see MPhCntPhonebookServices
      */
-    void CPhCntPhonebookServices::GetPhoneNumberL(
+    void GetPhoneNumberL(
 	    const TDesC8& aContactLink,
 	    const CPhCntSingleItemFetch::TCallType aCallType,
     	HBufC*& aNumber,

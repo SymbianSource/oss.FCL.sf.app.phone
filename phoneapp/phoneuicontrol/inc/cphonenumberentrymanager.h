@@ -53,7 +53,7 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
         * @param aCbaManager: Handle to cphonecbamanager.
         * @return CPhoneNumberEntryManager* object  
         */
-        static CPhoneNumberEntryManager* CPhoneNumberEntryManager::NewL(
+        static CPhoneNumberEntryManager* NewL(
                     CPhoneState* aState,
                     MPhoneViewCommandHandle& aViewCommandHandle,
                     MPhoneStateMachine& aStateMachine,

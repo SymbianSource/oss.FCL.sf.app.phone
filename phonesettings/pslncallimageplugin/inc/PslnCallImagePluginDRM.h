@@ -68,7 +68,7 @@ class CPslnCallImagePluginDRM : public CBase, public MMGFetchVerifier
         */
         void ConstructL();
 
-        void CPslnCallImagePluginDRM::ShowErrorNoteL( TInt  aResourceId  ) const;
+        void ShowErrorNoteL( TInt  aResourceId  ) const;
 
     private:    // Data
     
