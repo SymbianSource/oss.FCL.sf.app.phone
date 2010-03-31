@@ -100,6 +100,7 @@ void CDialingExtensionObserver::HandleDialingExtensionEvent( MDialingExtensionOb
         case MDialingExtensionObserver::EEasyDialingEnabled:
             {
             // order dialer to refresh its layout
+            iDialer->UpdateNumberEntryConfiguration();
             iDialer->SetSize( iDialer->Size() );
             if (iDialingExtension && iNumberEntry)
                 {
@@ -113,6 +114,7 @@ void CDialingExtensionObserver::HandleDialingExtensionEvent( MDialingExtensionOb
         case MDialingExtensionObserver::EEasyDialingDisabled:
             {
             // order parent to refresh its layout
+            iDialer->UpdateNumberEntryConfiguration();
             iDialer->SetSize( iDialer->Size() );
             iDialer->DrawDeferred();
             }

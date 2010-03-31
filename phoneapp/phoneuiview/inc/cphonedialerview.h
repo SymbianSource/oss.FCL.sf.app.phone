@@ -76,20 +76,6 @@ class CPhoneDialerView : public CCoeControl, public MCoeView
         * @return aControl The control.
         */
         CCoeControl* Control() const;
-       
-        /**
-        * Sets the security mode flag ETrue or EFalse
-        * @param aStatus ETrue for the security mode. EFalse for the 
-        * normal mode.
-        */ 
-        void SetSecurityMode( TBool aStatus );
-        
-        /**
-        * Get state of the security mode flag
-        * @return aStatus ETrue for the security mode. EFalse for the 
-        * normal mode.
-        */         
-        TBool IsSecurityMode();
         
     public:  // Functions from base classes
         
@@ -207,9 +193,7 @@ class CPhoneDialerView : public CCoeControl, public MCoeView
         
         //MainPane
         TRect iMainPane;
-        
-        //Is security mode or not
-        TBool iSecurityMode;
+  
         };
 
 #endif // __CPHONEDIALERVIEW_H

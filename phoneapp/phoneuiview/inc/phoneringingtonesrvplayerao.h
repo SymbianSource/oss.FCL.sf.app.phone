@@ -23,9 +23,9 @@
 #include <e32base.h>
 #include <Profile.hrh>
 
-#include "MPhoneAudioPlayerObserver.h"
-#include "MPhoneTimer.h"
-#include "CPhoneAudioPlayer.h"
+#include "mphoneaudioplayerobserver.h"
+#include "mphonetimer.h"
+#include "cphoneaudioplayer.h"
 
 // FORWARD DECLARATIONS
 class RFs;

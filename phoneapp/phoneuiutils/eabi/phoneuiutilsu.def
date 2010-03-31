@@ -416,4 +416,5 @@ EXPORTS
 	_ZThn4_N26CPhoneResourceResolverBaseD0Ev @ 415 NONAME
 	_ZThn4_N26CPhoneResourceResolverBaseD1Ev @ 416 NONAME
 	_ZThn4_NK26CPhoneResourceResolverBase17ResolveResourceIDERKi @ 417 NONAME
+	_ZN19CPhoneQwertyHandler22AddQwertyModeObserverLER24MPhoneQwertyModeObserver @ 418 NONAME
 

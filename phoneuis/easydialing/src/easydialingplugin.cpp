@@ -75,6 +75,9 @@
 #include <phoneappcommands.hrh>
 #include <bautils.h>    // for BaflUtils
 
+// Transition effects
+#include <gfxtranseffect/gfxtranseffect.h>
+
 // EXTERNAL DATA STRUCTURES
 
 // EXTERNAL FUNCTION PROTOTYPES
@@ -100,6 +103,11 @@ const TText KArabicPresentationFormsBRangenStart = 0xFE70;
 const TText KArabicPresentationFormsBRangeEnd = 0xFEFF;
 
 const TInt KMaxRunInfoArrayCount = 20;
+
+// Transition context_uid for dialer_list component effects
+#define KGfxContactListBoxUid TUid::Uid( 0x2000B47B )
+const TInt KGfxContactListBoxOpenEffect  = 3;
+const TInt KGfxContactListBoxCloseEffect = 4;
 
 // MACROS
 
@@ -190,12 +198,6 @@ void CEasyDialingPlugin::ConstructL()
     iContactDataManager->ConstructL();
     iContactDataManager->SetObserver(this);
 
-    PERF_MEASURE_START
-
-    InitPredictiveContactSearchL();
-
-    PERF_MEASURE_STOP
- 
     // Find a handle to ca launcher extension MCCAConnectionExt.
     // Easydialing has to use the extension API, because it needs function CloseAppL
     // only found in extension.
@@ -260,6 +262,11 @@ CEasyDialingPlugin::~CEasyDialingPlugin()
 
     delete iListBoxModel;
     
+    if ( iContactListBox )
+        {
+        GfxTransEffect::Deregister( iContactListBox );
+        }
+    
     delete iContactListBox;
 
     if (iContactLauncher)
@@ -313,12 +320,20 @@ void CEasyDialingPlugin::InitializeL( CCoeControl& aParent )
     model->SetItemTextArray( iListBoxModel );
     model->SetOwnershipType( ELbmDoesNotOwnItemArray );
 
-
     iContactListBox->MakeVisible( EFalse );
     
     SetFocus( EFalse );    
     iContactListBox->ActivateL();
-
+    
+    GfxTransEffect::Register( iContactListBox, 
+                              KGfxContactListBoxUid, EFalse );
+    
+    // Do delayed initialization of PCS. PCS constructions takes a long time.
+    // On the other hand, easy dialing initialization is done in phone application
+    // constructor, so it contributes the whole system boot time. These are good 
+    // reasons not to construct PCS in easy dialing constructor, but do it later as
+    // an asynchronous operation.
+    AsyncActionLaunchL( EInitializePcs );
     }
 
 
@@ -635,9 +650,14 @@ void CEasyDialingPlugin::SetInputL( const TDesC& aSearchString )
     // It's assumed later on in the code that string is not just empty space.
     TLex searchString( aSearchString );
     searchString.SkipSpace();
-    if ( searchString.Eos() )
+    if ( searchString.Eos() ) // the end of the string reached after skipping empty space
         {
-        // the end of the string reached after skipping empty space
+        // It's assumed here that if we get here due to switching to call
+        // handling etc, then dialer and thus ed is already set invisible
+        // and effect will not be shown as listbox is already invisible.
+        // However if user empties number entry, then it's feasible to show
+        // effect.
+        HideContactListBoxWithEffect();
         Reset();
         }
     else // proper search string
@@ -703,34 +723,14 @@ void CEasyDialingPlugin::HandleStoreEventL( MVPbkContactStore& /* aContactStore 
         case TVPbkContactStoreEvent::EContactDeleted:
         case TVPbkContactStoreEvent::EContactChanged:
             {
-            if ( iSearchString.Length() > 0 )
-                {
-                if ( iContactLauncherActive )
-                    {
-                    // Set the flag to make a search when communication launcher exits.
-                    iNewSearchNeeded = ETrue;                   
-                    }
-                else
-                    {
-                    // We get here if user e.g. leaves dialer open and goes to Contacts
-                    // application and does some editing.
-                    iContactDataManager->Reload(); // to update thumbnails
-                    AsyncActionLaunchL( ELaunchSearch );
-                    }
-                }
+            DoHandleContactsChangedL();
             }
-            
             break;
        
         default:
-            
             break;
         }
-    
-
-    
     }
-
 
 // -----------------------------------------------------------------------------
 // CEasyDialingPlugin::OpenComplete
@@ -797,6 +797,16 @@ void CEasyDialingPlugin::NameOrderChanged()
     }
 
 // -----------------------------------------------------------------------------
+// FavouritesChanged
+// From MContactDataManagerObserver
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::FavouritesChanged()
+    {
+    TRAP_IGNORE( DoHandleContactsChangedL() );
+    }
+
+// -----------------------------------------------------------------------------
 // InformContactorEvent
 // From MEDContactorObserver
 // -----------------------------------------------------------------------------
@@ -846,7 +856,7 @@ void CEasyDialingPlugin::Draw( const TRect& /* aRect */ ) const
 //
 void CEasyDialingPlugin::LaunchSearchL()
     {
-    if ( iSearchString.Length() == 0 )
+    if ( iSearchString.Length() == 0 || !iPredictiveContactSearchHandler )
         {
         return;
         }
@@ -1092,11 +1102,11 @@ void CEasyDialingPlugin::HandlePsResultsUpdateL( RPointerArray<CPsClientData>& a
         iContactListBox->HandleItemAdditionL();
         // Scroll the list to bottom
         iContactListBox->ScrollToMakeItemVisible( iNumberOfNames-1 );
-        iContactListBox->MakeVisible( ETrue );
+        ShowContactListBoxWithEffect();
         }
     else
-        {
-        iContactListBox->MakeVisible( EFalse );
+        {  
+        HideContactListBoxWithEffect();
         }
 
     if ( IsFocused() )
@@ -1611,6 +1621,14 @@ void CEasyDialingPlugin::DoLaunchActionL( )
         LaunchSearchL();
         return;
         }
+    else if ( iActionToBeLaunched == EInitializePcs )
+        {
+        PERF_MEASURE_START
+        InitPredictiveContactSearchL();
+        PERF_MEASURE_STOP
+ 
+        return;
+        }
     
     // If not for launching current contact or performing search, 
     // the action is launching some communication method.
@@ -1758,6 +1776,79 @@ void CEasyDialingPlugin::HandleListBoxEventL( CEikListBox* /*aListBox*/, TListBo
      // cause we are using CAknInputBlock::SetCancelDelete method.
      iInputBlocker = NULL;
      }
+
+// -----------------------------------------------------------------------------
+// CEasyDialingPlugin::DoHandleContactsChangedL
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::DoHandleContactsChangedL()
+    {
+    if ( iSearchString.Length() > 0 )
+        {
+        if ( iContactLauncherActive )
+            {
+            // Set the flag to make a search when communication launcher exits.
+            iNewSearchNeeded = ETrue;                   
+            }
+        else
+            {
+            // We get here if user e.g. leaves dialer open and goes to Contacts
+            // application and does some editing.
+            iContactDataManager->Reload(); // to update thumbnails
+            AsyncActionLaunchL( ELaunchSearch );
+            }
+        }
+    }
+
+// -----------------------------------------------------------------------------
+// CEasyDialingPlugin::ShowContactListBoxWithEffect
+// Use appear/disappear effects when in foreground and when listbox truly
+// changes visiblity.
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::ShowContactListBoxWithEffect()
+    {  
+    CAknAppUi* appUi = static_cast<CAknAppUi*>( iCoeEnv->AppUi() );
+       
+    // Show effect only if listbox is about to come visible.
+    if ( !iContactListBox->IsVisible() &&
+         appUi && appUi->IsForeground() && 
+         GfxTransEffect::IsRegistered( iContactListBox ) )
+        {
+        GfxTransEffect::Begin( iContactListBox, KGfxContactListBoxOpenEffect );
+        iContactListBox->MakeVisible( ETrue );
+        GfxTransEffect::SetDemarcation( iContactListBox, iContactListBox->Rect() );
+        GfxTransEffect::End( iContactListBox );
+        }
+    else
+        {
+        iContactListBox->MakeVisible( ETrue );
+        }
+    }
+
+// -----------------------------------------------------------------------------
+// CEasyDialingPlugin::HideContactListBoxWithEffect
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::HideContactListBoxWithEffect()
+    {
+    CAknAppUi* appUi = static_cast<CAknAppUi*>( iCoeEnv->AppUi() );
+           
+    // Show effect only if listbox is about to disappear from the screen.
+    if ( iContactListBox->IsVisible() &&
+         appUi && appUi->IsForeground() && 
+         GfxTransEffect::IsRegistered( iContactListBox ) )
+        {
+        GfxTransEffect::Begin( iContactListBox, KGfxContactListBoxCloseEffect );
+        iContactListBox->MakeVisible( EFalse );
+        GfxTransEffect::SetDemarcation( iContactListBox, iContactListBox->Rect() );
+        GfxTransEffect::End( iContactListBox );
+        }
+    else
+        {
+        iContactListBox->MakeVisible( EFalse );
+        }
+    }
 
 /*
  * ==============================================================================

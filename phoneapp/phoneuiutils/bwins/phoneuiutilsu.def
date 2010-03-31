@@ -324,4 +324,5 @@ EXPORTS
 	?SetTone@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 323 NONAME ; void TPhoneCmdParamGlobalNote::SetTone(int)
 	?After@CPhoneTimer@@QAEXVTTimeIntervalMicroSeconds32@@VTCallBack@@@Z @ 324 NONAME ; void CPhoneTimer::After(class TTimeIntervalMicroSeconds32, class TCallBack)
 	?ContactMatcher@TPhoneCmdParamReconnectQuery@@QBEPAVCPhCntMatcher@@XZ @ 325 NONAME ; class CPhCntMatcher * TPhoneCmdParamReconnectQuery::ContactMatcher(void) const
+	?AddQwertyModeObserverL@CPhoneQwertyHandler@@QAEXAAVMPhoneQwertyModeObserver@@@Z @ 326 NONAME ; void CPhoneQwertyHandler::AddQwertyModeObserverL(class MPhoneQwertyModeObserver &)
 

@@ -39,6 +39,8 @@ class CPhoneStateHandle;
 class CPEPhoneModel;
 class CPhoneRemoteControlHandler;
 class CPhoneKeyEventForwarder;
+class CPhoneSecurityModeObserver;
+class CPhoneViewController;
 
 class CPhoneUIController : 
     public CBase, 
@@ -52,8 +54,7 @@ class CPhoneUIController :
         /**
         * Two-phased constructor.
         */
-        IMPORT_C static CPhoneUIController* NewL( 
-            MPhoneViewCommandHandle* aViewCommandHandle );
+        IMPORT_C static CPhoneUIController* NewL( CPhoneViewController& aViewCommandHandle );
         
         /**
         * Destructor.
@@ -158,7 +159,6 @@ class CPhoneUIController :
         */
         IMPORT_C TBool ProcessCommandL( TInt aCommand );
 
-        
     private:
         
         /**
@@ -169,12 +169,12 @@ class CPhoneUIController :
         /**
         * By default EPOC constructor is private.
         */
-        void ConstructL( MPhoneViewCommandHandle* aViewCommandHandle );
+        void ConstructL( CPhoneViewController& aController );
         
         /**
         * Creates correct protocol DLL depending of the variation.
         */
-        void CreateProtocolDllL( MPhoneViewCommandHandle* aViewCommandHandle );
+        void CreateProtocolDllL( CPhoneViewController& aController );
         /**
         * CallBack for Phone Number Editor
         */
@@ -231,7 +231,13 @@ class CPhoneUIController :
         * iKeyEventForwarder
         */
         CPhoneKeyEventForwarder* iKeyEventForwarder;
-        
+
+		/**
+		 * Security mode observer.
+		 * Own.
+		 */
+		CPhoneSecurityModeObserver* iSecurityModeObserver;
+		
     };
 
 #endif      // CPHONEUICONTROLLER_H   

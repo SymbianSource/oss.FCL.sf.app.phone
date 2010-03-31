@@ -50,6 +50,7 @@ SOURCE  cdialercenrepwrapper.cpp
 
 USERINCLUDE ../inc 
 USERINCLUDE ../data 
+USERINCLUDE ../../../phoneapp/phoneuiutils/inc 
 
 APP_LAYER_SYSTEMINCLUDE
 
@@ -72,7 +73,7 @@ LIBRARY CommonEngine.lib
 LIBRARY PtiEngine.lib
 LIBRARY centralrepository.lib
 LIBRARY cenrepnotifhandler.lib 
-
+LIBRARY serviceprovidersettings.lib
 
 // Keypad resources. Header is generated only for the
 // default variant, all the variants use the same header.

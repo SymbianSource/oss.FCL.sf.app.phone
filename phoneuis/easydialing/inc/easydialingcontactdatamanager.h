@@ -26,6 +26,7 @@
 #include <MVPbkContactViewBase.h>
 #include <TPbk2ImageManagerParams.h>
 #include <MPbkGlobalSetting.h> // For name order setting
+#include <MVPbkContactViewObserver.h>
 #include "easydialingcontactdata.h"
 
 // FORWARD DECLARATIONS
@@ -47,7 +48,8 @@ class CEasyDialingContactDataManager :
         public MVPbkContactStoreObserver,
         public MVPbkOperationErrorObserver,
         public MVPbkOperationResultObserver<MVPbkContactViewBase*>,
-        public MPbkGlobalSettingObserver
+        public MPbkGlobalSettingObserver,
+        public MVPbkContactViewObserver
         
     {
 public:
@@ -279,6 +281,33 @@ private:
             MVPbkContactOperationBase* aOperation,
             MVPbkContactViewBase* aOperationResult );
 
+    
+private:
+    /**
+     * From MVPbkContactViewObserver.
+     * For observing changes to favourites view.
+     */
+    virtual void ContactViewReady(
+            MVPbkContactViewBase& aView );
+
+    virtual void ContactViewUnavailable(
+            MVPbkContactViewBase& aView );
+
+    virtual void ContactAddedToView(
+            MVPbkContactViewBase& aView, 
+            TInt aIndex, 
+            const MVPbkContactLink& aContactLink );
+
+    virtual void ContactRemovedFromView(
+            MVPbkContactViewBase& aView, 
+            TInt aIndex, 
+            const MVPbkContactLink& aContactLink );
+
+    virtual void ContactViewError(
+            MVPbkContactViewBase& aView, 
+            TInt aError, 
+            TBool aErrorNotified );
+
 private:
        
     void InitReady();
@@ -296,6 +325,8 @@ private:
     void GetAvailableServicesL( MVPbkStoreContact* aContact, TInt aIndex );
     
     void InformObserver();
+    
+    void UpdateNameOrderL();
 
 private:
     /** Array that contains all loaded contact data. Owned. */
@@ -343,6 +374,9 @@ private:
     /** View to vpbk containing all favourite contacts. Owned. */
     MVPbkContactViewBase* iFavsView;
         
+    /** Favourites view is ready to be used. */
+    TBool iFavsViewReady;
+    
     /** Virtual phonebook operation handle for getting favourites. Owned. */
     MVPbkContactOperationBase* iFavsOperation;
     

@@ -68,6 +68,11 @@ class CPhoneQwertyHandler : public CBase,
         */
         IMPORT_C TInt NumericKeyCode( const TKeyEvent& aKeyEvent );
 
+        /**
+        * Add qwerty mode observer. 
+        */
+        IMPORT_C void AddQwertyModeObserverL( MPhoneQwertyModeObserver& aObserver );
+
     private:
     
         /**

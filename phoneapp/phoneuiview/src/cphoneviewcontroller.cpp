@@ -980,14 +980,6 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             iStatusPane->SetTitlePanePictureL( aCommandParam );
             break;
 
-       case EPhoneViewSetSecurityMode:
-            SetSecurityMode( aCommandParam );
-            break;
-
-       case EPhoneViewGetSecurityModeStatus:
-            GetSecurityModeStatus( aCommandParam );
-            break;
-
        case EPhoneViewSetStatusPaneVisible:
             SetStatusPaneVisible( aCommandParam );
             break;
@@ -1088,18 +1080,7 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             break;
             }
 
-        case EPhoneViewSetRestrictedDialer:
-            {
-            if ( iDialer )
-                {
-                TPhoneCmdParamBoolean* booleanParam =
-                    static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
-                iDialerController->SetRestrictedDialer(
-                                                booleanParam->Boolean() );
-                }
-            break;
-            }
-        case EPhoneViewSetDtmfOptionsFlag:
+         case EPhoneViewSetDtmfOptionsFlag:
             {
             TPhoneCmdParamBoolean*  booleanParam =
                 static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
@@ -1511,6 +1492,13 @@ EXPORT_C void CPhoneViewController::ExecuteCommand(
             iToolbarController->SetToolbarButtonDimmed( integerParam->Integer(), EFalse );
             }
             break;
+            
+        case EPhoneViewGetQwertyModeObserver:
+            {
+            TPhoneCmdParamPointer* ptrParam = static_cast<TPhoneCmdParamPointer*>( aCommandParam );
+            ptrParam->SetPointer( static_cast<TAny*>( iDialer ) );
+            }
+            break;
 
         default:
             __PHONELOG( EBasic, EPhonePhoneapp, "CPhoneViewController::ExecuteCommand -> UnHandledMessage !!! " );
@@ -1688,8 +1676,19 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
                     }
                 // Set Number Entry CBA
                 TPhoneCmdParamInteger integerParam;
-                integerParam.SetInteger( CPhoneMainResourceResolver::Instance()->
-                    ResolveResourceID( EPhoneNumberAcqCBA ) );
+                if ( iSecurityMode )
+                	{
+                    iNoteController->DestroyNote();
+                    integerParam.SetInteger(
+                    CPhoneMainResourceResolver::Instance()->
+                              		ResolveResourceID( EPhoneEmergencyModeNoteCBA ) );
+                              	}
+                              else
+                              	{
+                              	integerParam.SetInteger(
+                              		CPhoneMainResourceResolver::Instance()->
+                              		ResolveResourceID( EPhoneNumberAcqCBA ) );
+                              	}
                 ExecuteCommandL( EPhoneViewUpdateCba, &integerParam );
                 // Set flag to false because dialler is set to open status.
                 iPhoneView->SetPhoneAppViewToDialer( EFalse );
@@ -1896,7 +1895,7 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
                 }
             else
                 {
-                TBool status;
+                TBool status( EFalse );
                 TRAP( err, status = GetNumberFromSpeedDialLocationL( aCommandParam ))
                 if ( err )
                     {
@@ -2151,6 +2150,28 @@ EXPORT_C TBool CPhoneViewController::StatusPaneDisplayed()
     }
 
 // ---------------------------------------------------------------------------
+// CPhoneViewController::HandleSecurityModeChanged
+// ---------------------------------------------------------------------------
+//
+EXPORT_C void CPhoneViewController::HandleSecurityModeChanged( TBool aIsEnabled )
+	{
+	 __PHONELOG1( EBasic, EPhoneUIView,
+            "CPhoneViewController::SetSecurityMode Mode = (%d)", aIsEnabled );
+    iToolbarController->DimToolbar( aIsEnabled );			
+	iPhoneView->SetSecurityMode( aIsEnabled );
+	iMenuController->SetSecurityMode( aIsEnabled );
+	if ( iDialer )
+		{
+		iDialerController->SetRestrictedDialer( aIsEnabled );
+		if ( iSecurityMode != aIsEnabled )
+			{
+			iDialer->RelayoutAndDraw();
+			}
+		}
+	iSecurityMode = aIsEnabled;
+	}
+
+// ---------------------------------------------------------------------------
 // CPhoneViewController::IdleAppUid
 // ---------------------------------------------------------------------------
 //
@@ -2208,20 +2229,7 @@ void CPhoneViewController::GetBlockingDialogIsDisplayed(
         }
     }
 
-// ---------------------------------------------------------------------------
-// CPhoneViewController::GetSecurityModeStatus
-// ---------------------------------------------------------------------------
-//
-void CPhoneViewController::GetSecurityModeStatus(
-    TPhoneCommandParam* aCommandParam )
-    {
-    if( aCommandParam->ParamId() == TPhoneCommandParam::EPhoneParamIdBoolean )
-        {
-        TPhoneCmdParamBoolean* booleanValue =
-            static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
-        booleanValue->SetBoolean( iPhoneView->IsSecurityMode() );
-        }
-    }
+
 
 // ---------------------------------------------------------------------------
 // CPhoneViewController::SendToBackgroundL
@@ -3459,21 +3467,6 @@ void CPhoneViewController::SendMessageL()
     CleanupStack::PopAndDestroy( phoneNumber );
     }
 
-// ---------------------------------------------------------------------------
-// CPhoneViewController::SetSecurityMode
-// ---------------------------------------------------------------------------
-//
-void CPhoneViewController::SetSecurityMode(
-                                        TPhoneCommandParam* aCommandParam )
-    {
-    __LOGMETHODSTARTEND(EPhoneUIView,
-        "CPhoneViewController::SetSecurityMode()" );
-    TPhoneCmdParamBoolean* booleanParam = static_cast<TPhoneCmdParamBoolean*>(
-        aCommandParam );
-    iPhoneView->SetSecurityMode( booleanParam->Boolean() );
-    iStatusPane->StatusPane().MakeVisible( !booleanParam->Boolean() );
-    }
-
 // -----------------------------------------------------------
 // CPhoneViewController::SetStatusPaneVisible
 // -----------------------------------------------------------
@@ -3688,11 +3681,7 @@ void CPhoneViewController::SwapEmptyIndicatorPaneInSecureStateL(
     {
     __LOGMETHODSTARTEND(EPhoneUIView,
         "CPhoneViewController::SwapEmptyIndicatorPaneInSecureStateL()" );
-
-    TPhoneCmdParamBoolean security;
-    GetSecurityModeStatus( &security );
-
-    if ( security.Boolean() )
+    if ( iSecurityMode )
         {
         if ( aSwapEmpty )
             {
@@ -3800,7 +3789,11 @@ void CPhoneViewController::SetControltoDialerL()
         // Don't make dialer view visible before status pane is updated.
         // This prevents unnecessary resizings.
         iDialerView->MakeVisible( ETrue );
-        iDialerView->DrawDeferred();
+        // Number entry is emptied when dialer is hidden but drawing doesn't
+        // succeed at that point as dialer is hidden first. So must draw
+        // dialer as soon as it becomes visible to prevent the flashing of
+        // number entry (DrawDeferred() isn't fast enough here).
+        iDialerView->DrawNow();
         }
     }
 
@@ -3813,9 +3806,8 @@ void CPhoneViewController::SetControltoCallHandlingL()
     __PHONELOG1( EBasic, EPhoneUIView,
         "CPhoneViewController::SetControltoCallHandlingL iDialerActive (%d)", iDialerActive );
 
-    // Do not show toolbar if securitymode or emergency call active
-    if ( !iPhoneView->IsSecurityMode() && 
-         !iIncallIndicator->IsEmergencyCall() )
+    // Do not show toolbar if emergency call is active
+    if ( !iIncallIndicator->IsEmergencyCall() )
         {
         iToolbarController->ShowToolbar();
         }

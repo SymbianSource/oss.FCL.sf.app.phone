@@ -104,6 +104,7 @@
 #include "cphonecontinueemergencycallcommand.h"
 #include "cphonecallheadermanager.h"
 #include "cphonenumberentrymanager.h"
+#include "mphonesecuritymodeobserver.h"
 #include "easydialingcommands.hrh"
 
 
@@ -674,7 +675,13 @@ TBool CPhoneState::IsKeyEventFurtherProcessedL( const TKeyEvent& aKeyEvent ) con
     TBool numericMode = iViewCommandHandle->HandleCommandL(
       EPhoneViewIsNumberEntryNumericMode ) == EPhoneViewResponseSuccess;
 
-    if ( ( aKeyEvent.iModifiers & EModifierSpecial ) != 0 || !numericMode )
+    // Key presses simulated by dialer are played even if in alphanumeric mode.
+    const TBool simulatedByDialer = 
+        ( ( aKeyEvent.iModifiers & ( EModifierNumLock | EModifierKeypad ) ) 
+                == ( EModifierNumLock | EModifierKeypad ) );
+
+
+    if ( ( ( aKeyEvent.iModifiers & EModifierSpecial ) != 0 || !numericMode ) && !simulatedByDialer )
         {
         return EFalse;
         }
@@ -1339,10 +1346,7 @@ EXPORT_C void CPhoneState::HandlePhoneForegroundEventL()
 
         else
             {
-            TPhoneCmdParamBoolean isSecurityMode;
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-
-            if ( !isSecurityMode.Boolean() )
+            if ( !iStateMachine->SecurityMode()->IsSecurityMode() )
                 {
                 __PHONELOG( EBasic, EPhoneControl,
                   "CPhoneState::HandlePhoneForegroundEventL - Force Idle to the foreground" );
@@ -1522,12 +1526,6 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
     switch( aCommand )
         {
         case EPhoneEmergencyCmdExit:
-            {
-            //cancel emergency mode.
-            TPhoneCmdParamBoolean booleanParam;
-            booleanParam.SetBoolean( EFalse );
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetRestrictedDialer, &booleanParam );
-            }
             // this should be bypasses?
         case EPhoneDialerCallHandling:
         case EPhoneCmdBack:
@@ -1643,30 +1641,6 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
             appInfoParam.SetAppUid( KPhoneUidAppPhonebook );
             iViewCommandHandle->ExecuteCommandL(
                 EPhoneViewActivateApp, &appInfoParam );
-            }
-            break;
-
-        case EPhoneNumberAcqSecurityDialer:
-            {
-            if ( IsOnScreenDialerSupported() && !IsNumberEntryUsedL() )
-                {
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNote );
-                TPhoneCmdParamBoolean visibleMode;
-                visibleMode.SetBoolean( ETrue );
-                iViewCommandHandle->ExecuteCommandL(
-                            EPhoneViewSetStatusPaneVisible, &visibleMode );
-
-
-                // Set emergency CBA, empty - exit
-                iCbaManager->SetCbaL( EPhoneEmergencyModeNoteCBA );
-
-                // Set dialer to restricted mode.
-                TPhoneCmdParamBoolean booleanParam;
-                booleanParam.SetBoolean( ETrue );
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewSetRestrictedDialer, &booleanParam );
-
-                NumberEntryManagerL()->CreateNumberEntryL();
-                }
             }
             break;
 
@@ -3386,9 +3360,7 @@ EXPORT_C TBool CPhoneState::IsSimOk()
 //
 EXPORT_C TBool CPhoneState::IsSimStateNotPresentWithSecurityModeEnabled()
     {
-    TPhoneCmdParamBoolean isSecurityMode;
-    TRAP_IGNORE( iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode ) );
-    if ( SimState() == EPESimNotPresent && isSecurityMode.Boolean() )
+    if ( SimState() == EPESimNotPresent && iStateMachine->SecurityMode()->IsSecurityMode() )
         {
         return ETrue;
         }
@@ -3442,11 +3414,6 @@ EXPORT_C void CPhoneState::StartAlsLineChangeTimerL()
 EXPORT_C void CPhoneState::StartShowSecurityNoteL()
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneState::StartShowSecurityNoteL ");
-
-    // Set security mode on.
-    TPhoneCmdParamBoolean securityMode;
-    securityMode.SetBoolean( ETrue );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetSecurityMode, &securityMode );
 
     // Remove number entry from screen
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
@@ -3874,10 +3841,7 @@ EXPORT_C void CPhoneState::HandleLongHashL()
 
     if( neLength == 1 )
         {
-        TPhoneCmdParamBoolean isSecurityMode;
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-
-        if ( !isSecurityMode.Boolean() )
+         if ( !iStateMachine->SecurityMode()->IsSecurityMode() )
             {
             OnlyHashInNumberEntryL();
             }
@@ -4085,9 +4049,7 @@ EXPORT_C void CPhoneState::SetDefaultFlagsL()
         &globalNotifierParam );
 
     // uncapture App and Camera keys if not security mode
-    TPhoneCmdParamBoolean isSecurityMode;
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-    if ( !isSecurityMode.Boolean() )
+    if ( !iStateMachine->SecurityMode()->IsSecurityMode() )
         {
         CaptureKeysDuringCallNotificationL( EFalse );
         }

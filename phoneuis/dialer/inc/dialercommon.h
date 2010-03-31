@@ -53,7 +53,8 @@ enum TDialerPanicCode
     EDialerPanicChineseScriptError,
     EDialerPanicLabelNotFound,
     EDialerPanicToolbarButtonNotFound,
-    EDialerPanicNullController
+    EDialerPanicNullController,
+    EDialerPanicEventFromUnknownControl
     };
 
 #endif // DIALERCOMMON_H

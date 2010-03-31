@@ -193,6 +193,13 @@ NONSHARABLE_CLASS(CDialerKeyPadContainer) : public CDialerContainerBase,
          * Helper to manage keypad button labels
          */
         CDialerKeyPadLabelManager* iKeyLabelManager;
+        
+        /**
+         * True if key up event has been simulated in order to cancel
+         * long tap action due to dragging pointer outside of
+         * pressed button.
+         */
+        TBool iKeyUpSimulatedDueToDragging;
     };
 
 #endif      // CDIALERKEYPADCONTAINER_H

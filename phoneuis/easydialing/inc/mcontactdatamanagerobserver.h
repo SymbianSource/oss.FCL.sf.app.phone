@@ -20,7 +20,7 @@
 
 /**
  *  MContactDataManagerObserver
- *  Thumbnail manager observer interface
+ *  Contact data manager observer interface
  */
 class MContactDataManagerObserver
     {
@@ -28,6 +28,8 @@ public:
     virtual void AllContactDataLoaded() = 0;
     
     virtual void NameOrderChanged() = 0;
+    
+    virtual void FavouritesChanged() = 0;
     };
 
 #endif //__MCONTACTDATAMANAGEROBSERVER_H__

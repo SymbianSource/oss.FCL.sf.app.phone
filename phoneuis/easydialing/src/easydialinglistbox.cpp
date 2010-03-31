@@ -279,46 +279,57 @@ void CEasyDialingListBox::SizeChanged()
     {
     CEikFormattedCellListBox::SizeChanged();
     
+    TRect parentRect = Rect();
+    
     // Set the listbox colors.
     // For some reason, calling this in HandleResourceChange is not enough, it does
     // not get called in situation it should.
     ItemDrawer()->SetColors();
-   
-    // resize scroll bar
+    
+    // Get all the layout rects
+    TAknLayoutRect rect;
+    TInt variety = ( Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0 );
+
+    TAknWindowComponentLayout viewLayout( AknLayoutScalable_Apps::dia3_list_pane( variety ) );
+    rect.LayoutRect(parentRect, viewLayout );
+    TRect viewRect( rect.Rect() );
+    // Add a bit of margin around the view as layout doesn't define any
+    viewRect.Shrink( KListBoxMarginWidth, KListBoxMarginWidth );
+    
+    TAknWindowComponentLayout scrollBarLayout( AknLayoutScalable_Apps::scroll_pane_cp12() );
+    rect.LayoutRect( parentRect, scrollBarLayout );
+    TRect scrollBarRect( rect.Rect() );
+
+    TRect viewAndScrollBarRect( viewRect );
+    if ( AknLayoutUtils::LayoutMirrored() )
+        {
+        viewAndScrollBarRect.iTl.iX = scrollBarRect.iTl.iX + KListBoxMarginWidth;
+        }
+    else
+        {
+        viewAndScrollBarRect.iBr.iX = scrollBarRect.iBr.iX - KListBoxMarginWidth;
+        }
+
+    // If scrollbar is not needed, then we can use all the space for the list view
+    if ( GetHeightBasedOnNumberOfItems( iNumberOfNames ) <= parentRect.Height() )
+        {
+        viewRect = viewAndScrollBarRect;
+        scrollBarRect.SetWidth( 0 );
+        }
+
+    // Set view rect
+    iView->SetViewRect( viewRect );
+    
+    // Set scroll bar rect
     if ( iSBFrame )
         {
-        TAknLayoutRect rect;
-        TInt variety = ( Layout_Meta_Data::IsLandscapeOrientation() ? 1 : 0 );
-    
-        TAknWindowComponentLayout viewLayout( AknLayoutScalable_Apps::dia3_list_pane( variety ) );
-        rect.LayoutRect( Rect(), viewLayout );
-        TRect viewRect( rect.Rect() );
-        // Add a bit of margin around the view as layout doesn't define any
-        viewRect.Shrink( KListBoxMarginWidth, KListBoxMarginWidth );
-        
-        TAknWindowComponentLayout scrollBarLayout( AknLayoutScalable_Apps::scroll_pane_cp12() );
-        rect.LayoutRect( Rect(), scrollBarLayout );
-        TRect scrollBarRect( rect.Rect() );
-
-        iView->SetViewRect( viewRect );
-        
         CAknDoubleSpanScrollBar* scrollbar = static_cast <CAknDoubleSpanScrollBar*>( iSBFrame->VerticalScrollBar() );
-
         scrollbar->SetFixedLayoutRect( scrollBarRect );
         scrollbar->SetRect( scrollBarRect );
-        
-        TRect viewAndScrollBarRect( viewRect );
-        
-        if ( AknLayoutUtils::LayoutMirrored() )
-            {
-            viewAndScrollBarRect.iTl = scrollBarRect.iTl;
-            }
-        else
-            {
-            viewAndScrollBarRect.iBr = scrollBarRect.iBr;
-            }
-        iBGContext->SetFrameRects( Rect(), viewAndScrollBarRect );
+        scrollbar->MakeVisible( scrollBarRect.Width() != 0 );
         }
+
+    iBGContext->SetFrameRects( parentRect, viewAndScrollBarRect );
     }
 
 

@@ -55,7 +55,6 @@
 #include "phoneconstants.h"
 #include "cphoneclearblacklist.h"
 #include "cphonestatuspane.h"
-#include "cphoneqwertyhandler.h"
 #include "tphonecmdparaminteger.h"
 #ifndef __WINS__
 #include <f32file.h>
@@ -90,7 +89,6 @@ CPhoneAppUI::~CPhoneAppUI()
         delete iPhoneViewController;
         }
     delete iPhoneUIController;
-    delete iQwertyHandler;
     
     CPhoneRecoverySystem::Remove( iStartupSignalRecoveryId );
 
@@ -136,8 +134,7 @@ void CPhoneAppUI::ConstructL()
     keySounds->PushContextL( R_PHONEUI_DEFAULT_SKEY_LIST );
    
     iPhoneViewController = CPhoneViewController::NewL( ClientRect() );
-    iPhoneUIController = CPhoneUIController::NewL( iPhoneViewController );
-    iQwertyHandler = CPhoneQwertyHandler::NewL();        
+    iPhoneUIController = CPhoneUIController::NewL( *iPhoneViewController );
 
     // Blacklist singleton is initialized here
     // return value is ignored since we do not require its services in this class
@@ -600,34 +597,6 @@ void CPhoneAppUI::HandleWsEventL(
                     {
                     Exit();
                     return;     
-                    }
-                           
-                // Check if key press is simulated by FEP or by touch dialer
-                TBool fepSimulated = keyEvent->iModifiers & EModifierSpecial;               
-                TInt modifierMask = ( EModifierNumLock | EModifierKeypad );
-                TBool dialerSimulated = ( ( keyEvent->iModifiers & modifierMask ) == modifierMask );
-                        
-                if ( !fepSimulated && !dialerSimulated && iQwertyHandler->IsQwertyInput() )
-                    {
-                    TInt code = iQwertyHandler->NumericKeyCode( *keyEvent );                    
-                    if ( code == EKeyNull && CPhoneKeys::IsNumericKey( *keyEvent, ( TEventCode ) aEvent.Type() ) )
-                        {
-                        code = keyEvent->iCode;
-                        }
-                    
-                    if ( code != EKeyNull ) 
-                        {
-                        // Modify event according to keyboard layout
-                        TWsEvent newWsEvent = aEvent;    
-                        TKeyEvent* newKeyEvent = newWsEvent.Key();
-                        newKeyEvent->iCode = code;
-                        TInt shiftMask = EModifierLeftShift  | 
-                                         EModifierRightShift | 
-                                         EModifierShift;
-                        shiftMask = ~shiftMask;
-                        newKeyEvent->iModifiers = newKeyEvent->iModifiers & shiftMask;
-                        return CAknAppUi::HandleWsEventL( newWsEvent, aDestination );
-                        }
                     }
                 }
                 break;

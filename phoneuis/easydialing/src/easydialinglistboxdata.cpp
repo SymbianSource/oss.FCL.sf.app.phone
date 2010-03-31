@@ -466,9 +466,8 @@ void CEasyDialingListBoxData::DrawDataFormatted(
         DrawArrowIcon( aGc, arrowRect );
         }
 
-    TInt textWidth( 0 );
     TInt err( KErrNone );
-    TRAP( err, textWidth = DrawTextWithMatchHighlightL(
+    TRAP( err, DrawTextWithMatchHighlightL(
             boundingBox, aGc, cellText, iContactNameFont, aColors, aHighlight ) );
 
     if ( !err && TextUtils::ColumnText( cellText , 2, aText ) == KErrNone ) 

@@ -52,7 +52,8 @@ SOURCE          cphoneaccessorybthandler.cpp
 SOURCE          tphonecallheaderparam.cpp
 SOURCE          cphonecallheadermanager.cpp 
 SOURCE          cphonenumberentrymanager.cpp
-SOURCE          cphonecbamanager.cpp 
+SOURCE          cphonecbamanager.cpp
+SOURCE          cphonesecuritymodeobserver.cpp
 
 /* Languages */
 LANG SC

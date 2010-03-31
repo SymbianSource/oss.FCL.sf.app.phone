@@ -1,39 +1,40 @@
 EXPORTS
 	?HandleResourceChangeL@CPhoneViewController@@QAEXH@Z @ 1 NONAME ; void CPhoneViewController::HandleResourceChangeL(int)
-	?ExecuteCommand@CPhoneViewController@@UAEXHPAVTPhoneCommandParam@@@Z @ 2 NONAME ; void CPhoneViewController::ExecuteCommand(int, class TPhoneCommandParam *)
-	?DoFetchForegroundApplicationWindowGroupIdL@CPhoneViewController@@SAHAAVCEikonEnv@@@Z @ 3 NONAME ; int CPhoneViewController::DoFetchForegroundApplicationWindowGroupIdL(class CEikonEnv &)
-	?ExecuteCommandL@CPhoneViewController@@UAEXHHPAVTPhoneCommandParam@@@Z @ 4 NONAME ; void CPhoneViewController::ExecuteCommandL(int, int, class TPhoneCommandParam *)
-	?SetBlockingDialogIsDisplayed@CPhoneViewController@@UAEXH@Z @ 5 NONAME ; void CPhoneViewController::SetBlockingDialogIsDisplayed(int)
-	?BlockingDialogIsDisplayed@CPhoneViewController@@QBEHXZ @ 6 NONAME ; int CPhoneViewController::BlockingDialogIsDisplayed(void) const
-	?NewL@CPhoneSingleItemFetch@@SAPAV1@AAVCEikonEnv@@AAVCPhoneViewController@@AAVCPhoneContactController@@AAVCPhoneStatusPane@@@Z @ 7 NONAME ; class CPhoneSingleItemFetch * CPhoneSingleItemFetch::NewL(class CEikonEnv &, class CPhoneViewController &, class CPhoneContactController &, class CPhoneStatusPane &)
-	?HelpContext@CPhoneViewController@@QAEABVTDesC16@@XZ @ 8 NONAME ; class TDesC16 const & CPhoneViewController::HelpContext(void)
-	?ExecuteCommandL@CPhoneViewController@@UAEXHH@Z @ 9 NONAME ; void CPhoneViewController::ExecuteCommandL(int, int)
-	?IdleWindowGroupId@CPhoneViewController@@QAEHXZ @ 10 NONAME ; int CPhoneViewController::IdleWindowGroupId(void)
-	?ExecuteCommandL@CPhoneViewController@@UAEXHHAAVTDesC16@@@Z @ 11 NONAME ; void CPhoneViewController::ExecuteCommandL(int, int, class TDesC16 &)
-	?PhoneView@CPhoneViewController@@QAEPAVCPhoneView@@XZ @ 12 NONAME ; class CPhoneView * CPhoneViewController::PhoneView(void)
-	?SetHiddenL@CPhoneViewController@@QAEXH@Z @ 13 NONAME ; void CPhoneViewController::SetHiddenL(int)
-	?HandleLayoutChange@CPhoneViewController@@QAEXVTRect@@@Z @ 14 NONAME ; void CPhoneViewController::HandleLayoutChange(class TRect)
-	?HandleCommandL@CPhoneViewController@@UAEHHPAVTPhoneCommandParam@@@Z @ 15 NONAME ; int CPhoneViewController::HandleCommandL(int, class TPhoneCommandParam *)
-	?ApplicationWindowGroupId@CPhoneViewController@@QAEHXZ @ 16 NONAME ; int CPhoneViewController::ApplicationWindowGroupId(void)
-	?NewL@CPhoneViewController@@SAPAV1@VTRect@@@Z @ 17 NONAME ; class CPhoneViewController * CPhoneViewController::NewL(class TRect)
-	?ExecuteCommand@CPhoneViewController@@UAEXH@Z @ 18 NONAME ; void CPhoneViewController::ExecuteCommand(int)
-	?ForegroundApplicationWindowGroupId@CPhoneViewController@@QAEHXZ @ 19 NONAME ; int CPhoneViewController::ForegroundApplicationWindowGroupId(void)
-	?StatusPaneDisplayed@CPhoneViewController@@QAEHXZ @ 20 NONAME ; int CPhoneViewController::StatusPaneDisplayed(void)
-	??1CPhoneViewController@@UAE@XZ @ 21 NONAME ; CPhoneViewController::~CPhoneViewController(void)
-	?ExecuteCommandL@CPhoneViewController@@UAEXH@Z @ 22 NONAME ; void CPhoneViewController::ExecuteCommandL(int)
-	?ExecuteCommandL@CPhoneViewController@@UAEXHPAVTPhoneCommandParam@@@Z @ 23 NONAME ; void CPhoneViewController::ExecuteCommandL(int, class TPhoneCommandParam *)
-	?FetchContent@CPhoneViewController@@UAEABVTDesC16@@XZ @ 24 NONAME ; class TDesC16 const & CPhoneViewController::FetchContent(void)
-	?HandleCommandL@CPhoneViewController@@UAEHH@Z @ 25 NONAME ; int CPhoneViewController::HandleCommandL(int)
-	?ButtonState@CPhoneDialerController@@UBEHW4TButtonIndex@MPhoneDialerController@@@Z @ 26 NONAME ; int CPhoneDialerController::ButtonState(enum MPhoneDialerController::TButtonIndex) const
-	?ConstructL@CPhoneDialerController@@IAEXXZ @ 27 NONAME ; void CPhoneDialerController::ConstructL(void)
-	??0CPhoneDialerController@@IAE@PAVCPhoneBubbleWrapper@@AAVCCoeEnv@@@Z @ 28 NONAME ; CPhoneDialerController::CPhoneDialerController(class CPhoneBubbleWrapper *, class CCoeEnv &)
-	?SetNumberEntryIsEmpty@CPhoneDialerController@@UAEXH@Z @ 29 NONAME ; void CPhoneDialerController::SetNumberEntryIsEmpty(int)
-	?EasyDialingAllowed@CPhoneDialerController@@UBEHXZ @ 30 NONAME ; int CPhoneDialerController::EasyDialingAllowed(void) const
-	?EmergencyCallActive@CPhoneDialerController@@IBEHXZ @ 31 NONAME ; int CPhoneDialerController::EmergencyCallActive(void) const
-	??1CPhoneDialerController@@UAE@XZ @ 32 NONAME ; CPhoneDialerController::~CPhoneDialerController(void)
-	?CbaResourceId@CPhoneDialerController@@UBEHXZ @ 33 NONAME ; int CPhoneDialerController::CbaResourceId(void) const
-	?NumberEntryPromptTextL@CPhoneDialerController@@UAEABVTDesC16@@XZ @ 34 NONAME ; class TDesC16 const & CPhoneDialerController::NumberEntryPromptTextL(void)
-	?MenuResourceId@CPhoneDialerController@@UBEHXZ @ 35 NONAME ; int CPhoneDialerController::MenuResourceId(void) const
-	?ButtonDimmed@CPhoneDialerController@@UBEHW4TButtonIndex@MPhoneDialerController@@@Z @ 36 NONAME ; int CPhoneDialerController::ButtonDimmed(enum MPhoneDialerController::TButtonIndex) const
-	?GetButtonData@CPhoneDialerController@@UBEHW4TButtonIndex@MPhoneDialerController@@AAV?$RPointerArray@VCButtonData@MPhoneDialerController@@@@@Z @ 37 NONAME ; int CPhoneDialerController::GetButtonData(enum MPhoneDialerController::TButtonIndex, class RPointerArray<class MPhoneDialerController::CButtonData> &) const
+	?DoFetchForegroundApplicationWindowGroupIdL@CPhoneViewController@@SAHAAVCEikonEnv@@@Z @ 2 NONAME ; int CPhoneViewController::DoFetchForegroundApplicationWindowGroupIdL(class CEikonEnv &)
+	?SetBlockingDialogIsDisplayed@CPhoneViewController@@UAEXH@Z @ 3 NONAME ; void CPhoneViewController::SetBlockingDialogIsDisplayed(int)
+	?BlockingDialogIsDisplayed@CPhoneViewController@@QBEHXZ @ 4 NONAME ; int CPhoneViewController::BlockingDialogIsDisplayed(void) const
+	?ButtonState@CPhoneDialerController@@UBEHW4TButtonIndex@MPhoneDialerController@@@Z @ 5 NONAME ; int CPhoneDialerController::ButtonState(enum MPhoneDialerController::TButtonIndex) const
+	?ExecuteCommandL@CPhoneViewController@@UAEXHHAAVTDesC16@@@Z @ 6 NONAME ; void CPhoneViewController::ExecuteCommandL(int, int, class TDesC16 &)
+	?ConstructL@CPhoneDialerController@@IAEXXZ @ 7 NONAME ; void CPhoneDialerController::ConstructL(void)
+	?SetHiddenL@CPhoneViewController@@QAEXH@Z @ 8 NONAME ; void CPhoneViewController::SetHiddenL(int)
+	??0CPhoneDialerController@@IAE@PAVCPhoneBubbleWrapper@@AAVCCoeEnv@@@Z @ 9 NONAME ; CPhoneDialerController::CPhoneDialerController(class CPhoneBubbleWrapper *, class CCoeEnv &)
+	?HandleLayoutChange@CPhoneViewController@@QAEXVTRect@@@Z @ 10 NONAME ; void CPhoneViewController::HandleLayoutChange(class TRect)
+	?SetNumberEntryIsEmpty@CPhoneDialerController@@UAEXH@Z @ 11 NONAME ; void CPhoneDialerController::SetNumberEntryIsEmpty(int)
+	?ApplicationWindowGroupId@CPhoneViewController@@QAEHXZ @ 12 NONAME ; int CPhoneViewController::ApplicationWindowGroupId(void)
+	?EasyDialingAllowed@CPhoneDialerController@@UBEHXZ @ 13 NONAME ; int CPhoneDialerController::EasyDialingAllowed(void) const
+	?EmergencyCallActive@CPhoneDialerController@@IBEHXZ @ 14 NONAME ; int CPhoneDialerController::EmergencyCallActive(void) const
+	?ExecuteCommand@CPhoneViewController@@UAEXH@Z @ 15 NONAME ; void CPhoneViewController::ExecuteCommand(int)
+	?ForegroundApplicationWindowGroupId@CPhoneViewController@@QAEHXZ @ 16 NONAME ; int CPhoneViewController::ForegroundApplicationWindowGroupId(void)
+	?GetButtonData@CPhoneDialerController@@UBEHW4TButtonIndex@MPhoneDialerController@@AAV?$RPointerArray@VCButtonData@MPhoneDialerController@@@@@Z @ 17 NONAME ; int CPhoneDialerController::GetButtonData(enum MPhoneDialerController::TButtonIndex, class RPointerArray<class MPhoneDialerController::CButtonData> &) const
+	??1CPhoneDialerController@@UAE@XZ @ 18 NONAME ; CPhoneDialerController::~CPhoneDialerController(void)
+	?CbaResourceId@CPhoneDialerController@@UBEHXZ @ 19 NONAME ; int CPhoneDialerController::CbaResourceId(void) const
+	?ExecuteCommand@CPhoneViewController@@UAEXHPAVTPhoneCommandParam@@@Z @ 20 NONAME ; void CPhoneViewController::ExecuteCommand(int, class TPhoneCommandParam *)
+	?ExecuteCommandL@CPhoneViewController@@UAEXHHPAVTPhoneCommandParam@@@Z @ 21 NONAME ; void CPhoneViewController::ExecuteCommandL(int, int, class TPhoneCommandParam *)
+	?NumberEntryPromptTextL@CPhoneDialerController@@UAEABVTDesC16@@XZ @ 22 NONAME ; class TDesC16 const & CPhoneDialerController::NumberEntryPromptTextL(void)
+	?ExecuteCommandL@CPhoneViewController@@UAEXHH@Z @ 23 NONAME ; void CPhoneViewController::ExecuteCommandL(int, int)
+	?HelpContext@CPhoneViewController@@QAEABVTDesC16@@XZ @ 24 NONAME ; class TDesC16 const & CPhoneViewController::HelpContext(void)
+	?NewL@CPhoneSingleItemFetch@@SAPAV1@AAVCEikonEnv@@AAVCPhoneViewController@@AAVCPhoneContactController@@AAVCPhoneStatusPane@@@Z @ 25 NONAME ; class CPhoneSingleItemFetch * CPhoneSingleItemFetch::NewL(class CEikonEnv &, class CPhoneViewController &, class CPhoneContactController &, class CPhoneStatusPane &)
+	?IdleWindowGroupId@CPhoneViewController@@QAEHXZ @ 26 NONAME ; int CPhoneViewController::IdleWindowGroupId(void)
+	?MenuResourceId@CPhoneDialerController@@UBEHXZ @ 27 NONAME ; int CPhoneDialerController::MenuResourceId(void) const
+	?PhoneView@CPhoneViewController@@QAEPAVCPhoneView@@XZ @ 28 NONAME ; class CPhoneView * CPhoneViewController::PhoneView(void)
+	?HandleSecurityModeChanged@CPhoneViewController@@UAEXH@Z @ 29 NONAME ; void CPhoneViewController::HandleSecurityModeChanged(int)
+	?ButtonDimmed@CPhoneDialerController@@UBEHW4TButtonIndex@MPhoneDialerController@@@Z @ 30 NONAME ; int CPhoneDialerController::ButtonDimmed(enum MPhoneDialerController::TButtonIndex) const
+	?HandleCommandL@CPhoneViewController@@UAEHHPAVTPhoneCommandParam@@@Z @ 31 NONAME ; int CPhoneViewController::HandleCommandL(int, class TPhoneCommandParam *)
+	?NewL@CPhoneViewController@@SAPAV1@VTRect@@@Z @ 32 NONAME ; class CPhoneViewController * CPhoneViewController::NewL(class TRect)
+	?StatusPaneDisplayed@CPhoneViewController@@QAEHXZ @ 33 NONAME ; int CPhoneViewController::StatusPaneDisplayed(void)
+	??1CPhoneViewController@@UAE@XZ @ 34 NONAME ; CPhoneViewController::~CPhoneViewController(void)
+	?ExecuteCommandL@CPhoneViewController@@UAEXH@Z @ 35 NONAME ; void CPhoneViewController::ExecuteCommandL(int)
+	?ExecuteCommandL@CPhoneViewController@@UAEXHPAVTPhoneCommandParam@@@Z @ 36 NONAME ; void CPhoneViewController::ExecuteCommandL(int, class TPhoneCommandParam *)
+	?FetchContent@CPhoneViewController@@UAEABVTDesC16@@XZ @ 37 NONAME ; class TDesC16 const & CPhoneViewController::FetchContent(void)
+	?HandleCommandL@CPhoneViewController@@UAEHH@Z @ 38 NONAME ; int CPhoneViewController::HandleCommandL(int)
 

@@ -115,17 +115,10 @@ void CEasyDialingContactDataManager::ConstructL()
     
     iPbkSettings = PbkGlobalSettingFactory::CreatePersistentSettingL();
     iPbkSettings->ConnectL( MPbkGlobalSetting::EGeneralSettingCategory );
-    
-    /*
-    * Phonebook name ordering flag, integer value, possible values:
-    * 0: name order Lastname Firstname
-    * 1: name order Firstname Lastname
-    * 2: name order undefined
-    */
-    TInt nameOrderSetting;
-    iPbkSettings->Get( MPbkGlobalSetting::ENameOrdering, nameOrderSetting );
-    iNameOrder = ( nameOrderSetting == 0 ? ELastnameFirstname : EFirstnameLastname );
     iPbkSettings->RegisterObserverL( this );
+
+    // Get name order from Phonebook settings
+    UpdateNameOrderL();
     }
 
 // ---------------------------------------------------------------------------
@@ -195,7 +188,7 @@ TBool CEasyDialingContactDataManager::GetThumbnailAndFav(const TDesC& aId, CFbsB
     TUint idVal(0);
     TLex lex(aId);
     lex.Val(idVal, EHex);
-	
+    
     TBool retVal;
     
     CEasyDialingContactData* thumbnail = iContactDataArray[idVal];
@@ -211,7 +204,7 @@ TBool CEasyDialingContactDataManager::GetThumbnailAndFav(const TDesC& aId, CFbsB
         retVal = EFalse;
         if (iWaitingContacts.Find(idVal) == KErrNotFound)
             {
-            LOGSTRING1("iWaitingContacts.Append %d", idVal);            
+            LOGSTRING1("iWaitingContacts.Append %d", idVal);
             iWaitingContacts.Append(idVal);
             TRAPD(err, LoadNextContactDataL());
             if (err)
@@ -230,7 +223,7 @@ TBool CEasyDialingContactDataManager::GetThumbnailAndFav(const TDesC& aId, CFbsB
 //
 TBool CEasyDialingContactDataManager::IsFavL( MVPbkContactLink* aLink )
     {
-    if ( iFavsView && iFavsView->IndexOfLinkL( *aLink ) > KErrNotFound )
+    if ( iFavsView && iFavsViewReady && iFavsView->IndexOfLinkL( *aLink ) > KErrNotFound )
         {
         return ETrue;
         }
@@ -246,7 +239,7 @@ TBool CEasyDialingContactDataManager::IsFavL( MVPbkContactLink* aLink )
 //
 TInt CEasyDialingContactDataManager::NumberOfFavsL()
     {
-    if ( iFavsView )
+    if ( iFavsView && iFavsViewReady )
         {
         return iFavsView->ContactCountL();
         }
@@ -262,7 +255,7 @@ TInt CEasyDialingContactDataManager::NumberOfFavsL()
 //
 MVPbkContactLink* CEasyDialingContactDataManager::FavLinkLC( TInt aIndex )
     {
-    if ( !iFavsView )
+    if ( !iFavsView || !iFavsViewReady )
         {
         // LC function should not return normally unless it has actually
         // put something to cleanup stack
@@ -450,12 +443,58 @@ void CEasyDialingContactDataManager::SettingChangedL( MPbkGlobalSetting::TPbkGlo
     {
     if ( aKey == MPbkGlobalSetting::ENameOrdering )
         {
-        TInt nameOrderSetting;
-        iPbkSettings->Get( MPbkGlobalSetting::ENameOrdering, nameOrderSetting );
-        iNameOrder = ( nameOrderSetting == 0 ? ELastnameFirstname : EFirstnameLastname );
+        UpdateNameOrderL();
         if ( iObserver )
             {
             iObserver->NameOrderChanged();
+            }
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactDataManager::UpdateNameOrderL
+// Update name order according to Phonebook setting
+// ---------------------------------------------------------------------------
+//
+void CEasyDialingContactDataManager::UpdateNameOrderL()
+    {
+    /*
+    * Phonebook name ordering flag, integer value, possible values:
+    * 0: name order Lastname Firstname
+    * 1: name order Firstname Lastname
+    * 2: name order undefined
+    */
+    TInt nameOrderSetting;
+    iPbkSettings->Get( MPbkGlobalSetting::ENameOrdering, nameOrderSetting );
+    
+    switch ( nameOrderSetting )
+        {
+        case 0:
+            {
+            iNameOrder = ELastnameFirstname;
+            break;
+            }
+        case 1:
+            {
+            iNameOrder = EFirstnameLastname;
+            break;
+            }
+        case 2:
+        default:
+            {
+            // Decide name order based on UI language: lastname-firstname
+            // for Chinese, firstname-lastname for the rest of languages.
+            TLanguage uiLang = User::Language();
+            if ( uiLang == ELangPrcChinese || 
+                 uiLang == ELangHongKongChinese ||
+                 uiLang == ELangTaiwanChinese )
+                {
+                iNameOrder = ELastnameFirstname;
+                }
+            else
+                {
+                iNameOrder = EFirstnameLastname;
+                }
             }
         }
     }
@@ -594,7 +633,16 @@ void CEasyDialingContactDataManager::HandleError(TInt /*aError*/)
     iImageOperation = NULL;
     delete iContactOperation;
     iContactOperation = NULL;
-    if (iObserver)
+    
+    // Also mark all contact data as loaded. Otherwise it would just be
+    // loaded again, which would cause infinite loop if there is a permanent
+    // problem.
+    for ( TInt i = 0; i < iContactDataArray.Count(); i++ )
+        {
+        iContactDataArray[i]->LoadingComplete();
+        }
+    
+    if ( iObserver )
         {
         iObserver->AllContactDataLoaded();
         }
@@ -666,6 +714,7 @@ void CEasyDialingContactDataManager::VPbkOperationFailed(
     iFavsOperation = NULL;        
     delete iFavsView;
     iFavsView = NULL;
+    iFavsViewReady = EFalse;
 
     InitReady();
     }
@@ -682,8 +731,99 @@ void CEasyDialingContactDataManager::VPbkOperationResultCompleted(
     iFavsOperation = NULL;
     delete iFavsView;
     iFavsView = aOperationResult;
+    iFavsViewReady = ETrue;
+    
+    // Leave can be safely ignored. Notifications of favourites view changes
+    // will not work, but otherwise Easydialing will work correctly.
+    TRAP_IGNORE( iFavsView->AddObserverL( *this ) );
     
     InitReady();
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactDataManager::ContactViewReady
+// From MVPbkContactViewObserver.
+// ---------------------------------------------------------------------------
+//
+void CEasyDialingContactDataManager::ContactViewReady(
+        MVPbkContactViewBase& aView )
+    {
+    LOGSTRING("CEasyDialingContactDataManager: ContactViewReady");
+    
+    if ( iFavsView == &aView )
+        {
+        iFavsViewReady = ETrue;
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactDataManager::ContactViewUnavailable
+// From MVPbkContactViewObserver.
+// ---------------------------------------------------------------------------
+//
+void CEasyDialingContactDataManager::ContactViewUnavailable(
+        MVPbkContactViewBase& aView )
+    {
+    LOGSTRING("CEasyDialingContactDataManager: ContactViewUnavailable");
+    
+    if ( iFavsView == &aView )
+        {
+        iFavsViewReady = EFalse;
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactDataManager::ContactAddedToView
+// From MVPbkContactViewObserver.
+// ---------------------------------------------------------------------------
+//
+void CEasyDialingContactDataManager::ContactAddedToView(
+        MVPbkContactViewBase& aView, 
+        TInt /*aIndex*/, 
+        const MVPbkContactLink& /*aContactLink*/ )
+    {
+    LOGSTRING("CEasyDialingContactDataManager: ContactAddedToView");
+    
+    if ( iFavsView == &aView )
+        {
+        iObserver->FavouritesChanged();
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactDataManager::ContactRemovedFromView
+// From MVPbkContactViewObserver.
+// ---------------------------------------------------------------------------
+//
+void CEasyDialingContactDataManager::ContactRemovedFromView(
+        MVPbkContactViewBase& aView, 
+        TInt /*aIndex*/, 
+        const MVPbkContactLink& /*aContactLink*/ )
+    {
+    LOGSTRING("CEasyDialingContactDataManager: ContactRemovedFromView");
+    
+    if ( iFavsView == &aView )
+        {
+        iObserver->FavouritesChanged();
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactDataManager::ContactViewError
+// From MVPbkContactViewObserver.
+// ---------------------------------------------------------------------------
+//
+void CEasyDialingContactDataManager::ContactViewError(
+        MVPbkContactViewBase& aView, 
+        TInt /*aError*/, 
+        TBool /*aErrorNotified*/ )
+    {
+    LOGSTRING("CEasyDialingContactDataManager: ContactViewError");
+    
+    if ( iFavsView == &aView )
+        {
+        iFavsViewReady = EFalse;
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -731,7 +871,7 @@ void CEasyDialingContactDataManager::DoHandleContactOperationCompleteL(
         }
     else
         {
-        // Protective coding. If aContact is NULL, act like opening the contact link failed.
+        // Opening contact failed. Mark contact data loaded, so it's not opened again.
         CEasyDialingContactData *tn = iContactDataArray[aIndex];
         tn->LoadingComplete();
         LOGSTRING1("iWaitingContacts.Remove %d", iWaitingContacts[0]);            
@@ -800,12 +940,18 @@ void CEasyDialingContactDataManager::VPbkSingleContactOperationComplete(
 //
 void CEasyDialingContactDataManager::VPbkSingleContactOperationFailed(
         MVPbkContactOperationBase& /*aOperation*/, 
-        TInt aError )
+        TInt /*aError*/ )
     {
     LOGSTRING("CEasyDialingContactDataManager: VPbkSingleContactOperationFailed");
     delete iContactOperation;
     iContactOperation = NULL;
-    HandleError(aError);
+    TInt index = iWaitingContacts[0];
+    LOGSTRING1("VPbkSingleContactOperationFailed, Index=%d", index);
+    TRAPD(err, DoHandleContactOperationCompleteL(NULL, index));
+    if (err)
+        {
+        HandleError(err);
+        }
     LOGSTRING("CEasyDialingContactDataManager: VPbkSingleContactOperationFailed Exit");
     }
 
@@ -836,7 +982,7 @@ void CEasyDialingContactDataManager::SetContactThumbnailSetting( TInt aContactTh
 //
 TBool CEasyDialingContactDataManager::GetContactThumbnailSetting( )
     {
-     return iContactThumbnailSetting;
+    return iContactThumbnailSetting;
     }
 
 // ---------------------------------------------------------------------------
@@ -846,13 +992,13 @@ TBool CEasyDialingContactDataManager::GetContactThumbnailSetting( )
 void  CEasyDialingContactDataManager::Reload( )
     {
     LOGSTRING("CEasyDialingContactDataManager: Reload");
+    
     for ( TInt i = 0 ; i < iContactDataArray.Count() ; i++ )
         {
         iContactDataArray[ i ]->DeleteThumbnail();
         }
     }
 
-// TODO: open item: sorting of favourites
 
 //  End of File
 

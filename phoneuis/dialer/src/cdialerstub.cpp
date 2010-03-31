@@ -126,7 +126,16 @@ EXPORT_C void CDialer::UpdateToolbar()
     {
     // empty
     }
-
+	
+// ---------------------------------------------------------------------------
+// CDialer::RelayoutAndDraw
+// ---------------------------------------------------------------------------
+//
+EXPORT_C void CDialer::RelayoutAndDraw()
+	{
+	// Empty
+	}
+	
 // Methods from MNumberEntry
 
 // ---------------------------------------------------------------------------
@@ -263,6 +272,24 @@ void CDialer::EnableTactileFeedback( const TBool /*aEnable*/ )
     // Empty
     }
 
+
+// ---------------------------------------------------------
+// CDialer::HandleQwertyModeChange
+// ---------------------------------------------------------
+//
+EXPORT_C void CDialer::HandleQwertyModeChange( TInt /*aMode*/ )
+    {
+    // Empty
+    }
+
+// ---------------------------------------------------------
+// CDialer::HandleKeyboardLayoutChange
+// ---------------------------------------------------------
+// 
+EXPORT_C void CDialer::HandleKeyboardLayoutChange()
+    {
+     // Empty
+   }
 
 // ---------------------------------------------------------------------------
 // CDialer::HandleControlEventL
@@ -416,17 +443,17 @@ CCoeControl* CDialer::ComponentControlForDialerMode( const TInt /*aIndex*/ ) con
 //  
 // ---------------------------------------------------------------------------
 //
-CAknEdwinState* CDialer::EdwinState()
+CAknEdwinState* CDialer::EdwinState() const
     {
     return NULL;
     } 
 
 // ---------------------------------------------------------------------------
-// CDialer::UpdateVkbEditorFlagsL
+// CDialer::UpdateEdwinState
 //  
 // ---------------------------------------------------------------------------
 //
-void CDialer::UpdateVkbEditorFlagsL()
+void CDialer::UpdateEdwinState( TEditorType /* aType */ )
     {
     // Empty
     }

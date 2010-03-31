@@ -54,6 +54,7 @@
 #include "cphonemediatorsender.h"
 #include "cphonereleasecommand.h"
 #include "mphonecustomization.h"
+#include "mphonesecuritymodeobserver.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -413,6 +414,11 @@ EXPORT_C void CPhoneStateIncoming::HandleAudioPlayStoppedL()
         {
         resourceId = EPhoneNumberAcqCBA;
         }
+    else if ( iStateMachine->SecurityMode()->IsSecurityMode() )
+    	{
+		// Use 'answer & reject' softkeys if security mode is enabled.
+    	resourceId = EPhoneCallHandlingIncomingRejectCBA;
+    	}
     else if ( softRejectParam.Boolean() )
         {
         resourceId = EPhoneCallHandlingIncomingSoftRejectCBA;

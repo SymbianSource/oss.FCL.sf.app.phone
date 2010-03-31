@@ -294,7 +294,7 @@ NONSHARABLE_CLASS(CDialerNumberEntry) :
         CAknPhoneNumberEditor* iEditor;
         
         //Prompt text label for number entry.
-        CEikLabel* iLabel;        
+        CEikLabel* iLabel;
         
         // NE Font.
         CFbsFont* iNEFont;
@@ -309,9 +309,9 @@ NONSHARABLE_CLASS(CDialerNumberEntry) :
         
         TRect iInnerRect;
         
-        MNumberEntryObserver* iObserver;    
+        MNumberEntryObserver* iObserver;
         
-        TBool iNumberContents;  
+        TBool iNumberContents;
         
         TBuf<KDialerPhoneNumberEntryBufferSize> iPreviousNumberEntryContent;
 

@@ -65,8 +65,7 @@ enum TPhoneBgLayers
 // might leave.
 // -----------------------------------------------------------------------------
 //
-CPhoneDialerView::CPhoneDialerView() :
-    iSecurityMode ( EFalse )
+CPhoneDialerView::CPhoneDialerView()
     {
     }
 
@@ -240,8 +239,7 @@ void CPhoneDialerView::Draw( const TRect& aRect ) const
         MAknsSkinInstance* skin = AknsUtils::SkinInstance();
         MAknsControlContext* cc = AknsDrawUtils::ControlContext( this );
         
-        if ( iSecurityMode || 
-            !AknsDrawUtils::Background( skin, cc, this, gc, aRect ) )
+        if ( !AknsDrawUtils::Background( skin, cc, this, gc, aRect ) )
             {
             gc.SetPenStyle(CGraphicsContext::ENullPen);
             gc.SetBrushColor( AKN_LAF_COLOR( 0 ) ); // 0 for white
@@ -360,28 +358,6 @@ void CPhoneDialerView::MakeVisible( TBool aVisible )
         UpdateControlRect();
         }
     CCoeControl::MakeVisible( aVisible );
-    }
-
-// -----------------------------------------------------------------------------
-// CPhoneDialerView::SetSecurityMode
-// -----------------------------------------------------------------------------
-//
-void CPhoneDialerView::SetSecurityMode ( TBool aStatus )
-    {
-    if ( iSecurityMode != aStatus ) 
-        {
-        iSecurityMode = aStatus;
-        SizeChanged();    
-        }
-    }
-    
-// -----------------------------------------------------------------------------
-// CPhoneDialerView::IsSecurityMode
-// -----------------------------------------------------------------------------
-//
-TBool CPhoneDialerView::IsSecurityMode()    
-    {
-    return iSecurityMode;
     }
 
 // End of File

@@ -359,13 +359,25 @@ EXPORT_C TBool CPhoneDialerController::ButtonDimmed( TButtonIndex aIndex ) const
     switch ( aIndex )
         {
         case ECallButton:
-            dimmed = iRestrictedDialer;
-            if ( !dimmed )
-                {
-                // Prevent calling but don't prevent log during emergency call
-                dimmed = ( iNumberAvailable && EmergencyCallActive() );
-                }
-            break;
+			{
+        	if ( iNumberAvailable )
+        		{
+        		// Dim send key if emergency call is active. 
+        		// Do not dim send key if emergency call is not active,
+        		// user must be able to make an emergency call whether 
+        		// security mode is enabled or disabled.
+        		dimmed = EmergencyCallActive();
+        		}
+        	else
+        		{
+        		// If there's no number available in dialer, we should dim
+        		// send key if security mode is enabled.
+        		// User cannot launch logs application.
+        		dimmed = iRestrictedDialer;
+        		}
+			}
+        	break;
+            
         case EPhonebookButton:
             dimmed = iRestrictedDialer;
             break;

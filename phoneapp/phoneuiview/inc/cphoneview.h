@@ -92,13 +92,6 @@ class CPhoneView : public CCoeControl, public MCoeView
         void SetSecurityMode ( TBool aStatus );
         
         /**
-        * Get state of the security mode flag
-        * @return aStatus ETrue for the security mode. EFalse for the 
-        * normal mode.
-        */         
-        TBool IsSecurityMode();
-        
-        /**
         * Gets the previous app flag value.
         */ 
         TBool GetActivatePreviousApp();

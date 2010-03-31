@@ -31,6 +31,7 @@
 #include <data_caging_path_literals.hrh>    // for KDC_APP_RESOURCE_DIR
 #include <bautils.h>                        // for BaflUtils
 #include <aknedsts.h>
+#include <spsettings.h>
 #include <dialingextensioninterface.h>
 #include <easydialingcommands.hrh>
 #include <dialer.rsg>
@@ -212,6 +213,48 @@ EXPORT_C void CDialer::UpdateToolbar()
         }
     }
 
+// ---------------------------------------------------------------------------
+// CDialer::UpdateNumberEntryConfiguration
+// ---------------------------------------------------------------------------
+//
+void CDialer::UpdateNumberEntryConfiguration()
+    {
+    TEditorType editorType = ENumericEditor;
+    if ( iQwertyMode && iController->EasyDialingAllowed() )
+        {
+        TBool voipSupported( EFalse );
+        CSPSettings* serviceProviderSettings = NULL;
+        TRAPD( err, serviceProviderSettings = CSPSettings::NewL() );
+        if ( !err )
+            {
+            voipSupported = serviceProviderSettings->IsFeatureSupported( 
+                ESupportInternetCallFeature );            
+            delete serviceProviderSettings;
+            }
+
+        if ( EasyDialingEnabled() || voipSupported )
+            {
+            editorType = EAlphanumericEditor;
+            }
+        }
+    
+    UpdateEdwinState( editorType );
+    }
+
+// ---------------------------------------------------------------------------
+// CDialer::RelayoutAndDraw
+// ---------------------------------------------------------------------------
+//
+EXPORT_C void CDialer::RelayoutAndDraw()
+	{
+	if ( iIsUsed )
+		{
+		SetSize( Size() );
+		DrawDeferred();
+		UpdateToolbar();
+		}
+	}
+
 // Methods from MNumberEntry
 
 // ---------------------------------------------------------------------------
@@ -226,6 +269,8 @@ void CDialer::CreateNumberEntry()
     
     iIsUsed = ETrue;    
 
+    UpdateNumberEntryConfiguration();
+    
     DIALER_PRINT("CDialer::CreateNumberEntry>");        
     }
     
@@ -319,7 +364,7 @@ TInt CDialer::ChangeEditorMode( TBool aDefaultMode )
 void CDialer::OpenVkbL()
     {
     iVirtualKeyBoardOpen = ETrue;
-    UpdateVkbEditorFlagsL();
+    UpdateEdwinState( EVirtualKeyboardEditor );
     
     iNumberEntry->HandleCommandL( EDialerCmdTouchInput );
     }
@@ -331,7 +376,8 @@ void CDialer::OpenVkbL()
 //
 TInt CDialer::GetEditorMode() const
     {
-    return iVirtualKeyBoardOpen ? EAknEditorTextInputMode : 
+    TBool vkbOpen = EdwinState()->Flags() & EAknEditorFlagTouchInputModeOpened;
+    return ( iQwertyMode || vkbOpen ) ? EAknEditorTextInputMode : 
                                   EAknEditorNumericInputMode;
     }
     
@@ -363,6 +409,24 @@ void CDialer::SetNumberEntryPromptText( const TDesC& aPromptText )
 void CDialer::EnableTactileFeedback( const TBool aEnable )
     {
     iKeypadArea->EnableTactileFeedback( aEnable );
+    }
+
+// ---------------------------------------------------------
+// CDialer::HandleQwertyModeChange
+// ---------------------------------------------------------
+//
+EXPORT_C void CDialer::HandleQwertyModeChange( TInt aMode )
+    {
+    iQwertyMode = aMode;
+    UpdateNumberEntryConfiguration();
+    }
+
+// ---------------------------------------------------------
+// CDialer::HandleKeyboardLayoutChange
+// ---------------------------------------------------------
+// 
+EXPORT_C void CDialer::HandleKeyboardLayoutChange()
+    {
     }
 
 // ---------------------------------------------------------------------------
@@ -547,9 +611,7 @@ void CDialer::PrepareForFocusGainL( )
         // Clear editor flags and report
         // edwin state changed.
         iVirtualKeyBoardOpen = EFalse;
-        iNumberEntry->ClearEditorFlags();
-        EdwinState()->ReportAknEdStateEventL(
-                MAknEdStateObserver::EAknEdwinStateEventStateUpdate );
+        UpdateNumberEntryConfiguration();
         }
     }
 
@@ -653,7 +715,7 @@ CCoeControl* CDialer::ComponentControlForDialerMode( const TInt aIndex ) const
 //  
 // ---------------------------------------------------------------------------
 //
-CAknEdwinState* CDialer::EdwinState()
+CAknEdwinState* CDialer::EdwinState() const
     {
     MCoeFepAwareTextEditor_Extension1* extension = 
         static_cast<MCoeFepAwareTextEditor_Extension1*>
@@ -663,31 +725,71 @@ CAknEdwinState* CDialer::EdwinState()
     } 
 
 // ---------------------------------------------------------------------------
-// CDialer::UpdateVkbEditorFlagsL
+// CDialer::UpdateEdwinState
 //  
 // ---------------------------------------------------------------------------
 //
-void CDialer::UpdateVkbEditorFlagsL()
+void CDialer::UpdateEdwinState( TEditorType aType )
     {
     CAknEdwinState* edwinState = EdwinState();
-    // Set flags, input mode, SCT, permitted modes,
-    // keymapping and menu for alphanumeric virtual
-    // keyboard.
-    edwinState->SetCurrentInputMode( EAknEditorTextInputMode );
-    edwinState->SetSpecialCharacterTableResourceId( 
-        R_AVKON_URL_SPECIAL_CHARACTER_TABLE_DIALOG );    
-    edwinState->SetFlags( EAknEditorFlagNoT9 |
-                          EAknEditorFlagLatinInputModesOnly | 
-                          EAknEditorFlagNoEditIndicators );            
-    edwinState->SetPermittedInputModes( 
-                          EAknEditorNumericInputMode |
-                          EAknEditorTextInputMode );    
-    edwinState->SetNumericKeymap( EAknEditorAlphanumericNumberModeKeymap );    
-    edwinState->SetMenu();
     
-    // Report state updated
-    edwinState->ReportAknEdStateEventL(
-                    MAknEdStateObserver::EAknEdwinStateEventStateUpdate );
+    switch ( aType )
+        {
+        case ENumericEditor:
+            {
+            iNumberEntry->ClearEditorFlags();
+            }
+            break;
+        
+        case EAlphanumericEditor:
+        case EVirtualKeyboardEditor:
+            // intended fall-through
+            {
+            TBool vkbOpen = edwinState->Flags() & EAknEditorFlagTouchInputModeOpened;
+            TInt flags = EAknEditorFlagNoT9 | 
+                         EAknEditorFlagLatinInputModesOnly |
+                         EAknEditorFlagSelectionVisible;
+            edwinState->SetDefaultInputMode( EAknEditorTextInputMode );
+            edwinState->SetCurrentInputMode( EAknEditorTextInputMode );
+            
+            if ( EVirtualKeyboardEditor == aType || vkbOpen )
+                {
+                // Indicators would be shown after closing VKB unless disabled
+                // here.
+                flags = ( flags |= EAknEditorFlagNoEditIndicators );
+                }
+            else
+                {
+                iVirtualKeyBoardOpen = EFalse;
+                }
+            
+            edwinState->SetFlags( flags );
+            edwinState->SetPermittedInputModes( 
+                EAknEditorNumericInputMode | EAknEditorTextInputMode );
+            edwinState->SetPermittedCases( 
+                EAknEditorUpperCase | EAknEditorLowerCase );
+            edwinState->SetDefaultCase( EAknEditorLowerCase );
+            edwinState->SetCurrentCase( EAknEditorLowerCase );
+            edwinState->SetSpecialCharacterTableResourceId( 
+                R_AVKON_URL_SPECIAL_CHARACTER_TABLE_DIALOG );
+            edwinState->SetNumericKeymap( 
+                EAknEditorAlphanumericNumberModeKeymap );
+            edwinState->SetMenu();
+            }
+            break;
+        
+        default:
+            DIALER_PRINT( "CDialer::ConfigureEditorSettings, DEFAULT" )
+            ASSERT( EFalse );
+        }
+    
+    TRAPD( result, edwinState->ReportAknEdStateEventL(
+        MAknEdStateObserver::EAknEdwinStateEventStateUpdate ) );
+    
+    if ( KErrNone != result )
+        {
+        DIALER_PRINTF( "CDialer::ConfigureEditorSettings, RESULT: %d", result )
+        }
     }
 
 // ---------------------------------------------------------------------------

@@ -126,6 +126,9 @@ void CPhoneQwertyModeMonitor::HandlePropertyChangedL(
         if ( aKey == KAknQwertyInputModeActive )
             {
             iQwertyMode = aValue;
+            
+            __PHONELOG1( EBasic, EPhoneUIUtils, 
+                    "CPhoneQwertyModeMonitor::HandlePropertyChangedL KAknQwertyInputModeActive = %d", aValue  );
 
             for ( TInt i = 0; i < iObserverArray.Count(); i++ ) 
                 {
@@ -136,6 +139,9 @@ void CPhoneQwertyModeMonitor::HandlePropertyChangedL(
 #ifdef RD_INTELLIGENT_TEXT_INPUT        
         else if ( aKey == KAknKeyBoardLayout )
             {
+            __PHONELOG1( EBasic, EPhoneUIUtils, 
+                    "CPhoneQwertyModeMonitor::HandlePropertyChangedL KAknKeyBoardLayout = %d", aValue  );
+
             for ( TInt i = 0; i < iObserverArray.Count(); i++ ) 
                 {
                 iKeyboard = aValue;

@@ -227,7 +227,8 @@ _STLIT8(K197, "EPhoneViewGetEasyDialingMenuId");
 _STLIT8(K198, "EPhoneViewGetEasyDialingCbaId");
 _STLIT8(K199, "EPhoneViewGetNeedToReturnToForegroundAppStatus");
 _STLIT8(K200, "EPhoneViewSetNeedToReturnToForegroundAppStatus");
-_STLIT8(K201, ", // Don't remove this, this should always be the last in list.");
+_STLIT8(K201, "EPhoneViewGetQwertyModeObserver");
+_STLIT8(K202, ", // Don't remove this, this should always be the last in list.");
 
 // Intermediate
 const void * const KStringPointers[] =
@@ -432,8 +433,9 @@ const void * const KStringPointers[] =
 	(const void*)&K198,
 	(const void*)&K199,
 	(const void*)&K200,
-	(const void*)&K201
+	(const void*)&K201,
+	(const void*)&K202
 	};
 
-const TStringTable PhoneLoggerviewCommands::Table = {201, KStringPointers, EFalse};
+const TStringTable PhoneLoggerviewCommands::Table = {202, KStringPointers, EFalse};
 

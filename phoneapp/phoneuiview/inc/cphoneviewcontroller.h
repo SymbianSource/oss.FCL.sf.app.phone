@@ -34,6 +34,7 @@
 
 #include "mphoneviewblockingdialogobserver.h"
 #include "mnumberentry.h"
+#include "mphonesecuritymodechangeobserver.h"
 
 // FORWARD DECLARATIONS
 class CPhoneButtonsController;
@@ -84,7 +85,8 @@ class CPhoneViewController :
     public MPhoneViewCommandHandle,
     public MPhoneStatusPaneObserver,
     public MPhoneViewBlockingDialogObserver,
-    public MNumberEntryObserver
+    public MNumberEntryObserver,
+	public MPhoneSecurityModeChangeObserver
     {
     public:  // Constructors and destructor
 
@@ -254,8 +256,19 @@ class CPhoneViewController :
          */
         void NumberEntryStateChanged( TBool aEntryHasText );    
 
+// From MPhoneSecurityModeChangeObserver
+
+		IMPORT_C void HandleSecurityModeChanged( TBool aIsEnabled );
+
     private:     // New functions
 
+		/**
+		 * Set security mode
+		 *
+		 * @param aMode ETrue if mode should be set enabled.
+		 */
+    	void SetSecurityMode( TBool aMode );
+    	
         /**
         * read IdleApplicationUid from PubSub
         */
@@ -508,16 +521,6 @@ class CPhoneViewController :
         /**
         * Set security mode to view and statuspane
         */
-        void SetSecurityMode( TPhoneCommandParam* aCommandParam );
-
-        /**
-        * Get security mode status
-        */
-        void GetSecurityModeStatus ( TPhoneCommandParam* aCommandParam );
-
-        /**
-        * Set security mode to view and statuspane
-        */
         void SetStatusPaneVisible( TPhoneCommandParam* aCommandParam );
 
         /**
@@ -759,6 +762,11 @@ class CPhoneViewController :
         TInt iPrevious;
 
         TBool iPriotityChanged;
+		
+		/**
+		 * Internal flag to define if security mode is enabled.
+		 */
+        TBool iSecurityMode;
         
         // Boolean flag. ETrue if the application needs to return
         // to the foreground after call ended

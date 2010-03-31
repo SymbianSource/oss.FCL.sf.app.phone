@@ -228,4 +228,18 @@ EXPORT_C TInt CPhoneQwertyHandler::NumericKeyCode( const TKeyEvent& aKeyEvent )
     return EKeyNull;         
     }           
 
+// -----------------------------------------------------------------------------
+// CPhoneQwertyHandler::AddQwertyModeObserverL
+// -----------------------------------------------------------------------------
+//
+EXPORT_C void CPhoneQwertyHandler::AddQwertyModeObserverL( 
+        MPhoneQwertyModeObserver& aObserver )
+    {
+    iQwertyModeMonitor->AddObserverL( aObserver );
+    
+    // Observer need to be notified with a current qwerty status so that
+    // status dependent objects would get correct initial value.
+    aObserver.HandleQwertyModeChange( iQwertyMode );
+    }
+
 //  End of File  

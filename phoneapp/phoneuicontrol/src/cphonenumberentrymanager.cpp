@@ -40,6 +40,7 @@
 #include "phoneviewcommanddefinitions.h"
 #include "phoneappcommands.hrh"
 #include "phonelogger.h"
+#include "mphonesecuritymodeobserver.h"
 
 const TInt  KPhoneKeyStart            = 33;
 const TInt  KPhoneKeyEnd              = 127;
@@ -224,12 +225,12 @@ void CPhoneNumberEntryManager::HandleCreateNumberEntryL()
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::HandleCreateNumberEntryL() ");
     
-    const TBool autoLcokOn = iState->IsAutoLockOn();
+    const TBool autoLockOn = iStateMachine.SecurityMode()->IsSecurityMode();
     const TBool idleVal = CPhonePubSubProxy::Instance()->Value( KPSUidAiInformation, KActiveIdleState );
     const TBool queryActive = iState->IsAnyQueryActiveL();
     const TBool menuBarVisible = iState->IsMenuBarVisibleL();
     
-    if( autoLcokOn || 
+    if( autoLockOn || 
         ( idleVal == EPSAiForeground ) ||
         ( menuBarVisible || queryActive ) )
         {
@@ -237,7 +238,7 @@ void CPhoneNumberEntryManager::HandleCreateNumberEntryL()
              "CPhoneNumberEntryManager::HandleCreateNumberEntryL() NE NOT CREATED" );
         __PHONELOG2( EBasic, EPhoneControl, 
              "CPhoneNumberEntryManager::HandleCreateNumberEntryL() autoLcokOn(%d) idleVal(%d)", 
-             autoLcokOn, idleVal );
+             autoLockOn, idleVal );
         __PHONELOG2( EBasic, EPhoneControl, 
              "CPhoneNumberEntryManager::HandleCreateNumberEntryL() queryActive(%d) menuBarVisible(%d)", 
              queryActive, menuBarVisible );
@@ -257,9 +258,7 @@ void CPhoneNumberEntryManager::HandleCreateNumberEntryL()
                 iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveNote );
                 }
             
-            TPhoneCmdParamBoolean isSecurityMode;      
-            iViewCommandHandle.ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-            if( isSecurityMode.Boolean() )
+            if( iStateMachine.SecurityMode()->IsSecurityMode() )
                 {
                 iState->HandleCommandL( EPhoneNumberAcqSecurityDialer );
                 }

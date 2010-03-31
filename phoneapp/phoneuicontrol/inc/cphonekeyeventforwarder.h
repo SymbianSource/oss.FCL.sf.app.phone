@@ -28,6 +28,8 @@ class MPhoneStateMachine;
 class MPhoneKeyEventHandler;
 class MPhoneViewCommandHandle;
 class CPhoneTimer;
+class CPhoneQwertyHandler;
+class MPhoneQwertyModeObserver;
 
 // CLASS DECLARATION
 
@@ -228,6 +230,12 @@ class CPhoneKeyEventForwarder
          * Zeroed in HandleEventKeyUpL.
          */
         TInt iScanCode;
+
+        /*
+        * Has information of used qwerty keyboard.
+        * Own.
+        */
+        CPhoneQwertyHandler* iQwertyHandler;
     };
 
 #endif      // CPHONEKEYEVENTFORWARDER_H

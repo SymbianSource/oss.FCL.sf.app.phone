@@ -630,11 +630,6 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
 
             UpdateCbaL( EPhoneCallHandlingInCallCBA );
             }
-        else
-            {
-            // Show the number entry if it exists.
-            SetNumberEntryVisibilityL(ETrue);
-            }
         }
     else
         {

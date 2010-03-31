@@ -279,8 +279,6 @@ class CPhoneAppUI :
         // Id of system events from Starter states.
         TInt iStarterEventId;
         
-        CPhoneQwertyHandler* iQwertyHandler;
-        
         // System evenviroment notifier
         CEnvironmentChangeNotifier* iEnvChangeNotifier;
         

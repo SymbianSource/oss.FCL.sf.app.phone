@@ -92,14 +92,14 @@ void CDialerNumberEntry::ConstructL()
     ConstructEditorFromResourceL( reader );
     
     iFrameContext = CAknsFrameBackgroundControlContext::NewL(
-            KAknsIIDNone, TRect(0,0,4,4), TRect(1,1,3,3), EFalse );    
+            KAknsIIDNone, TRect(0,0,4,4), TRect(1,1,3,3), EFalse );
             
-    iFrameContext->SetFrame( KAknsIIDQsnFrCall2Rect );      
+    iFrameContext->SetFrame( KAknsIIDQsnFrCall2Rect );
     
     iFrameContext->SetParentContext( 
-        AknsDrawUtils::ControlContextOfParent(this) );           
+        AknsDrawUtils::ControlContextOfParent(this) );
                 
-    CleanupStack::PopAndDestroy();    // reader    
+    CleanupStack::PopAndDestroy();    // reader
     iEditor->SetObserver( this );
     
     iLabel = new( ELeave ) CEikLabel;
@@ -107,7 +107,7 @@ void CDialerNumberEntry::ConstructL()
     iLabel->SetParent( this );
     iLabel->SetMopParent( this ); 
     iLabel->SetTextL( KNullDesC );
-    iLabel->MakeVisible( EFalse );    
+    iLabel->MakeVisible( EFalse );
     CheckLabelSkinningColor();
     
     iAppUi = iEikonEnv->EikAppUi();
@@ -215,7 +215,7 @@ void CDialerNumberEntry::SetTextToNumberEntry( const TDesC& aDesC )
     {
     DIALER_PRINT("numberentry::SetTextToNumberEntry<");
     
-    iEditor->SetText( aDesC );   
+    iEditor->SetText( aDesC );
     
     if ( iEasyDialer && iOperationMode == EModeEasyDialing )
         {
@@ -325,12 +325,12 @@ void CDialerNumberEntry::HandleControlEventL( CCoeControl* aControl,
         {
         HandleEditorFormatting();
         
-        InformNumberEntryState();        
+        InformNumberEntryState();
         
         iEditor->DrawDeferred();
         }
     
-    DIALER_PRINT("numberentry::HandleControlEventL>");                
+    DIALER_PRINT("numberentry::HandleControlEventL>");
     }
 
 // ---------------------------------------------------------------------------
@@ -494,14 +494,14 @@ void CDialerNumberEntry::ConstructEditorFromResourceL(
     HBufC* truncation = aReader.ReadHBufCL();
     CleanupStack::PushL( truncation );
     TInt formatCount = aReader.ReadInt16();
-    iEditor->ConstructL( maxChars, maxLines, formatCount, *truncation );  
-    CleanupStack::PopAndDestroy( truncation );       
+    iEditor->ConstructL( maxChars, maxLines, formatCount, *truncation );
+    CleanupStack::PopAndDestroy( truncation );
     iFormatCount = formatCount;
 
     for ( TInt ii = 0; ii < iFormatCount; ii++ )
         {
         CAknPhoneNumberEditor::TFormat format( aReader );
-	    CalculateLayout( format, ii );
+        CalculateLayout( format, ii );
         iEditor->AddFormat( format );
         }
 
@@ -520,7 +520,7 @@ void CDialerNumberEntry::UpdateNumberEntryFormats( )
     for ( TInt ii = 0; ii < iFormatCount; ii++ )
         {
         CAknPhoneNumberEditor::TFormat format( iEditor->Format( ii ) );
-		CalculateLayout( format, ii );
+        CalculateLayout( format, ii );
         iEditor->Format( ii ) = format;
         }
 
@@ -620,7 +620,22 @@ void CDialerNumberEntry::HandlePointerEventL( const TPointerEvent& aPointerEvent
     // text.
     if ( iEditor->IsFocused() )
         {
-        CCoeControl::HandlePointerEventL( aPointerEvent );
+        // If user hits the margin area between this control and the actual editor
+        // control, then the event position is moved to be inside the editor region.
+        // This makes it easier to move cursor with finger touch, especially in
+        // both ends of the number field.
+        TPoint eventPos( aPointerEvent.iPosition );
+        TRect editorRect( iEditor->Rect() );
+        editorRect.Shrink( 1, 1 ); // take rect which is fully inside the editor rect
+        eventPos.iX = Min( eventPos.iX, editorRect.iBr.iX );
+        eventPos.iX = Max( eventPos.iX, editorRect.iTl.iX );
+        eventPos.iY = Min( eventPos.iY, editorRect.iBr.iY );
+        eventPos.iY = Max( eventPos.iY, editorRect.iTl.iY );
+    
+        TPointerEvent modEvent( aPointerEvent );
+        modEvent.iPosition = eventPos;
+        
+        CCoeControl::HandlePointerEventL( modEvent );
         }
     }
 
@@ -640,8 +655,8 @@ void CDialerNumberEntry::HandleEditorFormatting()
     if ( iEditor->CurrentFormatIndex() != format )
         {
         iEditor->DrawDeferred();
-        iEditor->SetFormat( format );              
-        iFrameContext->SetRect( Rect() );                
+        iEditor->SetFormat( format );
+        iFrameContext->SetRect( Rect() );
         }
     
     }
@@ -687,43 +702,49 @@ void CDialerNumberEntry::RectFrameInnerOuterRects( const TRect& aFrameRect,
         TAknLayoutRect innerRectLayout;
         innerRectLayout.LayoutRect( aOuterRect, AknLayoutScalable_Apps::bg_dia3_numentry_pane_g1() );
         aInnerRect = innerRectLayout.Rect();
+        
+        // Add a bit of margin to left and right ends of the entry field if layout
+        // doens't define enough. This is to enhance the touch usability.
+        static const TInt KMinMargin( 10 );
+        aInnerRect.iTl.iX = Max( aInnerRect.iTl.iX, aOuterRect.iTl.iX + KMinMargin );
+        aInnerRect.iBr.iX = Min( aInnerRect.iBr.iX, aOuterRect.iBr.iX - KMinMargin );
         }
     else
         {
         if ( Layout_Meta_Data::IsMirrored() )
             {
-            TAknLayoutRect frameTopRight;        
+            TAknLayoutRect frameTopRight;
             frameTopRight.LayoutRect( 
              aFrameRect, 
-             AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g3().LayoutLine() );                
+             AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g3().LayoutLine() );
                     
-            TAknLayoutRect frameBottomLeft;        
+            TAknLayoutRect frameBottomLeft;
             frameBottomLeft.LayoutRect( 
              aFrameRect, 
-             AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g4().LayoutLine() );                        
+             AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g4().LayoutLine() );
     
             aOuterRect = TRect( frameTopRight.Rect().iTl, 
                                 frameBottomLeft.Rect().iBr );
                     
             aInnerRect = TRect( frameTopRight.Rect().iBr, 
-                                frameBottomLeft.Rect().iTl );    
+                                frameBottomLeft.Rect().iTl );
             }
         else
             {
-            TAknLayoutRect frameTopLeft;        
+            TAknLayoutRect frameTopLeft;
             frameTopLeft.LayoutRect( 
-             aFrameRect, 
-             AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g2().LayoutLine() );
+                aFrameRect, 
+                AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g2().LayoutLine() );
     
-            TAknLayoutRect frameBottomRight;        
+            TAknLayoutRect frameBottomRight;
             frameBottomRight.LayoutRect( 
-             aFrameRect, 
-             AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g5().LayoutLine() );
+                aFrameRect, 
+                AknLayoutScalable_Apps::bg_popup_call2_rect_pane_g5().LayoutLine() );
             
             aOuterRect = TRect( frameTopLeft.Rect().iTl, 
                                 frameBottomRight.Rect().iBr );
             aInnerRect = TRect( frameTopLeft.Rect().iBr, 
-                                frameBottomRight.Rect().iTl );    
+                                frameBottomRight.Rect().iTl );
             }
         }
     }    
@@ -799,8 +820,7 @@ void CDialerNumberEntry::CheckLabelSkinningColor()
         TRAP_IGNORE( iLabel->OverrideColorL( EColorLabelText, skinColor ) );
         }   
     }
-    
-    
+
 // -----------------------------------------------------------------------------
 // CDialerNumberEntry::MakeVisible( TBool aVisible )
 // -----------------------------------------------------------------------------
@@ -810,8 +830,7 @@ void CDialerNumberEntry::MakeVisible( TBool aVisible )
 	CCoeControl::MakeVisible( aVisible );
 	iEditor->MakeVisible( aVisible );
 	}
-	
-	
+
 // -----------------------------------------------------------------------------
 // CDialerNumberEntry::SetEasyDialingPlugin
 // -----------------------------------------------------------------------------

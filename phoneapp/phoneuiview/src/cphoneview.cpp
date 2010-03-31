@@ -66,11 +66,7 @@ enum TPhoneBgLayers
 // -----------------------------------------------------------------------------
 //
 CPhoneView::CPhoneView( CEikButtonGroupContainer& aCba ) :
-    iSecurityMode ( EFalse ),
-    iActivatePreviousApp( EFalse ),
-    iPhoneAppViewToDialer( EFalse ),
-    iCba ( aCba ),
-    iDialerActivation( EFalse )
+    iCba ( aCba )
     {
     }
 
@@ -151,7 +147,7 @@ void CPhoneView::ViewActivatedL(
                 if ( iSecurityMode )
                     {
                     static_cast<MEikCommandObserver*>( iEikonEnv->EikAppUi() )
-                    ->ProcessCommandL( EPhoneNumberAcqSecurityDialer );
+						->ProcessCommandL( EPhoneViewOpenNumberEntry );
                     return;
                     }
                  else
@@ -313,8 +309,7 @@ void CPhoneView::SetRect( const TRect &aRect )
         }
     else
         {
-        if ( Layout_Meta_Data::IsLandscapeOrientation() ||
-             iSecurityMode )
+        if ( Layout_Meta_Data::IsLandscapeOrientation() )
             {
             // In landscape and in security mode aRect is ok.
             CCoeControl::SetRect( aRect );    
@@ -371,8 +366,7 @@ void CPhoneView::Draw(  const TRect& aRect ) const
         MAknsSkinInstance* skin = AknsUtils::SkinInstance();
         MAknsControlContext* cc = AknsDrawUtils::ControlContext( this );
         
-        if ( iSecurityMode || 
-            !AknsDrawUtils::Background( skin, cc, this, gc, aRect ) )
+        if ( !AknsDrawUtils::Background( skin, cc, this, gc, aRect ) )
             {
             gc.SetPenStyle(CGraphicsContext::ENullPen);
             gc.SetBrushColor( AKN_LAF_COLOR( 0 ) ); // 0 for white
@@ -502,22 +496,9 @@ void CPhoneView::HandleResourceChange( TInt aType )
 //
 void CPhoneView::SetSecurityMode ( TBool aStatus )
     {
-    if ( iSecurityMode != aStatus ) 
-        {
-        iSecurityMode = aStatus;
-        SizeChanged();    
-        }
+    iSecurityMode = aStatus;
     }
     
-// -----------------------------------------------------------------------------
-// CPhoneView::IsSecurityMode
-// -----------------------------------------------------------------------------
-//
-TBool CPhoneView::IsSecurityMode()    
-    {
-    return iSecurityMode;
-    }
-
 // -----------------------------------------------------------------------------
 // CPhoneView::GetActivatePreviousApp
 // -----------------------------------------------------------------------------

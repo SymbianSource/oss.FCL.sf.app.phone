@@ -38,6 +38,7 @@
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparaminteger.h"
 #include "tphonecmdparamcallstatedata.h"
+#include "mphonesecuritymodeobserver.h"
 
 
 // ======== MEMBER FUNCTIONS ========
@@ -115,6 +116,7 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
         EPEBTAudioAccessory );
 
     // Call setup cases
+    
     if ( EPhoneCallHandlingCallSetupCBA == aResource )
         {
         if ( !FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling) )
@@ -249,10 +251,16 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
         &softRejectParam );
 
     TInt incomingCbaResourceId;
+    
+    TBool securityMode = iStateMachine.SecurityMode()->IsSecurityMode();
 
     if ( iState->IsSwivelClosed() )
         {
-        if ( !callIsAlerting || iRingtoneSilenced )
+        if ( securityMode )
+        	{
+        	incomingCbaResourceId = EPhoneCallHandlingIncomingSilentSliderCBA;
+        	}
+        else if ( !callIsAlerting || iRingtoneSilenced )
             {
             incomingCbaResourceId = EPhoneCallHandlingIncomingSilentSwivelClosedCBA;
             }
@@ -264,7 +272,12 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
 
     else if ( coverHideSendEndKey )
         {
-        if ( callIsAlerting )
+        if ( securityMode )
+        	{
+        	// Set CBA to Options..Reject
+        	incomingCbaResourceId = EPhoneCallHandlingIncomingSilentSliderCBA;
+        	}
+        else if ( callIsAlerting )
             {
             // Set CBA to Options..Silence
             incomingCbaResourceId = EPhoneCallHandlingIncomingSliderCBA;
@@ -283,7 +296,11 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
 
     else
         {
-        if ( callIsAlerting )
+        if ( securityMode )
+        	{
+        	incomingCbaResourceId = EPhoneCallHandlingIncomingRejectCBA;
+        	}
+        else if ( callIsAlerting )
             {
             incomingCbaResourceId = GetIncomingCallSilenceCBA( softRejectActivated );
             }
@@ -443,7 +460,11 @@ TInt CPhoneCbaManager::GetIncomingCallSilenceCBA(
     touchpaneButtonsParam.SetInteger( CPhoneMainResourceResolver::Instance()->
                              ResolveResourceID( EPhoneIncomingCallButtons ) );
 
-    if ( touchpaneButtonsParam.Integer() 
+    if ( iStateMachine.SecurityMode()->IsSecurityMode() )
+    	{
+    	ret = EPhoneCallHandlingIncomingRejectCBA;
+    	}
+    else if ( touchpaneButtonsParam.Integer() 
          == R_PHONEUI_INCOMING_CALL_SILENCE_BUTTONS )
         {
         aSoftRejectActivated ? 

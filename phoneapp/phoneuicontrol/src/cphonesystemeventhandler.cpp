@@ -22,7 +22,7 @@
 #include <UikonInternalPSKeys.h>
 #include <startupdomainpskeys.h>
 #include <hwrmdomainpskeys.h>
-#include <oem/SimLockUiKeys.h>
+#include <oem/simlockuikeys.h>
 #include <featmgr.h>
 #include <coreapplicationuisdomainpskeys.h>
 
@@ -90,6 +90,13 @@ void CPhoneSystemEventHandler::ConstructL()
         KPSUidStartup,
         KStartupSimSecurityStatus,
         this );
+    
+    // Set up notifications for autolock state changes.
+    CPhonePubSubProxy::Instance()->NotifyChangeL(
+    	KPSUidCoreApplicationUIs,
+    	KCoreAppUIsAutolockStatus,
+    	this );
+    
 
     if ( CPhoneCenRepProxy::Instance()->IsTelephonyFeatureSupported(
             KTelephonyLVFlagSwivelInDevice ))
@@ -223,7 +230,7 @@ void CPhoneSystemEventHandler::HandlePropertyChangedL(
     const TUint aKey,
     const TInt aValue )
     {
-    iStateMachine->State()->HandlePropertyChangedL( aCategory, aKey, aValue );
+    iStateMachine->HandlePropertyChangedL( aCategory, aKey, aValue );
     }
 
 // -----------------------------------------------------------

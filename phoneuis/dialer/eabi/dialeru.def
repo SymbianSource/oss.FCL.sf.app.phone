@@ -7,11 +7,16 @@ EXPORTS
 	_ZN7CDialer11NumberEntryEv @ 6 NONAME
 	_ZN7CDialer13UpdateToolbarEv @ 7 NONAME
 	_ZN7CDialer14SetControllerLEP22MPhoneDialerController @ 8 NONAME
-	_ZN7CDialer22SetNumberEntryObserverER20MNumberEntryObserver @ 9 NONAME
-	_ZN7CDialer4NewLERK11CCoeControlRK5TRectP22MPhoneDialerController @ 10 NONAME
-	_ZN7CDialerD0Ev @ 11 NONAME
-	_ZN7CDialerD1Ev @ 12 NONAME
-	_ZN7CDialerD2Ev @ 13 NONAME
-	_ZNK7CDialer23GetEasyDialingInterfaceEv @ 14 NONAME
-	_ZThn52_N7CDialer22SetNumberEntryObserverER20MNumberEntryObserver @ 15 NONAME
+	_ZN7CDialer15RelayoutAndDrawEv @ 9 NONAME
+	_ZN7CDialer22SetNumberEntryObserverER20MNumberEntryObserver @ 10 NONAME
+	_ZN7CDialer4NewLERK11CCoeControlRK5TRectP22MPhoneDialerController @ 11 NONAME
+	_ZN7CDialerD0Ev @ 12 NONAME
+	_ZN7CDialerD1Ev @ 13 NONAME
+	_ZN7CDialerD2Ev @ 14 NONAME
+	_ZNK7CDialer23GetEasyDialingInterfaceEv @ 15 NONAME
+	_ZThn52_N7CDialer22SetNumberEntryObserverER20MNumberEntryObserver @ 16 NONAME
+	_ZN7CDialer22HandleQwertyModeChangeEi @ 17 NONAME
+	_ZN7CDialer26HandleKeyboardLayoutChangeEv @ 18 NONAME
+	_ZThn64_N7CDialer22HandleQwertyModeChangeEi @ 19 NONAME
+	_ZThn64_N7CDialer26HandleKeyboardLayoutChangeEv @ 20 NONAME
 

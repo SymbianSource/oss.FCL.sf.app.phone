@@ -41,6 +41,7 @@
 #include "cphonepubsubproxy.h"
 #include "cphonekeys.h"
 #include "tphonecmdparamaudiooutput.h"
+#include "cphonesecuritymodeobserver.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -234,7 +235,7 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
             }
         else
             {
-            if ( !TopAppIsDisplayedL() || iDeviceLockOn  )
+            if ( !TopAppIsDisplayedL() || iStateMachine->SecurityMode()->IsAutolockEnabled() )
                 {
                 // Continue displaying current app but set up the
                 // idle screen in the background
@@ -293,9 +294,7 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
                 {
                 UpdateCbaL( EPhoneEmptyCBA );
 
-                TPhoneCmdParamBoolean securityMode;
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &securityMode );
-                if ( !securityMode.Boolean() )
+                if ( !iStateMachine->SecurityMode()->IsSecurityMode() )
                     {
                     // Setup idle as next active app.
                     SetupIdleScreenInBackgroundL();
@@ -334,8 +333,6 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
             visibleMode.SetBoolean( ETrue );
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSetStatusPaneVisible, &visibleMode );
             }
-
-        iDeviceLockOn = IsAutoLockOn();
 
         // Close menu bar, if it is displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
@@ -414,7 +411,7 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
             CaptureKeysDuringCallNotificationL( EFalse );
             }
         }
-    else if ( !iDeviceLockOn && SimState() == EPESimUsable )
+    else if ( !iStateMachine->SecurityMode()->IsAutolockEnabled() && SimState() == EPESimUsable )
         {
         // Stop capturing keys
         CaptureKeysDuringCallNotificationL( EFalse );
@@ -544,7 +541,9 @@ void CPhoneEmergency::UpdateInCallCbaL()
             resourceId = EPhoneInCallNumberAcqCBA;
             }
         }
-    else if ( iDeviceLockOn || SimState() != EPESimUsable || iStartupInterrupted )
+    else if ( iStateMachine->SecurityMode()->IsAutolockEnabled()
+    	|| SimState() != EPESimUsable
+    	|| iStartupInterrupted )
         {
         if ( TouchCallHandlingSupported() )
         	{
@@ -637,7 +636,8 @@ void CPhoneEmergency::HandleKeyMessageL(
                 {
                 CPhoneGsmInCall::HandleKeyMessageL( aMessage, aCode ); 
                 }
-            else if ( !iDeviceLockOn && SimState() == EPESimUsable )   
+            else if ( !iStateMachine->SecurityMode()->IsAutolockEnabled()
+            	&& SimState() == EPESimUsable )   
                 {
                 // do base operation
                 CPhoneGsmInCall::HandleKeyMessageL( aMessage, aCode );
@@ -775,7 +775,8 @@ void CPhoneEmergency::HandleKeyEventL(
         }
     else
         {
-		 if ( iDeviceLockOn && CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) )
+		 if ( iStateMachine->SecurityMode()->IsAutolockEnabled()
+			&& CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) )
 			{
 			// Send the key event to the phone engine
 			SendKeyEventL( aKeyEvent, aEventCode );

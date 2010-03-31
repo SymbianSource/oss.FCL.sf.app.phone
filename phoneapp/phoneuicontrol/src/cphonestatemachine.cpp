@@ -29,6 +29,8 @@
 #include "cphonestateincall.h"
 #include "phonestatedefinitions.h"
 #include "phonelogger.h"
+#include "mphonesecuritymodeobserver.h"
+#include "mphonesecuritymessagehandler.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -55,29 +57,14 @@ EXPORT_C CPhoneStateMachine::~CPhoneStateMachine()
     {
 	if( iState == iIdleState )
 		{
-		delete iState;
-		iState = NULL;
+		// Avoid deleting idle state instance twice.
+		// If state is idle, iState points to idle state instance.
 		iIdleState = NULL;			
 		}
-	else
-		{
-	    if( iState )
-		    {
-		    delete iState;
-		    iState = NULL;	    	
-		    }
-		if( iIdleState )
-			{
-		    delete iIdleState;
-		    iIdleState = NULL;			
-			}			
-		}
-	if( iPhoneEngine )
-		{
-	    delete iPhoneEngine;
-	    iPhoneEngine = NULL;			
-		}
-    }
+	delete iState;
+	delete iIdleState;
+	delete iPhoneEngine;
+	}
 
 // ---------------------------------------------------------
 // CPhoneStateMachine::SetPhoneEngine
@@ -176,4 +163,66 @@ EXPORT_C void CPhoneStateMachine::SetCallId(
     PhoneEngineInfo()->SetCallId( aCallId );
     }
 
+
+// -----------------------------------------------------------
+// CPhoneStateMachine::SecurityMode
+// -----------------------------------------------------------
+//
+EXPORT_C MPhoneSecurityModeObserver* CPhoneStateMachine::SecurityMode()
+	{
+	return iSecurityModeObserver;
+	}
+	
+// -----------------------------------------------------------
+// CPhoneStateMachine::SetSecurityModeObserver
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneStateMachine::SetSecurityModeObserver( MPhoneSecurityModeObserver* aObserver )
+	{
+	iSecurityModeObserver = aObserver;
+	}
+
+// -----------------------------------------------------------
+// CPhoneStateMachine::SetSecurityMessageHandler
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneStateMachine::SetSecurityMessageHandler( MPhoneSecurityMessageHandler* aHandler )
+	{
+	iSecurityMessageHandler = aHandler;
+	}
+
+// -----------------------------------------------------------
+// CPhoneStateMachine::HandlePhoneEngineMessageL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneStateMachine::HandlePhoneEngineMessageL(const TInt aMessage, 
+     TInt aCallId )
+	{
+	// Forward engine messages to security mode state and current phone state
+	// instance.
+	if ( iSecurityMessageHandler )
+		{
+		iSecurityMessageHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
+		}
+	
+	State()->HandlePhoneEngineMessageL( aMessage, aCallId );
+	}
+
+// -----------------------------------------------------------
+// CPhoneStateMachine::HandlePropertyChangedL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneStateMachine::HandlePropertyChangedL(const TUid& aCategory,
+     const TUint aKey,
+     const TInt aValue )
+	{
+	// Forward P&S key changes to security mode state and current phone state
+	// instance.
+	if ( iSecurityMessageHandler )
+		{
+		iSecurityMessageHandler->HandlePropertyChangedL( aCategory, aKey, aValue );
+		}
+	State()->HandlePropertyChangedL( aCategory, aKey, aValue );
+	}
+	
 // End of File

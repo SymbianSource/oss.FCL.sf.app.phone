@@ -35,6 +35,16 @@ const TMifDialer KDialerNoIcon = EMbmDialerLastElement;
 */
 NONSHARABLE_CLASS( CDialerKeyPadButton ) : public CAknButton
     {
+    public: // Enumerations
+
+        enum TDialerKeyPadButtonEvent
+            {
+            /* Reported to the observer when pointer is dragged outside
+             * the button's area.
+             */
+            EEventDraggingOutsideButton = 200
+            };
+        
     public:
     
         /**
@@ -134,6 +144,11 @@ NONSHARABLE_CLASS( CDialerKeyPadButton ) : public CAknButton
          */
         void SizeChanged();
         
+        /**
+         * @see CAknButton
+         */
+        void HandlePointerEventL( const TPointerEvent& aPointerEvent );
+        
     private:
 
         void UpdateIconL();
@@ -213,6 +228,9 @@ NONSHARABLE_CLASS( CDialerKeyPadButton ) : public CAknButton
         
         /** Rect inside the button where icon is drawn (if available) */
         TRect iIconRect;
+        
+        /** Own variable for counting drag events, cannot use the one in base class */
+        TInt iDragEventCounter;
     };
 
 #endif // C_CDIALERKEYPADBUTTON_H

@@ -21,7 +21,7 @@
 
 // INCLUDES
 #include    <e32base.h>
-#include    "cphcntthumbnailloader.h"
+#include    "CPhCntThumbnailLoader.h"
 
 // FORWARD DECLARATIONS
 class CFbsBitmap;

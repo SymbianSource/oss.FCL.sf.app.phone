@@ -285,28 +285,37 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                 break;
  
             case EPhoneNumberAcqCmdSendMessage:            
-                if ( iNumberEntryEmpty || iInvalidCsPhoneNumber )
+                if ( iNumberEntryEmpty || iInvalidCsPhoneNumber || iSecurityMode )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] ); 
                     }
-                break;                    
+                break;    
+                
+            case EPhoneInCallCmdSendToCallerMenu:
+            	{
+            	if ( iSecurityMode )
+            		{
+            		menuPane->DeleteMenuItem( menuItemArray[ i ] ); 
+            		}
+            	}
+            break;
                                 
             case EPhoneNumberAcqCmdSendCommand:
-                if ( !iServiceCodeFlag || iNumberEntryEmpty )
+                if ( !iServiceCodeFlag || iNumberEntryEmpty || iInvalidCsPhoneNumber )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] );
                     }
                 break;
                 
             case EPhoneNumberAcqCmdToggleNeAlphaMode:
-                if ( iAlphaMode )
+                if ( iAlphaMode || iSecurityMode )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] );
                     }
                 break;
                          
             case EPhoneNumberAcqCmdToggleNeNumericMode:
-                if ( !iAlphaMode )
+                if ( !iAlphaMode || iSecurityMode )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] );
                     }
@@ -314,7 +323,7 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                 
                 
             case EPhoneInCallCmdGoToIdle:
-                if ( iNEVisible )
+                if ( iNEVisible || iSecurityMode )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] );    
                     }
@@ -365,7 +374,7 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                 break;
                 
             case EPhoneCallComingCmdSoftReject:
-                if ( !iSoftRejectFlag )
+                if ( !iSoftRejectFlag || iSecurityMode )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] );
                     }
@@ -470,7 +479,7 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                 break;
             case EPhoneDialerCmdLog:
                 {
-                if ( onScreenDialer && !iNumberEntryEmpty  )
+                if ( ( onScreenDialer && !iNumberEntryEmpty  )  || iSecurityMode )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[i] );                    
                     }                
@@ -478,7 +487,7 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                 break;
             case EPhoneDialerCmdContacts:
                 {
-                if ( onScreenDialer && !iNumberEntryEmpty   )
+                if ( ( onScreenDialer && !iNumberEntryEmpty  ) || iSecurityMode ) 
                     {
                     menuPane->DeleteMenuItem( menuItemArray[i] );                    
                     }                
@@ -487,7 +496,7 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
 
             case EPhoneNumberAcqCmdAddToContacts:
                 {
-                if ( onScreenDialer && iNumberEntryEmpty )
+                if ( ( onScreenDialer && iNumberEntryEmpty ) || iSecurityMode )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[i] );                    
                     }                
@@ -495,7 +504,7 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                 break;
             case EPhoneDialerCmdSpeedDial:
                 {
-                if ( onScreenDialer && !iNumberEntryEmpty )
+                if ( ( onScreenDialer && !iNumberEntryEmpty ) || iSecurityMode )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[i] );                         
                     }
@@ -882,7 +891,8 @@ void CPhoneMenuController::ShowTaskSwapper( TInt aResourceId ) const
          aResourceId == R_PHONEUI_INCOMINGCALL_MENUBAR_WITH_NUMBERENTRY ||
          aResourceId == R_PHONEUI_INCOMINGVIDEOCALL_MENUBAR_WITH_NUMBERENTRY ||
          aResourceId == R_PHONEUI_WAITING_LOCK_MENUBAR ||
-         aResourceId == R_PHONEUI_TWOSINGLES_WAITING_LOCK_MENUBAR  )
+         aResourceId == R_PHONEUI_TWOSINGLES_WAITING_LOCK_MENUBAR ||
+         iSecurityMode )
         {
         iMenu->SetMenuType( CEikMenuBar::EMenuOptionsNoTaskSwapper );
         }
@@ -1065,6 +1075,16 @@ void CPhoneMenuController::SetVoipEnabledFlag(
         iVoipEnabledFlag = voipEnabled->Boolean();
         }
     }
+
+// ---------------------------------------------------------
+// CPhoneMenuController::HandlePropertyChangedL
+// ---------------------------------------------------------
+//
+void CPhoneMenuController::SetSecurityMode( TBool aIsEnabled )
+	{
+	__PHONELOG1( EBasic, EPhoneUIView, "CPhoneViewController::SetSecurityMode %d ", aIsEnabled );
+	iSecurityMode = aIsEnabled;
+	}
 
 // ---------------------------------------------------------
 // CPhoneMenuController::HandlePropertyChangedL

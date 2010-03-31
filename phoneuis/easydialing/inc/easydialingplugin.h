@@ -255,6 +255,11 @@ public:
     void NameOrderChanged();
     
     /**
+    * From MContactDataManagerObserver.
+    */
+    void FavouritesChanged();
+    
+    /**
     * From MEDContactorObserver.
     */
     void InformContactorEvent( MEDContactorObserver::TEvent aEvent );
@@ -368,7 +373,8 @@ private:
         EVideoCallCurrentContact,
         ESendMessageCurrentContact,
         ELaunchCurrentContact,
-		ELaunchSearch
+        ELaunchSearch,
+        EInitializePcs
         };
  
    /**
@@ -392,6 +398,21 @@ private:
      * Cancels async action launch and input block.
      */
     void CancelActionLaunchAndInputBlock();
+    
+    /**
+     * Handles change events from contact database and favourites view.
+     */
+    void DoHandleContactsChangedL();
+    
+    /**
+     * Makes contact listbox visible. Effect is used if feasible.
+     */  
+    void ShowContactListBoxWithEffect();
+    
+    /**
+     * Makes contact listbox invisible. Effect is used if feasible.
+     */  
+    void HideContactListBoxWithEffect();
     
     
 private:

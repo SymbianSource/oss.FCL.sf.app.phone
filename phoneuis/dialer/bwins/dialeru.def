@@ -8,5 +8,8 @@ EXPORTS
 	??1CDialer@@UAE@XZ @ 7 NONAME ; CDialer::~CDialer(void)
 	?GetEasyDialingInterface@CDialer@@QBEPAVCDialingExtensionInterface@@XZ @ 8 NONAME ; class CDialingExtensionInterface * CDialer::GetEasyDialingInterface(void) const
 	?SetControllerL@CDialer@@QAEXPAVMPhoneDialerController@@@Z @ 9 NONAME ; void CDialer::SetControllerL(class MPhoneDialerController *)
-	??1CVideoDTMFDialer@@UAE@XZ @ 10 NONAME ; CVideoDTMFDialer::~CVideoDTMFDialer(void)
+	?RelayoutAndDraw@CDialer@@QAEXXZ @ 10 NONAME ; void CDialer::RelayoutAndDraw(void)
+	??1CVideoDTMFDialer@@UAE@XZ @ 11 NONAME ; CVideoDTMFDialer::~CVideoDTMFDialer(void)
+	?HandleKeyboardLayoutChange@CDialer@@UAEXXZ @ 12 NONAME ; void CDialer::HandleKeyboardLayoutChange(void)
+	?HandleQwertyModeChange@CDialer@@UAEXH@Z @ 13 NONAME ; void CDialer::HandleQwertyModeChange(int)
 

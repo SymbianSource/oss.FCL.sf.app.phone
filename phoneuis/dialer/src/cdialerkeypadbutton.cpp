@@ -19,17 +19,17 @@
 
 // INCLUDE FILES
 #include <gulicon.h>
-#include <aknutils.h>
+#include <AknUtils.h>
 #include <aknbutton.h>
-#include <akncontrol.h>
-#include <aknsutils.h>
-#include <aknsskininstance.h>
-#include <aknsdrawutils.h>
+#include <AknControl.h>
+#include <AknsUtils.h>
+#include <AknsSkinInstance.h>
+#include <AknsDrawUtils.h>
 #include <data_caging_path_literals.hrh> // for KDC_APP_RESOURCE_DIR
 #include <touchfeedback.h>
 #include <aknlayoutscalable_avkon.cdl.h>
 #include <aknlayoutscalable_apps.cdl.h>
-#include <aknsframebackgroundcontrolcontext.h>
+#include <AknsFrameBackgroundControlContext.h>
 
 #include "dialercommon.h"
 #include "dialertrace.h"
@@ -51,6 +51,9 @@ static const TInt KIconMarginXPercent = 10;
 static const TInt KIconMarginYPercent = 5;
 
 static const TInt KCent = 100;
+
+// Copied from CAknButton
+const TInt KDragEventSensitivity = 1;
 
 // ---------------------------------------------------------------------------
 // C++ default constructor
@@ -231,6 +234,49 @@ void CDialerKeyPadButton::SizeChanged()
         }
 
     SetIconLayout( buttonRect );
+    }
+
+// ---------------------------------------------------------------------------
+// Pointer event handling. Implemented here just to detect when touch is 
+// dragged outside pressed button as no appropriate control event is sent 
+// by CAknButton when this happens.
+// ---------------------------------------------------------------------------
+// 
+void CDialerKeyPadButton::HandlePointerEventL( const TPointerEvent& aPointerEvent )
+    {   
+    // Do the check before forwarding events to base class as it will update
+    // iButtonPressed member variable used here. 
+    // Own drag event counter has to be used.
+    // Logic here to determine whether pointer is dragged outside button is 
+    // the same as used in CAknButton.
+    
+    if ( State() && IsVisible() )
+        {
+        if ( aPointerEvent.iType == TPointerEvent::EButton1Down )
+            {
+            iDragEventCounter = 0;
+            }
+         else if ( aPointerEvent.iType == TPointerEvent::EDrag )
+            {
+            iDragEventCounter++;
+            if ( iDragEventCounter >= KDragEventSensitivity  )
+                {
+                iDragEventCounter = 0;
+                
+                TBool buttonEvent( Rect().Contains( aPointerEvent.iPosition ) );
+                
+                // Pointer is dragged outside the pressed button area
+                if ( !buttonEvent && iButtonPressed && Observer() )
+                    {
+                    Observer()->HandleControlEventL( this,
+                            static_cast<MCoeControlObserver::TCoeEvent>( 
+                            CDialerKeyPadButton::EEventDraggingOutsideButton ) );
+                    }
+                }
+            }
+        }
+
+    CAknButton::HandlePointerEventL( aPointerEvent );
     }
 
 // -----------------------------------------------------------------------------

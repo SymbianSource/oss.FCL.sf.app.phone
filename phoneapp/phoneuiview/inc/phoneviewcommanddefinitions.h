@@ -137,8 +137,6 @@ enum
     EPhoneViewSendMessage,
     EPhoneViewSetBlockingDialogStatus,
     EPhoneViewSetPhoneNumberAvailableInPhoneEngine,
-    EPhoneViewSetSecurityMode,
-    EPhoneViewGetSecurityModeStatus,
     EPhoneViewSetStatusPaneVisible, // 110
     EPhoneViewEnableKeyLock,
     EPhoneViewLaunchFaxModem,
@@ -234,6 +232,7 @@ enum
     EPhoneViewSetNeedToReturnToForegroundAppStatus,
     EPhoneViewSetConferenceAndWaitingVideo,
     EPhoneViewLaunchMultimediaSharing,
+    EPhoneViewGetQwertyModeObserver,
 
     EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.
 };

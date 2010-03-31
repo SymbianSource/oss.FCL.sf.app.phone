@@ -89,6 +89,9 @@ LIBRARY aknlayout2scalable.lib
 LIBRARY cdlengine.lib
 LIBRARY aknlayout2.lib
 
+// Transition effects
+LIBRARY gfxtrans.lib
+
 // AIW library
 LIBRARY servicehandler.lib
 

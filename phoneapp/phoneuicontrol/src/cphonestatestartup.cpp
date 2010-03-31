@@ -24,6 +24,7 @@
 #include "tphonecmdparamboolean.h"
 #include "phonelogger.h"
 #include "phonerssbase.h"
+#include "mphonesecuritymodeobserver.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -228,15 +229,9 @@ EXPORT_C void CPhoneStateStartup::HandleIdleForegroundEventL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::HandleIdleForegroundEventL( ) ");
     // Security mode check. 
-    TPhoneCmdParamBoolean isSecurityMode;      
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );        
-    if ( !isSecurityMode.Boolean() && !IsSimOk() )
+    if ( !iStateMachine->SecurityMode()->IsSecurityMode() && !IsSimOk() )
         {
-        TPhoneCmdParamBoolean securityMode;
-        securityMode.SetBoolean( ETrue );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetSecurityMode, &securityMode );
         iCreateNote = CIdle::NewL( CActive::EPriorityHigh );
-        
         CreateAndShowNoteAfterIdle(); 
         }
     }
@@ -281,26 +276,17 @@ TInt CPhoneStateStartup::DoShowNoteL( TAny* aAny )
 void CPhoneStateStartup::InitializationReadyL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::InitializationReady() ");
-
-     // Security mode check.
-    TPhoneCmdParamBoolean isSecurityMode;      
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-    if ( !isSecurityMode.Boolean() && !IsSimOk() )
+	iStateMachine->SecurityMode()->Initialize();
+ if ( !iStateMachine->SecurityMode()->IsSecurityMode() && !IsSimOk() )
         {
-        TPhoneCmdParamBoolean securityMode;
-        securityMode.SetBoolean( ETrue );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetSecurityMode, &securityMode );
         iCreateNote = CIdle::NewL( CActive::EPriorityHigh );
-        
         CreateAndShowNoteAfterIdle(); 
         }
     // Go to idle state
     SetDefaultFlagsL();
     iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
-    
     iViewCommandHandle->ExecuteCommand( EPhoneViewPrepareIcons );
     iViewCommandHandle->ExecuteCommand( EPhoneViewLoadPlugins );
-    
     iStateMachine->ChangeState( EPhoneStateIdle );   
     }
 

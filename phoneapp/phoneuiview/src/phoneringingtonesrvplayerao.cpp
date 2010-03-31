@@ -19,10 +19,10 @@
 // INCLUDE FILES
 #include <e32base.h>
 #include <f32file.h>
-#include <Utility.h>
+#include <utility.h>
 #include <AudioPreference.h>
 
-#include "PhoneUI.pan"
+#include "phoneui.pan"
 #include "cphoneringingtone.h"
 #include "cphoneaudioplayer.h"
 #include "cphonetimer.h"

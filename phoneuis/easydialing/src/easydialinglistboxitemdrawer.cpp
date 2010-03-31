@@ -27,7 +27,7 @@
 #include <aknlistboxtfxinternal.h>
 #include <aknlistboxtfx.h>
 #include <akntransitionutils.h>
-#include <aknutils.h>
+#include <AknUtils.h>
 
 // EXTERNAL DATA STRUCTURES
 

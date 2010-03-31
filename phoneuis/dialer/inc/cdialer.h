@@ -25,6 +25,7 @@
 #include <coemain.h>
 
 #include "mnumberentry.h"
+#include "mphoneqwertymodeobserver.h"
 
 // CONSTANTS
 
@@ -118,7 +119,11 @@ class MPhoneDialerController;
     delete dialer;
 *
 */
-NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry, public MCoeControlObserver // easy dialing change
+NONSHARABLE_CLASS(CDialer) : 
+	public CCoeControl, 
+	public MNumberEntry, 
+	public MCoeControlObserver,
+	public MPhoneQwertyModeObserver
     {
     public:  // Constructors and destructor
 
@@ -177,6 +182,18 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry, public MCo
          */
         IMPORT_C void UpdateToolbar();
         
+        /**
+         * Updates number entry editor to correct state. State depends on
+         * qwerty availability and easydialing and voip settings. 
+         */
+        void UpdateNumberEntryConfiguration();
+        
+		
+		/**
+		 * Relayout and draw control. Also updates toolbar.
+		 */
+		IMPORT_C void RelayoutAndDraw();
+
     public: // from MNumberEntry 
 
         /**
@@ -254,6 +271,17 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry, public MCo
         * @param aEnable.
         */             
         void EnableTactileFeedback( const TBool aEnable );
+
+        /**
+        * Handle Qwerty mode change.
+        * @param aMode 0 = off, 1 = on
+        */
+        IMPORT_C void HandleQwertyModeChange( TInt aMode );
+
+        /**
+        * @see MIdleQwertyModeObserver.
+        */
+        IMPORT_C void HandleKeyboardLayoutChange();
 
     private: // Functions from MCoeControlObserver
         
@@ -349,13 +377,21 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry, public MCo
          * Returns edwin state
          * @return Pointer to CAknEdwinState
          */
-        CAknEdwinState* EdwinState();
+        CAknEdwinState* EdwinState() const;
         
+        /** Editor types. */
+        enum TEditorType
+            {
+            ENumericEditor,
+            EAlphanumericEditor,
+            EVirtualKeyboardEditor
+            };
+                
         /**
          * Updates editor flags for virtual
          * keyboard.
          */
-        void UpdateVkbEditorFlagsL();
+        void UpdateEdwinState( TEditorType aType );
 
         /**
          * Loads easydialing plugin. If loading fails (for instance when
@@ -376,7 +412,7 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry, public MCo
          * the availability and state of Easy dialing. 
          */
         void LayoutNumberEntry( const TRect& aParent, TInt aVariety );
-        
+                
     private:    // Data
           
         // Keypad container  - owned
@@ -421,6 +457,11 @@ NONSHARABLE_CLASS(CDialer) : public CCoeControl, public MNumberEntry, public MCo
          * Not owned.
          */
         MPhoneDialerController* iController;
+        
+        /*
+         * Is qwerty mode on.
+         */
+        TBool iQwertyMode;
     };
 
 #endif      // CDIALER_H

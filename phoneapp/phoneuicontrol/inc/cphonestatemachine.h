@@ -30,6 +30,8 @@
 
 // FORWARD DECLARATIONS
 class MPhoneState;
+class MPhoneSecurityModeObserver;
+class MPhoneSecurityMessageHandler;
 
 // CLASS DECLARATION
 
@@ -100,6 +102,47 @@ class CPhoneStateMachine :
         */    
         IMPORT_C void SetCallId( const TInt aCallId );
 
+   
+        /**
+         * Getter for security mode observer interface.
+         * 
+         * @return Pointer to security mode interface.
+         */
+        IMPORT_C MPhoneSecurityModeObserver* SecurityMode();
+        
+		/**
+		 * Setter for security mode observer interface.
+		 *
+		 * @param aObserver Pointer to observer interface.
+		 */
+		IMPORT_C void SetSecurityModeObserver( MPhoneSecurityModeObserver* aObserver );
+
+		/**
+		 * Set security message handler for security message observations.
+		 * 
+		 * @param aHandler Pointer to handler instance. 
+		 */
+		IMPORT_C void SetSecurityMessageHandler( MPhoneSecurityMessageHandler* aHandler );
+		
+        /**
+         * Handle phone engine message.
+         * 
+         * @param aMessage Message
+         * @param aCallId Call id
+         */
+        IMPORT_C void HandlePhoneEngineMessageL(const TInt aMessage, 
+             	TInt aCallId );
+        
+        /**
+          * This function is called when there is property value change.
+          * @param aCategory Category of the property
+          * @param aKey Property key that is changed
+          * @param aValue New property value
+          */
+         IMPORT_C void HandlePropertyChangedL(const TUid& aCategory,
+         	const TUint aKey,
+         	const TInt aValue );
+
     protected:
 
         /**
@@ -137,6 +180,19 @@ class CPhoneStateMachine :
 
         // Idle state which is hold in memory all the time
         MPhoneState* iIdleState;
+        
+        /**
+         * Security mode state
+         * Not own.
+         */
+        MPhoneSecurityModeObserver* iSecurityModeObserver;
+        
+        /**
+         * Security message handling interface.
+         * Not own.
+         */
+        MPhoneSecurityMessageHandler* iSecurityMessageHandler;
+        
     };
 
 #endif      // CPHONESTATEMACHINE_H

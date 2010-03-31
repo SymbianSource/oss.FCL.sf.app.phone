@@ -130,6 +130,9 @@ void CPEServiceHandling::EnableServiceL( TInt aServiceId )
 	                  "PE CPEServiceHandling::EnableServiceL, Error: %d"
 	                  , error );
 	         SendErrorMessage( error );
+	       
+             iCurrentServiceId = KErrNotFound;
+             service->RemoveObserver( *this );	
 	         }
 	    }
 	

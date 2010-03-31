@@ -20,9 +20,9 @@
 #include <e32base.h>
 #include <e32svr.h>
 
-#include "MPhoneRingingToneSrv.h"
-#include "PhoneRingingToneSrv.hrh"
-#include "PhoneRingingToneSrvSession.h"
+#include "mphoneringingtonesrv.h"
+#include "phoneringingtonesrv.hrh"
+#include "phoneringingtonesrvsession.h"
 #include "phoneuiviewtrace.h"
 
 // ============================ MEMBER FUNCTIONS ===============================

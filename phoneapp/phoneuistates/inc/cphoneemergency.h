@@ -195,11 +195,7 @@ class CPhoneEmergency : public CPhoneGsmInCall
        void HandlePhoneStartupL();
          
     private:
-        /**
-        * Is device lock on/off
-        */
-        TBool iDeviceLockOn;
-        
+ 
         /**
         * If true update emergency call wait note
         */

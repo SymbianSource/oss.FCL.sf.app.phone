@@ -59,6 +59,7 @@
 #include "phoneconstants.h"
 #include "mphonecustomization.h"
 #include <easydialingcommands.hrh>
+#include "mphonesecuritymodeobserver.h"
 
 //CONSTANTS
 const TInt  KMaxParamLength = 1024;
@@ -127,19 +128,15 @@ EXPORT_C void CPhoneStateIdle::HandleKeyEventL(
     TEventCode aEventCode )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::HandleKeyEventL( ) ");
-    // Security mode check
-    TPhoneCmdParamBoolean isSecurityMode;      
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );  
     
- 
     // Number entry is blocked, if active Query
     if ( !IsAnyQueryActiveL() )
         {
         // Handle numeric keys when key events are received in idle state
         HandleNumericKeyEventL( aKeyEvent, aEventCode );  
         }
-    else if ( isSecurityMode.Boolean() && CPhoneKeys::IsNumericKey( 
-        aKeyEvent, aEventCode ) )
+    else if ( iStateMachine->SecurityMode()->IsSecurityMode()
+    	&& CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNote );
         // Handle numeric keys when key events are received in single state
@@ -213,10 +210,7 @@ EXPORT_C void CPhoneStateIdle::HandleKeyMessageL(
                 {
                 if ( IsNumberEntryUsedL() )
                     {
-                    // Security mode check
-                    TPhoneCmdParamBoolean isSecurityMode;      
-                    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-
+                   
                     TPhoneCmdParamInteger numberEntryCountParam;
                     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetNumberEntryCount,
                     &numberEntryCountParam );
@@ -233,7 +227,7 @@ EXPORT_C void CPhoneStateIdle::HandleKeyMessageL(
                         return;
                         }
                     
-                    else if ( neLength == 0 && !isSecurityMode.Boolean())
+                    else if ( neLength == 0 && !iStateMachine->SecurityMode()->IsSecurityMode() )
                         {
                         // start logs
                         iViewCommandHandle->HandleCommandL( 
@@ -245,17 +239,12 @@ EXPORT_C void CPhoneStateIdle::HandleKeyMessageL(
                 // If dialer is not open but phone is in foreground and phone receives
                 // send-key event we have to check if security mode is true and if it
                 // is then open emergency dialer.
-                else if ( !IsNumberEntryUsedL() )
+                else if ( !IsNumberEntryUsedL() ) 
                     {
-                    // Security mode check
-                    TPhoneCmdParamBoolean isSecurityMode;      
-                    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-
-                    if ( isSecurityMode.Boolean())
-                        {
-                        // launch dialer.
-                        HandleCommandL(EPhoneNumberAcqSecurityDialer);
-                        }
+                   if ( iStateMachine->SecurityMode()->IsSecurityMode() )
+						{
+						iViewCommandHandle->HandleCommandL( EPhoneViewOpenNumberEntry );
+						}
                     }           
                 }
             else // iOnScreenDialer false, non-touch.
@@ -266,16 +255,12 @@ EXPORT_C void CPhoneStateIdle::HandleKeyMessageL(
             
         case EKeyApplication0:
             {
-            // Security mode
-            TPhoneCmdParamBoolean isSecurityMode;      
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-            	
             // If dialer is not open but phone is in foreground and phone receives
             // applicaion-key event we have to open emergency dialer. 
             // Securitymode check because Applicationkey only open dialer in securitymode.
-            if ( isSecurityMode.Boolean() && !IsNumberEntryUsedL() )
+            if ( iStateMachine->SecurityMode()->IsSecurityMode() && !IsNumberEntryUsedL() )
                 {
-                HandleCommandL(EPhoneNumberAcqSecurityDialer);
+                iViewCommandHandle->HandleCommandL( EPhoneViewOpenNumberEntry );
                 }           
             }
             break;
@@ -601,13 +586,7 @@ EXPORT_C TBool CPhoneStateIdle::ProcessCommandL( TInt aCommand )
                EPhoneViewMenuBarOpen, &integerParam );
            commandStatus = ETrue;
            }
-           break;  
-                     
-       case EPhoneViewOpenNumberEntry:	
-           BeginTransEffectLC( ENumberEntryOpen );
-           commandStatus = CPhoneState::ProcessCommandL( aCommand );
-           EndTransEffect();
-           break;
+           break;       
            
        default:
            commandStatus = CPhoneState::ProcessCommandL( aCommand );
@@ -848,9 +827,6 @@ EXPORT_C void CPhoneStateIdle::HandlePhoneForegroundEventL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::HandlePhoneForegroundEventL( ) ");
     
-    TPhoneCmdParamBoolean isSecurityMode;      
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-
     TBool activatePhone = CPhonePubSubProxy::Instance()->Value(
                     KPSUidAiInformation, KActiveIdleState ) == EPSAiNumberEntry;
     
@@ -878,7 +854,7 @@ EXPORT_C void CPhoneStateIdle::HandlePhoneForegroundEventL()
         // If dialer is open add icon to FSW list.
         iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateFSW );
         }
-    else if ( !IsNumberEntryUsedL() && !isSecurityMode.Boolean() )
+    else if ( !IsNumberEntryUsedL() && !iStateMachine->SecurityMode()->IsSecurityMode() )
         {
         // Bring Idle app to the foreground
         iViewCommandHandle->ExecuteCommandL( EPhoneViewBringIdleToForeground );

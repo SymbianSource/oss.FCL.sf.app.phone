@@ -139,7 +139,14 @@ void CPhoneGsmInCall::HandlePhoneEngineMessageL(
 			
             // Needed also in non-touch, if call waiting request (*43#) 
             // is sent during active call at least.
-    	    UpdateCbaL( EPhoneCallHandlingInCallCBA );
+			if ( aMessage == MEngineMonitor::EPEMessageIncCallIsForw )
+				{
+				UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
+				}
+			else 
+				{
+				UpdateCbaL( EPhoneCallHandlingInCallCBA );
+				}						
 			}
 			break;
 			

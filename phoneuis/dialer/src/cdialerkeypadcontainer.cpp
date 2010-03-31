@@ -33,7 +33,7 @@
 #include <data_caging_path_literals.hrh> // for KDC_APP_RESOURCE_DIR
 #include <touchfeedback.h>
 #include <aknlayoutscalable_avkon.cdl.h>
-#include <aknsframebackgroundcontrolcontext.h>
+#include <AknsFrameBackgroundControlContext.h>
 
 #include "cdialerkeypadcontainer.h"
 #include "dialercommon.h"
@@ -176,7 +176,8 @@ void CDialerKeyPadContainer::HandlePointerEventL(
 
     if ( aPointerEvent.iType == TPointerEvent::EButton1Down ) 
         {
-        iPointerEvent = aPointerEvent;    
+        iPointerEvent = aPointerEvent; 
+        iKeyUpSimulatedDueToDragging = EFalse;
         }
     DIALER_PRINT("KeyPadContainer::HandlePointerEventL>");     
     }
@@ -352,8 +353,7 @@ void CDialerKeyPadContainer::CreateButtonsL()
     {
     DIALER_PRINT("KeyPadContainer::CreateButtonsL<");
     
-    TInt flags ( KAknButtonReportOnLongPress|
-                 KAknButtonReportOnKeyDown  |
+    TInt flags ( KAknButtonReportOnKeyDown  |
                  KAknButtonRequestExitOnButtonUpEvent );
     
     for ( TInt i = 0; i < KNumberOfButtons; i++ )
@@ -400,9 +400,10 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
     DIALER_PRINTF("KeyPadContainer::HandleControlEventL.EventType=",
                  (TInt)aEventType);
     
-   if ( aEventType == EEventStateChanged   || 
-        aEventType == EEventRequestCancel ||
-        aEventType == EEventRequestExit)
+    if ( aEventType == EEventStateChanged   || 
+         aEventType == EEventRequestCancel ||
+         aEventType == EEventRequestExit ||
+         aEventType == CDialerKeyPadButton::EEventDraggingOutsideButton )
         
         {
         // Find tapped control 
@@ -417,15 +418,18 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
                 }    
             }
         
-        __ASSERT_ALWAYS( tappedButton, 
-        _L("CDialerKeyPadContainer::HandleControlEventL, invalid button handle")); // TODO: This is meaningless statement, use either Panic or make this only comment.
+        if ( !tappedButton )
+            {
+            __ASSERT_DEBUG( EFalse, DialerPanic( EDialerPanicEventFromUnknownControl ) );
+            return;
+            }
         
         // Send key event to phone.
         TKeyEvent keyEvent;
         keyEvent.iScanCode = tappedButton->ScanCode();
         keyEvent.iModifiers = ( EModifierNumLock | EModifierKeypad ); // Mark that this event is dialer simulated
-        keyEvent.iRepeats = 0;  
-             
+        keyEvent.iRepeats = 0;
+        
         switch ( aEventType )
             {
             case EEventRequestExit:
@@ -433,10 +437,15 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
                 {
                 DIALER_PRINT("HandleControlEventL.EEventRequestExit");
                 iButtonPressedDown = EFalse;
-                keyEvent.iCode = 0;
-                ControlEnv()->SimulateKeyEventL( keyEvent, EEventKeyUp );
+                if ( !iKeyUpSimulatedDueToDragging )
+                    {
+                    keyEvent.iCode = 0;
+                    ControlEnv()->SimulateKeyEventL( keyEvent, EEventKeyUp );
+                    }
+                iKeyUpSimulatedDueToDragging = EFalse;
                 }
                 break;
+                
             case EEventStateChanged:
                 {    
                 DIALER_PRINT("HandleControlEventL.EEventStateChanged");
@@ -444,7 +453,7 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
                 keyEvent.iCode = tappedButton->KeyCode();
                 iParentControl.PrepareForFocusGainL();
 
-                ControlEnv()->SimulateKeyEventL( keyEvent, EEventKeyDown );    
+                ControlEnv()->SimulateKeyEventL( keyEvent, EEventKeyDown );
 
                 if( iButtonPressedDown )
                     {
@@ -453,13 +462,29 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
                     }
                 }
                 break;
+            
+            case CDialerKeyPadButton::EEventDraggingOutsideButton:
+                {
+                DIALER_PRINT("HandleControlEventL.EEventDraggingOutsideButton");
+                // User hasn't released touch yet but in order to cancel
+                // long press action handled and initiated by parent control, 
+                // we must send key up event now.
+                if ( !iKeyUpSimulatedDueToDragging )
+                    {
+                    keyEvent.iCode = 0;
+                    ControlEnv()->SimulateKeyEventL( keyEvent, EEventKeyUp );
+                    iKeyUpSimulatedDueToDragging = ETrue;
+                    }
+                }
+                break;
+                
             default:
             break;
             }
         }
-    DIALER_PRINT("KeyPadContainer::HandleControlEventL>");        
+    DIALER_PRINT("KeyPadContainer::HandleControlEventL>");
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialerKeyPadContainer::HandleResourceChange
 //
@@ -575,7 +600,7 @@ void CDialerKeyPadContainer::EnableTactileFeedback( const TBool aEnable )
     {
     for ( TInt i=0; i < iButtons.Count(); i++ )
         {
-        (( CDialerKeyPadButton* )iButtons[i])->EnableAudioFeedback( aEnable );
+        iButtons[i]->EnableAudioFeedback( aEnable );
         }
 
     }

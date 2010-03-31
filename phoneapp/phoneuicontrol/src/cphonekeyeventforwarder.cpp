@@ -31,6 +31,11 @@
 #include "cphonetimer.h"
 #include "phonelogger.h"
 #include "phoneui.pan"
+#include "mphoneviewcommandhandle.h"
+#include "cphoneqwertyhandler.h"
+#include "tphonecmdparampointer.h"
+#include "mphoneqwertymodeobserver.h"
+#include "cdialer.h"
 
 // CONSTANTS
 
@@ -73,6 +78,8 @@ CPhoneKeyEventForwarder::~CPhoneKeyEventForwarder()
         env->EikAppUi()->RemoveFromStack( this );
         }
     delete iLongPressKeyEventTimer;
+    
+    delete iQwertyHandler;
     }
 
 // -----------------------------------------------------------------------------
@@ -199,6 +206,17 @@ void CPhoneKeyEventForwarder::ConstructL( const TRect& aRect )
 
     // Create the long press key event timer
     iLongPressKeyEventTimer = CPhoneTimer::NewL();
+    
+    // Create qwerty mode handler
+    iQwertyHandler = CPhoneQwertyHandler::NewL(); 
+    
+    TPhoneCmdParamPointer ptrParam;
+    iViewCommandHandle->ExecuteCommand( EPhoneViewGetQwertyModeObserver, &ptrParam );
+    CDialer* qwertyObserver = 
+            static_cast<CDialer*>( ptrParam.Pointer() );
+            
+    iQwertyHandler->AddQwertyModeObserverL( *qwertyObserver );
+
     }
 
 // -----------------------------------------------------------------------------
@@ -294,6 +312,24 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventBeforeControlStackL(
         default:
             break;
         }
+    
+    // Check if keyEvent is simulated in Dialer.
+    const TBool simulatedByDialer = 
+        ( ( aKeyEvent.iModifiers & ( EModifierNumLock | EModifierKeypad ) ) 
+                == ( EModifierNumLock | EModifierKeypad ) );
+    
+    if(  simulatedByDialer && iQwertyHandler->IsQwertyInput() )
+        {
+        // When dialler key was pressed and
+        // qwerty is open and editor is alphanumeric
+        //  -Dont let FEP to handle key events 
+        //    -> Multitapping doesnt work
+        //    -> Numbers are inserted to dialler without modifications
+        // Also effects # / * - key handling 
+        iStateMachine->State()->HandleKeyEventL( aKeyEvent, aType );
+        response = EKeyWasConsumed;
+        }
+    
     return response;
     }
 
