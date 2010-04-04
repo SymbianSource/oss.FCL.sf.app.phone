@@ -1,6 +1,6 @@
 EXPORTS
-	?ConstructL@CPhoneTwoSingles@@MAEXXZ @ 1 NONAME ; void CPhoneTwoSingles::ConstructL(void)
-	?NewPhoneUIStateMachineFactoryL@@YAPAVCPhoneUIStateMachineFactoryBase@@XZ @ 2 NONAME ; class CPhoneUIStateMachineFactoryBase * NewPhoneUIStateMachineFactoryL(void)
+	?NewPhoneUIStateMachineFactoryL@@YAPAVCPhoneUIStateMachineFactoryBase@@XZ @ 1 NONAME ; class CPhoneUIStateMachineFactoryBase * NewPhoneUIStateMachineFactoryL(void)
+	?ConstructL@CPhoneTwoSingles@@MAEXXZ @ 2 NONAME ; void CPhoneTwoSingles::ConstructL(void)
 	?SendGlobalErrorNoteL@CPhoneErrorMessagesHandler@@IAEXH@Z @ 3 NONAME ; void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL(int)
 	?HandleKeyMessageL@CPhoneAlerting@@MAEXW4TPhoneKeyEventMessages@MPhoneKeyEvents@@W4TKeyCode@@@Z @ 4 NONAME ; void CPhoneAlerting::HandleKeyMessageL(enum MPhoneKeyEvents::TPhoneKeyEventMessages, enum TKeyCode)
 	?HandleKeyMessageL@CPhoneTwoSingles@@UAEXW4TPhoneKeyEventMessages@MPhoneKeyEvents@@W4TKeyCode@@@Z @ 5 NONAME ; void CPhoneTwoSingles::HandleKeyMessageL(enum MPhoneKeyEvents::TPhoneKeyEventMessages, enum TKeyCode)
