@@ -19,7 +19,7 @@
 #define MPHCNTCONTACTFIELDS_H
 
 #include <e32std.h>
-#include "MPhCntMatch.h"
+#include "mphcntmatch.h"
 #include "tphcntnumber.h"
 
 class MVPbkContactLinkArray;

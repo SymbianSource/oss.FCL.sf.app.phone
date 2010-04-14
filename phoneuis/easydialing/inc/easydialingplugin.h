@@ -88,13 +88,13 @@ class CEasyDialingPlugin : public CDialingExtensionInterface,
                            public MAknInputBlockCancelHandler
 {
 public:
-    
+
     /**
     * Static constructor. 
     * @return: Created object.
     */
     static CEasyDialingPlugin* NewL();
-
+    
     /**
     * Destructor. 
     */
@@ -106,7 +106,7 @@ public: // from CCoeControl
     * From CCoeControl.
     */
     TKeyResponse OfferKeyEventL( const TKeyEvent& aKeyEvent, TEventCode aType );
-
+    
     /**
     * From CCoeControl
     */
@@ -123,7 +123,7 @@ public: // from CCoeControl
     void MakeVisible( TBool aVisible );
 
 protected:
-    
+
     /**
     * See CCoeControl
     */
@@ -133,9 +133,9 @@ protected:
     * See CCoeControl
     */
     void FocusChanged( TDrawNow aDrawNow );
-    
+
 public: // from CDialingExtensionInterface
-    
+
     /**
     * Does further initialization to component.
     * @param: parent container of this control.
@@ -170,7 +170,7 @@ public: // from CDialingExtensionInterface
      * @return: number of matches.
      */
     TInt MatchingContactCount();
-
+    
     /**
      * Gets the resource id of plugin's control button area resource.
      * 
@@ -204,15 +204,15 @@ public: // from CDialingExtensionInterface
      * @return  ETrue if command was handled, EFalse otherwise.
      */
     TBool HandleCommandL( TInt aCommand );
-
+    
     /**
      * Tells if extension is currently enabled from settings.
      * @return  ETrue if extension is enabled, EFalse otherwise.
      */
     TBool IsEnabled() const;
-    
+
 public:
-    
+
     /**
      * From MVPbkContactStoreListObserver.
      */
@@ -268,12 +268,12 @@ public:
     * From MEikListBoxObserver.
     */
     void HandleListBoxEventL( CEikListBox* aListBox, TListBoxEvent aEventType );
-
+    
     /**
     * From MAknInputBlockCancelHandler.
     */
     void AknInputBlockCancel();
-    
+
 
 private:
 
@@ -281,14 +281,14 @@ private:
     * Constructor.
     */
     CEasyDialingPlugin ();
-
+    
     /**
     * Second phase constructor.
     */
     void ConstructL ();
-
+    
     void InitPredictiveContactSearchL();
-        
+    
     void SetSortOrderL( CEasyDialingContactDataManager::TNameOrder aNameOrder );
     
     /**
@@ -314,7 +314,7 @@ private:
      * A leaving function to be trapped in HandlePsResultsUpdate.
      */
     void HandlePsResultsUpdateL( RPointerArray<CPsClientData>& aResults, RPointerArray<CPsPattern>& aSeqs );
-    
+
 public:
     
     /**
@@ -376,8 +376,8 @@ private:
         ELaunchSearch,
         EInitializePcs
         };
- 
-   /**
+    
+    /**
      * Initiates asynchronous callback to launch action and sets
      * input blocker active. 
      */
@@ -413,13 +413,13 @@ private:
      * Makes contact listbox invisible. Effect is used if feasible.
      */  
     void HideContactListBoxWithEffect();
-    
-    
+
+
 private:
 
     /** Textual version of current search string. */
     TBuf<KEDMaxSearchStringLength> iSearchString;
-
+    
     /** Handle to predictive search engine. Owned. */
     CPSRequestHandler* iPredictiveContactSearchHandler;
     
@@ -442,27 +442,27 @@ private:
     CVPbkContactManager* iContactManager;
 	
     /** Search result field index for first name field. */
-	TInt iFirstNamePCSIndex;
+    TInt iFirstNamePCSIndex;
     
     /** Search result field index for last name field. */
-	TInt iLastNamePCSIndex;
+    TInt iLastNamePCSIndex;
     
     /** Search result field index for first name field. */
-	TInt iCompanyNamePCSIndex;
-
-	/** Array containing observers to this class. Owned. */
-	RPointerArray<MDialingExtensionObserver> iObservers;
-	
-	/** Contact listbox. Owned. */
-	CEasyDialingListBox* iContactListBox;
-
-	/** Listbox model from search results. Owned. */
-	CDesCArrayFlat* iListBoxModel;
-	
-	/** Number of found matching contacts from most recent search. */
-	TInt iNumberOfNames;
-	
-	/** Handle to contact launcher. */
+    TInt iCompanyNamePCSIndex;
+    
+    /** Array containing observers to this class. Owned. */
+    RPointerArray<MDialingExtensionObserver> iObservers;
+    
+    /** Contact listbox. Owned. */
+    CEasyDialingListBox* iContactListBox;
+    
+    /** Listbox model from search results. Owned. */
+    CDesCArrayFlat* iListBoxModel;
+    
+    /** Number of found matching contacts from most recent search. */
+    TInt iNumberOfNames;
+    
+    /** Handle to contact launcher. */
     MCCAConnectionExt* iContactLauncher;
     
     /** ETrue if contact launcher (a.k.a. communication launcher) is open. */
@@ -471,9 +471,9 @@ private:
     /** If true, contact listbox must not reset focus when contact launcher exits. */
     TBool iRememberFocus;
     
-	/** Working buffer for creating contact string to listbox. */
+    /** Working buffer for creating contact string to listbox. */
     TBuf<KEDMaxContactStringLength> iContactStringCreationBuffer;
-
+    
     /** Central repository listener. Owned. */
     CEasyDialingCenrepListener* iCenrepListener;
     
@@ -482,7 +482,7 @@ private:
     
     /** Easy dialing contactor service. Owned. */
     CEDContactorService* iContactorService;
-
+    
     /** Easy dialing resource file offset in current application. */
     TInt iResourceFileOffset;
     

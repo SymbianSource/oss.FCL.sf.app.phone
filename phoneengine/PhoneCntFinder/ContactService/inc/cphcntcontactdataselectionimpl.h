@@ -25,7 +25,7 @@
 #include "tphcntcontactlinkresult.h"
 #include "mphcntaiwservice.h"
 #include "MPhCntContactFetchObserver.h"
-#include "MPhCntMatch.h"
+#include "mphcntmatch.h"
 
 class MPhCntServiceRequestParamFactory;
 class MPhCntServiceRequestParam;

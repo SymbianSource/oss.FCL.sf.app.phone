@@ -34,12 +34,8 @@
 
 #include <ccappcommlauncherpluginrsc.rsg>
 
-// AvKON and drawing header files
-
-#include <aknpointereventsuppressor.h> 
 #include <aknlongtapdetector.h> // Required for touch
 #include <AknsFrameBackgroundControlContext.h>
-#include <AknInfoPopupNoteController.h>  // tooltips
 
 #include <aknlayoutscalable_apps.cdl.h>
 #include <layoutmetadata.cdl.h>
@@ -170,14 +166,6 @@ void CEasyDialingListBox::FocusChanged( TDrawNow aDrawNow )
         {
         CEasyDialingListBoxView* view = static_cast<CEasyDialingListBoxView*>( iView );
         view->SetCurrentItemIndexToNone();
-        
-        // Invalidate window area. 
-        // This fixes the drawing problem that the top 
-        // of listbox is not always redrawn on the area that overlaps 
-        // the status pane area. 
-        // TODO: This overlapping no longer happens in 9.2 so this may
-        // now be unnecessary.
-        Window().Invalidate();
         }
     CEikFormattedCellListBox::FocusChanged( aDrawNow );
     }
@@ -277,6 +265,10 @@ void CEasyDialingListBox::HandleResourceChange(TInt aType)
 //
 void CEasyDialingListBox::SizeChanged()
     {
+	// Note that within this call view rect is adjusted to fit into TGulBorder
+    // that could have been given in construction. It's not used by ED listbox.
+    // The view rect is not correct for ED after this call but it's
+    // calculated and set below.
     CEikFormattedCellListBox::SizeChanged();
     
     TRect parentRect = Rect();
@@ -317,8 +309,11 @@ void CEasyDialingListBox::SizeChanged()
         scrollBarRect.SetWidth( 0 );
         }
 
-    // Set view rect
-    iView->SetViewRect( viewRect );
+    // Must use this method so that all eiklistbox's internal variables are 
+    // set and updated according to this viewRect. This call would
+    // add list margins but no such are defined in layouts so view's rect is
+    // set to viewRect calculated here.
+    SetViewRectFromClientRect( viewRect );
     
     // Set scroll bar rect
     if ( iSBFrame )
@@ -330,6 +325,8 @@ void CEasyDialingListBox::SizeChanged()
         }
 
     iBGContext->SetFrameRects( parentRect, viewAndScrollBarRect );
+    
+    TRAP_IGNORE( CEikFormattedCellListBox::HandleViewRectSizeChangeL() );
     }
 
 
@@ -492,6 +489,7 @@ TInt CEasyDialingListBox::CurrentContactDataIndex()
         }
     }
 
+
 // -----------------------------------------------------------------------------
 // CurrentContactLinkLC
 // 
@@ -542,6 +540,43 @@ void CEasyDialingListBox::HandlePointerEventL(const TPointerEvent& aPointerEvent
     CEikFormattedCellListBox::HandlePointerEventL( aPointerEvent );
     }
 
+
+// -----------------------------------------------------------------------------
+// HandleScrollEventL
+// If the EasyDialingListBox is scrolled by dragging the Scroll bar, this
+// observer function is called
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingListBox::HandleScrollEventL( CEikScrollBar* aScrollBar, TEikScrollEvent aEventType )
+    {
+    // Report scrolling to the listbox observer
+    TInt scrollEvent( KErrNotFound );
+    switch ( aEventType )
+        {
+        case EEikScrollThumbDragVert:
+            scrollEvent = KEasyDialingScrollingStarted;
+            break;
+
+        case EEikScrollThumbReleaseVert:
+        case EEikScrollUp:
+        case EEikScrollDown:
+        case EEikScrollPageUp:
+        case EEikScrollPageDown:
+            scrollEvent = KEasyDialingScrollingStopped;
+            break;
+            
+        default:
+            break;
+        }
+    
+    if ( scrollEvent != KErrNotFound )
+        {
+        ReportListBoxEventL( static_cast<MEikListBoxObserver::TListBoxEvent>( scrollEvent ) );
+        }
+    
+    // Base class(es) might be also interested about the scrollbar events
+    CEikFormattedCellListBox::HandleScrollEventL( aScrollBar, aEventType );
+    }
 
 // end of file
 

@@ -38,6 +38,7 @@
 #include "tphonecmdparamcallstatedata.h"
 #include "tphonecmdparamsfidata.h"
 #include "mphonestatemachine.h"
+#include "mphonesecuritymodeobserver.h"
 #include "phonestatedefinitions.h"
 #include "phoneviewcommanddefinitions.h"
 #include "phoneui.hrh"
@@ -611,9 +612,13 @@ EXPORT_C TBool CPhoneStateInCall::HandleCommandL( TInt aCommand )
             
             // Activate DTMF list query when cancel is pressed.
             // Forwards command to the framework 
-            HandleCommandL( EPhoneInCallCmdDtmfListQuery );
+            if ( !iStateMachine->SecurityMode()->IsSecurityMode() )
+                {
+                HandleCommandL( EPhoneInCallCmdDtmfListQuery );
+                }
             }
             break;  
+			
         case EPhoneDtmfDialerExit:
             {
             CloseDTMFEditorL();   
@@ -639,7 +644,14 @@ EXPORT_C TBool CPhoneStateInCall::HandleCommandL( TInt aCommand )
             break;
         //DTMF list query - dialog   
         case EPhoneInCallCmdDtmfListQuery:
-            LaunchDtmfListQueryL();
+            if ( iStateMachine->SecurityMode()->IsSecurityMode() )
+                {
+                HandleCommandL( EPhoneInCallCmdDtmfManualQuery );
+                }
+             else
+                {
+                LaunchDtmfListQueryL();
+                }
             break;
             
         //DTMF list query - Search   

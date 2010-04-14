@@ -43,6 +43,13 @@
 const TUid KCRUidAvkon = { 0x101F876E };
 const TUint32 KAknKeyBoardLayout = 0x0000000B;
 
+// Characters resulting from multitapping *-key.
+_LIT( KAsteriskMultitapCharacters, "*+pw" );
+
+// Multitap delay parameter in micro seconds.
+const TInt KMultitapDelay = 1000000;
+
+
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
@@ -278,6 +285,54 @@ TBool CPhoneKeyEventForwarder::ConvertHalfQwertySpecialChar( TUint& aCode,
     }
 
 // -----------------------------------------------------------------------------
+// CPhoneKeyEventForwarder::HandleTouchDialerKeyEventL
+// 
+// -----------------------------------------------------------------------------
+//
+void CPhoneKeyEventForwarder::HandleTouchDialerKeyEventL( const TKeyEvent& aKeyEvent, TEventCode aType )
+    {
+    TBool multitap = aKeyEvent.iScanCode == EStdKeyNkpAsterisk && 
+            iPreviousScanCode == EStdKeyNkpAsterisk &&
+            iKeyPressTime.MicroSecondsFrom( iPreviousKeyPressTime ) < KMultitapDelay;
+    
+    if ( multitap )
+        {
+        if ( aType == EEventKeyDown )
+            {
+            // Update multitap index
+            iMultitapIndex = ( iMultitapIndex + 1 ) % KAsteriskMultitapCharacters().Length();
+            
+            // Delete the previously entered character by simulating a backspace character.
+            TKeyEvent backSpaceEvent;
+            backSpaceEvent.iModifiers = 0;
+            backSpaceEvent.iRepeats = 0;
+            backSpaceEvent.iCode = EKeyBackspace;
+            backSpaceEvent.iScanCode = EStdKeyBackspace;
+            iStateMachine->State()->HandleKeyEventL( backSpaceEvent, EEventKey );
+            }
+        
+        TKeyEvent keyEvent( aKeyEvent );
+        
+        // Modify the key event to contain the next character on multitap list.
+        keyEvent.iCode = ( TInt ) KAsteriskMultitapCharacters()[ iMultitapIndex ];
+        
+        // Send character to number entry.
+        iStateMachine->State()->HandleKeyEventL( keyEvent, aType );
+        }
+    
+    else 
+        {
+        iMultitapIndex = 0;
+        iStateMachine->State()->HandleKeyEventL( aKeyEvent, aType );
+        }
+    
+    if ( aType == EEventKeyUp )
+        {
+        iPreviousScanCode = aKeyEvent.iScanCode;
+        }
+    }
+
+// -----------------------------------------------------------------------------
 // CPhoneKeyEventForwarder::OfferKeyEventBeforeControlStackL
 // Let phone handle before other components in control stack
 // -----------------------------------------------------------------------------
@@ -313,23 +368,26 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventBeforeControlStackL(
             break;
         }
     
-    // Check if keyEvent is simulated in Dialer.
+    // Check if keyEvent is simulated by Dialer.
     const TBool simulatedByDialer = 
         ( ( aKeyEvent.iModifiers & ( EModifierNumLock | EModifierKeypad ) ) 
                 == ( EModifierNumLock | EModifierKeypad ) );
     
-    if(  simulatedByDialer && iQwertyHandler->IsQwertyInput() )
+    if( simulatedByDialer )
         {
-        // When dialler key was pressed and
-        // qwerty is open and editor is alphanumeric
-        //  -Dont let FEP to handle key events 
-        //    -> Multitapping doesnt work
-        //    -> Numbers are inserted to dialler without modifications
-        // Also effects # / * - key handling 
-        iStateMachine->State()->HandleKeyEventL( aKeyEvent, aType );
+        HandleTouchDialerKeyEventL( aKeyEvent, aType );
         response = EKeyWasConsumed;
         }
     
+    else 
+        {
+        // If not simulated by dialer, multitap related fields are reset.
+        // Any key event not originating from dialer interrupts multitap
+        // behaviour.
+        iMultitapIndex = 0;
+        iPreviousScanCode = 0;
+        }
+
     return response;
     }
 
@@ -379,6 +437,9 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyDownBeforeControlStackL(
     ConvertKeyCode( iKeyPressedDown, aKeyEvent );
     // Save key scan code
     iScanCode = aKeyEvent.iScanCode;
+    
+    // Store the previous keypress time.
+    iPreviousKeyPressTime = iKeyPressTime;
 
     // Start the key press timer
     iKeyPressTime.UniversalTime();

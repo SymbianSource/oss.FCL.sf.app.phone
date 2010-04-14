@@ -465,6 +465,16 @@ public:
      */
     TPECallOrigin CallOrigin() const;
     
+    /**
+     * Sets transfer call back flag.
+     */
+    void SetDoCallBackRequest( TBool aDoCallBack );
+    
+    /**
+     * Returns transfer call back flag.
+     */
+    TBool DoCallBackRequest() const;
+
 private:
     
     /**
@@ -634,6 +644,11 @@ private:
      * Origin of the call. 
      */
     TPECallOrigin iCallOrigin;
+    
+    /**
+     * Flag which indicates if call back request is needed
+     */
+    TBool iDoCallBackRequest;
     };
 
 #endif // C_CPECALLINFO_H

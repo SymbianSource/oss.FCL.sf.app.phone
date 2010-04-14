@@ -53,6 +53,7 @@ NONSHARABLE_STRUCT( TPECallCommandInfo )                  // For Mobile Originat
 	TPEPhoneNumber iSwitchToNumber;         // Dialed Phonenumber, set by client
 	TPEPhoneNumber iTransferToAddress;      // Unattended transfer target address	
     TInt iForwardToAddressIndex;            // Array index for a address to be forwarded
+    TBool iTransferDial;                    // Flag which indicates utransfer dial
     };
 
 NONSHARABLE_STRUCT( TPEBasicInfo )                         // Contains information of the phone related variables 
@@ -90,6 +91,7 @@ NONSHARABLE_STRUCT( TPEBasicInfo )                         // Contains informati
     TBool iSecureSpecified;                 // Secure specified status
 	TName iDataPortName;                    // the name of data port currently on-loan
     TBool iSwitchToOngoing;                 // Switch to operation status
+    TPEPhoneNumber iCallBackAddress;        // Address of the transfer originator used for calling back
     };
 
 NONSHARABLE_STRUCT( TPEConferenceCallInfo ) // Contains conference call related variables 
@@ -621,6 +623,30 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
 		 * @param aCallState state to be checked.
          */
           TBool CheckIfCallStateExists( const TPEState& aCallState );
+          
+          /**
+          * From base class MPEEngineInfo
+          * @see MPEEngineInfo::SetTransferDial          
+          */
+          void SetIsTransferDial( TBool aTransferDial );
+          
+          /**
+          * From base class MPEEngineInfo
+          * @see MPEEngineInfo::IsTransferDial         
+          */
+          TBool IsTransferDial() const;
+          
+          /**
+          * From base class MPEEngineInfo
+          * @see MPEEngineInfo::SetCallBackAddress   
+          */
+          void SetCallBackAddress( const TDesC& aAddress );
+          
+          /**
+          * From base class MPEEngineInfo
+          * @see MPEEngineInfo::CallBackAddress
+          */
+          const TDesC& CallBackAddress() const;
 
     // Functions from MPEDataStore (reading values)
     public:
@@ -925,6 +951,12 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * @see MPEDataStore::CallIndex
          */
         TInt CallIndex( TInt aCallId ) const;
+        
+        /**
+         * From base class MPEDataStore
+         * @see MPEDataStore::DoCallBackRequest     
+         */
+        TBool DoCallBackRequest( TInt aCallId ) const;
 
     // Functions from MPEDataStore (setting values)
     public:
@@ -1529,6 +1561,12 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * @see MPEDataStore::SetCallOrigin          
          */
         void SetCallOrigin( TPECallOrigin aOrigin, TInt aCallId );
+        
+        /**
+         * From base class MPEDataStore
+         * @see MPEDataStore::SetDoCallBackRequest        
+         */
+        void SetDoCallBackRequest( TBool aDoCallBack, TInt aCallId );
                 
     private:
           /**

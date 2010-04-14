@@ -27,7 +27,7 @@
 #include "cphcntmatchcontact.h"
 #include "cphcntvoipcontactmatchstrategy.h"
 #include "tphcntvoipmatchArray.h"
-#include "MPhCntMatch.h"
+#include "mphcntmatch.h"
 #include "CPhCntContact.h"
 #include "cphcntvpbkcontactid.h"
 #include "cphcntfetchcontact.h"

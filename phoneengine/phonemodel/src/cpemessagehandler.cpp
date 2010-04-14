@@ -1743,12 +1743,16 @@ TInt CPEMessageHandler::HandleConnectedState(
                     errorCode = HandleSendDtmf();
                     }
                 }
-
+            // Reset unattended transfer callback flag
+            iDataStore.SetDoCallBackRequest( EFalse, aCallId );
+            
             iDataStore.SetErrorCode( errorCode );
-            }
-        }
+            }  
+		}
     // For Sat call ( normal or emergency )    
     iClientServices->CallRequestMonitor()->SendRespond( ECCPErrorNone );
+    
+    
     
     // Reset Phonenumber from engine info, this is necessary so that call number
     // logging works OK (see CPEMessageHandler::SetPhoneNumberForCallLogging).  
@@ -2184,6 +2188,11 @@ TInt CPEMessageHandler::HandleVoiceCallIdleState(
         TEFLOGSTRING2( KTAMESINT, 
             "CPEMessageHandler::HandleVoiceCallIdleState: numberOfCalls = %d", 
             numberOfCalls );
+        }
+    
+    if ( iDataStore.DoCallBackRequest( aCallId ) )
+        {
+        iModel.SendMessage( MEngineMonitor::EPEMessageTransferCallBackRequest, aCallId );
         }
     
     iDataStore.ResetCallInfo( aCallId );    

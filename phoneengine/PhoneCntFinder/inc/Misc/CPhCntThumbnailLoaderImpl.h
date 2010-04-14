@@ -20,7 +20,7 @@
 #define CPHCNTTHUMBNAILLOADERIMPL_H
 
 // INCLUDES
-#include    "CPhCntThumbnailLoader.h"
+#include    "cphcntthumbnailloader.h"
 #include    "mphcntthumbnailloader.h"
 
 // FORWARD DECLARATIONS

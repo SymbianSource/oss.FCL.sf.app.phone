@@ -40,7 +40,12 @@ EXPORT_C CDialer* CDialer::NewL( const CCoeControl& aContainer,
     return self;
     }
 
+// ---------------------------------------------------------------------------
+// CDialer::~CDialer
+//
 // Destructor
+// ---------------------------------------------------------------------------
+//
 EXPORT_C CDialer::~CDialer()
     {
     // Empty
@@ -63,11 +68,15 @@ void CDialer::ConstructL(
     SetRect( aRect );
     }
 
-// Constructor
-CDialer::CDialer( ) :
-    iEikEnv( *CEikonEnv::Static() )
+// ---------------------------------------------------------------------------
+// CDialer::CDialer
+//
+// C++ default constructor
+// ---------------------------------------------------------------------------
+//
+CDialer::CDialer()
     {
-    // Empty    
+    // Empty
     }
 
 // -----------------------------------------------------------------------------
@@ -149,8 +158,7 @@ void CDialer::CreateNumberEntry()
     {
     // Empty
     }
-    
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::GetNumberEntry
 //  
@@ -160,7 +168,7 @@ CCoeControl* CDialer::GetNumberEntry( ) const
     {
     return NULL;
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::IsNumberEntryUsed
 //  
@@ -170,7 +178,7 @@ TBool CDialer::IsNumberEntryUsed( ) const
     {
     return EFalse;
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::SetNumberEntryVisible
 //  
@@ -181,7 +189,6 @@ void CDialer::SetNumberEntryVisible( const TBool& /*aVisibility */)
     // Empty
     }
 
-    
 // ---------------------------------------------------------------------------
 // CDialer::SetTextToNumberEntry
 //  
@@ -191,7 +198,7 @@ void CDialer::SetTextToNumberEntry( const TDesC& /*aDesC */)
     {
     // Empty
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::GetTextFromNumberEntry
 //  
@@ -201,7 +208,7 @@ void CDialer::GetTextFromNumberEntry( TDes& aDesC )
     {
     aDesC = KNullDesC();
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::RemoveNumberEntry
 //  
@@ -211,7 +218,7 @@ void CDialer::RemoveNumberEntry( )
     {
     iIsUsed = EFalse;    
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::ChangeEditorMode
 //  
@@ -221,17 +228,17 @@ TInt CDialer::ChangeEditorMode( TBool /*aDefaultMode */)
     {
     return KErrNotSupported;
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::OpenVKBL
-//  
+// 
 // ---------------------------------------------------------------------------
 //
 void CDialer::OpenVkbL()
     {
     // Empty
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::GetEditorMode
 //  
@@ -241,7 +248,7 @@ TInt CDialer::GetEditorMode() const
     {
     return KErrNotSupported;
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::ResetEditorToDefaultValues
 //  
@@ -251,7 +258,7 @@ void CDialer::ResetEditorToDefaultValues()
     {
     // Empty
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::SetNumberEntryPromptText
 //  
@@ -260,7 +267,7 @@ void CDialer::ResetEditorToDefaultValues()
 void CDialer::SetNumberEntryPromptText( const TDesC& /*aPromptText*/ ) 
     {
     // Empty
-    }    
+    }
 
 // ---------------------------------------------------------------------------
 // CDialer::EnableTactileFeedback
@@ -271,7 +278,6 @@ void CDialer::EnableTactileFeedback( const TBool /*aEnable*/ )
     {
     // Empty
     }
-
 
 // ---------------------------------------------------------
 // CDialer::HandleQwertyModeChange
@@ -288,8 +294,8 @@ EXPORT_C void CDialer::HandleQwertyModeChange( TInt /*aMode*/ )
 // 
 EXPORT_C void CDialer::HandleKeyboardLayoutChange()
     {
-     // Empty
-   }
+    // Empty
+    }
 
 // ---------------------------------------------------------------------------
 // CDialer::HandleControlEventL
@@ -334,7 +340,6 @@ TInt CDialer::CountComponentControls() const
     {
     return 0;
     }
-
 
 // ---------------------------------------------------------------------------
 // CDialer::ComponentControl(TInt aIndex) const
@@ -392,14 +397,14 @@ void CDialer::HandlePointerEventL( const TPointerEvent& aPointerEvent )
     // Calling base class implementation
     CCoeControl::HandlePointerEventL(aPointerEvent);    
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::MakeVisible
 // ---------------------------------------------------------------------------
 //
 void CDialer::MakeVisible( TBool /*aVisible*/ )
-	{
-	}    
+    {
+    }
 
 // Private methods
 
@@ -423,7 +428,7 @@ void CDialer::UnLoadResources()
     {
     // Empty
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::ComponentControlForDialerMode
 // 
@@ -446,7 +451,7 @@ CCoeControl* CDialer::ComponentControlForDialerMode( const TInt /*aIndex*/ ) con
 CAknEdwinState* CDialer::EdwinState() const
     {
     return NULL;
-    } 
+    }
 
 // ---------------------------------------------------------------------------
 // CDialer::UpdateEdwinState

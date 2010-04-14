@@ -157,7 +157,7 @@ private:
      * @param   aBoundingBox    Rectangle containing bounds for contact thumbnail.
      * @param   aDescId Descriptor containing contact id.
      */
-    TBool ContactThumbnailDrawing(
+    TBool DrawContactThumbnail(
             CWindowGc& aGc,
             TRect aBoundingBox,
             TPtrC aDescId) const;

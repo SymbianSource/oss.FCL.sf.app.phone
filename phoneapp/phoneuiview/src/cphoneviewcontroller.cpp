@@ -877,6 +877,7 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             iMenuController->CloseMenuBar();
             iIncallIndicator->Update( aCommandParam );
             iMenuController->SetCallInProgressFlag( aCommandParam );
+            iToolbarController->SetCallInProgressFlag( aCommandParam );            
             break;
 
         case EPhoneViewStartCapturingKey:
@@ -3226,7 +3227,7 @@ void CPhoneViewController::UpdateAudioPathOptions(
 
     // Wired options
     iMenuController->SetWiredAccFlag( &wiredParam );
-
+    iToolbarController->SetWiredAccFlag( &wiredParam );
     iMenuController->SetIhfFlag( &ihfParam );
     iToolbarController->SetIhfFlag( &ihfParam );
 
@@ -3268,6 +3269,7 @@ void CPhoneViewController::UpdateAudioAvailabilityOptions(
 
     // Wired options
     iMenuController->SetWiredAccAvailableFlag( &wiredAvailableParam );
+    iToolbarController->SetWiredAccFlag( &wiredAvailableParam );
 
     // btaa menu options
     iMenuController->SetBTAccAvailableFlag( &btAvailableParam );

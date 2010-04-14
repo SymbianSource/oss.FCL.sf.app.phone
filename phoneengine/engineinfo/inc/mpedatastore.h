@@ -816,6 +816,18 @@ NONSHARABLE_CLASS( MPEDataStore )
          * @param aOrigin indicates if the call is phone, client or SAT originated
          */
         virtual void SetCallOrigin( TPECallOrigin aOrigin, TInt aCallId ) = 0;
+        
+        /**
+         * Sets flag indicating whether this is unattended transfer dial
+         * @param aTransferDial ETrue if voip unattended transfer dial was initiated
+         */
+        virtual void SetDoCallBackRequest( TBool aDoCallBack, TInt aCallId ) = 0;
+                
+        /**
+         * Returns flag indicating whether call back request is needed
+         * @param aCallId  
+         */
+        virtual TBool DoCallBackRequest( TInt aCallId ) const = 0;
 
     };
 

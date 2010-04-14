@@ -106,6 +106,7 @@ void CPECallInfo::Reset( TBool aIsConference )
     iDtmfPostFix = KNullDesC;
     iForwardAddressChoices = NULL;
     iCallIndex = KPEInvalidCallIndex;
+    iDoCallBackRequest = EFalse;
     }
 
 // ---------------------------------------------------------------------------
@@ -648,6 +649,24 @@ void CPECallInfo::SetCallOrigin( TPECallOrigin aOrigin )
 TPECallOrigin CPECallInfo::CallOrigin() const
     {
     return iCallOrigin;
+    }
+
+// ---------------------------------------------------------------------------
+// Sets flag indicating if unattended transfer call back request is needed
+// ---------------------------------------------------------------------------
+//
+void CPECallInfo::SetDoCallBackRequest( TBool aDoCallBack )
+    {
+    iDoCallBackRequest = aDoCallBack;
+    }
+
+// ---------------------------------------------------------------------------
+// Gets flag indicating if unattended transfer call back request is needed 
+// ---------------------------------------------------------------------------
+//
+TBool CPECallInfo::DoCallBackRequest() const
+    {
+    return iDoCallBackRequest;
     }
     
    

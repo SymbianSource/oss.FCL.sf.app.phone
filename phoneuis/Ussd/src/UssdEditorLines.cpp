@@ -53,7 +53,10 @@ void CUssdEditorLines::ConstructL( const CCoeControl* aParent )
     // transparency to display the editor window content as background 
     // for this line-window.
     EnableWindowTransparency();
-      
+
+    // enabled drag event to editor for highlighting the text.
+    EnableDragEvents();
+
     // Create region buffer.
     iRegBuf = new ( ELeave ) RRegionBuf< KUssdMaxNumberOfEditorLines >;
 

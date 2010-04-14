@@ -247,14 +247,7 @@ void CBubbleOutlookBottomImage::DoCall2LayoutL()
                 outerRect,
                 innerRect,
                 iBubble );
-            
-            // Add transparency
-            BubbleUtils::AddTransparencyToBubbleImageL( 
-                coMaskFrameId,
-                outerRect,
-                innerRect,
-                iBubble );
-                               
+                                          
             break;
             }
         case CBubbleManager::ENone:

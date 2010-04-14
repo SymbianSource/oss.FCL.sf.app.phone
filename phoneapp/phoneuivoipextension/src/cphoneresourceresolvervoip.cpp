@@ -299,6 +299,12 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
         case EPhoneVoIPDefectiveSettings:
             retVal = R_PHONE_VOIP_CREATING_CONN_FAILED_PERMANENTLY;
 			break;
+        case EPhoneVoIPTransferCallBackHeader:
+            retVal = R_VOIP_TRANSFER_CALL_BACK_HEADER;
+            break;
+        case EPhoneVoIPTransferCallBackText:
+            retVal = R_VOIP_TRANSFER_CALL_BACK;
+            break;
 		default:
             retVal = CPhoneResourceResolverGSM::ResolveResourceID( aResource );
             break;

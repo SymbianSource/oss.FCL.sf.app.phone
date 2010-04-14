@@ -553,7 +553,18 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                     }
                 }
                 break;
-                
+			
+            case EPhoneDialerCmdHelp: // Fall through 
+            case EPhoneDialerCmdHelpDtmf: // Fall through
+            case EPhoneInCallCmdHelp:
+                {
+                if ( iSecurityMode )
+                    {
+                    menuPane->DeleteMenuItem( menuItemArray[i] );
+                    }
+                }
+			break;
+			
             default:
                 break;                                                                                                
              

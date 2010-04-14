@@ -44,6 +44,12 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iCallCommandInfo.iDtmfString = KNullDesC;
     iCallCommandInfo.iCallType = EPECallTypeUninitialized;
     iCallCommandInfo.iServiceId = 0;
+    iCallCommandInfo.iIdRestrict = RMobileCall::EIdRestrictDefault;
+    iCallCommandInfo.iEmergencyNumber = KNullDesC;     
+    iCallCommandInfo.iTransferToAddress = KNullDesC;
+    iCallCommandInfo.iForwardToAddressIndex = ECCPErrorNotFound;
+    iCallCommandInfo.iTransferDial = EFalse;
+    
     iBasicInfo.iAudioOutputPreference = EPSAudioPrivate;
     iBasicInfo.iALSLine = CCCECallParameters::ECCELineTypePrimary;
     iBasicInfo.iALSLineSupport = EFalse;
@@ -69,14 +75,7 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iBasicInfo.iTwoDigitSupportStatus = EFalse;
     iBasicInfo.iLifeTimeData.iHours = 0;
     iBasicInfo.iLifeTimeData.iMinutes = 0;
-
     iBasicInfo.iNetworkRegistrationStatus = ENWStatusRegistrationUnknown;
-
-    iCallCommandInfo.iIdRestrict = RMobileCall::EIdRestrictDefault;
-    iCallCommandInfo.iEmergencyNumber = KNullDesC;
-    
-    iCallCommandInfo.iTransferToAddress = KNullDesC;
-    iCallCommandInfo.iForwardToAddressIndex = ECCPErrorNotFound;
     iBasicInfo.iActiveForward.iActiveType = RMobilePhone::ECFUnconditionalActive;
     iBasicInfo.iActiveForward.iServiceGroup =  RMobilePhone::EServiceUnspecified;
     iBasicInfo.iBarringInfo.iGroupCount = KPENumberInitValue;
@@ -98,6 +97,7 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iBasicInfo.iSecureSpecified = ETrue; 
     iBasicInfo.iDataPortName = KNullDesC;
     iBasicInfo.iSwitchToOngoing = EFalse;
+    iBasicInfo.iCallBackAddress = KNullDesC;
     iConferenceCallInfo.iConferenceCallState = EPEStateConferenceIdle;
     }
 
@@ -663,6 +663,70 @@ const TPECallOrigin& CPEEngineInfoImpl::CallOriginCommand() const
 	{
 	return iCallCommandInfo.iCallOrigin;
 	}
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::SetTransferDial
+// Sets flag indicating unattended transfer dial
+// -----------------------------------------------------------------------------
+//
+void CPEEngineInfoImpl::SetIsTransferDial( TBool aTransferDial )
+    {
+    iCallCommandInfo.iTransferDial = aTransferDial;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::IsTransferDial
+// Gets flag indicating unattended transfer dial
+// -----------------------------------------------------------------------------
+//
+TBool CPEEngineInfoImpl::IsTransferDial() const
+    {
+    return iCallCommandInfo.iTransferDial;
+    }
+        
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::SetDoCallBackRequest
+// Sets flag indicating if unattended transfer call back request is needed
+// -----------------------------------------------------------------------------
+//
+void CPEEngineInfoImpl::SetDoCallBackRequest( TBool aDoCallBack, TInt aCallId )
+    {
+    __ASSERT_DEBUG( iCurrentCalls.Count() > aCallId, Panic( EPEPanicCallIndexOutOfRange ) );
+    iCurrentCalls[ aCallId ]->SetDoCallBackRequest( aDoCallBack );
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::DoCallBackRequest
+// Gets flag indicating if unattended transfer call back request is needed
+// -----------------------------------------------------------------------------
+//
+TBool CPEEngineInfoImpl::DoCallBackRequest( TInt aCallId) const
+    {
+    __ASSERT_DEBUG( iCurrentCalls.Count() > aCallId, Panic( EPEPanicCallIndexOutOfRange ) );
+    return iCurrentCalls[ aCallId ]->DoCallBackRequest();            
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::SetCallBackAddress
+// Sets address used for calling back to transfer originator
+// in case when transfer call has been failed
+// -----------------------------------------------------------------------------
+//
+void CPEEngineInfoImpl::SetCallBackAddress( const TDesC& aAddress )
+    {
+    iBasicInfo.iCallBackAddress = aAddress;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::CallBackAddress
+// Gets address used for calling back to transfer originator
+// in case when transfer call has been failed
+// -----------------------------------------------------------------------------
+//
+const TDesC& CPEEngineInfoImpl::CallBackAddress() const
+    {
+    return iBasicInfo.iCallBackAddress;
+    }
         	
 // CPEEngineInfoImpl::ProfileId
 // Gets the profile id from the TPEBasicInfo structure.

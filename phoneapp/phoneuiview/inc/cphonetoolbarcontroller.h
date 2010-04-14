@@ -72,6 +72,10 @@ public:
 
     void SetIhfFlag( TPhoneCommandParam* aCommandParam );
     
+    void SetWiredAccFlag( TPhoneCommandParam* aCommandParam );
+    
+    void SetCallInProgressFlag( TPhoneCommandParam* aCommandParam ); 
+    
     /**
      * Dims (greys out) or undims all toolbar items.
      *
@@ -110,7 +114,15 @@ public:     // from MAknToolbarObserver
      * @param aToolbar The toolbar object pointer
      */
     void DynInitToolbarL( TInt aResourceId, CAknToolbar* aToolbar );
-      
+
+protected:
+    /**
+     * Constructor.
+     * 
+     * @param aCoeEnv 
+     */
+    CPhoneToolbarController( CCoeEnv& aCoeEnv );    
+    
 private:
 
     /**
@@ -130,12 +142,6 @@ private:
                                 TInt aCommand );
     
     
-    /**
-     * Constructor.
-     * 
-     * @param aCoeEnv 
-     */
-    CPhoneToolbarController( CCoeEnv& aCoeEnv );    
     /**
      * Symbian 2nd phase constructor.
      * 
@@ -169,6 +175,10 @@ private: // data
     TBool iMuteFlag;
     
     TBool iIhfFlag;
+    
+    TBool iWiredAccFlag;
+    
+    TBool iCallInProgress;
 
     };
 

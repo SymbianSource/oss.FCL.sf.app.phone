@@ -130,7 +130,7 @@ TRect ArrowIconBoundingBox(const TRect& aItemRect);
 static TRect ContactNameBoundingBox(
         const TRect& aItemRect, 
         const CFont* aContactNameFont, 
-        TBool aIsCurrentItem,
+        TBool aArrowIconShown,
         TBool aIsFavourite, 
         TBool aThumbnailsShown );
 static TRect CompanyNameBoundingBox(
@@ -181,6 +181,10 @@ static TBool CalculateTextPieceWidth(
         TBool aMatch,
         const CFont* aFont );
 
+static CGulIcon* CreateIconL(
+        const TDesC& aFileName,
+        TInt aBitmapId,
+        TInt aMaskId );
 // FORWARD DECLARATIONS
 
 
@@ -223,7 +227,7 @@ iMatchingBack(KRgbDarkYellow)
 // CEasyDialingListBoxData
 // 
 // -----------------------------------------------------------------------------
-//       
+//
 CEasyDialingListBoxData::CEasyDialingListBoxData() :
 CFormattedCellListBoxData()
     {
@@ -233,7 +237,7 @@ CFormattedCellListBoxData()
 // Destructor
 // 
 // -----------------------------------------------------------------------------
-//       
+//
 CEasyDialingListBoxData::~CEasyDialingListBoxData()
     {
     // Release fonts. ReleaseFont function can cope with null pointer
@@ -255,7 +259,7 @@ CEasyDialingListBoxData::~CEasyDialingListBoxData()
 // NewL
 // 
 // -----------------------------------------------------------------------------
-//       
+//
 CEasyDialingListBoxData* CEasyDialingListBoxData::NewL()
     {
     CEasyDialingListBoxData* self = new (ELeave) CEasyDialingListBoxData();
@@ -272,7 +276,7 @@ CEasyDialingListBoxData* CEasyDialingListBoxData::NewL()
 // DrawData
 // 
 // -----------------------------------------------------------------------------
-//       
+//
 void CEasyDialingListBoxData::DrawData(
     const TListItemProperties& aProperties, 
     CWindowGc& aGc,
@@ -298,7 +302,7 @@ void CEasyDialingListBoxData::DrawData(
 // ConstructLD
 // 
 // -----------------------------------------------------------------------------
-//       
+//
 void CEasyDialingListBoxData::ConstructLD()
     {
     CFormattedCellListBoxData::ConstructLD();
@@ -311,35 +315,26 @@ void CEasyDialingListBoxData::ConstructLD()
     TParse parse;
     User::LeaveIfError(parse.Set(KEasyDialingBitmapFile, &dllFileName, NULL));
     TFileName bitmapFileName(parse.FullName());
-      
-    CFbsBitmap* bm;
-    CFbsBitmap* mask;
     
-    // iArrowPointingLeft is the icon displayed for the selected item in EasyDialingListBox
-    AknIconUtils::CreateIconL( bm, mask, bitmapFileName, EMbmEasydialingQgn_indi_org_arrow_left, 
-            EMbmEasydialingQgn_indi_org_arrow_left_mask );
-
-    iArrowPointingLeft = CGulIcon::NewL( bm, mask );
-
-    AknIconUtils::CreateIconL( bm, mask, bitmapFileName, EMbmEasydialingQgn_indi_org_arrow_right, 
+    // Icon displayed for the selected item in normal layout
+    iArrowPointingRight = CreateIconL( bitmapFileName, EMbmEasydialingQgn_indi_org_arrow_right, 
             EMbmEasydialingQgn_indi_org_arrow_right_mask );
 
-    iArrowPointingRight = CGulIcon::NewL( bm, mask );
+    // Icon displayed for the selected item in mirrored layout
+    iArrowPointingLeft = CreateIconL( bitmapFileName, EMbmEasydialingQgn_indi_org_arrow_left, 
+            EMbmEasydialingQgn_indi_org_arrow_left_mask );
 
-    // Only mask for the icons are used. iColorBitmap is used for making the icon 
+    // Only mask for the arrow icons are used. iColorBitmap is used for making the icon 
     // to follow text color changes according to skin.
     iColorBitmap = new (ELeave) CFbsBitmap;
 
-    // Contact default thumbnail is not available in themes. It is read from phonebook resource. 
-    AknIconUtils::CreateIconL( bm, mask, KPhonebook2EceBitmapFile,
+    // Contact default thumbnail is not available in themes. It is read from phonebook resource.
+    iDummyThumbnail = CreateIconL( KPhonebook2EceBitmapFile,
             EMbmPhonebook2eceQgn_prop_pb_thumb_unknown, EMbmPhonebook2eceQgn_prop_pb_thumb_unknown_mask );
-    iDummyThumbnail = CGulIcon::NewL( bm, mask );
     
     // Create the favourite icon bitmap and mask
-    AknIconUtils::CreateIconL( bm, mask, KFavouriteIconBitmapFile, 
+    iFavouriteIcon = CreateIconL( KFavouriteIconBitmapFile, 
             EMbmPhonebook2Qgn_prop_pb_topc, EMbmPhonebook2Qgn_prop_pb_topc_mask );
-    
-    iFavouriteIcon = CGulIcon::NewL( bm, mask );
     }
 
 
@@ -347,7 +342,7 @@ void CEasyDialingListBoxData::ConstructLD()
 // DrawHighlight
 // 
 // -----------------------------------------------------------------------------
-//       
+//
 void CEasyDialingListBoxData::DrawHighlight( CWindowGc &aGc, const TRect &aItemRect ) const
     {
     MAknListBoxTfxInternal* transApi = CAknListLoader::TfxApiInternal( &aGc );
@@ -417,7 +412,7 @@ void CEasyDialingListBoxData::DrawDataFormatted(
     __ASSERT_DEBUG( iContactNameFont, EasyDialingPanic( EEasyDialingNoFontFound ) );
     __ASSERT_DEBUG( iCompanyNameFont, EasyDialingPanic( EEasyDialingNoFontFound ) );
     
-    MAknListBoxTfxInternal *transApi = CAknListLoader::TfxApiInternal( &aGc );
+    MAknListBoxTfxInternal* transApi = CAknListLoader::TfxApiInternal( &aGc );
     if ( transApi )
         {
         transApi->StartDrawing( MAknListBoxTfxInternal::EListItem );
@@ -433,15 +428,28 @@ void CEasyDialingListBoxData::DrawDataFormatted(
         boundingBox = MirrorLayoutBoundingBox( aItemRect, boundingBox );
         }
     
-    //Draws the Contact Thumbnail Icon if exists else draws the dummy contact thumbnail
-    TBool fav = ContactThumbnailDrawing( aGc, boundingBox, cellText );   
+    // Arrow icon is drawn if the item is in focus and listbox has focus
+    // (and not only the temporary visual focus caused by touching a list item).
+    TBool showArrowIcon = aHighlight && iControl->IsFocused();
+    if ( showArrowIcon )
+        {
+        TRect arrowRect = ArrowIconBoundingBox( aItemRect );
+        if ( AknLayoutUtils::LayoutMirrored() )
+            {
+            arrowRect = MirrorLayoutBoundingBox( aItemRect, arrowRect );
+            }
+        DrawArrowIcon( aGc, arrowRect );
+        }
+
+    //Draws the Contact Thumbnail Icon if exists, else draws the dummy contact thumbnail
+    TBool fav = DrawContactThumbnail( aGc, boundingBox, cellText );
 
     error = TextUtils::ColumnText( cellText , 1, aText );
     __ASSERT_DEBUG( error == KErrNone, EasyDialingPanic( EEasyDialingPanicInvalidListBoxModelString ) );
 
     boundingBox = ContactNameBoundingBox( aItemRect,
                                           iContactNameFont,
-                                          aHighlight,
+                                          showArrowIcon,
                                           fav,
                                           iContactDataManager->GetContactThumbnailSetting() );
     TRect nameRectUnMirrored = boundingBox; // used for favourite star drawing
@@ -454,18 +462,6 @@ void CEasyDialingListBoxData::DrawDataFormatted(
     // favourite icon size is set the same as contact name bounding box height.
     TInt favouriteIconSize = boundingBox.Height();
     
-    TRect arrowRect = ArrowIconBoundingBox( aItemRect );
-    if ( AknLayoutUtils::LayoutMirrored() )
-        {
-        arrowRect = MirrorLayoutBoundingBox( aItemRect, arrowRect );
-        }
-    
-    // Draw arrow icon if the item is in focus.
-    if ( aHighlight )
-        {
-        DrawArrowIcon( aGc, arrowRect );
-        }
-
     TInt err( KErrNone );
     TRAP( err, DrawTextWithMatchHighlightL(
             boundingBox, aGc, cellText, iContactNameFont, aColors, aHighlight ) );
@@ -496,12 +492,13 @@ void CEasyDialingListBoxData::DrawDataFormatted(
     }
 
 // -----------------------------------------------------------------------------
-// ContactThumbnailDrawing
+// DrawContactThumbnail
 // 
-// Draws the Contact Thumbnail Icon if any else draws the dummy contact thumbnail
+// Draws the Contact Thumbnail Icon if any, else draws the dummy contact thumbnail
+// Also check if this is a favorite contact and return true if this is.
 // -----------------------------------------------------------------------------
-
-TBool CEasyDialingListBoxData::ContactThumbnailDrawing(CWindowGc& aGc, TRect aBoundingBox, TPtrC aCellText) const
+//
+TBool CEasyDialingListBoxData::DrawContactThumbnail(CWindowGc& aGc, TRect aBoundingBox, TPtrC aCellText) const
     {
     TBool fav(EFalse);
     CFbsBitmap* thumbnail(NULL);
@@ -534,6 +531,7 @@ TBool CEasyDialingListBoxData::ContactThumbnailDrawing(CWindowGc& aGc, TRect aBo
 // DrawArrowIcon
 //  Draws the Action Menu 
 // -----------------------------------------------------------------------------
+//
 void CEasyDialingListBoxData::DrawArrowIcon( 
         CWindowGc& aGc, TRect aArrowRect) const
     {
@@ -561,6 +559,7 @@ void CEasyDialingListBoxData::DrawArrowIcon(
 // 
 // Draws the Favourite Icon
 // -----------------------------------------------------------------------------
+//
 void CEasyDialingListBoxData::DrawFavouriteIcon(
         CWindowGc& aGc, 
          TRect aNameRectUnMirrored,
@@ -596,7 +595,7 @@ void CEasyDialingListBoxData::DrawFavouriteIcon(
 // SetContactDataManager
 // 
 // -----------------------------------------------------------------------------
-// 
+//
 void CEasyDialingListBoxData::SetContactDataManager(CEasyDialingContactDataManager* aContactDataManager)
     {
     iContactDataManager = aContactDataManager;
@@ -623,7 +622,7 @@ void CEasyDialingListBoxData::HandleItemSizeChange()
 // ObtainFonts
 // 
 // -----------------------------------------------------------------------------
-//       
+//
 void CEasyDialingListBoxData::ObtainFonts( TInt aItemHeight )
     {
     CWsScreenDevice& screenDev = *( CEikonEnv::Static()->ScreenDevice() );
@@ -668,7 +667,7 @@ void CEasyDialingListBoxData::ObtainFonts( TInt aItemHeight )
 // UpdateColorBitmapL
 // ColorBitmap is redrawn when UI layout or text color (Theme) changes
 // -----------------------------------------------------------------------------
-//       
+//
 void CEasyDialingListBoxData::UpdateColorBitmapL( const TSize& aSize )
     {
     TRgb color;
@@ -707,7 +706,7 @@ void CEasyDialingListBoxData::UpdateColorBitmapL( const TSize& aSize )
 // SetEDLBXControl
 // 
 // -----------------------------------------------------------------------------
-//       
+//
 void CEasyDialingListBoxData::SetEDLBXControl(CEasyDialingListBox* aControl)
     {
     iControl = aControl;
@@ -728,7 +727,7 @@ void CEasyDialingListBoxData::SetEDLBXControl(CEasyDialingListBox* aControl)
 // Calculates the area where contact thumbnail is confined
 // -----------------------------------------------------------------------------
 //
-TRect ContactImageBoundingBox(const TRect& aItemRect)
+TRect ContactImageBoundingBox( const TRect& aItemRect )
     {
     TInt leftMargin = aItemRect.Width() * KMarginXPercent / KCent;
     TInt topMargin = KMarginYPercent * aItemRect.Height() / KCent;
@@ -746,13 +745,12 @@ TRect ContactImageBoundingBox(const TRect& aItemRect)
 // ContactNameBoundingBox
 // Calculates the area to which the contact name and possible match highlights
 // are confined.
-//      
 // -----------------------------------------------------------------------------
 //
 static TRect ContactNameBoundingBox(
         const TRect& aItemRect,
         const CFont* aContactNameFont,
-        TBool aIsCurrentItem,
+        TBool aArrowIconShown,
         TBool aIsFavourite,
         TBool aThumbnailsShown )
     {
@@ -771,9 +769,8 @@ static TRect ContactNameBoundingBox(
     TInt height = KTextBoundingBoxHeightPercent * aContactNameFont->FontMaxHeight() / KCent;
     TInt rightMargin = KMarginXPercent * aItemRect.Width() / KCent;
     
-    // Reserve space for communication launcher icon.
-    // Communication launcher icon is shown only id item is highlighted.
-    if ( aIsCurrentItem )
+    // Reserve space for communication launcher icon if it's shown on this item
+    if ( aArrowIconShown )
         {
         rightMargin += KArrowIconSizePercent * aItemRect.Height() / KCent;
         }
@@ -839,7 +836,7 @@ static TRect CompanyNameBoundingBox(
 // Calculates the area to which the action menu icon is drawn.
 // -----------------------------------------------------------------------------
 //
-TRect ArrowIconBoundingBox(const TRect& aItemRect)
+TRect ArrowIconBoundingBox( const TRect& aItemRect )
     {
     TInt iconSize = KArrowIconSizePercent * aItemRect.Height() / KCent;
     TInt rightMargin = KMarginXPercent * aItemRect.Width() / KCent;
@@ -894,7 +891,7 @@ static TInt BaseLineOffset( const TRect& aTextBoundingBox, const CFont* aFont )
 //
 // -----------------------------------------------------------------------------
 //
-static TRect MirrorLayoutBoundingBox(const TRect& aSourceRect, TRect& aBoundingBoxRect)
+static TRect MirrorLayoutBoundingBox( const TRect& aSourceRect, TRect& aBoundingBoxRect )
     {
     return TRect(
             aSourceRect.iTl.iX + aSourceRect.iBr.iX - aBoundingBoxRect.iBr.iX,
@@ -914,15 +911,13 @@ static TRect MirrorLayoutBoundingBox(const TRect& aSourceRect, TRect& aBoundingB
 // These cases must be handled elsewhere.
 // -----------------------------------------------------------------------------
 //
-
-_LIT( KThreeDots, "..." );
-
 static void ClipTextToWidth(
         TDes& aText,
         const CFont& aFont,
         TInt aMaxWidthInPixels,
         TBool& aMatch)
     {
+    _LIT( KThreeDots, "..." );
     TInt minimumWidth = aFont.TextWidthInPixels( KThreeDots );
     
     // If this is a matching piece of text, also match text marginals need to be counted.
@@ -947,7 +942,6 @@ static void ClipTextToWidth(
     
     AknTextUtils::ClipToFit( aText, aFont, aMaxWidthInPixels );    
     }
-
 
 // -----------------------------------------------------------------------------
 // DrawPieceOfText
@@ -1050,7 +1044,6 @@ static TBool DrawPieceOfText(
     return ETrue;
     }
 
-
 // -----------------------------------------------------------------------------
 // DrawTextWithMatchHighlight
 // Draws a string with match highlight. Highlighted and non-highlighted
@@ -1066,7 +1059,7 @@ static TInt DrawTextWithMatchHighlightL(
         const TDesC& aText,
         const CFont* aFont,
         const CEasyDialingListBoxData::TExtendedColors& aColors,
-        TBool aHighLight)
+        TBool aHighLight )
     {
     TInt xOffset = 0;
     
@@ -1111,9 +1104,10 @@ static TInt DrawTextWithMatchHighlightL(
 // Calculates the width of the text and returns it 
 // -----------------------------------------------------------------------------
 //
-static TInt CalculateTextWidth(const TRect& aBoundingBox, const TDesC& aText, const CFont* aFont )
+static TInt CalculateTextWidth( const TRect& aBoundingBox, 
+                                const TDesC& aText, 
+                                const CFont* aFont )
     {
-    
     TInt xOffset = 0;
     TPtrC textPiece;
     TInt textPieceIndex = 0;
@@ -1254,8 +1248,8 @@ static TBool ContainsRightToLeftText( const TDesC& aDesc )
 // -----------------------------------------------------------------------------
 //
 static HBufC* ConvertToVisualAndClipLC( const TDesC& aText, 
-                                       const CFont& aFont, 
-                                       const TRect& aBoundingBox )
+                                        const CFont& aFont, 
+                                        const TRect& aBoundingBox )
     {
     HBufC* buf = HBufC::NewLC( aText.Length() + KAknBidiExtraSpacePerLine );
     TPtr ptr = buf->Des();
@@ -1318,6 +1312,30 @@ static TInt HighlightSeparatorCount( const TDesC& aText )
         }
     
     return sepCount;
+    }
+
+// -----------------------------------------------------------------------------
+// CreateIconL
+// 
+// Create and return a new icon object from given file and with given ID
+// -----------------------------------------------------------------------------
+//
+static CGulIcon* CreateIconL(
+        const TDesC& aFileName,
+        TInt aBitmapId,
+        TInt aMaskId )
+    {
+    CGulIcon* icon = CGulIcon::NewLC();
+
+    CFbsBitmap* bm;
+    CFbsBitmap* mask;
+    AknIconUtils::CreateIconL( bm, mask, aFileName, aBitmapId, aMaskId );
+    
+    icon->SetBitmap( bm );
+    icon->SetMask( mask );
+    
+    CleanupStack::Pop( icon );
+    return icon;
     }
 
 //  End of File.

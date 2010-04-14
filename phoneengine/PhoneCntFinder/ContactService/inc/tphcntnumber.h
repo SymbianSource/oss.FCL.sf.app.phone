@@ -21,7 +21,7 @@
 
 #include <e32std.h>
 
-#include "MPhCntMatch.h"
+#include "mphcntmatch.h"
 
 /**
  *  Represents phone number.

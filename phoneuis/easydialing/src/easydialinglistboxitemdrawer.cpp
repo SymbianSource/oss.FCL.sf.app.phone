@@ -115,7 +115,7 @@ void CEasyDialingListBoxItemDrawer::DrawItemText(
     iGc->SetPenColor(iTextColor);
     iGc->SetBrushColor(iBackColor);
 
-    TPtrC temp=iModel->ItemText(aItemIndex);
+    TPtrC temp = iModel->ItemText(aItemIndex);
 
     SetupGc(aItemIndex);
     if ( transApi )
@@ -126,8 +126,8 @@ void CEasyDialingListBoxItemDrawer::DrawItemText(
 //    TBool removeicon = (!aItemIsSelected && !ItemMarkReverse()) || (aItemIsSelected && ItemMarkReverse());
 
     CEasyDialingListBoxData::TExtendedColors colors;
-    colors.iText=iTextColor;
-    colors.iBack=iBackColor;
+    colors.iText = iTextColor;
+    colors.iBack = iBackColor;
     colors.iHighlightedText = iHighlightedTextColor;
     colors.iHighlightedBack = iHighlightedBackColor;
     colors.iMatchingText = iMatchingText;
@@ -211,7 +211,7 @@ void CEasyDialingListBoxItemDrawer::SetColors()
         AknsUtils::GetCachedColor( skin,
                 iMatchingBack,
                 KAknsIIDQsnHighlightColors,
-                EAknsCIQsnHighlightColorsCG2 );  
+                EAknsCIQsnHighlightColorsCG2 );
         }
     }
 
@@ -224,7 +224,7 @@ void CEasyDialingListBoxItemDrawer::SetColors()
 //
 void CEasyDialingListBoxItemDrawer::DrawBackgroundAndSeparatorLines( const TRect& aItemTextRect ) const
     {
-    CCoeControl* control = FormattedCellData()->Control();    
+    CCoeControl* control = FormattedCellData()->Control();
 
     MAknListBoxTfxInternal* transApi = CAknListLoader::TfxApiInternal( iGc );
     
@@ -255,7 +255,7 @@ void CEasyDialingListBoxItemDrawer::DrawBackgroundAndSeparatorLines( const TRect
                 *Gc(), 
                 aItemTextRect.iTl, 
                 aItemTextRect, 
-                KAknsDrawParamDefault );        
+                KAknsDrawParamDefault );
         }
     
     if ( !bgDrawn )

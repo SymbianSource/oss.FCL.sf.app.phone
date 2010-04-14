@@ -31,6 +31,8 @@
 // Easy dialing specific listbox events
 const TInt KEasyDialingContactSelected( 0x1001 );
 const TInt KEasyDialingContactLongTapped( 0x1002 );
+const TInt KEasyDialingScrollingStarted( 0x1003 );
+const TInt KEasyDialingScrollingStopped( 0x1004 );
 
 // FORWARD DECLARATIONS
 
@@ -52,7 +54,7 @@ class CAknPointerEventSuppressor;
 
 class CEasyDialingListBox : public CEikFormattedCellListBox, 
                             public MAknLongTapDetectorCallBack
-    {   
+    {
 public:
     
     /**
@@ -72,7 +74,7 @@ public:
     */
     void ConstructL( TInt aFlags, 
             CEasyDialingContactDataManager* aContactDataManager );
-
+    
     /**
     * From CEikFormattedCellListBox.
     */
@@ -86,27 +88,32 @@ public:
     /**
     * From CEikFormattedCellListBox.
     */
-    void Draw(const TRect& aRect) const;
+    void Draw( const TRect& aRect ) const;
     
     /**
     * From CEikFormattedCellListBox.
     */
-    void HandleResourceChange(TInt aType);
+    void HandleResourceChange( TInt aType );
+    
+    /**
+    * From CEikFormattedCellListBox.
+    */
+    void HandleScrollEventL( CEikScrollBar* aScrollBar, TEikScrollEvent aEventType );
     
     /**
     * From CCoeControl
     */
-    void MakeVisible(TBool aVisible);
+    void MakeVisible( TBool aVisible );
     
     /**
     * From CCoeControl
     */
-    void HandlePointerEventL(const TPointerEvent& aPointerEvent);
+    void HandlePointerEventL( const TPointerEvent& aPointerEvent );
     
     /**
      * The the rectangle within which the listbox must always fit.
      * @param   aMaxRect   The largest allowed rect size, given in
-	 *                     screen relative coordinate system.
+     *                     screen relative coordinate system.
      */
     void SetMaxRect( TRect aMaxRect );
     
@@ -125,7 +132,6 @@ public:
      * @return  Whether the key was handled or not.
      */
     TKeyResponse SetFocusedWithKeyEventL( const TKeyEvent& aKeyEvent, TEventCode aType );
-
     
     /**
     * Gets the height of the listbox based on the number of items.
@@ -158,7 +164,7 @@ protected:
     /**
     * From CEikFormattedCellListBox.
     */
-    virtual void FocusChanged(TDrawNow aDrawNow);
+    virtual void FocusChanged( TDrawNow aDrawNow );
         
     /**
     * From CEikFormattedCellListBox.
@@ -173,7 +179,7 @@ protected:
     /**
     * From CCoeControl
     */
-    TTypeUid::Ptr MopSupplyObject(TTypeUid aId);
+    TTypeUid::Ptr MopSupplyObject( TTypeUid aId );
     
 private:
     
@@ -195,8 +201,5 @@ private:
     /** Flag set when long pointer press has been handled after latest pointer down event.*/
     TBool iPointerLongPressHandled;	
     };
-    
+
 #endif // _EASYDIALINGLISTBOX_H
-
-
-

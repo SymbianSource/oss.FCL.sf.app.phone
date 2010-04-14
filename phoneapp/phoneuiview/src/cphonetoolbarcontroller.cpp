@@ -30,6 +30,7 @@
 #include <phoneappcommands.hrh>
 #include <phoneui.mbg>
 
+#include "tphonecmdparamincallindicatordata.h"
 #include "cphonetoolbarcontroller.h"
 #include "phoneui.hrh"
 #include "phonerssbase.h"
@@ -379,6 +380,61 @@ void CPhoneToolbarController::SetIhfFlag( TPhoneCommandParam* aCommandParam )
     }
 
 // ---------------------------------------------------------
+// CPhoneMenuController::SetWiredAccFlag
+// ---------------------------------------------------------
+//
+void CPhoneToolbarController::SetWiredAccFlag( TPhoneCommandParam* aCommandParam )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneMenuController::SetWiredAccAvailableFlag()" );
+    // Check is the given parameter valid
+    if ( aCommandParam->ParamId() == TPhoneCommandParam::EPhoneParamIdBoolean )
+        {
+        TPhoneCmdParamBoolean* accFlag = 
+            static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
+
+        iWiredAccFlag = accFlag->Boolean();        
+        if ( iCallInProgress ) 
+            {
+            SetToolbarButtonDimmed( EPhoneInCallCmdActivateIhf, iWiredAccFlag );
+            UpdateToolbar(); 
+            }
+        }
+    }
+
+// ---------------------------------------------------------
+// CPhoneToolbarController::SetCallInProgressFlag
+// ---------------------------------------------------------
+// 
+void CPhoneToolbarController::SetCallInProgressFlag( TPhoneCommandParam* aCommandParam )
+    {
+    TPhoneCmdParamIncallIndicatorData* param =
+        static_cast<TPhoneCmdParamIncallIndicatorData*>( aCommandParam );
+    
+    TInt callState = param->CallState();  
+
+    __PHONELOG1( EBasic, EPhoneUIView,
+      "CPhoneToolbarController::SetCallInProgressFlag - Current CallState = (%d)",
+      callState );
+    
+    switch ( callState )
+        {
+        case EPSCTsyCallStateUninitialized:
+        case EPSCTsyCallStateNone:
+            {
+            // No active call in progress.
+            iCallInProgress = EFalse;
+            break;
+            }                 
+        default:
+            {
+            // Active call in progress.
+            iCallInProgress = ETrue;
+            break;
+            } 
+        }
+    }
+
+// ---------------------------------------------------------
 // CPhoneToolbarController::DimToolbar
 // ---------------------------------------------------------
 //
@@ -390,8 +446,12 @@ void CPhoneToolbarController::DimToolbar( const TBool aDimmed )
     iToolbar->SetItemDimmed( EPhoneInCallCmdMute, aDimmed, ETrue );
     iToolbar->SetItemDimmed( EPhoneInCallCmdUnmute, aDimmed, ETrue );
     iToolbar->SetItemDimmed( EPhoneInCallCmdActivatEPhonebook, aDimmed, ETrue );
-    iToolbar->SetItemDimmed( EPhoneInCallCmdActivateIhf, aDimmed, ETrue );
-    iToolbar->SetItemDimmed( EPhoneInCallCmdHandset, aDimmed, ETrue );        
+    iToolbar->SetItemDimmed( EPhoneInCallCmdHandset, aDimmed, ETrue );  
+    // Don't dim/undim iHF when complete toolbar dimming is changed. 
+    if ( !iWiredAccFlag )
+        {
+        iToolbar->SetItemDimmed( EPhoneInCallCmdActivateIhf, aDimmed, ETrue );
+        }
     }
 
 // ---------------------------------------------------------

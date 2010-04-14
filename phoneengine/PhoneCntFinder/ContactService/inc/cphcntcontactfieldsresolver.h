@@ -23,7 +23,7 @@
 #include <e32base.h>
 
 #include "tphcntcontactfield.h"
-#include "MPhCntMatch.h"
+#include "mphcntmatch.h"
 #include "mphcntcontactfields.h"
 
 class MVPbkContactLink;

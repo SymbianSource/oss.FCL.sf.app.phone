@@ -1391,6 +1391,28 @@ RESOURCE TBUF r_phoneui_numberacq_options_call_menu_item_xsp
     {
     buf = qtn_call_sub_voip_with_name;
     }
+
+//-----------------------------------------------------------------------------
+//
+//    r_voip_transfer_call_back "Call back to\n%U"
+//
+// -----------------------------------------------------------------------------
+// 
+RESOURCE TBUF r_voip_transfer_call_back
+    {
+    buf = qtn_voip_transfer_call_back;
+    }
+
+//-----------------------------------------------------------------------------
+//
+//    r_voip_transfer_call_back_header "Call back request:"
+//
+// -----------------------------------------------------------------------------
+// 
+RESOURCE TBUF r_voip_transfer_call_back_header
+    {
+    buf = qtn_voip_transfer_call_back_header;
+    }
     
 // End of File
 

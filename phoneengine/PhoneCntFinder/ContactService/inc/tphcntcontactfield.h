@@ -21,7 +21,7 @@
 
 #include <e32base.h>
 #include <TVPbkFieldVersitProperty.h>
-#include "MPhCntMatch.h"
+#include "mphcntmatch.h"
 #include "tphcntnumber.h"
 
 class MPhCntContactManager;

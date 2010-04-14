@@ -27,7 +27,7 @@
 #include <AknsSkinInstance.h>
 #include <AknsDrawUtils.h>
 #include <AknsConstants.h>
-#include <AknLayout2Def.h>
+#include <aknlayout2def.h>
 #include <aknlayoutscalable_apps.cdl.h>
 #include <layoutmetadata.cdl.h>
 #include <data_caging_path_literals.hrh> // for KDC_APP_RESOURCE_DIR
@@ -515,11 +515,15 @@ void CDialerKeyPadContainer::MakeVisible( TBool aVisible )
     // This is needed when dialer control disappeares during keypress. 
     // Last pressed pointer event must be forwarted to framework 
     // as pointer up event. Thus button is set to unpressed state etc. 
+    // This code calls HandlePointerEventL of the parent class instead of this.
+    // If we call this classes HandlePointerEventL, this classes 
+    // grab status is not cleared, and later coming EButton1Up events may end
+    // up erroneously to this class, although intended elsewhere.
     // 
-    if ( !aVisible && iButtonPressedDown )
+    if ( !aVisible && iButtonPressedDown && Parent() )
         {    
         iPointerEvent.iType = TPointerEvent::EButton1Up;
-        TRAP_IGNORE( HandlePointerEventL( iPointerEvent ) );
+        TRAP_IGNORE( Parent()->HandlePointerEventL( iPointerEvent ) );
         }    
     CCoeControl::MakeVisible( aVisible );        
     }
@@ -558,11 +562,15 @@ void CDialerKeyPadContainer::HandleLosingForeground()
     // This is needed when dialer control disappeares during keypress. 
     // Last pressed pointer event must be forwarted to framework 
     // as pointer up event. Thus button is set to unpressed state etc. 
+    // This code calls HandlePointerEventL of the parent class instead of this.
+    // If we call this classes HandlePointerEventL, this classes 
+    // grab status is not cleared, and later coming EButton1Up events may end
+    // up erroneously to this class, although intended elsewhere.
     // 
-    if ( iButtonPressedDown )
+    if ( iButtonPressedDown && Parent() )
         {    
         iPointerEvent.iType = TPointerEvent::EButton1Up;
-        TRAP_IGNORE( HandlePointerEventL( iPointerEvent ) );
+        TRAP_IGNORE( Parent()->HandlePointerEventL( iPointerEvent ) );
         }    
     }
 

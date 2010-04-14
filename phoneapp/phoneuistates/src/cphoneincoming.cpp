@@ -27,6 +27,7 @@
 #include "tphonecmdparamboolean.h"
 #include "phoneui.hrh"
 #include "mphonestatemachine.h"
+#include "mphonesecuritymodeobserver.h"
 #include "tphonecmdparamcallstatedata.h"
 
 // ================= MEMBER FUNCTIONS =======================
@@ -122,11 +123,20 @@ EXPORT_C void CPhoneIncoming::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageRemoteResumed:
                 SendGlobalInfoNoteL( EPhoneInformationConnectedNote );
             break;
+		
+		case MEngineMonitor::EPEMessageShowVersion:
+			{
+			if ( iStateMachine->SecurityMode()->IsSecurityMode() )
+				{
+				// Do nothing if security mode is enabled.
+				return;
+				}
+			}
+		// Fall through
 
         // fall through.
         case MEngineMonitor::EPEMessageIssuingSSRequest:
         case MEngineMonitor::EPEMessageCallBarred:
-        case MEngineMonitor::EPEMessageShowVersion:
         case MEngineMonitor::EPEMessageIssuedSSRequest:
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
         case MEngineMonitor::EPEMessageIncCallIsForw:

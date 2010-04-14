@@ -36,7 +36,7 @@
 #include    <AknBidiTextUtils.h>
 #include    <featmgr.h>
 #include    <aknlayoutscalable_apps.cdl.h>
-#include    <AknLayout2ScalableDef.h>
+#include    <aknlayout2scalabledef.h>
 #include    <applayout.cdl.h>
 #include    <layoutmetadata.cdl.h>
 
@@ -1489,10 +1489,15 @@ void BubbleUtils::AddTransparencyToBubbleImageL(
     CFbsBitGc* transparencyCtx;
     User::LeaveIfError( transparencyDev->CreateContext( transparencyCtx ) );
     CleanupStack::PushL( transparencyCtx );
-    transparencyCtx->SetBrushColor( KRgbDarkGray );
-    transparencyCtx->SetBrushStyle( CGraphicsContext::ESolidBrush );
-    transparencyCtx->DrawRect( rect );
-
+    MAknsSkinInstance* skin = AknsUtils::SkinInstance();
+    AknsDrawUtils::DrawFrame( skin,
+                              *transparencyCtx,
+                              aOuterRect,
+                              aInnerRect,
+                              aFrameID,
+                              KAknsIIDDefault,
+                              KAknsDrawParamDefault );
+    
     CleanupStack::PopAndDestroy( 2, transparencyDev );
             
     // create solid black mask

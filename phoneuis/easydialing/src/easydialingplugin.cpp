@@ -118,7 +118,7 @@ _LIT(KResourceFile, "\\resource\\easydialingpluginresources.rsc");
 
 // LOCAL FUNCTION PROTOTYPES
 
-TInt CompareTPsMatchLocation( const TPsMatchLocation& a1, const TPsMatchLocation& a2);
+TInt CompareTPsMatchLocation( const TPsMatchLocation& a1, const TPsMatchLocation& a2 );
 
 void AppendStringWithMatchDataL(
         TDes& aBuffer,
@@ -139,7 +139,7 @@ static TBool IsItuTCharacter( TChar aChar );
 static TInt Find( const MVPbkContactLink* aLink, const RPointerArray<MVPbkContactLink>& aArray );
 
 template <class T>
-inline void CleanupResetAndDestroyPushL(T& aRef);
+inline void CleanupResetAndDestroyPushL( T& aRef );
 
 
 
@@ -203,7 +203,7 @@ void CEasyDialingPlugin::ConstructL()
     // only found in extension.
     // MCCAConnection extension has to be obtained through MCCAParameter extension,
     // since MCCAConnection is not designed to be extensible API.
-    MCCAParameter* parameter = TCCAFactory::NewParameterL();    
+    MCCAParameter* parameter = TCCAFactory::NewParameterL();
     TAny* any = parameter->CcaParameterExtension( KMCCAConnectionExtUid );
     
     // Parameter can be deallocated since "any" containing pointer to contact launcher
@@ -233,10 +233,10 @@ void CEasyDialingPlugin::ConstructL()
     SetComponentsToInheritVisibility( ETrue );
     }
 
-// ---------------------------------------------------------
+// -----------------------------------------------------------------------------
 // ~CEasyDialingPlugin
 // The desctructor
-// ---------------------------------------------------------
+// -----------------------------------------------------------------------------
 //
 CEasyDialingPlugin::~CEasyDialingPlugin()
     {
@@ -322,7 +322,7 @@ void CEasyDialingPlugin::InitializeL( CCoeControl& aParent )
 
     iContactListBox->MakeVisible( EFalse );
     
-    SetFocus( EFalse );    
+    SetFocus( EFalse );
     iContactListBox->ActivateL();
     
     GfxTransEffect::Register( iContactListBox, 
@@ -344,8 +344,7 @@ void CEasyDialingPlugin::InitializeL( CCoeControl& aParent )
 //
 void CEasyDialingPlugin::Reset()
     {
-    // PCS searches completing must be discarded, if the complete
-    // after Reset() -call.    
+    // PCS searches completing after the Reset() call must be discarded
     iDiscardCompletingSearches = ETrue;
     
     iNewSearchNeeded = EFalse;
@@ -604,6 +603,15 @@ void CEasyDialingPlugin::SizeChanged()
     
     iContactListBox->SetMaxRect( rect );
     iContactListBox->SetRectToNumberOfItems( iNumberOfNames );
+    
+    TInt itemToMakeVisible = iContactListBox->CurrentItemIndex();  
+    if ( itemToMakeVisible == KErrNotFound && iNumberOfNames )
+        {
+        // if no current item is set, make sure that the list is then 
+        // scrolled to the bottom.
+        itemToMakeVisible = iNumberOfNames - 1;
+        } 
+    iContactListBox->ScrollToMakeItemVisible( itemToMakeVisible );
     }
 
 
@@ -828,7 +836,7 @@ void CEasyDialingPlugin::InformContactorEvent( MEDContactorObserver::TEvent aEve
         }
     
     // Reset focus unless it is flagged to be remembered.
-    if ( ! iRememberFocus )
+    if ( !iRememberFocus )
         {
         SetFocus( EFalse );
         DrawDeferred();
@@ -880,11 +888,11 @@ void CEasyDialingPlugin::LaunchSearchL()
         // in most of the normal cases, and makes the logic simpler.
         if ( IsItuTCharacter( iSearchString[i] ) )
             {
-            item->SetMode( EItut );
+            item->SetMode( EPredictiveItuT );
             }
         else 
             {
-            item->SetMode( EQwerty );
+            item->SetMode( EPredictiveDefaultKeyboard );
             }
         
         iPredictiveSearchQuery->AppendL(*item);
@@ -1148,7 +1156,7 @@ void CEasyDialingPlugin::CCASimpleNotifyL( TNotifyType aType, TInt aReason )
         }
 
     // Give up focus, if iRememberFocus flag is not set.
-    if ( ! iRememberFocus )
+    if ( !iRememberFocus )
         {
         SetFocus( EFalse );
         DrawDeferred();
@@ -1255,13 +1263,13 @@ void CEasyDialingPlugin::CreateListBoxContactStringL(
 HBufC* CEasyDialingPlugin::CreateContactStringLC( CPsClientData* aResult,
         CEasyDialingContactDataManager::TNameOrder aNameOrder )
     {
-    TPtr firstName = aResult->Data( iFirstNamePCSIndex )->Des();
-    TPtr lastName = aResult->Data( iLastNamePCSIndex )->Des();
-    TPtr companyName( NULL, 0 );
+    TPtrC firstName = *aResult->Data( iFirstNamePCSIndex );
+    TPtrC lastName = *aResult->Data( iLastNamePCSIndex );
+    TPtrC companyName( KNullDesC );
     
     if ( iCompanyNamePCSIndex != KErrNotFound )
         {
-        companyName.Set( aResult->Data( iCompanyNamePCSIndex )->Des() );
+        companyName.Set( *aResult->Data( iCompanyNamePCSIndex ) );
         }
     return EasyDialingUtils::CreateContactStringLC( firstName, lastName, companyName, aNameOrder );
     }
@@ -1279,7 +1287,7 @@ void CEasyDialingPlugin::AddObserverL( MDialingExtensionObserver* aObserver )
         return;
         }
     
-    User::LeaveIfError( iObservers.Append( aObserver ) );
+    iObservers.AppendL( aObserver );
     }
 
 
@@ -1418,7 +1426,7 @@ TBool CEasyDialingPlugin::InitializeMenuPaneL( CEikMenuPane& aMenuPane, TInt aMe
         {
         if ( IsEnabled() )
             {
-            aMenuPane.SetItemButtonState( EEasyDialingOn, EEikMenuItemSymbolOn );      
+            aMenuPane.SetItemButtonState( EEasyDialingOn, EEikMenuItemSymbolOn );
             }
         else
             {
@@ -1749,12 +1757,23 @@ void CEasyDialingPlugin::HandleListBoxEventL( CEikListBox* /*aListBox*/, TListBo
         // This ensures smooth and responsive listbox touch handling.
         case EEventFlickStarted:
         case EEventPanningStarted:
+        case KEasyDialingScrollingStarted:
             iContactDataManager->Pause( ETrue );
             break;
             
         case EEventFlickStopped:
         case EEventPanningStopped:
+        case KEasyDialingScrollingStopped:
             iContactDataManager->Pause( EFalse );
+            
+            // Touching the listbox always removes the visual focus from any list item.
+            // Move the focus away from the listbox after panning has ended to
+            // align our internal state with the visual lack of focus.
+            if ( IsFocused() )
+                {
+                SetFocus( EFalse );
+                DrawDeferred();
+                }
             break;
             
         // We are not interested about the other listbox events.
@@ -1788,7 +1807,7 @@ void CEasyDialingPlugin::DoHandleContactsChangedL()
         if ( iContactLauncherActive )
             {
             // Set the flag to make a search when communication launcher exits.
-            iNewSearchNeeded = ETrue;                   
+            iNewSearchNeeded = ETrue;
             }
         else
             {
@@ -1869,11 +1888,7 @@ void CEasyDialingPlugin::HideContactListBoxWithEffect()
 //
 TInt CompareTPsMatchLocation( const TPsMatchLocation& a1, const TPsMatchLocation& a2)
     {
-    if ( a1.index == a2.index )
-        {
-        return 0;
-        }
-    return ( a1.index > a2.index ) ? 1 : -1;
+    return a1.index - a2.index;
     }
 
 
@@ -1907,7 +1922,7 @@ void AppendStringWithMatchDataL(
         TInt numberOfIndices = matchIndices.Count();
         TInt textOffset = 0;
         
-        for (TInt i = 0; i < numberOfIndices ; i++ )
+        for ( TInt i = 0; i < numberOfIndices ; i++ )
             {
             TInt matchingPartStart = matchIndices[i].index;
             TInt matchingPartLength = matchIndices[i].length;
@@ -1924,10 +1939,10 @@ void AppendStringWithMatchDataL(
             
             TPtrC matchingPart = aText.Mid( matchingPartStart, matchingPartLength );
             aBuffer.Append( matchingPart );
-    
+            
             // Append matching separator charactes.
             aBuffer.Append( KHighlightSeparatorChar );
-                    
+            
             textOffset = matchingPartStart + matchingPartLength;
             }
 

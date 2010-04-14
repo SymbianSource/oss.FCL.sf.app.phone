@@ -277,7 +277,7 @@ void CPhoneStateStartup::InitializationReadyL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::InitializationReady() ");
 	iStateMachine->SecurityMode()->Initialize();
- if ( !iStateMachine->SecurityMode()->IsSecurityMode() && !IsSimOk() )
+ if ( !IsSimOk() )
         {
         iCreateNote = CIdle::NewL( CActive::EPriorityHigh );
         CreateAndShowNoteAfterIdle(); 

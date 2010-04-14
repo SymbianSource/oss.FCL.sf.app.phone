@@ -20,7 +20,7 @@
 #define CPHCNTCONTACT_H
 
 #include <e32base.h>
-#include "MPhCntMatch.h"
+#include "mphcntmatch.h"
 #include "tphcntnumber.h"
 
 class MPhCntContactFields;

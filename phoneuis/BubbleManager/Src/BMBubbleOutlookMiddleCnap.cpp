@@ -338,14 +338,7 @@ void CBubbleOutlookMiddleCnap::DoCall2LayoutL()
                 outerRect,
                 innerRect,
                 iBubble );
-            
-            // Add transparency
-            BubbleUtils::AddTransparencyToBubbleImageL( 
-                coMaskFrameId,
-                outerRect,
-                innerRect,
-                iBubble );
-                
+                           
             if ( iHeader->CallObjectImage() )
                 {
                 BubbleUtils::PrepareCallObjectImageL(

@@ -698,6 +698,28 @@ NONSHARABLE_CLASS( MPEEngineInfo )
          */
         virtual TPECallOrigin CallOrigin( const TInt aCallId ) const = 0;
         
+        /**
+         * Sets flag indicating unattended transfer dial
+         * @param aTransferDial ETrue if voip unattended transfer dial was initiated
+         */
+        virtual void SetIsTransferDial( TBool aTransferDial ) = 0;
+        
+        /**
+         * Returns flag indicating unattended transfer dial
+         */
+        virtual TBool IsTransferDial() const = 0;
+           
+        /**
+         * Sets unattended transfer call back address
+         * @param aAddress Unattended transfer call back address
+         */
+        virtual void SetCallBackAddress( const TDesC& aAddress ) = 0;
+        
+        /**
+         * Returns unattended transfer call back address
+         */
+        virtual const TDesC& CallBackAddress() const = 0;
+        
     }; // MPEEngineInfo
     
 #endif      //MPEENGINEINFO_H

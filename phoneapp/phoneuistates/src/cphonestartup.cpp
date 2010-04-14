@@ -20,6 +20,8 @@
 #include "cphonestartup.h"
 #include "phonerssbase.h"
 #include "phonelogger.h"
+#include "mphonestatemachine.h"
+#include "mphonesecuritymodeobserver.h"
 #include "cphonegeneralgsmmessageshandler.h"
 
 // ================= MEMBER FUNCTIONS =======================
@@ -100,10 +102,19 @@ void CPhoneStartup::HandlePhoneEngineMessageL(
             CPhoneState::SendGlobalInfoNoteL( 
                 EPhoneInformationConnectedNote );
             break;
+		
+		case MEngineMonitor::EPEMessageShowVersion:
+			{
+			if ( iStateMachine->SecurityMode()->IsSecurityMode() )
+				{
+				// Do nothing if security mode is enabled.
+				return;
+				}
+			}
+		// Fall through
 
         case MEngineMonitor::EPEMessageIssuingSSRequest: // fall through
         case MEngineMonitor::EPEMessageCallBarred: // fall through
-        case MEngineMonitor::EPEMessageShowVersion: // fall through
         case MEngineMonitor::EPEMessageIssuedSSRequest: // fall through
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
         case MEngineMonitor::EPEMessageIncCallIsForw: // fall through

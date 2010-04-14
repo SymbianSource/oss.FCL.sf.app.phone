@@ -450,12 +450,8 @@ CEikEdwin* CUssdContainer::CreateEdwinL()
     newEditor->SetAknEditorInputMode( EAknEditorNumericInputMode );
     newEditor->SetAknEditorNumericKeymap( EAknEditorStandardNumberModeKeymap );
 
-    TInt editorFlags = EAknEditorFlagNoT9 | EAknEditorFlagEnableScrollBars;
-
-    if ( FeatureManager::FeatureSupported( KFeatureIdJapanese ) )
-        {
-        editorFlags |= EAknEditorFlagLatinInputModesOnly;
-        }
+    TInt editorFlags = EAknEditorFlagNoT9 | EAknEditorFlagEnableScrollBars | 
+        EAknEditorFlagLatinInputModesOnly;
 
      if( FeatureManager::FeatureSupported( KFeatureIdPenSupport ) )
         {

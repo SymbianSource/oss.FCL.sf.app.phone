@@ -23,12 +23,12 @@ DEFAULT
 PRJ_EXPORTS
 ../inc/CPhoneCntFactory.h                   |../../../inc/cphonecntfactory.h
 ../inc/CPhoneCntSaveAddToName.h             |../../../inc/cphonecntsaveaddtoname.h
-../inc/MPhCntMatch.h                        |../../../inc/mphcntmatch.h
+../inc/mphcntmatch.h                        |../../../inc/mphcntmatch.h
 ../inc/CPhCntMatcher.h                      |../../../inc/cphcntmatcher.h
 ../inc/cphcntcontactid.h                    |../../../inc/cphcntcontactid.h
 
 ../inc/Misc/CPhCntSingleItemFetch.h         |../../../inc/cphcntsingleitemfetch.h
-../inc/Misc/CPhCntThumbnailLoader.h         |../../../inc/cphcntthumbnailloader.h
+../inc/Misc/cphcntthumbnailloader.h         |../../../inc/cphcntthumbnailloader.h
 ../inc/Misc/MPhCntThumbnailLoaderObserver.h |../../../inc/mphcntthumbnailloaderobserver.h
 ../inc/Misc/CPhCntSpeedDialMonitor.h        |../../../inc/cphcntspeeddialmonitor.h
 ../inc/Misc/CPhCntRfsHandler.h              |../../../inc/cphcntrfshandler.h

@@ -195,16 +195,18 @@ void CDialerKeyPadButton::SizeChanged()
 
     if ( iOperationMode == EModeEasyDialing )
         {
-        // Number layout.
-        iNumberLayout.LayoutText( buttonRect,
-            AknLayoutScalable_Apps::cell_dia3_key_num_pane_t1( iVariety ) );
-        // Use different number layout if key doens't contain any alphabets or icon.
+        // Number layout
+        TAknTextComponentLayout numLayout = 
+            AknLayoutScalable_Apps::cell_dia3_key_num_pane_t1( iVariety );
+        // Center the number label if key doens't contain any alphabets or icon.
         if ( !icon && !iPrimaryAlphaLabel.Length() && !iSecondaryAlphaLabel.Length() )
             {
-            iNumberLayout.LayoutText( buttonRect, 
-                AknLayoutScalable_Apps::cell_dialer2_keypad_pane_t1(), 
-                iNumberLayout.Font() );
+            // eliminate margins, alignment takes care of correct position
+            numLayout.Setl( 0 );
+            numLayout.Setr( 0 );
+            numLayout.SetJ( 1 ); // ID for center alignment
             }
+        iNumberLayout.LayoutText( buttonRect, numLayout );
 
         // Alphabet layout is different if two rows of alphabets are given
         if ( iSecondaryAlphaLabel.Length() )
@@ -223,14 +225,20 @@ void CDialerKeyPadButton::SizeChanged()
     else if ( iOperationMode == EModeDialer )
         {
         // Number layout
-        iNumberLayout.LayoutText( buttonRect, 
-            AknLayoutScalable_Apps::cell_dialer2_keypad_pane_t1() );
+        // Center number labels as only numbers are shown
+        TAknTextComponentLayout numLayout = 
+            AknLayoutScalable_Apps::cell_dia3_key_num_pane_t1( iVariety );
+        // eliminate margins, alignment takes care of correct position
+        numLayout.Setl( 0 );
+        numLayout.Setr( 0 );
+        numLayout.SetJ( 1 ); // ID for center alignment
+        iNumberLayout.LayoutText( buttonRect, numLayout );
         }
     else // video mode layout
         {
         // Number layout
         iNumberLayout.LayoutText( buttonRect, 
-            AknLayoutScalable_Apps::cell_video_dialer_keypad_pane_t1() );        
+            AknLayoutScalable_Apps::cell_video_dialer_keypad_pane_t1() );
         }
 
     SetIconLayout( buttonRect );
@@ -395,7 +403,7 @@ TInt CDialerKeyPadButton::ScanCode() const
     {
     return iScanCode;
     }
-    
+
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
@@ -404,7 +412,6 @@ TInt CDialerKeyPadButton::KeyCode() const
     {
     return iKeyCode;
     }
-
 
 // ---------------------------------------------------------------------------
 // 
@@ -423,7 +430,6 @@ void CDialerKeyPadButton::MapDialerIconToSkinIcon(
         }
     }   
 
-
 // ---------------------------------------------------------------------------
 // 
 // ---------------------------------------------------------------------------
@@ -431,40 +437,39 @@ void CDialerKeyPadButton::MapDialerIconToSkinIcon(
 void CDialerKeyPadButton::SetIconLayout( const TRect& aRect )
     {
     // Calculate icon size and placement.
-    TInt iconSize = aRect.Height() * KIconSizePercent / KCent;             
+    TInt iconSize = aRect.Height() * KIconSizePercent / KCent;
     TInt xMargin = aRect.Width() * KIconMarginXPercent / KCent;
     TInt yMargin = aRect.Height() * KIconMarginYPercent / KCent;
     
     // Adapt icon size and vertical margin. If the button has 
     // already two lines of text, use smaller icon size
-    if ( iOperationMode == EModeEasyDialing && iSecondaryAlphaLabel.Length() ) 
+    if ( iOperationMode == EModeEasyDialing && iSecondaryAlphaLabel.Length() )
         {
         iconSize = aRect.Height() * KSmallIconSizePercent / KCent;
         yMargin = 0;
         }
     
-    if ( AknLayoutUtils::LayoutMirrored() ) 
+    if ( AknLayoutUtils::LayoutMirrored() )
         {
         iIconRect.SetRect( aRect.iTl.iX + xMargin,
                 aRect.iTl.iY + yMargin, 
                 aRect.iTl.iX + xMargin + iconSize, 
-                aRect.iTl.iY + iconSize + yMargin );       
+                aRect.iTl.iY + iconSize + yMargin );
         }
     else 
         {
         iIconRect.SetRect( aRect.iBr.iX - iconSize - xMargin,
                 aRect.iTl.iY + yMargin, 
                 aRect.iBr.iX - xMargin, 
-                aRect.iTl.iY + iconSize + yMargin );        
+                aRect.iTl.iY + iconSize + yMargin );
         }
     SetIconSize( iIconRect.Size() );
     }
 
-
 // ---------------------------------------------------------------------------
 // Update icon when skin is changed
 // ---------------------------------------------------------------------------
-//   
+//
 void CDialerKeyPadButton::UpdateIconL()
     {
     if ( KDialerNoIcon != iButtonIconId )
@@ -528,5 +533,5 @@ void CDialerKeyPadButton::HandleResourceChange( TInt aType )
         TRAP_IGNORE( UpdateIconL() );
         }    
     }
-    
+
 // End of File

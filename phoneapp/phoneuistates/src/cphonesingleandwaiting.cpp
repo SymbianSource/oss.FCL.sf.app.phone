@@ -622,14 +622,11 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
         CloseCustomizedDialerL();
         }
      
-    if ( IsNumberEntryUsedL() )
+    if ( IsNumberEntryUsedL() && NeedToReturnToForegroundAppL() )
         {
-        if ( NeedToReturnToForegroundAppL() )
-            {
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
 
-            UpdateCbaL( EPhoneCallHandlingInCallCBA );
-            }
+        UpdateCbaL( EPhoneCallHandlingInCallCBA );
         }
     else
         {

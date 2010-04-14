@@ -380,15 +380,21 @@ void CPhoneStateSingleVoIP::HandleUnattendedTransferRequestResponseL(
         MPEEngineInfo* info = iStateMachine->PhoneEngineInfo();
         const TPEPhoneNumber& transferTarget = 
             info->UnattendedTransferTarget( CallId() );
- 
+        info->SetIsTransferDial( ETrue );
         TUint32 serviceId = iStateMachine->PhoneEngineInfo()->
             ServiceId( CallId() );
         StateUtils().SelectServiceAndDialL( transferTarget, serviceId );
+        
+        // Store transferor address to phoneengine, this is used for
+        // calling back if transfer call fails for some reason
+        info->SetCallBackAddress( info->RemotePhoneNumber( CallId() ) );
         }
     else
         {
         iStateMachine->SendPhoneEngineMessage( 
             MPEPhoneModel::EPEMessageRejectUnattendedTransfer );
+        iStateMachine->PhoneEngineInfo()->SetCallBackAddress(
+            KNullDesC() );
         }
     }
 

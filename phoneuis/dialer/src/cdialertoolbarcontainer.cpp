@@ -276,7 +276,7 @@ void CDialerToolbarContainer::HandleGainingForeground()
     {
     // no implementation needed
     }
-    
+
 // ---------------------------------------------------------------------------
 // HandleLosingForeground
 //
@@ -286,12 +286,16 @@ void CDialerToolbarContainer::HandleLosingForeground()
     {
     // This is needed when dialer control disappeares during keypress. 
     // Last pressed pointer event must be forwarted to framework 
-    // as pointer up event. Thus button is set to unpressed state etc. 
+    // as pointer up event. Thus button is set to unpressed state etc.
+    // This code calls HandlePointerEventL of the parent class instead of this.
+    // If we call this classes HandlePointerEventL, this classes 
+    // grab status is not cleared, and later coming EButton1Up events may end
+    // up erroneously to this class, although intended elsewhere.
     // 
-    if ( iLatestPointerEvent.iType != TPointerEvent::EButton1Up )
+    if ( iLatestPointerEvent.iType != TPointerEvent::EButton1Up && Parent() )
         {    
         iLatestPointerEvent.iType = TPointerEvent::EButton1Up;
-        TRAP_IGNORE( HandlePointerEventL( iLatestPointerEvent ) );
+        TRAP_IGNORE( Parent()->HandlePointerEventL( iLatestPointerEvent ) );
         }    
     }
 
@@ -402,15 +406,7 @@ TInt CDialerToolbarContainer::ButtonCommand( const CAknButton& aButton ) const
     TInt commandId = KErrNotFound;
     
     // Find out index of the button in iButtons array
-    TInt btnIndex = KErrNotFound;
-    for ( TInt i = 0 ; i < iButtons.Count() ; ++i )
-        {
-        if ( iButtons[i] == &aButton )
-            {
-            btnIndex = i;
-            i = iButtons.Count(); // to break out of the loop
-            }
-        }
+    TInt btnIndex = iButtons.Find( &aButton );
     __ASSERT_DEBUG( btnIndex >= 0, DialerPanic( EDialerPanicToolbarButtonNotFound ) );
     
     // Find the corresponding command from command array

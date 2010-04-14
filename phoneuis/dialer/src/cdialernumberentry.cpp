@@ -31,9 +31,9 @@
 #include <AknsDrawUtils.h>
 #include <applayout.cdl.h>
 #include <AknLayoutFont.h>
-#include <AknLayout2Def.h>
+#include <aknlayout2def.h>
 #include <AknPhoneNumberEditor.h>
-#include <AknLayout2ScalableDef.h>
+#include <aknlayout2scalabledef.h>
 #include <AknsBasicBackgroundControlContext.h>
 #include <AknsFrameBackgroundControlContext.h>
 #include <aknlayoutscalable_apps.cdl.h>

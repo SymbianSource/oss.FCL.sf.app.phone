@@ -323,14 +323,17 @@ CEasyDialingContactDataManager::TNameOrder CEasyDialingContactDataManager::NameO
 //
 void CEasyDialingContactDataManager::Pause( TBool aPause )
     {
-    iPause = aPause;
-    
-    if ( !iPause && iWaitingContacts.Count() )
+    if ( iPause != aPause )
         {
-        TRAPD( err, LoadNextContactDataL());
-        if ( err )
+        iPause = aPause;
+        
+        if ( !iPause && iWaitingContacts.Count() )
             {
-            HandleError(err);
+            TRAPD( err, LoadNextContactDataL());
+            if ( err )
+                {
+                HandleError(err);
+                }
             }
         }
     }

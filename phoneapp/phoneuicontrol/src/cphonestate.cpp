@@ -4705,12 +4705,16 @@ EXPORT_C void CPhoneState::UpdateSilenceButtonDimming()
 //
 EXPORT_C void CPhoneState::SetToolbarDimming( TBool aDimmed )
     {
-    if ( FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
+	if ( FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
         {
-        TPhoneCmdParamBoolean booleanParam;
-        booleanParam.SetBoolean( aDimmed );
-        TRAP_IGNORE( iViewCommandHandle->ExecuteCommandL(
-            EPhoneViewSetToolbarDimming, &booleanParam ));
+		// Check that we are not undimming toolbar in security mode
+		if ( !( !aDimmed && iStateMachine->SecurityMode()->IsSecurityMode() ) )
+			{
+			TPhoneCmdParamBoolean booleanParam;
+			booleanParam.SetBoolean( aDimmed );
+			TRAP_IGNORE( iViewCommandHandle->ExecuteCommandL(
+				EPhoneViewSetToolbarDimming, &booleanParam ));
+			}
         }
     }
 

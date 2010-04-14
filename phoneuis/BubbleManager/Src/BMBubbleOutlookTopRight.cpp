@@ -240,21 +240,18 @@ void CBubbleOutlookTopRight::DoCall2LayoutL()
             BubbleLayout2::BubbleFrameInnerOuterRects( frameRect, 
                                                        outerRect, 
                                                        innerRect);
-            TAknsItemID coMaskFrameId;
+
             if ( callState == CBubbleManager::EOnHold )
                 {
                 iFrameId = KAknsIIDQsnFrCall2Bubble;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleCoMask;
                 }
             else if ( callState == CBubbleManager::EDisconnected )
                 {
                 iFrameId = KAknsIIDQsnFrCall2BubbleSecondDisconn;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleSecondCoMask;
                 }
             else
                 {
                 iFrameId = KAknsIIDQsnFrCall2BubbleSecond;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleSecondCoMask;
                 }                
             
             iOuterRect = outerRect;
@@ -296,14 +293,7 @@ void CBubbleOutlookTopRight::DoCall2LayoutL()
                 outerRect,
                 innerRect,
                 iBubble );
-            
-            // Add transparency
-            BubbleUtils::AddTransparencyToBubbleImageL( 
-                coMaskFrameId,
-                outerRect,
-                innerRect,
-                iBubble );
-                
+                          
             break;
             }
         case CBubbleManager::ENone:

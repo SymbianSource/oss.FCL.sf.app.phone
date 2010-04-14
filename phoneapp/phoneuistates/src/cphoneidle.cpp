@@ -22,6 +22,8 @@
 #include "phonelogger.h"
 #include "cphonegeneralgsmmessageshandler.h"
 #include "tphonecmdparamboolean.h"
+#include "mphonesecuritymodeobserver.h"
+#include "mphonestatemachine.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -114,7 +116,6 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
         		}
         case MEngineMonitor::EPEMessageIssuingSSRequest: // fall through
         case MEngineMonitor::EPEMessageCallBarred: // fall through
-        case MEngineMonitor::EPEMessageShowVersion: // fall through
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
         case MEngineMonitor::EPEMessageIncCallIsForw: // fall through
         case MEngineMonitor::EPEMessageIncCallForwToC: // fall through
@@ -131,7 +132,22 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
 			CleanupStack::PopAndDestroy( gsmMsgHandler );
 			}
 			break;
-
+		
+		case MEngineMonitor::EPEMessageShowVersion:
+			{
+			if ( !iStateMachine->SecurityMode()->IsSecurityMode() )
+				{
+				CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
+				CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
+													   *iViewCommandHandle,
+													   *this );
+				CleanupStack::PushL( gsmMsgHandler );
+				gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
+				CleanupStack::PopAndDestroy( gsmMsgHandler );
+				}
+			}
+			break;
+		
         default:
             CPhoneStateIdle::HandlePhoneEngineMessageL( 
                 aMessage, aCallId );

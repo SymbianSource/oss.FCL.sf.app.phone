@@ -24,7 +24,7 @@
 #include <CNTDEF.H>     // TContactItemId
 
 #include "CPhCntMatcher.h" // TFieldId
-#include "MPhCntMatch.h" // TPhCCliType
+#include "mphcntmatch.h" // TPhCCliType
 
 // CONSTANTS
 

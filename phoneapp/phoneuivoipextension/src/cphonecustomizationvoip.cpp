@@ -390,6 +390,8 @@ TBool CPhoneCustomizationVoip::HandleCommandL( TInt aCommand )
         case EPhoneCmdTransferDialerExit:
         case EPhoneCmdTransferDialerSearch:
         case EPhoneCmdTransferDialerContactFetch:
+        case EPhoneCmdUnattendedTransferCallBackOk:
+        case EPhoneCmdUnattendedTransferCallBackCancel:
             // intended fall-through
             iTransferCmdHandler->HandleCommandL( aCommand );
             handled = ETrue;
@@ -605,6 +607,11 @@ TBool CPhoneCustomizationVoip::HandlePhoneEngineMessageL(
             {
             SendGlobalErrorNoteL( EPhoneRemoteForwarding );
             break; 
+            }
+        case MEngineMonitor::EPEMessageTransferCallBackRequest:
+            {
+            iTransferCmdHandler->LaunchCallBackQueryL();
+            break;
             }
         default:
             handled = EFalse;

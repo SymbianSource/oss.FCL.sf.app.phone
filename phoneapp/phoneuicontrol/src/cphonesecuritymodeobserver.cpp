@@ -18,7 +18,7 @@
 #include "cphonesecuritymodeobserver.h"
 #include "mphonesecuritymodechangeobserver.h"
 #include "cphonelogger.h"
-#include "CPhonePubSubProxy.h"
+#include "cphonepubsubproxy.h"
 
 #include <mpeengineinfo.h>
 #include <featmgr.h>

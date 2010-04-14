@@ -196,6 +196,14 @@ class CPhoneKeyEventForwarder
          * @ return ETrue if alpha mode, EFalse otherwise.
          */
         TBool IsKeyBlocked( const TKeyEvent& aKeyEvent ) const;
+        
+        /**
+         * Handles dialer key event. This includes handling multitapping of *-key. 
+         * If multitap happens, function creates back space event 
+         * to delete previous character, and replaces it with
+         * the next one in the cyclig character list *+pw.
+         */
+        void HandleTouchDialerKeyEventL( const TKeyEvent& aKeyEvent, TEventCode aType );
 
     private:    // Data
         
@@ -236,6 +244,21 @@ class CPhoneKeyEventForwarder
         * Own.
         */
         CPhoneQwertyHandler* iQwertyHandler;
+        
+        /*
+         * Time of the previous key press. Used for multitap behaviour.
+         */
+        TTime iPreviousKeyPressTime;
+        
+        /*
+         * Keycode of the previous keypress. Used for multitap behaviour.
+         */
+        TInt iPreviousScanCode;
+        
+        /*
+         * Points to next character in multitap character list.
+         */
+        TInt iMultitapIndex;
     };
 
 #endif      // CPHONEKEYEVENTFORWARDER_H

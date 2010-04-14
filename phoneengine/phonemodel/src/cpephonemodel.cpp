@@ -481,7 +481,9 @@ TPtrC CPEPhoneModel::NameByMessageFromPhoneEngine(
             return MESSAGE("EPEMessageConnectingWithInband");            
         case MEngineMonitor::EPEMessageColpNumberAvailable:
             return MESSAGE("EPEMessageColpNumberAvailable");
-
+        case MEngineMonitor::EPEMessageTransferCallBackRequest:
+            return MESSAGE("EPEMessageTransferCallBackRequest");
+      
         // Contact messages                   3000 - 3999
         case MEngineMonitor::EPEMessageThumbnailLoadingCompleted:
             return MESSAGE("EPEMessageThumbnailLoadingCompleted");
@@ -1237,6 +1239,11 @@ TBool CPEPhoneModel::DelayMessageSending(
         case MEngineMonitor::EPEMessageColpNumberAvailable:
             {              
             sendingDelayed = ETrue;            
+            }
+            break;
+        case MEngineMonitor::EPEMessageTransferCallBackRequest:
+            {
+            sendingDelayed = ETrue;
             }
             break;
         default:

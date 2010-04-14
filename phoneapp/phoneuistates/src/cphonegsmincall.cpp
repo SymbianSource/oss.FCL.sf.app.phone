@@ -35,6 +35,7 @@
 
 #include "tphonecmdparamcallstatedata.h"
 #include "tphonecmdparamcallheaderdata.h"
+#include "mphonesecuritymodeobserver.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -118,10 +119,20 @@ void CPhoneGsmInCall::HandlePhoneEngineMessageL(
             CPhoneState::SendGlobalInfoNoteL( 
                 EPhoneInformationRemoteCreateConferenceNote );
             break;        
+			
+		case MEngineMonitor::EPEMessageShowVersion:
+			{
+			if ( iStateMachine->SecurityMode()->IsSecurityMode() )
+				{
+				// Do nothing if security mode is enabled.
+				return;
+				}
+			}
+		// Fall through
+		
         case MEngineMonitor::EPEMessageIncCallIsForw:  // fall through
         case MEngineMonitor::EPEMessageIssuingSSRequest: // fall through
         case MEngineMonitor::EPEMessageCallBarred: // fall through
-        case MEngineMonitor::EPEMessageShowVersion: // fall through
         case MEngineMonitor::EPEMessageIssuedSSRequest: // fall through
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
         case MEngineMonitor::EPEMessageIncCallForwToC: // fall through

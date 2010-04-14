@@ -31,6 +31,7 @@
 #include "cphonegeneralgsmmessageshandler.h"
 #include "cphonemediatorfactory.h"
 #include "cphonemediatorsender.h"
+#include "mphonesecuritymodeobserver.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -102,11 +103,20 @@ EXPORT_C void CPhoneCallSetup::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageConnecting:
             HandleConnectingL( aCallId );
             break;
+		
+		case MEngineMonitor::EPEMessageShowVersion:
+			{
+			if ( iStateMachine->SecurityMode()->IsSecurityMode() )
+				{
+				// Do nothing if security mode is enabled.
+				return;
+				}
+			}
+		// Fall through
 
         // fall through.    
         case MEngineMonitor::EPEMessageIssuingSSRequest:
         case MEngineMonitor::EPEMessageCallBarred:
-        case MEngineMonitor::EPEMessageShowVersion:
         case MEngineMonitor::EPEMessageIssuedSSRequest:
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
         case MEngineMonitor::EPEMessageIncCallIsForw:

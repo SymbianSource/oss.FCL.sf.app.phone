@@ -376,10 +376,6 @@ TAknsItemID CBubbleTouchPaneButton::SelectPressedButton( TAknsItemID frameId ) c
        {
        return KAknsIIDQsnFrButtonPressedReject;
        }
-   else if( frameId == KAknsIIDQsnFrButtonNormalHold )
-       {
-       return KAknsIIDQsnFrButtonPressedHold;   
-       }
    else
        {
        return KAknsIIDQsnFrButtonPressed;
@@ -399,10 +395,6 @@ TAknsItemID CBubbleTouchPaneButton::SelectPressedButton( TAknsItemID frameId ) c
    else if( frameId == KAknsIIDQsnFrButtonNormalReject )
        {
        return KAknsIIDQsnFrButtonInactiveReject;
-       }
-   else if( frameId == KAknsIIDQsnFrButtonNormalHold )
-       {
-       return KAknsIIDQsnFrButtonInactiveHold;
        }
    else
        {

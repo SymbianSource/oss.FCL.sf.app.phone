@@ -50,7 +50,8 @@
 _LIT( KDialerResourceFile, "dialer.rsc" );
 
 // number entry, keypad area, easydialing, toolbar
-const TInt KContainedControlsInTelephonyMode = 4;  
+const TInt KContainedControlsInTelephonyMode = 4;
+
 
 // ========================= MEMBER FUNCTIONS ================================
 
@@ -71,7 +72,12 @@ EXPORT_C CDialer* CDialer::NewL( const CCoeControl& aContainer,
     return self;
     }
 
+// -----------------------------------------------------------------------------
+// CDialer::~CDialer
+//
 // Destructor
+// -----------------------------------------------------------------------------
+//
 EXPORT_C CDialer::~CDialer()
     {
     DIALER_PRINT("CDialer::~CDialer<"); 
@@ -131,11 +137,15 @@ void CDialer::ConstructL(
     DIALER_PRINT("CDialer::ConstructL>");
     }
 
-// Constructor
-CDialer::CDialer( ) :
-    iEikEnv( *CEikonEnv::Static() )
+// -----------------------------------------------------------------------------
+// CDialer::CDialer
+//
+// Default constructor
+// -----------------------------------------------------------------------------
+//
+CDialer::CDialer()
     {
-    // Empty    
+    // Empty
     }
 
 // -----------------------------------------------------------------------------
@@ -151,8 +161,6 @@ EXPORT_C MNumberEntry* CDialer::NumberEntry()
 
 // -----------------------------------------------------------------------------
 // CDialer::SetNumberEntryObserver
-//
-// 
 // -----------------------------------------------------------------------------
 //
 EXPORT_C void CDialer::SetNumberEntryObserver( MNumberEntryObserver& aObserver ) 
@@ -653,9 +661,9 @@ void CDialer::LoadResourceL()
     path.Append( KDC_RESOURCE_FILES_DIR );
     path.Append( KDialerResourceFile );
     
-    RFs &fsSession= iEikEnv.FsSession();
+    RFs& fsSession= ControlEnv()->FsSession();
     BaflUtils::NearestLanguageFile( fsSession, path ); 
-    iResourceOffset = iEikEnv.AddResourceFileL( path );
+    iResourceOffset = ControlEnv()->AddResourceFileL( path );
     }
 
 // -----------------------------------------------------------------------------
@@ -667,7 +675,7 @@ void CDialer::UnLoadResources()
     {
     if ( iResourceOffset > 0 )
         {
-        iEikEnv.DeleteResourceFile( iResourceOffset );
+        ControlEnv()->DeleteResourceFile( iResourceOffset );
         iResourceOffset = 0;
         }
     }

@@ -20,7 +20,7 @@
 #define CPHCNTMATCH_H
 
 //  INCLUDES
-#include "MPhCntMatch.h"
+#include "mphcntmatch.h"
 
 // FORWARD DECLARATIONS
 class CPhCntMatchItem;

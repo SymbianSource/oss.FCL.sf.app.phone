@@ -175,6 +175,12 @@ TInt CPEParserVoipNumberHandler::ContinueVoipDial() const
     // DialCall method will set call origin as unknow
     TInt errorCode = iCallHandling.DialCall( phoneNumber, callId );
     
+    if ( iDataStore.IsTransferDial() )
+        {
+        iDataStore.SetDoCallBackRequest( ETrue, callId );   
+        iDataStore.SetIsTransferDial( EFalse );
+        }
+    
     // Set dtmf string to dataStore
     iDataStore.SetDtmfPostFix( iDtmfString, callId );
     

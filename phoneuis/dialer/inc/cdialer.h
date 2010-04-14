@@ -412,7 +412,7 @@ NONSHARABLE_CLASS(CDialer) :
          * the availability and state of Easy dialing. 
          */
         void LayoutNumberEntry( const TRect& aParent, TInt aVariety );
-                
+        
     private:    // Data
           
         // Keypad container  - owned
@@ -423,9 +423,6 @@ NONSHARABLE_CLASS(CDialer) :
         
         // Is Number entry (e.g. dialer) being used at the moment
         TBool iIsUsed;
-        
-        // Reference to CEikonEnv
-        CEikonEnv& iEikEnv;
         
         // Resource 
         TInt iResourceOffset;

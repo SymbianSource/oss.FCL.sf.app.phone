@@ -908,16 +908,6 @@ TAknsItemID CPhoneButtonsController::GetButtonForCommandL( TInt aCommandId )
             frameId = KAknsIIDQsnFrButtonNormalReject; 
             break;           
             }
-        case EPhoneInCallCmdHold:
-            {
-            frameId = KAknsIIDQsnFrButtonNormalHold; 
-            break;            
-            }
-        case EPhoneInCallCmdUnhold:
-            {
-            frameId = KAknsIIDQsnFrButtonNormalHold; 
-            break;          
-            }
         case EPhoneInCallCmdEndThisOutgoingCall: 
             {
             frameId = KAknsIIDQsnFrButtonNormalReject;
