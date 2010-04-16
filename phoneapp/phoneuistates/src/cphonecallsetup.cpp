@@ -18,9 +18,6 @@
 
 // INCLUDES
 #include <MediatorDomainUIDs.h>
-// <-- QT PHONE START --> 
-//#include <videotelcontrolmediatorapi.h>
-// <-- QT PHONE END --> 
 #include "cphonecallsetup.h"
 #include "mphonestatemachine.h"
 #include "tphonecmdparamboolean.h"
@@ -163,6 +160,12 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
 
+    // Home screen to foreground after call
+    TPhoneCmdParamBoolean booleanParam;
+    booleanParam.SetBoolean( ETrue );
+    iViewCommandHandle->ExecuteCommand( EPhoneViewHsToForegroundAfterCall,
+        &booleanParam );
+    
     // Stop capturing keys
     CaptureKeysDuringCallNotificationL( EFalse );
     

@@ -152,7 +152,7 @@ goto end
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :RUNTESTS
 echo Running tests
-for /f %%a in ('dir /b ut_*') do call %PATH_TO_DLL%\%%a.exe -dtextshell --
+for /f %%a in ('dir /b ut_*') do call %PATH_TO_DLL%\%%a.exe
 goto end
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::

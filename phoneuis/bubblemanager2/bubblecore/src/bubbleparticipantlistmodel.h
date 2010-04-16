@@ -34,7 +34,11 @@ public:
     void addParticipant(
         int bubbleId,
         const QString &name,
-        int state );
+        int state,
+        bool ciphering);
+
+    void removeParticipant(
+        int bubbleId);
 
     int bubbleId(int row);
 
@@ -44,6 +48,19 @@ public:
 
     QVariant data( const QModelIndex &index,
                    int role = Qt::DisplayRole ) const;
+
+private:
+    inline bool isDataChanged(
+        const Participant& participant,
+        const QString &name,
+        int state,
+        bool ciphering) const;
+
+    inline void updateData(
+        Participant& participant,
+        const QString &name,
+        int state,
+        bool ciphering) const;
 
 private:
     QList<Participant*> mParticipants;

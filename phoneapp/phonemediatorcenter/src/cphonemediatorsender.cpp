@@ -18,17 +18,12 @@
 
 // INCLUDE FILES
 #include <MediatorDomainUIDs.h>
-// <-- QT PHONE START -->
 #include <videotelcontrolmediatorapi.h>
-// <-- QT PHONE END -->
 #include "phoneui.hrh"
 #include "cphonemediatorsender.h"
 #include "phonelogger.h"
 #include "phoneconstants.h"
 #include "phonemediatorpackagetypes.h"
-// <-- QT PHONE START --> 
-//#include "mphonecoveruiobserver.h"
-// <-- QT PHONE END --> 
 #include "phoneui.pan"
 #include "tphonecmdparamcallheaderdata.h"
 #include "tphonecmdparamboolean.h"
@@ -196,7 +191,7 @@ EXPORT_C void CPhoneMediatorSender::SendEvent( const TPhoneViewCommandId aComman
             TPhoneCmdParamBoolean& booleanParam = static_cast<TPhoneCmdParamBoolean&>( aCommandParam );
             const TBool audioMute( booleanParam.Boolean() );
             TInt response = KErrNone;
-// <-- QT PHONE START --> 
+
             TInt command = -1; 
             if( audioMute )
                 {
@@ -236,7 +231,6 @@ EXPORT_C void CPhoneMediatorSender::SendEvent( const TPhoneViewCommandId aComman
                                                     KPhoneToVideotelCmdVersionMinor, 
                                                     KPhoneToVideotelCmdVersionBuild );
                 }
-// <-- QT PHONE END --> 
             }
             break;
             
@@ -345,15 +339,12 @@ void CPhoneMediatorSender::CommandResponseL( TUid aDomain, TUid aCategory,
             ResetCommandBuffer();
             }
         }
-// <-- QT PHONE START --> 
 
     if( ( aDomain == KMediatorVideoTelephonyDomain ) &&
         ( aCategory == KCatPhoneToVideotelCommands ) )
         {
         VideoTelephonyCommandResponse( aCommandId );        
         }
-
-// <-- QT PHONE END --> 
     }
 
 // -----------------------------------------------------------------------------
@@ -365,7 +356,6 @@ void CPhoneMediatorSender::VideoTelephonyCommandResponse( TInt aCommandId )
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, "CPhoneMediatorSender::VideoTelephonyCommandResponse( ) ");
     __PHONELOG1( EBasic, EPhoneMediatorCenter, 
         "VideoTelephonyCommandResponse aCommandId = %d", aCommandId );
-// <-- QT PHONE START --> 
 
     switch( aCommandId )
         {
@@ -377,8 +367,6 @@ void CPhoneMediatorSender::VideoTelephonyCommandResponse( TInt aCommandId )
         default:
             break;
         }     
-
-// <-- QT PHONE END --> 
     }
 
 // -----------------------------------------------------------------------------

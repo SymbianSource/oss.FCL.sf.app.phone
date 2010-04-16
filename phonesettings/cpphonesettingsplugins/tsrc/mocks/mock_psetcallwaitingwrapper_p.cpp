@@ -15,7 +15,7 @@
 *
 */
 #include <QObject>
-#include <RSSSettings.h>
+#include <rsssettings.h>
 #include <psetcontainer.h>
 #include <psetcallwaiting.h>
 #include <smcmockclassincludes.h>

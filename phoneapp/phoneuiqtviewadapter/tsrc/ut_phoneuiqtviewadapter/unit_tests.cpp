@@ -230,6 +230,8 @@ private slots:
     void testSetConferenceExpanded();
     void testSetMenuActions();
     void testNoteController();
+    void testHsToForegroundAfterCall();
+    void testCipheringInfoChange();
 
 private:
     PhoneUIQtViewAdapter *m_adapter; // class under test
@@ -284,6 +286,7 @@ void TestPhoneUIQtViewAdapter::init ()
 {
     m_startChangesCalled = false;
     m_endChangesCalled = false;
+    m_setCipheringCalled = false;
 }
 
 void TestPhoneUIQtViewAdapter::cleanup ()
@@ -344,12 +347,12 @@ void TestPhoneUIQtViewAdapter::testEPhoneViewSetIdleTopApplicationCommand ()
 
 void TestPhoneUIQtViewAdapter::testEPhoneViewUpdateCallHeaderCallDurationCommand ()
 {
-    _LIT (KText, "01:20:13");
-    TBufC<8> textBuf (KText);
-    m_adapter->ExecuteCommandL (EPhoneViewUpdateCallHeaderCallDuration, 1, textBuf);	
+    TPhoneCmdParamInteger time;
+    time.SetInteger(73);
+    m_adapter->ExecuteCommandL (EPhoneViewUpdateCallHeaderCallDuration, 1, &time);	
     QCOMPARE (m_updateCallTimeCalled, true);
     QCOMPARE (m_int, 2);
-    QVERIFY (m_string == "01:20:13");
+    QVERIFY (m_string == "0:01:13");
 }
 
 void TestPhoneUIQtViewAdapter::testEPhoneViewCreateCallHeaderCommand ()
@@ -361,6 +364,8 @@ void TestPhoneUIQtViewAdapter::testEPhoneViewCreateCallHeaderCommand ()
     callHeader.SetCLIText (_L("Bar"), TPhoneCmdParamCallHeaderData::ERight);
     callHeader.SetCNAPText (_L("CNAP"), TPhoneCmdParamCallHeaderData::ERight);
     callHeader.SetCallType (3);
+    callHeader.SetCipheringIndicatorAllowed(true);
+    callHeader.SetCiphering(false);
     m_adapter->ExecuteCommandL (EPhoneViewCreateCallHeader, 2, &callHeader);
 
     QVERIFY (m_startChangesCalled == true);
@@ -396,6 +401,8 @@ void TestPhoneUIQtViewAdapter::testEPhoneViewCreateCallHeaderCommand ()
     QVERIFY (m_bubblewrapperbool == true);
     QCOMPARE (m_bubblewrapperint, 1);
     
+    QVERIFY (m_setCipheringCalled == true);
+    
     QVERIFY (m_endChangesCalled == true);
 }
 
@@ -405,6 +412,8 @@ void TestPhoneUIQtViewAdapter::testEPhoneViewCreateEmergencyCallHeader ()
     callHeader.SetLabelText (_L("Attempting"));
     callHeader.SetHeaderText (_L("emergency") );
     m_adapter->ExecuteCommandL (EPhoneViewCreateEmergencyCallHeader, 2, &callHeader);
+    callHeader.SetCipheringIndicatorAllowed(true);
+    callHeader.SetCiphering(false);    
 
     QVERIFY (m_startChangesCalled == true);
 
@@ -420,6 +429,8 @@ void TestPhoneUIQtViewAdapter::testEPhoneViewCreateEmergencyCallHeader ()
     QString cliText = QString::fromUtf16 (m_setCliText->Ptr (), m_setCliText->Length ());
     QCOMPARE (m_setCliBubbleId, 1);
     QCOMPARE (cliText, QString("emergency"));
+    
+    QVERIFY (m_setCipheringCalled == true);
     
     QVERIFY (m_endChangesCalled == true);    
 }
@@ -874,6 +885,9 @@ void TestPhoneUIQtViewAdapter::testCreateConferenceBubble ()
     callHeader.SetCallState (2);
     callHeader.SetLabelText (_L("Foo2"));
     callHeader.SetDiverted (EFalse);
+    callHeader.SetCipheringIndicatorAllowed(true);
+    callHeader.SetCiphering(false);
+    
     m_adapter->ExecuteCommandL (EPhoneViewCreateConference, 3, &callHeader);    
     QVERIFY (m_creataConferenceCalled == true);
     
@@ -887,6 +901,8 @@ void TestPhoneUIQtViewAdapter::testCreateConferenceBubble ()
     
     m_adapter->ExecuteCommandL (EPhoneViewGetCallExistsInConference, 0, &conferenceDataValue);
     QVERIFY (conferenceDataValue.Boolean() == false);
+    
+    QVERIFY (m_setCipheringCalled == true);
 }
 
 void TestPhoneUIQtViewAdapter::testHandleCommandL ()
@@ -1217,6 +1233,25 @@ void TestPhoneUIQtViewAdapter::testNoteController()
     QVERIFY( m_removeQueryCalled == true );
     QVERIFY( m_removeNoteCalled == true );
     
+}
+
+void TestPhoneUIQtViewAdapter::testHsToForegroundAfterCall()
+{
+    TPhoneCmdParamBoolean booleanParam;
+    booleanParam.SetBoolean( ETrue );
+    m_adapter->ExecuteCommand( EPhoneViewHsToForegroundAfterCall,
+        &booleanParam );
+}
+
+void TestPhoneUIQtViewAdapter::testCipheringInfoChange()
+{
+    TPhoneCmdParamCallHeaderData callHeader;
+    callHeader.SetCipheringIndicatorAllowed(true);
+    callHeader.SetCiphering(false);
+    m_adapter->ExecuteCommandL (EPhoneViewCipheringInfoChange, 1, &callHeader);
+    QVERIFY (m_startChangesCalled == true);
+    QVERIFY (m_setCipheringCalled == true);
+    QVERIFY (m_endChangesCalled == true);
 }
 
 PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestPhoneUIQtViewAdapter)

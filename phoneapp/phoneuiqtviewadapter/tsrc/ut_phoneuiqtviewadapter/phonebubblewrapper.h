@@ -54,6 +54,7 @@ extern bool m_removeConferenceCalled;
 extern bool m_removeCallFromConference;
 extern int m_bubble_id;
 extern QMap<int,int> m_services;
+extern bool m_setCipheringCalled;
 
 
 class PhoneBubbleWrapper : public QObject
@@ -75,13 +76,14 @@ public:
     BubbleManagerIF& bubbleManager ();
     int bubbleId (int callId);
     void setDivert (int bubble, bool enabled);
+    void setCiphering(int bubble, bool indicatorAllowed, bool enabled);
     int activeCallCount ();
     
     const QMap<int, int> callStates() const;
     
     QMap<int, int> bubbles();
     
-    void createConferenceBubble(int callId, int callState, 
+    int createConferenceBubble(int callId, int callState, 
             const TDesC &labelText, const TDesC &cliText);
     
     void setConferenceCallId(int callId);

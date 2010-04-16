@@ -45,11 +45,13 @@ CpCallsPlugin::~CpCallsPlugin()
 /*!
     CpCallsPlugin::createSettingFormItemData.
  */
-CpSettingFormItemData *CpCallsPlugin::createSettingFormItemData(
+QList<CpSettingFormItemData*> CpCallsPlugin::createSettingFormItemData(
         CpItemDataHelper &itemDataHelper) const
 {
-    DPRINT << ", itemDataHelper: " << reinterpret_cast<int>(&itemDataHelper);
-    return new CpCallsPluginGroup(itemDataHelper);
+    DPRINT;
+    QList<CpSettingFormItemData*> ret;
+    ret.append(new CpCallsPluginGroup(itemDataHelper));
+    return ret;
 }
 
 Q_EXPORT_PLUGIN2(cpcallsplugin, CpCallsPlugin);

@@ -19,8 +19,6 @@
 #ifndef __PHONEUI_IBY__
 #define __PHONEUI_IBY__
 
-#ifdef RD_PHONE_NG
-
 #include <data_caging_paths_for_iby.hrh>
 
 #define UPGRADABLE_APP_REG_RSC(NAME) data=DATAZ_\PRIVATE\10003A3F\IMPORT\APPS\ ## NAME ## _reg.rsc        Private\10003a3f\import\apps\ ## NAME ## _reg.rsc
@@ -29,7 +27,6 @@ REM PhoneUI
 S60_APP_EXE(phoneui)
 UPGRADABLE_APP_REG_RSC(phoneui)
 S60_APP_AIF_RSC(phoneui)
-S60_APP_RESOURCE(phoneui)
 //S60_APP_BITMAP(phoneui)
 //S60_APP_AIF_ICONS(phoneui)
 
@@ -53,7 +50,5 @@ data=ZSYSTEM\install\phoneuicontrol_stub.sis        System\Install\phoneuicontro
 data=ZSYSTEM\install\phoneuistates_stub.sis         System\Install\phoneuistates_stub.sis
 data=ZSYSTEM\install\phoneuiutils_stub.sis          System\Install\phoneuiutils_stub.sis
 data=ZSYSTEM\install\phonemediatorcenter_stub.sis   System\Install\phonemediatorcenter_stub.sis
-
-#endif // RD_PHONE_NG
 
 #endif

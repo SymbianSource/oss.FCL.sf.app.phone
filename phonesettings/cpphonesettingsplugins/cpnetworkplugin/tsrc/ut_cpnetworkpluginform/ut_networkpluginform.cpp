@@ -16,7 +16,7 @@
 */
 
 #include "ut_networkpluginform.h"
-#include "qtestmains60.h"
+#include "qtestmains60ui.h"
 #define private public
 #include "cpnetworkpluginform.h"
 #include "cpitemdatahelper.h"
@@ -253,4 +253,4 @@ void UT_CpNetworkPluginForm::updateNetworkSelectionMode(
     mode = m_NetworkSelectionMode;
 }
 
-QTEST_MAIN_S60(UT_CpNetworkPluginForm)
+QTEST_MAIN_S60UI(UT_CpNetworkPluginForm)

@@ -26,7 +26,7 @@ HbMainWindow *mainWindow;
 #define QTEST_MAIN_S60UI(TestObject) \
 int main(int argc, char *argv[]) \
 { \
-\
+HbApplication app(argc, argv); \
 QString str = "C:\\data\\" + QFileInfo(QCoreApplication::applicationFilePath()).baseName() + ".log"; \
 QByteArray   bytes  = str.toAscii(); \
 \
@@ -36,7 +36,6 @@ new_argv[0] = argv[0]; \
 new_argv[1] = arg1; \
 new_argv[2] = bytes.data(); \
 \
-HbApplication app(argc, argv); \
 TestObject tc; \
 QResource::registerResource("../hbcore.rcc"); \
 mainWindow = new HbMainWindow;\

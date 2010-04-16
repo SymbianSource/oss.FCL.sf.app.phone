@@ -137,6 +137,14 @@ public slots:
         snd << "address@domain" << 123 << 12345;        
     */
     void dialVoipService(const QString& address, int serviceId, int contactId);
+    
+private:
+    /*!
+        \fn QString simplified(QString& number)
+        
+        Returns a string that has whitespaces, '(', ')', '-', '[', and ']' chars removed 
+    */
+    static QString simplified(const QString &number) Q_REQUIRED_RESULT;
 
 
 private:

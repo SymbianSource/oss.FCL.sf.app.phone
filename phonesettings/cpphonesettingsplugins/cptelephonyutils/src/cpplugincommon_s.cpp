@@ -18,21 +18,7 @@
 #include "cpplugincommon.h"
 #include "cppluginlogging.h"
 #include <hbglobal.h>
-#include <cppluginplatinterface.h>
-#include <QPluginLoader>
 
-
-CpPluginPlatInterface* Tools::loadCpPlugin(const QString& name)
-{
-    QPluginLoader loader("C:/ControlPanel/debug/bin/"+name+".dll");
-    return qobject_cast<CpPluginPlatInterface*> (loader.instance());
-}
-
-bool Tools::unloadCpPlugin(const QString& name)
-{
-    QPluginLoader loader("C:/ControlPanel/debug/bin/"+name+".dll");
-    return loader.unload();
-}
 
 bool Tools::voipSupported()
 {

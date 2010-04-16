@@ -67,9 +67,7 @@ class CPhoneStateHandle : public CCoeStatic
         * Returns the state machine
         * @return State machine
         */
-// <-- QT PHONE START --> 
         IMPORT_C MPhoneStateMachine* StateMachine();
-// <-- QT PHONE END --> 
         
         /**
         * Returns the view command handle

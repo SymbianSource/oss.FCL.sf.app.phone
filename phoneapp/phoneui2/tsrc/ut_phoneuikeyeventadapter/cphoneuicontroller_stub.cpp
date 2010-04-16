@@ -18,6 +18,7 @@
 // INCLUDE FILES
 
 #include "CPhoneUIController_Stub.h"
+#include "phoneconstants.h"
 
 int m_scan_code;
 int m_code;
@@ -25,6 +26,7 @@ int m_scan_code_down;
 int m_code_down;
 int m_repeats;
 bool m_leave;
+TEventCode m_eventCode;
 
 
 // ================= MEMBER FUNCTIONS =======================
@@ -36,9 +38,9 @@ bool m_leave;
 // -----------------------------------------------------------
 //
 CPhoneUIController_Stub::CPhoneUIController_Stub()  
-    {
+{
     m_leave = false;	
-    }
+}
 
 
 
@@ -48,9 +50,8 @@ CPhoneUIController_Stub::CPhoneUIController_Stub()
 // -----------------------------------------------------------
 
 CPhoneUIController_Stub::~CPhoneUIController_Stub()
-    {
-
-    }
+{
+}
 
 
 
@@ -61,32 +62,32 @@ CPhoneUIController_Stub::~CPhoneUIController_Stub()
 TKeyResponse CPhoneUIController_Stub::HandleKeyEventL(
     const TKeyEvent& aKeyEvent,
     TEventCode aEventCode )
-    {
+{
     m_scan_code = 0;
     m_code = 0;
     m_scan_code_down = 0;
     m_code_down = 0;
+    m_eventCode = aEventCode;
     
-    if (m_leave)
-        {
+    if (m_leave) {
         User::Leave(KErrArgument);
-        }
+    }
         
     m_repeats = aKeyEvent.iRepeats;
     
-    if ( EEventKeyUp == aEventCode )
-        {
+    if(EEventKeyUp == aEventCode) {
         m_scan_code = aKeyEvent.iScanCode;
         m_code = aKeyEvent.iCode;
-        }
-    else if ( EEventKey == aEventCode )
-        {
+    } else if(EEventKey == aEventCode) {
         m_scan_code_down = aKeyEvent.iScanCode;
         m_code_down = aKeyEvent.iCode;       	
-        }
+    } else if(EEventLongPress) {
+        m_scan_code = aKeyEvent.iScanCode;
+        m_code = aKeyEvent.iCode;
+    }
     
     return EKeyWasNotConsumed;
-    }
+}
 
 
 

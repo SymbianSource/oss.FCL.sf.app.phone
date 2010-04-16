@@ -21,10 +21,6 @@
 
 //INCLUDES
 #include <e32base.h>
-// <-- QT PHONE START -->
-//#include <bmbubblemanager.h>
-// <-- QT PHONE END -->
-
 #include "mphonecallheadermanagerutility.h"
 #include "mphonestatemachine.h"
 #include "mphoneviewcommandhandle.h"
@@ -89,7 +85,6 @@ NONSHARABLE_CLASS( CPhoneCallHeaderManager ) :  public CBase,
         void DisplayHeaderForOutgoingCallL(
                 const TInt aCallId );
 
-// <-- QT PHONE START -->       
         /**
         * Sets the call header type used in the call bubble.
         * @param aCallHeaderType, call header type.
@@ -101,7 +96,6 @@ NONSHARABLE_CLASS( CPhoneCallHeaderManager ) :  public CBase,
         * Returns the set call header type.
         */
         TInt CallHeaderType() const;
-// <-- QT PHONE END -->
                 
         /**
         * Sets divert indication to call header if necessary

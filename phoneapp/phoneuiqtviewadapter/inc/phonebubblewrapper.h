@@ -65,6 +65,8 @@ public:
     int bubbleId (int callId);
     
     void setDivert (int bubble, bool enabled);
+    
+    void setCiphering(int bubble, bool indicatorAllowed, bool enabled);
 
     int activeCallCount();    
     
@@ -72,7 +74,7 @@ public:
     
     QMap<int, int> bubbles() const;
     
-    void createConferenceBubble(int callId, int callState,
+    int createConferenceBubble(int callId, int callState,
             const TDesC &labelText, const TDesC &cliText);
     
     void setConferenceCallId(int callId);

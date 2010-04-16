@@ -17,6 +17,7 @@
 
 #include "ut_cpbarringplugin.h"
 #include "qtestmains60.h"
+#include <cpsettingformitemdata.h>
 #define private public
 #include "cpbarringplugin.h"
 #include "cpitemdatahelper.h"
@@ -60,8 +61,9 @@ void UT_CpBarringPlugin::t_createSettingFormItemData()
 {
     CpItemDataHelper itemDataHelper;
     CpBarringPlugin* p = (CpBarringPlugin*)qt_plugin_instance();
-    CpSettingFormItemData *pSettingFormItemData = p->createSettingFormItemData(itemDataHelper);
-
+    QList<CpSettingFormItemData*> list;
+    list.append(p->createSettingFormItemData(itemDataHelper));
+    qDeleteAll(list);
 }
 
 /*!

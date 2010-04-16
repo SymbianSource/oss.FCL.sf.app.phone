@@ -75,10 +75,20 @@ void CPECallDurationDisplaySettingMonitor::ConstructL()
 //
 void CPECallDurationDisplaySettingMonitor::UpdateL()
     {
-    // Resubmit notification request
     // Retrieve current value for call duration display
-    User::LeaveIfError( Get( iDisplayCallDuration ) );
+    iError = Get( iDisplayCallDuration );
+    User::LeaveIfError( iError );
     TEFLOGSTRING2( KTAINT, "CPECallDurationDisplaySettingMonitor::UpdateL %d", iDisplayCallDuration );
+    }
+
+// -----------------------------------------------------------------------------
+// CPECallDurationDisplaySettingMonitor::GetValue
+// -----------------------------------------------------------------------------
+//
+TInt CPECallDurationDisplaySettingMonitor::GetValue(TInt& aValue)
+    {
+    aValue = (TInt)iDisplayCallDuration;
+    return iError;
     }
     
 // End of file

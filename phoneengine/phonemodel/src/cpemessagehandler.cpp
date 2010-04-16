@@ -2996,7 +2996,6 @@ void CPEMessageHandler::UpdateRemotePartyInfo( )
         }
     }
 
-    // <-- QT PHONE START -->
 // -----------------------------------------------------------------------------
 // CPEMessageHandler::HandleDialCall
 // Handles dial message from dial service
@@ -3012,6 +3011,5 @@ TInt CPEMessageHandler::HandleDialServiceCall(
     iModel.HandleInternalMessage( MPEPhoneModel::EPEMessageDialServiceCall );
     return errorCode;
     }
-// <-- QT PHONE END -->
 
 //  End of File  

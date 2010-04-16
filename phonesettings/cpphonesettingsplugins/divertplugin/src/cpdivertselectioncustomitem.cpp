@@ -42,7 +42,7 @@ CpDivertSelectionCustomitem::CpDivertSelectionCustomitem(
     layout->setRowMaximumHeight(1,0);
 
     checkbox = new HbCheckBox(this);
-    checkbox->setBackgroundItem(HbStyle::P_DataItemContentWidget_background);
+    checkbox->setBackgroundItem(HbStyle::P_DataItem_background);
 
     HbStyle::setItemName(checkbox, "dataItem_ContentWidget");
 
@@ -61,7 +61,7 @@ CpDivertSelectionCustomitem::CpDivertSelectionCustomitem(
 
     timeoutLabel->hide();
     timeoutValueLabel = new HbLabel(this);
-    timeoutValueLabel->setBackgroundItem(HbStyle::P_DataItemContentWidget_background);
+    timeoutValueLabel->setBackgroundItem(HbStyle::P_DataItem_background);
     HbStyle::setItemName(timeoutValueLabel, "dataItem_ContentWidget");
     timeoutValueLabel->hide();
     layout->addItem(timeoutValueLabel, 1, 1);

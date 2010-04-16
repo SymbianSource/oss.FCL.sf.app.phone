@@ -135,7 +135,7 @@ class CPhoneStateIncoming : public CPhoneState
         /**
         * Open soft reject message editor
         */
-        void OpenSoftRejectMessageEditorL();
+        void OpenSoftRejectMessageL();
 
         /**
         * Indicator if soft reject message editor is displayed

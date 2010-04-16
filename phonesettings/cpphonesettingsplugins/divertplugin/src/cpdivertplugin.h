@@ -17,16 +17,16 @@
 #ifndef CPDIVERTPLUGIN_H
 #define CPDIVERTPLUGIN_H
 
-#include <cppluginplatinterface.h>
+#include <cpplugininterface.h>
 
 /*!
     \class CpDivertPlugin
     \brief The class CpDivertPlugin implements call divert functionality. 
  */
-class CpDivertPlugin : public QObject, public CpPluginPlatInterface
+class CpDivertPlugin : public QObject, public CpPluginInterface
 {
     Q_OBJECT
-    Q_INTERFACES(CpPluginPlatInterface)
+    Q_INTERFACES(CpPluginInterface)
 
 public:
 
@@ -34,11 +34,11 @@ public:
     
     ~CpDivertPlugin();
     
-    /*!
-     From CpPluginPlatInterface.
-     @see CpPluginPlatInterface.
+    /**
+     * From CpPluginInterface
+     * @see CpPluginInterface.
      */
-    CpSettingFormItemData *createSettingFormItemData(
+    QList<CpSettingFormItemData*> createSettingFormItemData(
             CpItemDataHelper &itemDataHelper) const;
 };
 

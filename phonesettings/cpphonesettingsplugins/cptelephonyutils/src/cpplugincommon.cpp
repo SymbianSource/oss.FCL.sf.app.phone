@@ -28,8 +28,6 @@
 #include <LogsDomainCRKeys.h>
 #include <BTSapDomainPSKeys.h>
 #include <NumberGroupingCRKeys.h>
-#include <QPluginLoader>
-#include <cppluginplatinterface.h>
 #include <hbglobal.h>
 #include <CoreApplicationUIsSDKCRKeys.h>
 #include "cptelephonyutilsdefs.h"
@@ -41,24 +39,6 @@ const int CenrepKeyValueOn = 1;
 
 const int SoftRejectTextDefault = 0; 
 const int SoftRejectTextUserDefined = 1; 
-
-/*!
-  Tools::loadCpPlugin
-*/
-CpPluginPlatInterface* Tools::loadCpPlugin(const QString& name)
-{
-    QPluginLoader loader("\\resource\\qt\\plugins\\controlpanel\\"+name+".qtplugin");
-    return qobject_cast<CpPluginPlatInterface*> (loader.instance());
-}
-
-/*!
-  Tools::unloadCpPlugin
-*/
-bool Tools::unloadCpPlugin(const QString& name)
-{
-    QPluginLoader loader("\\resource\\qt\\plugins\\controlpanel\\"+name+".qtplugin");
-    return loader.unload();
-}
 
 /*!
   Tools::voipSupported

@@ -32,7 +32,8 @@ public:
         Hold            = 0x02, // Hold
         Ihf             = 0x04, // Ihf
         Wired           = 0x08, // Wired
-        Btaa            = 0x10  // Btaa
+        Btaa            = 0x10, // Btaa
+        DisableJoin     = 0x20  // Should join option be disabled
     };
     Q_DECLARE_FLAGS(PhoneButtonFlags, PhoneButtonFlag)
 

@@ -195,9 +195,7 @@ void CPhoneStateIdleVoIP::HandleDialingL( TInt aCallId )
 
     if( iStateMachine->PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP )
         {
-// <-- QT PHONE START --> 
         SetCallHeaderType( EPECallTypeVoIP );       
-// <-- QT PHONE END -->     
         }
 
     CPhoneIdle::HandleDialingL( aCallId );

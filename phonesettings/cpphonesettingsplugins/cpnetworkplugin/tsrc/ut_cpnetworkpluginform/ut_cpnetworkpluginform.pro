@@ -31,7 +31,7 @@ QT -= gui
 QT += testlib
 
 symbian: { 
-    CONFIG += no_icon
+    #CONFIG += no_icon
     INCLUDEPATH += /epoc32/include/mw/QtTest \
         /epoc32/include/platform/mw \
         /epoc32/include/mw/qt

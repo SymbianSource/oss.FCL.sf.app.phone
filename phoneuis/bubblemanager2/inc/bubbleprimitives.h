@@ -26,6 +26,7 @@ enum BubblePrimitive
     BP_Text3_text,
     BP_CallStatus_icon,
     BP_NumberType_icon,
+    BP_Ciphering_icon,
     BP_Bubble_primitive_count
 };
 

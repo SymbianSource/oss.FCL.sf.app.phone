@@ -28,10 +28,7 @@
 // might leave.
 // -----------------------------------------------------------------------------
 //
-// <-- QT PHONE START --> 
-TPhTouchPaneWrapper::TPhTouchPaneWrapper( 
-        /*MBubbleTouchPaneInterface& aTouchPane*/ ) :
-        //iTouchPane( aTouchPane )    
+TPhTouchPaneWrapper::TPhTouchPaneWrapper()
     {
     }
 
@@ -42,7 +39,7 @@ TPhTouchPaneWrapper::TPhTouchPaneWrapper(
 //
 TInt TPhTouchPaneWrapper::NumberOfButtonsInPane() const
     {
-    return KErrNotSupported; //iTouchPane.NumberOfButtonsInPane();
+    return KErrNotSupported;
     }
 
 // ---------------------------------------------------------
@@ -53,7 +50,7 @@ TInt TPhTouchPaneWrapper::NumberOfButtonsInPane() const
 TInt TPhTouchPaneWrapper::ButtonCommandId( 
         TInt /*aButtonIndex*/ ) const
     {
-    return KErrNotSupported; //iTouchPane.ButtonCommandId( aButtonIndex );
+    return KErrNotSupported;
     }
 
 // ---------------------------------------------------------
@@ -63,9 +60,6 @@ TInt TPhTouchPaneWrapper::ButtonCommandId(
 //
 void TPhTouchPaneWrapper::SetButtonDimmed( TInt /*aCommand*/, TBool /*aDimmed*/ )
    {
-   //iTouchPane.SetButtonDimmed( aCommand, aDimmed );   
    }
-
-// <-- QT PHONE END --> 
 
 //  End of File

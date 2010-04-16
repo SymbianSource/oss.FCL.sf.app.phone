@@ -92,7 +92,7 @@ void CPEParserPhoneNumberHandler::ProcessDialToNumberL(
     if( processType != EPECallTypeVideo )
         {
         // TSY not accept phone number that include + or w chartes.
-        TPEPhoneNumber postfix = FilterPostfix( aDtmfPostfix );
+        TPEPhoneNumber postfix = FilterPostfixL( aDtmfPostfix );
         if( postfix.Length() )
             {
             phoneNumber.Append( postfix );
@@ -166,7 +166,7 @@ void CPEParserPhoneNumberHandler::ProcessDialToNumberL(
 // CPEParserPhoneNumberHandler::FilterPostfix
 // -----------------------------------------------------------------------------
 // 
-TPtrC CPEParserPhoneNumberHandler::FilterPostfix( TPtrC aPostfix )
+TPtrC CPEParserPhoneNumberHandler::FilterPostfixL( TPtrC aPostfix )
     {
     TLex input( aPostfix );
     TInt stripStart = KErrNotFound;
@@ -174,8 +174,11 @@ TPtrC CPEParserPhoneNumberHandler::FilterPostfix( TPtrC aPostfix )
     for ( TInt i = 0; i != postfixLength; i ++ )
         {
         TChar ch( input.Peek() );
-        if ( ch == KDtmfWait ||
-             ch == KDtmfPlus )
+        if (ch == KDtmfPlus)
+            {
+            User::Leave ( ECCPErrorInvalidPhoneNumber );
+            }
+        else if ( ch == KDtmfWait )
             {
             if ( i < stripStart || stripStart == KErrNotFound )
                 {
@@ -217,12 +220,9 @@ TBool CPEParserPhoneNumberHandler::IsPhoneOffline()
         {
         isPhoneOffline = ETrue;
         }
-    // <-- QT PHONE START -->
     //TODO
     isPhoneOffline = EFalse;
-    return isPhoneOffline; //isPhoneOffline;
-    // <-- QT PHONE END -->
+    return isPhoneOffline;
     }
-
     
 //  End of File

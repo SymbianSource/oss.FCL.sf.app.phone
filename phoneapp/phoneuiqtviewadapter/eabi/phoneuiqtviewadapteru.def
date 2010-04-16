@@ -98,4 +98,7 @@ EXPORTS
 	_ZThn8_N20PhoneUIQtViewAdapterD0Ev @ 97 NONAME
 	_ZThn8_N20PhoneUIQtViewAdapterD1Ev @ 98 NONAME
 	_ZNK20PhoneResourceAdapter18convertToHbActionsEi @ 99 NONAME
+	_ZN20PhoneUIQtViewAdapter15convertDurationEi @ 100 NONAME
+	_ZN20PhoneUIQtViewAdapter22setBubbleSelectionFlagEv @ 101 NONAME
+	_ZN20PhoneUIQtViewAdapter25handleCipheringInfoChangeEiP18TPhoneCommandParam @ 102 NONAME
 

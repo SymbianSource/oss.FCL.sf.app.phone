@@ -202,7 +202,7 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     // Close fast swap window if it's displayed
     CEikonEnv::Static()->DismissTaskList();
     
-        // If the 1st incoming call became Connected, this is waiting call
+    // If the 1st incoming call became Connected, this is waiting call
     // If the 1st incoming call went just Idle, this is a normal call
     if ( connectedCall > KErrNotFound )
         {
@@ -220,12 +220,11 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     
     SetToolbarDimming( EFalse );
     
-// <-- QT PHONE START -->
     // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
-// <-- QT PHONE END -->
+
     if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
             && !CPhoneCenRepProxy::Instance()->
             IsTelephonyFeatureSupported( KTelephonyLVFlagAllowUnlockOnIncoming ) 

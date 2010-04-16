@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <service>
     <name>hsdialerwidgetplugin</name>
-    <filepath>z:/private/20022F35/import/widgetregistry/20022F44/hsdialerwidgetplugin.qtplugin</filepath>
+    <filepath>hsdialerwidgetplugin</filepath>
     <description>Dialer widget</description>
     <interface>
-        <name>com.nokia.homescreen.widget</name>
+        <name>com.nokia.symbian.IHomeScreenWidget</name>
         <version>1.0</version>
         <description>The dialer widget displays dialing menu</description>
         <capabilities></capabilities>

@@ -14,7 +14,6 @@
 * Description:
 *
 */
-#include <QDebug>
 #include <qcontact.h>
 #include <qcontactdetail.h>
 #include <qcontactname.h>
@@ -23,6 +22,7 @@
 #include <qtcontactsglobal.h>
 #include "cphcntmatch2.h"
 #include "cphcntcontactidimpl2.h"
+#include "qtphonelog.h"
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -31,7 +31,7 @@
 // ---------------------------------------------------------------------------
 //
 CPhCntMatch2::CPhCntMatch2(const QContact aContact):
-iContact(aContact), iNumber(NULL)
+iContact(aContact), iNumber(NULL), iContactId(NULL), iDummyArray(NULL)
     {
     }
 
@@ -267,7 +267,7 @@ TPtrC CPhCntMatch2::FieldValue(const QString& name, const QString& key) const
         {
         returnValue = details.first().value(key);        
         }
-    qDebug()<<"CPhCntMatch2::FieldValue:: key is : "<< key << "..value is : "  << returnValue;
+    PHONE_DEBUG4("CPhCntMatch2::FieldValue:: key is :", key, "..value is :", returnValue);
     return returnValue.utf16();    
 }
 

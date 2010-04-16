@@ -65,103 +65,44 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     QMap<PhoneAction::ActionType, PhoneAction *> translatedActions;
     
     switch (symbianResourceId) {
-    case R_PHONEUI_INCOMING_CALL_BUTTONS:
-    case R_PHONEUI_WAITING_CALL_BUTTONS:        
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setText (hbTrId("txt_common_button_answer"));
-        leftButton->setIcon (HbIcon(":/pri_large_button_answer.svg"));
-        leftButton->setCommand (EPhoneCallComingCmdAnswer);
-        translatedActions [PhoneAction::LeftButton] = leftButton;
-        
-        PhoneAction *rightButton = new PhoneAction;
-        rightButton->setText (hbTrId("txt_common_button_reject"));
-        rightButton->setIcon (HbIcon(":/qtg_large_button_reject.svg"));
-        rightButton->setCommand (EPhoneCallComingCmdReject);
-        translatedActions [PhoneAction::RightButton] = rightButton;
-        }
-        break;
-        
-    case R_PHONEUI_CALL_SETUP_BUTTONS:
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setText (hbTrId("txt_phone_button_end_call"));
-        leftButton->setIcon (HbIcon(":/pri_large_button_endcall.svg"));
-        leftButton->setCommand (EPhoneInCallCmdEndThisOutgoingCall);
-        translatedActions [PhoneAction::LeftButton] = leftButton;
-        }
-        break;
-
-    case R_PHONEUI_INCALL_BUTTONS:
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setText (hbTrId("txt_phone_button_hold"));
-        leftButton->setIcon (HbIcon(":/qtg_large_button_hold.svg"));
-        leftButton->setCommand (EPhoneInCallCmdHold);
-        translatedActions [PhoneAction::LeftButton] = leftButton;
-
-        PhoneAction *rightButton = new PhoneAction;
-        rightButton->setText (hbTrId("txt_phone_button_end_call"));
-        rightButton->setIcon (HbIcon(":/pri_large_button_endcall.svg"));
-        rightButton->setCommand (EPhoneInCallCmdEndThisActiveCall);
-        translatedActions [PhoneAction::RightButton] = rightButton;
-        }
-        break;
-        
-    case R_PHONEUI_INCALL_HELD_BUTTONS:
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setText (hbTrId("txt_phone_button_unhold"));
-        leftButton->setIcon (HbIcon(":/qtg_large_button_onhold.svg"));
-        leftButton->setCommand (EPhoneInCallCmdUnhold);
-        translatedActions [PhoneAction::LeftButton] = leftButton;
-
-        PhoneAction *rightButton = new PhoneAction;
-        rightButton->setText (hbTrId("txt_phone_button_end_call"));
-        rightButton->setIcon (HbIcon(":/pri_large_button_endcall.svg"));
-        rightButton->setCommand (EPhoneInCallCmdEndThisActiveCall);
-        translatedActions [PhoneAction::RightButton] = rightButton;
-        }
-        break;
-
-    case R_PHONEUI_TWO_SINGLES_BUTTONS:
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setText (hbTrId("txt_phone_button_swap"));
-        leftButton->setIcon (HbIcon(":/qgn_indi_button_swap.svg"));
-        leftButton->setCommand (EPhoneInCallCmdSwap);
-        translatedActions [PhoneAction::LeftButton] = leftButton;
-
-        PhoneAction *rightButton = new PhoneAction;
-        rightButton->setText (hbTrId("txt_phone_button_end_call"));
-        rightButton->setIcon (HbIcon(":/pri_large_button_endcall.svg"));
-        rightButton->setCommand (EPhoneInCallCmdEndThisActiveCall);
-        translatedActions [PhoneAction::RightButton] = rightButton;                        
-        }
-        break;
     
     case R_PHONEUI_CALLHANDLING_INCOMINGCALL_CBA:
         {
         PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon(":/qtg_large_comp_message.svg"));
+        leftButton->setIcon (HbIcon("qtg_mono_send"));
+        leftButton->setCommand(EPhoneCallComingCmdSoftReject);
         translatedActions [PhoneAction::ToolbarButton1] = leftButton;       
         
         PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon (HbIcon(":/qtg_large_tb_silence.svg"));
+        rightButton->setIcon (HbIcon("qtg_mono_mute"));
         rightButton->setCommand (EPhoneCallComingCmdSilent);
         translatedActions [PhoneAction::ToolbarButton2] = rightButton;            
         }
         break;
 
     case R_PHONEUI_CALLHANDLING_INCOMINGCALL_REJECT_CBA:
+        {
+        PhoneAction *leftButton = new PhoneAction;
+        leftButton->setIcon (HbIcon("qtg_mono_send"));
+        leftButton->setCommand(EPhoneCallComingCmdSoftReject);
+        translatedActions [PhoneAction::ToolbarButton1] = leftButton;
+               
+        PhoneAction *rightButton = new PhoneAction;
+        rightButton->setIcon (HbIcon("qtg_mono_reject_call"));
+        rightButton->setCommand (EPhoneCallComingCmdReject);
+        translatedActions [PhoneAction::ToolbarButton2] = rightButton;      
+        }
+        break;
+        
     case R_PHONEUI_CALLHANDLING_INCOMINGCALL_SOFT_REJECT_CBA:
         {
         PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon(":/qtg_large_comp_message.svg"));
-        translatedActions [PhoneAction::ToolbarButton1] = leftButton;
+        leftButton->setIcon (HbIcon("qtg_mono_send"));
+        leftButton->setCommand(EPhoneCallComingCmdSoftReject);
+        translatedActions [PhoneAction::ToolbarButton1] = leftButton;    
         
         PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon (HbIcon(":/qtg_large_tb_silence.svg"));
+        rightButton->setIcon (HbIcon("qtg_mono_mute"));
         rightButton->setDisabled(true);
         translatedActions [PhoneAction::ToolbarButton2] = rightButton;        
         }
@@ -170,12 +111,14 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     case R_PHONEUI_CALLHANDLING_CALLWAITING_CBA:        
         {
         PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon(":/qtg_large_comp_message.svg"));
+        leftButton->setIcon (HbIcon("qtg_mono_send"));
+        leftButton->setCommand(EPhoneCallComingCmdSoftReject);
         translatedActions [PhoneAction::ToolbarButton1] = leftButton;       
         
         PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon (HbIcon(":/qtg_large_tb_join.svg"));
+        rightButton->setIcon (HbIcon("qtg_mono_join_call"));
         rightButton->setCommand (EPhoneInCallCmdJoin);
+        rightButton->setDisabled(true);
         translatedActions [PhoneAction::ToolbarButton2] = rightButton;            
         }
         break;        
@@ -186,30 +129,30 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     case R_PHONEUI_CALLHANDLING_INCALL_UNHOLD_CBA:
         {
         PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon(":/qtg_large_tb_dialler.svg"));
+        leftButton->setIcon (HbIcon("qtg_mono_dialer"));
         leftButton->setCommand(EPhoneInCallCmdDialer);
         translatedActions [PhoneAction::ToolbarButton1] = leftButton;
         
         PhoneAction *centerButton = new PhoneAction;
-        centerButton->setIcon (HbIcon(":/qtg_large_tb_mute.svg"));
+        centerButton->setIcon (HbIcon("qtg_mono_mic_mute"));
         centerButton->setCommand (EPhoneInCallCmdMute);
         translatedActions [PhoneAction::ToolbarButton2] = centerButton;        
 
         PhoneAction *centerButton2 = new PhoneAction;
         if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
             {
-            centerButton2->setIcon (HbIcon(":/qtg_large_tb_loudsp_unmute.svg"));
+            centerButton2->setIcon (HbIcon("qtg_mono_loudspeaker"));
             centerButton2->setCommand (EPhoneInCallCmdActivateIhf);
             }
         else
             {
-            centerButton2->setIcon (HbIcon(":/qtg_large_tb_loudsp_mute.svg"));
+            centerButton2->setIcon (HbIcon("qtg_mono_mobile"));
             centerButton2->setCommand (EPhoneInCallCmdDeactivateIhf);
             }
         translatedActions [PhoneAction::ToolbarButton3] = centerButton2; 
         
         PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon(HbIcon(":/qtg_large_tb_contacts.svg"));
+        rightButton->setIcon(HbIcon("qtg_mono_contacts"));
         rightButton->setDisabled( 
                 (symbianResourceId==
                  R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA));
@@ -221,19 +164,19 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     case R_PHONEUI_CALLHANDLING_EMERGENCY_CBA:
         {
         PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon(":/qtg_large_tb_dialler.svg"));
+        leftButton->setIcon (HbIcon("qtg_mono_dialer"));
         leftButton->setCommand(EPhoneInCallCmdDialer);
         translatedActions [PhoneAction::ToolbarButton1] = leftButton;
         
         PhoneAction *rightButton = new PhoneAction;
         if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
             {
-            rightButton->setIcon (HbIcon(":/qtg_large_tb_loudsp_unmute.svg"));
+            rightButton->setIcon (HbIcon("qtg_mono_loudspeaker"));
             rightButton->setCommand (EPhoneInCallCmdActivateIhf);
             }
         else
             {
-            rightButton->setIcon (HbIcon(":/qtg_large_tb_loudsp_mute.svg"));
+            rightButton->setIcon (HbIcon("qtg_mono_mobile"));
             rightButton->setCommand (EPhoneInCallCmdDeactivateIhf);
             }
         translatedActions [PhoneAction::ToolbarButton2] = rightButton;                    
@@ -243,30 +186,30 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     case R_PHONEUI_CALLHANDLING_INCALL_UNMUTE_CBA:
         {
         PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon(":/qtg_large_tb_dialler.svg"));
+        leftButton->setIcon (HbIcon("qtg_mono_dialer"));
         leftButton->setCommand(EPhoneInCallCmdDialer);
         translatedActions [PhoneAction::ToolbarButton1] = leftButton;
         
         PhoneAction *centerButton = new PhoneAction;
-        centerButton->setIcon (HbIcon(":/qtg_large_tb_unmute.svg"));
+        centerButton->setIcon (HbIcon("qtg_mono_mic_unmute"));
         centerButton->setCommand (EPhoneInCallCmdUnmute);
         translatedActions [PhoneAction::ToolbarButton2] = centerButton;        
 
         PhoneAction *centerButton2 = new PhoneAction;
         if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
             {
-            centerButton2->setIcon (HbIcon(":/qtg_large_tb_loudsp_unmute.svg"));
+            centerButton2->setIcon (HbIcon("qtg_mono_loudspeaker"));
             centerButton2->setCommand (EPhoneInCallCmdActivateIhf);
             }
         else
             {
-            centerButton2->setIcon (HbIcon(":/qtg_large_tb_loudsp_mute.svg"));
+            centerButton2->setIcon (HbIcon("qtg_mono_mobile"));
             centerButton2->setCommand (EPhoneInCallCmdDeactivateIhf);
             }
         translatedActions [PhoneAction::ToolbarButton3] = centerButton2;     
         
         PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon(HbIcon(":/qtg_large_tb_contacts.svg"));
+        rightButton->setIcon(HbIcon("qtg_mono_contacts"));
         translatedActions[PhoneAction::ToolbarButton4] = rightButton;   
         }
         break;
@@ -274,30 +217,30 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     case R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA:
         {
         PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon(":/qtg_large_tb_dialler.svg"));
+        leftButton->setIcon (HbIcon("qtg_mono_dialer"));
         leftButton->setCommand(EPhoneInCallCmdDialer);
         translatedActions [PhoneAction::ToolbarButton1] = leftButton;
         
         PhoneAction *centerButton1 = new PhoneAction;
         if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Hold))
             {
-            centerButton1->setIcon (HbIcon(":/qtg_large_tb_mute.svg"));
+            centerButton1->setIcon (HbIcon("qtg_mono_mic_mute"));
             centerButton1->setCommand (EPhoneInCallCmdMute);
             }
         else
             {
-            centerButton1->setIcon (HbIcon(":/qtg_large_tb_unmute.svg"));
+            centerButton1->setIcon (HbIcon("qtg_mono_mic_unmute"));
             centerButton1->setCommand (EPhoneInCallCmdUnmute);
             }
         translatedActions [PhoneAction::ToolbarButton2] = centerButton1;
 
         PhoneAction *centerButton2 = new PhoneAction;
-        centerButton2->setIcon (HbIcon(":/qtg_large_tb_loudsp_mute.svg"));
+        centerButton2->setIcon (HbIcon("qtg_mono_mobile"));
         centerButton2->setCommand (EPhoneInCallCmdDeactivateIhf);
         translatedActions [PhoneAction::ToolbarButton3] = centerButton2;
         
         PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon(HbIcon(":/qtg_large_tb_contacts.svg"));
+        rightButton->setIcon(HbIcon("qtg_mono_contacts"));
         translatedActions[PhoneAction::ToolbarButton4] = rightButton;
         }
         break;
@@ -305,7 +248,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     case R_PHONEUI_MTCAL_INCOMING_CALL:
         {
         PhoneAction *text = new PhoneAction;
-        text->setText (hbTrId("calling"));
+        text->setText (hbTrId("txt_phone_other_incoming_call"));
         translatedActions [PhoneAction::Text] = text;
         }
         break;
@@ -313,7 +256,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     case R_PHONEUI_INCALL_CALL_DISCONNECTED:
         {
         PhoneAction *text = new PhoneAction;
-        text->setText (hbTrId("disconnected"));
+        text->setText (hbTrId("txt_phone_other_disconnected"));
         translatedActions [PhoneAction::Text] = text;
         }
         break;      
@@ -340,7 +283,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         VA_LIST list;
         VA_START (list, symbianResourceId);
         int intValue = VA_ARG (list, int);
-        text->setText (hbTrId("txt_phone_other_call_ln").arg (intValue));
+        text->setText(hbTrId("txt_phone_other_call_ln", intValue));
         translatedActions [PhoneAction::Text] = text;
         VA_END (list);
         }
@@ -392,7 +335,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         {
         PhoneAction *button = new PhoneAction;
         button->setText (hbTrId("txt_phone_button_end_call"));
-        button->setIcon (HbIcon(":/pri_large_button_endcall.svg"));
+        button->setIcon (HbIcon("qtg_mono_end_call"));
         button->setCommand (EPhoneCmdEnd);
         translatedActions [PhoneAction::LeftButton] = button;
         }
@@ -419,7 +362,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         VA_LIST list;
         VA_START (list, symbianResourceId);
         const TDesC *string = (TDesC*)VA_ARG(list, TDesC*);
-        text->setText (hbTrId("Sending:\n%1").arg(QString::fromUtf16(string->Ptr(), 
+        text->setText (hbTrId("txt_phone_info_sending").arg(QString::fromUtf16(string->Ptr(), 
                 string->Length())));
         translatedActions [PhoneAction::Text] = text;
         VA_END (list);
@@ -431,7 +374,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         VA_LIST list;
         VA_START (list, symbianResourceId);
         const TDesC *string = (TDesC*)VA_ARG(list, TDesC*);
-        text->setText (hbTrId("Send string:\n%1").arg(QString::fromUtf16(string->Ptr(), 
+        text->setText (hbTrId("txt_phone_info_send_string").arg(QString::fromUtf16(string->Ptr(), 
                 string->Length())));
         translatedActions [PhoneAction::Text] = text;
         VA_END (list);
@@ -464,19 +407,19 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
             
         case R_NOTETEXT_INVALID_PHONENUMBER:
             {
-            ret = hbTrId("Invalid phone number"); 
+            ret = hbTrId("txt_phone_info_invalid_phone_number"); 
             }
             break;
             
         case R_NOTETEXT_NO_ANSWER:
             {
-            ret = hbTrId("No answer"); 
+            ret = hbTrId("txt_phone_info_no_answer"); 
             }
             break;
         
         case R_PHONE_ERROR_NUMBER_BUSY:
             {
-            ret = hbTrId("Number busy"); 
+            ret = hbTrId("txt_phone_info_number_busy"); 
             }
             break;
             
@@ -500,7 +443,7 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
             
         case R_INCAL_REMOTE_ACTIVE_TEXT:
             {
-            ret = hbTrId("Connected");
+            ret = hbTrId("txt_phone_info_connected");
             }
             break;
             
@@ -511,7 +454,7 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
             break;
         case R_PHONE_INCALL_INFO_NO_NETWORK_SUPPORT:
             {
-            ret = hbTrId("No network support for video call");
+            ret = hbTrId("txt_phone_info_no_network_support_for_video_call");
             }
             break;
         default:
@@ -530,7 +473,7 @@ QString PhoneResourceAdapter::convertToString(
 
         case R_PHONE_TEXT_COLP_CONNECTED:
             {
-            ret = hbTrId("Connected to %1").arg(text);
+            ret = hbTrId("txt_phone_info_connected_to_1").arg(text);
             }
             break;
         default:

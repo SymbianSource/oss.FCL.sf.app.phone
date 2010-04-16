@@ -16,7 +16,7 @@
 */
 
 
-#include "../Blacklist/group/bld.inf"
+#include "../blacklist/group/bld.inf"
 #include "../phoneuicontrol/group/bld.inf"
 #include "../phoneuistates/group/bld.inf"
 #include "../phoneuiutils/group/bld.inf"

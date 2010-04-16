@@ -38,9 +38,7 @@ private slots:
     void cleanup();
     
     void t_memleak();
-    
-    void t_onConnectionRemoved();
-    void t_onPrototypeAdded();
+
 private:
     CpTelephonyPluginView *m_callspluginview;
 

@@ -24,12 +24,9 @@
 #include <StringLoader.h>
 #include <dundomainpskeys.h>
 #include <telephonyvariant.hrh>
-#include <ScreensaverInternalPSKeys.h>
 #include <mpeengineinfo.h>
 #include <MediatorDomainUIDs.h>
-// <-- QT PHONE START -->
 #include <videotelcontrolmediatorapi.h>
-// <-- QT PHONE END -->
 
 #include "cphonepubsubproxy.h"
 #include "phoneui.pan"
@@ -409,6 +406,7 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
 
     SetTouchPaneButtons( EPhoneIncallButtons );
     SetToolbarDimming( EFalse );
+    SetBackButtonActive(ETrue);
             
     EndUiUpdate();
     EndTransEffect();
@@ -482,7 +480,6 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
         &globalNotifierParam );
     
-
     SetDefaultFlagsL();
     
      if ( IsNumberEntryUsedL() )
@@ -517,6 +514,8 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
         }
  
     DeleteTouchPaneButtons();
+    SetBackButtonActive(ETrue);
+    
     EndUiUpdate();
     EndTransEffect();
     // Go to idle state   
@@ -573,7 +572,7 @@ EXPORT_C TBool CPhoneStateIncoming::HandleCommandL( TInt aCommand )
 
         case EPhoneCallComingCmdSoftReject:
             // Open Soft reject message editor
-            OpenSoftRejectMessageEditorL();
+            OpenSoftRejectMessageL();
             break;
 
         case EPhoneNumberAcqCmdSendCommand:
@@ -649,8 +648,6 @@ void CPhoneStateIncoming::DisconnectWaitingCallL()
     if( IsVideoCall( iRingingCallId ) )
         {
         // Video call can be released only after we get response to VT Shutdown Command
-// <-- QT PHONE START -->
- 
         CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( KMediatorVideoTelephonyDomain,
                                                                              KCatPhoneToVideotelCommands, 
                                                                              EVtCmdReleaseDataport,
@@ -659,8 +656,6 @@ void CPhoneStateIncoming::DisconnectWaitingCallL()
                                                                              KPhoneToVideotelCmdVersionBuild ),
                                                                    KNullDesC8,
                                                                    CPhoneReleaseCommand::NewL( *iStateMachine ) );
-
-// <-- QT PHONE END --> 
         }
     else
         {
@@ -676,7 +671,7 @@ void CPhoneStateIncoming::DisconnectWaitingCallL()
 // CPhoneStateIncoming::OpenSoftRejectMessageEditorL
 // -----------------------------------------------------------
 //
-void CPhoneStateIncoming::OpenSoftRejectMessageEditorL()
+void CPhoneStateIncoming::OpenSoftRejectMessageL()
     {
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::OpenSoftRejectMessageEditorL ()" );

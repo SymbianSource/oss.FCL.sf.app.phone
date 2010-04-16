@@ -86,4 +86,7 @@ EXPORTS
 	?metaObject@PhoneResourceAdapter@@UBEPBUQMetaObject@@XZ @ 85 NONAME ; struct QMetaObject const * PhoneResourceAdapter::metaObject(void) const
 	?setParticipantListActions@PhoneUIQtViewAdapter@@AAEXXZ @ 86 NONAME ; void PhoneUIQtViewAdapter::setParticipantListActions(void)
 	?convertToHbActions@PhoneResourceAdapter@@QBE?AV?$QList@PAVHbAction@@@@H@Z @ 87 NONAME ; class QList<class HbAction *> PhoneResourceAdapter::convertToHbActions(int) const
+	?convertDuration@PhoneUIQtViewAdapter@@AAE?AVQString@@H@Z @ 88 NONAME ; class QString PhoneUIQtViewAdapter::convertDuration(int)
+	?setBubbleSelectionFlag@PhoneUIQtViewAdapter@@AAEXXZ @ 89 NONAME ; void PhoneUIQtViewAdapter::setBubbleSelectionFlag(void)
+	?handleCipheringInfoChange@PhoneUIQtViewAdapter@@AAEXHPAVTPhoneCommandParam@@@Z @ 90 NONAME ; void PhoneUIQtViewAdapter::handleCipheringInfoChange(int, class TPhoneCommandParam *)
 

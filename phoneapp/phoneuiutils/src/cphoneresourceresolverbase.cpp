@@ -31,12 +31,7 @@
 #include "phonelogger.h"
 #include "cphonecenrepproxy.h"
 
-// <-- QT PHONE START --> 
 #include "phoneresourceids.h"
-//#include <phoneui.rsg>
-//#include <callhandlingui.rsg>
-//#include <phoneuitouch.rsg>
-// <-- QT PHONE END --> 
 #include "tphonetouchbuttonconfig.h"
 #include <data_caging_path_literals.hrh>
 
@@ -655,14 +650,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
 
         case EPhoneCallHandlingInCallHandsetCBA:
             if ( iVariationFlags & EOnscreenDialer )
-// <-- QT PHONE START -->                
-/* 
-                {
-                retVal = R_PHONEUI_INCALL_DIALER_CBA;
-                }
-            else
-*/
-// <-- QT PHONE END -->                
                 {
                 retVal = R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA;
                 }
@@ -670,14 +657,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
 
         case EPhoneCallHandlingInCallBtaaCBA:
             if ( iVariationFlags & EOnscreenDialer )
-// <-- QT PHONE START -->                
-/* 
-                {
-                retVal = R_PHONEUI_INCALL_DIALER_CBA;
-                }
-            else
-*/
-// <-- QT PHONE END -->                
                 {
                 retVal = R_PHONEUI_CALLHANDLING_INCALL_BTAA_CBA;
                 }
@@ -685,14 +664,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallHandlingEmergencyCBA:
-// <-- QT PHONE START -->        
-/*            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUI_INCALL_DIALER_CBA;
-                }
-            else
-*/            
-// <-- QT PHONE END -->              
                 {
                 retVal = R_PHONEUI_CALLHANDLING_EMERGENCY_CBA;
                 }
@@ -1006,9 +977,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallDurationFormatString:
-// <-- QT PHONE START --> 
             retVal = R_PHONEUI_TIME_DURAT_LONG_WITH_ZERO;
-// <-- QT PHONE END --> 
             break;
 
         case EPhoneDtmfNumberQuery:
@@ -1535,7 +1504,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
         case EPhoneCallHandlingEmergencyInCallNoOptions:
             retVal = R_PHONEUI_CALLHANDLING_EMERGENCY_INCALL_NO_OPTIONS;
             break;
-// <-- QT PHONE START -->
+
         case EPhoneIncallHeldButtons:
             retVal = R_PHONEUI_INCALL_HELD_BUTTONS;
             break;
@@ -1543,7 +1512,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
         case EPhoneAttemptingEmergencyText:
             retVal = R_PHONEUI_ATTEMPTING_EMERGENCY_CALL_TEXT;
             break;
-// <-- QT PHONE END -->
 
         default:
             Panic( EPhoneUtilsResourcePhoneappNotFound );

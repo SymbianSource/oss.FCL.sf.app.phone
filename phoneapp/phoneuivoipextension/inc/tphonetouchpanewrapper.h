@@ -22,9 +22,6 @@
 // INCLUDES
 #include <e32base.h>
 #include <teltouchpaneextension.h>
-// <-- QT PHONE START --> 
-//#include <bmtouchpaneinterface.h>
-// <-- QT PHONE END --> 
 
 /**
  * Wrapper class to touch pane interface.
@@ -35,9 +32,7 @@ NONSHARABLE_CLASS( TPhTouchPaneWrapper ): public MTelTouchPaneExtension
     {
 
 public:
-// <-- QT PHONE START --> 
-    TPhTouchPaneWrapper( /*MBubbleTouchPaneInterface& aTouchPane*/ );
-// <-- QT PHONE END -->
+    TPhTouchPaneWrapper();
      
     /**
      * Returns number of buttons in touch pane.
@@ -69,13 +64,6 @@ public:
 
 private:
     
-    /**
-     * Reference to touch pane interface
-     * Not own.
-     */
-// <-- QT PHONE START --> 
-    //MBubbleTouchPaneInterface& iTouchPane;
-// <-- QT PHONE END -->     
     };
 
 

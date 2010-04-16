@@ -37,6 +37,7 @@ NONSHARABLE_CLASS( CPECallDurationDisplaySettingMonitor ) : public CPECenRepMoni
 public:
     static CPECallDurationDisplaySettingMonitor* NewL();
     ~CPECallDurationDisplaySettingMonitor();
+    TInt GetValue(TInt& aValue);
 protected: // From base class
     virtual void UpdateL();
 protected:
@@ -44,6 +45,7 @@ protected:
     void ConstructL();
 private:
     TBool iDisplayCallDuration;
+    TInt iError;
 };
 
 #endif // CPECALLDURATIONDISPLAYSETTINGMONITOR_H

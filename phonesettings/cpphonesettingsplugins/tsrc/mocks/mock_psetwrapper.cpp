@@ -16,7 +16,7 @@
 */
 #include <QDebug>
 #include <smcmockclassincludes.h>
-#include "psetwrapper.h"
+#include <psetwrapper.h>
 #include <psetcliwrapper.h>
 #include <psetcallwaitingwrapper.h> 
 #include <psetcalldivertingwrapper.h>
@@ -85,3 +85,11 @@ PSetNetworkWrapper & PSetWrapper::networkWrapper(  )
     }
 
 
+// -----------------------------------------------------------------------------
+// PSetWrapper::callBarringWrapper
+// -----------------------------------------------------------------------------
+//
+PSetCallBarringWrapper & PSetWrapper::callBarringWrapper(  )
+    {
+    SMC_MOCK_METHOD0( PSetCallBarringWrapper & )
+    }

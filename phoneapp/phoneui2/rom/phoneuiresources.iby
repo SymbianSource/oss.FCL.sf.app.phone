@@ -24,8 +24,8 @@
 data=DATAZ_\RESOURCE_FILES_DIR\PhoneClient.rsc RESOURCE_FILES_DIR\PhoneClient.rsc
 data=DATAZ_\RESOURCE_FILES_DIR\PhoneServer.rsc RESOURCE_FILES_DIR\PhoneServer.rsc
 
-// <-- QT PHONE START -->
-data=DATAZ_\QT_TRANSLATIONS_DIR\telephony.qm QT_TRANSLATIONS_DIR\telephony.qm
-// <-- QT PHONE END -->
+S60_APP_RESOURCE(phoneui)
+
+data=DATAZ_\QT_TRANSLATIONS_DIR\telephone.qm QT_TRANSLATIONS_DIR\telephone.qm
 
 #endif

@@ -65,15 +65,12 @@ void BubbleExpandedHandler::reset()
     mButtonCenter->hide();
     mButtonCenter->setDown(false);
     mButtonCenter->disconnect();
-    mButtonCenter->setText("");
     mButtonLeft->hide();
     mButtonLeft->setDown(false);
     mButtonLeft->disconnect();
-    mButtonLeft->setText("");
     mButtonRight->hide();
     mButtonRight->setDown(false);
     mButtonRight->disconnect();
-    mButtonRight->setText("");
     mImage->hide();
     mHeading->reset();
 }

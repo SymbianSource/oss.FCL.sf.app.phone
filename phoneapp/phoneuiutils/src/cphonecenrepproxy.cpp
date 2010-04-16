@@ -146,21 +146,6 @@ void CPhoneCenRepProxy::ConstructL()
     
     User::LeaveIfError( GetTelephonyVariantData() );
     User::LeaveIfError( GetPhoneUIVariantData() );
-
-// <-- QT PHONE START-->
-/*    iCenRepAccessoryEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidAccessorySettings );
-    iCenRepNetworkEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidNetworkSettings );
-    iCenRepThemesEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidThemes );
-    iCenRepLanguageEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidAknFep );
-    iCenRepQwertyEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidAvkon );
-    iCenRepKDRMHelperEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidDRMHelperServer );*/
-// <-- QT PHONE END-->        
     }
 
 // ---------------------------------------------------------

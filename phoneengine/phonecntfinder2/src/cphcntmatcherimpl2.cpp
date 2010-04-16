@@ -15,7 +15,6 @@
 *
 */
 
-#include <QDebug>
 #include <QList>
 #include <QString>
 #include <QChar>
@@ -27,7 +26,7 @@
 
 #include "cphcntmatcherimpl2.h"
 #include "cphcntmatch2.h"
-
+#include "qtphonelog.h"
 
 
 
@@ -70,8 +69,8 @@ TInt CPhCntMatcherImpl2::MatchNumber(
     filter.setDetailDefinitionName(QContactPhoneNumber::DefinitionName, QContactPhoneNumber::FieldNumber);
     filter.setValue(telnumber);
     QList<QContactLocalId> contacts;
-    contacts = iContactManager->contacts(filter);
-    qDebug()<<"CPhCntMatcherImpl2::MatchNumber(): matched contacts count is: " << contacts.count();
+    contacts = iContactManager->contactIds(filter);
+    PHONE_DEBUG2("CPhCntMatcherImpl2::MatchNumber(): matched contacts count is:", contacts.count());
     //only 1 exact match returns a contact to be used 
     if (contacts.isEmpty() || contacts.count() > 1 )
         {
@@ -85,7 +84,7 @@ TInt CPhCntMatcherImpl2::MatchNumber(
         if (!err)
         {
             aMatch = iMatch;
-            qDebug()<<"CPhCntMatcherImpl2::MatchNumber() -- matched contact is ready";
+            PHONE_DEBUG("CPhCntMatcherImpl2::MatchNumber() -- matched contact is ready");
         }
         return err;
         }
@@ -177,7 +176,7 @@ TBool CPhCntMatcherImpl2::HasCSNumbers( const CPhCntContactId& /*aContactId*/ )
     if (!err)
     {   
         aMatch = iMatch;
-        qDebug()<<"CPhCntMatcherImpl2::MatchNumber(ContactId) -- matched contact is ready";
+        PHONE_DEBUG("CPhCntMatcherImpl2::MatchNumber(ContactId) -- matched contact is ready");
     }
     return err;
     }

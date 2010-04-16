@@ -62,10 +62,8 @@ CPhoneConferenceAndSingle::~CPhoneConferenceAndSingle()
         {
         TPhoneCmdParamBoolean dtmfSendFlag;
         dtmfSendFlag.SetBoolean( EFalse );
-// <-- QT PHONE START -->
         iViewCommandHandle->ExecuteCommand( EPhoneViewSetDtmfOptionsFlag, 
             &dtmfSendFlag );
-// <-- QT PHONE END -->         
         }
     }
 
@@ -307,9 +305,7 @@ void CPhoneConferenceAndSingle::HandleConnectedConferenceL()
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleConnectedConferenceL");
     // Update call state
     TPhoneCmdParamCallHeaderData callHeaderParam;
-    // <-- QT PHONE START -->
     callHeaderParam.SetCallState( EPEStateConnectedConference );
-    // <-- QT PHONE END -->
 
     TBuf<KPhoneCallHeaderLabelMaxLength> conferenceText( KNullDesC );
     TInt callLabelId = CPhoneMainResourceResolver::Instance()->
@@ -346,9 +342,7 @@ void CPhoneConferenceAndSingle::HandleHeldConferenceL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleHeldConferenceL");
     TPhoneCmdParamCallHeaderData callHeaderParam;
-    // <-- QT PHONE START -->
     callHeaderParam.SetCallState( EPEStateHeldConference );
-    // <-- QT PHONE END -->
     
     TInt callLabelId;
     TBuf<KPhoneCallHeaderLabelMaxLength> labelText( KNullDesC );
@@ -389,9 +383,7 @@ void CPhoneConferenceAndSingle::HandleConnectedL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
 
-    // <-- QT PHONE START --> 
     SetTouchPaneButtons( EPhoneConferenceButtons );
-    // <-- QT PHONE END -->
     }
 
 // -----------------------------------------------------------
@@ -418,9 +410,7 @@ void CPhoneConferenceAndSingle::HandleHeldL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );      
     
-    // <-- QT PHONE START --> 
     SetTouchPaneButtons( EPhoneConferenceButtons );
-    // <-- QT PHONE END -->
     }
 
 // -----------------------------------------------------------
@@ -491,14 +481,12 @@ void CPhoneConferenceAndSingle::HandleIncomingL( TInt aCallId )
     // Check if HW Keys or Call UI should be disabled
     CheckDisableHWKeysAndCallUIL();
     
-    // <-- QT PHONE START -->
     // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam  );
 
     // Set touch controls
     SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
-    // <-- QT PHONE END -->
     
     EndUiUpdate();
 
@@ -508,7 +496,7 @@ void CPhoneConferenceAndSingle::HandleIncomingL( TInt aCallId )
         &conferenceAndSingleFlag );
     
     // Go to Conference And Single And Waiting state
-    UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
+    UpdateCbaL( EPhoneCallHandlingIncomingRejectCBA );
     iStateMachine->ChangeState( EPhoneStateConferenceAndSingleAndWaiting );                
     }
 

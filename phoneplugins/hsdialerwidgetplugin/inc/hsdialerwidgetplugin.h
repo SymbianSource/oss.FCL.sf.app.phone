@@ -21,11 +21,9 @@
 
 #include <QObject>
 #include <qserviceplugininterface.h>
-//#include <hstest_global.h>
 
 QTM_USE_NAMESPACE
 
-//HOMESCREEN_TEST_CLASS(TestDialerWidgetPlugin)
 
 /**
  * @ingroup group_hsdialerwidgetplugin
@@ -47,7 +45,6 @@ public:
                             QServiceContext *context,
                             QAbstractSecuritySession *session);
 
-//HOMESCREEN_TEST_FRIEND_CLASS(TestDialerWidgetPlugin)
 };
 
 #endif //HSDIALERWIDGETPLUGIN_H

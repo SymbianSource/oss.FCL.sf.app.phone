@@ -69,11 +69,6 @@ void CPhoneUIController::ConstructL(
     iSystemEventHandler = CPhoneSystemEventHandler::NewL( iStateMachine );
      // Create the remote control handler
     iRemoteControlHandler = CPhoneRemoteControlHandler::NewL( iStateMachine );
-    // Create the key event forwarder
-// <-- QT PHONE START --> 
-//    iKeyEventForwarder = CPhoneKeyEventForwarder::NewL( 
-//        CEikonEnv::Static()->EikAppUi()->ClientRect(), iStateMachine, aViewCommandHandle );
-// <-- QT PHONE END --> 
 
     TInt leaveCode( 0 );
     TInt retry( 0 );
@@ -159,9 +154,7 @@ EXPORT_C CPhoneUIController::~CPhoneUIController()
     delete iSystemEventHandler;
     delete iEngineHandler;
     delete iKeyEventForwarder;
-// <-- QT PHONE START --> 
     delete iStateHandle;
-// <-- QT PHONE END --> 
     }
 
 // ---------------------------------------------------------
@@ -218,22 +211,22 @@ EXPORT_C TKeyResponse CPhoneUIController::HandleKeyEventL(
     const TKeyEvent& aKeyEvent,
     TEventCode aEventCode )
     {
-// <-- QT PHONE START --> 
-//    __ASSERT_DEBUG( iKeyEventForwarder, Panic( EPhoneCtrlInvariant ) );
-//    return iKeyEventForwarder->OfferKeyEventAfterControlStackL( 
-//                aKeyEvent,
-//                aEventCode );
-    if ( EEventKey == aEventCode )
+    if ( aEventCode == EEventKey )
         {
         iStateMachine->State()->HandleKeyMessageL( 
                         MPhoneKeyEvents::EPhoneKeyShortPress, 
                         TKeyCode( aKeyEvent.iCode ) );
         }
+    else if ( aEventCode == EEventLongPress )
+        {
+        iStateMachine->State()->HandleKeyMessageL( 
+                        MPhoneKeyEvents::EPhoneKeyLongPress, 
+                        TKeyCode( aKeyEvent.iCode ) );    
+        }
     
     iStateMachine->State()->HandleDtmfKeyToneL( aKeyEvent, aEventCode );
         
     return EKeyWasNotConsumed;
-// <-- QT PHONE END --> 
     }
 
 // ---------------------------------------------------------

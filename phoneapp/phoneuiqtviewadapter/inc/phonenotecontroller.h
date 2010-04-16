@@ -28,7 +28,7 @@ class TPhoneCommandParam;
 class TPhoneCmdParamQuery;
 class HbDeviceMessageBox;
 class HbDeviceProgressDialog;
-class HbProgressNote;
+class HbProgressDialog;
 class HbMessageBox;
 class HbAction;
 class QSignalMapper;
@@ -186,7 +186,7 @@ private:
     QTimer *m_timer;
     QList<HbDeviceMessageBox *> m_messageBoxList;
     HbDeviceProgressDialog *m_progressDialog;
-    HbProgressNote *m_dtmfNote;
+    HbProgressDialog *m_dtmfNote;
     HbMessageBox *m_queryNote;
     QSignalMapper *m_signalMapper;
     QList<HbAction*> m_actions;

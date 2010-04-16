@@ -17,6 +17,7 @@
 
 #include "ut_callsplugin.h"
 #include "qtestmains60.h"
+#include <cpsettingformitemdata.h>
 #define private public
 #include "cpcallsplugin.h"
 #include "cpitemdatahelper.h"
@@ -56,7 +57,9 @@ void UT_CpCallsPlugin::t_createSettingFormItemData()
 {
     CpItemDataHelper itemDataHelper;
     CpCallsPlugin* p = (CpCallsPlugin*)qt_plugin_instance();
-    CpSettingFormItemData *pSettingFormItemData = p->createSettingFormItemData(itemDataHelper);
+    QList<CpSettingFormItemData*> list;
+    list.append(p->createSettingFormItemData(itemDataHelper));
+    qDeleteAll(list);
 }
 
 

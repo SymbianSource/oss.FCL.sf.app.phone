@@ -22,23 +22,23 @@
 #include <data_caging_paths_for_iby.hrh>
 
 // Phone Engine
-file=ABI_DIR\BUILD_DIR\PHONEENGINE.DLL        SHARED_LIB_DIR\PHONEENGINE.DLL
+file=ABI_DIR\BUILD_DIR\phoneengine.dll        SHARED_LIB_DIR\phoneengine.dll
 
 // Engine Info
-file=ABI_DIR\BUILD_DIR\ENGINEINFO.DLL        SHARED_LIB_DIR\ENGINEINFO.DLL
+file=ABI_DIR\BUILD_DIR\engineinfo.dll        SHARED_LIB_DIR\engineinfo.dll
 
 // Audio Handling
-file=ABI_DIR\BUILD_DIR\AUDIOHANDLING.DLL    SHARED_LIB_DIR\AUDIOHANDLING.DLL
+file=ABI_DIR\BUILD_DIR\audiohandling.dll    SHARED_LIB_DIR\audiohandling.dll
 data=MULTI_LINGUIFY(RSC DATAZ_\RESOURCE_FILES_DIR\defaultbeep RESOURCE_FILES_DIR\defaultbeep)
 
 // Call Handling
-file=ABI_DIR\BUILD_DIR\CALLHANDLING.DLL     SHARED_LIB_DIR\CALLHANDLING.DLL
+file=ABI_DIR\BUILD_DIR\callhandling.dll     SHARED_LIB_DIR\callhandling.dll
 
 // Contact Handling
-file=ABI_DIR\BUILD_DIR\CONTACTHANDLING.DLL  SHARED_LIB_DIR\CONTACTHANDLING.DLL
+file=ABI_DIR\BUILD_DIR\contacthandling.dll  SHARED_LIB_DIR\contacthandling.dll
 
 // Log Handling
-file=ABI_DIR\BUILD_DIR\LOGHANDLING.DLL      SHARED_LIB_DIR\LOGHANDLING.DLL
+file=ABI_DIR\BUILD_DIR\loghandling.dll      SHARED_LIB_DIR\loghandling.dll
 
 // Service Handling
 file=ABI_DIR\BUILD_DIR\peservicehandling.dll      SHARED_LIB_DIR\peservicehandling.dll

@@ -21,7 +21,7 @@
 
 //  INCLUDE FILES   
 #include <MTelephonyAudioRoutingObserver.h>
-#include "MTelDMAccessory.h"
+#include "mteldmaccessory.h"
 
 // FORWARD DECLARATIONS
 

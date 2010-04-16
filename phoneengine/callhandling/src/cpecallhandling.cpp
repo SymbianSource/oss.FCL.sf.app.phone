@@ -471,7 +471,7 @@ void CPECallHandling::SendMessage(
                 {
                 MCCECall& call = callData->Call();
                 iModel.DataStore()->SetRemotePartyName( call.RemotePartyName(), aCallId );
-                iModel.DataStore()->SetRemotePhoneNumber( call.RemoteParty(), aCallId );
+                iModel.DataStore()->SetRemotePhoneNumber( call.RemoteParty().Left( KPEPhoneNumberMaxLength ), aCallId );
                 iModel.DataStore()->SetCallIndex(call.CallIndex(), aCallId );
                 }
             break;

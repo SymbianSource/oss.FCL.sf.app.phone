@@ -268,7 +268,6 @@ TBool CPhoneCallHeaderManager::IsVideoCall( const TInt aCallId ) const
 //  CPhoneCallHeaderManager::SetCallHeaderType
 // ---------------------------------------------------------------------------
 //
-// <-- QT PHONE START --> 
 void CPhoneCallHeaderManager::SetCallHeaderType( 
     TInt aCallHeaderType )
     {
@@ -282,7 +281,6 @@ void CPhoneCallHeaderManager::SetCallHeaderType(
 //
 TInt CPhoneCallHeaderManager::CallHeaderType() const
     {
-// <-- QT PHONE END --> 
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneCallHeaderManager::CallHeaderType() ");
     return iCallHeaderParam->CallHeaderType();            
     }

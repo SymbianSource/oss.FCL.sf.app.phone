@@ -100,6 +100,10 @@ CpDivertPluginGroup::CpDivertPluginGroup(CpItemDataHelper &helper)
     // Create custom item prototype
     m_helper.addItemPrototype(new CpDivertSelectionItem());
     
+    // Listen form item visibility change
+    m_helper.connectToForm(
+            SIGNAL(itemShown(QModelIndex)), this, SLOT(itemShown(QModelIndex)));
+    
     // Create grouped setting items
     createVoiceCallItems();
     createVideoCallItems();
@@ -617,7 +621,9 @@ void CpDivertPluginGroup::handleDivertingError(int aReason)
     DPRINT << ": IN : aReason:" << aReason;
     
     // Update view item for failed request
-    revertItemData(m_divertRequestQueue.head().item->condition());
+    if (m_divertRequestQueue.count()) {
+        revertItemData(m_divertRequestQueue.head().item->condition());
+    }
     
     // Clear queue
     m_divertRequestQueue.clear();

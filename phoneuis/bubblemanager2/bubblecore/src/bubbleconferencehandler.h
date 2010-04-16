@@ -55,6 +55,10 @@ protected:
     
     void updateTimerDisplayNow();
 
+    void conferenceMemberRemoved(int bubbleId);
+
+    void conferenceRemoved();
+
 protected slots:
     void handleItemSelected(int row);
     void clearSelection();

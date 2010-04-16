@@ -1530,7 +1530,6 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          */
         void SetCallOrigin( TPECallOrigin aOrigin, TInt aCallId );
       
-// <-- QT PHONE START -->
         /**
         * Sets call Phonebook contact identifier.
         * @param aContactId is the contact identifier for a call
@@ -1541,7 +1540,6 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * Returns Phonebook contact identifier.
          */
         TInt ContactId2() const;
-// <-- QT PHONE END -->
           
     private:
           /**
@@ -1581,12 +1579,10 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          */
         CCCECallParameters *iCallParams;
 
-// <-- QT PHONE START -->
         /**
          * Phonebook contact identifier.
          */
         TInt iContactId;
-// <-- QT PHONE END -->
     };
 
 

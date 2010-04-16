@@ -37,12 +37,15 @@ CpTelephonyPlugin::~CpTelephonyPlugin()
     UNINSTALL_TRACE_MSG_HANDLER; 
 }
 
-CpSettingFormItemData *CpTelephonyPlugin::createSettingFormItemData(
-    CpItemDataHelper &itemDataHelper) const
+QList<CpSettingFormItemData*> CpTelephonyPlugin::createSettingFormItemData(
+        CpItemDataHelper &itemDataHelper) const
 {
     DPRINT;
-    return new CpSettingFormEntryItemDataImpl<CpTelephonyPluginView>(
-            itemDataHelper, hbTrId("Telephony"), hbTrId(""));
+
+    QList<CpSettingFormItemData*> ret;
+    ret.append(new CpSettingFormEntryItemDataImpl<CpTelephonyPluginView>(
+            itemDataHelper, hbTrId("Telephony"), hbTrId("")));
+    return ret;
 }
 
 Q_EXPORT_PLUGIN2(cptelephonyplugin, CpTelephonyPlugin);

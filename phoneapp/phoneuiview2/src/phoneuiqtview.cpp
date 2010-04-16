@@ -1,5 +1,5 @@
 /*!
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -15,7 +15,8 @@
 *
 */
 #include <hbinstance.h>
-#include <QSignalMapper>
+#include <qsignalmapper>
+#include <qtimer>
 #include <hbaction.h>
 #include <hbtoolbar.h>
 #include <hbvolumesliderpopup.h>
@@ -29,53 +30,56 @@
 
 #include "phoneuiqtview.h"
 #include "phoneaction.h"
+#include "qtphonelog.h"
+const int LongKeyPressTimeOut(600);
 
 PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
     HbView (parent),
     m_window(window),
-    m_volumeSlider (0), 
-    m_expandSignalMapper(0), 
+    m_volumeSlider (0),
+    m_expandSignalMapper(0),
     m_participantListSignalMapper(0),
-    m_volumeCommandId(0)
+    m_volumeCommandId(0),
+    m_longPressTimer(0)
 {
     setTitle(hbTrId("txt_phone_title_telephone"));
 
-    // call handling widget
+    // Call handling widget
     m_bubbleManager = new BubbleManager (this);
-
     setWidget(m_bubbleManager);
 
+    // Long press timer
+    m_longPressTimer = new QTimer(this);
+    m_longPressTimer->setSingleShot(true);
+    connect(m_longPressTimer, SIGNAL(timeout()), this, SLOT(longEndKeyPressEvent()));
+
     // Dialpad
-    m_dialpad = new Dialpad();
+    m_dialpad = new Dialpad(m_window);
     m_dialpad->setCallButtonEnabled(false);
+    m_dialpad->setTapOutsideDismiss(true);
     connect(&m_dialpad->editor(),SIGNAL(contentsChanged()),
             SLOT(onEditorContentChanged()));
     connect(m_dialpad,SIGNAL(aboutToClose()),this,
                 SLOT(dialpadClosed()));
-            
-    // Set event filter         
+
+    // Set event filter
     m_window.installEventFilter(this);
-    
-    
+
     m_signalMapper = new QSignalMapper (this);
     connect(m_signalMapper, SIGNAL (mapped (int)), this, SIGNAL (command (int)));
     connect(&m_window,SIGNAL(orientationChanged(Qt::Orientation)),
             this,SLOT(handleOrientationChange(Qt::Orientation)));
-    
+
     m_menuSignalMapper = new QSignalMapper(this);
     connect(m_menuSignalMapper, SIGNAL(mapped(int)), this, SIGNAL(command(int)));
-    
+
     m_bubbleManager->handleOrientationChange(m_window.orientation());
-    
-    // changed exit softkey to back button
-    m_backAction = new HbAction(Hb::BackAction,this);
+
+    // change exit softkey to back button
+    m_backAction = new HbAction(Hb::BackAction, this);
     connect(m_backAction, SIGNAL(triggered()), this, SLOT(backButtonClicked()));
-    HbAction *action = m_window.softKeyAction(Hb::SecondarySoftKey);
-    m_window.removeSoftKeyAction(Hb::SecondarySoftKey,action);
-    m_window.addSoftKeyAction(Hb::SecondarySoftKey,m_backAction);
-    
-    m_emptyAction = new HbAction(this);
-    
+    setNavigationAction(m_backAction);
+
     createToolBarActions();
 }
 
@@ -102,12 +106,12 @@ void PhoneUIQtView::addBubbleCommand (
     HbAction* bubbleAction = new HbAction ();
     bubbleAction->setText (action.text());
     bubbleAction->setIcon (action.icon());
-    setActionRole(action,*bubbleAction);                    
+    setActionRole(action,*bubbleAction);
     m_bubbleManager->addAction (bubbleId, bubbleAction);
-    
+
     QList<int> bubbles = m_bubbleMap.keys();
     bool found(false);
-    
+
     for ( int i=0; i<bubbles.size(); ++i ) {
         if (bubbleId==bubbles[i]){
             connect(bubbleAction, SIGNAL (triggered ()), m_bubbleMap.value(bubbleId), SLOT (map ()));
@@ -116,7 +120,7 @@ void PhoneUIQtView::addBubbleCommand (
             found = true;
         }
     }
-    
+
     if (!found) {
         QSignalMapper *mapper = new QSignalMapper();
         connect(mapper, SIGNAL (mapped (int)), this, SIGNAL (command (int)));
@@ -131,19 +135,19 @@ void PhoneUIQtView::addBubbleCommand (
 
 void PhoneUIQtView::addParticipantListAction(
     int commandId,
-    const QString& text, 
+    const QString& text,
     const HbIcon& icon)
 {
     HbAction* action = new HbAction ();
     action->setText (text);
     action->setIcon (icon);
     m_bubbleManager->addParticipantListAction(action);
-    
+
     if (!m_participantListSignalMapper) {
         m_participantListSignalMapper = new QSignalMapper();
         connect(m_participantListSignalMapper, SIGNAL (mapped (int)), this, SIGNAL (command (int)));
     }
-    
+
     connect(action, SIGNAL (triggered ()), m_participantListSignalMapper, SLOT (map ()));
     m_participantListSignalMapper->setMapping (action, commandId);
     m_participantListActions.append( action );
@@ -151,15 +155,15 @@ void PhoneUIQtView::addParticipantListAction(
 
 void PhoneUIQtView::clearParticipantListActions()
 {
-   
+
     if (m_participantListSignalMapper) {
         m_bubbleManager->clearParticipantListActions();
-        
+
         foreach (HbAction *action, m_participantListActions ) {
             m_participantListSignalMapper->removeMappings(action);
             delete action;
         }
-            
+
         m_participantListActions.clear();
         delete m_participantListSignalMapper;
         m_participantListSignalMapper = 0;
@@ -169,22 +173,22 @@ void PhoneUIQtView::clearParticipantListActions()
 
 void PhoneUIQtView::clearBubbleCommands (int bubbleId)
 {
-    m_bubbleManager->clearActions (bubbleId);   
+    m_bubbleManager->clearActions (bubbleId);
     QSignalMapper *mapper = m_bubbleMap.value(bubbleId);
-    
+
     if (mapper) {
         QList<HbAction *> *actions = m_bubbleActionMap.value(bubbleId);
-        
+
         foreach (HbAction *action, *actions ) {
             mapper->removeMappings(action);
             delete action;
         }
-            
+
         actions->clear();
         m_bubbleMap.remove(bubbleId);
         m_bubbleActionMap.remove(bubbleId);
         delete mapper;
-        delete actions;      
+        delete actions;
     }
 
 }
@@ -196,9 +200,9 @@ void PhoneUIQtView::setToolbarActions(const QList<PhoneAction*>& actions)
         m_signalMapper->removeMappings(
                 static_cast<HbAction*>(toolBar()->actions().at(i)));
     }
-    
+
     QList<QAction*> toolBarActions = toolBar()->actions();
-    
+
     if (toolBarActions.size()<actions.size()) {
         for (int i=toolBarActions.size(); i<actions.size(); ++i) {
             toolBar()->addAction(m_toolbarActions.at(i));
@@ -211,19 +215,19 @@ void PhoneUIQtView::setToolbarActions(const QList<PhoneAction*>& actions)
             }
         }
     }
-    
-    for (int i=0; i<toolBar()->actions().size(); ++i) {    
-    
+
+    for (int i=0; i<toolBar()->actions().size(); ++i) {
+
         if (i<actions.count()) {
             HbAction* action = static_cast<HbAction*>(toolBar()->actions().at(i));
             action->setText(actions.at(i)->text());
-            action->setIcon(actions.at(i)->icon());            
+            action->setIcon(actions.at(i)->icon());
             action->setDisabled(actions.at(i)->isDisabled());
-            
+
             m_signalMapper->setMapping(action, actions.at(i)->command());
         }
     }
-    
+
     if ( m_window.orientation() == Qt::Horizontal ) {
         toolBar()->setOrientation(Qt::Horizontal);
     }
@@ -238,7 +242,7 @@ void PhoneUIQtView::hideToolbar ()
 
 void PhoneUIQtView::showToolbar ()
 {
-    setFocus();       
+    setFocus();
     toolBar()->show();
 }
 
@@ -255,7 +259,7 @@ void PhoneUIQtView::removeVolumeSlider ()
 {
     if (m_volumeSlider) {
         if (m_volumeSlider->isVisible()) {
-            m_volumeSlider->hide();   
+            m_volumeSlider->hide();
         }
         m_volumeSlider->deleteLater();
         m_volumeSlider = 0;
@@ -271,7 +275,7 @@ void PhoneUIQtView::setVolumeSliderValue (
         int value, int commandId, int maxVolumeValue, int minVolumeValue)
 {
     m_volumeCommandId = commandId;
-    
+
     if (!m_volumeSlider) {
         m_volumeSlider = new HbVolumeSliderPopup ();
         m_volumeSlider->setDismissPolicy(HbDialog::TapOutside);
@@ -279,16 +283,16 @@ void PhoneUIQtView::setVolumeSliderValue (
         connect(m_volumeSlider, SIGNAL(valueChanged(int)), this, SLOT(volumeSliderChanged(int)));
         connect(m_volumeSlider, SIGNAL(aboutToClose()), this, SLOT(volumeSliderClosed()));
     }
-        
+
 
     if (m_volumeSlider->minimum() != minVolumeValue ||
             m_volumeSlider->maximum() !=  maxVolumeValue  ) {
         m_volumeSlider->setRange (minVolumeValue, maxVolumeValue);
     }
-    
+
     if (value != m_volumeSlider->value())
         m_volumeSlider->setValue (value);
-    
+
     if (false == m_volumeSlider->isVisible()) {
         m_volumeSlider->show();
     }
@@ -297,25 +301,25 @@ void PhoneUIQtView::setVolumeSliderValue (
 void PhoneUIQtView::volumeSliderChanged(int value)
 {
     Q_UNUSED (value);
-    emit command (m_volumeCommandId);   
+    emit command (m_volumeCommandId);
 }
 
 void PhoneUIQtView::setExpandAction(int bubbleId, int commandId)
 {
     removeExpandAction(bubbleId);
-    
+
     HbAction* action = new HbAction();
     m_bubbleManager->setExpandAction(bubbleId, action);
-    
+
     if (!m_expandSignalMapper) {
         m_expandSignalMapper = new QSignalMapper(this);
-        connect(m_expandSignalMapper, SIGNAL (mapped (int)), 
+        connect(m_expandSignalMapper, SIGNAL (mapped (int)),
                 this, SIGNAL (command (int)));
     }
-    
+
     connect(action, SIGNAL (triggered ()), m_expandSignalMapper, SLOT (map ()));
     m_expandSignalMapper->setMapping(action, commandId);
-    
+
     m_expandActionMap.insert(bubbleId,action);
 }
 
@@ -327,7 +331,7 @@ void PhoneUIQtView::removeExpandAction(int bubbleId)
         m_expandSignalMapper->removeMappings(action);
         m_expandActionMap.remove(bubbleId);
         delete action;
-    }   
+    }
 }
 
 void PhoneUIQtView::showDialpad()
@@ -344,17 +348,17 @@ void PhoneUIQtView::hideDialpad()
         m_dialpad->closeDialpad();
 }
 
-bool PhoneUIQtView::isDialpadVisible()   
+bool PhoneUIQtView::isDialpadVisible()
 {
     return m_dialpad->isVisible();
 }
 
-QString PhoneUIQtView::dialpadText()   
+QString PhoneUIQtView::dialpadText()
 {
     return m_dialpad->editor().text();
 }
 
-void PhoneUIQtView::clearAndHideDialpad()   
+void PhoneUIQtView::clearAndHideDialpad()
 {
     m_dialpad->editor().setText(QString(""));
     hideDialpad();
@@ -375,7 +379,7 @@ void PhoneUIQtView::setMenuActions(const QList<PhoneAction*>& actions)
         menu()->removeAction(action);
         delete action;
     }
-    
+
     for (int i=0; i<actions.count(); ++i) {
         HbAction* action = new HbAction();
         action->setText(actions.at(i)->text());
@@ -398,7 +402,7 @@ void PhoneUIQtView::handleOrientationChange(Qt::Orientation orientation)
     }
 
     m_bubbleManager->handleOrientationChange(orientation);
-    
+
     setDialpadPosition();
 }
 
@@ -422,12 +426,17 @@ bool PhoneUIQtView::eventFilter(QObject * /*watched*/, QEvent * event)
 {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-        qDebug() << "PhoneUIQtView::eventFilter: pressed key " << keyEvent->key();
+        PHONE_DEBUG2("PhoneUIQtView::eventFilter pressed key:", keyEvent->key());
+        if(keyEvent->key() == Qt::Key_No) {
+            m_longPressTimer->stop();
+            m_longPressTimer->start(LongKeyPressTimeOut);
+        }
         emit keyPressed(keyEvent);
         return false;
     } else if (event->type() == QEvent::KeyRelease) {
+        m_longPressTimer->stop();
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-        qDebug() << "PhoneUIQtView::eventFilter: released key " << keyEvent->key();
+        PHONE_DEBUG2("PhoneUIQtView::eventFilter released key:", keyEvent->key());
         emit keyReleased(keyEvent);
         return false;
     } else {
@@ -444,14 +453,14 @@ void PhoneUIQtView::setDialpadPosition()
         m_dialpad->setPos(QPointF(screenRect.width()/2,
                                   this->scenePos().y()));
         m_dialpad->setPreferredSize(screenRect.width()/2,
-                                           (screenRect.height()-scenePos().y()));                                  
+                                           (screenRect.height()-scenePos().y()));
     } else {
         // dialpad takes 65% of the screen height
         qreal screenHeight = screenRect.height();
         m_dialpad->setPos(QPointF(0,
                                   screenHeight/2.25));
         m_dialpad->setPreferredSize(screenRect.width(),
-                                    screenHeight-screenHeight/2.25);        
+                                    screenHeight-screenHeight/2.25);
     }
 }
 
@@ -475,19 +484,23 @@ void PhoneUIQtView::createToolBarActions()
 
 void PhoneUIQtView::shutdownPhoneApp()
 {
-    qDebug() << "PhoneUIQtView::shutdownPhoneApp ";
+    PHONE_DEBUG("PhoneUIQtView::shutdownPhoneApp");
     QCoreApplication::quit();
 }
 
 void PhoneUIQtView::setBackButtonVisible(bool visible)
 {
-    HbAction *oldAction = m_window.softKeyAction(Hb::SecondarySoftKey);
-    m_window.removeSoftKeyAction(Hb::SecondarySoftKey, oldAction);
     if (visible) {
-        m_window.addSoftKeyAction(Hb::SecondarySoftKey, m_backAction);
+        setNavigationAction(m_backAction);
         }
     else {
-        m_window.addSoftKeyAction(Hb::SecondarySoftKey, m_emptyAction);
+        setNavigationAction(0);
     }
 }
 
+void PhoneUIQtView::longEndKeyPressEvent()
+{
+    Q_ASSERT(m_longPressTimer);
+    m_longPressTimer->stop();
+    emit endKeyLongPress();
+}

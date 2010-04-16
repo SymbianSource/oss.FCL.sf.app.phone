@@ -28,12 +28,12 @@ LIBS += -lhswidgetmodel
 DEPENDPATH += ./inc \
               ./src
 
-INCLUDEPATH += ./inc
+INCLUDEPATH += ./inc \
+               ../../inc
 
 symbian: {
     LIBS += -lxqservice \
-            -llogsservices \
-            -lxqsettingsmanager
+            -lxqtelephonyservice
 
     TARGET.UID3 = 0x20022F44
     TARGET.EPOCALLOWDLLDATA=1

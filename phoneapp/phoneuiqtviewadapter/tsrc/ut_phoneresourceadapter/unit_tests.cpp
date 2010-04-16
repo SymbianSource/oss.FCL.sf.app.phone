@@ -105,93 +105,40 @@ void TestPhoneResourceAdapter::testConvert ()
     
 
     QMap<PhoneAction::ActionType, PhoneAction *> map;
-    map = m_resourceAdapter->convert (R_PHONEUI_INCOMING_CALL_BUTTONS);
-    QCOMPARE (map.size (), 2);
     PhoneAction *action = map [PhoneAction::LeftButton];
-    QCOMPARE (action->text (), QString ("Answer"));
-    QCOMPARE (action->icon (), HbIcon(":/pri_large_button_answer.svg"));
-    QCOMPARE (action->command (), (int)EPhoneCallComingCmdAnswer);
-    action = map [PhoneAction::RightButton];
-    QCOMPARE (action->text (), QString ("Reject"));
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_button_reject.svg"));
-    QCOMPARE (action->command (), (int)EPhoneCallComingCmdReject);
-    
-    map = m_resourceAdapter->convert (R_PHONEUI_INCALL_BUTTONS);
-    QCOMPARE (map.size (), 2);
-    action = map [PhoneAction::LeftButton];
-    QCOMPARE (action->text (), QString ("Hold"));
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_button_hold.svg"));
-    QCOMPARE (action->command (), (int)EPhoneInCallCmdHold);
-    action = map [PhoneAction::RightButton];
-    QCOMPARE (action->text (), QString ("End call"));
-    QCOMPARE (action->icon (), HbIcon(":/pri_large_button_endcall.svg"));
-    QCOMPARE (action->command (), (int)EPhoneInCallCmdEndThisActiveCall);
-    
-    map = m_resourceAdapter->convert (R_PHONEUI_INCALL_HELD_BUTTONS);
-    QCOMPARE (map.size (), 2);
-    action = map [PhoneAction::LeftButton];
-    QCOMPARE (action->text (), QString ("Unhold"));
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_button_onhold.svg"));
-    QCOMPARE (action->command (), (int)EPhoneInCallCmdUnhold);
-    action = map [PhoneAction::RightButton];
-    QCOMPARE (action->text (), QString ("End call"));
-    QCOMPARE (action->icon (), HbIcon(":/pri_large_button_endcall.svg"));
-    QCOMPARE (action->command (), (int)EPhoneInCallCmdEndThisActiveCall);
-    
-    map = m_resourceAdapter->convert (R_PHONEUI_WAITING_CALL_BUTTONS);
-    QCOMPARE (map.size (), 2);
-    action = map [PhoneAction::LeftButton];
-    QCOMPARE (action->text (), QString ("Answer"));
-    QCOMPARE (action->icon (), HbIcon(":/pri_large_button_answer.svg"));
-    QCOMPARE (action->command (), (int)EPhoneCallComingCmdAnswer);
-    action = map [PhoneAction::RightButton];
-    QCOMPARE (action->text (), QString ("Reject"));
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_button_reject.svg"));
-    QCOMPARE (action->command (), (int)EPhoneCallComingCmdReject);
 
-    map = m_resourceAdapter->convert (R_PHONEUI_TWO_SINGLES_BUTTONS);
-    QCOMPARE (map.size (), 2);
-    action = map [PhoneAction::LeftButton];
-    QCOMPARE (action->text (), QString ("Swap"));
-    QCOMPARE (action->icon (), HbIcon(":/qgn_indi_button_swap.svg"));
-    QCOMPARE (action->command (), (int)EPhoneInCallCmdSwap);
-    action = map [PhoneAction::RightButton];
-    QCOMPARE (action->text (), QString ("End call"));
-    QCOMPARE (action->icon (), HbIcon(":/pri_large_button_endcall.svg"));
-    QCOMPARE (action->command (), (int)EPhoneInCallCmdEndThisActiveCall);    
-    
     map = m_resourceAdapter->convert (R_PHONEUI_CALLHANDLING_INCOMINGCALL_CBA);
     QCOMPARE (map.size (), 2);
     action = map [PhoneAction::ToolbarButton1];
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_comp_message.svg"));    
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_send"));    
     action = map [PhoneAction::ToolbarButton2];
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_silence.svg"));
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_mute"));
     QCOMPARE (action->command (), (int)EPhoneCallComingCmdSilent);    
     
     map = m_resourceAdapter->convert (R_PHONEUI_CALLHANDLING_INCOMINGCALL_REJECT_CBA);
     QCOMPARE (map.size (), 2);
     action = map [PhoneAction::ToolbarButton1];
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_comp_message.svg"));    
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_send"));    
     action = map [PhoneAction::ToolbarButton2];
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_silence.svg"));
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_reject_call"));
     //Command is disabled
     //QCOMPARE (action->command (), (int)EPhoneCallComingCmdReject);    
      
     map = m_resourceAdapter->convert (R_PHONEUI_CALLHANDLING_INCOMINGCALL_SOFT_REJECT_CBA);
     QCOMPARE (map.size (), 2);
     action = map [PhoneAction::ToolbarButton1];
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_comp_message.svg"));    
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_send"));    
     action = map [PhoneAction::ToolbarButton2];
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_silence.svg"));
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_mute"));
     //Command is disabled
     //QCOMPARE (action->command (), (int)EPhoneCallComingCmdReject); 
 
     map = m_resourceAdapter->convert (R_PHONEUI_CALLHANDLING_CALLWAITING_CBA);
     QCOMPARE (map.size (), 2);
     action = map [PhoneAction::ToolbarButton1];
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_comp_message.svg"));    
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_send"));    
     action = map [PhoneAction::ToolbarButton2];
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_join.svg"));
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_join_call"));
     QCOMPARE (action->command (), (int)EPhoneInCallCmdJoin);    
     
     testIncallToolbar( R_PHONEUI_DIALER_CBA );
@@ -203,95 +150,88 @@ void TestPhoneResourceAdapter::testConvert ()
     map = m_resourceAdapter->convert (R_PHONEUI_MTCAL_INCOMING_CALL);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("calling"));
+    QVERIFY( false == action->text().isEmpty() );
 
     map = m_resourceAdapter->convert (R_PHONEUI_INCALL_CALL_DISCONNECTED);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("disconnected"));
+    QVERIFY( false == action->text().isEmpty() );
     
     map = m_resourceAdapter->convert (R_PHONEUI_INCALL_CALL_HELD);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("on hold"));
+    QVERIFY( false == action->text().isEmpty() );
 
     map = m_resourceAdapter->convert (R_PHONEUI_MULTC_WAITING);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("waiting"));
+    QVERIFY( false == action->text().isEmpty() );
 
     map = m_resourceAdapter->convert (R_PHONEUI_INCALL_CALL_NUMBER, 3);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("Call 3"));
-
-    map = m_resourceAdapter->convert (R_PHONEUI_CALL_SETUP_BUTTONS);
-    QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::LeftButton];
-    QCOMPARE (action->text (), QString ("End call"));
-    QCOMPARE (action->icon (), HbIcon(":/pri_large_button_endcall.svg"));
-    QCOMPARE (action->command (), (int)EPhoneInCallCmdEndThisOutgoingCall);
+    QVERIFY( false == action->text().isEmpty() );
     
     map = m_resourceAdapter->convert (R_PHONEUI_TIME_DURAT_LONG_WITH_ZERO);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("%:0%H%:1%T%:2%S%:3"));
+    QVERIFY( false == action->text().isEmpty() );
     
     map = m_resourceAdapter->convert (R_PHONEUI_OUT_GOING_CALL);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("Calling"));
+    QVERIFY( false == action->text().isEmpty() );
 
     map = m_resourceAdapter->convert (R_PHONEUI_MTCAL_CLI_WITHHELD);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("Private number"));
+    QVERIFY( false == action->text().isEmpty() );
     
     map = m_resourceAdapter->convert (R_PHONEUI_MTCAL_CALL);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("Call"));
+    QVERIFY( false == action->text().isEmpty() );
     
     map = m_resourceAdapter->convert (R_PHONEUI_EMERGENCY_CALL_HEADER);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("Emergency call"));
+    QVERIFY( false == action->text().isEmpty() );
 
     map = m_resourceAdapter->convert (R_PHONEUI_ATTEMPTING_EMERGENCY_CALL_TEXT);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("Attempting"));
+    QVERIFY( false == action->text().isEmpty() );
     
     map = m_resourceAdapter->convert (R_PHONEUI_EMERGENCY_CALL_BUTTONS);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::LeftButton];
-    QCOMPARE (action->text (), QString ("End call"));
-    QCOMPARE (action->icon (), HbIcon(":/pri_large_button_endcall.svg"));
+    QVERIFY( false == action->text().isEmpty() );
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_end_call"));
     QCOMPARE (action->command (), (int)EPhoneCmdEnd);
     
     map = m_resourceAdapter->convert (R_PHONEUI_CALLHANDLING_EMERGENCY_CBA);
     QCOMPARE (map.size (), 2);
     action = map [PhoneAction::ToolbarButton1];
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_dialler.svg"));
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_dialer"));
     action = map [PhoneAction::ToolbarButton2];
-    QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_loudsp_unmute.svg"));
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_loudspeaker"));
     QCOMPARE (action->command (), (int)EPhoneInCallCmdActivateIhf);        
     
     map = m_resourceAdapter->convert (R_PHONEUI_CONFERENCE_CALL);
     QCOMPARE (map.size (), 1);
     action = map [PhoneAction::Text];
-    QCOMPARE (action->text (), QString ("Conference"));
+    QVERIFY( false == action->text().isEmpty() );
     
     TBuf<10> buffer(_L("123"));
     map = m_resourceAdapter->convert (R_PHONEUI_SENDING_DTMF_WAIT_NOTE_TEXT, &buffer);
     QCOMPARE (map.size(), 1);
     action = map[PhoneAction::Text];
-    QCOMPARE (action->text(), QString("Sending:\n123"));
+    QVERIFY( false == action->text().isEmpty() );
     
     map = m_resourceAdapter->convert(R_PHONEUI_DTMF_WAIT_CHARACTER_CONFIRMATION_QUERY_TEXT, &buffer);
     QCOMPARE(map.size(), 1);
     action = map[PhoneAction::Text];
-    QCOMPARE(action->text(), QString("Send string:\n123"));
+    QVERIFY( false == action->text().isEmpty() );
     
     // TODO
     map = m_resourceAdapter->convert (R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA);
@@ -305,37 +245,37 @@ void TestPhoneResourceAdapter::testConvertToString ()
     m_resourceAdapter = PhoneResourceAdapter::Instance (this);
         
     QString testString = m_resourceAdapter->convertToString(R_PHONE_ERROR_CALL_NOT_ALLOWED); 
-    QCOMPARE( testString, QString ("Call not allowed") );
+    QVERIFY( false == testString.isEmpty() );
     
     QString testString2 = m_resourceAdapter->convertToString(R_ERROR_NOTE_NOT_ALLOWED); 
-    QCOMPARE( testString2, QString ("Not allowed") );
+    QVERIFY( false == testString2.isEmpty() );
     
     QString testString3 = m_resourceAdapter->convertToString(R_NOTETEXT_INVALID_PHONENUMBER); 
-    QCOMPARE( testString3, QString ("Invalid phone number") );
+    QVERIFY( false == testString3.isEmpty() );
     
     QString testString4 = m_resourceAdapter->convertToString(R_NOTETEXT_NO_ANSWER); 
-    QCOMPARE( testString4, QString ("No answer") );
+    QVERIFY( false == testString4.isEmpty() );
     
     QString testString5 = m_resourceAdapter->convertToString(R_PHONE_ERROR_NUMBER_BUSY); 
-    QCOMPARE( testString5, QString ("Number busy") );
+    QVERIFY( false == testString5.isEmpty() );
     
     QString testString6 = m_resourceAdapter->convertToString(R_PHONE_SS_NOTIFICATION_MOCAL_WAITING_TEXT); 
-    QCOMPARE( testString6, QString ("Waiting") );
+    QVERIFY( false == testString6.isEmpty() );
     
     QString testString7 = m_resourceAdapter->convertToString(R_PHONE_SS_NOTIFICATION_INCAL_INFO_HOLD_TEXT); 
-    QCOMPARE( testString7, QString ("On hold") );
+    QVERIFY( false == testString7.isEmpty() );
     
     QString testString8 = m_resourceAdapter->convertToString(R_INCAL_INFO_HOLD_TEXT); 
-    QCOMPARE( testString8, QString ("On hold") );
+    QVERIFY( false == testString8.isEmpty() );
     
     QString testString9 = m_resourceAdapter->convertToString(R_INCAL_REMOTE_ACTIVE_TEXT); 
-    QCOMPARE( testString9, QString ("Connected") );
+    QVERIFY( false == testString9.isEmpty() );
     
     QString testString10 = m_resourceAdapter->convertToString(R_INCAL_INFO_CONF_HOLD_TEXT); 
-    QCOMPARE( testString10, QString ("Conference on hold") );
+    QVERIFY( false == testString10.isEmpty() );
     
     QString testString11 = m_resourceAdapter->convertToString(R_PHONE_INCALL_INFO_NO_NETWORK_SUPPORT); 
-    QCOMPARE( testString11, QString ("No network support for video call") );
+    QVERIFY( false == testString11.isEmpty() );
     
     QString testString12 = m_resourceAdapter->convertToString(0); 
     QCOMPARE( testString12, QString ("") );
@@ -348,7 +288,7 @@ void TestPhoneResourceAdapter::testConvertToString2 ()
     QString testString = m_resourceAdapter->convertToString(
             R_PHONE_TEXT_COLP_CONNECTED, QString("123456"));
     
-    QCOMPARE( testString, QString ("Connected to 123456") );
+    QVERIFY( false == testString.isEmpty() );
        
     QString testString2 = m_resourceAdapter->convertToString(0, QString()); 
     QCOMPARE( testString2, QString ("") );
@@ -364,22 +304,22 @@ void TestPhoneResourceAdapter::testIncallToolbar (int id)
     switch(id) {
     case R_PHONEUI_CALLHANDLING_INCALL_UNMUTE_CBA:
         action = map [PhoneAction::ToolbarButton1];
-        QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_dialler.svg"));
+        QCOMPARE (action->icon (), HbIcon("qtg_mono_dialer"));
         action = map [PhoneAction::ToolbarButton2];
-        QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_unmute.svg"));
+        QCOMPARE (action->icon (), HbIcon("qtg_mono_mic_unmute"));
         QCOMPARE (action->command (), (int)EPhoneInCallCmdUnmute);    
         action = map [PhoneAction::ToolbarButton3];
-        QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_loudsp_unmute.svg"));
+        QCOMPARE (action->icon (), HbIcon("qtg_mono_loudspeaker"));
         QCOMPARE (action->command (), (int)EPhoneInCallCmdActivateIhf);        
         break;
     default:    
         action = map [PhoneAction::ToolbarButton1];
-        QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_dialler.svg"));
+        QCOMPARE (action->icon (), HbIcon("qtg_mono_dialer"));
         action = map [PhoneAction::ToolbarButton2];
-        QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_mute.svg"));
+        QCOMPARE (action->icon (), HbIcon("qtg_mono_mic_mute"));
         QCOMPARE (action->command (), (int)EPhoneInCallCmdMute);    
         action = map [PhoneAction::ToolbarButton3];
-        QCOMPARE (action->icon (), HbIcon(":/qtg_large_tb_loudsp_unmute.svg"));
+        QCOMPARE (action->icon (), HbIcon("qtg_mono_loudspeaker"));
         QCOMPARE (action->command (), (int)EPhoneInCallCmdActivateIhf);
         break;
     }
@@ -397,23 +337,23 @@ void TestPhoneResourceAdapter::testConvertCommandToString ()
     
     QString testString = m_resourceAdapter->convertCommandToString(
             EPhoneInCallCmdEndAllCalls);    
-    QCOMPARE( testString, QString ("End all calls") );
+    QVERIFY( false == testString.isEmpty() );
     
     testString = m_resourceAdapter->convertCommandToString(
             EPhoneInCallCmdTransfer);    
-    QCOMPARE( testString, QString ("Transfer") );
+    QVERIFY( false == testString.isEmpty() );
     
     testString = m_resourceAdapter->convertCommandToString(
             EPhoneInCallCmdSwitchToVideo);    
-    QCOMPARE( testString, QString ("Call back with video call") );
+    QVERIFY( false == testString.isEmpty() );
     
     testString = m_resourceAdapter->convertCommandToString(
             EPhoneCmdHandoverToWlan);    
-    QCOMPARE( testString, QString ("Handover to WLAN") );
+    QVERIFY( false == testString.isEmpty() );
     
     testString = m_resourceAdapter->convertCommandToString(
             EPhoneCmdHandoverToGsm);    
-    QCOMPARE( testString, QString ("Handover to GSM") );
+    QVERIFY( false == testString.isEmpty() );
     
     testString = m_resourceAdapter->convertCommandToString(0); 
     QCOMPARE( testString, QString ("") );

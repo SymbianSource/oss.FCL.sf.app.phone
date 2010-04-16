@@ -21,9 +21,9 @@
 
 #include    <mphonedevicemodeobserver.h>
 #include    <hwrmdomainpskeys.h>
-#include    "CTelDMGripHandler.h"
-#include    "MTelDMAccessory.h"
-#include    "CTelDMCommandHandler.h"
+#include    "cteldmgriphandler.h"
+#include    "mteldmaccessory.h"
+#include    "cteldmcommandhandler.h"
 #include    <settingsinternalcrkeys.h>
 #include    <centralrepository.h>
 

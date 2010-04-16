@@ -153,11 +153,6 @@ void BubbleWidgetManager::setButtonStyle(Widget widget, QGraphicsWidget* button)
     if (b) {
         Q_ASSERT(mButtonStyle.contains(widget));
         b->setStyle(mButtonStyle.value(widget));
-        HbTextItem* label =
-        static_cast<HbTextItem*>(b->primitive(HbStyle::P_PushButton_text));
-        if (label) {
-            label->setTextColor(Qt::white);
-        }
     }
 }
 

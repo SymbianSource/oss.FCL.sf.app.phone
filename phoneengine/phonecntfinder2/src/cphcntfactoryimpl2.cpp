@@ -17,7 +17,6 @@
 
 
 // INCLUDE FILES
-#include    <QDebug>
 #include    <qglobal.h>
 #include    <e32cmn.h>  
 #include    <qcontactmanager.h>
@@ -27,6 +26,7 @@
 #include    <QString>
 #include    "cphcntfactoryimpl2.h"
 #include    "cphcntmatcherimpl2.h"
+#include    "qtphonelog.h"
 
 
 static const QString SYMBIAN_CONTACTS_BACKEND  = "symbian";
@@ -39,13 +39,13 @@ static const QString SYMBIAN_CONTACTS_BACKEND  = "symbian";
 //
 CPhCntFactoryImpl2* CPhCntFactoryImpl2::NewL()
     {
-    qDebug()<<"CPhCntFactoryImpl2::NewL - enter";
+    PHONE_DEBUG("CPhCntFactoryImpl2::NewL - enter");
     CPhCntFactoryImpl2* self = new (ELeave) CPhCntFactoryImpl2;
 
     CleanupStack::PushL( self );
     self->ConstructL();
     CleanupStack::Pop();
-    qDebug()<<"CPhCntFactoryImpl2::cntfinder2 is ready. lets rock.";
+    PHONE_DEBUG("CPhCntFactoryImpl2::cntfinder2 is ready. lets rock.");
     return self;
     }
 

@@ -44,25 +44,8 @@ CPhoneQwertyModeMonitor::CPhoneQwertyModeMonitor()
 //
 void CPhoneQwertyModeMonitor::ConstructL()
     {
-    // Current Call state.
-    iQwertyMode = GetQwertyMode();
-
-// <-- QT PHONE START-->
-/*    CPhonePubSubProxy::Instance()->NotifyChangeL(
-        KCRUidAvkon, 
-        KAknQwertyInputModeActive,
-        this );*/
-     
-
-     iKeyboard = GetKeyboard();
-    
-#ifdef RD_INTELLIGENT_TEXT_INPUT
-/*    CPhonePubSubProxy::Instance()->NotifyChangeL(
-        KCRUidAvkon, 
-        KAknKeyBoardLayout,
-        this );*/
-#endif
-// <-- QT PHONE END-->
+    iQwertyMode = GetQwertyMode();     
+    iKeyboard = GetKeyboard();    
     }
 
 // -----------------------------------------------------------------------------
@@ -188,14 +171,7 @@ TInt CPhoneQwertyModeMonitor::GetQwertyMode() const
 //
 TInt CPhoneQwertyModeMonitor::GetKeyboard() const
     {
-    // Get call state.
-// <-- QT PHONE START-->    
-/*    TInt keyboard( CPhonePubSubProxy::Instance()->Value(
-        KCRUidAvkon,
-        KAknKeyBoardLayout ) );*/
-    TInt keyboard(0);
-// <-- QT PHONE END-->    
-    
+    TInt keyboard(0);    
     return keyboard;
     }
 

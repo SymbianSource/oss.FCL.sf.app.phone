@@ -37,9 +37,6 @@ class CPhoneUnattendedTransferCmdHandler;
 class CPhoneNewCallCmdHandler;
 class CEikMenuPaneItem;
 class CCoeEnv;
-// <-- QT PHONE START -->
-//class CPhoneVccHandler;
-// <-- QT PHONE END -->
 class CPhoneCallForwardQueryHandler;
 
 // CONSTANTS
@@ -171,7 +168,6 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         void HandleDialL( const TDesC& aNumber );
 
 // from base class MPhoneButtonCustomization
-// <-- QT PHONE START -->         
         /**
         * From MPhoneButtonCustomization.
         * Customizes touch pane buttons.
@@ -180,7 +176,6 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         */
         void CustomizeTouchPaneButtons(
                         /*MBubbleTouchPaneInterface& aTouchPane*/ );
-// <-- QT PHONE END -->         
     protected:
 
         CPhoneCustomizationVoip( 
@@ -285,17 +280,6 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         */  
         TBool CheckFeatureSupportByCallTypeL( 
                 TFeature aFeature );
-
-// <-- QT PHONE START -->         
-        /**
-        * Customizes touch pane buttons by extension.
-        * @leave KErrNotFound if extension not found.
-        * @param aTouchPane Interface to add and dimm
-        *                   bubble touch pane buttons.
-        */
-        /*void CustomizeTouchPaneUsingExtensionL(
-                        MBubbleTouchPaneInterface& aTouchPane );*/
-// <-- QT PHONE END --> 
 
         /**
         * Shows "Enabling %U service" wait note 
@@ -408,13 +392,6 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
          */
         CPhoneNewCallCmdHandler* iNewCallCmdHandler;
         
-        /**
-         * Pointer to VCC handler
-         */
-        // <-- QT PHONE START -->
-        //CPhoneVccHandler* iVccHandler;
-        // <-- QT PHONE END -->
-
         /**
          * Call forward handler.
          */

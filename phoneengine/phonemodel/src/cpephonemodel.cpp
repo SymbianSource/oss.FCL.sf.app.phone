@@ -39,10 +39,8 @@
 #include <mccedtmfinterface.h>
 #include <mpecontacthandling.h>
 #include <mpeloghandling.h>
-// <-- QT PHONE START --> 
 #include "phoneservices.h"
 #include "parserrecognizer.h"
-// <-- QT PHONE END --> 
 
 // CONSTANTS
 const TInt KDriveProfile ( 6 );
@@ -163,10 +161,8 @@ CPEPhoneModel::~CPEPhoneModel()
         {
         delete iIdleStatusMonitor;
         } 
-// <-- QT PHONE START --> 
     delete iPhoneServices;
     delete iParserRecognizer;
-// <-- QT PHONE END --> 
     }// ~CPEPhoneModel
 
 // -----------------------------------------------------------------------------
@@ -237,10 +233,8 @@ TPtrC CPEPhoneModel::NameByMessageToPhoneEngine(
             return MESSAGE("EPEMessageClientDial");
         case MPEPhoneModel::EPEMessageClientDialEmergency:
             return MESSAGE("EPEMessageClientDialEmergency");
-// <-- QT PHONE START -->
         case MPEPhoneModel::EPEMessageDialServiceCall:
             return MESSAGE("EPEMessageDialServiceCall");
-// <-- QT PHONE END -->
         case MPEPhoneModel::EPEMessageContinueEmergencyCallInitialization:
             return MESSAGE("EPEMessageContinueEmergencyCallInitialization");
         case MPEPhoneModel::EPEMessageContinueDTMFSending:
@@ -845,11 +839,9 @@ void CPEPhoneModel::HandleMessage(
         case MPEPhoneModel::EPEMessageDisableService:
             iMessageHandler->HandleDisableService();
             break;
-// <-- QT PHONE START -->
         case MPEPhoneModel::EPEMessageDialServiceCall:  //Make Dial request
             errorCode = iMessageHandler->HandleDialCall( EFalse );
             break;
-// <-- QT PHONE END -->
         default:
             errorCode = ECCPErrorNotFound;
             break;
@@ -1032,13 +1024,10 @@ void CPEPhoneModel::SendMessage(
             aCallId );
         }
 
-// <-- QT PHONE START -->
         if( iParserRecognizer )
             {
             iParserRecognizer->sendMessage( aMessage, aCallId );
             }
-// <-- QT PHONE END -->
-
 
     }// SendMessage( 2 params )
 
@@ -1410,26 +1399,16 @@ TBool CPEPhoneModel::StepL()
         case CPEPhoneModel::EPEContactHandlingPhaseTwo:
             {
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 15.1" );
-// <-- QT PHONE START -->
-            // Start Idle State monitor to finalize ContactHandling contruction
-            //iIdleStatusMonitor = CPEIdleStatusMonitor::NewL (*this ); 
             static_cast< CPEContactHandlingProxy* >( iContactHandling )->
                    CreateSecondPhaseL( *this, iFsSession );
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 15.2" );
-
-            // This should be set after the last case
- 
-//            continueStepping = EFalse;
-// <-- QT PHONE END --> 
             break; 
             }
         case CPEPhoneModel::EPEMediatorCommandHandler:
             {
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 16.1" );
             // Start Mediator command listener
-// <-- QT PHONE START -->
             iMediatorCommunicationHandler = CPERemotePartyInfoMediator::NewL( *this );
-            
             break; 
             }
         case CPEPhoneModel::EPEPhoneServices:
@@ -1450,7 +1429,7 @@ TBool CPEPhoneModel::StepL()
             continueStepping = EFalse;
             break;
             }
-// <-- QT PHONE END --> 
+
         default:
             {
             Panic( EPEPanicIndexOutOfRange );

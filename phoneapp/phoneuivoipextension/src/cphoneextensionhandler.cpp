@@ -21,11 +21,7 @@
 #include <spsettings.h>
 #include <spentry.h>
 #include <spproperty.h>
-// <-- QT PHONE START --> 
-//#include <phoneui.rsg>
 #include "phoneresourceids.h"
-//#include <phoneuivoip.rsg>
-// <-- QT PHONE END --> 
 #include <avkon.rsg>
 #include <StringLoader.h>
 
@@ -98,32 +94,6 @@ TBool CPhoneExtensionHandler::HandleCommandL(
     
     return interface->HandleCommandL( aCommand );
     }
-
- 
-
-// -----------------------------------------------------------
-// CPhoneExtensionHandler::CustomizeTouchPaneButtonsL
-// -----------------------------------------------------------
-//
-// <-- QT PHONE START --> 
-/*void CPhoneExtensionHandler::CustomizeTouchPaneButtonsL(
-        TUint aServiceId,
-        RArray<CTelMenuExtension::TCallInfo>& aArray,
-        MBubbleTouchPaneInterface& aTouchPane )
-    {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-        "CPhoneExtensionHandler::CustomizeTouchPaneButtonsL" );
-
-    // <-- QT PHONE START -->
-    CTelMenuExtension* interface = MenuExtensionL( aServiceId );
-    
-    TPhTouchPaneWrapper wrapper( aTouchPane );    
-    interface->ModifyExtensionsTouchPaneButtonsL(
-        aArray,
-        wrapper);
-    // <-- QT PHONE END -->
-    }*/
-// <-- QT PHONE END --> 
 
 // -----------------------------------------------------------
 // CPhoneExtensionHandler::ModifyInCallMenuL

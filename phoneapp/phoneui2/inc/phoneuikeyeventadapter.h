@@ -51,8 +51,22 @@ public slots:
     */
     void keyPressed (QKeyEvent *event);
     
+    /*!
+        \fn void keyReleased (QKeyEvent *event)
+    
+        This method is called when keyReleaseEvent signal
+        is emitted from view.
+    */
     void keyReleased (QKeyEvent *event);
     
+    /*!
+        \fn void endKeyLongPress()
+    
+        This method is called when end key is pressed for 0.6 seconds.
+    */
+    void endKeyLongPress();
+
+
 private:
  
     /*!
@@ -71,8 +85,8 @@ private:
     
 private:
 
-    MPhoneKeyEventHandler &m_handler;
-    
+    MPhoneKeyEventHandler &mHandler;
+
 };
 
 #endif // PHONEUIKEYEVENTADAPTER_H

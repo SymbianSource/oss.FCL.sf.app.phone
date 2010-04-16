@@ -336,7 +336,6 @@ void CPhoneTwoSinglesAndWaiting::StateTransitionToSingleAndWaitingL()
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSinglesAndWaiting::StateTransitionToSingleAndWaitingL()");
     // Go to two singles state
-    // <-- QT PHONE START -->    
     TPhoneCmdParamInteger callIdParam;
     iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewGetExpandedBubbleCallId, &callIdParam );
@@ -349,7 +348,6 @@ void CPhoneTwoSinglesAndWaiting::StateTransitionToSingleAndWaitingL()
         {
         iCbaManager->SetCbaL( EPhoneCallHandlingCallWaitingCBA );
         }
-    // <-- QT PHONE END -->    
   
     // Set touch controls
     SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
@@ -383,11 +381,9 @@ void CPhoneTwoSinglesAndWaiting::HandleConnectedConferenceL( TInt aCallId )
         conferenceText, 
         callLabelId, 
         CCoeEnv::Static() );        
-// <-- QT PHONE START --> 
     callHeaderParam.SetCLIText( conferenceText, TPhoneCmdParamCallHeaderData::ERight );
     
     callHeaderParam.SetCallState(EPEStateConnectedConference);
-// <-- QT PHONE END --> 
     
     callHeaderParam.SetCiphering(
         iStateMachine->PhoneEngineInfo()->IsSecureCall( aCallId ) );
@@ -395,7 +391,6 @@ void CPhoneTwoSinglesAndWaiting::HandleConnectedConferenceL( TInt aCallId )
     callHeaderParam.SetCipheringIndicatorAllowed(
         iStateMachine->PhoneEngineInfo()->SecureSpecified() );
 
-// <-- QT PHONE START -->
     // Service identifier must be given so that service specific settings
     // can be taken into account at phoneuiview.
     callHeaderParam.SetServiceId( 
@@ -420,7 +415,6 @@ void CPhoneTwoSinglesAndWaiting::HandleConnectedConferenceL( TInt aCallId )
     
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
     
-// <-- QT PHONE END -->
     EndUiUpdate();
     // Go to Conference And Waiting state
     // No need for CBA update
@@ -436,7 +430,6 @@ void CPhoneTwoSinglesAndWaiting::UpdateInCallCbaL()
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSinglesAndWaiting::UpdateInCallCbaL()");
 
-// <-- QT PHONE START -->    
     TPhoneCmdParamInteger callIdParam;
     iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewGetExpandedBubbleCallId, &callIdParam );
@@ -449,7 +442,6 @@ void CPhoneTwoSinglesAndWaiting::UpdateInCallCbaL()
         {
         iCbaManager->SetCbaL( EPhoneCallHandlingIncomingSoftRejectCBA );
         }
-// <-- QT PHONE END -->    
     }
 
 // -----------------------------------------------------------
@@ -463,7 +455,6 @@ void CPhoneTwoSinglesAndWaiting::HandleNumberEntryClearedL()
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
     }
 
-// <-- QT PHONE START -->
 // -----------------------------------------------------------
 // CPhoneTwoSinglesAndWaiting::HandleCommandL
 // -----------------------------------------------------------
@@ -497,8 +488,5 @@ void CPhoneTwoSinglesAndWaiting::UpdateUiControlsL()
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndWaiting::UpdateUiControlsL( ) ");
     UpdateInCallCbaL();
     }
-
-// <-- QT PHONE END -->
-
 
 // End of File

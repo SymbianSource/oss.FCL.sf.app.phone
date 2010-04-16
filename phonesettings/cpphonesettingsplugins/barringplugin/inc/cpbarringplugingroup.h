@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -17,10 +17,13 @@
 #ifndef CPBARRINGPLUGINGROUP_H
 #define CPBARRINGPLUGINGROUP_H
 
+#include <QQueue>
 #include <cpsettingformitemdata.h>
-#include "cptelephonyutilsdefs.h"
+#include <psetcallbarringwrapper.h>
 
-using namespace CpTelephonyUtils;
+class PSetWrapper;
+class QModelIndex;
+class CpPhoneNotes;
 
 /*!
     \class CpBarringPluginGroup
@@ -33,12 +36,61 @@ class CpBarringPluginGroup : public CpSettingFormItemData
 public:
 
     explicit CpBarringPluginGroup(CpItemDataHelper &helper);
-    
     ~CpBarringPluginGroup();
+
+public slots:
+    
+    void itemShown(const QModelIndex& item);
+    
+private:
+    
+    void setupLocalization();
+    void connectToWrapper();
+    
+    void createAllOutgoingBarringItem();
+    void createOutgoingInternationalBarringItem();
+    void createOutgoingInternationalExceptToHomeCountryBarringItem();
+    void createAllIncomingBarringItem();
+    void createIncomingWhenRoamingBarringItem();
+    
+    void processBarringStatusRequestQueue();
+    void revertCheckStateForItem(CpSettingFormItemData *barringItem);
+
+private slots:
+
+    void barringStatusRequestCompleted(
+        int result,
+        const QList<unsigned char> & basicServiceGroupIds,
+        PSetCallBarringWrapper::BarringStatus status);
+    
+    void enableBarringRequestCompleted(
+        int result,
+        PSetCallBarringWrapper::BarringType barringType,
+        PSetCallBarringWrapper::BarringStatus barringStatus, 
+        bool plural);
+
+    void disableBarringRequestCompleted(
+        int result,
+        PSetCallBarringWrapper::BarringType barringType,
+        PSetCallBarringWrapper::BarringStatus barringStatus, 
+        bool plural);
+    
+    void changeBarringStateRequested(int checkState);
     
 private: 
     
     CpItemDataHelper &m_helper;
+    PSetWrapper *m_pSetWrapper;
+    PSetCallBarringWrapper *m_barringWrapper;
+    CpSettingFormItemData *m_allOutgoingBarringItem;
+    CpSettingFormItemData *m_outgoingInternationalBarringItem;
+    CpSettingFormItemData *m_outgoingInternationalExceptToHomeCountryBarringItem;
+    CpSettingFormItemData *m_allIncomingBarringItem;
+    CpSettingFormItemData *m_incomingWhenRoamingBarringItem;
+    QQueue<CpSettingFormItemData *> m_barringRequestQueue;
+    bool m_barringStatusRequestOngoing;
+    int m_activeNoteId;
+    CpPhoneNotes* m_phoneNotes;
 };
 
 #endif // CPBARRINGPLUGINGROUP_H

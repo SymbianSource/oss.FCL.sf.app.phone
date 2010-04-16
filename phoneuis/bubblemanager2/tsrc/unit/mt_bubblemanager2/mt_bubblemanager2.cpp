@@ -37,10 +37,13 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
 
+    void testConferenceCall();
+
+private:
     void testBasicMtCall();
     void testBasicMoCall();
     void testWaitingCall();
-    void testConferenceCall();
+
     void testEmergencyCall();
 
 private:
@@ -157,6 +160,7 @@ void mt_BubbleManager2::testBasicMoCall()
     bubbleManager->setSecondaryCli( bubbleId, "0507284096" );
     bubbleManager->setNumberType( bubbleId, BubbleManager::Mobile );
     bubbleManager->setLabel( bubbleId,"Calling");
+    bubbleManager->setCallFlag( bubbleId, BubbleManager::NoCiphering, true );
     bubbleManager->setCallObjectFromTheme(bubbleId);
     HbAction action1("End call", this);
     action1.setSoftKeyRole(QAction::NegativeSoftKey);
@@ -177,6 +181,7 @@ void mt_BubbleManager2::testBasicMoCall()
     bubbleManager->setState( bubbleId, BubbleManager::Active );
     bubbleManager->setLabel( bubbleId,"");
     bubbleManager->setCallTime( bubbleId, "00:00" );
+    bubbleManager->setCallFlag( bubbleId, BubbleManager::NoCiphering, false);
     bubbleManager->clearActions(bubbleId);
     HbAction action2("Hold", this);
     bubbleManager->addAction( bubbleId, &action2 );
@@ -358,6 +363,8 @@ void mt_BubbleManager2::testConferenceCall()
     bubbleManager->setCli(bubbleIdC,"Conference call",Qt::ElideRight);
     bubbleManager->setExpandedConferenceCallHeader(true);
     bubbleManager->setState(bubbleIdC,BubbleManager::Active);
+    bubbleManager->setState(bubbleId1,BubbleManager::Active);
+    bubbleManager->setState(bubbleId2,BubbleManager::Active);
     bubbleManager->setCallTime(bubbleIdC,"00:00");
     HbAction action5("End conference");
     action5.setSoftKeyRole(QAction::NegativeSoftKey);
@@ -409,6 +416,21 @@ void mt_BubbleManager2::testConferenceCall()
     // try to click conference list
     QTest::mouseClick(mainWindow->viewport(),Qt::LeftButton,0,QPoint(100,100));
     QTest::qWait( 2*WAIT_TIME );
+
+    // hold/unhold conference
+    bubbleManager->startChanges();
+    bubbleManager->setState( bubbleIdC, BubbleManager::OnHold );
+    bubbleManager->setState( bubbleId1, BubbleManager::OnHold );
+    bubbleManager->setState( bubbleId2, BubbleManager::OnHold );
+    bubbleManager->setState( bubbleId3, BubbleManager::OnHold );
+    bubbleManager->endChanges();
+    QTest::qWait( 2*WAIT_TIME );
+    bubbleManager->startChanges();
+    bubbleManager->setState( bubbleIdC, BubbleManager::Active );
+    bubbleManager->setState( bubbleId1, BubbleManager::Active );
+    bubbleManager->setState( bubbleId2, BubbleManager::Active );
+    bubbleManager->setState( bubbleId3, BubbleManager::Active );
+    bubbleManager->endChanges();
 
     // remove call from conference
     bubbleManager->startChanges();

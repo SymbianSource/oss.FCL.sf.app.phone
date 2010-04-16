@@ -25,8 +25,8 @@
 // -----------------------------------------------------------------------------
 //
 CpBaseSettingView::CpBaseSettingView( 
-        HbDataForm *,
-        QGraphicsItem *)
+        QGraphicsWidget * ,
+        QGraphicsItem *  )
     //:
     //HbView( /*settingForm, parent*/ )
     {

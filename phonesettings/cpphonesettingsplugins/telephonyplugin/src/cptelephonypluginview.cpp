@@ -16,19 +16,20 @@
 */
 
 #include "cptelephonypluginview.h"
-#include "cpplugincommon.h"
 #include "cppluginlogging.h"
 #include <QPluginLoader>
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
 #include <hbdataformmodel.h>
-#include <cppluginplatinterface.h>
+#include <cpplugininterface.h>
 #include <cpsettingformitemdata.h>
 #include <cpitemdatahelper.h>
+#include <cppluginutility.h>
+#include <cppluginloader.h>
 
 CpTelephonyPluginView::CpTelephonyPluginView() : 
-    CpBaseSettingView(),
+    CpBaseSettingView(0,0),
     m_helper(NULL)
 {
     DPRINT << ": IN";
@@ -45,35 +46,32 @@ CpTelephonyPluginView::CpTelephonyPluginView() :
         DPRINT << ": translator installed"; 
     }
     
-    HbDataForm *form = settingForm();
+    HbDataForm *form = qobject_cast<HbDataForm*>(widget());
     if (form) {
         HbDataFormModel *model = new HbDataFormModel;
         form->setHeading(hbTrId("Telephone settings"));
         // Create and initialize plugin's item data helper
         m_helper = initializeItemDataHelper(); 
-        HbDataFormModelItem *item(NULL);
+        QList<CpSettingFormItemData*> items;
         
-        DPRINT << ": Loading cpcallsplugin";
         // Load calls plugin
-        item = groupItemFromPlugin("cpcallsplugin");
-        if (item) {
-            model->appendDataFormItem(item);
-        }
+        DPRINT << ": Loading cpcallsplugin";
+        items.append(groupItemFromPlugin("cpcallsplugin"));
         
         // Load diverts plugin
         DPRINT << ": Loading cpdivertsplugin";
-        item = groupItemFromPlugin("cpdivertplugin");
-        if (item) {
-            model->appendDataFormItem(item);
-        }
+        items.append(groupItemFromPlugin("cpdivertplugin"));
+        
 
         // Load call mailboxes plugin
         DPRINT << ": Loading vmbxcpplugin";
-        item = groupItemFromPlugin("vmbxcpplugin");
-        if (item) {
-            model->appendDataFormItem(item);
-        }
+        items.append(groupItemFromPlugin("vmbxcpplugin"));
 
+        // Insert items to form model
+        foreach (CpSettingFormItemData* i, items) {
+            model->appendDataFormItem(i);
+        }
+        
         form->setModel(model);
     }
     
@@ -89,23 +87,16 @@ CpTelephonyPluginView::~CpTelephonyPluginView()
     DPRINT << ": OUT";
 }
 
-HbDataFormModelItem* CpTelephonyPluginView::groupItemFromPlugin( const QString& plugin )
+QList<CpSettingFormItemData*> CpTelephonyPluginView::groupItemFromPlugin( const QString& plugin )
 {
     DPRINT << ": IN";
  
-    CpSettingFormItemData *item(NULL);
-    CpPluginPlatInterface *p(NULL);
+    QList<CpSettingFormItemData*> items;
+    CpPluginInterface *p(NULL);
     try {
-        p = Tools::loadCpPlugin(plugin);
+        p = CpPluginLoader::loadCpPlugin(plugin);
         if (p && m_helper){
-            item = p->createSettingFormItemData(*m_helper);
-            if (item){
-                item->setType(HbDataFormModelItem::GroupItem);
-                QObject::connect(
-                        settingForm(), SIGNAL(itemShown(QModelIndex)),
-                        item, SLOT(itemShown(QModelIndex)));
-                DPRINT << "plugin:" << plugin;
-            }
+            items = p->createSettingFormItemData(*m_helper);
         }
     } catch(...) {
         DPRINT << "CATCH ERROR";
@@ -113,72 +104,13 @@ HbDataFormModelItem* CpTelephonyPluginView::groupItemFromPlugin( const QString& 
     }
     
     DPRINT << ": OUT";
-    return item;
-}
-
-void CpTelephonyPluginView::onConnectionAdded(HbDataFormModelItem *item,
-                                   const QString &signal,
-                                   QObject *receiver,
-                                   const QString &method)
-{
-    DPRINT << ": IN";
-    
-    if (HbDataForm *form = settingForm()) {
-        form->addConnection(item, signal.toAscii(), receiver, method.toAscii());
-    }
-    
-    DPRINT << ": OUT";
-}
-
-void CpTelephonyPluginView::onConnectionRemoved(HbDataFormModelItem *item,
-                                     const QString &signal,
-                                     QObject *receiver,
-                                     const QString &method)
-{
-    DPRINT << ": IN";
-    
-    if (HbDataForm *form = settingForm()) {
-        form->removeConnection(item, signal.toAscii(), receiver, method.toAscii());
-    }
-    
-    DPRINT << ": OUT";
-}
-
-void CpTelephonyPluginView::onPrototypeAdded(HbAbstractViewItem *prototype)
-{
-    DPRINT << ": IN";
-    
-    if (HbDataForm *form = settingForm()) {
-        QList<HbAbstractViewItem *> prototypes = form->itemPrototypes();
-        prototypes.append(prototype);
-        form->setItemPrototypes(prototypes);
-    }
-    
-    DPRINT << ": OUT";
+    return items;
 }
 
 CpItemDataHelper* CpTelephonyPluginView::initializeItemDataHelper()
 {
-    DPRINT << ": IN";
-    
-    CpItemDataHelper *itemDataHelper = new CpItemDataHelper;
-    DPRINT << "itemDataHelper:" << reinterpret_cast<int>(itemDataHelper);
-    itemDataHelper->bindToForm(settingForm());
-    connect(itemDataHelper, 
-        SIGNAL(connectionAdded(HbDataFormModelItem*, QString, QObject *, QString)),
-        this,
-        SLOT(onConnectionAdded(HbDataFormModelItem*, QString, QObject *, QString)));
-    connect(itemDataHelper,
-        SIGNAL(connectionRemoved(HbDataFormModelItem*, QString, QObject *, QString)),
-        this,
-        SLOT(onConnectionRemoved(HbDataFormModelItem*, QString, QObject *, QString)));
-    connect(itemDataHelper,
-        SIGNAL(prototypeAdded(HbAbstractViewItem *)),
-        this,
-        SLOT(onPrototypeAdded(HbAbstractViewItem *)));
-    
-    DPRINT << ": OUT : helper signals connected";
-    return itemDataHelper;
+    DPRINT;
+    return new CpItemDataHelper(qobject_cast<HbDataForm*>(widget()));
 }
 
 // End of File. 

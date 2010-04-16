@@ -23,6 +23,7 @@
 #include <cpbasesettingview.h>
 
 class HbDataFormModelItem;
+class CpSettingFormItemData;
 
 /*!
     \class CpTelephonyPluginView
@@ -39,24 +40,10 @@ public:
 private: 
     
     CpItemDataHelper* initializeItemDataHelper();
-    
-private slots: 
-
-    void onConnectionAdded(HbDataFormModelItem *item,
-            const QString &signal,
-            QObject *receiver,
-            const QString &method);
-    
-    void onConnectionRemoved(HbDataFormModelItem *item,
-            const QString &signal,
-            QObject *receiver,
-            const QString &method);
-    
-    void onPrototypeAdded(HbAbstractViewItem *prototype);
 
 private: 
  
-    HbDataFormModelItem* groupItemFromPlugin(const QString& plugin);
+    QList<CpSettingFormItemData*> groupItemFromPlugin(const QString& plugin);
     
 private:   // data
  

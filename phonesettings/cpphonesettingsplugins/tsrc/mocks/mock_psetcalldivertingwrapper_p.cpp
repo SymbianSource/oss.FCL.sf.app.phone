@@ -14,8 +14,8 @@
 * Description:
 *
 */
-#include <MPsetDivertObs.h>
-#include <MPhCltEmergencyCallObserver.h>
+#include <mpsetdivertobs.h>
+#include <mphcltemergencycallobserver.h>
 #include <mmlist.h>
 #include <smcmockclassincludes.h>
 #include "psetcalldivertingwrapper_p.h"

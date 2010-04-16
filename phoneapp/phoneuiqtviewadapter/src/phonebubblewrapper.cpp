@@ -15,14 +15,13 @@
 *
 */
 
-#include <QtDebug>
 #include <hbaction.h>
 #include <pevirtualengine.h>
 
 #include "bubblemanagerif.h"
 #include "phonebubblewrapper.h"
 #include "phoneconstants.h"
-
+#include "qtphonelog.h"
 
 PhoneBubbleWrapper::PhoneBubbleWrapper (BubbleManagerIF& bubble, QObject *parent) :
     QObject (parent), m_bubbleManager (bubble)
@@ -127,26 +126,27 @@ void PhoneBubbleWrapper::setState (int callId, int bubble, int callState)
     
     updateCallState (callId, callState);
     m_bubbleManager.setState (bubble, state);
+
 }
 
 void PhoneBubbleWrapper::setLabel (int bubble, const TDesC &text)
 {
     QString labelText = QString::fromUtf16 (text.Ptr (), text.Length ());
-    qDebug () << "PhoneBubbleWrapper::setLabel, label:" << labelText; 
+    PHONE_DEBUG2("PhoneBubbleWrapper::setLabel, label:", labelText); 
     m_bubbleManager.setLabel (bubble, labelText, Qt::ElideRight);
 }
 
 void PhoneBubbleWrapper::setCli (int bubble, const TDesC &cliText)
 {
     QString text = QString::fromUtf16 (cliText.Ptr (), cliText.Length ());
-    qDebug () << "PhoneBubbleWrapper::setCli, cli:" << text; 
+    PHONE_DEBUG2("PhoneBubbleWrapper::setCli, cli:", text); 
     m_bubbleManager.setCli (bubble, text, Qt::ElideRight);
 }
 
 void PhoneBubbleWrapper::setSecondaryCli (int bubble, const TDesC &cliText)
 {
     QString text = QString::fromUtf16 (cliText.Ptr (), cliText.Length ());
-    qDebug () << "PhoneBubbleWrapper::setSecondaryCli, SecondaryCli:" << text; 
+    PHONE_DEBUG2("PhoneBubbleWrapper::setSecondaryCli, SecondaryCli:", text); 
     m_bubbleManager.setSecondaryCli (bubble, text);
 }
 
@@ -181,6 +181,15 @@ void PhoneBubbleWrapper::setDivert (int bubble, bool enabled)
     if (enabled) {
         BubbleManagerIF::PhoneCallFlags divertedFlag = BubbleManagerIF::Diverted;
         m_bubbleManager.setCallFlag (bubble, divertedFlag, true);
+    }
+}
+
+void PhoneBubbleWrapper::setCiphering(int bubble, bool indicatorAllowed, bool enabled)
+{
+    if (indicatorAllowed && !enabled) {
+        m_bubbleManager.setCallFlag (bubble, BubbleManagerIF::NoCiphering, true);
+    } else {
+        m_bubbleManager.setCallFlag (bubble, BubbleManagerIF::NoCiphering, false);
     }
 }
 
@@ -230,7 +239,7 @@ QMap<int, int> PhoneBubbleWrapper::bubbles() const
     return ret;
 }
 
-void PhoneBubbleWrapper::createConferenceBubble(
+int PhoneBubbleWrapper::createConferenceBubble(
         int callId,
         int callState,
         const TDesC &labelText, 
@@ -238,9 +247,10 @@ void PhoneBubbleWrapper::createConferenceBubble(
 {
     int callId1;
     int callId2;
+    int bubble = -1;
     if (getCallIdsForConference(callId1, callId2)) {
         m_bubbleManager.startChanges();
-        int bubble = m_bubbleManager.createConference( 
+        bubble = m_bubbleManager.createConference( 
                 bubbleId(callId1), 
                 bubbleId(callId2) );
         
@@ -259,6 +269,8 @@ void PhoneBubbleWrapper::createConferenceBubble(
         
         m_bubbleManager.endChanges();
     }
+    
+    return bubble;
 }
 
 void PhoneBubbleWrapper::setConferenceCallId(int callId) 

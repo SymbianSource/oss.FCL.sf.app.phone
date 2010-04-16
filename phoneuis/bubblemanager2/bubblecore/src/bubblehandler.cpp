@@ -38,3 +38,12 @@ QGraphicsWidget* BubbleHandler::widget(
 {
     return mWidgetManager.widget(mView,mContainer,widget);
 }
+
+void BubbleHandler::conferenceMemberRemoved(int bubbleId)
+{
+    Q_UNUSED(bubbleId);
+}
+
+void BubbleHandler::conferenceRemoved()
+{
+}

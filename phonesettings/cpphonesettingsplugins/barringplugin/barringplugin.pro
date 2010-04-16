@@ -29,6 +29,7 @@ RCC_DIR = rcc
 TRANSLATIONS = telephone_cp.ts
 
 LIBS += -lcpframework \
+        -lpsetwrapper \
         -lcptelephonyutils
 
 # Input

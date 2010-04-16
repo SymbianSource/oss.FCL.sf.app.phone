@@ -16,7 +16,8 @@
 
 #include "phoneuicommandcontroller.h"
 #include "phoneresourceadapter.h"
-#include <QtDebug>
+#include "phoneuiqtbuttonscontroller.h"
+#include "qtphonelog.h"
 #include <hbaction.h>
 #include <spsettings.h>
 #include <spentry.h>
@@ -32,12 +33,12 @@ PhoneUiCommandController::PhoneUiCommandController(
         PhoneUIQtViewIF &view, QObject *parent) 
 : QObject (parent), m_view(view), m_lastCommandExtension(0)
 {
-    qDebug() << "PhoneMenuController::PhoneMenuController";
+    PHONE_DEBUG("PhoneMenuController::PhoneMenuController");
 }
 
 PhoneUiCommandController::~PhoneUiCommandController()
 {
-    qDebug() << "PhoneMenuController::~PhoneMenuController";
+    PHONE_DEBUG("PhoneMenuController::~PhoneMenuController");
     for (int i=0;i<m_commandExtensions.count();++i) {
         m_commandExtensions.at(i)->release();
     }
@@ -47,7 +48,7 @@ void PhoneUiCommandController::setCallMenuActions(
         QMap<int,int> callStates, QMap<int,int> serviceIds, 
         int serviceId, int expandedCallId )
 {
-    qDebug() << "PhoneMenuController::setCallMenuActions";
+    PHONE_DEBUG("PhoneMenuController::setCallMenuActions");
     releaseMenu();
     
     PhoneCommandExtensionWrapper *extension = commandExtension(serviceId);
@@ -75,7 +76,7 @@ void PhoneUiCommandController::setCallMenuActions(
 
 void PhoneUiCommandController::setDialpadMenuActions()
 {
-    qDebug() << "PhoneMenuController::setDialpadMenuActions";
+    PHONE_DEBUG("PhoneMenuController::setDialpadMenuActions");
     releaseMenu();
     QList<PhoneAction*> values;
     m_view.setMenuActions(values);
@@ -129,29 +130,35 @@ QMap<PhoneAction::ActionType, PhoneAction *>
 QList<int> PhoneUiCommandController::menuCommands(
         QMap<int,int> callStates, QMap<int,int> serviceIds )
 {
-    qDebug() << "PhoneMenuController::menuCommands";
+    PHONE_DEBUG("PhoneMenuController::menuCommands");
     QList<int> commands;
     bool sameServices = areServicesSame(callStates,serviceIds);
 
     switch(callStates.values().count()) {
-    case 1:
+    case 1: {
         // No logical string for switch to video option	
         /*if (callStates.values().contains(EPEStateConnected)) {
             commands.append(PhoneInCallCmdSwitchToVideo);
         }*/
-        break;
-    case 2:
+    }
+    break;
+    case 2: {
+        if (!callStates.values().contains(EPEStateRinging) &&
+            !callStates.values().contains(EPEStateDisconnecting)) {
+            commands.append(PhoneInCallCmdEndAllCalls);
+        }
         if (callStates.values().contains(EPEStateConnected) &&
             callStates.values().contains(EPEStateHeld)) {
-            commands.append(PhoneInCallCmdEndAllCalls);
             if (sameServices) {
                 commands.append(PhoneInCallCmdTransfer);
             }
         }
-        break;
-    case 3:
-
-        break;
+    }
+    break;
+    case 3: {
+        commands.append(PhoneInCallCmdEndAllCalls);    
+    }
+    break;
     default:
         break;
     }
@@ -281,7 +288,7 @@ PhoneCommandExtensionWrapper
 
 void PhoneUiCommandController::releaseMenu()
 {
-    qDebug() << "PhoneMenuController::setDialpadMenuActions";
+    PHONE_DEBUG("PhoneMenuController::setDialpadMenuActions");
     for (int i=0;i<m_customMenuActions.count();i++) {
         m_view.menuReference().removeAction(m_customMenuActions.at(i));
     }
@@ -349,7 +356,9 @@ QList<int> PhoneUiCommandController::buttonCommandList(
                 
                 if (EPEStateConnectedConference == callState) {
                     ret.append(PhoneInCallCmdSwap);
-                } else if (sameServices) {
+                } else if (sameServices && 
+                    false == PhoneResourceAdapter::Instance()->buttonsController()->
+                        getButtonFlags(PhoneUIQtButtonsController::DisableJoin)) {
                     if ( callStates.contains(EPEStateHeldConference) ) {
                         ret.append(PhoneInCallCmdJoinToConference);                  
                     } else {
@@ -373,7 +382,9 @@ QList<int> PhoneUiCommandController::buttonCommandList(
         } else {
             if (EPEStateHeldConference == callState) {
                 ret.append(PhoneInCallCmdSwap);
-            } else if (sameServices) {
+            } else if (sameServices && 
+                    false == PhoneResourceAdapter::Instance()->buttonsController()->
+                        getButtonFlags(PhoneUIQtButtonsController::DisableJoin)) {
                 if ( callStates.contains(EPEStateConnectedConference)) {
                     ret.append(PhoneInCallCmdJoinToConference);
                 } else {
@@ -403,21 +414,21 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     switch( command ) {
     case PhoneInCallCmdJoinToConference: {
         action = new PhoneAction;
-        action->setIcon(HbIcon(":/qtg_mono_join_call.svg"));
+        action->setIcon(HbIcon("qtg_mono_join_call"));
         action->setCommand(EPhoneInCallCmdJoin);
     }
     break;
 
     case PhoneInCallCmdCreateConference: {
         action = new PhoneAction;
-        action->setIcon(HbIcon(":/qtg_mono_join_call.svg"));
+        action->setIcon(HbIcon("qtg_mono_join_call"));
         action->setCommand(EPhoneInCallCmdCreateConference);
     }
     break;
         
     case PhoneInCallCmdAnswer: {
         action = new PhoneAction;
-        action->setIcon(HbIcon(":/qtg_mono_answer_call.svg"));
+        action->setIcon(HbIcon("qtg_mono_call"));
         action->setCommand (EPhoneCallComingCmdAnswer);
         action->setActionRole(PhoneAction::Accept);
     }
@@ -425,7 +436,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     
     case PhoneInCallCmdReject: {
         action = new PhoneAction;
-        action->setIcon(HbIcon(":/qtg_mono_reject_call.svg"));
+        action->setIcon(HbIcon("qtg_mono_reject_call"));
         action->setCommand (EPhoneCallComingCmdReject);
         action->setActionRole(PhoneAction::Decline);
     }
@@ -433,21 +444,21 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     
     case PhoneInCallCmdHold: {
         action = new PhoneAction;
-        action->setIcon(HbIcon(":/qtg_mono_hold_call.svg"));
+        action->setIcon(HbIcon("qtg_mono_hold_call"));
         action->setCommand(EPhoneInCallCmdHold);
     }
     break;
     
     case PhoneInCallCmdUnhold: {
         action = new PhoneAction;
-        action->setIcon(HbIcon(":/qtg_mono_answer_call.svg")); // todo icon missing
+        action->setIcon(HbIcon("qtg_mono_call"));
         action->setCommand(EPhoneInCallCmdUnhold);
     }
     break;
     
     case PhoneInCallCmdEndActive: {
         action = new PhoneAction;
-        action->setIcon(HbIcon(":/qtg_mono_end_call.svg"));
+        action->setIcon(HbIcon("qtg_mono_end_call"));
         action->setCommand(EPhoneInCallCmdEndThisActiveCall);
         action->setActionRole(PhoneAction::Decline);
     }
@@ -455,7 +466,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     
     case PhoneInCallCmdEndOutgoingCall: {
         action = new PhoneAction;
-        action->setIcon(HbIcon(":/qtg_mono_end_call.svg"));
+        action->setIcon(HbIcon("qtg_mono_end_call"));
         action->setCommand(EPhoneInCallCmdEndThisOutgoingCall);
         action->setActionRole(PhoneAction::Decline);
     }
@@ -463,7 +474,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
 
     case PhoneInCallCmdReplace: {
         action = new PhoneAction;
-        action->setIcon(HbIcon(":/qtg_mono_replace_call.svg"));
+        action->setIcon(HbIcon("qtg_mono_replace_call"));
         action->setCommand(EPhoneInCallCmdReplace);
         action->setActionRole(PhoneAction::Accept);
     }
@@ -471,7 +482,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     
     case PhoneInCallCmdSwap: {
         action = new PhoneAction;
-        action->setIcon(HbIcon(":/qgn_indi_button_swap.svg"));
+        action->setIcon(HbIcon("qtg_mono_swap"));
         action->setCommand(EPhoneInCallCmdSwap); 
     }
     break;

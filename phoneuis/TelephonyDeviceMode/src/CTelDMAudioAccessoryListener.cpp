@@ -17,8 +17,8 @@
 
 
 //  INCLUDE FILES
-#include    "CTelDMAudioAccessoryListener.h"               // this
-#include    "CTelDMDebug.h"
+#include    "cteldmaudioaccessorylistener.h"               // this
+#include    "cteldmdebug.h"
 #include    <TelephonyAudioRouting.h>
 
 //  CONSTANTS

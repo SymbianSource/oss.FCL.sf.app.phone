@@ -21,6 +21,7 @@
 
 #include "hsdialerwidgetplugin.h"
 #include "hsdialerwidget.h"
+#include "qtphonelog.h"
 
 #ifdef COVERAGE_MEASUREMENT
 #pragma CTC SKIP
@@ -30,10 +31,12 @@ QObject *HsDialerWidgetPlugin::createInstance(const QServiceInterfaceDescriptor 
                                              QServiceContext *context,
                                              QAbstractSecuritySession *session)
 {
+    PHONE_DEBUG("HsDialerWidgetPlugin::createInstance");
     Q_UNUSED(context);
     Q_UNUSED(session);
 
-    if (descriptor.interfaceName() == QLatin1String("com.nokia.homescreen.widget")) {
+    if (descriptor.interfaceName() == QLatin1String("com.nokia.symbian.IHomeScreenWidget")) {
+        PHONE_DEBUG("creating HsDialerWidget instance");
         return new HsDialerWidget();
     } else {
         return 0;

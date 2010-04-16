@@ -20,9 +20,6 @@
 #define C_PESERVICEHANDLING_H
 
 #include <e32base.h>
-// <-- QT PHONE START -->
-// #include <cch.h>
-// <-- QT PHONE END -->
 #include "mpeservicehandling.h"
 
 class  MPEPhoneModelInternal;
@@ -35,9 +32,6 @@ class  MPEPhoneModelInternal;
  *  @since S60 v5.0
  */
 NONSHARABLE_CLASS( CPEServiceHandling ): public CBase,
-// <-- QT PHONE START -->
-                                         //public MCchServiceStatusObserver,
-// <-- QT PHONE END -->
                                          public MPEServiceHandling
     {
 
@@ -84,21 +78,6 @@ NONSHARABLE_CLASS( CPEServiceHandling ): public CBase,
          */ 
         void DisableService() const;
     
-    public: // from MCchServiceStatusObserver
-        
-        /**
-         * From MCchServiceStatusObserver.
-         * Signaled when service status or error changes.
-         *
-         * @param   aServiceId      Identifier of the service.
-         * @param   aType           Service type.
-         * @param   aServiceStatus  Service status.
-         */
-        // <-- QT PHONE START -->
-        /*void ServiceStatusChanged( TInt aServiceId, 
-                                   const TCCHSubserviceType aType,
-                                   const TCchServiceStatus& aServiceStatus );*/
-        // <-- QT PHONE END -->
     private: // Constructors
 
         /**
@@ -110,39 +89,9 @@ NONSHARABLE_CLASS( CPEServiceHandling ): public CBase,
          * By default Symbian 2nd phase constructor is private.
          */
         void ConstructL();
-        
-    private: // functions
-    
-        /**
-         * Enable service, if not already enabled.
-         *
-         * @param  aState       Service state.
-         * @param  aService     Service.
-         * @return Error code.
-         */
-        // <-- QT PHONE START -->
-        /*TInt EnableServiceIfNeeded( const TCCHSubserviceState& aState, 
-                                    CCchService& aService );*/
-        
-        /**
-        * Sends ServiceHandlingError message to PhoneEngine and saves 
-        * errorcode to member variable.
-        * 
-        * @param  aErrorCode, Cch errorcode.
-        */      
-        //void SendErrorMessage( TInt aErrorCode );
-        // <-- QT PHONE END -->
-       
+               
     private: // data
         
-        /**
-         * CCH client.
-         * Own.
-         */
-        // <-- QT PHONE START -->
-        //CCch* iCchClient;
-        // <-- QT PHONE END -->
-
         /**
          * PhoneModel.
          * Not own.

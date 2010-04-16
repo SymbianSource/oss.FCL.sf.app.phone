@@ -43,7 +43,7 @@ SOURCES += ut_cpnetworkplugin.cpp
 
 # code to be tested
 HEADERS += ../../src/cpnetworkplugin.h \
-           ../../src/cpnetworkpluginview.h \
+           ../../src/cpnetworkpluginview.h
        
 SOURCES += ../../src/cpnetworkplugin.cpp 
 

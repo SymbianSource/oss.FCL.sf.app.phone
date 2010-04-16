@@ -16,12 +16,7 @@
 */
 
 // INCLUDES
-// <-- QT PHONE START --> 
-//#include <phoneui.rsg>
 #include "phoneresourceids.h"
-//#include <avkon.rsg>
-//#include <phoneuivoip.rsg>
-// <-- QT PHONE END --> 
 #include <StringLoader.h>
 #include <avkon.rsg>
 #include <mpeengineinfo.h>

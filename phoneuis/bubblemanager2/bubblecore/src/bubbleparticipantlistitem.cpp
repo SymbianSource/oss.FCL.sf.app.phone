@@ -38,7 +38,9 @@ BubbleParticipantListItem::BubbleParticipantListItem(
     mButtonStyle(buttonStyle),
     mBackground(0),
     mText(0),
-    mIcon(0),
+    mStatusIcon(0),
+    mCipheringIcon(0),
+    mExpandIcon(0),
     mButton1(0),
     mButton2(0),
     mExpanded(false)
@@ -81,11 +83,26 @@ void BubbleParticipantListItem::updateChildItems()
         }
     }
 
-    if (!mIcon) {
-        mIcon = style()->createPrimitive(
+    if (!mCipheringIcon) {
+        mCipheringIcon = style()->createPrimitive(
+                (HbStyle::Primitive)(pluginBaseId()+BP_Ciphering_icon), this);
+        if ( mCipheringIcon ) {
+            style()->setItemName( mCipheringIcon, "ciphering" );
+        }
+    }
+
+    if (!mStatusIcon) {
+        mStatusIcon = style()->createPrimitive(
                 (HbStyle::Primitive)(pluginBaseId()+BP_CallStatus_icon), this);
-        if ( mIcon ) {
-            style()->setItemName( mIcon, "icon" );
+        if ( mStatusIcon ) {
+            style()->setItemName( mStatusIcon, "icon" );
+        }
+    }
+
+    if (!mExpandIcon) {
+        mExpandIcon = new HbIconItem(this);
+        if ( mExpandIcon ) {
+            style()->setItemName( mExpandIcon, "expand-indi" );
         }
     }
 
@@ -150,7 +167,10 @@ void BubbleParticipantListItem::updateChildItems()
                          modelIndex().data(Qt::DecorationRole).toInt();
     option.mText1 = modelIndex().data(Qt::DisplayRole).toString();
     option.mCliLineNumber = 1;
-
+    bool ciphering = modelIndex().data(Qt::StatusTipRole).toBool();
+    if (!ciphering) {
+        option.mCallFlags = BubbleManagerIF::NoCiphering;
+    }
 
     if (mBackground) {
         style()->updatePrimitive(
@@ -166,11 +186,26 @@ void BubbleParticipantListItem::updateChildItems()
             &option);
     }
 
-    if (mIcon) {
+    if (mStatusIcon) {
         style()->updatePrimitive(
-            mIcon,
+            mStatusIcon,
             (HbStyle::Primitive)(pluginBaseId()+BP_CallStatus_icon),
             &option );
+    }
+
+    if (mCipheringIcon) {
+        style()->updatePrimitive(
+            mCipheringIcon,
+            (HbStyle::Primitive)(pluginBaseId()+BP_Ciphering_icon),
+            &option );
+    }
+
+    if (mExpandIcon) {
+        if (mExpanded) {
+            mExpandIcon->setIcon(HbIcon("qtg_small_expand"));
+        } else {
+            mExpandIcon->setIcon(HbIcon("qtg_small_collapse"));
+        }
     }
 
     repolish();
@@ -184,7 +219,7 @@ void BubbleParticipantListItem::polish(HbStyleParameters& params)
         setProperty("layoutOption","collapsed");
     }
 
-    HbWidget::polish(params);
+    HbListViewItem::polish(params);
 }
 
 void BubbleParticipantListItem::receivedFocus()

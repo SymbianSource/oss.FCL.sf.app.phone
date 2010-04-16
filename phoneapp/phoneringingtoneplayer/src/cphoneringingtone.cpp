@@ -389,7 +389,6 @@ TInt CPhoneRingingTone::CheckToneFileSize( const TDesC& aFile,
     // Get file size
     TInt size = 0;
 
-// <-- QT PHONE START -->    
     RFs fs;   
     TInt error = fs.Connect();
     TEntry entry;
@@ -407,7 +406,6 @@ TInt CPhoneRingingTone::CheckToneFileSize( const TDesC& aFile,
             error = KErrTooBig;
             }
         }
-// <-- QT PHONE END -->
 
     fs.Close();
     __PHONELOG1( 
@@ -428,14 +426,8 @@ void CPhoneRingingTone::GetMaxToneFileSize()
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneRingingtone::GetMaxToneFileSize()" );
 
-// <-- QT PHONE START -->     
-    /*const TInt error = CPhoneCenRepProxy::Instance()->GetInt( 
-            KCRUidProfileEngine,
-            KProEngRingingToneMaxSize,
-            iToneFileSizeLimitKB );*/
     TInt error(KErrNone);           
     iToneFileSizeLimitKB = 5000;
-// <-- QT PHONE END -->     
    
     if ( error != KErrNone )
         {

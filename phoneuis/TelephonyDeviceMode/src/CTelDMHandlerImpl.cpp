@@ -21,12 +21,12 @@
 #include    <featmgr.h>
 #include    <mphonedevicemodeobserver.h>
 #include    <telinternalpskeys.h>
-#include    "CTelDMHandlerImpl.h"
-#include    "CTelDMGripHandler.h"
-#include    "CTelDMCommandHandler.h"
-#include    "CTelDMCallStateListener.h"
-#include    "CTelDMAudioAccessoryListener.h"
-#include    "CTelDMDebug.h"
+#include    "cteldmhandlerimpl.h"
+#include    "cteldmgriphandler.h"
+#include    "cteldmcommandhandler.h"
+#include    "cteldmcallstatelistener.h"
+#include    "cteldmaudioaccessorylistener.h"
+#include    "cteldmdebug.h"
  
 // MODULE DATA STRUCTURES
 

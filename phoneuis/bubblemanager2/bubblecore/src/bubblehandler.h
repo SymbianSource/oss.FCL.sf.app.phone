@@ -43,6 +43,8 @@ public:
     virtual QGraphicsWidget* graphicsWidgetForAction(
         HbAction* action ) const = 0;
     virtual void updateTimerDisplayNow() = 0;
+    virtual void conferenceMemberRemoved(int bubbleId);
+    virtual void conferenceRemoved();
 
 protected:
     QGraphicsWidget* widget(BubbleWidgetManager::Widget widget) const;

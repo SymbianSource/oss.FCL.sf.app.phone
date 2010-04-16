@@ -36,30 +36,28 @@ EXPORTS
 	_ZN17CpSettingsWrapperD2Ev @ 35 NONAME
 	_ZN5Tools11qt_metacallEN11QMetaObject4CallEiPPv @ 36 NONAME
 	_ZN5Tools11qt_metacastEPKc @ 37 NONAME
-	_ZN5Tools12loadCpPluginERK7QString @ 38 NONAME
+	_ZN12CpPhoneNotes11noteShowingEv @ 38 NONAME
 	_ZN5Tools13voipSupportedEv @ 39 NONAME
-	_ZN5Tools14unloadCpPluginERK7QString @ 40 NONAME
-	_ZN5Tools14videoSupportedEv @ 41 NONAME
-	_ZN5Tools16staticMetaObjectE @ 42 NONAME DATA 16
-	_ZN5Tools19getStaticMetaObjectEv @ 43 NONAME
-	_ZN5Tools20errorCodeTextMappingEiR7QString @ 44 NONAME
-	_ZN5Tools28convertEtelMobileServiceCodeEi @ 45 NONAME
-	_ZNK12CpPhoneNotes10metaObjectEv @ 46 NONAME
-	_ZNK12CpPhoneNotes17formatPhoneNumberE7QString @ 47 NONAME
-	_ZNK12CpPhoneNotes21basicServiceGroupNameEN16CpTelephonyUtils18BasicServiceGroupsE @ 48 NONAME
-	_ZNK12CpPhoneNotes28convertEtelMobileServiceCodeEi @ 49 NONAME
-	_ZNK17CpSettingsWrapper10metaObjectEv @ 50 NONAME
-	_ZNK17CpSettingsWrapper14isPhoneOfflineEv @ 51 NONAME
-	_ZNK17CpSettingsWrapper15readCenrepValueElm @ 52 NONAME
-	_ZNK17CpSettingsWrapper16readCenrepStringElm @ 53 NONAME
-	_ZNK17CpSettingsWrapper16writeCenrepValueElmRK8QVariant @ 54 NONAME
-	_ZNK17CpSettingsWrapper23numberGroupingSupportedEv @ 55 NONAME
-	_ZNK5Tools10metaObjectEv @ 56 NONAME
-	_ZTI12CpPhoneNotes @ 57 NONAME
-	_ZTI17CpSettingsWrapper @ 58 NONAME
-	_ZTI5Tools @ 59 NONAME
-	_ZTV12CpPhoneNotes @ 60 NONAME
-	_ZTV17CpSettingsWrapper @ 61 NONAME
-	_ZTV5Tools @ 62 NONAME
-	_ZN12CpPhoneNotes11noteShowingEv @ 63 NONAME
+	_ZN5Tools14videoSupportedEv @ 40 NONAME
+	_ZN5Tools16staticMetaObjectE @ 41 NONAME DATA 16
+	_ZN5Tools19getStaticMetaObjectEv @ 42 NONAME
+	_ZN5Tools20errorCodeTextMappingEiR7QString @ 43 NONAME
+	_ZN5Tools28convertEtelMobileServiceCodeEi @ 44 NONAME
+	_ZNK12CpPhoneNotes10metaObjectEv @ 45 NONAME
+	_ZNK12CpPhoneNotes17formatPhoneNumberE7QString @ 46 NONAME
+	_ZNK12CpPhoneNotes21basicServiceGroupNameEN16CpTelephonyUtils18BasicServiceGroupsE @ 47 NONAME
+	_ZNK12CpPhoneNotes28convertEtelMobileServiceCodeEi @ 48 NONAME
+	_ZNK17CpSettingsWrapper10metaObjectEv @ 49 NONAME
+	_ZNK17CpSettingsWrapper14isPhoneOfflineEv @ 50 NONAME
+	_ZNK17CpSettingsWrapper15readCenrepValueElm @ 51 NONAME
+	_ZNK17CpSettingsWrapper16readCenrepStringElm @ 52 NONAME
+	_ZNK17CpSettingsWrapper16writeCenrepValueElmRK8QVariant @ 53 NONAME
+	_ZNK17CpSettingsWrapper23numberGroupingSupportedEv @ 54 NONAME
+	_ZNK5Tools10metaObjectEv @ 55 NONAME
+	_ZTI12CpPhoneNotes @ 56 NONAME
+	_ZTI17CpSettingsWrapper @ 57 NONAME
+	_ZTI5Tools @ 58 NONAME
+	_ZTV12CpPhoneNotes @ 59 NONAME
+	_ZTV17CpSettingsWrapper @ 60 NONAME
+	_ZTV5Tools @ 61 NONAME
 

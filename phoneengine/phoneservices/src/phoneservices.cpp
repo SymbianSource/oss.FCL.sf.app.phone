@@ -15,15 +15,15 @@
 *
 */
 
-#include <QDebug>
 #include "phoneservices.h"
 #include "dialservice.h"
 #include "dtmfservice.h"
+#include "qtphonelog.h"
 
 PhoneServices::PhoneServices(MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent) : 
     QObject(parent)
 {
-    qDebug () << "PhoneServices::PhoneServices";
+    PHONE_DEBUG("PhoneServices::PhoneServices");
     dialService = new DialService(call, parameters, this);
     dtmfService = new DTMFService(call, parameters, this);
 }

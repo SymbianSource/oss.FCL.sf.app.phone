@@ -27,7 +27,6 @@
 #include <telephonyvariant.hrh>
 #include <featmgr.h>
 #include <settingsinternalcrkeys.h>
-#include <ScreensaverInternalPSKeys.h>
 #include <mpeengineinfo.h>
 #include <activeidle2domainpskeys.h>
 #include <mpeclientinformation.h>
@@ -56,10 +55,6 @@
 #include "cphonepubsubproxy.h"
 #include "phonelogger.h"
 #include "phoneui.pan"
-// <-- QT PHONE START --> 
-//#include "phoneconstants.h"
-//#include <activeidle2domainpskeys.h>
-// <-- QT PHONE END --> 
 #include "mphonecustomization.h"
 
 //CONSTANTS
@@ -394,12 +389,7 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNaviPaneAudioVolume );
 
     SetRingingTonePlaybackL( aCallId );
-    
-    CPhonePubSubProxy::Instance()->ChangePropertyValue(
-        KPSUidScreenSaver,
-        KScreenSaverAllowScreenSaver,
-        EPhoneScreensaverNotAllowed );
-    
+
     BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC();
     
@@ -409,21 +399,16 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
         SetNumberEntryVisibilityL(EFalse);    
         }
      
-    // Close fast swap window if it's displayed
-// <-- QT PHONE START --> 
-//    CEikonEnv::Static()->DismissTaskList();
-
-
     // Display incoming call
     DisplayIncomingCallL( aCallId );
     
     // Show incoming call buttons
     SetTouchPaneButtons( EPhoneIncomingCallButtons );
     
-// <-- QT PHONE END --> 
-
     // Disable HW keys and Call UI if needed
     CheckDisableHWKeysAndCallUIL();
+    
+    SetBackButtonActive(EFalse);
     
     EndUiUpdate();
     
@@ -458,13 +443,11 @@ EXPORT_C void CPhoneStateIdle::HandleDialingL( TInt aCallId )
     
     SetNumberEntryVisibilityL(EFalse);
 
-    // <-- QT PHONE START -->
     // Display call setup 
     DisplayCallSetupL( aCallId );  
     
     // Show call setup buttons
     SetTouchPaneButtons( EPhoneCallSetupButtons );          
-    // <-- QT PHONE END -->
     
     EndUiUpdate();
     
@@ -841,45 +824,6 @@ EXPORT_C void CPhoneStateIdle::HandleIdleForegroundEventL()
 
 EXPORT_C void CPhoneStateIdle::HandlePhoneForegroundEventL()
     {
-// <-- QT PHONE START --> 
-    /*__LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::HandlePhoneForegroundEventL( ) ");
-    
-    TPhoneCmdParamBoolean isSecurityMode;      
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-
-    TBool activatePhone = CPhonePubSubProxy::Instance()->Value(
-                    KPSUidAiInformation, KActiveIdleState ) == EPSAiNumberEntry;
-    
-    if ( activatePhone )
-        {
-        // If activatePhone is true then user has pressed some numeric
-        // key and icon must be set to FSW. In this case number entry is not yet open so it
-        // it is not enough to call EPhoneViewUpdateFSW.
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdatePhoneIconToFSW );
-        }
-    // If number entry is used update FSW accordingly.
-    else if ( IsNumberEntryUsedL() )
-        {
-        // If numberentry is used then we need to call EPhoneViewSetDialerControlVisible 
-        // to ensure that numberentry/dialler is drawn to UI.
-        TPhoneViewResponseId respond = 
-            iViewCommandHandle->HandleCommandL( EPhoneViewSetDialerControlVisible );
-        
-        if ( respond && IsNumberEntryVisibleL() )
-            {
-            // Set Number Entry CBA
-            iCbaManager->SetCbaL( EPhoneNumberAcqCBA );
-            }
-        
-        // If dialer is open add icon to FSW list.
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateFSW );
-        }
-    else if ( !IsNumberEntryUsedL() && !isSecurityMode.Boolean() )
-        {
-        // Bring Idle app to the foreground
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewBringIdleToForeground );
-        }*/
-// <-- QT PHONE END --> 
     }
 
 // -----------------------------------------------------------
@@ -1090,9 +1034,7 @@ void CPhoneStateIdle::SendExitCommandL()
     wsSession.SimulateKeyEvent( keyEvent );
     wsSession.Flush();  
 
-// <-- QT PHONE START -->     
     iViewCommandHandle->ExecuteCommandL( EPhoneAppShutDown );
-// <-- QT PHONE END --> 
     }
 
 // -----------------------------------------------------------

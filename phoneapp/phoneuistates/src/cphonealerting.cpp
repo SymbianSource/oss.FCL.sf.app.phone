@@ -21,9 +21,6 @@
 #include <mpeengineinfo.h>
 #include <mpeclientinformation.h>
 #include <MediatorDomainUIDs.h>
-// <-- QT PHONE START --> 
-//#include <videotelcontrolmediatorapi.h>
-// <-- QT PHONE END --> 
 #include "cphonealerting.h"
 #include "mphonestatemachine.h"
 #include "tphonecmdparamboolean.h"
@@ -378,15 +375,6 @@ EXPORT_C void CPhoneAlerting::HandleDisconnectingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,  
             "CPhoneAlerting::HandleDisconnectingL()" );
-
-// <-- QT PHONE START --> 
-    /*if ( iStateMachine->PhoneEngineInfo()->CallOrigin( aCallId ) == EPECallOriginSAT )
-        {
-        // User has hangup alerting SAT call, complete sat request
-        CompleteSatRequestL( aCallId );
-        }*/
-// <-- QT PHONE END --> 
-    
     CPhoneGsmInCall::HandleDisconnectingL( aCallId );
     }
 

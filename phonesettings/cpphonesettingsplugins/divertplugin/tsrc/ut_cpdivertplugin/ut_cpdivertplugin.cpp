@@ -30,6 +30,7 @@
 #include "cpitemdatahelper.h"
 #include "cpdivertitemdata.h"
 #include "psetwrappertypes.h"
+#include "cpdivertselectioncustomitem.h"
 
 #define private public
 #include "cpdivertplugin.h"
@@ -80,8 +81,9 @@ void UT_CpDivertPlugin::init()
     QVERIFY(m_divertplugin);
     
     m_helper = new CpItemDataHelper;
-    m_divertpluginGroup = qobject_cast<CpDivertPluginGroup *>(
-            m_divertplugin->createSettingFormItemData(*m_helper));
+    QList<CpSettingFormItemData*> list;
+    list.append(m_divertplugin->createSettingFormItemData(*m_helper));
+    m_divertpluginGroup = qobject_cast<CpDivertPluginGroup *>(list.takeFirst());
     QVERIFY(m_divertpluginGroup);
     
     QVERIFY(verify());
@@ -124,8 +126,9 @@ void UT_CpDivertPlugin::t_createSettingFormItemData()
     expect("PSetWrapper::callDivertingWrapper").returns(&tmpDivWrapper); 
     
     CpDivertPlugin* p = (CpDivertPlugin*)qt_plugin_instance();
-    CpSettingFormItemData *pSettingFormItemData = p->createSettingFormItemData(itemDataHelper);
-    
+    QList<CpSettingFormItemData*> list;
+    list.append(p->createSettingFormItemData(itemDataHelper));
+    qDeleteAll(list);
     QVERIFY(verify());
 }
 
@@ -138,14 +141,16 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     appendAction("All voice calls:", selectAction, "Cancel");
     expect("PSetCallDivertingWrapper::getDefaultNumbers");
     m_divertpluginGroup->m_DataItemAllVoiceCalls->setContentWidgetData("number", "");
+    m_divertpluginGroup->m_DataItemAllVoiceCalls->setContentWidgetData(
+            "state", CpDivertSelectionCustomitem::Disabled);
     m_divertpluginGroup->m_DataItemAllVoiceCalls->thisItemClicked();
     QVERIFY(verify());
     
     //except user selects vmb and inserts number
-    appendAction("All voice calls:", selectItem, "Voice mail box");
+    appendAction("All voice calls:", selectItem, "txt_phone_setlabel_voice_mbx");
     appendAction("Voice mail box number:", insertText, "12345");
     appendAction("Voice mail box number:", selectAction, "OK");
-     expect("PSetCallDivertingWrapper::getDefaultNumbers");
+    expect("PSetCallDivertingWrapper::getDefaultNumbers");
     expect("SsSettingsWrapper::get");
     expect("PSetCallDivertingWrapper::setCallDiverting");
     expect("CpPhoneNotes::noteShowing").returns(false);
@@ -163,6 +168,8 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
 
     //except user selects one of the default numbers
     m_divertpluginGroup->m_DataItemAllVoiceCalls->setContentWidgetData("number","");
+    m_divertpluginGroup->m_DataItemAllVoiceCalls->setContentWidgetData(
+            "state", CpDivertSelectionCustomitem::Disabled);
     appendAction("All voice calls:", selectItem, "0401234567");
     expect("PSetCallDivertingWrapper::getDefaultNumbers");
     expect("SsSettingsWrapper::get");
@@ -273,6 +280,9 @@ void UT_CpDivertPlugin::t_popUpTimerQuery()
     appendAction("If not answered:", selectItem, "0401234567");
     appendAction("Time out", selectAction, "Cancel");
     expect("PSetCallDivertingWrapper::getDefaultNumbers");
+    m_divertpluginGroup->m_DataItemIfNotAnswered->setContentWidgetData("number", "");
+    m_divertpluginGroup->m_DataItemIfNotAnswered->setContentWidgetData(
+            "state", CpDivertSelectionCustomitem::Disabled);
     m_divertpluginGroup->m_DataItemIfNotAnswered->thisItemClicked();
     QVERIFY(verify());
     

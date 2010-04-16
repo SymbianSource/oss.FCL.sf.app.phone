@@ -217,9 +217,6 @@ EXPORT_C void TPhoneCmdParamQuery::SetDataText( TDes* aDataText )
 //
 EXPORT_C TDes* TPhoneCmdParamQuery::DataText() const
     {
-    // <-- QT PHONE START -->
-    //__ASSERT_DEBUG( iDataText, Panic( EPhoneUtilsInvariant ) );
-    // <-- QT PHONE END -->
     return iDataText;
     }
    

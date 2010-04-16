@@ -14,7 +14,6 @@
 * Description:  Wraps the QContact for the legacy handling in the phone engine
 */
 
-#include <QDebug>
 #include <e32base.h>
 #include <utf.h>
 #include <qcontact.h>

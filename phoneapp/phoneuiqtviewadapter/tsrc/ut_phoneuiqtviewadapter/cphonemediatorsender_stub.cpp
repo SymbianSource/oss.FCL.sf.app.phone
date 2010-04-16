@@ -23,9 +23,6 @@
 #include "PhoneLogger.h"
 #include "PhoneConstants.h"
 #include "PhoneMediatorPackageTypes.h"
-// <-- QT PHONE START --> 
-//#include "MPhoneCoverUiObserver.h"
-// <-- QT PHONE END --> 
 #include "phoneui.pan"
 #include "tphonecmdparamcallheaderdata.h"
 #include "tphonecmdparamboolean.h"

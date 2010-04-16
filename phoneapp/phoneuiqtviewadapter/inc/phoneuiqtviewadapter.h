@@ -35,6 +35,7 @@ class CPhoneRingingToneController;
 class PhoneResourceAdapter;
 class PhoneUIQtButtonsController;
 class PhoneNoteController;
+class PhoneMessageController;
 class PhoneUiCommandController;
 class TelephonyService;
 class QKeyEvent;
@@ -212,6 +213,13 @@ private:
         This method updates remote information in call header and label.
     */
     void updateCallHeaderRemoteInfoAndLabel (int callId, TPhoneCommandParam *commandParam);    
+
+    /*!
+        \fn int PhoneUIQtViewAdapter::handleCipheringInfoChange()
+        
+        This method updates ciphering indicators.
+    */
+    void handleCipheringInfoChange(int callId, TPhoneCommandParam *commandParam);    
     
     /*!
         \fn int PhoneUIQtViewAdapter::callIdByState()
@@ -468,6 +476,18 @@ private:
     */
     void showNote(TPhoneCommandParam *commandParam);
     
+	/*!
+	    /fn QString convertDuration(int)
+		This method returns the localized call duration
+    */
+    QString convertDuration(int seconds);
+ 
+    /*!
+        /fn void setBubbleSelectionFlag()
+        This method sets bubble selection flag.
+    */
+    void setBubbleSelectionFlag();
+    
 private:
 
     PhoneUIQtViewIF &m_view;
@@ -478,7 +498,9 @@ private:
     PhoneNoteController *m_noteController;
     TelephonyService *m_telephonyService;
     PhoneUiCommandController *m_uiCommandController;
+    PhoneMessageController *m_messageController;
     bool m_dialpadAboutToClose;
+    bool m_homeScreenToForeground;
 };
 
 #endif // PHONEUIQTVIEWADAPTER_H

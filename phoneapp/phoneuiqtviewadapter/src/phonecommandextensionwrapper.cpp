@@ -1,5 +1,5 @@
 /*!
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -15,21 +15,21 @@
 */
 
 #include "phonecommandextensionwrapper.h"
-#include <QtDebug>
+#include "qtphonelog.h"
 #include <xqplugin.h>
 #include <xqpluginloader.h>
 #include <pevirtualengine.h>
 
-  
+
 PhoneCommandExtensionWrapper::PhoneCommandExtensionWrapper(int pluginUid) :
     m_plugin(0),m_pluginUid(pluginUid)
 {
-    qDebug() << "PhoneCommandExtensionWrapper::PhoneMenuExtensionWrapper";    
+    PHONE_DEBUG("PhoneCommandExtensionWrapper::PhoneMenuExtensionWrapper");
     XQPluginLoader pluginLoader;
     pluginLoader.setUid(m_pluginUid);
-    
+
     QObject *plugin = pluginLoader.instance();
-    
+
     if (plugin) {
         m_plugin = qobject_cast<XQTelUiCommandExtension*>(plugin);
     }
@@ -37,7 +37,7 @@ PhoneCommandExtensionWrapper::PhoneCommandExtensionWrapper(int pluginUid) :
 
 PhoneCommandExtensionWrapper::~PhoneCommandExtensionWrapper()
 {
-    qDebug() << "PhoneCommandExtensionWrapper::~PhoneCommandExtensionWrapper";
+    PHONE_DEBUG("PhoneCommandExtensionWrapper::~PhoneCommandExtensionWrapper");
     release();
 }
 
@@ -47,18 +47,18 @@ int PhoneCommandExtensionWrapper::pluginUid()
 }
 
 void PhoneCommandExtensionWrapper::modifyMenuCommandList(
-        const QList<XQTelUiCommandExtension::CallInfo> &callInfo, 
+        const QList<XQTelUiCommandExtension::CallInfo> &callInfo,
         QList<int> &menuCmdList)
-{   
+{
     if (m_plugin) {
         m_plugin->modifyMenuCommandList(callInfo, menuCmdList);
     }
 }
 
 void PhoneCommandExtensionWrapper::modifyPushButtonCommandList(
-        const QList<XQTelUiCommandExtension::CallInfo> &callInfo, 
+        const QList<XQTelUiCommandExtension::CallInfo> &callInfo,
         QList<int> &buttonCmdList)
-{   
+{
     if (m_plugin) {
         m_plugin->modifyPushButtonCommandList(callInfo, buttonCmdList);
     }
@@ -90,7 +90,7 @@ void PhoneCommandExtensionWrapper::release()
 
 void PhoneCommandExtensionWrapper::getCallInfoList(
         QList<XQTelUiCommandExtension::CallInfo> &callInfo,
-        QMap<int,int> callStates, 
+        QMap<int,int> callStates,
         QMap<int,int> serviceIds,
         int expandedCall )
 {
@@ -107,45 +107,45 @@ XQTelUiCommandExtension::CallState PhoneCommandExtensionWrapper::mapCallState(
         int callState )
 {
     XQTelUiCommandExtension::CallState state(XQTelUiCommandExtension::None);
-    
+
     switch( callState ) {
     case EPEStateDisconnecting: {
         state = XQTelUiCommandExtension::Disconnecting;
     }
     break;
-    
+
     case EPEStateRinging: {
         state = XQTelUiCommandExtension::Incoming;
     }
     break;
-    
+
     case EPEStateDialing:
     case EPEStateConnecting: {
         state = XQTelUiCommandExtension::Outgoing;
     }
     break;
-    
+
     case EPEStateConnected:
     case EPEStateConnectedConference: {
         state = XQTelUiCommandExtension::Active;
     }
     break;
-    
+
     case EPEStateHeld:
     case EPEStateHeldConference: {
         state = XQTelUiCommandExtension::OnHold;
     }
     break;
-    
+
     case EPEStateUnknown:
     case EPEStateIdle:
-    case EPEStateConferenceIdle:   
+    case EPEStateConferenceIdle:
     break;
-    
+
     default:
     break;
     }
-    
+
     return state;
 }
 

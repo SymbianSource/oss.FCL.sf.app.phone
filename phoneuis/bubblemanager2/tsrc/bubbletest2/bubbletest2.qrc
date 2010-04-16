@@ -3,21 +3,5 @@
         <file>resources/contactpic.jpg</file>
         <file>resources/contactpic2.jpg</file>
         <file>resources/contactpic3.png</file>
-        <file>resources/qtg_large_tb_mute.svg</file>
-        <file>resources/qtg_large_tb_silence.svg</file>
-        <file>resources/qtg_large_tb_unmute.svg</file>
-        <file>resources/qtg_large_tb_message.svg</file>
-        <file>resources/qtg_large_tb_contacts.svg</file>
-        <file>resources/qtg_large_tb_dialler.svg</file>
-        <file>resources/qtg_large_tb_loudsp_mute.svg</file>
-        <file>resources/qtg_large_tb_loudsp_unmute.svg</file>
-        <file>resources/qtg_mono_reject_call.svg</file>
-        <file>resources/qtg_mono_answer_call.svg</file>
-        <file>resources/qtg_mono_replace_call.svg</file>
-        <file>resources/qtg_mono_drop_call.svg</file>
-        <file>resources/qtg_mono_end_call.svg</file>
-        <file>resources/qtg_mono_hold_call.svg</file>
-        <file>resources/qtg_mono_join_call.svg</file>
-        <file>resources/qtg_mono_private_call.svg</file>
     </qresource>
 </RCC>

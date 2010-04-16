@@ -15,6 +15,6 @@
 *              
 */ 
 
-#include "../TelephonyDeviceMode/group/bld.inf"
+#include "../telephonydevicemode/group/bld.inf"
 
 // End of File

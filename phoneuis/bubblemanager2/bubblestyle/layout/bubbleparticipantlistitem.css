@@ -8,16 +8,36 @@ BubbleParticipantListItem[layoutOption="expanded"] {
 }
 
 BubbleParticipantListItem::icon {
-    fixed-width: 5un;
-    fixed-height: 5un;
+    fixed-width: var(hb-param-graphic-size-primary-medium);
+    fixed-height: var(hb-param-graphic-size-primary-medium);
+}
+
+BubbleParticipantListItem::ciphering {
+    fixed-width: 2.0un;
+    fixed-height: 2.0un;
+    left: (hb-param-margin-gene-middle-horizontal);
+    top: (hb-param-margin-gene-middle-vertical)
+}
+
+BubbleParticipantListItem::expand-indi {
+    fixed-width: var(hb-param-graphic-size-primary-small);
+    fixed-height: var(hb-param-graphic-size-primary-small);
+    right: var(hb-param-margin-gene-middle-horizontal);
+}
+
+BubbleHeadingWidget:text
+{
+    preferred-height: var(hb-param-text-height-primary);
+	  left: var(hb-param-margin-gene-middle-horizontal);
+	  right: var(hb-param-margin-gene-middle-horizontal);
 }
 
 BubbleParticipantListItem::button-1 {
-    fixed-height: 10un;
+    fixed-height: 9.0un;
 }
 
 BubbleParticipantListItem::button-2 {
-    fixed-height: 10un;
+    fixed-height: 9.0un;
 }
 
 BubbleParticipantListItem::background{

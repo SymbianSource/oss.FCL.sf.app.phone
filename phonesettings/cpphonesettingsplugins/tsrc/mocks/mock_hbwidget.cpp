@@ -416,16 +416,6 @@ void HbWidget::resizeEvent(
     }
 
 
-// -----------------------------------------------------------------------------
-// HbWidget::initStyleOption
-// -----------------------------------------------------------------------------
-//
-void HbWidget::initStyleOption( 
-        HbStyleOption * option ) const
-    {
- //   SMC_MOCK_METHOD1( void, HbStyleOption *, option )
-    }
-
 
 // -----------------------------------------------------------------------------
 // HbWidget::changeEvent

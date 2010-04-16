@@ -24,6 +24,7 @@ class QGraphicsItem;
 class HbPushButton;
 class BubbleButtonStyle;
 class HbAction;
+class HbIconItem;
 
 class BubbleParticipantListItem : public HbListViewItem
 {
@@ -58,7 +59,9 @@ private:
     BubbleButtonStyle& mButtonStyle;
     QGraphicsItem* mBackground;
     QGraphicsItem* mText;
-    QGraphicsItem* mIcon;
+    QGraphicsItem* mStatusIcon;
+    QGraphicsItem* mCipheringIcon;
+    HbIconItem*    mExpandIcon;
     HbPushButton*  mButton1;
     HbPushButton*  mButton2;
     QList<HbAction*> mActions;

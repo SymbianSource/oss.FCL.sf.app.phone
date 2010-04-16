@@ -21,6 +21,7 @@
 #include <hbtextitem.h>
 #include <hblabel.h>
 #include <hblistview.h>
+#include <hbcolorscheme.h>
 
 #include "bubblemanager2.h"
 #include "bubbleconferencehandler.h"
@@ -87,23 +88,18 @@ void BubbleConferenceHandler::reset()
 {  
     mHeader = 0;
 
-    mModel->reset();
-    mList->reset();
     mSelectionTimer->stop();
     mPrototype->clearActions();
     mTimerLabel->hide();
     mButtonCenter->hide();
     mButtonCenter->setDown(false);
     mButtonCenter->disconnect();
-    mButtonCenter->setText("");
     mButtonLeft->hide();
     mButtonLeft->setDown(false);
     mButtonLeft->disconnect();
-    mButtonLeft->setText("");
     mButtonRight->hide();
     mButtonRight->setDown(false);
     mButtonRight->disconnect();
-    mButtonRight->setText("");
 }
 
 void BubbleConferenceHandler::readBubbleHeader( const BubbleHeader& header )
@@ -114,9 +110,11 @@ void BubbleConferenceHandler::readBubbleHeader( const BubbleHeader& header )
     // populate participant list model
     QList<BubbleHeader*> participants = mHeader->headers();
     foreach(BubbleHeader* participant, participants) {
-         mModel->addParticipant(participant->bubbleId(),
-                                participant->cli(),
-                                (int)participant->callState());
+         mModel->addParticipant(
+            participant->bubbleId(),
+            participant->cli(),
+            (int)participant->callState(),
+            !(mHeader->callFlags()&BubbleManagerIF::NoCiphering));
     }
 
     // set actions to item prototype
@@ -126,14 +124,19 @@ void BubbleConferenceHandler::readBubbleHeader( const BubbleHeader& header )
         mPrototype->addAction(action);
     }
 
-    mList->reset();
-
     if (header.timerCost().length()) {
+        QColor color;
+        color = HbColorScheme::color("list_item_title_normal");
+        if (color.isValid()) {
+            mTimerLabel->setTextColor(color);
+        }
         mTimerLabel->setPlainText(header.timerCost());
         mTimerLabel->show();
     }
 
     setButtons(mHeader->actions());
+
+    clearSelection();
 }
 
 void BubbleConferenceHandler::setButtons(const QList<HbAction*>& actions)
@@ -199,4 +202,15 @@ void BubbleConferenceHandler::handleItemSelected(int row)
 void BubbleConferenceHandler::clearSelection()
 {
     mList->selectionModel()->clear();
+}
+
+void BubbleConferenceHandler::conferenceMemberRemoved(int bubbleId)
+{
+    mModel->removeParticipant(bubbleId);
+}
+
+void BubbleConferenceHandler::conferenceRemoved()
+{
+    mModel->reset();
+    mList->reset();
 }

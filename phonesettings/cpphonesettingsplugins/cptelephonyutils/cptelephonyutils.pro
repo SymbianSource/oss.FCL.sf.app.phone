@@ -43,8 +43,7 @@ symbian: {
     LIBS += -lsssettings    \
             -lphonesettings \
             -lxqsysinfo \
-            -lxqsettingsmanager \
-            -lcpframework
+            -lxqsettingsmanager
 
     INCLUDEPATH += $$MW_LAYER_SYSTEMINCLUDE
     TARGET.EPOCALLOWDLLDATA = 1 

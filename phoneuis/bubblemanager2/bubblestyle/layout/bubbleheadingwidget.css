@@ -1,4 +1,5 @@
 
+
 BubbleHeadingWidget[layoutOption="three_lines"]
 {
     layout: three_lines_layout;
@@ -16,45 +17,48 @@ BubbleHeadingWidget[layoutOption="one_line"]
 
 BubbleHeadingWidget:text_line_1
 {
-    preferred-height: 4un;
+    preferred-height: var(hb-param-text-height-primary);
+    left: -var(hb-param-margin-gene-middle-horizontal);
 }
 
 BubbleHeadingWidget:text_line_2[layoutOption!="one_line"]
 {
-    preferred-height: 4un;
+    preferred-height: var(hb-param-text-height-primary);
+    preferred-width: -1;
+    left: -var(hb-param-margin-gene-middle-horizontal);
+    top: -var(hb-param-margin-gene-middle-vertical);
+    text-align: left;
 }
 
 BubbleHeadingWidget:text_line_2[layoutOption="one_line"]
 {
-    preferred-height: 4un;
-    fixed-width:  23un;
+    preferred-height: var(hb-param-text-height-primary);
+    preferred-width: 30un;
+    left: -var(hb-param-margin-gene-middle-horizontal);
+    text-align: right;
 }
 
 BubbleHeadingWidget:text_line_3
 {
-    preferred-height: 4un;
+    preferred-height: var(hb-param-text-height-primary);
+    left: -var(hb-param-margin-gene-middle-horizontal);
+    top: -var(hb-param-margin-gene-middle-vertical);
 }
 
-BubbleHeadingWidget:status_icon[layoutOption!="one_line"]
+BubbleHeadingWidget:status_icon
 {
-    fixed-width:   8un;
-    fixed-height:  8un;
+    fixed-width:   var(hb-param-graphic-size-primary-large);
+    fixed-height:  var(hb-param-graphic-size-primary-large);
 }
 
-BubbleHeadingWidget:number_type_icon[layoutOption!="one_line"]
+BubbleHeadingWidget:number_type_icon
 {
-    fixed-height: 3un;
-    fixed-width:  3un;
+    fixed-height: var(hb-param-graphic-size-secondary);
+    fixed-width:  var(hb-param-graphic-size-secondary);
 }
 
-BubbleHeadingWidget:status_icon[layoutOption="one_line"]
+BubbleHeadingWidget:ciphering_icon
 {
-    fixed-width:   8un;
-    fixed-height:  8un;
-}
-
-BubbleHeadingWidget:number_type_icon[layoutOption="one_line"]
-{
-    fixed-height: 3un;
-    fixed-width:  3un;
+    fixed-height: 2.5un;
+    fixed-width:  2.5un;
 }

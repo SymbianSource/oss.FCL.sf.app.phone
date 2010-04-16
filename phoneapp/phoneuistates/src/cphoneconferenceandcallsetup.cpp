@@ -57,10 +57,8 @@ CPhoneConferenceAndCallSetup::~CPhoneConferenceAndCallSetup()
         {
         TPhoneCmdParamBoolean dtmfSendFlag;
         dtmfSendFlag.SetBoolean( EFalse );
-// <-- QT PHONE START -->
         iViewCommandHandle->ExecuteCommand( EPhoneViewSetDtmfOptionsFlag, 
             &dtmfSendFlag );
-// <-- QT PHONE END -->         
         }
     }
 

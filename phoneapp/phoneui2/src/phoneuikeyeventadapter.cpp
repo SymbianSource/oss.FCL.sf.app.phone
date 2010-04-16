@@ -17,14 +17,13 @@
 */
 
 #include <exception> // must be before e32base.h so uncaught_exception gets defined
+#include <qkeyevent>
 #include "phoneuikeyeventadapter.h"
 #include "phoneconstants.h"
-#include <QKeyEvent>
 
 PhoneUIKeyEventAdapter::PhoneUIKeyEventAdapter (MPhoneKeyEventHandler &keyEventHandler, QObject *parent) :
-    QObject (parent), m_handler (keyEventHandler)
+    QObject (parent), mHandler (keyEventHandler)
 {
-
 }
 
 PhoneUIKeyEventAdapter::~PhoneUIKeyEventAdapter ()
@@ -50,8 +49,7 @@ void PhoneUIKeyEventAdapter::forwardKeyEvent(
     symbianKeyEvent.iRepeats = 0;
     symbianKeyEvent.iScanCode = convertKeyCode(event);
     
-    TRAP_IGNORE(m_handler.HandleKeyEventL (symbianKeyEvent, symbianEventCode));
-    
+    TRAP_IGNORE(mHandler.HandleKeyEventL (symbianKeyEvent, symbianEventCode));  
 }
 
 int PhoneUIKeyEventAdapter::convertKeyCode(QKeyEvent *event)
@@ -75,7 +73,16 @@ int PhoneUIKeyEventAdapter::convertKeyCode(QKeyEvent *event)
             code = event->key();
             break;
         }
-
-    
+ 
     return code;
+}
+
+void PhoneUIKeyEventAdapter::endKeyLongPress()
+{
+    TKeyEvent symbianKeyEvent;
+    symbianKeyEvent.iCode = EKeyNo;
+    symbianKeyEvent.iRepeats = 0;
+    symbianKeyEvent.iScanCode = EKeyNo;
+    
+    TRAP_IGNORE(mHandler.HandleKeyEventL (symbianKeyEvent, (TEventCode)EEventLongPress));      
 }

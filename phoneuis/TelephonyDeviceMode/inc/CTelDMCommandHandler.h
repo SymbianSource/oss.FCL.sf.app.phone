@@ -23,7 +23,7 @@
 
 #include    <e32base.h>
 #include    <aknkeylock.h>  
-#include    "MTelDMCallStateObserver.h"
+#include    "mteldmcallstateobserver.h"
 
 // FORWARD DECLARATIONS
 

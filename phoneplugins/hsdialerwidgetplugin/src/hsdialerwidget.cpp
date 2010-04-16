@@ -19,8 +19,9 @@
 #include <HbIconItem>
 #include "hsdialerwidget.h"
 #ifdef Q_OS_SYMBIAN
+#include "qtphonelog.h"
 #include <xqservicerequest.h>
-#include <XQSettingsManager>
+#include <xqcallinfo.h>
 #include <xqpublishandsubscribeutils.h>
 #include <ctsydomainpskeys.h>
 #include <logsservices.h>
@@ -44,7 +45,7 @@ namespace
 */
 HsDialerWidget::HsDialerWidget(QGraphicsItem *parent, Qt::WindowFlags flags)
   : HbWidget(parent, flags),
-    mSetManager(0)
+    mXQCallInfo(0)
 {
     HbIconItem *iconItem = new HbIconItem;
     HbIcon icon(KDialerWidgetIcon);
@@ -63,9 +64,6 @@ HsDialerWidget::HsDialerWidget(QGraphicsItem *parent, Qt::WindowFlags flags)
 */
 HsDialerWidget::~HsDialerWidget()
 {
-#ifdef Q_OS_SYMBIAN
-    delete mSetManager;
-#endif
 }
 
 /*!
@@ -76,27 +74,28 @@ HsDialerWidget::~HsDialerWidget()
 void HsDialerWidget::startDialer()
 {
 #ifdef Q_OS_SYMBIAN
-    const quint32 KKCTsyCallState = 0x00000001;
-    const qint32 KKPSUidCtsyCallInformation = {0x102029AC};
-    if  (!mSetManager) {
-        mSetManager = new XQSettingsManager();
-        }
-
-    XQPublishAndSubscribeSettingsKey callStateKey(KKPSUidCtsyCallInformation, KKCTsyCallState);
-    int callState = mSetManager->readItemValue(callStateKey).toInt();
-    if( (callState != EPSCTsyCallStateNone ) && (callState != EPSCTsyCallStateUninitialized) ) {
+    PHONE_DEBUG("HsDialerWidget::startDialer");
+    
+    if (!mXQCallInfo) {
+        mXQCallInfo = XQCallInfo::create();
+        mXQCallInfo->setParent(this);
+    }
+    
+    QList<CallInfo> calls;
+    mXQCallInfo->getCalls(calls);
+        
+    if( 0 < calls.count() ){
+        PHONE_DEBUG("call ongoing, bring Telephone to foreground");
+        
+        // ToDo: should telephone + dialpad be opened when there is a waiting call?
         int dialer(1);
-
-        // ToDo: should telephone + dialpad be opened when there is a waiting call? 
-        //if (callState == EPSCTsyCallStateRinging) {
-        //dialer = 0;
-        //}
         XQServiceRequest snd("com.nokia.services.telephony.uistarter", "start(int)", false);
         snd << dialer;
         QVariant retValue;
         snd.send(retValue);
     }
     else {
+        PHONE_DEBUG("no calls, open Dialer");
         XQServiceRequest snd("com.nokia.services.logsservices.starter",
             "start(int,bool)", false);
         snd << (int)LogsServices::ViewAll;

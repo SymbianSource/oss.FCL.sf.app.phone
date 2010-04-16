@@ -129,24 +129,6 @@ void UT_CpPluginCommon::t_numberGroupingSupported()
 }
 
 /*!
-  UT_CpPluginCommon::t_memleak
- */
-
-void UT_CpPluginCommon::t_loadCpPlugin()
-{
-    CpPluginPlatInterface* p = Tools::loadCpPlugin("hello");
-    QVERIFY( !p );
-}
-
-/*!
-  UT_CpPluginCommon::t_memleak
- */
-void UT_CpPluginCommon::t_unloadCpPlugin()
-{
-    QVERIFY( !Tools::unloadCpPlugin("hello") );
-}
-
-/*!
   UT_CpPluginCommon::t_voipSupported
  */
 

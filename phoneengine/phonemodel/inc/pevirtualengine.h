@@ -845,9 +845,7 @@ public:
 
         EPEMessageDoUnattendedTransfer,
         EPEMessageForwardCallToAddress,
-// <-- QT PHONE START --> 
         EPEMessageDialServiceCall,
-// <-- QT PHONE END --> 
         // Contact messages                   3000 - 3999
 
         // Error messages                     4000 - 4999

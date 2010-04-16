@@ -21,7 +21,6 @@
 #include <qvariant.h>
 #include "cptelephonyutilsdefs.h"
 
-class CpPluginPlatInterface;
 class XQSettingsManager;
 
 using namespace CpTelephonyUtils;
@@ -33,10 +32,6 @@ using namespace CpTelephonyUtils;
 class CPTELEPHONYUTILS_EXPORT Tools : public QObject
 {
     Q_OBJECT
-    
-public:
-    static CpPluginPlatInterface* loadCpPlugin( const QString& name );
-    static bool unloadCpPlugin( const QString& name );
 
 public:
     /*!

@@ -17,16 +17,16 @@
 #ifndef CPBARRINGPLUGIN_H
 #define CPBARRINGPLUGIN_H
 
-#include <cppluginplatinterface.h>
+#include <cpplugininterface.h>
 
 /*!
     \class CpBarringPlugin 
     \brief The class CpBarringPlugin implements call barring functionality. 
  */
-class CpBarringPlugin : public QObject, public CpPluginPlatInterface
+class CpBarringPlugin : public QObject, public CpPluginInterface
 {
     Q_OBJECT
-    Q_INTERFACES(CpPluginPlatInterface)
+    Q_INTERFACES(CpPluginInterface)
 
 public:
 
@@ -34,11 +34,12 @@ public:
     
     ~CpBarringPlugin();
     
-    /*!
-     From CpPluginPlatInterface.
-     @see CpPluginPlatInterface.
+    /**
+     * From CpPluginInterface
+     * @see CpPluginInterface.
      */
-    CpSettingFormItemData *createSettingFormItemData(CpItemDataHelper &itemDataHelper) const;
+    QList<CpSettingFormItemData*> createSettingFormItemData(
+             CpItemDataHelper &itemDataHelper) const;
 };
 
 #endif // CPBARRINGPLUGIN

@@ -23,10 +23,10 @@ DEFAULT
 
 PRJ_EXPORTS
 ../inc/phoneanimdllstd.h         |../../../inc/phoneanimdllstd.h
-../group/phoneanimdll_stub.SIS    /epoc32/data/z/system/install/phoneanimdll_stub.SIS
+../group/phoneanimdll_stub.sis    /epoc32/data/z/system/install/phoneanimdll_stub.sis
 
 // IBY files
-../rom/PhoneAnimDll.iby             CORE_APP_LAYER_IBY_EXPORT_PATH(PhoneAnimDll.iby)
+../rom/phoneanimdll.iby             CORE_APP_LAYER_IBY_EXPORT_PATH(phoneanimdll.iby)
 
 PRJ_MMPFILES
 ../group/phoneanimdll.mmp

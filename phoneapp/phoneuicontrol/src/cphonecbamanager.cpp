@@ -22,9 +22,6 @@
 #include "mphonestatemachine.h"
 
 #include <featmgr.h>
-// <-- QT PHONE START -->
-//#include <callhandlingui.rsg>
-// <-- QT PHONE END -->
 
 #include "phonerssbase.h"
 #include "phoneui.pan"
@@ -458,36 +455,7 @@ TInt CPhoneCbaManager::GetIncomingCallSilenceCBA(
         const TBool /*aSoftRejectActivated*/ )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneCbaManager::GetIncomingCallSilenceCBA ()" );
-// <-- QT PHONE START -->
     TInt ret = EPhoneCallHandlingIncomingCBA;
-    /*TInt ret = EPhoneCallHandlingIncomingSoftRejectCBA;
-    
-    //Get incoming call touchpane button set
-    TPhoneCmdParamInteger touchpaneButtonsParam;
-    touchpaneButtonsParam.SetInteger( CPhoneMainResourceResolver::Instance()->
-                             ResolveResourceID( EPhoneIncomingCallButtons ) );
-
-    if ( touchpaneButtonsParam.Integer() 
-         == R_PHONEUI_INCOMING_CALL_SILENCE_BUTTONS )
-        {
-        aSoftRejectActivated ? 
-        ret = EPhoneCallHandlingIncomingSoftRejectCBA:
-        ret = EPhoneCallHandlingIncomingRejectCBA;
-        }
-    else
-        {
-        // Check if the ringtone has been silenced. If it is, then show
-        // "Send Message" in RSK, else show "Silence".
-        iRingtoneSilenced ?
-            ret = EPhoneCallHandlingIncomingSoftRejectCBA :
-            ret = EPhoneCallHandlingIncomingCBA;
-        }
-
-    // reset the iRingtoneSilence so it won't cause any problems with
-    // next calls.
-    SetRingtoneSilencedStatus( EFalse );*/
-    
-// <-- QT PHONE END -->
     return ret;
     }
 

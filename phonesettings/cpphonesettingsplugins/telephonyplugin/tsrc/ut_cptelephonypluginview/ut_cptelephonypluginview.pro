@@ -13,6 +13,7 @@
 #
 # Description: 
 #
+#
 
 CONFIG += qtestlib hb
 TEMPLATE = app
@@ -20,7 +21,7 @@ TARGET =
 DEPENDPATH += . ../../src/
 INCLUDEPATH += .
 INCLUDEPATH +=../../../cptelephonyutils/inc
-DEFINES += BUILD_CPTELEPHONYUTILS
+DEFINES += BUILD_CP_FRAMEWORK
 
 QT -= gui
 QT += testlib
@@ -39,10 +40,10 @@ HEADERS += ut_cptelephonypluginview.h
 SOURCES += ut_cptelephonypluginview.cpp
 
 # code to be tested
-HEADERS += ../../src/cptelephonypluginview.h \
-           ../../../cptelephonyutils/inc/cpplugincommon.h
+HEADERS += ../../src/cptelephonypluginview.h
            
 SOURCES += ../../src/cptelephonypluginview.cpp 
 
 # mocks needed for testing
-SOURCES += ../../../tsrc/mocks/mock_cpplugincommon.cpp
+SOURCES += ../../../tsrc/mocks/mock_cppluginloader.cpp
+

@@ -154,6 +154,14 @@ void BubbleUtils::setCallHeaderTexts2Lines(
         option.mCliLineNumber = 1;
         break;
 
+    case BubbleManager::Outgoing:
+        option.mText1.append(header.text());
+        option.mText1Clip = header.textClipDirection();
+        option.mText2.append(header.cli());
+        option.mText2Clip = header.cliClipDirection();
+        option.mCliLineNumber = 2;
+        break;
+
     default:
         // do nothing
         break;

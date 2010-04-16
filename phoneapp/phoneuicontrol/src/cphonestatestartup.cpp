@@ -20,7 +20,7 @@
 #include "cphonestatestartup.h"
 #include "phonestatedefinitions.h"
 #include "mphonestatemachine.h"
-#include "tphonecmdparamKeycapture.h"
+#include "tphonecmdparamkeycapture.h"
 #include "tphonecmdparamboolean.h"
 #include "phonelogger.h"
 #include "phonerssbase.h"

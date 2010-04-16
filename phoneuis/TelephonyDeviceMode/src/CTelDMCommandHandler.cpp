@@ -23,10 +23,10 @@
 #include    <PSVariables.h>
 #include    <ctsydomainpskeys.h>
 
-#include    "CTelDMCommandHandler.h"
-#include    "CTelDMCallStateListener.h"
-#include    "MTelDMAccessory.h"
-#include    "CTelDMDebug.h"
+#include    "cteldmcommandhandler.h"
+#include    "cteldmcallstatelistener.h"
+#include    "mteldmaccessory.h"
+#include    "cteldmdebug.h"
 #include     <coreapplicationuisdomainpskeys.h>
 
 // MODULE DATA STRUCTURES

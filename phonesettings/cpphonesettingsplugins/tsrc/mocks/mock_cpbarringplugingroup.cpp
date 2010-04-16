@@ -14,7 +14,16 @@
 * Description:
 *
 */
+#include <smcmockclassincludes.h>
 #include <QDebug>
+#include <hbdataformmodel.h>
+#include <hbdataformmodelitem.h>
+#include <HbCheckBox>
+#include <QTranslator>
+#include <QLocale>
+#include <QApplication>
+#include <QTimer>
+#include <cpitemdatahelper.h>
 #include "cpbarringplugingroup.h"
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -41,5 +50,83 @@ CpBarringPluginGroup::~CpBarringPluginGroup(  )
     }
 
 
+// -----------------------------------------------------------------------------
+// CpBarringPluginGroup::itemShown
+// -----------------------------------------------------------------------------
+//
+void CpBarringPluginGroup::itemShown(const QModelIndex& item)
+{
+    SMC_MOCK_METHOD1( void, QModelIndex &, item )
+}
 
 
+// -----------------------------------------------------------------------------
+// CpBarringPluginGroup::barringStatusRequestCompleted
+// -----------------------------------------------------------------------------
+//
+void CpBarringPluginGroup::barringStatusRequestCompleted(
+    int result,
+    const QList<unsigned char> & basicServiceGroupIds,
+    PSetCallBarringWrapper::BarringStatus status)
+{
+    SMC_MOCK_METHOD3( void, 
+        int, result,
+        const QList<unsigned char> &, basicServiceGroupIds, 
+        PSetCallBarringWrapper::BarringStatus, status)
+}
+
+
+// -----------------------------------------------------------------------------
+// CpBarringPluginGroup::enableBarringRequestCompleted
+// -----------------------------------------------------------------------------
+//
+void CpBarringPluginGroup::enableBarringRequestCompleted(
+    int result,
+    PSetCallBarringWrapper::BarringType barringType,
+    PSetCallBarringWrapper::BarringStatus barringStatus, 
+    bool plural)
+{
+    SMC_MOCK_METHOD4( void, 
+        int, result,
+        PSetCallBarringWrapper::BarringType, barringType, 
+        PSetCallBarringWrapper::BarringStatus, barringStatus,
+        bool, plural)
+}
+
+
+// -----------------------------------------------------------------------------
+// CpBarringPluginGroup::disableBarringRequestCompleted
+// -----------------------------------------------------------------------------
+//
+void CpBarringPluginGroup::disableBarringRequestCompleted(
+    int result,
+    PSetCallBarringWrapper::BarringType barringType,
+    PSetCallBarringWrapper::BarringStatus barringStatus, 
+    bool plural)
+{
+    SMC_MOCK_METHOD4( void, 
+        int, result,
+        PSetCallBarringWrapper::BarringType, barringType, 
+        PSetCallBarringWrapper::BarringStatus, barringStatus,
+        bool, plural)
+}
+
+
+// -----------------------------------------------------------------------------
+// CpBarringPluginGroup::changeBarringStateRequested
+// -----------------------------------------------------------------------------
+//
+void CpBarringPluginGroup::changeBarringStateRequested(int checkState)
+{
+    SMC_MOCK_METHOD1( void, int, checkState)
+}
+
+
+// -----------------------------------------------------------------------------
+// CpBarringPluginGroup::processBarringStatusRequestQueue
+// -----------------------------------------------------------------------------
+//
+void CpBarringPluginGroup::processBarringStatusRequestQueue()
+{
+    SMC_MOCK_METHOD0( void )    
+}

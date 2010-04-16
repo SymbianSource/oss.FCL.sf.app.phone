@@ -21,9 +21,6 @@
 #include <utility.h>
 #include <AudioPreference.h>
 #include <ProfileEngineDomainCRKeys.h>
-// <-- QT PHONE START -->
-//#include <musicplayerdomaincrkeys.h>
-// <-- QT PHONE END -->
 #include <DRMHelperServerInternalCRKeys.h>
 #include <DRMHelper.h>
 #include <activeidle2domainpskeys.h>
@@ -37,14 +34,6 @@
 #include "cphonetimer.h"
 #include "phoneconstants.h"
 #include "phoneui.pan"
-
-// CONSTANTS
-
-// <-- QT PHONE START -->
-// Minimum acceptable length of parsed DRM message.
-
-//const TInt KPhoneMinDRMTextLength = 3;
-// <-- QT PHONE END -->
 
 CPhoneRingingtonePlayer::CPhoneRingingtonePlayer():
 CActive( CActive::EPriorityStandard ), iAsyncDeletePlayers( EPlayerCount )
@@ -117,28 +106,10 @@ void CPhoneRingingtonePlayer::ConstructL()
             iAsyncDeletePlayers.Append( NULL ) );
         }
     
- 
-    // <-- QT PHONE START -->
-       // Checks if DRM extend security is needed
-    //TInt extSecNeeded = KErrNone;
-/*
-    TInt err = CPhoneCenRepProxy::Instance()->GetInt(
-        KCRUidMusicPlayerFeatures,
-        KRequireDRMInPlayback,
-        extSecNeeded );
-*/
-
     //disabling the DRM for the TB10.1wk46 release. Lets see if need to put it back and how.
     //iExtSecNeeded = ( ( err == KErrNone ) && extSecNeeded ) ? ETrue : EFalse;
     iExtSecNeeded = EFalse; 
-    
-    
-    /*CPhoneCenRepProxy::Instance()->NotifyChangeL(
-        KCRUidDRMHelperServer, 
-        KDRMHelperServerNotificationPassive,
-        this );*/
-    // <-- QT PHONE END-->        
-    
+        
     // Construct players.
     if ( !iMdaServer )
         {
@@ -147,9 +118,7 @@ void CPhoneRingingtonePlayer::ConstructL()
     
     // Backup player. 
     ConstructBackupPlayer();
-    // <-- QT PHONE START-->
     ConstructDefaultPlayerL();
-    // <-- QT PHONE END-->
     }
 
 // -----------------------------------------------------------------------------
@@ -486,14 +455,8 @@ void CPhoneRingingtonePlayer::ConstructDefaultPlayerL()
     {
     // Construct the default ringing tone
     TBuf<KMaxFileName> defaultTone;
-// <-- QT PHONE START-->
-    /*TInt err = CPhoneCenRepProxy::Instance()->GetString(            
-        KCRUidProfileEngine,
-        KProEngDefaultRingingTone,
-        defaultTone );*/
     defaultTone = _L("z:\\data\\sounds\\digital\\Nokia tune.aac");        
     TInt err(KErrNone);
-// <-- QT PHONE END-->    
     
     if ( err == KErrNone )
         {
@@ -791,60 +754,6 @@ void CPhoneRingingtonePlayer::HandleCenRepChangeL(
     
     if ( aUid == KCRUidDRMHelperServer )
         {
-// <-- QT PHONE START --> 
-        /*
-        TBuf<256> tempBuf16( KNullDesC );
-        
-        User::LeaveIfError( CPhoneCenRepProxy::Instance()->GetString(
-            KCRUidDRMHelperServer,
-            KDRMHelperServerNotificationPassive,
-            tempBuf16 ) );         
-       
-        const TBool idleIsTopApp = CPhonePubSubProxy::Instance()->Value(
-            KPSUidAiInformation, KActiveIdleState ) == EPSAiForeground;
-       
-        // Quick validity check and    
-        // The first Tuint8 is the times the content has been informed.
-        // Note should not shown until Idle.
-        if ( idleIsTopApp && tempBuf16.Length() >= KPhoneMinDRMTextLength )
-            { 
-            TBuf8<256> tempBuf8;
-            TPtrC8 ptr((TUint8*)tempBuf16.Ptr(), tempBuf16.Size());
-            HBufC8* buf8 = HBufC8::NewLC( 256 );
-            buf8->Des().Copy(ptr);  
-            // Extract URI etc. 
-            // buf8 format:
-            //<TUint8 aTimes><TUint8 aExpirationMark>
-            //<TUint8 aPermissionType>
-            //<TUint8 aAutomatedContentType><TDesC8 aContentID>
-            TInt8 count = (TInt8)(*(buf8->Ptr())); 
-            TChar mark = (TChar)(*(buf8->Ptr()+1));
-            TInt8 permtype = (TChar)(*(buf8->Ptr()+2));
-            TInt8 automcontenttype = (TChar)(*(buf8->Ptr()+3)); 
-            TBuf8<256> curi = buf8->Right( buf8->Length()-4);
-            
-            if (curi.Ptr()[curi.Size()-1] == 0)
-                {
-                // The last character in the descriptor is 0, which means
-                // that the original 16-bit desc was padded so
-                // remove the last char...
-                curi.SetLength(curi.Size()-1);
-                }
-                    
-            // Create DRM helper.     
-            CDRMHelper* drmHelper = CDRMHelper::NewLC();            
-            // Show notification.
-            drmHelper->SetAutomatedType( (CDRMHelper::TDRMHelperAutomatedType)automcontenttype );
-            TInt error = drmHelper->CheckRightsAmountL( curi );
-
-            __PHONELOG1( EBasic, EPhoneControl, 
-                "CPhoneRingingtonePlayer::HandleCenRepChangeL > CheckRightsAmountL, error: %d"
-                , error );
-                           
-            CleanupStack::PopAndDestroy( drmHelper ); 
-            CleanupStack::PopAndDestroy( buf8 ); 
-            } */
-// <-- QT PHONE END --> 
         }
     }
 

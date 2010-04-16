@@ -25,20 +25,24 @@ DEPENDPATH += . ../../src/
 INCLUDEPATH += .
 INCLUDEPATH += ../../../inc
 INCLUDEPATH += ../../../cptelephonyutils/inc
-DEFINES += BUILD_BARRINGPLUGIN
+DEFINES += BUILD_CPTELEPHONYUTILS BUILD_BARRINGPLUGIN \
+           BUILD_PSETWRAPPER BUILD_SSSETTINGSWRAPPER
+DEFINES += QT_NO_DEBUG_STREAM
 
 QT -= gui
 QT += testlib
 
 symbian: { 
     CONFIG += no_icon
+    
     INCLUDEPATH += /epoc32/include/mw/QtTest \
-        /epoc32/include/platform/mw \
-        /epoc32/include/mw/qt
+                   /epoc32/include/platform/mw \
+                   /epoc32/include/mw/qt
+    
     LIBS += -lmocklib \
         -lsymbianmock \
         -lcpframework 
-        }
+}
     
 # test code
 HEADERS += ut_barringplugingroup.h
@@ -46,10 +50,24 @@ SOURCES += ut_barringplugingroup.cpp
     
 # code to be tested
 HEADERS += ../../inc/cpbarringplugin.h \
-           ../../inc/cpbarringplugingroup.h
+           ../../inc/cpbarringplugingroup.h \
+           ../../../cptelephonyutils/inc/cpphonenotes.h \
+           ../../../cptelephonyutils/inc/cpplugincommon.h \
+           /epoc32/include/platform/mw/psetwrapper.h \
+           /epoc32/include/platform/mw/psetcliwrapper.h \
+           /epoc32/include/platform/mw/sssettingswrapper.h \
+           /epoc32/include/platform/mw/psetcallwaitingwrapper.h \
+           /epoc32/include/platform/mw/psetcalldivertingwrapper.h \
+           /epoc32/include/platform/mw/psetnetworkwrapper.h \
+           /epoc32/include/platform/mw/psetcallbarringwrapper.h
 
-    
 SOURCES += ../../src/cpbarringplugingroup.cpp
-    
+
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cpbarringplugin.cpp
+SOURCES += ../../../tsrc/mocks/mock_psetcallbarringwrapper.cpp
+SOURCES += ../../../tsrc/mocks/mock_psetwrapper.cpp
+SOURCES += ../../../tsrc/mocks/mock_cpphonenotes.cpp
+SOURCES += ../../../tsrc/mocks/mock_cpplugincommon.cpp
+SOURCES += ../../../tsrc/mocks/mock_cpitemdatahelper.cpp
+SOURCES += ../../../tsrc/mocks/mock_hbcheckbox.cpp

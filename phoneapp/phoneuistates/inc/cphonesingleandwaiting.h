@@ -166,12 +166,10 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
         */
         void HandleDisconnectingL( TInt aCallId );
 
-// <-- QT PHONE START -->
         /**
         *  Handles received EPhoneCmdUpdateUiControls command.
         */
         void UpdateUiControlsL();
-// <-- QT PHONE END -->        
         
     private: //Data
             

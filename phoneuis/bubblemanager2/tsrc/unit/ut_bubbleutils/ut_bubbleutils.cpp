@@ -58,6 +58,7 @@ private slots:
     void test_setCallHeaderTexts2Lines_active();
     void test_setCallHeaderTexts2Lines_held();
     void test_setCallHeaderTexts2Lines_disconnected();
+    void test_setCallHeaderTexts2Lines_outgoing();
 
     void test_compareHeaders();
 
@@ -464,6 +465,24 @@ void ut_BubbleUtils::test_setCallHeaderTexts2Lines_disconnected()
     QVERIFY( opt.mText2 == "discon" );
     QVERIFY( opt.mText2Clip == Qt::ElideRight );
     QVERIFY( opt.mText3 == "" );
+}
+
+void ut_BubbleUtils::test_setCallHeaderTexts2Lines_outgoing()
+{
+    // outgoing
+    BubbleHeader header;
+    BubbleStyleOption opt;
+
+    header.setCallState(BubbleManager::Outgoing);
+    header.setCli("john", Qt::ElideRight);
+    header.setText("calling", Qt::ElideRight);
+    header.setTimerCost("00:00");
+
+    BubbleUtils::setCallHeaderTexts2Lines(header, opt);
+    QCOMPARE(opt.mText1, QString("calling"));
+    QCOMPARE(opt.mText1Clip, Qt::ElideRight);
+    QCOMPARE(opt.mText2, QString("john"));
+    QCOMPARE(opt.mText2Clip, Qt::ElideRight);
 }
 
 void ut_BubbleUtils::test_compareHeaders()

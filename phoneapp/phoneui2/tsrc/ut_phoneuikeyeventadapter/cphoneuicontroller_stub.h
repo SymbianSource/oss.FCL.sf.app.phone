@@ -32,6 +32,7 @@ extern int m_scan_code_down;
 extern int m_code_down;
 extern int m_repeats;
 extern bool m_leave;
+extern TEventCode m_eventCode;
 
 // FORWARD DECLARATIONS
 

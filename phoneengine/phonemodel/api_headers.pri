@@ -26,4 +26,5 @@ PHONEENGINE_API_HEADERS = ./inc/pevirtualengine.h \
                           ./inc/mpephonemodelinternal.h \
                           ./inc/mpeexternaldatahandler.h \
                           ./inc/talogger.h \
-                          ./inc/pepanic.pan
+                          ./inc/pepanic.pan \
+                          ./inc/qtphonelog.h

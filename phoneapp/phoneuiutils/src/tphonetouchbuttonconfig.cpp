@@ -17,9 +17,6 @@
 
 // INCLUDE FILES
 #include "cphonecenrepproxy.h"
-// <-- QT PHONE START -->
-//#include <callhandlingui.rsg>
-// <-- QT PHONE END -->
 #include <barsread.h>
 #include <coemain.h>
 
@@ -97,29 +94,6 @@ void TPhoneTouchButtonConfig::ReadCenRepKeysL(
 void TPhoneTouchButtonConfig::ReadConfigResourceL( 
     const TFixedArray<TInt,KTelButtonsConfigKeyCount>& /*aKeyValues*/ )
     {
-// <-- QT PHONE START -->
-    /*TResourceReader reader;
-    CCoeEnv::Static()->CreateResourceReaderLC( 
-            reader, 
-            R_PHONEUI_TOUCH_BUTTON_CONFIG );
-
-    TInt configItemCount = reader.ReadInt16();
-    for ( TInt i=0; i < configItemCount; i++ )
-        {
-        TInt buttonSetId = reader.ReadInt16();
-        TInt buttonSetCount = reader.ReadInt16();
-        for ( TInt j=0; j < buttonSetCount ; j++ )
-            {
-            TInt buttonSetResourceId = reader.ReadInt32();
-            if ( j == aKeyValues[ buttonSetId ] )
-                {
-                iConfiguration[ buttonSetId ] = buttonSetResourceId;
-                }
-            }
-        }
-    
-    CleanupStack::PopAndDestroy(); // reader*/
-// <-- QT PHONE END -->
     }
 
 // ---------------------------------------------------------------------------

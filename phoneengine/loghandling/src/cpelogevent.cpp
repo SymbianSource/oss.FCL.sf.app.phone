@@ -21,9 +21,6 @@
 #include "cpeloginfo.h"
 #include "cpeloghandling.h"
 #include "cpeloghandlingcommand.h"
-// <-- QT PHONE START -->
-//#include <pbkfields.hrh>
-// <-- QT PHONE END -->
 #include <talogger.h>
 #include <logcli.h>
 #include <LogsApiConsts.h>
@@ -306,8 +303,6 @@ void CPELogEvent::SetPhoneNumberId()
     TBuf<KPhonebookTypeIdLength> subject;
     subject.Zero();
 
-// <-- QT PHONE START -->
-    
     switch ( iLogInfo->PhoneNumberId() )
         {
         case EPEMobileNumber:
@@ -332,9 +327,6 @@ void CPELogEvent::SetPhoneNumberId()
             subject.AppendNum( EPEUnknownNumber );
             break;
         }
-        
-// <-- QT PHONE END -->
-    
 
     if ( subject.Length() > 0 )
         {

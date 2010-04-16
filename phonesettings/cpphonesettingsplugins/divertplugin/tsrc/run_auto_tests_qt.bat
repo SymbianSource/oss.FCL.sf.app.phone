@@ -160,7 +160,7 @@ echo 4) User selects other number, inserts number and cancels
 echo 5) User selects othernumber and find
 echo 6) User selects other number and inserts number and timeout
 echo 7) User selects default number and and cancels in timeout query
-for /f %%a in ('dir /b ut_*') do call %PATH_TO_DLL%\%%a.exe -- 
+for /f %%a in ('dir /b ut_*') do call %PATH_TO_DLL%\%%a.exe 
 goto end
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::

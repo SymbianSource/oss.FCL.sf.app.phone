@@ -22,14 +22,12 @@
 
 //  INCLUDES
 #include <pevirtualengine.h>
-#include "DosSvrServices.h"
+#include <DosSvrServices.h>
 #include <cphcltcommandhandler.h>
 #include <cphcltdialdata.h>
 
 #include "mpecallhandling.h"
-// <-- QT PHONE START -->
 #include "mpecallcontrolif.h" 
-// <-- QT PHONE END --> 
 
 // CONSTANTS
 const TInt KModeNormal = 0;  // Normal System mode  
@@ -107,9 +105,7 @@ class MPEServiceHandling;
 *  @lib phoneenginebase.dll
 *  @since S60_5.0
 */
-// <-- QT PHONE START --> 
 NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase, public MPECallControlIF
-// <-- QT PHONE END --> 
     {
     public:  // Destructor
 
@@ -597,13 +593,11 @@ NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase, public MPECallControlIF
         */     
         void HandleDisableService();
 
-// <-- QT PHONE START -->   
         /**
         * Handle dial service call
         */ 
         TInt HandleDialServiceCall(
             const TBool aClientCall );
-// <-- QT PHONE END -->
         
     private: // New functions
         

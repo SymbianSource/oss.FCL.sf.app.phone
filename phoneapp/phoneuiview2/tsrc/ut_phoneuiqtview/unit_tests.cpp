@@ -19,6 +19,7 @@
 #include <QtGui>
 #include <QVariant>
 #include <QKeyEvent>
+#include <QTimer>
 #include <hbapplication.h>
 #include <QSignalSpy>
 #include <hbmainwindow.h>
@@ -37,6 +38,8 @@
 static const int KMAXVOLUME = 10;
 static const int KMINVOLUME = 0;
 static const int KVOLUMECOMMAND = 5;
+
+bool m_qtimer_stop_called;
 
 
 #define PHONE_QT_VIEW_TEST_MAIN(TestObject) \
@@ -86,6 +89,7 @@ private slots:
     void testShowDialpad();
     void testDialpadText();
     void testSetMenuActions();
+    void testLongEndKeyPressEvent();
 
 private:
     int createCallHeader();
@@ -96,7 +100,11 @@ private:
 
 };
 
-
+void QTimer::stop()
+{
+    m_qtimer_stop_called = true;   
+}
+    
 TestPhoneUIQtView::TestPhoneUIQtView ()
 {    
 }
@@ -107,22 +115,22 @@ TestPhoneUIQtView::~TestPhoneUIQtView ()
 
 void TestPhoneUIQtView::initTestCase ()
 {	
-}
-
-void TestPhoneUIQtView::cleanupTestCase ()
-{
-}
-
-void TestPhoneUIQtView::init ()
-{
     m_main_window = new HbMainWindow(); 
     m_view = new PhoneUIQtView(*m_main_window);
 }
 
-void TestPhoneUIQtView::cleanup ()
+void TestPhoneUIQtView::cleanupTestCase ()
 {
     delete m_view;
-    delete m_main_window;
+}
+
+void TestPhoneUIQtView::init ()
+{
+    m_qtimer_stop_called = false;
+}
+
+void TestPhoneUIQtView::cleanup ()
+{
 }
 
 void TestPhoneUIQtView::testAddBubbleCommand ()
@@ -169,6 +177,7 @@ void TestPhoneUIQtView::testShowToolbar ()
     m_view->showToolbar ();
     QCOMPARE (m_showCalled, true);
 }
+
 void TestPhoneUIQtView::testAddToolbarActions ()
 {
     m_actions.clear();
@@ -376,6 +385,14 @@ int TestPhoneUIQtView::createCallHeader ()
     int bubble = m_view->bubbleManager().createCallHeader ();
 
     return bubble;
+}
+
+void TestPhoneUIQtView::testLongEndKeyPressEvent()
+{
+    QSignalSpy spy(m_view, SIGNAL(endKeyLongPress()));
+    m_view->longEndKeyPressEvent();
+    QVERIFY(m_qtimer_stop_called == true);
+    QCOMPARE(spy.count(), 1);
 }
 
 PHONE_QT_VIEW_TEST_MAIN(TestPhoneUIQtView)

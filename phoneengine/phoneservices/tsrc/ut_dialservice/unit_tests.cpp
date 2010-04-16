@@ -46,6 +46,7 @@ public:
 private slots:
     void testDial ();
     void testDial2 ();
+    void testDial3();
     void testDialVideo ();
     void testDialVideo2 ();
     void testDialVoip();
@@ -182,6 +183,14 @@ void TestDialService::testDial2()
     QVERIFY (m_setContactIdCalled == true);
     QCOMPARE (m_contactId, 3127);
     QVERIFY (m_clientCall == false);
+}
+
+void TestDialService::testDial3()
+{
+    m_DialService->dial(QString("[+358] (0) 50-1234 5.6,7"), 3127);
+    QString _number((QChar*)m_phoneNumber.Ptr(), m_phoneNumber.Length());
+    QVERIFY (m_setPhoneNumberCalled == true);
+    QCOMPARE(_number, QString("+3580501234567"));
 }
 
 void TestDialService::testDialVideo()

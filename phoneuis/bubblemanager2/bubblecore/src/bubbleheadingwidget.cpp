@@ -28,7 +28,7 @@
 BubbleHeadingWidget::BubbleHeadingWidget(
     const QString& stylePluginName, QGraphicsItem* item)
     : HbWidget(item), mStylePluginName(stylePluginName), mStatusIcon(0),
-      mNumberTypeIcon(0), mText1(0), mText2(0), mText3(0)
+      mNumberTypeIcon(0), mCipheringIcon(0), mText1(0), mText2(0), mText3(0)
 {
     setPluginBaseId(style()->registerPlugin(mStylePluginName));
     Q_ASSERT(pluginBaseId()!=-1);
@@ -69,15 +69,20 @@ void BubbleHeadingWidget::createPrimitives()
             (HbStyle::Primitive)(pluginBaseId()+BP_Text3_text), this);
     style()->setItemName( mText3, "text_line_3" );
 
-    delete mStatusIcon;
-    mStatusIcon = style()->createPrimitive(
-            (HbStyle::Primitive)(pluginBaseId()+BP_CallStatus_icon), this);
-    style()->setItemName( mStatusIcon, "status_icon" );
-
     delete mNumberTypeIcon;
     mNumberTypeIcon = style()->createPrimitive(
             (HbStyle::Primitive)(pluginBaseId()+BP_NumberType_icon), this);
     style()->setItemName( mNumberTypeIcon, "number_type_icon" );
+
+    delete mCipheringIcon;
+    mCipheringIcon = style()->createPrimitive(
+            (HbStyle::Primitive)(pluginBaseId()+BP_Ciphering_icon), this);
+    style()->setItemName( mCipheringIcon, "ciphering_icon" );
+
+    delete mStatusIcon;
+    mStatusIcon = style()->createPrimitive(
+            (HbStyle::Primitive)(pluginBaseId()+BP_CallStatus_icon), this);
+    style()->setItemName( mStatusIcon, "status_icon" );
 }
 
 void BubbleHeadingWidget::updatePrimitives()
@@ -117,6 +122,13 @@ void BubbleHeadingWidget::updatePrimitives()
         style()->updatePrimitive(
                 mNumberTypeIcon,
                 (HbStyle::Primitive)(pluginBaseId()+BP_NumberType_icon),
+                &option);
+    }
+
+    if (mCipheringIcon) {
+        style()->updatePrimitive(
+                mCipheringIcon,
+                (HbStyle::Primitive)(pluginBaseId()+BP_Ciphering_icon),
                 &option);
     }
 
@@ -176,6 +188,9 @@ int BubbleHeadingWidget::lineCount() const
 void BubbleHeadingWidget::setLineCount(int count)
 {
     lines = count;
+    if (isVisible()) {
+        repolish();        
+    }
 }
 
 QString BubbleHeadingWidget::layout() const

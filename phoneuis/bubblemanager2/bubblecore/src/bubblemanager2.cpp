@@ -16,7 +16,6 @@
 */
 
 #include <QtGui>
-#include <QDebug>
 #include <QtAlgorithms>
 
 #include <hblabel.h>
@@ -459,7 +458,7 @@ void BubbleManager::setCallObjectFromTheme(
     findActiveHeader( bubbleId, header );     
     Q_ASSERT( header );
 
-    header->setCallImage(":resources/qtg_large_avatar.svg");
+    header->setCallImage("qtg_large_avatar");
 }
 
 /**
@@ -570,6 +569,17 @@ void BubbleManager::removeConference()
             break;
         }
     }
+
+    QGraphicsWidget* view =
+        mWidgetManager->view(BubbleWidgetManager::ConferenceView);
+    if (view) {
+        QList<BubbleHandler*>* handlers = mWidgetManager->handlers(view);
+        if (handlers) {
+            foreach (BubbleHandler* handler, *handlers) {
+                handler->conferenceRemoved();
+            }
+        }
+    }
 }
 
 /**
@@ -599,6 +609,18 @@ void BubbleManager::removeRowFromConference( int bubbleId )
     Q_ASSERT( mIsReadyToDraw > 0 );
     mConferenceHeader->removeHeader(bubbleId);
     mSortHeaders = true;
+
+    QGraphicsWidget* view =
+        mWidgetManager->view(BubbleWidgetManager::ConferenceView);
+
+    if (view) {
+        QList<BubbleHandler*>* handlers = mWidgetManager->handlers(view);
+        if (handlers) {
+            foreach (BubbleHandler* handler, *handlers) {
+                handler->conferenceMemberRemoved(bubbleId);
+            }
+        }
+    }
 }
 
 /**

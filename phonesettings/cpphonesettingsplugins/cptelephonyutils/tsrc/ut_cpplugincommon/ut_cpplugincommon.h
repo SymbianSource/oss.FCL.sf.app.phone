@@ -44,9 +44,6 @@ private slots:
     void t_writeSoftRejectText();
     void t_numberGroupingSupported();
     
-    void t_loadCpPlugin();
-    void t_unloadCpPlugin();
-    
     void t_voipSupported();
     void t_videoSupported();
     void t_convertEtelMobileServiceCode();

@@ -20,18 +20,11 @@
 #include <ccpdefs.h>
 #include <mpeengineinfo.h>
 #include <StringLoader.h>
-
-// <-- QT PHONE START -->
-//#include <ccherror.h>
-// <-- QT PHONE END -->
-
 #include <spsettings.h>
 #include <spentry.h>
-
 #include <telephonydomainpskeys.h>
 #include <UikonInternalPSKeys.h>
 #include <aknnotedialog.h>
-
 #include "cphonevoiperrormessageshandler.h"
 #include "cphonemainerrormessageshandler.h"
 #include "cphoneerrormessageshandler.h"
@@ -382,60 +375,7 @@ void CPhoneVoIPErrorMessagesHandler::ShowRegistrationErrorNotesL(
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
               "CPhoneVoIPErrorMessagesHandler::ShowRegistrationErrorNotesL()" );
     // Dismiss service enabling wait note
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalWaitNote );
-    
-    // <-- QT PHONE START -->
-    /*switch ( aErrorCode )
-        {
-        case KCCHErrorAccessPointNotDefined:
-            {
-            TUint32 serviceId = 
-                iStateMachine->PhoneEngineInfo()->ServiceIdCommand();
-            ShowErrorNoteWithServiceNameL( EPhoneVoIPNoConnectionsDefined,
-                serviceId );
-            break;
-            }
-        case KCCHErrorBandwidthInsufficient:   
-            {
-            TUint32 serviceId = 
-                iStateMachine->PhoneEngineInfo()->ServiceIdCommand();
-            ShowErrorNoteWithServiceNameL( EPhoneVoIPCallsNotSupported,
-                serviceId );
-            break;
-            }
-        case KCCHErrorInvalidSettings:
-            {
-            TUint32 serviceId = 
-                iStateMachine->PhoneEngineInfo()->ServiceIdCommand();
-            ShowErrorNoteWithServiceNameL( EPhoneVoIPDefectiveSettings,
-                serviceId );
-            break;
-            }
-        case KCCHErrorAuthenticationFailed:
-            {
-            SendGlobalErrorNoteL( EPhoneVoIPAuthenticationFailed );
-            break;
-            }
-        case KCCHErrorInvalidIap:
-        case KCCHErrorNetworkLost:
-        case KCCHErrorServiceNotResponding:
-            {
-            TUint32 serviceId = 
-                iStateMachine->PhoneEngineInfo()->ServiceIdCommand();
-            ShowErrorNoteWithServiceNameL( EPhoneVoIPNoConnectionsAvailable,
-                serviceId );
-            break;
-            }
-        default:
-            {
-            TUint32 serviceId = 
-               iStateMachine->PhoneEngineInfo()->ServiceIdCommand();
-            ShowErrorNoteWithServiceNameL( EPhoneVoIPServiceUnavailable,
-               serviceId );
-            break;
-            }
-        }*/
-    // <-- QT PHONE END -->
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalWaitNote );    
     }
 
 // ---------------------------------------------------------

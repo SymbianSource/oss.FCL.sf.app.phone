@@ -64,6 +64,7 @@ private:
     // primitives
     QGraphicsItem* mStatusIcon;
     QGraphicsItem* mNumberTypeIcon;
+    QGraphicsItem* mCipheringIcon;
     QGraphicsItem* mText1;
     QGraphicsItem* mText2;
     QGraphicsItem* mText3;

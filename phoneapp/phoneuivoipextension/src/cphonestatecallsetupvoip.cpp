@@ -17,9 +17,6 @@
 
 
 // INCLUDES
-// <-- QT PHONE START -->
-//#include <bmbubblemanager.h>
-// <-- QT PHONE END -->
 #include <mpeengineinfo.h>
 
 #include "cphonestatecallsetupvoip.h"
@@ -116,9 +113,7 @@ void CPhoneStateCallSetupVoIP::HandleConnectingL( TInt aCallId )
 
     if( iStateMachine->PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP )
         {
-// <-- QT PHONE START --> 
         SetCallHeaderType( EPECallTypeVoIP );   
-// <-- QT PHONE END -->         
         }
         
     CPhoneCallSetup::HandleConnectingL( aCallId );      

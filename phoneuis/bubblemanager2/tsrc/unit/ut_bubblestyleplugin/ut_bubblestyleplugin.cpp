@@ -52,21 +52,24 @@ private slots:
     void testVideoCallStatusIcon();
     void testVoipCallStatusIcon();
     void testNumberTypeIcon();
+    void testCipheringIcon();
 
 private:
-    BubbleStylePlugin* mPlugin;
+    BubbleStylePlugin* mPluginInstance;
+    HbStyleInterface*  mPlugin;
     HbWidget* mParent;
 };
 
 void ut_BubbleStylePlugin::initTestCase()
 {
-    mPlugin = new BubbleStylePlugin();
+    mPluginInstance = new BubbleStylePlugin();
+    mPlugin = static_cast<HbStyleInterface*>(mPluginInstance);
     mParent = new HbWidget();
 }
 
 void ut_BubbleStylePlugin::cleanupTestCase()
 {
-    delete mPlugin;
+    delete mPluginInstance;
     delete mParent;
 }
 
@@ -315,7 +318,7 @@ void ut_BubbleStylePlugin::testNumberTypeIcon()
     mPlugin->updatePrimitive(
             item, (HbStyle::Primitive)(BP_NumberType_icon),
             &option);
-    QVERIFY(icon->icon().iconName()==":/resources/qgn_indi_call_diverted.svg");
+    QVERIFY(icon->icon().iconName()==":/qgn_indi_call_diverted.svg");
     option.mCallState = BubbleManagerIF::Incoming;
     option.mCallFlags &= ~BubbleManagerIF::Diverted;
     mPlugin->updatePrimitive(
@@ -329,11 +332,35 @@ void ut_BubbleStylePlugin::testNumberTypeIcon()
     mPlugin->updatePrimitive(
             item, (HbStyle::Primitive)(BP_NumberType_icon),
             &option);
-    QVERIFY(icon->icon().iconName()==":/resources/qgn_indi_call_diverted.svg");
+    QVERIFY(icon->icon().iconName()==":/qgn_indi_call_diverted.svg");
     option.mCallState = BubbleManagerIF::Waiting;
     option.mCallFlags &= ~BubbleManagerIF::Diverted;
     mPlugin->updatePrimitive(
             item, (HbStyle::Primitive)(BP_NumberType_icon),
+            &option);
+    QVERIFY(icon->icon().iconName()=="");
+}
+
+void ut_BubbleStylePlugin::testCipheringIcon()
+{
+    QGraphicsItem *item = mPlugin->createPrimitive(
+        (HbStyle::Primitive)(BP_Ciphering_icon),mParent);
+    QVERIFY(item);
+    QVERIFY(item->parentItem()==mParent);
+
+    HbIconItem* icon = qgraphicsitem_cast<HbIconItem*>(item);
+    QVERIFY(icon);
+    BubbleStyleOption option;
+    option.mCallState = BubbleManagerIF::Active;
+    option.mCallFlags |= BubbleManagerIF::NoCiphering;
+    mPlugin->updatePrimitive(
+            item, (HbStyle::Primitive)(BP_Ciphering_icon),
+            &option);
+    QVERIFY(icon->icon().iconName()=="qtg_mono_ciphering_off");
+    option.mCallState = BubbleManagerIF::Incoming;
+    option.mCallFlags &= ~BubbleManagerIF::NoCiphering;
+    mPlugin->updatePrimitive(
+            item, (HbStyle::Primitive)(BP_Ciphering_icon),
             &option);
     QVERIFY(icon->icon().iconName()=="");
 }

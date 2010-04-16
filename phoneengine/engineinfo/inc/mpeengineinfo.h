@@ -22,9 +22,7 @@
 
 //  INCLUDES
 #include <pevirtualengine.h>
-// <-- QT PHONE START -->
 #include "mpecallsettersif.h" 
-// <-- QT PHONE END --> 
 
 // CONSTANTS
 // None
@@ -43,9 +41,7 @@ class MPEClientInformation;
 *  @lib phoneengine.lib
 *  @since Series 60 4.0
 */
-// <-- QT PHONE START --> 
 NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
-// <-- QT PHONE END --> 
     {
 
     public:
@@ -703,12 +699,11 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
          */
         virtual TPECallOrigin CallOrigin( const TInt aCallId ) const = 0;
         
-// <-- QT PHONE START --> 
         /**
          * Returns Phonebook contact identifier.
          */
         virtual TInt ContactId2 () const = 0;
-// <-- QT PHONE END -->  
+
     }; // MPEEngineInfo
     
 #endif      //MPEENGINEINFO_H

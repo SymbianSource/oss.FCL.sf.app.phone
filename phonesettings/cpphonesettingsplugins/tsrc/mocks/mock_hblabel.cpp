@@ -20,27 +20,8 @@
 
 // ============================ MEMBER FUNCTIONS ===============================
 
-// -----------------------------------------------------------------------------
-// HbLabel::Q_PROPERTY
-// -----------------------------------------------------------------------------
-/*
-void HbLabel::Q_PROPERTY( 
-        QString plainText READ plainText WRITE setPlainText ) Q_PROPERTY ( QString html READ html WRITE setHtml ) Q_PROPERTY ( Qt::Alignment alignment READ alignment WRITE setAlignment ) Q_PROPERTY ( Qt::TextElideMode elideMode READ elideMode WRITE setElideMode ) Q_PROPERTY ( Hb::TextWrapping textWrapping READ textWrapping WRITE setTextWrapping ) Q_PROPERTY ( QColor textColor READ textColor WRITE setTextColor ) Q_PROPERTY ( HbIcon icon READ icon WRITE setIcon ) Q_PROPERTY ( Qt::AspectRatioMode aspectRatioMode READ aspectRatioMode WRITE setAspectRatioMode ) Q_ENUMS ( QIcon::Mode QIcon::State ) Q_PROPERTY ( QString text READ text WRITE setText NOTIFY textChanged USER true ) Q_PROPERTY ( QColor color READ color WRITE setColor ) Q_PROPERTY ( int textFlags READ textFlags WRITE setTextFlags ) Q_PROPERTY ( Hb::LogicalFontName logicalFont READ logicalFont WRITE setLogicalFont ) Q_PROPERTY ( QIcon::Mode mode READ mode WRITE setMode ) Q_PROPERTY ( QIcon::State state READ state WRITE setState ) Q_PROPERTY ( Qt::TextFormat textFormat READ textFormat WRITE setTextFormat ):HbLabel ( QGraphicsItem * parent )
-    {
-    SMC_MOCK_METHOD1( void, QString plainText READ plainText WRITE setPlainText ) Q_PROPERTY ( QString html READ html WRITE setHtml ) Q_PROPERTY ( Qt::Alignment alignment READ alignment WRITE setAlignment ) Q_PROPERTY ( Qt::TextElideMode elideMode READ elideMode WRITE setElideMode ) Q_PROPERTY ( Hb::TextWrapping textWrapping READ textWrapping WRITE setTextWrapping ) Q_PROPERTY ( QColor textColor READ textColor WRITE setTextColor ) Q_PROPERTY ( HbIcon icon READ icon WRITE setIcon ) Q_PROPERTY ( Qt::AspectRatioMode aspectRatioMode READ aspectRatioMode WRITE setAspectRatioMode ) Q_ENUMS ( QIcon::Mode QIcon::State ) Q_PROPERTY ( QString text READ text WRITE setText NOTIFY textChanged USER true ) Q_PROPERTY ( QColor color READ color WRITE setColor ) Q_PROPERTY ( int textFlags READ textFlags WRITE setTextFlags ) Q_PROPERTY ( Hb::LogicalFontName logicalFont READ logicalFont WRITE setLogicalFont ) Q_PROPERTY ( QIcon::Mode mode READ mode WRITE setMode ) Q_PROPERTY ( QIcon::State state READ state WRITE setState ) Q_PROPERTY ( Qt::TextFormat textFormat READ textFormat WRITE setTextFormat ):HbLabel ( QGraphicsItem *, parent )
-    }
-*/
 
-// -----------------------------------------------------------------------------
-// HbLabel::HbLabel
-// -----------------------------------------------------------------------------
-//
-HbLabel::HbLabel( 
-        QGraphicsItem * parent )
-    {
 
-    }
-    
 // -----------------------------------------------------------------------------
 // HbLabel::HbLabel
 // -----------------------------------------------------------------------------
@@ -220,17 +201,6 @@ bool HbLabel::isEmpty(  ) const
 
 
 // -----------------------------------------------------------------------------
-// HbLabel::setGeometry
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setGeometry( 
-        const QRectF & rect )
-    {
-  //  SMC_MOCK_METHOD1( void, const QRectF &, rect )
-    }
-
-
-// -----------------------------------------------------------------------------
 // HbLabel::primitive
 // -----------------------------------------------------------------------------
 //
@@ -245,189 +215,9 @@ QGraphicsItem * HbLabel::primitive(
 // HbLabel::type
 // -----------------------------------------------------------------------------
 //
-/*
 int HbLabel::type(  ) const
     {
     SMC_MOCK_METHOD0( int )
-    }
-
-*/
-
-// -----------------------------------------------------------------------------
-// HbLabel::setColor
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setColor( 
-        const QColor & textColor )
-    {
-  //  SMC_MOCK_METHOD1( void, const QColor &, textColor )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::color
-// -----------------------------------------------------------------------------
-//
-QColor HbLabel::color(  ) const
-    {
-   // SMC_MOCK_METHOD0( QColor )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::setLogicalFont
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setLogicalFont( 
-        Hb::LogicalFontName logicalFont )
-    {
- //   SMC_MOCK_METHOD1( void, Hb::LogicalFontName, logicalFont )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::logicalFont
-// -----------------------------------------------------------------------------
-//
-Hb::LogicalFontName HbLabel::logicalFont(  ) const
-    {
-   // SMC_MOCK_METHOD0( Hb::LogicalFontName )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::text
-// -----------------------------------------------------------------------------
-//
-QString HbLabel::text(  ) const
-    {
-    SMC_MOCK_METHOD0( QString )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::setTextFlags
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setTextFlags( 
-        int flags )
-    {
-    SMC_MOCK_METHOD1( void, int, flags )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::textFlags
-// -----------------------------------------------------------------------------
-//
-int HbLabel::textFlags(  ) const
-    {
-    SMC_MOCK_METHOD0( int )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::effectiveFont
-// -----------------------------------------------------------------------------
-//
-QFont HbLabel::effectiveFont(  ) const
-    {
-  //  SMC_MOCK_METHOD0( QFont )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::setMode
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setMode( 
-        QIcon::Mode mode )
-    {
-   // SMC_MOCK_METHOD1( void, QIcon::Mode, mode )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::mode
-// -----------------------------------------------------------------------------
-//
-QIcon::Mode HbLabel::mode(  ) const
-    {
-   // SMC_MOCK_METHOD0( QIcon::Mode )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::setState
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setState( 
-        QIcon::State state )
-    {
-  //  SMC_MOCK_METHOD1( void, QIcon::State, state )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::state
-// -----------------------------------------------------------------------------
-//
-QIcon::State HbLabel::state(  ) const
-    {
-  //  SMC_MOCK_METHOD0( QIcon::State )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::setTextFormat
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setTextFormat( 
-        Qt::TextFormat textFormat )
-    {
- //   SMC_MOCK_METHOD1( void, Qt::TextFormat, textFormat )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::textFormat
-// -----------------------------------------------------------------------------
-//
-Qt::TextFormat HbLabel::textFormat(  ) const
-    {
- //   SMC_MOCK_METHOD0( Qt::TextFormat )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::setMirroringMode
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setMirroringMode( 
-        HbIcon::MirroringMode mirroringMode )
-    {
- //   SMC_MOCK_METHOD1( void, HbIcon::MirroringMode, mirroringMode )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::setIconFlags
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setIconFlags( 
-        HbIcon::Flags flags )
-    {
- //   SMC_MOCK_METHOD1( void, HbIcon::Flags, flags )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::isNull
-// -----------------------------------------------------------------------------
-//
-bool HbLabel::isNull(  ) const
-    {
-    SMC_MOCK_METHOD0( bool )
     }
 
 
@@ -496,49 +286,6 @@ void HbLabel::clear(  )
 
 
 // -----------------------------------------------------------------------------
-// HbLabel::setText
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setText( 
-        const QString & text )
-    {
-    SMC_MOCK_METHOD1( void, const QString &, text )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::setNum
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setNum( 
-        int num )
-    {
-    SMC_MOCK_METHOD1( void, int, num )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::setNum
-// -----------------------------------------------------------------------------
-//
-void HbLabel::setNum( 
-        qreal num )
-    {
-    SMC_MOCK_METHOD1( void, qreal, num )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::toggleState
-// -----------------------------------------------------------------------------
-//
-void HbLabel::toggleState(  )
-    {
-    SMC_MOCK_METHOD0( void )
-    }
-
-
-// -----------------------------------------------------------------------------
 // HbLabel::HbLabel
 // -----------------------------------------------------------------------------
 //
@@ -546,30 +293,6 @@ HbLabel::HbLabel(
         HbLabelPrivate & dd,
         QGraphicsItem * parent )
     {
- //   SMC_MOCK_METHOD2( void, HbLabelPrivate &, dd, 
- //       QGraphicsItem *, parent )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::resizeEvent
-// -----------------------------------------------------------------------------
-//
-void HbLabel::resizeEvent( 
-        QGraphicsSceneResizeEvent * event )
-    {
-  //  SMC_MOCK_METHOD1( void, QGraphicsSceneResizeEvent *, event )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbLabel::changeEvent
-// -----------------------------------------------------------------------------
-//
-void HbLabel::changeEvent( 
-        QEvent * event )
-    {
- //   SMC_MOCK_METHOD1( void, QEvent *, event )
     }
 
 

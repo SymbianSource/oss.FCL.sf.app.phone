@@ -17,8 +17,6 @@
 
 #ifndef MPHONEBUTTONCUSTOMIZATION_H
 #define MPHONEBUTTONCUSTOMIZATION_H
-// <-- QT PHONE START --> 
-//#include <bmtouchpaneinterface.h>
 
 // CLASS DECLARATION
 /**
@@ -33,11 +31,7 @@ public:
     * @param aTouchPane Interface to add and dimm
     *                   bubble touch pane buttons.
     */
-    virtual void CustomizeTouchPaneButtons(
-                    /*MBubbleTouchPaneInterface& aTouchPane*/ ) = 0;
-    
-
-// <-- QT PHONE END --> 
+    virtual void CustomizeTouchPaneButtons() = 0;
     };
     
 #endif // MPHONEBUTTONCUSTOMIZATION_H

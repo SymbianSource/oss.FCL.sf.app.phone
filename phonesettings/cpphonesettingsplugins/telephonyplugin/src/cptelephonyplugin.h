@@ -19,7 +19,7 @@
 #define CPTELEPHONYPLUGIN_H
 
 #include <qobject.h>
-#include <cppluginplatinterface.h>
+#include <cpplugininterface.h>
 
 /*!
     \class CpTelephonyPlugin
@@ -27,10 +27,10 @@
  */
 class CpTelephonyPlugin
         : public QObject,
-          public CpPluginPlatInterface
+          public CpPluginInterface
 {
     Q_OBJECT
-    Q_INTERFACES(CpPluginPlatInterface)
+    Q_INTERFACES(CpPluginInterface)
     
 public:
  
@@ -38,10 +38,11 @@ public:
     ~CpTelephonyPlugin();
     
     /*!
-     From CpPluginPlatInterface.
-     @see CpPluginPlatInterface.
+     From CpPluginInterface.
+     @see CpPluginInterface.
      */
-    CpSettingFormItemData *createSettingFormItemData(CpItemDataHelper &itemDataHelper) const;
+    QList<CpSettingFormItemData*> createSettingFormItemData(
+            CpItemDataHelper &itemDataHelper) const;
 };
 
 #endif /* CPTELEPHONYPLUGIN_H */

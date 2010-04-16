@@ -130,7 +130,6 @@ void CPhoneConferenceAndWaiting::HandlePhoneEngineMessageL(
             HandleWentOneToOneL( aCallId );
             break;
 
-// <-- QT PHONE START -->
         case MEngineMonitor::EPEMessageHeldConference:            
         case MEngineMonitor::EPEMessageConnectedConference:
             {
@@ -147,7 +146,6 @@ void CPhoneConferenceAndWaiting::HandlePhoneEngineMessageL(
                 }
             }
             break;
-// <-- QT PHONE END -->
             
         default:
             CPhoneConference::HandlePhoneEngineMessageL( aMessage, 
@@ -314,9 +312,6 @@ void CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt
         if ( NeedToSendToBackgroundL() )
             {
             // Return phone to the background if send to background is needed.
-// <-- QT PHONE START -->            
-            //iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-// <-- QT PHONE END -->                        
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
             
             UpdateCbaL( EPhoneCallHandlingInCallCBA );
@@ -332,13 +327,6 @@ void CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt
         UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
         // If numberentry is not open just check NeedToSendToBackgroundL and 
         // sendbackround if needed.
-// <-- QT PHONE START -->        
-        /*if ( NeedToSendToBackgroundL() )
-            {
-            // Return phone to the background if send to background is needed.
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-            }*/
-// <-- QT PHONE END -->            
         }
     SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
     SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
@@ -519,6 +507,7 @@ void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
             SetTouchPaneButtonEnabled( EPhoneCallComingCmdSilent );
             SetRingingTonePlaybackL( iRingingCallId );          
             SetToolbarDimming( ETrue );
+            SetBackButtonActive(EFalse);
             iStateMachine->ChangeState( EPhoneStateIncoming );
             break;   
             }   
@@ -647,7 +636,6 @@ void CPhoneConferenceAndWaiting::HandleWentOneToOneL( TInt aCallId )
     EndUiUpdate();
     }
 
-// <-- QT PHONE START -->
 // -----------------------------------------------------------
 // CPhoneConferenceAndWaiting::HandleCommandL
 // -----------------------------------------------------------
@@ -682,8 +670,5 @@ void CPhoneConferenceAndWaiting::UpdateUiControlsL()
     iViewCommandHandle->ExecuteCommand(EPhoneSetConferenceExpanded);
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
     }
-
-// <-- QT PHONE END -->
-
 
 // End of File

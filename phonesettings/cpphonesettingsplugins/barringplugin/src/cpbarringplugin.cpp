@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -44,10 +44,13 @@ CpBarringPlugin::~CpBarringPlugin()
 /*!
     CpBarringPlugin::createSettingFormItemData.
  */
-CpSettingFormItemData *CpBarringPlugin::createSettingFormItemData(CpItemDataHelper &itemDataHelper) const
+QList<CpSettingFormItemData*> CpBarringPlugin::createSettingFormItemData(
+        CpItemDataHelper &itemDataHelper) const
 {
     DPRINT;
-    return new CpBarringPluginGroup(itemDataHelper);
+    QList<CpSettingFormItemData*> ret;
+    ret.append(new CpBarringPluginGroup(itemDataHelper));
+    return ret;
 }
 
 Q_EXPORT_PLUGIN2(CpBarringPlugin, CpBarringPlugin);

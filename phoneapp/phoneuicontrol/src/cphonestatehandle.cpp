@@ -100,9 +100,7 @@ EXPORT_C CPhoneStateHandle* CPhoneStateHandle::Instance()
 // CPhoneStateHandle::StateMachine
 // ---------------------------------------------------------
 //
-// <-- QT PHONE START --> 
 EXPORT_C MPhoneStateMachine* CPhoneStateHandle::StateMachine()
-// <-- QT PHONE END --> 
     {   
     __ASSERT_DEBUG( Instance(), Panic( EPhoneCtrlSingletonNotInitialized ) );
     return iPhoneStateMachine;

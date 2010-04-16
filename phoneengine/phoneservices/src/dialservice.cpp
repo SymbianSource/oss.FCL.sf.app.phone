@@ -15,10 +15,12 @@
 *
 */
 
-#include <QDebug>
 #include <xqserviceutil.h>
 #include <e32base.h>
+#include <qregexp.h>
 #include "dialservice.h"
+#include "qtphonelog.h"
+
 
 DialService::DialService(MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent) : 
     XQServiceProvider(QLatin1String("com.nokia.services.telephony"), parent), m_call (call), m_parameters (parameters)
@@ -32,7 +34,7 @@ DialService::~DialService()
 
 int DialService::dial(const QString& number)
 {
-    qDebug () << "DialService::dial number:" << number;
+    PHONE_DEBUG2("DialService::dial number:", number);
     TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(number.utf16 ()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeCSVoice);
@@ -41,9 +43,9 @@ int DialService::dial(const QString& number)
 
 int DialService::dial(const QString& number, int contactId)
 {
-    qDebug () << "DialService::dial number:" << number;
-    qDebug () << "DialService::dial contactId:" << contactId;
-    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(number.utf16 ()));
+    PHONE_DEBUG4("DialService::dial number:", number, "contactId:", contactId);
+    QString simplifiedNumber = simplified(number);
+    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(simplifiedNumber.utf16 ()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeCSVoice);
     m_parameters.SetContactId2 (contactId);
@@ -52,7 +54,7 @@ int DialService::dial(const QString& number, int contactId)
 
 void DialService::dialVideo(const QString& number)
 {
-    qDebug () << "DialService::dialVideo number:" << number;
+    PHONE_DEBUG2("DialService::dialVideo number:", number);
     TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(number.utf16 ()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeVideo);
@@ -61,9 +63,9 @@ void DialService::dialVideo(const QString& number)
 
 void DialService::dialVideo(const QString& number, int contactId)
 {
-    qDebug () << "DialService::dialVideo number:" << number;
-    qDebug () << "DialService::dialVideo contactId:" << contactId;
-    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(number.utf16 ()));
+    PHONE_DEBUG4("DialService::dialVideo number:", number, "contactId:", contactId);
+    QString simplifiedNumber = simplified(number);
+    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(simplifiedNumber.utf16 ()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeVideo);
     m_parameters.SetContactId2 (contactId);
@@ -72,7 +74,7 @@ void DialService::dialVideo(const QString& number, int contactId)
 
 void DialService::dialVoip(const QString& address)
 {
-    qDebug () << "DialService::dialVoip number:" << address;
+    PHONE_DEBUG2("DialService::dialVoip number:", address);
     TPtrC16 numberPtr(reinterpret_cast<const TUint16*>(address.utf16 ()));
     m_parameters.SetPhoneNumber(numberPtr);
     m_parameters.SetCallTypeCommand(EPECallTypeVoIP);
@@ -81,8 +83,7 @@ void DialService::dialVoip(const QString& address)
 
 void DialService::dialVoip(const QString& address, int contactId)
 {
-    qDebug () << "DialService::dialVoip number:" << address;
-    qDebug () << "DialService::dialVoip contactId:" << contactId;
+    PHONE_DEBUG4("DialService::dialVoip number:", address, "contactId:", contactId);
     TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(address.utf16 ()));
     m_parameters.SetPhoneNumber(numberPtr);
     m_parameters.SetCallTypeCommand(EPECallTypeVoIP);
@@ -92,8 +93,7 @@ void DialService::dialVoip(const QString& address, int contactId)
 
 void DialService::dialVoipService(const QString& address, int serviceId)
 {
-    qDebug () << "DialService::dialVoipService number:" << address;
-    qDebug () << "DialService::dialVoipService serviceId:" << serviceId;
+    PHONE_DEBUG4("DialService::dialVoipService number:", address, "serviceId:", serviceId);
     TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(address.utf16 ()));
     m_parameters.SetPhoneNumber(numberPtr);
     m_parameters.SetCallTypeCommand(EPECallTypeVoIP);
@@ -104,13 +104,21 @@ void DialService::dialVoipService(const QString& address, int serviceId)
 void DialService::dialVoipService(
         const QString& address, int serviceId, int contactId)
 {
-    qDebug () << "DialService::dialVoipService number:" << address;
-    qDebug () << "DialService::dialVoipService serviceId:" << serviceId;
-    qDebug () << "DialService::dialVoipService contactId:" << contactId;
+    PHONE_DEBUG2("DialService::dialVoipService number:", address);
+    PHONE_DEBUG2("DialService::dialVoipService serviceId:", serviceId);
+    PHONE_DEBUG2("DialService::dialVoipService contactId:", contactId);
     TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(address.utf16 ()));
     m_parameters.SetPhoneNumber(numberPtr);
     m_parameters.SetCallTypeCommand(EPECallTypeVoIP);
     m_parameters.SetServiceIdCommand(serviceId);
     m_parameters.SetContactId2(contactId);
     m_call.HandleDialServiceCall();    
+}
+
+QString DialService::simplified(const QString &number)
+{
+    QString simplifiedNumber = number;
+    QRegExp rx(QString("[\\s,.\\[\\]\\(\\)\\-]"));
+    simplifiedNumber.remove(rx);
+    return simplifiedNumber;
 }

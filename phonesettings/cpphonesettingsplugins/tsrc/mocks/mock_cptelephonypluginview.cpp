@@ -24,7 +24,7 @@
 // -----------------------------------------------------------------------------
 //
 CpTelephonyPluginView::CpTelephonyPluginView(  )
-    //: CpBaseSettingView( /**/ )
+    :CpBaseSettingView(0, 0)
     {
     
     }
@@ -38,24 +38,3 @@ CpTelephonyPluginView::~CpTelephonyPluginView(  )
     {
     
     }
-
-void CpTelephonyPluginView::onConnectionAdded(HbDataFormModelItem *item,
-                                   const QString &signal,
-                                   QObject *receiver,
-                                   const QString &method)
-{
-
-}
-
-void CpTelephonyPluginView::onConnectionRemoved(HbDataFormModelItem *item,
-                                     const QString &signal,
-                                     QObject *receiver,
-                                     const QString &method)
-{
-
-}
-
-void CpTelephonyPluginView::onPrototypeAdded(HbAbstractViewItem *prototype)
-{
-
-}

@@ -17,6 +17,7 @@
 
 #include "ut_cpnetworkplugin.h"
 #include "qtestmains60.h"
+#include <cpsettingformitemdata.h>
 #define private public
 #include "cpnetworkplugin.h"
 #include "cpitemdatahelper.h"
@@ -73,8 +74,9 @@ void UT_CpNetworkPlugin::t_createSettingFormItemData()
 {
     CpItemDataHelper itemDataHelper;
     CpNetworkPlugin* p = (CpNetworkPlugin*)qt_plugin_instance();
-    CpSettingFormItemData *pSettingFormItemData = 
-        p->createSettingFormItemData(itemDataHelper);
+    QList<CpSettingFormItemData*> list;
+    list.append(p->createSettingFormItemData(itemDataHelper));
+    qDeleteAll(list);
 }
 
 

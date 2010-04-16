@@ -41,7 +41,7 @@ SOURCE          cphoneclearblacklist.cpp
 SOURCE          cphonekeys.cpp
 SOURCE          cphonelangsettingmonitor.cpp
 SOURCE          cphonelibrarycontainer.cpp
-SOURCE          cphoneLogger.cpp
+SOURCE          cphonelogger.cpp
 SOURCE          cphonemainresourceresolver.cpp
 SOURCE          cphonemainerrormessageshandler.cpp
 SOURCE          cphonepublishsubscriberao.cpp

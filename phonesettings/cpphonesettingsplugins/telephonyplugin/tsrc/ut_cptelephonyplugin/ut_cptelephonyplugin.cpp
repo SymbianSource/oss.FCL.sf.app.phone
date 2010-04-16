@@ -17,6 +17,7 @@
 
 #include "ut_cptelephonyplugin.h"
 #include "qtestmains60ui.h"
+#include <cpsettingformitemdata.h>
 #define private public
 #include "cptelephonyplugin.h"
 #include "cpitemdatahelper.h"
@@ -76,9 +77,13 @@ void UT_CpTelephonyPlugin::t_memleak()
 void UT_CpTelephonyPlugin::t_createSettingFormItemData()
 {
     CpItemDataHelper itemDataHelper;
-    CpSettingFormItemData *pSettingFormItemData = 
+    QList<CpSettingFormItemData*> items = 
             m_callsplugin->createSettingFormItemData(itemDataHelper);
+    
+    QVERIFY(items.count()==1);
+    qDeleteAll(items);
 }
+
 
 
 QTEST_MAIN_S60UI(UT_CpTelephonyPlugin)

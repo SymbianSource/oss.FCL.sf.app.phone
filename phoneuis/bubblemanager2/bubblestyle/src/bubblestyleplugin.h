@@ -25,6 +25,7 @@
 
 class HbFontSpec;
 class HbTextItem;
+class HbIconItem;
 class BubbleStyleOption;
 class BubbleAnimIconItem;
 
@@ -37,14 +38,17 @@ public:
     BubbleStylePlugin();
     virtual ~BubbleStylePlugin();
 
+protected:
     int primitiveCount() const;
-    HbWidgetBase *createPrimitive( HbStyle::Primitive primitive, QGraphicsItem *parent = 0 ) const;
+    QGraphicsItem *createPrimitive( HbStyle::Primitive primitive, QGraphicsItem *parent = 0 ) const;
     void updatePrimitive( QGraphicsItem *item, HbStyle::Primitive primitive, const QStyleOption *option ) const;
     QString layoutPath() const;
-    void setFont(HbTextItem* item, int primitive, const BubbleStyleOption *option) const;
 
 private:
     void setCallStatusIcons(BubbleAnimIconItem* anim, const BubbleStyleOption *opt) const;
+    void setText(HbTextItem* item, const QString& text, Qt::TextElideMode clip) const;
+    void setFont(HbTextItem* item, int primitive, const BubbleStyleOption *option) const;
+    void setIconColor(HbIconItem* icon) const;
     
 private:
     HbFontSpec* mCliFont;

@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/" >                  
+        <file>themes/icons/hbdefault/scalable/qtg_mono_swap.svg</file>        
+        <file>themes/icons/hbdefault/scalable/qtg_mono_call.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_reject_call.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_end_call.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_hold_call.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_join_call.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_private_call.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_drop_call.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_replace_call.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_send.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_mic_mute.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_mic_unmute.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_dialer.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_loudspeaker.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_contacts.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_mute.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_mobile.svg</file>
+    </qresource>
+</RCC>

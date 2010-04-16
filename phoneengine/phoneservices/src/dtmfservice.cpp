@@ -15,10 +15,10 @@
 *
 */
 
-#include <QDebug>
 #include <xqserviceutil.h>
 #include <e32base.h>
 #include "dtmfservice.h"
+#include "qtphonelog.h"
 
 DTMFService::DTMFService(MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent) : 
     XQServiceProvider(QLatin1String("com.nokia.services.telephony.dtmf"), parent), m_call (call), m_parameters (parameters)
@@ -32,20 +32,20 @@ DTMFService::~DTMFService()
 
 void DTMFService::executeKeySequence(const QString& keySequence)
 {
-    qDebug () << "DTMFService::executeKeySequence keySequence:" << keySequence;
+    PHONE_DEBUG2("DTMFService::executeKeySequence keySequence:", keySequence);
     TPtrC16 keySequencePtr (reinterpret_cast<const TUint16*>(keySequence.utf16 ()));
     m_parameters.SetPhoneNumber (keySequencePtr);   
 }
 
 void DTMFService::playDTMFTone(const QChar& keyToPlay)
 {
-    qDebug () << "DTMFService::playDTMFTone keyToPlay:" << keyToPlay;
+    PHONE_DEBUG2("DTMFService::playDTMFTone keyToPlay:", keyToPlay);
     m_parameters.SetKeyCode(keyToPlay.unicode());
     TRAP_IGNORE( m_call.HandlePlayDTMFL() );
 }
 
 void DTMFService::stopDTMFPlay()
 {
-    qDebug () << "DTMFService::stopDTMFPlay";
+    PHONE_DEBUG("DTMFService::stopDTMFPlay");
     m_call.HandleEndDTMF(); 
 }

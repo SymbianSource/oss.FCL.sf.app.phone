@@ -75,7 +75,6 @@ void CPhoneDataPortMessage::ExecuteL()
     {
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, "CPhoneDataPortMessage::ExecuteL( ) ");
     const TName& dataPortName = iEngineInfo.DataPortName();
-// <-- QT PHONE START -->
     TDataPortPackage dataPortPackage( dataPortName );
     CPhoneMediatorSender::Instance()->IssueCommand( KMediatorVideoTelephonyDomain,
                                                     KCatPhoneToVideotelCommands,
@@ -84,8 +83,6 @@ void CPhoneDataPortMessage::ExecuteL()
                                                               KPhoneToVideotelCmdVersionMinor,
                                                               KPhoneToVideotelCmdVersionBuild ),
                                                     dataPortPackage );
-
-// <-- QT PHONE END -->
     }
 
 //  End of File  

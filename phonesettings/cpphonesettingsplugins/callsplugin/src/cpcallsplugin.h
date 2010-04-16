@@ -17,28 +17,28 @@
 #ifndef CPCALLSPLUGIN_H
 #define CPCALLSPLUGIN_H
 
-#include <cppluginplatinterface.h>
+#include <cpplugininterface.h>
 
 
 /*!
     \class CpCallsPlugin
     \brief The class CpCallsPlugin implements call settings functionality. 
  */
-class CpCallsPlugin: public QObject,public CpPluginPlatInterface
+class CpCallsPlugin: public QObject,public CpPluginInterface
 {
     Q_OBJECT
-    Q_INTERFACES(CpPluginPlatInterface)
+    Q_INTERFACES(CpPluginInterface)
 public:
     
     CpCallsPlugin();
     
     ~CpCallsPlugin();
 
-    /*!
-     From CpPluginPlatInterface.
-     @see CpPluginPlatInterface.
-     */    
-    virtual CpSettingFormItemData *createSettingFormItemData(
-            CpItemDataHelper &itemDataHelper) const;
+    /**
+     * From CpPluginInterface
+     * @see CpPluginInterface.
+     */
+    QList<CpSettingFormItemData*> createSettingFormItemData(
+        CpItemDataHelper &itemDataHelper) const;
 };
 #endif // CPCALLSPLUGIN_H

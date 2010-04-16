@@ -60,4 +60,6 @@ EXPORTS
 	?setVolumeSliderValue@PhoneUIQtView@@UAEXHHHH@Z @ 59 NONAME ; void PhoneUIQtView::setVolumeSliderValue(int, int, int, int)
 	?clearAndHideDialpad@PhoneUIQtView@@UAEXXZ @ 60 NONAME ; void PhoneUIQtView::clearAndHideDialpad(void)
 	?isDisabled@PhoneAction@@QBE_NXZ @ 61 NONAME ; bool PhoneAction::isDisabled(void) const
+	?endKeyLongPress@PhoneUIQtView@@IAEXXZ @ 62 NONAME ; void PhoneUIQtView::endKeyLongPress(void)
+	?longEndKeyPressEvent@PhoneUIQtView@@QAEXXZ @ 63 NONAME ; void PhoneUIQtView::longEndKeyPressEvent(void)
 

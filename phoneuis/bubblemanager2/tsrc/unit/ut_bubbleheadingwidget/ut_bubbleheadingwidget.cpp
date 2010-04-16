@@ -43,8 +43,6 @@ private slots:
     void testTwoLinedHeading();
     void testOneLinedHeading();
 
-    //void testInvalidStylePlugin();
-
 private:
     BubbleHeadingWidget* mHeading;
     HbMainWindow* mMainWindow;
@@ -78,11 +76,12 @@ void ut_BubbleHeadingWidget::testThreeLinedHeading()
     header.setText("",Qt::ElideRight);
     header.setTimerCost("0:00");
     header.setCallState(BubbleManagerIF::Active);
+    header.setCallFlag(BubbleManagerIF::NoCiphering);
     mHeading->setLineCount(3);
     Q_ASSERT(mHeading->lineCount()==3);
     mHeading->readBubbleHeader(header);
     mHeading->show();
-    QTest::qWait(100);
+    QTest::qWait(1000);
     mHeading->updateTimerDisplayNow();
 }
 
@@ -94,6 +93,7 @@ void ut_BubbleHeadingWidget::testTwoLinedHeading()
     header.setText("",Qt::ElideRight);
     header.setTimerCost("0:00");
     header.setCallState(BubbleManagerIF::Active);
+    header.setCallFlag(BubbleManagerIF::NoCiphering);
 
     mHeading->setLineCount(2);
     Q_ASSERT(mHeading->lineCount()==2);
@@ -111,6 +111,7 @@ void ut_BubbleHeadingWidget::testOneLinedHeading()
     header.setText("",Qt::ElideRight);
     header.setTimerCost("0:00");
     header.setCallState(BubbleManagerIF::Active);
+    header.setCallFlag(BubbleManagerIF::NoCiphering);
 
     mHeading->setLineCount(1);
     Q_ASSERT(mHeading->lineCount()==1);
@@ -120,23 +121,6 @@ void ut_BubbleHeadingWidget::testOneLinedHeading()
     QTest::qWait(100);
     mHeading->updateTimerDisplayNow();
 }
-
-/*void ut_BubbleHeadingWidget::testInvalidStylePlugin()
-{
-    // this just shouldn't crash
-    BubbleHeadingWidget *heading =
-        new BubbleHeadingWidget("c:\foobar.dll");
-    HbView* view = mMainWindow->addView(heading);
-    mMainWindow->setCurrentView(view);
-    BubbleHeader header;
-    header.setCli("John Doe",Qt::ElideRight);
-    header.setSecondaryCli("12345",Qt::ElideLeft);
-    header.setText("",Qt::ElideRight);
-    header.setTimerCost("0:00");
-    header.setCallState(BubbleManagerIF::Active);
-    heading->readBubbleHeader(header);
-    heading->show();
-}*/
 
 BUBBLE_TEST_MAIN(ut_BubbleHeadingWidget)
 #include "ut_bubbleheadingwidget.moc"

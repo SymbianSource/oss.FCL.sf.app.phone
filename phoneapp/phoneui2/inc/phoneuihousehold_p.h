@@ -115,6 +115,9 @@ private:
     
     PhoneUIQtViewAdapter* iViewAdapter;
     
+    //List for translators
+    QList<QTranslator*> m_translators;
+    
 };
 
 #endif

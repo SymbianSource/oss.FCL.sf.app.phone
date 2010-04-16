@@ -44,11 +44,13 @@ CpDivertPlugin::~CpDivertPlugin()
 /*!
     CpDivertPlugin::createSettingFormItemData.
  */
-CpSettingFormItemData *CpDivertPlugin::createSettingFormItemData(
+QList<CpSettingFormItemData*> CpDivertPlugin::createSettingFormItemData(
         CpItemDataHelper &itemDataHelper) const
 {
     DPRINT;
-    return new CpDivertPluginGroup(itemDataHelper);
+    QList<CpSettingFormItemData*> ret;
+    ret.append(new CpDivertPluginGroup(itemDataHelper));
+    return ret;
 }
 
 Q_EXPORT_PLUGIN2(cpdivertplugin, CpDivertPlugin);

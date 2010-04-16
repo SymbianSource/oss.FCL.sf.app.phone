@@ -24,10 +24,6 @@
 #include <w32std.h>
 #include <remconcoreapitargetobserver.h>
 #include <MProfileEngine.h>
-// <-- QT PHONE START -->
-//#include <bmbubblemanager.h>
-// <-- QT PHONE START -->
-
 #include "mphonestate.h"
 #include "mphoneviewcommandhandle.h"
 #include "cphonecbamanager.h"
@@ -645,9 +641,7 @@ class CPhoneState :
         /**
         * Sets the call header type used in the call bubble.
         */
-// <-- QT PHONE START -->
         IMPORT_C void SetCallHeaderType( TInt aCallHeaderType );
-// <-- QT PHONE END -->
 
         /**
         * Handles situation when hash key has been kept down long
@@ -752,6 +746,11 @@ class CPhoneState :
         * Returns customized dialer CBA resource id
         */
         IMPORT_C TInt CustomizedDialerCbaResourceIdL();
+        
+        /**
+        * Opens soft reject message editor.
+        */
+        IMPORT_C virtual void OpenSoftRejectMessageEditorL();
 
     protected: // NumberEntry functions.
 
@@ -848,6 +847,11 @@ class CPhoneState :
          * Sets toolbar loudspeaker button enabled.
          */
          IMPORT_C void SetToolbarButtonLoudspeakerEnabled();
+         
+         /**
+         * Sets state of TitleBar Back button 
+         */
+         IMPORT_C void SetBackButtonActive( TBool aActive );
 
     protected:
 

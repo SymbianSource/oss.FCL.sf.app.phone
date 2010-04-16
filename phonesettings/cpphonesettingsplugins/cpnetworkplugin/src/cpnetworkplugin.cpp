@@ -40,15 +40,17 @@ CpNetworkPlugin::~CpNetworkPlugin()
 /*!
   CpNetworkPlugin::createSettingFormItemData
  */
-CpSettingFormItemData *CpNetworkPlugin::createSettingFormItemData(
-    CpItemDataHelper &itemDataHelper) const
+QList<CpSettingFormItemData*> CpNetworkPlugin::createSettingFormItemData(
+        CpItemDataHelper &itemDataHelper) const
 {
     DPRINT;
-    
-    return new CpSettingFormEntryItemDataImpl<CpNetworkPluginView>(
-        itemDataHelper,
-        hbTrId("Mobile network"), 
-        hbTrId("Mobile network settings"));
+
+    QList<CpSettingFormItemData*> ret;
+    ret.append(new CpSettingFormEntryItemDataImpl<CpNetworkPluginView>(
+            itemDataHelper,
+            hbTrId("Mobile network"), 
+            hbTrId("Mobile network settings")));
+    return ret;
 }
 
 Q_EXPORT_PLUGIN2(CpNetworkPlugin, CpNetworkPlugin);

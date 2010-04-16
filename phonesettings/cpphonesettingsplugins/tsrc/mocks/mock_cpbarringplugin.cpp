@@ -16,6 +16,7 @@
 */
 #include <QDebug>
 #include "cpbarringplugin.h"
+#include <cpsettingformitemdata.h>
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -43,9 +44,9 @@ CpBarringPlugin::~CpBarringPlugin(  )
 // CpBarringPlugin::createSettingFormItemData
 // -----------------------------------------------------------------------------
 //
-CpSettingFormItemData * CpBarringPlugin::createSettingFormItemData( 
-        CpItemDataHelper & itemDataHelper ) const
+QList<CpSettingFormItemData*> CpBarringPlugin::createSettingFormItemData(
+        CpItemDataHelper &itemDataHelper) const
     {
     Q_UNUSED( itemDataHelper )
-    return NULL;
+    return QList<CpSettingFormItemData *> ();
     }

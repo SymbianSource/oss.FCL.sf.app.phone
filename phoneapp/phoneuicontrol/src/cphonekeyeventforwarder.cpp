@@ -32,14 +32,6 @@
 #include "phonelogger.h"
 #include "phoneui.pan"
 
-// CONSTANTS
-
-//Avkon P&S keys
-// <-- QT PHONE START-->
-//const TUid KCRUidAvkon = { 0x101F876E };
-//const TUint32 KAknKeyBoardLayout = 0x0000000B;
-// <-- QT PHONE END-->
-
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
@@ -229,12 +221,7 @@ TBool CPhoneKeyEventForwarder::ConvertHalfQwertySpecialChar( TUint& aCode,
         "CPhoneKeyEventForwarder::ConvertHalfQwertySpecialChar");
 
     TBool ret( EFalse );
-// <-- QT PHONE START-->    
-    /*TInt keyboard( CPhonePubSubProxy::Instance()->Value(
-          KCRUidAvkon,
-          KAknKeyBoardLayout ) );*/
     TInt keyboard(KErrNotFound);
-// <-- QT PHONE END-->
     
     if( keyboard == EPtiKeyboardHalfQwerty )
         {

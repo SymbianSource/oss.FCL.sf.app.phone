@@ -17,29 +17,27 @@
 
 #include "ut_cptelephonypluginview.h"
 #include "qtestmains60ui.h"
-#include <CpPluginPlatInterface.h>
+#include <cpplugininterface.h>
 #include <cpitemdatahelper.h>
-#include <CpSettingFormItemData.h>
+#include <cpsettingformitemdata.h>
 #include <smcmockclassincludes.h>
-#include <HbDataForm.h>
-#include <HbDataFormModel.h>
+#include <hbdataform.h>
+#include <hbdataformmodel.h>
 #include <hbsettingformitem.h>
-#define private public
 #include "cptelephonypluginview.h"
 
 
-class DummyPlugin : public CpPluginPlatInterface
+class DummyPlugin : public CpPluginInterface
 {
 public:
     DummyPlugin(){}
     ~DummyPlugin(){}
     
-    CpSettingFormItemData *createSettingFormItemData(
+    QList<CpSettingFormItemData*> createSettingFormItemData(
             CpItemDataHelper &itemDataHelper) const
     {
-    SMC_MOCK_METHOD1( CpSettingFormItemData*, CpItemDataHelper &, itemDataHelper )
+        SMC_MOCK_METHOD1( QList<CpSettingFormItemData*>, CpItemDataHelper &, itemDataHelper )
     }
-    
 };
 
 /*!
@@ -67,17 +65,15 @@ UT_CpTelephonyPluginView::~UT_CpTelephonyPluginView()
 void UT_CpTelephonyPluginView::init()
 {
     initialize();
-    CpPluginPlatInterface *nullPlugin=0;
-    expect("Tools::loadCpPlugin").with(QString("cpcallsplugin")).returns(nullPlugin);
+    CpPluginInterface *nullPlugin=0;
+    expect("CpPluginLoader::loadCpPlugin").with(QString("cpcallsplugin")).returns(nullPlugin);
     DummyPlugin *ret = new DummyPlugin;
-    //CpSettingFormItemData *nullItemData=0;
-    //expect("Tools::loadCpPlugin").with(QString("cpdivertplugin")).returns(ret);
-    //expect("DummyPlugin::createSettingFormItemData").returns(nullItemData);
     
     //ret = new DummyPlugin;
-    CpSettingFormItemData *itemData = new CpSettingFormItemData;
-    expect("Tools::loadCpPlugin").with(QString("cpdivertplugin")).returns(ret); // cpnetworkplugin
-    expect("DummyPlugin::createSettingFormItemData").returns(itemData);
+    QList<CpSettingFormItemData*> list;
+    list.append(new CpSettingFormItemData);
+    expect("CpPluginLoader::loadCpPlugin").with(QString("cpdivertplugin")).returns(ret); // cpnetworkplugin
+    expect("DummyPlugin::createSettingFormItemData").returns(list);
     
     m_callspluginview = new CpTelephonyPluginView;
     QVERIFY( verify() );
@@ -99,51 +95,20 @@ void UT_CpTelephonyPluginView::cleanup()
  */
 void UT_CpTelephonyPluginView::t_memleak()
 {
-    CpSettingFormItemData *itemData = new CpSettingFormItemData;
+    QList<CpSettingFormItemData*> list;
+    list.append(new CpSettingFormItemData);
     DummyPlugin *ret = new DummyPlugin;
-    expect("Tools::loadCpPlugin").with(QString("cpcallsplugin")).returns(ret);
-    expect("DummyPlugin::createSettingFormItemData").returns(itemData);
+    expect("CpPluginLoader::loadCpPlugin").with(QString("cpcallsplugin")).returns(ret);
+    expect("DummyPlugin::createSettingFormItemData").returns(list);
     
     ret = new DummyPlugin;
-    expect("Tools::loadCpPlugin").with(QString("cpdivertplugin")).returns(ret);
-    expect("DummyPlugin::createSettingFormItemData").returns(itemData);
+    expect("CpPluginLoader::loadCpPlugin").with(QString("cpdivertplugin")).returns(ret);
+    expect("DummyPlugin::createSettingFormItemData").returns(list);
     
-    //CpPluginPlatInterface *nullPlugin=0;
-    //expect("Tools::loadCpPlugin").with(QString("cpnetworkplugin")).returns(nullPlugin);
     
     CpTelephonyPluginView *tmp = new CpTelephonyPluginView;
     QVERIFY( verify() );
     delete tmp;
-}
-
-/*!
-  UT_CpTelephonyPluginView::t_onConnectionRemoved
- */
-void UT_CpTelephonyPluginView::t_onConnectionRemoved()
-{
-    HbDataForm *w = m_callspluginview->settingForm();
-    HbDataFormModel *m = static_cast<HbDataFormModel *>(w->model());
-
-    m_callspluginview->m_helper->addConnection(
-            m->item(0),SIGNAL(currentIndexChanged(int)),
-            this, SLOT(tmp(int)));
-    
-    m_callspluginview->m_helper->removeConnection(
-            m->item(0),SIGNAL(currentIndexChanged(int)),
-            this, SLOT(tmp(int)));
-}
-
-/*!
-  UT_CpTelephonyPluginView::t_onPrototypeAdded
- */
-void UT_CpTelephonyPluginView::t_onPrototypeAdded()
-{
-    HbSettingFormItem* item= new HbSettingFormItem;
-    m_callspluginview->m_helper->addItemPrototype(item);
-    QVERIFY( m_callspluginview->settingForm()->
-        itemPrototypes().contains(item) );
-    
-    delete item;
 }
 
 

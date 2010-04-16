@@ -16,6 +16,7 @@
 */
 #include <QDebug>
 #include "cpnetworkplugin.h"
+#include <cpsettingformitemdata.h>
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -43,9 +44,9 @@ CpNetworkPlugin::~CpNetworkPlugin(  )
 // CpNetworkPlugin::createSettingFormItemData
 // -----------------------------------------------------------------------------
 //
-CpSettingFormItemData * CpNetworkPlugin::createSettingFormItemData( 
-        CpItemDataHelper & itemDataHelper ) const
+QList<CpSettingFormItemData*> CpNetworkPlugin::createSettingFormItemData(
+        CpItemDataHelper &itemDataHelper) const
     {
     Q_UNUSED( itemDataHelper )
-    return NULL;
+    return QList<CpSettingFormItemData *> ();
     }

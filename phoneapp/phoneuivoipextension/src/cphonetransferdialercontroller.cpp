@@ -22,22 +22,10 @@
 #include <akntoolbar.h>
 #include <AknsItemID.h>
 #include <StringLoader.h>
-
-
-// <-- QT PHONE START -->
-//#include <phoneui.mbg>
 #include "phoneresourceids.h"
-//#include <phoneui.rsg>
-//#include <phoneuivoip.rsg>
-// <-- QT PHONE END -->
-
 #include "phoneui.pan"
 #include "phonelogger.h"
-// <-- QT PHONE START -->
-//#include "cphonebubblewrapper.h" // For KDC_APP_BITMAP_DIR
 #include <data_caging_path_literals.hrh>
-// <-- QT PHONE END -->
-
 #include "cphonetransferdialercontroller.h"
 #include "cphonemainresourceresolver.h"
 #include "phonerssvoip.h"
@@ -48,33 +36,6 @@
 // CONSTANTS
 _LIT ( KPhoneMifFileName, "phoneui.mif" );
 
-// Number of buttons 
-const TInt KButtonCount = 2;
-
-// <-- QT PHONE START -->
-/*
-class TPhoneDialerToolbarButton 
-    {
-public:
-    TInt iIconIndex;
-    TInt iMaskIndex;
-    TInt iCommandId;    
-    };
-
-const TPhoneDialerToolbarButton bArray[KButtonCount] = 
-        {  
-            { EMbmPhoneuiQgn_indi_button_send_dtmf,
-              EMbmPhoneuiQgn_indi_button_send_dtmf_mask,
-              EPhoneCmdTransferDialerOk
-            },
-            { EMbmPhoneuiQgn_indi_dialer_contacts,
-              EMbmPhoneuiQgn_indi_dialer_contacts_mask,
-              EPhoneCmdTransferDialerSearch
-            }                 
-        };  
-        
- */
-// <-- QT PHONE END -->
 // ================= MEMBER FUNCTIONS =======================
 
 // C++ default constructor can NOT contain any code, that
@@ -126,31 +87,6 @@ void CPhoneTransferDialerController::InitializeL( CAknToolbar& aToolbar )
                 "Toolbar control count:=%d", 
                 aToolbar.CountComponentControls());
         iToolbar = &aToolbar;
-        // Create transfer specific buttons and add them to the 
-        // toolbar starting from index 0
- // <-- QT PHONE START --> 
-        //CAknButton* button( NULL );
-  
- /*
-        for( TInt i = 0; i < KButtonCount; i++ )
-            {
-           
-            TAknsItemID skinId = SkinId( bArray[i].iIconIndex );
-            // Load tooltip text.
-            HBufC* tooltipText = GetTooltipTextL( bArray[i].iCommandId );  
-            CleanupStack::PushL( tooltipText );
-            button = CreateButtonLC(
-                    bArray[i].iIconIndex, 
-                    bArray[i].iMaskIndex, 
-                    *tooltipText, 
-                    skinId );
-            // Toolbar takes ownership of the button                    
-            iToolbar->AddItemL( button, EAknCtButton, bArray[i].iCommandId, 0, i );
-            CleanupStack::Pop( button );
-            CleanupStack::PopAndDestroy( tooltipText );
-            } 
-            */
- // <-- QT PHONE END -->        
         iIsInitialized = ETrue;
         }
    
@@ -224,20 +160,12 @@ void CPhoneTransferDialerController::ShowButtons( TBool aShow )
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneTransferDialerController::ShowButtons()");
     __ASSERT_DEBUG( iToolbar, Panic( EPhoneCtrlInvariant ) );
-    for( TInt i = 0; i < KButtonCount; i++ )
-        {
-// <-- QT PHONE START -->   
-        //iToolbar->HideItem( bArray[ i ].iCommandId, !aShow, EFalse );
-        }
     if ( aShow )
         {
         iToolbar->SetItemDimmed( EPhoneCmdTransferDialerOk, ETrue, EFalse ); 
         iToolbar->SetItemDimmed( EPhoneCmdTransferDialerSearch, EFalse, EFalse ); 
         iToolbar->SetItemDimmed( EPhoneDialerCmdClear, ETrue, EFalse ); 
         }
-    
-    //iToolbar->DrawDeferred();
-// <-- QT PHONE END --> 
     }
 
 // ---------------------------------------------------------------------------
@@ -314,23 +242,6 @@ HBufC* CPhoneTransferDialerController::GetTooltipTextL( TInt aCommandId ) const
 TAknsItemID CPhoneTransferDialerController::SkinId( TInt /*aIconIndex*/ ) const
     {
     TAknsItemID skinId;
- // <-- QT PHONE START -->
- /*
-    switch ( aIconIndex )
-        {
-        
-        case EMbmPhoneuiQgn_indi_button_send_dtmf:
-            skinId = KAknsIIDQgnIndiButtonSendDtmf;
-            break;
-        case EMbmPhoneuiQgn_indi_dialer_contacts:
-            skinId = KAknsIIDQgnIndiDialerContacts;
-            break;                     
-        default:
-            skinId = KAknsIIDNone;        
-            break;            
-        }
-  */
-  skinId = KAknsIIDNone; 
-// <-- QT PHONE END -->     
+    skinId = KAknsIIDNone; 
     return skinId;  
     }

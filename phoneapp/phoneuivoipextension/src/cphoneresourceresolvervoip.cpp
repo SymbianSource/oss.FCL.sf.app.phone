@@ -19,10 +19,7 @@
 // INCLUDE FILES
 #include <bautils.h>
 #include <AknUtils.h>
-// <-- QT PHONE START -->
-//#include <phoneuivoip.rsg>
 #include "phoneresourceids.h"
-// <-- QT PHONE END -->
 #include <data_caging_path_literals.hrh>
 #include "cphoneresourceresolvervoip.h"
 #include "cphonemainresourceresolver.h"
@@ -47,20 +44,6 @@ CPhoneResourceResolverVoIP::CPhoneResourceResolverVoIP()
 //
 void CPhoneResourceResolverVoIP::ConstructL()
     {
-    // Add resource file
-    // Create path to default resource file name
-// <-- QT PHONE START -->    
-    /*TFileName path( KDriveZ );
-    path.Append( KDC_APP_RESOURCE_DIR );
-    path.Append( KPhoneResourceFileVoIP );
-
-    RFs &fsSession= iEnv.FsSession();
-    BaflUtils::NearestLanguageFile( fsSession, path );
-    iVoIPResourceOffset = iEnv.AddResourceFileL( path );
-
-    LoadGSMResourcesL();*/
-// <-- QT PHONE END -->    
-    
     // Register resolver
     CPhoneMainResourceResolver::Instance()->RegisterResolver( this );
     }
@@ -83,9 +66,6 @@ CPhoneResourceResolverVoIP* CPhoneResourceResolverVoIP::NewL()
 // Destructor
 CPhoneResourceResolverVoIP::~CPhoneResourceResolverVoIP()
     {
-// <-- QT PHONE START -->    
-//    iEnv.DeleteResourceFile( iVoIPResourceOffset );
-// <-- QT PHONE END -->    
     }
 
 // -----------------------------------------------------------------------------
@@ -211,9 +191,6 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
             retVal = R_VOIP_CALL_TYPE_INTERNET;
             break;
         case EPhoneVoIPNumberAcqXSPCall:
-// <-- QT PHONE START -->    
-            //retVal = R_PHONEUI_NUMBERACQ_OPTIONS_CALL_MENU_ITEM_XSP;
-// <-- QT PHONE END -->
             break;
         case EPhoneVoIPUnattendedTransferOption:  
             retVal = R_VOIP_UNATTENDED_TRANSFER_OPTION;       

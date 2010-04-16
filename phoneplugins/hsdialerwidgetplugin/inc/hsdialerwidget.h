@@ -30,7 +30,7 @@
 
 HOMESCREEN_TEST_CLASS(TestDialerWidgetPlugin)
 
-class XQSettingsManager;
+class XQCallInfo;
 
 class HsDialerWidget : public HbWidget
 {
@@ -51,7 +51,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    XQSettingsManager *mSetManager;
+    XQCallInfo *mXQCallInfo;
     HOMESCREEN_TEST_FRIEND_CLASS(TestDialerWidgetPlugin)
 };
 

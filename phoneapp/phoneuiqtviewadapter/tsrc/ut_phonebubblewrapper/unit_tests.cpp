@@ -109,6 +109,7 @@ private slots:
     void testSetState ();
     void testBubbleId ();
     void testSetDivert();
+    void testSetCiphering();
     void testActiveCallCount();
     void testCallStates ();
     void testBubbles ();
@@ -255,59 +256,59 @@ void TestPhoneBubbleWrapper::testRemoveCallHeader ()
 void TestPhoneBubbleWrapper::testSetState ()
 {
     m_wrapper->setState (0, 1, EPEStateIdle);
-    QCOMPARE (m_int, 1);	
-    QCOMPARE (m_bubbleState, BubbleManagerIF::Disconnected);
-    QCOMPARE (m_wrapper->callId (EPEStateIdle), 0);
+    QCOMPARE(m_int, 1);	
+    QCOMPARE(m_bubbleState, BubbleManagerIF::Disconnected);
+    QCOMPARE(m_wrapper->callId (EPEStateIdle), 0);
     
     m_wrapper->setState (0, 2, EPEStateDialing);
-    QCOMPARE (m_int, 2);	
-    QCOMPARE (m_bubbleState, BubbleManagerIF::Outgoing);
-    QCOMPARE (m_wrapper->callId (EPEStateDialing), 0);
+    QCOMPARE(m_int, 2);	
+    QCOMPARE(m_bubbleState, BubbleManagerIF::Outgoing);
+    QCOMPARE(m_wrapper->callId (EPEStateDialing), 0);
 
     m_wrapper->setState (0, 3, EPEStateRinging);
-    QCOMPARE (m_int, 3);	
-    QCOMPARE (m_bubbleState, BubbleManagerIF::Incoming);
-    QCOMPARE (m_wrapper->callId (EPEStateRinging), 0);
+    QCOMPARE(m_int, 3);	
+    QCOMPARE(m_bubbleState, BubbleManagerIF::Incoming);
+    QCOMPARE(m_wrapper->callId (EPEStateRinging), 0);
 
     m_wrapper->setState (0, 4, EPEStateConnecting);
-    QCOMPARE (m_int, 4);	
-    QCOMPARE (m_bubbleState, BubbleManagerIF::Alerting);
-    QCOMPARE (m_wrapper->callId (EPEStateConnecting), 0);
+    QCOMPARE(m_int, 4);	
+    QCOMPARE(m_bubbleState, BubbleManagerIF::Alerting);
+    QCOMPARE(m_wrapper->callId (EPEStateConnecting), 0);
 
     m_wrapper->setState (0, 5, EPEStateConnected);
-    QCOMPARE (m_int, 5);	
-    QCOMPARE (m_bubbleState, BubbleManagerIF::Active);
-    QCOMPARE (m_wrapper->callId (EPEStateConnected), 0);
+    QCOMPARE(m_int, 5);	
+    QCOMPARE(m_bubbleState, BubbleManagerIF::Active);
+    QCOMPARE(m_wrapper->callId (EPEStateConnected), 0);
 
     m_wrapper->setState (0, 6, EPEStateHeld);
-    QCOMPARE (m_int, 6);	
-    QCOMPARE (m_bubbleState, BubbleManagerIF::OnHold);
-    QCOMPARE (m_wrapper->callId (EPEStateHeld), 0);
+    QCOMPARE(m_int, 6);	
+    QCOMPARE(m_bubbleState, BubbleManagerIF::OnHold);
+    QCOMPARE(m_wrapper->callId (EPEStateHeld), 0);
 
     m_wrapper->setState (0, 7, EPEStateDisconnecting);
-    QCOMPARE (m_int, 7);	
-    QCOMPARE (m_bubbleState, BubbleManagerIF::Disconnected);
-    QCOMPARE (m_wrapper->callId (EPEStateDisconnecting), 0);
+    QCOMPARE(m_int, 7);	
+    QCOMPARE(m_bubbleState, BubbleManagerIF::Disconnected);
+    QCOMPARE(m_wrapper->callId (EPEStateDisconnecting), 0);
 
     m_wrapper->setState (0, 8, EPEStateConferenceIdle);
-    QCOMPARE (m_int, 8);	
-    QCOMPARE (m_bubbleState, BubbleManagerIF::Disconnected);
-    QCOMPARE (m_wrapper->callId (EPEStateConferenceIdle), 0);
+    QCOMPARE(m_int, 8);	
+    QCOMPARE(m_bubbleState, BubbleManagerIF::Disconnected);
+    QCOMPARE(m_wrapper->callId (EPEStateConferenceIdle), 0);
 
     m_wrapper->setState (0, 9, EPEStateConnectedConference);
-    QCOMPARE (m_int, 9);	
-    QCOMPARE (m_bubbleState, BubbleManagerIF::Active);
-    QCOMPARE (m_wrapper->callId (EPEStateConnectedConference), 0);
+    QCOMPARE(m_int, 9);	
+    QCOMPARE(m_bubbleState, BubbleManagerIF::Active);
+    QCOMPARE(m_wrapper->callId (EPEStateConnectedConference), 0);
 
     m_wrapper->setState (0, 10, EPEStateHeldConference);
-    QCOMPARE (m_int, 10);	
-    QCOMPARE (m_bubbleState, BubbleManagerIF::OnHold);
-    QCOMPARE (m_wrapper->callId (EPEStateHeldConference), 0);
+    QCOMPARE(m_int, 10);	
+    QCOMPARE(m_bubbleState, BubbleManagerIF::OnHold);
+    QCOMPARE(m_wrapper->callId (EPEStateHeldConference), 0);
     
     m_wrapper->setState (0, 11, EPEStateUnknown);
-    QCOMPARE (m_int, 11);	
-    QCOMPARE (m_bubbleState, BubbleManagerIF::None);
-    QCOMPARE (m_wrapper->callId (EPEStateUnknown), 0);
+    QCOMPARE(m_int, 11);	
+    QCOMPARE(m_bubbleState, BubbleManagerIF::None);
+    QCOMPARE(m_wrapper->callId (EPEStateUnknown), 0);
 
     m_wrapper->createCallHeader (0);
     int bubble = m_wrapper->createCallHeader (1);
@@ -343,6 +344,27 @@ void TestPhoneBubbleWrapper::testSetDivert ()
     QCOMPARE (m_int, 1);
     QCOMPARE (m_callFlags, BubbleManagerIF::Diverted);
     QVERIFY (m_set == true);    
+}
+
+void TestPhoneBubbleWrapper::testSetCiphering()
+{
+    m_wrapper->setCiphering(2, false, false);
+    QVERIFY(m_setCallFlagCalled == true);
+    QCOMPARE(m_callFlags, (int)BubbleManagerIF::NoCiphering);
+    QVERIFY(m_int == 2);
+    QVERIFY(m_set == false);        
+    
+    m_wrapper->setCiphering(2, true, true);
+    QVERIFY(m_setCallFlagCalled == true);
+    QCOMPARE(m_callFlags, (int)BubbleManagerIF::NoCiphering);
+    QVERIFY(m_int == 2);
+    QVERIFY(m_set == false);    
+
+    m_wrapper->setCiphering(2, true, false);
+    QVERIFY(m_setCallFlagCalled == true);
+    QCOMPARE(m_callFlags,  (int)BubbleManagerIF::NoCiphering);
+    QVERIFY(m_int == 2);
+    QVERIFY(m_set == true);        
 }
 
 void TestPhoneBubbleWrapper::testActiveCallCount ()

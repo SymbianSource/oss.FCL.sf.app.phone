@@ -17,11 +17,7 @@
 
 
 // INCLUDE FILES
-// <-- QT PHONE START -->
-//#include <mcauireconnectqueryobserver.h>
-// <-- QT PHONE END -->
 #include <mpeengineinfo.h>
-
 #include "cphonereconnectquery.h"
 #include "phoneconstants.h"
 #include "phonelogger.h"
@@ -30,10 +26,6 @@
 #include "cphonestatehandle.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparaminteger.h"
-// <-- QT PHONE START -->
-//#include "tphonecmdparammessageeditor.h"
-//#include "tphonecmdparamreconnectquery.h"
-// <-- QT PHONE END -->
 #include "cphonemainresourceresolver.h"
 
 // ================= MEMBER FUNCTIONS =======================
@@ -111,19 +103,6 @@ EXPORT_C void CPhoneReconnectQuery::ShowReconnectQueryL( TBool aShowVideo )
 void CPhoneReconnectQuery::HandleTimeOutL()
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneReconnectQuery::HandleTimeOutL( ) ");
-// <-- QT PHONE START -->
-/* TPhoneCmdParamReconnectQuery reconQueryParam( *this );
-    // Recipient number to CallUIs reconnect query in case message selected
-    TPtrC phoneNumber( CPhoneStateHandle::Instance()->StateMachine()->
-        PhoneEngineInfo()->PhoneNumber() );
-    reconQueryParam.SetPhoneNumber( phoneNumber );
-    reconQueryParam.SetIncludeVideoOption( iIncludeVideo );
-    // Display reconnect query
-    CPhoneStateHandle::Instance()->ViewCommandHandle()->
-        ExecuteCommandL( EPhoneViewShowQuery, &reconQueryParam );
-    iDisplayingQuery = ETrue;*/
-// <-- QT PHONE END -->
-
     }
 
 // -----------------------------------------------------------

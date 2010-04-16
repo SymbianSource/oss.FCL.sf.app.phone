@@ -25,7 +25,7 @@ symbian {
     DEFINES += BUILD_PARSERRECOGNIZER
     
     INCLUDEPATH += ../../inc \
-                   ../phonemodel/inc \
+                   ../phonemodel/inc 
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     
     parserDefFiles = \

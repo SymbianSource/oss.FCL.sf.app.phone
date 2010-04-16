@@ -70,11 +70,11 @@ void ut_BubbleButtonStyle::testPushButtonFrame()
 
     mStyle->setButtonColor(BubbleButtonStyle::Green);
     mStyle->updatePrimitive(item,HbStyle::P_PushButton_background,&option);
-    QVERIFY(item->frameDrawer().frameGraphicsName()==":/resources/qtg_fr_btn_green_pressed");
+    QVERIFY(item->frameDrawer().frameGraphicsName()=="qtg_fr_btn_green_pressed");
 
     mStyle->setButtonColor(BubbleButtonStyle::Red);
     mStyle->updatePrimitive(item,HbStyle::P_PushButton_background,&option);
-    QVERIFY(item->frameDrawer().frameGraphicsName()==":/resources/qtg_fr_btn_red_pressed");
+    QVERIFY(item->frameDrawer().frameGraphicsName()=="qtg_fr_btn_red_pressed");
 
     // Enabled OFF
     option.state &= ~QStyle::State_On;
@@ -86,11 +86,11 @@ void ut_BubbleButtonStyle::testPushButtonFrame()
 
     mStyle->setButtonColor(BubbleButtonStyle::Green);
     mStyle->updatePrimitive(item,HbStyle::P_PushButton_background,&option);
-    QVERIFY(item->frameDrawer().frameGraphicsName()==":/resources/qtg_fr_btn_green_normal");
+    QVERIFY(item->frameDrawer().frameGraphicsName()=="qtg_fr_btn_green_normal");
 
     mStyle->setButtonColor(BubbleButtonStyle::Red);
     mStyle->updatePrimitive(item,HbStyle::P_PushButton_background,&option);
-    QVERIFY(item->frameDrawer().frameGraphicsName()==":/resources/qtg_fr_btn_red_normal");
+    QVERIFY(item->frameDrawer().frameGraphicsName()=="qtg_fr_btn_red_normal");
 
     // Disabled
     option.state &= ~QStyle::State_Enabled;

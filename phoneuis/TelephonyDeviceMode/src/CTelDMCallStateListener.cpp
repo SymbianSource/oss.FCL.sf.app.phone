@@ -18,9 +18,9 @@
 
 
 // INCLUDE FILES
-#include    "CTelDMCallStateListener.h"
-#include    "MTelDMCallStateObserver.h"
-#include    "MTelDMAccessory.h"
+#include    "cteldmcallstatelistener.h"
+#include    "mteldmcallstateobserver.h"
+#include    "mteldmaccessory.h"
 
 #include    <ctsydomainpskeys.h>
 

@@ -89,4 +89,6 @@ EXPORTS
 	_ZThn28_N13PhoneUIQtView27clearParticipantListActionsEv @ 88 NONAME
 	_ZThn8_N13PhoneUIQtViewD0Ev @ 89 NONAME
 	_ZThn8_N13PhoneUIQtViewD1Ev @ 90 NONAME
+	_ZN13PhoneUIQtView15endKeyLongPressEv @ 91 NONAME
+	_ZN13PhoneUIQtView20longEndKeyPressEventEv @ 92 NONAME
 

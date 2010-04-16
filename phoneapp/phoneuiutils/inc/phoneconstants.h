@@ -236,7 +236,7 @@ _LIT( KPhoneLogFileName, "PhoneUI.log" );
 
 // Paths to CentRep
 _LIT( KGSMProtocol, "phoneuistates.dll" );
-_LIT( KVoIPExtension, "PhoneUIVoIPExtension.dll" );
+_LIT( KVoIPExtension, "phoneuivoipextension.dll" );
 
 // Literals for formatting log messages
 _LIT( KPEDefaultMsgToPhoneUI,   "PE ----> PHONEUI <%S> message from PE. CallId: %d.");
@@ -430,7 +430,7 @@ const TInt KEventIfVersionBuild = 0;
 const TInt KPhoneUiMediatorIfTimeout = 10000;
 
 // Name of Call UI dll which is loaded polymorficly in CPhoneQueryController
-_LIT( KPhoneCaUiLoadedLib, "CaUiEngine.dll" );
+_LIT( KPhoneCaUiLoadedLib, "cauiengine.dll" );
 
 // CPhoneTextQuery constants
 const TInt KLeftCbaId = 0;
@@ -489,6 +489,8 @@ const TInt KPhoneMaxParamLength = 10;
 // Video call setup failed query timeout
 const TInt KPhoneVideoCallSetupFailedQueryTimeout = 5; 
 
+// Key event value for long press
+const TInt EEventLongPress = 1100;
 
 #endif  // PHONECONSTANTS_H
 

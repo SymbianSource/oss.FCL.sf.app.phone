@@ -23,10 +23,6 @@
 //  INCLUDES
 #include    <e32base.h>
 
-// FORWARD DECLARATIONS
-// <-- QT PHONE START --> 
-//class CCoUtlInterface;
-// <-- QT PHONE END -->
  
 // CLASS DECLARATION
 
@@ -76,10 +72,6 @@ class CPEGprsTermination
         void DoCancel();
 
     private:
-// <-- QT PHONE START --> 
-        // Owned GPRS termination instance.
-        //CCoUtlInterface* iInterface;
-// <-- QT PHONE END --> 
 
     };
 

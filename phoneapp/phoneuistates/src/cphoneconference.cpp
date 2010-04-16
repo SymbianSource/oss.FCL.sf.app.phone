@@ -260,13 +260,7 @@ TBool CPhoneConference::HandleCommandL( TInt aCommand )
 //
 void CPhoneConference::UpdateInCallCbaL()
     {
-// <-- QT PHONE START -->
-    //if ( iViewCommandHandle->HandleCommandL( EPhoneViewIsConferenceInExpandedMode ) 
-    //    != EPhoneViewResponseSuccess )
-    //    {
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
-    //    }
-// <-- QT PHONE END -->    
     }
 
 // -----------------------------------------------------------
@@ -497,9 +491,7 @@ void CPhoneConference::HandleHeldConferenceL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::HandleHeldConferenceL()");
     TPhoneCmdParamCallHeaderData callHeaderParam;
-    // <-- QT PHONE START --> 
     callHeaderParam.SetCallState( EPEStateHeldConference );
-    // <-- QT PHONE END -->
     
     TInt callLabelId;
     TBuf<KPhoneCallHeaderLabelMaxLength> labelText( KNullDesC );
@@ -524,9 +516,7 @@ void CPhoneConference::HandleHeldConferenceL( TInt aCallId )
         }
     
     SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
-    // <-- QT PHONE START --> 
     SetTouchPaneButtons( EPhoneConferenceButtons );
-    // <-- QT PHONE END -->
     UpdateInCallCbaL();
     }
 
@@ -581,9 +571,7 @@ void CPhoneConference::HandleConnectedConferenceL()
         "CPhoneConference::HandleConnectedConferenceL()");
     // Update call state
     TPhoneCmdParamCallHeaderData callHeaderParam;
-    // <-- QT PHONE START -->
     callHeaderParam.SetCallState( EPEStateConnectedConference );
-    // <-- QT PHONE END -->
     
     TBuf<KPhoneCallHeaderLabelMaxLength> conferenceText( KNullDesC );
     TInt callLabelId = CPhoneMainResourceResolver::Instance()->
@@ -609,9 +597,7 @@ void CPhoneConference::HandleConnectedConferenceL()
         }
     
     SetTouchPaneButtonEnabled( EPhoneInCallCmdPrivate );
-    // <-- QT PHONE START --> 
     SetTouchPaneButtons( EPhoneConferenceButtons );
-    // <-- QT PHONE END -->
     
     UpdateInCallCbaL();
     }
@@ -950,12 +936,10 @@ void CPhoneConference::HandleIncomingL( TInt aCallId )
     // Check if HW Keys or Call UI should be disabled
     CheckDisableHWKeysAndCallUIL();
     
-// <-- QT PHONE START -->
     // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
-// <-- QT PHONE END -->
 
     EndUiUpdate();
 

@@ -70,9 +70,9 @@ void BubbleButtonStyle::updatePrimitive(
                 frameGraphicsName = "qtg_fr_btn_disabled";
             } else if (mode == QIcon::Normal && state == QIcon::On) {
                 if (mButtonColor==Green) {
-                    frameGraphicsName = ":/resources/qtg_fr_btn_green_pressed";
+                    frameGraphicsName = "qtg_fr_btn_green_pressed";
                 } else if (mButtonColor==Red) {
-                    frameGraphicsName = ":/resources/qtg_fr_btn_red_pressed";
+                    frameGraphicsName = "qtg_fr_btn_red_pressed";
                 } else {
                     frameGraphicsName = "qtg_fr_btn_pressed";
                 }
@@ -80,9 +80,9 @@ void BubbleButtonStyle::updatePrimitive(
                 frameGraphicsName = "qtg_fr_btn_highlight";
             } else {
                 if (mButtonColor==Green) {
-                    frameGraphicsName = ":/resources/qtg_fr_btn_green_normal";
+                    frameGraphicsName = "qtg_fr_btn_green_normal";
                 } else if (mButtonColor==Red) {
-                    frameGraphicsName = ":/resources/qtg_fr_btn_red_normal";
+                    frameGraphicsName = "qtg_fr_btn_red_normal";
                 } else {
                     frameGraphicsName = "qtg_fr_btn_normal";
                 }

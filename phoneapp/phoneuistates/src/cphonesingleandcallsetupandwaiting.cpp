@@ -571,9 +571,7 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToSingleAndAlertingL( TInt a
 // CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL
 // -----------------------------------------------------------
 //
-// <-- QT PHONE START --> 
 void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL( TInt /*aCallId*/ )
-// <-- QT PHONE END --> 
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL()");
@@ -594,9 +592,7 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL( TInt /*aCallI
 // CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL
 // -----------------------------------------------------------
 //
-// <-- QT PHONE START --> 
 void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL( TInt /*aCallId*/ )
-// <-- QT PHONE END --> 
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL()");

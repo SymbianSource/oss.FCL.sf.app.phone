@@ -29,6 +29,7 @@ class QSignalMapper;
 class HbToolBar;
 class HbVolumeSliderPopup;
 class Dialpad;
+class QTimer;
 
 #ifdef BUILD_PHONEUIQTVIEW
 #define PHONEUIQTVIEW_EXPORT Q_DECL_EXPORT
@@ -263,6 +264,13 @@ public slots:
         Shutdown phone application.
     */
     void shutdownPhoneApp();
+    
+    /*!
+        \fn void PhoneUIQtView::longEndKeyPressEvent()
+        
+        This is called when end key's long press timer times out.
+    */
+    void longEndKeyPressEvent();
    
 signals:
 
@@ -279,6 +287,8 @@ signals:
         This signal is emitted when key is released.
     */
     void keyReleased (QKeyEvent *event);
+
+    void endKeyLongPress();
     
     /*!
         \fn void command(int command)
@@ -293,6 +303,7 @@ signals:
         This signal is emitted when dialpad is about to close.
     */
     void dialpadIsAboutToClose();
+    
     
 protected:
 
@@ -340,9 +351,9 @@ private:
     QList<HbAction *>   m_participantListActions;
     int                 m_volumeCommandId;
     HbAction            *m_backAction;
-    HbAction            *m_emptyAction; 
     Dialpad             *m_dialpad;
     QSignalMapper       *m_menuSignalMapper;
+    QTimer              *m_longPressTimer;
 };
 
 #endif // PHONEUIQTVIEW_H

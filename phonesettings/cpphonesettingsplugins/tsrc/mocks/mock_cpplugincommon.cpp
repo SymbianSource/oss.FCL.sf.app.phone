@@ -118,27 +118,6 @@ bool CpSettingsWrapper::isPhoneOffline() const
     SMC_MOCK_METHOD0( bool )
 }
 
-// -----------------------------------------------------------------------------
-// Tools::loadCpPlugin
-// -----------------------------------------------------------------------------
-//
-CpPluginPlatInterface * Tools::loadCpPlugin( 
-        const QString & name )
-    {
-    SMC_MOCK_METHOD1( CpPluginPlatInterface*, QString &, name )
-    }
-
-
-// -----------------------------------------------------------------------------
-// Tools::unloadCpPlugin
-// -----------------------------------------------------------------------------
-//
-bool Tools::unloadCpPlugin( 
-        const QString & name )
-    {
-    SMC_MOCK_METHOD1( CpPluginPlatInterface*, QString &, name )
-    }
-
 
 // -----------------------------------------------------------------------------
 // Tools::voipSupported

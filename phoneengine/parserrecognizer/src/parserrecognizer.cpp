@@ -16,10 +16,10 @@
 *
 */
 
-#include <QDebug>
 #include <xqservicerequest.h>
 #include <pevirtualengine.h>
 #include "parserrecognizer.h"
+#include "qtphonelog.h"
 
 ParserRecognizer::ParserRecognizer(QObject* parent) : QObject (parent)
 {
@@ -32,7 +32,7 @@ ParserRecognizer::~ParserRecognizer()
 void ParserRecognizer::sendMessage(const int message, const int callId)
 {
     Q_UNUSED(callId); // for now
-    qDebug () << "ParserRecognizer::sendMessage message:" << message;
+    PHONE_DEBUG2("ParserRecognizer::sendMessage message:", message);
     QString api;
     QString method;
     bool recognized = true;
@@ -94,8 +94,8 @@ void ParserRecognizer::sendMessage(const int message, const int callId)
     }
     
     if(recognized) {
-        qDebug () << "ParserRecognizer::sendMessage api:" << api;
-        qDebug () << "ParserRecognizer::sendMessage method:" << method;
+        PHONE_DEBUG2("ParserRecognizer::sendMessage api:", api);
+        PHONE_DEBUG2("ParserRecognizer::sendMessage method:", method);
         XQServiceRequest snd(api, method);
         QVariant err;
         snd.send(err);

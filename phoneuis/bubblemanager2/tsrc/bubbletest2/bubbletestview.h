@@ -47,6 +47,7 @@ private slots:
     void rejectCall();
     void toggleHold();
     void toggleHoldDelayed();
+    void toggleConferenceHoldDelayed();
     void createIncomingCall();
     void createOutgoingCall();
     void setMuted();
@@ -81,6 +82,7 @@ private:
     bool callIndexByBubbleId(int bubbleId, int& index);
     void conferenceWizard();
     void sendKeyEvent(int key);
+    void toggleHoldConference();
 
 private:
     HbMainWindow&     mMainWindow;
@@ -89,6 +91,7 @@ private:
     
     // settings
     HbAction          *mCallDivert;
+    HbAction          *mCipheringOff;
     HbAction          *mCallTimer;
     HbAction          *mEmergencyCall;
     HbAction          *mContactPicture;

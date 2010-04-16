@@ -19,7 +19,7 @@
 TEMPLATE = app
 TARGET = phoneui
 CONFIG += hb svg
-RESOURCES = ./graphics/resources.qrc
+RESOURCES = ./phoneui2.qrc
 
 TRANSLATIONS = telephone.ts
 

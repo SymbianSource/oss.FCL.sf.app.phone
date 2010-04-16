@@ -409,18 +409,12 @@ void CPhoneGsmInCall::HandeDivertIndicationL()
        {
        TPhoneCmdParamCallHeaderData divertData;
     
-// <-- QT PHONE START --> 
-//       divertData.SetCallFlag( CBubbleManager::EDiverted );
         divertData.SetDiverted( ETrue );
-// <-- QT PHONE END --> 
        
        GetRemoteInfoDataL( ringingCallId, remoteInfoText );
        divertData.SetCLIText( 
                   remoteInfoText,
-// <-- QT PHONE START -->
-//                  CBubbleManager::ERight );
                   TPhoneCmdParamCallHeaderData::ERight );
-// <-- QT PHONE END --> 
        
        divertData.SetCiphering(
            iStateMachine->PhoneEngineInfo()->IsSecureCall( ringingCallId ) );

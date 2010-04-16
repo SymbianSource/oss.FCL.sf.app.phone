@@ -51,6 +51,7 @@ bool m_removeCallHeaderCalled;
 int m_bubble_id;
 bool m_addToConferenceBubbleCalled;
 QMap<int,int> m_services;
+bool m_setCipheringCalled;
 
 PhoneBubbleWrapper::PhoneBubbleWrapper (BubbleManagerIF& bubble, QObject *parent) : m_bubble(bubble)
 {
@@ -80,6 +81,7 @@ PhoneBubbleWrapper::PhoneBubbleWrapper (BubbleManagerIF& bubble, QObject *parent
     m_removeCallHeaderCalled = false;
     m_bubble_id = -2;
     m_addToConferenceBubbleCalled = false;
+    m_setCipheringCalled = false;
 }
 
 PhoneBubbleWrapper::~PhoneBubbleWrapper () 
@@ -170,6 +172,11 @@ void PhoneBubbleWrapper::setDivert (int bubble, bool enabled)
     m_bubblewrapperbool = enabled;
 }
 
+void PhoneBubbleWrapper::setCiphering(int bubble, bool indicatorAllowed, bool enabled)
+{
+    m_setCipheringCalled = true;
+}
+
 int PhoneBubbleWrapper::activeCallCount ()
 {
     m_activeCallCountCalled = true;
@@ -186,7 +193,7 @@ QMap<int, int> PhoneBubbleWrapper::bubbles()
     return m_bubblesMap;
 }
 
-void PhoneBubbleWrapper::createConferenceBubble(
+int PhoneBubbleWrapper::createConferenceBubble(
         int callId, int callState, const TDesC &labelText, const TDesC &cliText)
 {
     m_creataConferenceCalled = true;

@@ -28,6 +28,7 @@
 #include <hbfontspec.h>
 #include <hbdeviceprofile.h>
 #include <hbcolorscheme.h>
+#include <hbstringutil.h>
 
 static const int BUBBLE_ICON_ANIM_INTERVAL = 500; // ms
 
@@ -55,11 +56,11 @@ int BubbleStylePlugin::primitiveCount() const
     return BP_Bubble_primitive_count;
 }
 
-HbWidgetBase* BubbleStylePlugin::createPrimitive(
+QGraphicsItem* BubbleStylePlugin::createPrimitive(
     HbStyle::Primitive primitive, 
     QGraphicsItem *parent) const
 {
-    HbWidgetBase* item = 0;
+    QGraphicsItem* item = 0;
     
     switch(primitive) {
     case BP_Bubble_frame: {
@@ -87,7 +88,12 @@ HbWidgetBase* BubbleStylePlugin::createPrimitive(
         HbIconItem* icon = new HbIconItem(parent);
         item = icon;
         }
-        break;    
+        break;
+    case BP_Ciphering_icon: {
+        HbIconItem* icon = new HbIconItem(parent);
+        item = icon;
+        }
+        break;
     default:
         break;
     } // switch
@@ -119,26 +125,23 @@ void BubbleStylePlugin::updatePrimitive(
         break;                
 
     case BP_Text1_text: {
-        HbTextItem* text = static_cast<HbTextItem*>(item);
-        text->setText( opt->mText1 );
-        text->setElideMode( opt->mText1Clip );
-        setFont(text, primitive, opt);
+        HbTextItem* textItem = static_cast<HbTextItem*>(item);
+        setText(textItem, opt->mText1, opt->mText1Clip);
+        setFont(textItem, primitive, opt);
         }
         break;    
     
     case BP_Text2_text: {
-        HbTextItem* text = static_cast<HbTextItem*>(item);
-        text->setText( opt->mText2 );
-        text->setElideMode( opt->mText2Clip );
-        setFont(text, primitive, opt);
+        HbTextItem* textItem = static_cast<HbTextItem*>(item);
+        setText(textItem, opt->mText2, opt->mText2Clip);
+        setFont(textItem, primitive, opt);
         }
         break;    
 
     case BP_Text3_text: {
-        HbTextItem* text = static_cast<HbTextItem*>(item);
-        text->setText( opt->mText3 );
-        text->setElideMode( opt->mText3Clip );
-        setFont(text, primitive, opt);
+        HbTextItem* textItem = static_cast<HbTextItem*>(item);
+        setText(textItem, opt->mText3, opt->mText3Clip);
+        setFont(textItem, primitive, opt);
         }
         break;    
     
@@ -152,15 +155,21 @@ void BubbleStylePlugin::updatePrimitive(
         if ( (( opt->mCallState == BubbleManagerIF::Incoming ) ||
               ( opt->mCallState == BubbleManagerIF::Waiting )) &&
              ( opt->mCallFlags & BubbleManagerIF::Diverted ) ) {
-            icon->setIconName(":/resources/qgn_indi_call_diverted.svg");
-
-            // to be done via css when possible
-            QColor color;
-            color = HbColorScheme::color("list_item_title_normal");
-            if (color.isValid()) {
-                icon->setColor(color);
+            icon->setIconName(":/qgn_indi_call_diverted.svg");
+            setIconColor(icon);
+            icon->show();
+            } else {
+            icon->setIconName(QString());
+            icon->hide();
             }
+        }
+        break;
 
+    case BP_Ciphering_icon: {
+        HbIconItem* icon = static_cast<HbIconItem*>(item);
+        if ( opt->mCallFlags & BubbleManagerIF::NoCiphering ) {
+            icon->setIconName("qtg_mono_ciphering_off");
+            setIconColor(icon);
             icon->show();
             } else {
             icon->setIconName(QString());
@@ -174,7 +183,25 @@ void BubbleStylePlugin::updatePrimitive(
     } // switch
 }
 
-void BubbleStylePlugin::setFont(HbTextItem* item, int primitive, const BubbleStyleOption *option) const
+void BubbleStylePlugin::setText(
+    HbTextItem* item,
+    const QString& text,
+    Qt::TextElideMode clip) const
+{
+    if (clip == Qt::ElideLeft) {
+        // convert phonenumber to phone ui language
+        QString converted = HbStringUtil::convertDigits(text);
+        item->setText(converted);
+    } else {
+        item->setText( text );
+    }
+    item->setElideMode( clip );
+}
+
+void BubbleStylePlugin::setFont(
+    HbTextItem* item,
+    int primitive,
+    const BubbleStyleOption *option) const
 {
     int primitiveLineNumber = 0;
     if (primitive==BP_Text1_text) {
@@ -204,6 +231,16 @@ void BubbleStylePlugin::setFont(HbTextItem* item, int primitive, const BubbleSty
     }
 }
 
+void BubbleStylePlugin::setIconColor(HbIconItem* icon) const
+{
+    // to be done via css when possible
+    QColor color;
+    color = HbColorScheme::color("list_item_title_normal");
+    if (color.isValid()) {
+        icon->setColor(color);
+    }
+}
+
 QString BubbleStylePlugin::layoutPath() const
 {
    QString path(":/");
@@ -218,43 +255,43 @@ void BubbleStylePlugin::setCallStatusIcons(BubbleAnimIconItem* anim, const Bubbl
     case BubbleManagerIF::Alerting:
     case BubbleManagerIF::Waiting:
         if ( opt->mCallFlags & BubbleManagerIF::VoIPCall ) {
-            anim->appendIcon(":/qtg_large_voip_received_call.svg");
-            anim->appendIcon(":/qtg_large_voip_dialled_call.svg");
+            anim->appendIcon("qtg_large_voip_received_call");
+            anim->appendIcon("qtg_large_voip_dialled_call");
         } else if ( opt->mCallFlags & BubbleManagerIF::Video ) {
-            anim->appendIcon(":/qtg_large_video_received_call.svg");
-            anim->appendIcon(":/qtg_large_video_dialled_call.svg");         
+            anim->appendIcon("qtg_large_video_received_call");
+            anim->appendIcon("qtg_large_video_dialled_call");
         } else {
-            anim->appendIcon(":/pri_large_green_handset.svg");
-            anim->appendIcon(":/pri_large_yellow_handset.svg");
+            anim->appendIcon("qtg_large_active_call");
+            anim->appendIcon("qtg_large_waiting_call");
         }
         break;
     case BubbleManagerIF::Outgoing:
     case BubbleManagerIF::Active:
         if ( opt->mCallFlags & BubbleManagerIF::VoIPCall ) {
-            anim->appendIcon(":/qtg_large_voip_received_call.svg");
+            anim->appendIcon("qtg_large_voip_received_call");
         } else if ( opt->mCallFlags & BubbleManagerIF::Video ) {
-            anim->appendIcon(":/qtg_large_video_received_call.svg");
+            anim->appendIcon("qtg_large_video_received_call");
         } else {
-            anim->appendIcon(":/pri_large_green_handset.svg");
+            anim->appendIcon("qtg_large_active_call");
         }            
         break;
     case BubbleManagerIF::OnHold:
         if ( opt->mCallFlags & BubbleManagerIF::VoIPCall ) {
-            anim->appendIcon(":/qtg_large_voip_dialled_call.svg");
+            anim->appendIcon("qtg_large_voip_dialled_call");
         } else if ( opt->mCallFlags & BubbleManagerIF::Video ) {
-            anim->appendIcon(":/qtg_large_video_dialled_call.svg");
+            anim->appendIcon("qtg_large_video_dialled_call");
         } else {
-            anim->appendIcon(":/pri_large_yellow_handset.svg");
+            anim->appendIcon("qtg_large_waiting_call");
         }                      
         break;
     case BubbleManagerIF::Disconnected:
     case BubbleManagerIF::AlertToDisconnected:
         if ( opt->mCallFlags & BubbleManagerIF::VoIPCall ) {
-            anim->appendIcon(":/qtg_large_voip_missed_call.svg");
+            anim->appendIcon("qtg_large_voip_missed_call");
         } else if ( opt->mCallFlags & BubbleManagerIF::Video ) {
-            anim->appendIcon(":/qtg_large_video_missed_call.svg");
+            anim->appendIcon("qtg_large_video_missed_call");
         } else {
-            anim->appendIcon(":/pri_large_red_handset.svg");
+            anim->appendIcon("qtg_large_end_call");
         }           
         break;
     default:

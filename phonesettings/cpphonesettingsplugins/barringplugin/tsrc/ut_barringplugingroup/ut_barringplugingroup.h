@@ -21,27 +21,41 @@
 #include <QtTest/QtTest>
 #include <mockservice.h>
 
-
 class CpBarringPluginGroup;
+class PSetCallBarringWrapper;
+class HbDataFormModel;
 
 class UT_CpBarringPluginGroup : public QObject, MockService
 {
     Q_OBJECT
 
 public:    
+    
     UT_CpBarringPluginGroup();
     ~UT_CpBarringPluginGroup();
     
 private slots:
 
     void init();
-
     void cleanup();
     
     void t_memleak();
-private:
-    CpBarringPluginGroup *m_barringpluginGroup;
+    void t_barringStatusRequestCompletedWithAnError();
+    void t_getBarringStatuses();
+    void t_enableBarringRequestCompleted();
+    void t_disableBarringRequestCompleted();
+    void t_changeBarringStateRequested();
 
+signals:
+    void simulateCheckStateChange(int checkState);
+    
+private:
+    
+    CpBarringPluginGroup *m_barringpluginGroup;
+    PSetCallBarringWrapper *m_barringWrapperMock;
+    
+    /** Now own. Data form model. */
+    HbDataFormModel *m_dataFormModel;
 };
 
 #endif // UT_BARRINGPLUGINGROUP_H

@@ -54,6 +54,7 @@ HEADERS += ../../callsplugin/src/cpcallsplugin.h                \
            /epoc32/include/platform/mw/psetcallwaitingwrapper.h \
            /epoc32/include/platform/mw/psetcalldivertingwrapper.h \
            /epoc32/include/platform/mw/psetnetworkwrapper.h     \
+           /epoc32/include/platform/mw/psetcallbarringwrapper.h \
            /epoc32/include/mw/xqsettingskey.h                   \
            /epoc32/include/mw/xqsettingsmanager.h               \
            /epoc32/include/mw/xqsysinfo.h
@@ -81,5 +82,6 @@ SOURCES +=                                  \
         mock_sssettingswrapper.cpp          \
         mock_xqsettingskey.cpp              \
         mock_xqsettingsmanager.cpp          \
-        mock_xqsysinfo.cpp
+        mock_xqsysinfo.cpp                  \
+        mock_psetcallbarringwrapper.cpp
   

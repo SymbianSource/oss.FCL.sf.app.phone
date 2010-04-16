@@ -19,12 +19,12 @@
 #define CPNETWORKPLUGIN_H
 
 #include <qobject.h>
-#include <cppluginplatinterface.h>
+#include <cpplugininterface.h>
 
-class CpNetworkPlugin : public QObject, public CpPluginPlatInterface
+class CpNetworkPlugin : public QObject, public CpPluginInterface
 {
     Q_OBJECT
-    Q_INTERFACES(CpPluginPlatInterface)
+    Q_INTERFACES(CpPluginInterface)
     
 public:
     
@@ -32,8 +32,13 @@ public:
     
     ~CpNetworkPlugin();
     
-    virtual CpSettingFormItemData *createSettingFormItemData(
+    /**
+     * From CpPluginInterface
+     * @see CpPluginInterface.
+     */
+    QList<CpSettingFormItemData*> createSettingFormItemData(
         CpItemDataHelper &itemDataHelper) const;
+
 };
 
 #endif  // CPNETWORKPLUGIN_H

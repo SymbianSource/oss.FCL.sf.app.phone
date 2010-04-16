@@ -24,6 +24,7 @@ HEADERS += ./inc/phonenotecontroller.h
 HEADERS += ./inc/telephonyservice.h
 HEADERS += ./inc/phoneuicommandcontroller.h
 HEADERS += ./inc/phonecommandextensionwrapper.h
+HEADERS += ./inc/phonemessagecontroller.h
 
 SOURCES += ./src/phoneuiqtviewadapter.cpp
 SOURCES += ./src/phoneuiqtbuttonscontroller.cpp
@@ -33,3 +34,4 @@ SOURCES += ./src/phonenotecontroller.cpp
 SOURCES += ./src/telephonyservice.cpp
 SOURCES += ./src/phoneuicommandcontroller.cpp
 SOURCES += ./src/phonecommandextensionwrapper.cpp
+SOURCES += ./src/phonemessagecontroller.cpp

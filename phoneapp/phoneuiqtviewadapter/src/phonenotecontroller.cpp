@@ -18,13 +18,13 @@
 #include "tphonecmdparamglobalnote.h"
 #include "tphonecmdparamquery.h"
 #include "phoneresourceadapter.h"
-#include <QtDebug>
+#include "qtphonelog.h"
 #include <QSignalMapper>
 #include <QTimer>
 #include <hbdevicemessagebox.h>
 #include <hbdeviceprogressdialog.h>
 #include <hbmessagebox.h>
-#include <hbprogressnote.h>
+#include <hbprogressdialog.h>
 #include <hbaction.h>
 #include <phoneappcommands.hrh>
   
@@ -32,14 +32,14 @@ PhoneNoteController::PhoneNoteController(QObject *parent) :
     QObject(parent), m_timer(0), m_progressDialog(0), m_dtmfNote(0), 
     m_queryNote(0), m_queryCanceledCommand(-1), m_timeoutCommand(-1)
 {
-    qDebug() << "PhoneNoteController::PhoneNoteController";
+    PHONE_DEBUG("PhoneNoteController::PhoneNoteController");
     m_signalMapper = new QSignalMapper(this);
     connect(m_signalMapper, SIGNAL(mapped(int)), this, SIGNAL(command (int)));
 }
 
 PhoneNoteController::~PhoneNoteController()
 {
-    qDebug() << "PhoneNoteController::~PhoneNoteController";
+    PHONE_DEBUG("PhoneNoteController::~PhoneNoteController");
     if (m_timer) {
         delete m_timer;
     }
@@ -47,7 +47,7 @@ PhoneNoteController::~PhoneNoteController()
 
 void PhoneNoteController::showGlobalNote(TPhoneCommandParam *commandParam)
 {
-    qDebug() << "PhoneNoteController::showGlobalNote";
+    PHONE_DEBUG("PhoneNoteController::showGlobalNote");
     Q_ASSERT (commandParam->ParamId () == TPhoneCommandParam::EPhoneParamIdGlobalNote);
 
     TPhoneCmdParamGlobalNote* globalNoteParam = 
@@ -90,7 +90,7 @@ void PhoneNoteController::showGlobalNote(TPhoneCommandParam *commandParam)
 
 void PhoneNoteController::showNote(TPhoneCommandParam *commandParam)
 {
-    qDebug() << "PhoneNoteController::showNote";
+    PHONE_DEBUG("PhoneNoteController::showNote");
 
     TPhoneCmdParamNote* noteParam = static_cast<TPhoneCmdParamNote*>(
             commandParam );
@@ -103,7 +103,7 @@ void PhoneNoteController::showNote(TPhoneCommandParam *commandParam)
 
 void PhoneNoteController::showQuery(TPhoneCommandParam *commandParam)
 {
-    qDebug() << "PhoneNoteController::showQuery";
+    PHONE_DEBUG("PhoneNoteController::showQuery");
     TPhoneCmdParamQuery& params = *static_cast<TPhoneCmdParamQuery*>( commandParam );
 
     if ( EPhoneQueryDialog == params.QueryType() && 
@@ -120,7 +120,7 @@ void PhoneNoteController::showQuery(TPhoneCommandParam *commandParam)
 
 void PhoneNoteController::removeDtmfNote()
 {
-    qDebug() << "PhoneNoteController::removeDtmfNote"; 
+    PHONE_DEBUG("PhoneNoteController::removeDtmfNote"); 
     if (m_dtmfNote) {
         m_dtmfNote->close();
     }
@@ -128,13 +128,13 @@ void PhoneNoteController::removeDtmfNote()
 
 void PhoneNoteController::removeNote()
 {
-    qDebug() << "PhoneNoteController::removeNote"; 
+    PHONE_DEBUG("PhoneNoteController::removeNote"); 
     removeDtmfNote();
 }
 
 void PhoneNoteController::removeQuery()
 {
-    qDebug() << "PhoneNoteController::removeQuery"; 
+    PHONE_DEBUG("PhoneNoteController::removeQuery"); 
     if (m_queryNote) {
         m_queryNote->close();
     }
@@ -142,7 +142,7 @@ void PhoneNoteController::removeQuery()
 
 void PhoneNoteController::removeGlobalWaitNote()
 {
-    qDebug() << "PhoneNoteController::removeGlobalWaitNote"; 
+    PHONE_DEBUG("PhoneNoteController::removeGlobalWaitNote"); 
     if (m_timer) {
         m_timeoutCommand = -1;
         m_timer->stop();
@@ -156,13 +156,13 @@ void PhoneNoteController::removeGlobalWaitNote()
 
 void PhoneNoteController::destroyDialog()
 {
-    qDebug() << "PhoneNoteController::destroyDialog"; 
+    PHONE_DEBUG("PhoneNoteController::destroyDialog"); 
     HbDeviceMessageBox *messageBox = m_messageBoxList.takeFirst();
     messageBox->deleteLater();
     messageBox = 0;
     
     if ( 0 < m_messageBoxList.size() ) {
-        qDebug() << "PhoneNoteController::show pending note";
+        PHONE_DEBUG("PhoneNoteController::show pending note");
         HbDeviceMessageBox *messageBoxTemp = m_messageBoxList[0];
         QObject::connect(messageBoxTemp, SIGNAL(aboutToClose()), 
                          this, SLOT(destroyDialog()));
@@ -254,9 +254,9 @@ void PhoneNoteController::showDtmfNote(TPhoneCmdParamNote* noteParam)
     } else {
         QList<HbAction*> hbactions = PhoneResourceAdapter::Instance()->
             convertToHbActions(noteParam->ResourceId());
-        
+
         if (hbactions.count() > 0) {
-            m_dtmfNote = new HbProgressNote(HbProgressNote::ProgressNote);
+            m_dtmfNote = new HbProgressDialog(HbProgressDialog::ProgressDialog);
             m_dtmfNote->setText( QString::fromUtf16(noteParam->Text().Ptr(), 
                     noteParam->Text().Length()) ); 
                   
@@ -313,7 +313,7 @@ void PhoneNoteController::showGlobalWaitNote(TPhoneCmdParamQuery* params)
     if (!m_progressDialog) {        
         m_queryCanceledCommand = params->CbaCommandMapping(EAknSoftkeyCancel);
 
-        m_progressDialog = new HbDeviceProgressDialog(HbProgressNote::WaitNote);
+        m_progressDialog = new HbDeviceProgressDialog(HbProgressDialog::WaitDialog);
         
         if (params->QueryPrompt().Length()) {
             m_progressDialog->setText(QString::fromUtf16(params->QueryPrompt().Ptr(), 

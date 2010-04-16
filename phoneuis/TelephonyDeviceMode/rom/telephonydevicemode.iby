@@ -19,7 +19,7 @@
 #define __TELEPHONYDEVICEMODE_IBY__
 
 file=ABI_DIR\BUILD_DIR\telephonydevicemode.dll            SHARED_LIB_DIR\telephonydevicemode.dll
-data=ZSYSTEM\Install\telephonydevicemode_stub.SIS         \System\Install\telephonydevicemode_stub.SIS
+data=ZSYSTEM\Install\telephonydevicemode_stub.sis         \System\Install\telephonydevicemode_stub.sis
 
 #endif
 
