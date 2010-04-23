@@ -10,6 +10,7 @@
 * Nokia Corporation - initial contribution.
 *
 * Contributors:
+* NTT DOCOMO, INC - BUG 2360
 *
 * Description: Build file for silence action plugin.
 *
@@ -23,11 +24,7 @@ PRJ_PLATFORMS
 DEFAULT
 
 PRJ_EXPORTS
-../data/silence.rul\
-	/epoc32/RELEASE/winscw/UDEB/Z/private/10282BC4/Rules/silence.rul
-
-../data/silence.rul\
-	/epoc32/data/Z/private/10282BC4/Rules/silence.rul
+../data/silence.rul z:/private/10282BC4/Rules/silence.rul
 
 ../data/silenceactionplugin_stub.SIS\
     /epoc32/data/z/system/install/silenceactionplugin_stub.SIS
