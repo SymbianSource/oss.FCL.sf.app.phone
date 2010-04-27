@@ -198,15 +198,7 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndSingleAndWaiting::HandleIdleL()");
-        
-    // Effect is shown when dialer exist.
-    TBool effectStarted ( EFalse );
-    if ( !NeedToReturnToForegroundAppL() )
-        {
-        BeginTransEffectLC( ENumberEntryOpen );
-        effectStarted = ETrue; 
-        }
-         
+             
     BeginUiUpdateLC();    
     // Set touch controls
     SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
@@ -255,10 +247,6 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
             }
         }
     EndUiUpdate();
-    if ( effectStarted )
-        {
-        EndTransEffect();    
-        }
     }
 
 // -----------------------------------------------------------

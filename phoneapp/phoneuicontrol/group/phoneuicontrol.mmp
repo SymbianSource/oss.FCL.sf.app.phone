@@ -79,6 +79,7 @@ LIBRARY         commonengine.lib //StringLoader
 LIBRARY         featmgr.lib // FeatureManager
 LIBRARY         connmon.lib // RConnectionMonitor
 LIBRARY         avkon.lib // AknTextUtils
+LIBRARY         ProfileEngine.lib
 
 // RemCon
 LIBRARY         remconcoreapi.lib

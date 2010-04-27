@@ -180,9 +180,9 @@ class CPhoneKeyEventForwarder
         
         /**
          * Checks from the statemachine is the given keyevent 
-         * from one of the allowed characters
+         * one which produces a legal character in the current mode.
          */
-        TBool IsAlphaNumericKey( const TKeyEvent& aKeyEvent );
+        TBool IsKeyAllowed( const TKeyEvent& aKeyEvent );
                 
         /**
          * Checks is the given key special character (*, 0, # ) from half-qwerty
@@ -198,12 +198,18 @@ class CPhoneKeyEventForwarder
         TBool IsKeyBlocked( const TKeyEvent& aKeyEvent ) const;
         
         /**
+         * Test if key has flags indicating that it has been simulated by the
+         * touch dialer.
+         */
+        TBool IsKeySimulatedByTouchDialer( const TKeyEvent& aKeyEvent ) const;
+        
+        /**
          * Handles dialer key event. This includes handling multitapping of *-key. 
          * If multitap happens, function creates back space event 
          * to delete previous character, and replaces it with
          * the next one in the cyclig character list *+pw.
          */
-        void HandleTouchDialerKeyEventL( const TKeyEvent& aKeyEvent, TEventCode aType );
+        void HandleTouchDialerKeyEventL( const TKeyEvent& aKeyEvent );
 
     private:    // Data
         

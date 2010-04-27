@@ -199,20 +199,20 @@ void CBubbleOutlookBottomRightCnap::DoCall2LayoutL()
                 rect, 
                 BubbleLayout2::popup_call2_audio_out_call_text_1(5) );
             
-            // Text line 2
-            BubbleUtils::LayoutLabel( 
-                iTextLine2, 
-                rect, 
-                BubbleLayout2::popup_call2_audio_out_call_text_2(4) );            
-            
             // Smaller rect for text if brand image exists
             if ( iBrandImage )
                 {
-                // Text line 3
+                // Text line 2
                 BubbleUtils::LayoutLabel( 
-                    iTextLine3, 
+                    iTextLine2, 
                     rect, 
-                    BubbleLayout2::popup_call2_audio_out_call_text_3(5) );
+                    BubbleLayout2::popup_call2_audio_out_call_text_2(5) );            
+            
+                // Text line 3
+                    BubbleUtils::LayoutLabel( 
+                        iTextLine3, 
+                        rect, 
+                        BubbleLayout2::popup_call2_audio_out_call_text_3(5) );
                 
                 //Brand image
                 BubbleUtils::LayoutCustomElement(
@@ -222,6 +222,12 @@ void CBubbleOutlookBottomRightCnap::DoCall2LayoutL()
                 }
             else
                 {
+                // Text line 2
+                BubbleUtils::LayoutLabel( 
+                    iTextLine2, 
+                    rect, 
+                    BubbleLayout2::popup_call2_audio_out_call_text_2(4) );            
+            
                 // Text line 3
                 BubbleUtils::LayoutLabel( 
                     iTextLine3, 

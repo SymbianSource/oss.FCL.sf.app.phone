@@ -90,15 +90,6 @@
 #define KTelephonyLVFlagAdvancedENCheck 0x00000200
 
 /**
-* KTelephonyLVFlagUssdTone defines if the USSD tone play functionality is 
-* enabled.
-* When the flag is set, tone is played when USSD message is received. 
-* @since Series 60 2.6
-*/
-#define KTelephonyLVFlagUssdTone 0x00000800
-
-
-/**
 * KTelephonyLVFlagArbitraryVideoScaling defines if video player
 * implementation in the device support arbitrary scaling.
 * When the flag is set, arbitrary scaling is applied.

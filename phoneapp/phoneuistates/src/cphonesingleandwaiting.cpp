@@ -430,14 +430,6 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
         }
     else
         {
-        // Effect is shown when dialer exist.
-        TBool effectStarted ( EFalse );
-        if ( !NeedToReturnToForegroundAppL() )
-            {
-            BeginTransEffectLC( ENumberEntryOpen );
-            effectStarted = ETrue;
-            }
-
         BeginUiUpdateLC();
 
         // Remove call
@@ -475,10 +467,7 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
         
         SetTouchPaneButtons( EPhoneIncallButtons );
         EndUiUpdate();
-        if( effectStarted )
-            {
-            EndTransEffect();
-            }
+
         // CBA updates in above if-else conditions
         iStateMachine->ChangeState( EPhoneStateSingle );
         }
@@ -590,14 +579,6 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL() ");
 
-    // Effect is shown when dialer exist.
-    TBool effectStarted ( EFalse );
-    if ( !NeedToReturnToForegroundAppL() )
-        {
-        BeginTransEffectLC( ENumberEntryOpen );
-        effectStarted = ETrue;
-        }
-    
     BeginUiUpdateLC();
 
     UpdateRemoteInfoDataL ( aCallId );
@@ -636,10 +617,6 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
 
     SetTouchPaneButtons( EPhoneTwoSinglesButtons );
     EndUiUpdate();
-    if( effectStarted )
-        {
-        EndTransEffect();
-        }
 
     // Go to two singles state
     // CBA updates in above if-else conditions
@@ -680,7 +657,6 @@ void CPhoneSingleAndWaiting::HandleDiallingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::HandleDiallingL() ");
 
-    BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC();
 
     // Hide number entry if it exists
@@ -697,7 +673,6 @@ void CPhoneSingleAndWaiting::HandleDiallingL( TInt aCallId )
     SetTouchPaneButtons( EPhoneCallSetupButtons );
 
     EndUiUpdate();
-    EndTransEffect();
 
     // Update call setup CBAs
     UpdateCbaL( EPhoneCallHandlingCallSetupCBA );

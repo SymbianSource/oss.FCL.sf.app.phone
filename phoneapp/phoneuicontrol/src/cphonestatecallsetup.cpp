@@ -609,7 +609,6 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleIdleL()");
     
-    BeginTransEffectLC ( ENumberEntryOpen );
     BeginUiUpdateLC ();
     
     // Disable the volume display
@@ -641,7 +640,7 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
         }
         
     EndUiUpdate();
-    EndTransEffect(); 
+
     // Go to idle state
     // No need update cba
     iStateMachine->ChangeState( EPhoneStateIdle );

@@ -1068,10 +1068,10 @@ EXPORT_C void CPhoneState::HandleNumericKeyEventL(
 
     if ( numberEntryUsed && ( aKeyEvent.iRepeats == 0 ||
               aKeyEvent.iScanCode == EStdKeyBackspace ||
-              aKeyEvent.iScanCode ==EStdKeyLeftArrow  ||              
-              aKeyEvent.iScanCode == EStdKeyUpArrow  ||
-              aKeyEvent.iScanCode == EStdKeyDownArrow  ||              
-              aKeyEvent.iScanCode ==EStdKeyRightArrow ))
+              aKeyEvent.iScanCode == EStdKeyLeftArrow ||
+              aKeyEvent.iScanCode == EStdKeyUpArrow   ||
+              aKeyEvent.iScanCode == EStdKeyDownArrow ||
+              aKeyEvent.iScanCode == EStdKeyRightArrow ))
         {
         // Number entry exists but may be hidden
         KeyEventForExistingNumberEntryL( aKeyEvent, aEventCode );
@@ -1529,12 +1529,10 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
             // this should be bypasses?
         case EPhoneDialerCallHandling:
         case EPhoneCmdBack:
-            BeginTransEffectLC( ENumberEntryClose );
             // Remove number entry from screen
             iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
             // Do state-specific behaviour if number entry is cleared
             HandleNumberEntryClearedL();
-            EndTransEffect();
             break;
 
         case EPhoneDialerCmdTouchInput:
@@ -1635,16 +1633,6 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
             break;
 
         case EPhoneInCallCmdActivatEPhonebook:
-            {
-            // Launch Phonebook application
-            TPhoneCmdParamAppInfo appInfoParam;
-            appInfoParam.SetAppUid( KPhoneUidAppPhonebook );
-            iViewCommandHandle->ExecuteCommandL(
-                EPhoneViewActivateApp, &appInfoParam );
-            }
-            break;
-
-        case EPhoneDialerCmdContacts:
             {
             // Launch Phonebook application
             TPhoneCmdParamAppInfo appInfoParam;
@@ -2073,6 +2061,13 @@ EXPORT_C void CPhoneState::SetupIdleScreenInBackgroundL()
     // Set Idle app as the top app
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetIdleTopApplication );
 
+	// Go to Homescreen when application, which was open when answered incoming call,
+	// is closed during active call    
+    if( TopAppIsDisplayedL() )
+        {
+        DisplayIdleScreenL();
+        }
+
     // Set Empty CBA
     iCbaManager->SetCbaL( EPhoneEmptyCBA );
     }
@@ -2137,12 +2132,8 @@ EXPORT_C void CPhoneState::CallFromNumberEntryL()
         iStateMachine->PhoneEngineInfo()->SetPhoneNumber( *phoneNumber );
     
         if ( phoneNumber->Des().Length() < KPhoneValidPhoneNumberLength )
-            {
-            // Closing effect is shown when dialer exist.
-            BeginTransEffectLC( ENumberEntryClose );            
+            {        
             iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-            EndTransEffect();
-            
             HandleNumberEntryClearedL();
             }
     
@@ -3878,25 +3869,31 @@ EXPORT_C void CPhoneState::BeginUiUpdateLC()
 EXPORT_C void CPhoneState::BeginTransEffectLC(  TStateTransEffectType aType )
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneState::BeginTransEffectLC( ) ");
-    TPhoneCmdParamTransEffect effectParam;
-
-    switch ( aType )
+    
+    // Check if this particular effect can be used in the current state.
+    if ( CanTransEffectTypeBeUsed( aType ) )
         {
-        case ENumberEntryOpen:
-            effectParam.SetType( EPhoneTransEffectDialerOpen );
-            break;
-        case ENumberEntryClose:
-            effectParam.SetType( EPhoneTransEffectDialerClose );
-            break;
-        case ENumberEntryCreate:
-            effectParam.SetType( EPhoneTransEffectDialerCreate );
-            break;
-        default:
-            effectParam.SetType( EPhoneTransEffectNone );
+        TPhoneCmdParamTransEffect effectParam;
+        switch ( aType )
+            {
+            case ENumberEntryOpen:
+                effectParam.SetType( EPhoneTransEffectDialerOpen );
+                break;
+            case ENumberEntryClose:
+                effectParam.SetType( EPhoneTransEffectDialerClose );
+                break;
+            case ENumberEntryCreate:
+                effectParam.SetType( EPhoneTransEffectDialerCreate );
+                break;
+            default:
+                effectParam.SetType( EPhoneTransEffectNone );
+            }
+
+        iViewCommandHandle->ExecuteCommand( EPhoneViewBeginTransEffect,  
+                                            &effectParam );
         }
 
-    iViewCommandHandle->ExecuteCommand( EPhoneViewBeginTransEffect,  &effectParam );
-
+    // Always put the cleanup item into stack as expected by the caller.
     TCleanupItem operation( EffectCleanup, this );
     CleanupStack::PushL( operation );
     }
@@ -3974,7 +3971,7 @@ void CPhoneState::EffectCleanup(TAny* aThis )
     {
     TPhoneCmdParamTransEffect effectParam;
     effectParam.SetType( EPhoneTransEffectStop );
-
+    // won't do anything if effect wasn't started
     static_cast<CPhoneState*>( aThis )->iViewCommandHandle->ExecuteCommand(
         EPhoneViewEndTransEffect, &effectParam );
     }
@@ -4006,10 +4003,7 @@ EXPORT_C void CPhoneState::CloseDTMFEditorL()
         iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfDialerViewVisible,
                                              &booleanParam );
 
-        // Closing effect is shown when DTMF dialer exist.
-        BeginTransEffectLC( ENumberEntryClose );
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-        EndTransEffect();
         }
     else // Non-Touch
         {
@@ -4345,12 +4339,8 @@ EXPORT_C void CPhoneState::CloseCustomizedDialerL()
     // Set dialer back to default mode.
     iViewCommandHandle->HandleCommandL( EPhoneViewHideCustomizedDialer );
 
-    // Closing effect is shown when customized dialer exist.
-    BeginTransEffectLC( ENumberEntryClose );
-
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
 
-    EndTransEffect();
     // Do state-specific behaviour if number entry is cleared
     HandleNumberEntryClearedL();
     }
@@ -4402,8 +4392,6 @@ void CPhoneState::ShowDtmfDialerL()
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfDialerViewVisible,
                                          &booleanParam );
 
-    BeginTransEffectLC( ENumberEntryCreate );
-
     if ( IsNumberEntryUsedL() )
         {
         // Store the number entry content to cache
@@ -4420,8 +4408,6 @@ void CPhoneState::ShowDtmfDialerL()
         // Create and display DTMF dialer
         NumberEntryManagerL()->CreateNumberEntryL();
         }
-
-    EndTransEffect();
 
     // Update CBA
     iCbaManager->UpdateInCallCbaL();
@@ -4666,6 +4652,16 @@ EXPORT_C void CPhoneState::OnlyHashInNumberEntryL()
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneState::OnlyHashInNumberEntryL( ) ");
     // 0.8 seconds has passed, start ALS line change timer
     StartAlsLineChangeTimerL();
+    }
+
+// ---------------------------------------------------------
+// CPhoneState::CanTransEffectTypeBeUsed
+// ---------------------------------------------------------
+//
+EXPORT_C TBool CPhoneState::CanTransEffectTypeBeUsed( TStateTransEffectType /*aType*/ )
+    {
+    // State dependant so return EFalse by default.
+    return EFalse;
     }
 
 // -----------------------------------------------------------

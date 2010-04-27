@@ -300,7 +300,6 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
   
     //Make sure that toolbar is not shown
     iViewCommandHandle->ExecuteCommandL( EPhoneViewHideToolbar );
-    BeginTransEffectLC( ENumberEntryOpen );  
     BeginUiUpdateLC();
     SetDefaultFlagsL();
     if ( IsNumberEntryUsedL() )
@@ -356,7 +355,7 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
         
     DeleteTouchPaneButtons();        
     EndUiUpdate();
-    EndTransEffect();
+    
     // Display call termination note, if necessary
     DisplayCallTerminationNoteL();
 
@@ -594,14 +593,13 @@ EXPORT_C TBool CPhoneStateInCall::HandleCommandL( TInt aCommand )
     switch( aCommand )
         {
         case EPhoneInCallCmdDialer:
-            BeginTransEffectLC( ENumberEntryCreate );
             if ( !IsNumberEntryUsedL() )
                 {
                 CreateNumberEntryL();
                 }
             SetNumberEntryVisibilityL(ETrue ); 
-            EndTransEffect();
           break;
+          
         case EPhoneCmdOptions:
             OpenMenuBarL();
             break;
@@ -909,7 +907,6 @@ EXPORT_C void CPhoneStateInCall::LaunchNewCallQueryL()
     if ( iOnScreenDialer )
         {
         //In touch, just activate dialer
-        BeginTransEffectLC( ENumberEntryCreate );
         if ( IsNumberEntryUsedL() )
             {
             SetNumberEntryVisibilityL(ETrue);   
@@ -919,7 +916,6 @@ EXPORT_C void CPhoneStateInCall::LaunchNewCallQueryL()
             CreateNumberEntryL();
             SetNumberEntryVisibilityL(ETrue); 
             }
-        EndTransEffect();
         }
     else
         {
@@ -1538,11 +1534,9 @@ void CPhoneStateInCall::HandleEndKeyPressL( TPhoneKeyEventMessages aMessage )
                 }
             else
                 {
-                BeginTransEffectLC( ENumberEntryClose );
                 // Remove number entry from screen
                 iViewCommandHandle->ExecuteCommandL( 
                     EPhoneViewRemoveNumberEntry );
-                EndTransEffect();
                 // Do state-specific operation when number entry is cleared
                 HandleNumberEntryClearedL();         
                 }

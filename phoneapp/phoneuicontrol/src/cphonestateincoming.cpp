@@ -371,9 +371,6 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
         &globalNotifierParam );
     // Stop tone playing, if necessary
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
-    
-    
-    BeginTransEffectLC( ENumberEntryOpen );
 
     BeginUiUpdateLC();
     
@@ -384,7 +381,6 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
     SetToolbarDimming( EFalse );
             
     EndUiUpdate();
-    EndTransEffect();
 
     // Go to single state
     iCbaManager->UpdateCbaL( EPhoneCallHandlingInCallCBA );
@@ -435,7 +431,6 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::HandleIdleL ()" );
 
-    BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
 
     // Remove call
@@ -486,7 +481,7 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
  
     DeleteTouchPaneButtons();
     EndUiUpdate();
-    EndTransEffect();
+
     // Go to idle state   
     iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
     iStateMachine->ChangeState( EPhoneStateIdle );

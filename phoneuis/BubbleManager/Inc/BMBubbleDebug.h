@@ -19,7 +19,7 @@
 #ifndef BM_DEBUG_H
 #define BM_DEBUG_H
 
-//#ifdef _DEBUG 
+#ifdef _DEBUG 
 
 // INCLUDES
 #include <e32svr.h>
@@ -73,7 +73,7 @@ enum TTraceType
     
 
     
-/*
+
 #else // _DEBUG
 
     #define TRACE_ASSERT( a )
@@ -102,7 +102,7 @@ enum TTraceType
     #define PANIC_ALWAYS
 
 #endif // _DEBUG
-*/
+
 #endif // BM_DEBUG_H
 
 // End of File

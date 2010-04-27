@@ -432,8 +432,6 @@ void CPhCntGetUserSelectedDtmfNumberLink::ConstructL(
         EVPbkContactViewFilterDTMF );
     aContactManager.AppendFilterToSelectorL( *iContactViewFilter,   
         EVPbkContactViewFilterPhoneNumber );
-
-    iDefaultPriorities.Append( EVPbkDefaultTypePhoneNumber ); 
                      
     TAiwSingleItemSelectionDataV3 data;
     data.SetAddressSelectType(EAiwDTMFPhoneNumberSelect);

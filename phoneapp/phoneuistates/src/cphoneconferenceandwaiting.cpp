@@ -265,14 +265,6 @@ void CPhoneConferenceAndWaiting::HandleConnectedL( TInt aCallId )
 void CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL()");
-    
-    // Effect is shown when dialer exist.
-    TBool effectStarted ( EFalse );
-    if ( !NeedToReturnToForegroundAppL() )
-        {
-        BeginTransEffectLC( ENumberEntryOpen );
-        effectStarted = ETrue; 
-        }
         
     BeginUiUpdateLC();    
          
@@ -307,10 +299,7 @@ void CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt
     SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
     
     EndUiUpdate();
-    if( effectStarted )
-        {
-        EndTransEffect();    
-        }
+
     // CBA updates in above if-else conditions
     iStateMachine->ChangeState( EPhoneStateConferenceAndSingle );                     
     }
@@ -335,14 +324,6 @@ void CPhoneConferenceAndWaiting::HandleIdleL( TInt aCallId )
     
     if( iRingingCallId == aCallId )
         {
-        // Effect is shown when dialer exist.
-        TBool effectStarted ( EFalse );
-        if ( !NeedToReturnToForegroundAppL() )
-            {
-            BeginTransEffectLC( ENumberEntryOpen );
-            effectStarted = ETrue;
-            }
-        
         BeginUiUpdateLC();    
  
         // Idle message came for waiting call            
@@ -386,11 +367,7 @@ void CPhoneConferenceAndWaiting::HandleIdleL( TInt aCallId )
             SetTouchPaneButtons( EPhoneConferenceButtons );    
             }
         EndUiUpdate();
-        if ( effectStarted )
-            {
-            EndTransEffect();    
-            }
-         
+
         // Go to conference state
         // CBA updates in above if-else conditions
         iStateMachine->ChangeState( EPhoneStateConference );                    
@@ -419,7 +396,6 @@ void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndWaiting::HandleConferenceIdleL()");
  
-    BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
@@ -503,7 +479,6 @@ void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
            break;            
         }
     EndUiUpdate();
-    EndTransEffect();  
     }
 
 // -----------------------------------------------------------
@@ -525,7 +500,6 @@ void CPhoneConferenceAndWaiting::HandleDiallingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndWaiting::HandleDiallingL()");
     
-    BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC();
     // Hide number entry if it exists
     SetNumberEntryVisibilityL(EFalse);        
@@ -536,7 +510,6 @@ void CPhoneConferenceAndWaiting::HandleDiallingL( TInt aCallId )
     SetTouchPaneButtons( EPhoneCallSetupButtons ); 
 
     EndUiUpdate();
-    EndTransEffect();
     
     // Update conference and waiting and call setup softkeys
     UpdateCbaL( EPhoneCallHandlingCallSetupCBA );

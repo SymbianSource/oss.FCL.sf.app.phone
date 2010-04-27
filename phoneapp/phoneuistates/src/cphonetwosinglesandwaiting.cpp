@@ -217,16 +217,7 @@ void CPhoneTwoSinglesAndWaiting::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSinglesAndWaiting::HandleIdleL()");
-        
-    // Effect is shown when dialer exist.
-    
-    TBool effectStarted ( EFalse );
-    if ( !NeedToReturnToForegroundAppL() )
-        {
-        BeginTransEffectLC( ENumberEntryOpen );
-        effectStarted = ETrue;   
-        }
- 
+     
     BeginUiUpdateLC();    
          
     if ( !IsNumberEntryUsedL() )
@@ -248,10 +239,6 @@ void CPhoneTwoSinglesAndWaiting::HandleIdleL( TInt aCallId )
         }
 
     EndUiUpdate();
-    if ( effectStarted )
-        {
-        EndTransEffect();
-        }
     }
 
 // -----------------------------------------------------------

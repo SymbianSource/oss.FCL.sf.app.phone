@@ -132,11 +132,9 @@ EXPORT_C void CPhoneAlerting::HandleKeyMessageL(
 
                 if ( IsNumberEntryUsedL() )
                     {
-                    BeginTransEffectLC( ENumberEntryClose );
                     // Remove number entry from screen
                     iViewCommandHandle->ExecuteCommandL( 
                         EPhoneViewRemoveNumberEntry );
-                    EndTransEffect();    
                     // Do state-specific operation when number entry is cleared
                     HandleNumberEntryClearedL();
                     }

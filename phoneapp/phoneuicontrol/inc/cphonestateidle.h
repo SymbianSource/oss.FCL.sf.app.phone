@@ -164,6 +164,14 @@ class CPhoneStateIdle : public CPhoneState
         * in number entry.
         */
         IMPORT_C virtual void OnlyHashInNumberEntryL();
+        
+        /*
+        * Checks if it's ok to use aType effect in this state.
+        *
+        * @param aType effect to be checked
+        * @return true if aType effect can be used
+        */
+        IMPORT_C virtual TBool CanTransEffectTypeBeUsed( TStateTransEffectType aType );
 
         /**
         * A message handling function for EPEMessageDialling
@@ -290,9 +298,6 @@ class CPhoneStateIdle : public CPhoneState
          TInt GetNumberAcqMenuIdL();
          
     private:
-    
-        // Owned profile engine
-        MProfileEngine* iEngine;
         // indicates that incomming call is arrived.
         TBool iIncommingCall;
   

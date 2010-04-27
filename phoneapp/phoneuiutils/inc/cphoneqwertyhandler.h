@@ -69,6 +69,14 @@ class CPhoneQwertyHandler : public CBase,
         IMPORT_C TInt NumericKeyCode( const TKeyEvent& aKeyEvent );
 
         /**
+        * Converts the key code of the event to numeric mode code and removes
+        * any modifiers so that editor component will not do any more conversions.
+        * Does nothing if the key doesn't map to any numeric mode characters.
+        * @return ETrue if key contained any numeric mode character
+        */
+        IMPORT_C TBool ConvertToNumeric( TKeyEvent& aKeyEvent );
+
+        /**
         * Add qwerty mode observer. 
         */
         IMPORT_C void AddQwertyModeObserverL( MPhoneQwertyModeObserver& aObserver );
@@ -94,7 +102,7 @@ class CPhoneQwertyHandler : public CBase,
         * C++ default constructor.
         */
         CPhoneQwertyHandler();
-                                  
+        
         /**
         * By default Symbian 2nd phase constructor is private.
         */
@@ -104,6 +112,11 @@ class CPhoneQwertyHandler : public CBase,
         * LoadNumericKeyBindings
         */
         void LoadNumericKeyBindings( TInt aLanguage, TInt aKeyboard );
+        
+        /**
+         * Check if given character is a number character
+         */
+        TBool IsNumber( TText aChar ) const;
 
 
     private:    // Data
@@ -114,7 +127,7 @@ class CPhoneQwertyHandler : public CBase,
         // Qwerty mode
         TInt iQwertyMode;
         
-        // Language setting monitor            
+        // Language setting monitor
         CPhoneLangSettingMonitor* iLangSettingMonitor;
         
         // Qwerty mode monitor

@@ -39,7 +39,9 @@ enum
     EEasyDialingEnterKeyAction,
     EEasyDialingOn,
     EEasyDialingOff,
-    EEasyDialingClosePopup
+    EEasyDialingClosePopup,
+    EEasyDialingVkbOpened,
+    EEasyDialingVkbClosed
     };
 
 #endif //__EASYDIALINGCOMMANDS_HRH__

@@ -45,6 +45,11 @@
 const TInt  KPhoneKeyStart            = 33;
 const TInt  KPhoneKeyEnd              = 127;
 
+const TInt KKeyCtrlA( 1 );
+const TInt KKeyCtrlC( 3 );
+const TInt KKeyCtrlV( 22 );
+const TInt KKeyCtrlX( 24 );
+
 // ======== MEMBER FUNCTIONS ========
 
 // ---------------------------------------------------------------------------
@@ -395,7 +400,11 @@ void CPhoneNumberEntryManager::KeyEventForExistingNumberEntryL(
     keyEventParam.SetKeyEvent( aKeyEvent );
     keyEventParam.SetEventCode( aEventCode );
 
-    if ( IsValidAlphaNumericKey( aKeyEvent, aEventCode ) )
+    if ( IsValidAlphaNumericKey( aKeyEvent, aEventCode ) 
+            || aKeyEvent.iCode == KKeyCtrlA
+            || aKeyEvent.iCode == KKeyCtrlC
+            || aKeyEvent.iCode == KKeyCtrlV
+            || aKeyEvent.iCode == KKeyCtrlX )
         {
         iViewCommandHandle.HandleCommandL(
                 EPhoneViewSendKeyEventToNumberEntry, &keyEventParam );
@@ -449,7 +458,7 @@ TBool CPhoneNumberEntryManager::IsValidAlphaNumericKey(
     // a numeric key (1,2,3,4,6,7,8,9,0,+,*,p,w )
     // or
     // a letter from fullscreen qwerty, miniqwerty or handwriting
-    // when voip is enabled.
+    // when voip or easydialing is enabled.
     if ( numericKeyEntered
         || IsAlphanumericSupportedAndCharInput( aKeyEvent ) )
         {
@@ -461,17 +470,20 @@ TBool CPhoneNumberEntryManager::IsValidAlphaNumericKey(
 
 // -----------------------------------------------------------------------------
 // CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput
+// Check that number entry is in alphabetic mode and given key is an allowed
+// character key
 // -----------------------------------------------------------------------------
 //
 TBool CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput(
         const TKeyEvent& aKeyEvent ) const
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput( ) ");
-    TBool ret = ( ( iCustomization &&
-                 iCustomization->AllowAlphaNumericMode() ) &&
-                 ( ( aKeyEvent.iScanCode >= KPhoneKeyStart &&
-                     aKeyEvent.iScanCode <= KPhoneKeyEnd ) ||
-                     aKeyEvent.iModifiers & EModifierSpecial ) );
+    TBool ret = ( iViewCommandHandle.HandleCommandL( EPhoneViewIsNumberEntryNumericMode ) 
+                    != EPhoneViewResponseSuccess )
+                        &&
+                ( ( aKeyEvent.iScanCode >= KPhoneKeyStart &&
+                    aKeyEvent.iScanCode <= KPhoneKeyEnd ) ||
+                  aKeyEvent.iModifiers & EModifierSpecial );
     __PHONELOG1( EBasic, EPhoneControl, 
             "CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput: %d", ret );
     return ret;

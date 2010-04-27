@@ -33,3 +33,4 @@
 -c8,8 qgn_indi_tb_bthf
 -c8,8 qgn_indi_button_answer_white
 -c8,8 qgn_indi_button_logdialer_white
+-c8,8 qgn_indi_dialer_videocall_send

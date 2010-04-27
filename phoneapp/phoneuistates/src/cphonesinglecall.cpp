@@ -608,7 +608,6 @@ void CPhoneSingleCall::HandleDiallingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::HandleDiallingL()");
     
-    BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC();
     
     SetNumberEntryVisibilityL(EFalse);
@@ -620,8 +619,6 @@ void CPhoneSingleCall::HandleDiallingL( TInt aCallId )
     DisplayCallSetupL( aCallId );
 
     EndUiUpdate();
-    
-    EndTransEffect();
 
     // Go to call setup state
     UpdateCbaL( EPhoneCallHandlingCallSetupCBA );

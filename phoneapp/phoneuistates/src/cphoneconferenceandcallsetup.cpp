@@ -380,8 +380,7 @@ void CPhoneConferenceAndCallSetup::HandleIdleL( TInt aCallId )
         }
     else
         {       
-        // Remove  outgoing call 
-        BeginTransEffectLC( ENumberEntryOpen );
+        // Remove  outgoing call
         BeginUiUpdateLC();
         
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
@@ -396,8 +395,7 @@ void CPhoneConferenceAndCallSetup::HandleIdleL( TInt aCallId )
 	        
         SetTouchPaneButtons( EPhoneConferenceButtons );
         EndUiUpdate();
-        EndTransEffect(); 
-
+        
         // Go to conference state
         UpdateCbaL( EPhoneCallHandlingInCallCBA );
         iStateMachine->ChangeState( EPhoneStateConference );

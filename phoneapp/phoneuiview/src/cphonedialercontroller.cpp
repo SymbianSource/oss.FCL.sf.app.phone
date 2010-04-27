@@ -26,6 +26,7 @@
 #include <phoneui.rsg>
 #include <phoneui.mbg>
 #include <pevirtualengine.h>
+#include <featmgr.h>
 #include <data_caging_path_literals.hrh>
 
 #include "cphonedialercontroller.h"
@@ -49,53 +50,75 @@ enum TCallButtonState
     };
 static const CPhoneDialerController::TLocalButtonData KCallButtonDataTable[] =
     {
-        { EPhoneNumberAcqCmdSendCommand, 
-          EAknsMinorGenericQgnIndiButtonAnswerWhite,
-          EMbmPhoneuiQgn_indi_button_answer_white, 
-          EMbmPhoneuiQgn_indi_button_answer_white_mask,
-          R_PHONEUI_DIALER_TOOLTIP_CALL
+        { 
+        EPhoneNumberAcqCmdSendCommand, 
+        EAknsMinorGenericQgnIndiButtonAnswerWhite,
+        EMbmPhoneuiQgn_indi_button_answer_white, 
+        EMbmPhoneuiQgn_indi_button_answer_white_mask,
+        R_PHONEUI_DIALER_TOOLTIP_CALL
         },
-        { EPhoneDialerCmdLog,
-          EAknsMinorGenericQgnIndiButtonLogdialerWhite,
-          EMbmPhoneuiQgn_indi_button_logdialer_white,
-          EMbmPhoneuiQgn_indi_button_logdialer_white_mask,
-          R_PHONEUI_DIALER_TOOLTIP_RECENT_CALLS
+        { 
+        EPhoneDialerCmdLog,
+        EAknsMinorGenericQgnIndiButtonLogdialerWhite,
+        EMbmPhoneuiQgn_indi_button_logdialer_white,
+        EMbmPhoneuiQgn_indi_button_logdialer_white_mask,
+        R_PHONEUI_DIALER_TOOLTIP_RECENT_CALLS
         },
-        { EPhoneNumberAcqCmdSendCommand, 
-          EAknsMinorGenericQgnIndiButtonAnswerWhite,
-          EMbmPhoneuiQgn_indi_button_answer_white, 
-          EMbmPhoneuiQgn_indi_button_answer_white_mask,
-          R_PHONEUI_DIALER_TOOLTIP_SEND
+        { 
+        EPhoneNumberAcqCmdSendCommand, 
+        EAknsMinorGenericQgnIndiButtonAnswerWhite,
+        EMbmPhoneuiQgn_indi_button_answer_white, 
+        EMbmPhoneuiQgn_indi_button_answer_white_mask,
+        R_PHONEUI_DIALER_TOOLTIP_SEND
         }
     };
 static const TInt KCallButtonDataTableCount = 
     sizeof( KCallButtonDataTable ) / sizeof( CPhoneDialerController::TLocalButtonData );
 
-
 /** States for Phonebook button */
 enum TPhonebookButtonState
     {
     EPhonebookButtonContactsState = 0,
-    EPhonebookButtonAddContactState
+    EPhonebookButtonAddContactState,
+    // Video call button send state
+    EPhonebookButtonVideocallSendState,
+    // Video call button call state
+    EPhonebookButtonVideocallState
     };
 static const CPhoneDialerController::TLocalButtonData KPhonebookButtonDataTable[] =
     {
-        { EPhoneDialerCmdContacts,
-          EAknsMinorGenericQgnIndiDialerContacts,
-          EMbmPhoneuiQgn_indi_dialer_contacts,
-          EMbmPhoneuiQgn_indi_dialer_contacts_mask,
-          R_PHONEUI_DIALER_TOOLTIP_CONTACTS
+        { 
+        EPhoneDialerCmdContacts,
+        EAknsMinorGenericQgnIndiDialerContacts,
+        EMbmPhoneuiQgn_indi_dialer_contacts,
+        EMbmPhoneuiQgn_indi_dialer_contacts_mask,
+        R_PHONEUI_DIALER_TOOLTIP_CONTACTS
         },
-        { EPhoneNumberAcqCmdAddToContacts,
-          EAknsMinorGenericQgnIndiDialerAddContacts,      
-          EMbmPhoneuiQgn_indi_dialer_add_contacts,
-          EMbmPhoneuiQgn_indi_dialer_add_contacts_mask,
-          R_PHONEUI_DIALER_TOOLTIP_ADD_TO_CONTACTS
+        { 
+        EPhoneNumberAcqCmdAddToContacts,
+        EAknsMinorGenericQgnIndiDialerAddContacts,      
+        EMbmPhoneuiQgn_indi_dialer_add_contacts,
+        EMbmPhoneuiQgn_indi_dialer_add_contacts_mask,
+        R_PHONEUI_DIALER_TOOLTIP_ADD_TO_CONTACTS
+        },
+        // Video call button 
+        {
+        EPhoneNumberAcqCmdVideoCall,
+        EAknsMinorGenericQgnIndiDialerVideocallSend,
+        EMbmPhoneuiQgn_indi_dialer_videocall_send,
+        EMbmPhoneuiQgn_indi_dialer_videocall_send_mask,
+        R_PHONEUI_DIALER_TOOLTIP_SEND
+        },
+        {
+        EPhoneNumberAcqCmdVideoCall,
+        EAknsMinorGenericQgnIndiDialerVideocallSend,
+        EMbmPhoneuiQgn_indi_dialer_videocall_send,
+        EMbmPhoneuiQgn_indi_dialer_videocall_send_mask,
+        R_PHONEUI_DIALER_TOOLTIP_VIDEO_CALL
         }
     };
 static const TInt KPhonebookButtonDataTableCount = 
     sizeof( KPhonebookButtonDataTable ) / sizeof( CPhoneDialerController::TLocalButtonData );
-
 
 /** States for Clear button */
 enum TClearButtonState
@@ -104,11 +127,12 @@ enum TClearButtonState
     };
 static const CPhoneDialerController::TLocalButtonData KClearButtonDataTable[] =
     {
-        { EPhoneDialerCmdClear,
-          EAknsMinorGenericQgnIndiDialerClear,
-          EMbmPhoneuiQgn_indi_dialer_clear,
-          EMbmPhoneuiQgn_indi_dialer_clear_mask,
-          R_PHONEUI_DIALER_TOOLTIP_CLEAR
+        { 
+        EPhoneDialerCmdClear,
+        EAknsMinorGenericQgnIndiDialerClear,
+        EMbmPhoneuiQgn_indi_dialer_clear,
+        EMbmPhoneuiQgn_indi_dialer_clear_mask,
+        R_PHONEUI_DIALER_TOOLTIP_CLEAR
         }
     };
 static const TInt KClearButtonDataTableCount = 
@@ -331,6 +355,17 @@ EXPORT_C TInt CPhoneDialerController::ButtonState( TButtonIndex aIndex ) const
                 {
                 state = EPhonebookButtonContactsState;
                 }
+            else if ( FeatureManager::FeatureSupported( KFeatureIdFfTdScdmaVideocallKey ) )
+                {
+                if ( iServiceCodeFlag && !EasyDialingFocused() )
+                    {
+                    state = EPhonebookButtonVideocallSendState;
+                    }
+                else
+                    {
+                    state = EPhonebookButtonVideocallState;
+                    }
+                }
             else
                 {
                 state = EPhonebookButtonAddContactState;
@@ -379,10 +414,21 @@ EXPORT_C TBool CPhoneDialerController::ButtonDimmed( TButtonIndex aIndex ) const
         	break;
             
         case EPhonebookButton:
+            {
             dimmed = iRestrictedDialer;
+            // Check if video call button supported
+            TBool videoCallKeySupported = FeatureManager::FeatureSupported( KFeatureIdFfTdScdmaVideocallKey );
+            // Prevent video call but don't prevent opening Contacts during emergency call.
+            if ( !dimmed && videoCallKeySupported && iNumberAvailable )
+                {
+                dimmed = EmergencyCallActive();
+                }
+            }
             break;
         case EClearButton:
+            {
             dimmed = !iNumberAvailable;
+            }
             break;
         default:
             break;
@@ -411,7 +457,7 @@ EXPORT_C TBool CPhoneDialerController::EmergencyCallActive() const
         TPhoneCmdParamCallStateData callStateData;
         callStateData.SetCallState( EPEStateConnected );
         iBubbleWrapper->GetCallIdByState( &callStateData );
-        TInt connected = callStateData.CallId();    
+        TInt connected = callStateData.CallId();
         ret = ( connected == KEmergencyCallId );
         }
     return ret;

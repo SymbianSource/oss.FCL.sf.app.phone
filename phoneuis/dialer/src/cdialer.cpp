@@ -104,19 +104,19 @@ void CDialer::ConstructL(
     const CCoeControl& aContainer, 
     const TRect& aRect,
     MPhoneDialerController* aController )
-    {    
+    {
     DIALER_PRINT("CDialer::ConstructL<");	
-    LoadResourceL();    
+    LoadResourceL();
     
     // set window
     SetContainerWindowL( aContainer );
     SetParent( const_cast<CCoeControl*>(&aContainer) );
 
-    iNumberEntry = CDialerNumberEntry::NewL( *this );    
+    iNumberEntry = CDialerNumberEntry::NewL( *this );
 
     iController = aController;
     
-    iKeypadArea = CDialerKeyPadContainer::NewL( *this, EModeEasyDialing );    
+    iKeypadArea = CDialerKeyPadContainer::NewL( *this, EModeEasyDialing );
     
     iToolbar = CDialerToolbarContainer::NewL( *this, iController );
 
@@ -183,6 +183,7 @@ EXPORT_C void CDialer::SetControllerL( MPhoneDialerController* aController )
         iNumberEntry->SetNumberEntryPromptTextL( iController->NumberEntryPromptTextL() );
         SizeChanged();
         UpdateToolbar();
+        UpdateNumberEntryConfiguration();
         }
     }
 
@@ -194,7 +195,7 @@ EXPORT_C MPhoneDialerController* CDialer::Controller()
     {
     return iController;
     }
-            
+
 // ---------------------------------------------------------------------------
 // CDialer::GetEasyDialingInterface
 // ---------------------------------------------------------------------------
@@ -236,7 +237,7 @@ void CDialer::UpdateNumberEntryConfiguration()
         if ( !err )
             {
             voipSupported = serviceProviderSettings->IsFeatureSupported( 
-                ESupportInternetCallFeature );            
+                ESupportInternetCallFeature );
             delete serviceProviderSettings;
             }
 
@@ -254,14 +255,14 @@ void CDialer::UpdateNumberEntryConfiguration()
 // ---------------------------------------------------------------------------
 //
 EXPORT_C void CDialer::RelayoutAndDraw()
-	{
-	if ( iIsUsed )
-		{
-		SetSize( Size() );
-		DrawDeferred();
-		UpdateToolbar();
-		}
-	}
+    {
+    if ( iIsUsed )
+        {
+        SetSize( Size() );
+        DrawDeferred();
+        UpdateToolbar();
+        }
+    }
 
 // Methods from MNumberEntry
 
@@ -275,13 +276,15 @@ void CDialer::CreateNumberEntry()
     {
     DIALER_PRINT("CDialer::CreateNumberEntry<");
     
-    iIsUsed = ETrue;    
-
-    UpdateNumberEntryConfiguration();
+    if ( !iIsUsed )
+        {
+        iIsUsed = ETrue;
+        UpdateNumberEntryConfiguration();
+        }
     
-    DIALER_PRINT("CDialer::CreateNumberEntry>");        
+    DIALER_PRINT("CDialer::CreateNumberEntry>");
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::GetNumberEntry
 //  
@@ -293,7 +296,7 @@ CCoeControl* CDialer::GetNumberEntry() const
     control = iNumberEntry->GetNumberEntry();
     return control;
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::IsNumberEntryUsed
 //  
@@ -303,7 +306,7 @@ TBool CDialer::IsNumberEntryUsed() const
     {
     return iIsUsed;
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::SetNumberEntryVisible
 //  
@@ -312,7 +315,7 @@ TBool CDialer::IsNumberEntryUsed() const
 void CDialer::SetNumberEntryVisible( const TBool& /*aVisibility*/ )
     {
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::SetTextToNumberEntry
 //  
@@ -322,7 +325,7 @@ void CDialer::SetTextToNumberEntry( const TDesC& aDesC )
     {
     iNumberEntry->SetTextToNumberEntry( aDesC );
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::GetTextFromNumberEntry
 //  
@@ -332,7 +335,7 @@ void CDialer::GetTextFromNumberEntry( TDes& aDes )
     {
     iNumberEntry->GetTextFromNumberEntry( aDes );
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::RemoveNumberEntry
 //  
@@ -341,17 +344,20 @@ void CDialer::GetTextFromNumberEntry( TDes& aDes )
 void CDialer::RemoveNumberEntry()
     {
     ResetEditorToDefaultValues();
+    iVirtualKeyBoardOpen = EFalse;
+    
     iIsUsed = EFalse;
 
     // easydialer change begins
     if (iEasyDialer)
         {
-        TRAP_IGNORE( iEasyDialer->HandleCommandL( EEasyDialingClosePopup ) );
+        TRAP_IGNORE( iEasyDialer->HandleCommandL( EEasyDialingClosePopup );
+                     iEasyDialer->HandleCommandL( EEasyDialingVkbClosed ) );
         iEasyDialer->Reset();
         }
     // easydialer change ends
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::ChangeEditorMode
 //  
@@ -363,7 +369,7 @@ TInt CDialer::ChangeEditorMode( TBool aDefaultMode )
     ret = iNumberEntry->ChangeEditorMode( aDefaultMode );
     return ret;
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::OpenVKBL
 //  
@@ -375,6 +381,10 @@ void CDialer::OpenVkbL()
     UpdateEdwinState( EVirtualKeyboardEditor );
     
     iNumberEntry->HandleCommandL( EDialerCmdTouchInput );
+    if ( iEasyDialer )
+        {
+        iEasyDialer->HandleCommandL( EEasyDialingVkbOpened );
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -384,11 +394,10 @@ void CDialer::OpenVkbL()
 //
 TInt CDialer::GetEditorMode() const
     {
-    TBool vkbOpen = EdwinState()->Flags() & EAknEditorFlagTouchInputModeOpened;
-    return ( iQwertyMode || vkbOpen ) ? EAknEditorTextInputMode : 
-                                  EAknEditorNumericInputMode;
+    return ( iEditorType == ENumericEditor ) ? 
+        EAknEditorNumericInputMode : EAknEditorTextInputMode;
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::ResetEditorToDefaultValues
 //  
@@ -398,7 +407,7 @@ void CDialer::ResetEditorToDefaultValues()
     {
     iNumberEntry->ResetEditorToDefaultValues();
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::SetNumberEntryPromptText
 //  
@@ -427,6 +436,10 @@ EXPORT_C void CDialer::HandleQwertyModeChange( TInt aMode )
     {
     iQwertyMode = aMode;
     UpdateNumberEntryConfiguration();
+    if ( iEasyDialer && aMode )
+        {
+        TRAP_IGNORE( iEasyDialer->HandleCommandL( EEasyDialingVkbClosed ) );
+        }
     }
 
 // ---------------------------------------------------------
@@ -534,7 +547,7 @@ TInt CDialer::CountComponentControls() const
         }
     return count;
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::ComponentControl(TInt aIndex) const
 //
@@ -560,7 +573,7 @@ void CDialer::Draw( const TRect& /*aRect*/ ) const
 // CDialer::FocusChanged
 // ---------------------------------------------------------------------------
 //
-void CDialer::FocusChanged(TDrawNow aDrawNow)
+void CDialer::FocusChanged( TDrawNow aDrawNow )
     {
     if ( iEasyDialer )
         {           
@@ -571,10 +584,10 @@ void CDialer::FocusChanged(TDrawNow aDrawNow)
         }
     else
         {
-        iNumberEntry->SetFocus( IsFocused(), aDrawNow );    
+        iNumberEntry->SetFocus( IsFocused(), aDrawNow );
         }
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::MakeVisible
 // ---------------------------------------------------------------------------
@@ -620,6 +633,10 @@ void CDialer::PrepareForFocusGainL( )
         // edwin state changed.
         iVirtualKeyBoardOpen = EFalse;
         UpdateNumberEntryConfiguration();
+        if ( iEasyDialer )
+            {
+            iEasyDialer->HandleCommandL( EEasyDialingVkbClosed );
+            }
         }
     }
 
@@ -679,7 +696,7 @@ void CDialer::UnLoadResources()
         iResourceOffset = 0;
         }
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialer::ComponentControlForDialerMode
 // 
@@ -739,6 +756,7 @@ CAknEdwinState* CDialer::EdwinState() const
 //
 void CDialer::UpdateEdwinState( TEditorType aType )
     {
+    iEditorType = aType;
     CAknEdwinState* edwinState = EdwinState();
     
     switch ( aType )
@@ -820,7 +838,7 @@ void CDialer::LoadEasyDialingPlugin()
         {
         DIALER_PRINT( "CDialer::LoadEasyDialingPlugin, load failed" )
                 
-        delete iEasyDialer;        
+        delete iEasyDialer;
         iEasyDialer = NULL;
         
         delete iDialingExtensionObserver;
@@ -847,27 +865,29 @@ TBool CDialer::EasyDialingEnabled() const
 //
 void CDialer::LayoutNumberEntry( const TRect& aParent, TInt aVariety )
     {
-    // Use larger number entry if Easy dialing is not currently enabled.
+    TAknLayoutRect neLayoutRect;
+    neLayoutRect.LayoutRect( aParent, AknLayoutScalable_Apps::dia3_numentry_pane( aVariety ) );
+    TRect neRect = neLayoutRect.Rect();
+
     if ( EasyDialingEnabled() )
         {
         iNumberEntry->SetOperationMode( EModeEasyDialing );
-        AknLayoutUtils::LayoutControl(
-            iNumberEntry, aParent, 
-            AknLayoutScalable_Apps::dia3_numentry_pane( aVariety ).LayoutLine() );
+        
+        // Layout doesn't define any margin between number entry and contact list.
+        // Add a small margin here.
+        neRect.iTl.iY += 2;
         }
     else
         {
         iNumberEntry->SetOperationMode( EModeDialer );
-        TAknLayoutRect neLayoutRect;
-        neLayoutRect.LayoutRect( aParent, AknLayoutScalable_Apps::dia3_numentry_pane( aVariety ) );
+        
+        // Use rect which is an union of layout rects for ED and NE
         TAknLayoutRect edLayoutRect;
         edLayoutRect.LayoutRect( aParent, AknLayoutScalable_Apps::dia3_listscroll_pane( aVariety ) );
-
-        // create rect which is union of layout rects for ED and NE
-        TRect neRect( edLayoutRect.Rect().iTl, neLayoutRect.Rect().iBr );
-
-        iNumberEntry->SetRect( neRect );
+        neRect.iTl.iY = edLayoutRect.Rect().iTl.iY;
         }
+
+    iNumberEntry->SetRect( neRect );
     }
 
 // End of File

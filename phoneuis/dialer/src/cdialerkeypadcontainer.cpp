@@ -400,7 +400,7 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
     DIALER_PRINTF("KeyPadContainer::HandleControlEventL.EventType=",
                  (TInt)aEventType);
     
-    if ( aEventType == EEventStateChanged   || 
+    if ( aEventType == EEventStateChanged || 
          aEventType == EEventRequestCancel ||
          aEventType == EEventRequestExit ||
          aEventType == CDialerKeyPadButton::EEventDraggingOutsideButton )
@@ -426,6 +426,7 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
         
         // Send key event to phone.
         TKeyEvent keyEvent;
+        keyEvent.iCode = 0; // iCode should be 0 for all but EEventKey type of events
         keyEvent.iScanCode = tappedButton->ScanCode();
         keyEvent.iModifiers = ( EModifierNumLock | EModifierKeypad ); // Mark that this event is dialer simulated
         keyEvent.iRepeats = 0;
@@ -439,7 +440,6 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
                 iButtonPressedDown = EFalse;
                 if ( !iKeyUpSimulatedDueToDragging )
                     {
-                    keyEvent.iCode = 0;
                     ControlEnv()->SimulateKeyEventL( keyEvent, EEventKeyUp );
                     }
                 iKeyUpSimulatedDueToDragging = EFalse;
@@ -450,14 +450,14 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
                 {    
                 DIALER_PRINT("HandleControlEventL.EEventStateChanged");
                 iButtonPressedDown = ETrue;
-                keyEvent.iCode = tappedButton->KeyCode();
                 iParentControl.PrepareForFocusGainL();
 
                 ControlEnv()->SimulateKeyEventL( keyEvent, EEventKeyDown );
 
-                if( iButtonPressedDown )
+                if ( iButtonPressedDown )
                     {
                     // Send event key if key havent be lifted up already
+                    keyEvent.iCode = tappedButton->KeyCode();
                     ControlEnv()->SimulateKeyEventL( keyEvent, EEventKey );
                     }
                 }
@@ -471,7 +471,6 @@ void CDialerKeyPadContainer::HandleControlEventL( CCoeControl* aControl,
                 // we must send key up event now.
                 if ( !iKeyUpSimulatedDueToDragging )
                     {
-                    keyEvent.iCode = 0;
                     ControlEnv()->SimulateKeyEventL( keyEvent, EEventKeyUp );
                     iKeyUpSimulatedDueToDragging = ETrue;
                     }

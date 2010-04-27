@@ -79,10 +79,9 @@ CPhoneKeyEventForwarder::~CPhoneKeyEventForwarder()
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneKeyEventForwarder::~CPhoneKeyEventForwarder");
 
-    CEikonEnv* env = static_cast<CEikonEnv*>(ControlEnv());
-    if( env )
+    if ( iEikonEnv )
         {
-        env->EikAppUi()->RemoveFromStack( this );
+        iEikonEnv->EikAppUi()->RemoveFromStack( this );
         }
     delete iLongPressKeyEventTimer;
     
@@ -142,25 +141,20 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventL(
         "CPhoneKeyEventForwarder::OfferKeyEventL");
 
     TKeyResponse ret( EKeyWasNotConsumed );
-    TKeyEvent keyEvent = aKeyEvent;
 
     ret = OfferKeyEventBeforeControlStackL( aKeyEvent, aType );
 
-    // Convert event. Use already converted iKeyPressedDown.
-    // Do not convert other than DTMF tones
-    if( CPhoneKeys::IsDtmfTone( aKeyEvent, aType ) )
+    if ( !aKeyEvent.iRepeats )
         {
+        // Convert event. Use already converted iKeyPressedDown.
+        TKeyEvent keyEvent = aKeyEvent;
         keyEvent.iCode = iKeyPressedDown;
-        }
-
-    if ( !keyEvent.iRepeats )
-        {
+        
         // Start and stop dtmf
         iStateMachine->State()->HandleDtmfKeyToneL( keyEvent, aType );
-        if( aType != EEventKeyUp &&
-            ( CPhoneKeys::IsNumericKey( keyEvent, aType ) ||
-              IsAlphaNumericKey( keyEvent ) )
-          )
+        // Open number entry view if any allowed character key
+        // is pressed on homescreen or in-call ui
+        if ( aType != EEventKeyUp && IsKeyAllowed( keyEvent ) )
             {
             // Do not open number entry with up key
             iStateMachine->State()->HandleCreateNumberEntryL( keyEvent, aType );
@@ -202,10 +196,9 @@ void CPhoneKeyEventForwarder::ConstructL( const TRect& aRect )
     MakeVisible( EFalse );
     SetRect( aRect );
 
-    CEikonEnv* env = static_cast<CEikonEnv*>(ControlEnv());
-    if( env )
+    if ( iEikonEnv )
         {
-        env->EikAppUi()->AddToStackL(
+        iEikonEnv->EikAppUi()->AddToStackL(
             this,
             ECoeStackPriorityEnvironmentFilter,
             ECoeStackFlagRefusesFocus );
@@ -215,7 +208,7 @@ void CPhoneKeyEventForwarder::ConstructL( const TRect& aRect )
     iLongPressKeyEventTimer = CPhoneTimer::NewL();
     
     // Create qwerty mode handler
-    iQwertyHandler = CPhoneQwertyHandler::NewL(); 
+    iQwertyHandler = CPhoneQwertyHandler::NewL();
     
     TPhoneCmdParamPointer ptrParam;
     iViewCommandHandle->ExecuteCommand( EPhoneViewGetQwertyModeObserver, &ptrParam );
@@ -223,22 +216,32 @@ void CPhoneKeyEventForwarder::ConstructL( const TRect& aRect )
             static_cast<CDialer*>( ptrParam.Pointer() );
             
     iQwertyHandler->AddQwertyModeObserverL( *qwertyObserver );
-
     }
 
 // -----------------------------------------------------------------------------
 // CPhoneKeyEventForwarder::IsAlphaNumericKey
 // -----------------------------------------------------------------------------
 //
-TBool CPhoneKeyEventForwarder::IsAlphaNumericKey( const TKeyEvent& aKeyEvent )
+TBool CPhoneKeyEventForwarder::IsKeyAllowed( const TKeyEvent& aKeyEvent )
     {
     __LOGMETHODSTARTEND( EPhoneControl,
         "CPhoneKeyEventForwarder::IsAlphaNumericKey");
 
-    TBool alphaNumeric =
-       iStateMachine->State()->IsAlphanumericSupportedAndCharInput( aKeyEvent );
+    TKeyEvent keyEvent( aKeyEvent );
+    
+    // Check keyboard mode
+    TBool isModeNumeric = iViewCommandHandle->HandleCommandL(
+          EPhoneViewIsNumberEntryNumericMode ) == EPhoneViewResponseSuccess;
 
-    return alphaNumeric;
+    // Check if key is a numeric key
+    TBool isNumeric = CPhoneKeys::IsNumericKey( keyEvent, EEventKey );
+    
+    // Check if key is alpha numeric key and alphabet input is allowed
+    TBool isAllowedAlphaNumeric =
+       iStateMachine->State()->IsAlphanumericSupportedAndCharInput( keyEvent );
+
+    return ( ( isModeNumeric && isNumeric ) || 
+             ( !isModeNumeric && isAllowedAlphaNumeric ) );
     }
 
 // -----------------------------------------------------------------------------
@@ -256,7 +259,7 @@ TBool CPhoneKeyEventForwarder::ConvertHalfQwertySpecialChar( TUint& aCode,
           KCRUidAvkon,
           KAknKeyBoardLayout ) );
 
-    if( keyboard == EPtiKeyboardHalfQwerty )
+    if ( keyboard == EPtiKeyboardHalfQwerty )
         {
         switch ( aKeyEvent.iScanCode )
            {
@@ -285,11 +288,23 @@ TBool CPhoneKeyEventForwarder::ConvertHalfQwertySpecialChar( TUint& aCode,
     }
 
 // -----------------------------------------------------------------------------
-// CPhoneKeyEventForwarder::HandleTouchDialerKeyEventL
+// CPhoneKeyEventForwarder::IsKeySimulatedByTouchDialer
 // 
 // -----------------------------------------------------------------------------
 //
-void CPhoneKeyEventForwarder::HandleTouchDialerKeyEventL( const TKeyEvent& aKeyEvent, TEventCode aType )
+TBool CPhoneKeyEventForwarder::IsKeySimulatedByTouchDialer( 
+        const TKeyEvent& aKeyEvent ) const
+    {
+    return ( ( aKeyEvent.iModifiers & EModifierNumLock ) &&
+             ( aKeyEvent.iModifiers & EModifierKeypad ) );
+    }
+
+// -----------------------------------------------------------------------------
+// CPhoneKeyEventForwarder::HandleTouchDialerKeyEventL
+// Handle EEventKey type of event from touch dialer
+// -----------------------------------------------------------------------------
+//
+void CPhoneKeyEventForwarder::HandleTouchDialerKeyEventL( const TKeyEvent& aKeyEvent )
     {
     TBool multitap = aKeyEvent.iScanCode == EStdKeyNkpAsterisk && 
             iPreviousScanCode == EStdKeyNkpAsterisk &&
@@ -297,19 +312,16 @@ void CPhoneKeyEventForwarder::HandleTouchDialerKeyEventL( const TKeyEvent& aKeyE
     
     if ( multitap )
         {
-        if ( aType == EEventKeyDown )
-            {
-            // Update multitap index
-            iMultitapIndex = ( iMultitapIndex + 1 ) % KAsteriskMultitapCharacters().Length();
-            
-            // Delete the previously entered character by simulating a backspace character.
-            TKeyEvent backSpaceEvent;
-            backSpaceEvent.iModifiers = 0;
-            backSpaceEvent.iRepeats = 0;
-            backSpaceEvent.iCode = EKeyBackspace;
-            backSpaceEvent.iScanCode = EStdKeyBackspace;
-            iStateMachine->State()->HandleKeyEventL( backSpaceEvent, EEventKey );
-            }
+        // Update multitap index
+        iMultitapIndex = ( iMultitapIndex + 1 ) % KAsteriskMultitapCharacters().Length();
+        
+        // Delete the previously entered character by simulating a backspace character.
+        TKeyEvent backSpaceEvent;
+        backSpaceEvent.iModifiers = 0;
+        backSpaceEvent.iRepeats = 0;
+        backSpaceEvent.iCode = EKeyBackspace;
+        backSpaceEvent.iScanCode = EStdKeyBackspace;
+        iStateMachine->State()->HandleKeyEventL( backSpaceEvent, EEventKey );
         
         TKeyEvent keyEvent( aKeyEvent );
         
@@ -317,18 +329,12 @@ void CPhoneKeyEventForwarder::HandleTouchDialerKeyEventL( const TKeyEvent& aKeyE
         keyEvent.iCode = ( TInt ) KAsteriskMultitapCharacters()[ iMultitapIndex ];
         
         // Send character to number entry.
-        iStateMachine->State()->HandleKeyEventL( keyEvent, aType );
+        iStateMachine->State()->HandleKeyEventL( keyEvent, EEventKey );
         }
-    
     else 
         {
         iMultitapIndex = 0;
-        iStateMachine->State()->HandleKeyEventL( aKeyEvent, aType );
-        }
-    
-    if ( aType == EEventKeyUp )
-        {
-        iPreviousScanCode = aKeyEvent.iScanCode;
+        iStateMachine->State()->HandleKeyEventL( aKeyEvent, EEventKey );
         }
     }
 
@@ -367,26 +373,6 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventBeforeControlStackL(
         default:
             break;
         }
-    
-    // Check if keyEvent is simulated by Dialer.
-    const TBool simulatedByDialer = 
-        ( ( aKeyEvent.iModifiers & ( EModifierNumLock | EModifierKeypad ) ) 
-                == ( EModifierNumLock | EModifierKeypad ) );
-    
-    if( simulatedByDialer )
-        {
-        HandleTouchDialerKeyEventL( aKeyEvent, aType );
-        response = EKeyWasConsumed;
-        }
-    
-    else 
-        {
-        // If not simulated by dialer, multitap related fields are reset.
-        // Any key event not originating from dialer interrupts multitap
-        // behaviour.
-        iMultitapIndex = 0;
-        iPreviousScanCode = 0;
-        }
 
     return response;
     }
@@ -407,8 +393,7 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventAfterControlStackL(
     // Send key to editor
     iStateMachine->State()->HandleKeyEventL( aKeyEvent, aType );
     
-    if( EEventKeyUp == aType 
-            && EKeyNull != iKeyPressedDown )
+    if ( EEventKeyUp == aType && EKeyNull != iKeyPressedDown )
         {
         // Handle short key press
         iStateMachine->State()->HandleKeyMessageL( 
@@ -472,16 +457,60 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyBeforeControlStackL(
         "CPhoneKeyEventForwarder::HandleEventKeyBeforeControlStackL");
 
     TKeyResponse response( EKeyWasNotConsumed );
+    TKeyEvent keyEvent( aKeyEvent );
 
-    // Convert event.
-    TKeyEvent keyEvent = aKeyEvent;
-    keyEvent.iCode = iKeyPressedDown;
-
-    if(  aKeyEvent.iRepeats > 0 &&
-        CPhoneKeys::IsDtmfTone( keyEvent, EEventKey ) )
+    // Special handling for virtual dialer keys events
+    const TBool simulatedByDialer = IsKeySimulatedByTouchDialer( keyEvent );
+    if ( simulatedByDialer )
         {
-        // Do not repeat dtmf characters
+        // feed the event directly to number entry
+        HandleTouchDialerKeyEventL( keyEvent );
         response = EKeyWasConsumed;
+        }
+    else 
+        {
+        // If not simulated by dialer, multitap related fields are reset.
+        // Any key event not originating from dialer interrupts multitap
+        // behaviour.
+        iMultitapIndex = 0;
+        iPreviousScanCode = 0;
+        }
+
+    // Special handling for QWERTY numeric mode key events
+    if ( response == EKeyWasNotConsumed )
+        {
+        // FEP treats numeric QWERTY mode of Phone editor as a special case where most
+        // key events flow through directly to the Phone app (but some don't).
+        // To ensure consistent handling of numeric mode keys and QWERTY modifiers, 
+        // handle those keys manually before FEP has a chance to mess things up.
+        TBool numericMode = iViewCommandHandle->HandleCommandL(
+              EPhoneViewIsNumberEntryNumericMode ) == EPhoneViewResponseSuccess;
+
+        if ( iQwertyHandler->IsQwertyInput() && numericMode )
+            {
+            iQwertyHandler->ConvertToNumeric( keyEvent );
+            // Send key to editor unless this is a repeat event for dtmf character
+            if ( aKeyEvent.iRepeats == 0 ||
+                 !CPhoneKeys::IsDtmfTone( keyEvent, EEventKey ) )
+                {
+                iStateMachine->State()->HandleKeyEventL( keyEvent, EEventKey );
+                }
+            response = EKeyWasConsumed;
+            }
+        }
+    
+    // Prevent repeats of DTMF keys anyway
+    if ( response == EKeyWasNotConsumed )
+        {
+        // Convert event.
+        keyEvent.iCode = iKeyPressedDown;
+        if ( aKeyEvent.iRepeats > 0 &&
+             aKeyEvent.iCode != EKeyF18 &&   // EKeyF18 is used for AknCCPU support
+             CPhoneKeys::IsDtmfTone( keyEvent, EEventKey ) )
+            {
+            // Do not repeat dtmf characters
+            response = EKeyWasConsumed;
+            }
         }
 
     return response;
@@ -518,6 +547,9 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyUpBeforeControlStackL(
             iLongPressKeyEventTimer->CancelTimer();
             }
         }
+
+    // Store the previous scan code
+    iPreviousScanCode = iScanCode;
 
     return EKeyWasNotConsumed;
     }
@@ -602,35 +634,53 @@ void CPhoneKeyEventForwarder::ConvertKeyCode( TUint& aCode,
         "CPhoneKeyEventHandler::ConvertKeyCode scan code (%d)",
         aKeyEvent.iScanCode );
 
-    if( !ConvertHalfQwertySpecialChar( aCode, aKeyEvent ) )
+    if ( !ConvertHalfQwertySpecialChar( aCode, aKeyEvent ) )
         {
-        switch ( aKeyEvent.iScanCode )
+        TBool numMode = iViewCommandHandle->HandleCommandL(
+              EPhoneViewIsNumberEntryNumericMode ) == EPhoneViewResponseSuccess;
+        TBool simulatedByDialer = IsKeySimulatedByTouchDialer( aKeyEvent );
+    
+        if ( iQwertyHandler->IsQwertyInput() && numMode && !simulatedByDialer )
             {
-            case EStdKeyEnter:
-                aCode = EKeyEnter;
-                break;
-            case EStdKeyYes:
-                aCode = EKeyYes;
-                break;
-            case EStdKeyNo:
-                aCode = EKeyNo;
-                break;
-            case EStdKeyDeviceF:
-                aCode = EKeyDeviceF;  // EStdKeyDeviceF mapping for unlock switch.
-                break;
-            case EStdKeyHash:
-                aCode = KPhoneDtmfHashCharacter;
-                break;
-            case EStdKeyNkpAsterisk:
-                aCode = KPhoneDtmfStarCharacter;
-                break;              
-            case EStdKeyApplication0:
-                aCode = EKeyApplication0;
-                break;
-
-            default:
-                aCode = aKeyEvent.iScanCode; // Use default code
-                break;
+            TUint numCode = iQwertyHandler->NumericKeyCode( aKeyEvent );
+            if ( numCode )
+                {
+                aCode = numCode;
+                }
+            else
+                {
+                aCode = aKeyEvent.iScanCode;
+                }
+            }
+        else 
+            {
+            switch ( aKeyEvent.iScanCode )
+                {
+                case EStdKeyEnter:
+                    aCode = EKeyEnter;
+                    break;
+                case EStdKeyYes:
+                    aCode = EKeyYes;
+                    break;
+                case EStdKeyNo:
+                    aCode = EKeyNo;
+                    break;
+                case EStdKeyDeviceF:
+                    aCode = EKeyDeviceF;  // EStdKeyDeviceF mapping for unlock switch.
+                    break;
+                case EStdKeyHash:
+                    aCode = KPhoneDtmfHashCharacter;
+                    break;
+                case EStdKeyNkpAsterisk:
+                    aCode = KPhoneDtmfStarCharacter;
+                    break;
+                case EStdKeyApplication0:
+                    aCode = EKeyApplication0;
+                    break;
+                default:
+                    aCode = aKeyEvent.iScanCode; // Use default code
+                    break;
+                }
             }
         }
 

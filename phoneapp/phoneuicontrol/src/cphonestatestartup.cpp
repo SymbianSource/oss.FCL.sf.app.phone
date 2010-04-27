@@ -276,8 +276,8 @@ TInt CPhoneStateStartup::DoShowNoteL( TAny* aAny )
 void CPhoneStateStartup::InitializationReadyL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::InitializationReady() ");
-	iStateMachine->SecurityMode()->Initialize();
- if ( !IsSimOk() )
+    iStateMachine->SecurityMode()->Initialize();
+    if ( !IsSimOk() )
         {
         iCreateNote = CIdle::NewL( CActive::EPriorityHigh );
         CreateAndShowNoteAfterIdle(); 

@@ -42,6 +42,10 @@ class CPhoneNumberEntryManager;
 enum TStateTransEffectType
     {
     ENoneType,
+    // These effect types can be used only when NE is opened/closed
+    // when some other app than phone is visible on the foreground/
+    // background.
+    // These cannot be used for internal transitions (=call ui<->dialer).
     ENumberEntryOpen,
     ENumberEntryClose,
     ENumberEntryCreate
@@ -242,7 +246,8 @@ class CPhoneState :
         IMPORT_C void HandleLongHashL();
 
         /**
-        * Informs view to start Transition effect
+        * Informs view to start Transition effect if effect
+        * type is feasible for current state.
         * @param aType a transition effect, default none
         * EndTransEffect() must be called when update is done.
         */
@@ -615,6 +620,14 @@ class CPhoneState :
         */
         IMPORT_C virtual void OnlyHashInNumberEntryL();
 
+        /*
+        * Checks if it's ok to use aType effect in this state.
+        *
+        * @param aType effect to be checked
+        * @return true if aType effect can be used
+        */
+        IMPORT_C virtual TBool CanTransEffectTypeBeUsed( TStateTransEffectType aType );
+
         /**
         * Informs view that UI is being updated (call bubble or number editor).
         * EndUiUpdate() must be called when update is done.
@@ -711,6 +724,7 @@ class CPhoneState :
         * Returns customized dialer CBA resource id
         */
         IMPORT_C TInt CustomizedDialerCbaResourceIdL();
+        
 
     protected: // NumberEntry functions.
 

@@ -85,7 +85,8 @@ class CEasyDialingPlugin : public CDialingExtensionInterface,
                            public MContactDataManagerObserver,
                            public MEDContactorObserver,
                            public MEikListBoxObserver,
-                           public MAknInputBlockCancelHandler
+                           public MAknInputBlockCancelHandler,
+                           public MCoeForegroundObserver
 {
 public:
 
@@ -274,6 +275,15 @@ public:
     */
     void AknInputBlockCancel();
 
+    /**
+    * From MCoeForegroundObserver.
+    */
+    void HandleGainingForeground();
+    
+    /**
+    * From MCoeForegroundObserver.
+    */
+    void HandleLosingForeground();
 
 private:
 
@@ -374,15 +384,21 @@ private:
         ESendMessageCurrentContact,
         ELaunchCurrentContact,
         ELaunchSearch,
-        EInitializePcs
+        EInitializePcs,
+        ESimulateKeyEvent
         };
+    
+    /**
+     * Simulates a key event asynchronously
+     */
+    void AsyncSimulateKeyEvent( const TKeyEvent& aKeyEvent );
     
     /**
      * Initiates asynchronous callback to launch action and sets
      * input blocker active. 
      */
-    void AsyncActionLaunchL( const TEasyDialingAction aAction );
-       
+    void AsyncActionLaunchL( TEasyDialingAction aAction );
+    
     /**
      * Callback for CAsyncCallBack. Launches action set in iActionToBeLaunched
      * and stops input block when launch is done.
@@ -413,6 +429,12 @@ private:
      * Makes contact listbox invisible. Effect is used if feasible.
      */  
     void HideContactListBoxWithEffect();
+    
+    /**
+     * Checks if listbox effect can be triggered. Eg checks if 
+     * app is in the foreground.
+     */  
+    TBool CanListBoxEffectBeUsed() const;
 
 
 private:
@@ -494,6 +516,13 @@ private:
     
     /** Action to be launched next asynchronously. */
     TEasyDialingAction iActionToBeLaunched;
+    
+    /** Key event to be simulated asynchronously. */
+    TKeyEvent iKeyEventToSimulate;
+    
+    /** Is virtual keyboard currently open or not.*/
+    TBool iVirtualKeyboardOpen;
+    
 };
 
 

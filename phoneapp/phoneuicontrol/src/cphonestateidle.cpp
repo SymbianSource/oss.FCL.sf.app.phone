@@ -32,6 +32,8 @@
 #include <activeidle2domainpskeys.h>
 #include <mpeclientinformation.h>
 #include <bldvariant.hrh>
+#include <MProEngEngine.h>
+#include <ProEngFactory.h>
 
 #include "cphonepubsubproxy.h"
 #include "cphonecenrepproxy.h"
@@ -396,7 +398,6 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
         KScreenSaverAllowScreenSaver,
         EPhoneScreensaverNotAllowed );
     
-    BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC();
     
     // Hide the number entry if it exists
@@ -416,8 +417,6 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
     DisplayIncomingCallL( aCallId );
 
     EndUiUpdate();
-    
-    EndTransEffect();
     
     // Go to incoming state
     iCbaManager->UpdateIncomingCbaL( aCallId );
@@ -443,7 +442,6 @@ EXPORT_C void CPhoneStateIdle::HandleDialingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::HandleDialingL( ) ");
 
-    BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC();
     
     SetNumberEntryVisibilityL(EFalse);
@@ -463,8 +461,6 @@ EXPORT_C void CPhoneStateIdle::HandleDialingL( TInt aCallId )
     iCbaManager->UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
 
     SetToolbarDimming( ETrue );
-    
-    EndTransEffect();
     
     iStateMachine->ChangeState( EPhoneStateCallSetup );
     }
@@ -491,7 +487,6 @@ void CPhoneStateIdle::HandleConnectedL( TInt aCallId )
             &uidParam );
         }
  
-    BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC();
             
     // Remove the number entry
@@ -508,7 +503,6 @@ void CPhoneStateIdle::HandleConnectedL( TInt aCallId )
     SetToolbarDimming( EFalse );
     
     EndUiUpdate();
-    EndTransEffect();
   
     // Go to single state
     iCbaManager->UpdateCbaL( EPhoneCallHandlingInCallCBA );
@@ -587,6 +581,14 @@ EXPORT_C TBool CPhoneStateIdle::ProcessCommandL( TInt aCommand )
            commandStatus = ETrue;
            }
            break;       
+           
+       case EPhoneViewOpenNumberEntry:   
+           {
+           BeginTransEffectLC( ENumberEntryOpen );
+           commandStatus = CPhoneState::ProcessCommandL( aCommand );
+           EndTransEffect();
+           }
+           break;
            
        default:
            commandStatus = CPhoneState::ProcessCommandL( aCommand );
@@ -917,9 +919,7 @@ EXPORT_C void CPhoneStateIdle::SpeedDialL( const TUint& aDigit,
         DialL( *phoneNumber, speedDialParam.NumberType(), aDialMethod );
         
         if ( IsNumberEntryUsedL()  ) 
-            {
-            BeginTransEffectLC( ENumberEntryClose ); 
-            
+            {         
             iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
             
             // Set Idle background, if still idle
@@ -927,8 +927,6 @@ EXPORT_C void CPhoneStateIdle::SpeedDialL( const TUint& aDigit,
                 {
                 SetupIdleScreenInBackgroundL();
                 }
-            
-            EndTransEffect();
             }
         }
     else
@@ -1104,9 +1102,11 @@ void CPhoneStateIdle::HandleEndKeyPressL( TPhoneKeyEventMessages aMessage )
 
                 if ( IsNumberEntryUsedL() )
                     {
+                    BeginTransEffectLC( ENumberEntryClose );
                     // Remove number entry from screen
                     iViewCommandHandle->ExecuteCommandL( 
                         EPhoneViewRemoveNumberEntry );
+                    EndTransEffect();
                     // Do state-specific operation when number entry is cleared
                     HandleNumberEntryClearedL();
                     
@@ -1122,9 +1122,11 @@ void CPhoneStateIdle::HandleEndKeyPressL( TPhoneKeyEventMessages aMessage )
                 }
             else if ( IsNumberEntryUsedL() && TopAppIsDisplayedL() )
                 {
-                // Remove number entry from screen
+                // Remove number entry from screen with effect
+                BeginTransEffectLC( ENumberEntryClose );
                 iViewCommandHandle->ExecuteCommandL( 
                     EPhoneViewRemoveNumberEntry );
+                EndTransEffect();
                 // Do state-specific operation when number entry is cleared
                 HandleNumberEntryClearedL();
                 }
@@ -1184,6 +1186,24 @@ EXPORT_C void CPhoneStateIdle::OnlyHashInNumberEntryL()
     }
 
 // ---------------------------------------------------------
+// CPhoneStateIdle::CanTransEffectTypeBeUsed
+// ---------------------------------------------------------
+//
+EXPORT_C TBool CPhoneStateIdle::CanTransEffectTypeBeUsed( TStateTransEffectType aType )
+    {
+    TBool okToUse( EFalse );
+    // These effects can be used for transitions between
+    // phone and some other app.
+    if ( aType == ENumberEntryOpen || 
+         aType == ENumberEntryClose ||
+         aType == ENumberEntryCreate )
+        {
+        okToUse = ETrue;
+        }
+    return okToUse;
+    }
+
+// ---------------------------------------------------------
 // CPhoneStateIdle::ChangeMannerModeL
 // ---------------------------------------------------------
 //
@@ -1192,8 +1212,10 @@ void CPhoneStateIdle::ChangeMannerModeL()
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneStateIdle::ChangeMannerModeL( ) ");
 
     // Get the profile information
-    const TInt profileId = 
-        iStateMachine->PhoneEngineInfo()->ProfileId();
+    MProEngEngine* profileEngine = ProEngFactory::NewEngineLC();
+    const TInt profileId =
+            profileEngine->ActiveProfileId();
+    
     TInt newProfile;
     
     if ( profileId == EProfileSilentId )
@@ -1204,13 +1226,11 @@ void CPhoneStateIdle::ChangeMannerModeL()
         {
         newProfile = EProfileSilentId;    
         }
-        
-    if ( !iEngine )
-        {
-        iEngine = CreateProfileEngineL();
-        }
-
-    iEngine->SetActiveProfileL( newProfile );
+    
+    profileEngine->SetActiveProfileL( newProfile );
+    
+    CleanupStack::Pop(); // profileEngine 
+    profileEngine->Release();
     
     // Stop playing DTMF tone
     iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF ); 

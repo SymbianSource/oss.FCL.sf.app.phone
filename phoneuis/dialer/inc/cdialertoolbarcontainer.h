@@ -108,6 +108,11 @@ private: // new methods
      */
     TPoint LayoutButton( TInt aButtonIdx, TPoint aPos );
     
+    /**
+     * Simulate backspace press including key down event, key event, and key up event
+     */
+    void SimulateBackspace();
+    
 private: // data
     
     /** Provides toolbar button data. Not owned. */

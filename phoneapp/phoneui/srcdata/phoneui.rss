@@ -7549,6 +7549,17 @@ RESOURCE TBUF r_phoneui_dialer_tooltip_add_to_contacts
 
 // ----------------------------------------------------------------
 //
+//    r_phoneui_dialer_tooltip_video_call
+//
+// ----------------------------------------------------------------
+//
+RESOURCE TBUF r_phoneui_dialer_tooltip_video_call
+    {
+    buf = qtn_indi_dialer_videocall_tooltip;
+    }
+
+// ----------------------------------------------------------------
+//
 //    r_phoneui_dialer_tooltip_clear
 //
 // ----------------------------------------------------------------

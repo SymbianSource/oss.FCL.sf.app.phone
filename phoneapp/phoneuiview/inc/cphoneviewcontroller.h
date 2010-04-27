@@ -570,7 +570,8 @@ class CPhoneViewController :
         /**
         * Handles transition effect.
         */
-        void HandleTransitionEffect( TPhoneTransEffectType aType );
+        void HandleTransitionEffect( TPhoneTransEffectType aType, 
+                const TUid& aAppUidEffectParam = KUidPhoneApplication );
 
         /**
         * Sets control to dialer.
@@ -624,6 +625,30 @@ class CPhoneViewController :
          * Checks if custom dialer mode is currently active        
          */
         TBool IsCustomDialerActive() const;
+        
+        /**
+        * Checks if the effect could and should be triggered.
+        */
+        TBool CanTransEffectBeUsed( TPhoneTransEffectType aType );
+
+        /**
+        * Triggers application start effect for the application
+        * that is going to be lauched from dialer.
+        * @param aAppUid app that is launched
+        * EndTransEffect() must be called after app is launched.
+        */
+        void BeginTransEffectForAppStartFromDialerLC( const TUid& aAppUid );
+
+        /**
+        * Complete transition effect.
+        */
+        void EndTransEffect();
+        
+        /**
+         * TCleanupOperation to call EndTransEffect, if leave occurs
+         * after BeginTransEffectForAppStartFromDialerLC.
+         */
+        static void EffectCleanup(TAny* aThis );
         
     private:    // Data
 

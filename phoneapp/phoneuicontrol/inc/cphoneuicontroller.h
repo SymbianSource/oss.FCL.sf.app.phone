@@ -185,6 +185,11 @@ class CPhoneUIController :
         */
         void DoHandlePhoneNumberEditorCallBack();
         
+		/**
+        * Handles the construction of Remote Controller Handler.
+        */
+        void ConstructRemoteControlHandlerL();
+        
     private:    // Data
 
         /**

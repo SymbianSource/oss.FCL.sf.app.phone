@@ -589,14 +589,14 @@ void CPhoneAppUI::HandleWsEventL(
                 
                 if ( keyEvent->iScanCode == EStdKeyNo )
                     {
-                    NoKeySpecialHandlingL( *keyEvent, EEventKey );    
+                    NoKeySpecialHandlingL( *keyEvent, EEventKey );
                     }
                     
                  //will be called if exit number is typed (*#1234#)
                 if ( keyEvent->iCode == EEikCmdExit )
                     {
                     Exit();
-                    return;     
+                    return;
                     }
                 }
                 break;
@@ -607,8 +607,8 @@ void CPhoneAppUI::HandleWsEventL(
                 
                 if ( keyEvent->iScanCode == EStdKeyNo )
                     {
-                    NoKeySpecialHandlingL( *keyEvent, EEventKeyUp );    
-                    }    
+                    NoKeySpecialHandlingL( *keyEvent, EEventKeyUp );
+                    }
                 }
                 break;
                 
@@ -618,8 +618,8 @@ void CPhoneAppUI::HandleWsEventL(
                 
                 if ( keyEvent->iScanCode == EStdKeyNo )
                     {
-                    NoKeySpecialHandlingL( *keyEvent, EEventKeyDown );    
-                    }    
+                    NoKeySpecialHandlingL( *keyEvent, EEventKeyDown );
+                    }
                 }
                 break;
 
@@ -681,7 +681,7 @@ void CPhoneAppUI::ProcessCommandL( TInt aCommand )
 
     if( !iPhoneUIController->ProcessCommandL( aCommand ) )
         {
-		// State didn't handle the command so pass it up
+        // State didn't handle the command so pass it up
         CAknAppUi::ProcessCommandL( aCommand );
         }
     
@@ -873,7 +873,7 @@ TInt CPhoneAppUI::GetAliasKeyCode( TUint& aCode,
                                    const TKeyEvent& aKeyEvent,
                                    TEventCode /*aType*/)
     {    
-    aCode = aKeyEvent.iCode;    
+    aCode = aKeyEvent.iCode;
     return KErrNone;
     } 
 

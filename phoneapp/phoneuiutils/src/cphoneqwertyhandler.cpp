@@ -24,6 +24,9 @@
 #include    <w32std.h>
 
 // CONSTANTS
+static const TUint32 KNumKeyModifiers( EModifierLeftShift | EModifierRightShift | EModifierShift |
+                                       EModifierLeftFunc | EModifierRightFunc | EModifierFunc );
+
 
 // FORWARD DECLARATIONS
 
@@ -60,7 +63,7 @@ void CPhoneQwertyHandler::ConstructL()
     
     if ( iQwertyMode )
         {
-        LoadNumericKeyBindings( iInputLanguageId, iQwertyModeMonitor->Keyboard() );            
+        LoadNumericKeyBindings( iInputLanguageId, iQwertyModeMonitor->Keyboard() );
         }
     }
 
@@ -80,7 +83,7 @@ EXPORT_C CPhoneQwertyHandler* CPhoneQwertyHandler::NewL()
 
     return self;
     }
-    
+
 // Destructor
 EXPORT_C CPhoneQwertyHandler::~CPhoneQwertyHandler()
     {
@@ -99,7 +102,7 @@ EXPORT_C CPhoneQwertyHandler::~CPhoneQwertyHandler()
 //    
 EXPORT_C TBool CPhoneQwertyHandler::IsQwertyInput() const
     {
-    return iQwertyMode > 0 ? ETrue : EFalse;    
+    return iQwertyMode > 0 ? ETrue : EFalse;
     }
 
 // -----------------------------------------------------------------------------
@@ -124,12 +127,12 @@ void CPhoneQwertyHandler::HandleInputLanguageSettingChange( TInt aLanguage )
 void CPhoneQwertyHandler::HandleQwertyModeChange( TInt aMode )
     {
     iQwertyMode = aMode;
-#ifndef RD_INTELLIGENT_TEXT_INPUT    
+#ifndef RD_INTELLIGENT_TEXT_INPUT
     if ( iQwertyMode && !iNumericKeys.Count() )
         {
-        LoadNumericKeyBindings( iInputLanguageId, iQwertyModeMonitor->Keyboard() );            
+        LoadNumericKeyBindings( iInputLanguageId, iQwertyModeMonitor->Keyboard() );
         }
-#endif    
+#endif
     }
 
 // -----------------------------------------------------------------------------
@@ -139,9 +142,7 @@ void CPhoneQwertyHandler::HandleQwertyModeChange( TInt aMode )
 //
 void CPhoneQwertyHandler::HandleKeyboardLayoutChange()
     {
-    
-    LoadNumericKeyBindings( iInputLanguageId, iQwertyModeMonitor->Keyboard() );            
-   
+    LoadNumericKeyBindings( iInputLanguageId, iQwertyModeMonitor->Keyboard() );
     }
 
 // -----------------------------------------------------------------------------
@@ -161,8 +162,8 @@ void CPhoneQwertyHandler::LoadNumericKeyBindings( TInt aLanguage, TInt aKeyboard
         
         ptiEngine->GetNumericModeKeysForQwertyL( aLanguage, 
                                                  iNumericKeys,
-                                                 keyboard );         
-        CleanupStack::PopAndDestroy( ptiEngine );                                                 
+                                                 keyboard );
+        CleanupStack::PopAndDestroy( ptiEngine );
         } ); // TRAP
 #else
     TRAPD( err, 
@@ -170,12 +171,12 @@ void CPhoneQwertyHandler::LoadNumericKeyBindings( TInt aLanguage, TInt aKeyboard
         CPtiEngine* ptiEngine = CPtiEngine::NewL();
         CleanupStack::PushL( ptiEngine );
         ptiEngine->GetNumericModeKeysForQwertyL( aLanguage, 
-                                                 iNumericKeys );         
-        CleanupStack::PopAndDestroy( ptiEngine );                                                 
+                                                 iNumericKeys );
+        CleanupStack::PopAndDestroy( ptiEngine );
         } ); // TRAP
 #endif    
         
-    if ( err )        
+    if ( err )
         {
         iNumericKeys.Reset();
         iQwertyMode = 0; // To default mode
@@ -191,9 +192,9 @@ void CPhoneQwertyHandler::LoadNumericKeyBindings( TInt aLanguage, TInt aKeyboard
             // This is PTI bug? Should not be in numeric keys list.
             if ( numKeyBind.iKey == EPtiKeyQwertySpace ) 
                  {
-                 iNumericKeys.Remove( numericKeysCount );                    
+                 iNumericKeys.Remove( numericKeysCount );
                  }
-            }    
+            }
         }
     }
 
@@ -203,30 +204,72 @@ void CPhoneQwertyHandler::LoadNumericKeyBindings( TInt aLanguage, TInt aKeyboard
 //    
 EXPORT_C TInt CPhoneQwertyHandler::NumericKeyCode( const TKeyEvent& aKeyEvent )
     {
-  
-    // Check shift state
-    TBool shiftActive(EFalse);
-    shiftActive = aKeyEvent.iModifiers & EModifierLeftShift ||
-                  aKeyEvent.iModifiers & EModifierRightShift; //||
+    TInt keyCode( EKeyNull );
     
-    TInt numericKeysCount = iNumericKeys.Count();
+    // It's possible that there are several numeric mode characters in same
+    // QWERTY key (for example, '2' and 'w' may be on same button) and there must 
+    // be a way to enter each of these. 
+    // Select numeric mode key code for the key event with the following logic:
+    // 1. If key contains exactly one numeric mode character, return that
+    //    regardless of the current modifiers.
+    // 2a. If key has two numeric mode characters, then actual numbers are preferred.
+    //     Pressing such key without modifiers will produce the number character.
+    // 2b. Pressing key with two numeric mode characters together with any modifier
+    //     (Fn, Shift, Chr) will produce the secondary numeric mode character.
+    // 3. More than two numeric mode characters on one key are not supported.
+    //    Such cases shouldn't ever occur, but if they will, then this algorithm
+    //    must be changed.
     
-    while ( numericKeysCount-- )
+    // Check modifier state
+    TBool modifierActive = ( aKeyEvent.iModifiers & KNumKeyModifiers );
+    
+    TInt numBindIdx = iNumericKeys.Count();
+    
+    while ( numBindIdx-- )
         {
-        TPtiNumericKeyBinding numKeyBind = iNumericKeys[numericKeysCount];
-            
-        TBool shiftRequired = ( numKeyBind.iCase ==EPtiCaseUpper ) ||
-                              ( numKeyBind.iCase ==EPtiCaseChrUpper );
-            
-        if ( numKeyBind.iKey == aKeyEvent.iScanCode &&
-             (shiftRequired == shiftActive  )   )
+        const TPtiNumericKeyBinding& numKeyBind = iNumericKeys[numBindIdx];
+        
+        if ( numKeyBind.iKey == aKeyEvent.iScanCode )
             {
-            return numKeyBind.iChar;
+            if ( !keyCode )
+                {
+                // first match for this key
+                keyCode = numKeyBind.iChar;
+                }
+            else
+                {
+                // Second numeric mode character for this key. Override
+                // previous code if it was the number character but some
+                // modifier is active or it was not number character and no
+                // modifiers are active.
+                if ( ( IsNumber(keyCode) && modifierActive ) ||
+                     ( !IsNumber(keyCode) && !modifierActive ) )
+                    {
+                    keyCode = numKeyBind.iChar;
+                    }
+                }
             }
         }
         
-    return EKeyNull;         
-    }           
+    return keyCode;
+    }
+
+// -----------------------------------------------------------------------------
+// CPhoneQwertyHandler::ConvertToNumeric
+// -----------------------------------------------------------------------------
+//
+EXPORT_C TBool CPhoneQwertyHandler::ConvertToNumeric( TKeyEvent& aKeyEvent )
+    {
+    TBool ret( EFalse );
+    TInt numericCode = NumericKeyCode( aKeyEvent );
+    if ( numericCode )
+        {
+        aKeyEvent.iCode = numericCode;
+        aKeyEvent.iModifiers &= ~KNumKeyModifiers;
+        ret = ETrue;
+        }
+    return ret;
+    }
 
 // -----------------------------------------------------------------------------
 // CPhoneQwertyHandler::AddQwertyModeObserverL
@@ -241,5 +284,15 @@ EXPORT_C void CPhoneQwertyHandler::AddQwertyModeObserverL(
     // status dependent objects would get correct initial value.
     aObserver.HandleQwertyModeChange( iQwertyMode );
     }
+
+// -----------------------------------------------------------------------------
+// CPhoneQwertyHandler::IsNumber
+// -----------------------------------------------------------------------------
+//
+TBool CPhoneQwertyHandler::IsNumber( TText aChar ) const
+    {
+    return TChar( aChar ).IsDigit();
+    }
+
 
 //  End of File  

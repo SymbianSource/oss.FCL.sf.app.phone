@@ -68,8 +68,7 @@ void CPhoneUIController::ConstructL( CPhoneViewController& aViewController )
     iEngineHandler = CPhoneEngineHandler::NewL( iStateMachine );
     // Create the system event handler
     iSystemEventHandler = CPhoneSystemEventHandler::NewL( iStateMachine );
-     // Create the remote control handler
-    iRemoteControlHandler = CPhoneRemoteControlHandler::NewL( iStateMachine );
+
     // Create the key event forwarder
     iKeyEventForwarder = CPhoneKeyEventForwarder::NewL( 
         CEikonEnv::Static()->EikAppUi()->ClientRect(), iStateMachine, &aViewController );
@@ -178,6 +177,14 @@ EXPORT_C void CPhoneUIController::HandleMessage(
     const TInt aCallId ) 
     {
     __PHONELOGENGINEMSG( aMessage, aCallId );
+    
+    // PhoneCmdHandler is using Call information API so 
+	// Remote Control Handler can be constructed only after CCCE is constructed.
+	if ( aMessage == EPEMessagePEConstructionReady )
+		{
+		TRAP_IGNORE( ConstructRemoteControlHandlerL() );
+		}
+        	
     TRAPD( err, iEngineHandler->DoHandleMessageL( aMessage, aCallId ) );
 
     if ( err != KErrNone )
@@ -413,6 +420,16 @@ TInt CPhoneUIController::HandlePhoneNumberEditorCallBack( TAny* aAny )
 void CPhoneUIController::DoHandlePhoneNumberEditorCallBack()
     {
     iStateMachine->State()->HandleNumberEntryEdited();
+    }
+
+// ---------------------------------------------------------
+// CPhoneUIController::ConstructRemoteControlHandlerL
+// ---------------------------------------------------------
+//
+void CPhoneUIController::ConstructRemoteControlHandlerL()
+    { 
+	// Create the remote control handler
+	iRemoteControlHandler = CPhoneRemoteControlHandler::NewL( iStateMachine );
     }
 
 //  End of File  

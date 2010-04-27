@@ -459,6 +459,13 @@ NONSHARABLE_CLASS(CDialer) :
          * Is qwerty mode on.
          */
         TBool iQwertyMode;
+        
+        /**
+         * Current type of the editor field. The field is numeric unless
+         * the device is in QWERTY mode and there is some consumer (like VoIP, EasyDialing)
+         * for the alphabetic characters.
+         */
+        TEditorType iEditorType;
     };
 
 #endif      // CDIALER_H

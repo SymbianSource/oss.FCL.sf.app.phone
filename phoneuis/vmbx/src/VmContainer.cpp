@@ -1453,6 +1453,12 @@ void CVmContainer::AiwCallRequestL( TInt aCommand,
     if ( aCallType == CAiwDialData::EAIWVoiP)
         {
         VMBLOGSTRING( "VMBX: CVmContainer::AiwCallRequestL: Type: VoipCall" );
+        if ( !FeatureManager::FeatureSupported( KFeatureIdCsVideoTelephony ) )
+            {
+            // Internet call command id is the same as video call command id
+            // when video call is not supported.
+            aCommand = KVmCmdAiwVideoCall;
+            }
 
         serviceInfo.iServiceId = ServiceId();
 

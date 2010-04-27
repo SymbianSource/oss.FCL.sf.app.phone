@@ -328,6 +328,8 @@ void CEasyDialingPlugin::InitializeL( CCoeControl& aParent )
     GfxTransEffect::Register( iContactListBox, 
                               KGfxContactListBoxUid, EFalse );
     
+    iCoeEnv->AddForegroundObserverL( *this );
+    
     // Do delayed initialization of PCS. PCS constructions takes a long time.
     // On the other hand, easy dialing initialization is done in phone application
     // constructor, so it contributes the whole system boot time. These are good 
@@ -461,20 +463,14 @@ TKeyResponse CEasyDialingPlugin::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEve
     {
     TKeyResponse keyResponse = EKeyWasNotConsumed;
 
-    if ( aKeyEvent.iCode == 0 && aKeyEvent.iScanCode != EStdKeyDevice3)
+    if ( aType != EEventKey )
         {
         return keyResponse;
         }
 
     TInt keyCode = aKeyEvent.iCode;
     
-    // Swap right and left key codes in mirrored layout. This needs to be done
-    // also for action menu grid as CAknGrid handles arrow keys like this:
-    // left key = next column (not item!) and right is previous column and
-    // grid layout (LtR/RtL) is not taken into account when movement is done
-    // in columns (always like in LtR layout). So if right key should move
-    // focus to the right also in mirroded layout, key codes must be switched.
-    // This kind of approach is used also e.g. in application grid.
+    // Swap right and left key codes in mirrored layout.
     if ( AknLayoutUtils::LayoutMirrored() ) 
         {
         if ( keyCode == EKeyRightArrow ) keyCode = EKeyLeftArrow;
@@ -534,6 +530,21 @@ TKeyResponse CEasyDialingPlugin::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEve
             {
             // then focus jumps off the component.
             SetFocus( EFalse );
+            
+            // FEP hasn't had chance to handle this key event as focus was not in the editor field.
+            // Give that chance now by consuming original event and simulating a new one.
+            // The simulation must be asynchronous because FEP focusing state is updated
+            // with high priority active object.
+            // As an exception, dialer simulated keys are given directly to editor. They are
+            // not handled by FEP anyway, and asynchronous handling would be problematic for
+            // the * key multitapping logic of Phone.
+            TBool simulatedByDialer = (aKeyEvent.iModifiers&EModifierNumLock) &&
+                                      (aKeyEvent.iModifiers&EModifierKeypad);
+            if ( !simulatedByDialer )
+                {
+                keyResponse = EKeyWasConsumed;
+                AsyncSimulateKeyEvent( aKeyEvent );
+                }
             }
         }
 
@@ -966,23 +977,13 @@ TInt CEasyDialingPlugin::FindContactFieldPCSIndexL( TInt aIndex )
 
     // Current implementation searches only from default database.
     // Later this may be expanded to search SIM contacts as well.
-    HBufC* default_cdb = VPbkContactStoreUris::DefaultCntDbUri().AllocLC();
+    const TDesC& defaultCdb = VPbkContactStoreUris::DefaultCntDbUri();
 
-    iPredictiveContactSearchHandler->GetDataOrderL( *default_cdb, fieldOrder );
+    iPredictiveContactSearchHandler->GetDataOrderL( defaultCdb, fieldOrder );
+    TInt pcsIndex = fieldOrder.Find( aIndex );
 
-    for ( TInt i = 0; i < fieldOrder.Count(); i++)
-        {
-        if ( fieldOrder[i] == aIndex )
-            {
-            CleanupStack::PopAndDestroy( default_cdb );
-            CleanupStack::PopAndDestroy( &fieldOrder );
-            return i;
-            }
-        }
-
-    CleanupStack::PopAndDestroy( default_cdb );
     CleanupStack::PopAndDestroy( &fieldOrder );
-    return KErrNotFound;
+    return pcsIndex;
     }
 
 
@@ -1106,10 +1107,25 @@ void CEasyDialingPlugin::HandlePsResultsUpdateL( RPointerArray<CPsClientData>& a
     iNumberOfNames = iListBoxModel->Count();
     if ( iNumberOfNames )
         {
+        TInt oldRectHeight = iContactListBox->Rect().Height();
+        
         iContactListBox->SetRectToNumberOfItems( iNumberOfNames );
+        
+        // If the window is resized (->position changes too) while it's visible, 
+        // it has to be redrawn immediately or otherwise listbox will flash
+        // in a wrong place on the screen during execution of this method
+        // HandlePsResultsUpdateL. In the worst case it'll flash on top of
+        // dialer's numeric keypad when listbox is made smaller.
+        if ( oldRectHeight != iContactListBox->Rect().Height() )
+            {
+            iContactListBox->DrawNow();
+            }
+
         iContactListBox->HandleItemAdditionL();
+        
         // Scroll the list to bottom
         iContactListBox->ScrollToMakeItemVisible( iNumberOfNames-1 );
+
         ShowContactListBoxWithEffect();
         }
     else
@@ -1218,10 +1234,20 @@ void CEasyDialingPlugin::LaunchCurrentContactL()
     // Ownership of parameter transferred to CCA launcher => pop but do not destroy.
     CleanupStack::Pop( launchParameters );
 
-
-    iContactLauncherActive = ETrue;
-    CAknAppUi* appUi = static_cast<CAknAppUi*>( iCoeEnv->AppUi() );
-    appUi->HandleCommandL( EPhoneCmdBlockingDialogLaunched );
+    if ( !IsVisible() )
+        {
+        // MCCAConnection::LaunchAppL uses CActiveSchedulerWait to hide asynchronous
+        // opening of CCA launcher. It is possible that during opening of CCA launcher
+        // phone has moved to in-call view (at least in case of an incoming call).
+        // In that case we need to close CCA launcher again.
+        iContactLauncher->CloseAppL();
+        }
+    else
+        {
+        iContactLauncherActive = ETrue;
+        CAknAppUi* appUi = static_cast<CAknAppUi*>( iCoeEnv->AppUi() );
+        appUi->HandleCommandL( EPhoneCmdBlockingDialogLaunched );
+        }
     }
 
 
@@ -1455,10 +1481,12 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
     // ECoeStackPriorityDialog so we will get HandleCommandL calls from 
     // phoneappui (CBA) when input blocker is active (=not NULL).
     
-    if ( iInputBlocker && aCommand != EEasyDialingCallHandlingActivated )
+    if ( iInputBlocker && aCommand != EEasyDialingCallHandlingActivated &&
+         aCommand != EEasyDialingVkbOpened && aCommand != EEasyDialingVkbClosed )
         {
         // Some action is already being launched since iInputBlocker exists.
         // Only call activation command requires always action from this plugin.
+        // Vkb status flag should be updated always too (invokes no action).
         return ETrue;
         }
  
@@ -1536,6 +1564,18 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
             ret = ETrue;
             break;
             
+        case EEasyDialingVkbOpened:
+            
+            iVirtualKeyboardOpen = ETrue;
+            ret = ETrue;
+            break;
+                  
+        case EEasyDialingVkbClosed:
+            
+            iVirtualKeyboardOpen = EFalse;
+            ret = ETrue;
+            break;
+            
         default:
             break;
         }
@@ -1553,6 +1593,23 @@ TBool CEasyDialingPlugin::IsEnabled() const
     }
 
 // -----------------------------------------------------------------------------
+// AsyncSimulateKeyEvent
+// 
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::AsyncSimulateKeyEvent( const TKeyEvent& aKeyEvent )
+    {
+    // Do the simulation only if input hasn't been blocked
+    if ( !iInputBlocker )
+        {
+        iKeyEventToSimulate = aKeyEvent;
+        iActionToBeLaunched = ESimulateKeyEvent;
+        iAsyncCallBack->SetPriority( CActive::EPriorityStandard );
+        iAsyncCallBack->CallBack(); // activates callback request
+        }
+    }
+
+// -----------------------------------------------------------------------------
 // AsyncActionLaunchL
 // Use asynchronous callback to launch action. While action is being launched,
 // input blocker is used to avoid OfferKeyEvent and HandlePointerEvent calls
@@ -1561,7 +1618,7 @@ TBool CEasyDialingPlugin::IsEnabled() const
 // HandleCommandL method.
 // -----------------------------------------------------------------------------
 //
-void CEasyDialingPlugin::AsyncActionLaunchL( const TEasyDialingAction aAction )
+void CEasyDialingPlugin::AsyncActionLaunchL( TEasyDialingAction aAction )
     {
     iActionToBeLaunched = aAction;
     
@@ -1618,8 +1675,22 @@ TInt CEasyDialingPlugin::AsyncCallBackToLaunchAction( TAny* aPtr )
 //
 void CEasyDialingPlugin::DoLaunchActionL( )
     {
+    if ( iActionToBeLaunched == EInitializePcs )
+        {
+        PERF_MEASURE_START
+        InitPredictiveContactSearchL();
+        PERF_MEASURE_STOP
+ 
+        return;
+        }
+    else if ( !IsVisible() )
+        {
+        // If ED is not visible, don't launch the action. This can happen if
+        // we get incoming call in the middle of action launching.
+        return;
+        }
     // If ELaunchCurrentContact, then we launch cca launcher.
-    if ( iActionToBeLaunched == ELaunchCurrentContact )
+    else if ( iActionToBeLaunched == ELaunchCurrentContact )
         {
         LaunchCurrentContactL();
         return;
@@ -1629,12 +1700,9 @@ void CEasyDialingPlugin::DoLaunchActionL( )
         LaunchSearchL();
         return;
         }
-    else if ( iActionToBeLaunched == EInitializePcs )
+    else if ( iActionToBeLaunched == ESimulateKeyEvent )
         {
-        PERF_MEASURE_START
-        InitPredictiveContactSearchL();
-        PERF_MEASURE_STOP
- 
+        iEikonEnv->SimulateKeyEventL( iKeyEventToSimulate, EEventKey );
         return;
         }
     
@@ -1787,14 +1855,52 @@ void CEasyDialingPlugin::HandleListBoxEventL( CEikListBox* /*aListBox*/, TListBo
 // Called when input block is cancelled.
 // -----------------------------------------------------------------------------
 //
- void CEasyDialingPlugin::AknInputBlockCancel()
-     {
-     LOGSTRING("EasyDialingPlugin: AknInputBlockCancel");
-     
-     // iInputBlocker will be deleted right after this callback by CAknInputBlock
-     // cause we are using CAknInputBlock::SetCancelDelete method.
-     iInputBlocker = NULL;
-     }
+void CEasyDialingPlugin::AknInputBlockCancel()
+    {
+    LOGSTRING("EasyDialingPlugin: AknInputBlockCancel");
+    
+    // iInputBlocker will be deleted right after this callback by CAknInputBlock
+    // cause we are using CAknInputBlock::SetCancelDelete method.
+    iInputBlocker = NULL;
+    }
+
+// -----------------------------------------------------------------------------
+// HandleGainingForeground
+// From MCoeForegroundObserver.
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::HandleGainingForeground()
+    {
+    }
+
+// -----------------------------------------------------------------------------
+// HandleLosingForeground
+// From MCoeForegroundObserver.
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::HandleLosingForeground()
+    {
+    // Make sure contact data manager is not left in paused state when
+    // ED loses foreground while scrolling is active.
+    iContactDataManager->Pause( EFalse );
+    
+    // Simulate an EButton1Up event for scrollbar so that it will be in correct
+    // state if e.g. some popup appears while scrollbar is dragged.
+    // No need to check if scrollbar has received button1Down event or
+    // is indeed dragged currently: no harm done if button1Up is simulated 
+    // in vain.
+    CEikScrollBarFrame* scrollBarFrame = iContactListBox->ScrollBarFrame();
+    if ( scrollBarFrame )
+        {
+        CEikScrollBar* scrollBar = scrollBarFrame->VerticalScrollBar();
+        if ( scrollBar && scrollBar->IsVisible() )
+            {
+            TPointerEvent simulatedPointerEvent( TPointerEvent::EButton1Up, 0,
+                                                 TPoint(), TPoint() );
+            TRAP_IGNORE( scrollBar->HandlePointerEventL( simulatedPointerEvent ) );
+            }
+        }
+    }
 
 // -----------------------------------------------------------------------------
 // CEasyDialingPlugin::DoHandleContactsChangedL
@@ -1826,13 +1932,14 @@ void CEasyDialingPlugin::DoHandleContactsChangedL()
 // -----------------------------------------------------------------------------
 //
 void CEasyDialingPlugin::ShowContactListBoxWithEffect()
-    {  
-    CAknAppUi* appUi = static_cast<CAknAppUi*>( iCoeEnv->AppUi() );
-       
+    {
+    if ( !IsVisible() )
+        {
+        // never show listbox if easydialing is not visible
+        return;
+        }
     // Show effect only if listbox is about to come visible.
-    if ( !iContactListBox->IsVisible() &&
-         appUi && appUi->IsForeground() && 
-         GfxTransEffect::IsRegistered( iContactListBox ) )
+    else if ( !iContactListBox->IsVisible() && CanListBoxEffectBeUsed() )
         {
         GfxTransEffect::Begin( iContactListBox, KGfxContactListBoxOpenEffect );
         iContactListBox->MakeVisible( ETrue );
@@ -1851,12 +1958,8 @@ void CEasyDialingPlugin::ShowContactListBoxWithEffect()
 //
 void CEasyDialingPlugin::HideContactListBoxWithEffect()
     {
-    CAknAppUi* appUi = static_cast<CAknAppUi*>( iCoeEnv->AppUi() );
-           
     // Show effect only if listbox is about to disappear from the screen.
-    if ( iContactListBox->IsVisible() &&
-         appUi && appUi->IsForeground() && 
-         GfxTransEffect::IsRegistered( iContactListBox ) )
+    if ( iContactListBox->IsVisible() && CanListBoxEffectBeUsed() )
         {
         GfxTransEffect::Begin( iContactListBox, KGfxContactListBoxCloseEffect );
         iContactListBox->MakeVisible( EFalse );
@@ -1867,6 +1970,30 @@ void CEasyDialingPlugin::HideContactListBoxWithEffect()
         {
         iContactListBox->MakeVisible( EFalse );
         }
+    }
+
+// -----------------------------------------------------------------------------
+// CEasyDialingPlugin::CanListBoxEffectBeUsed
+// -----------------------------------------------------------------------------
+//
+TBool CEasyDialingPlugin::CanListBoxEffectBeUsed() const
+    {
+    TBool canBeUsed( EFalse );
+    
+    CAknAppUi* appUi = static_cast<CAknAppUi*>( iCoeEnv->AppUi() );
+    
+    // Note that when vkb is open, phone still keeps foreground and focus so
+    // vkb status must be checked separately (vkb's window group has just higher
+    // priority than phone's window group).
+    if ( appUi && appUi->IsForeground() &&
+         !iVirtualKeyboardOpen &&
+         GfxTransEffect::IsEnabled() &&
+         GfxTransEffect::IsRegistered( iContactListBox ) )
+        {
+        canBeUsed = ETrue;
+        }
+    
+    return canBeUsed;
     }
 
 /*

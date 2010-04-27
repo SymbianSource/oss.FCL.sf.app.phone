@@ -292,7 +292,6 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetup::HandleIdleL()");
     
-    BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
  
     // Remove call 
@@ -342,7 +341,6 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
         }
         
     EndUiUpdate();
-    EndTransEffect();
     }
 
 // -----------------------------------------------------------

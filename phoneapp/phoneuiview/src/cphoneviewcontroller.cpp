@@ -137,6 +137,7 @@
 #include <easydialingcommands.hrh>
 
 // Kastor effect IDs, aknskincontent/101f84b9.sel
+// These effects cannot be used for internal transitions (Call UI<->Dialer)
 const TInt KTouchDialerOpenEffect  = 3;
 const TInt KTouchDialerCloseEffect = 5;
 
@@ -1400,25 +1401,10 @@ EXPORT_C void CPhoneViewController::ExecuteCommand(
                 {
                 TPhoneTransEffectType type =
                     static_cast<TPhoneCmdParamTransEffect*>( aCommandParam )->Type();
-                TBool isForeground = iAppui->IsForeground();
-
-                // Check whether the idle is on foreground
-                TBool idleInFore = ForegroundApplicationWindowGroupId() ==  IdleWindowGroupId() ?
-                        ETrue : EFalse;
-                
-                if ( ( isForeground && // Newer run effect if not at front
-                     ( ( type == EPhoneTransEffectDialerCreate && !iDialerActive ) ||
-                       ( type == EPhoneTransEffectDialerOpen && !iDialerActive &&
-                         iBubbleWrapper->IsNumberEntryUsed() )) ||
-                       ( type == EPhoneTransEffectDialerClose && iDialerActive ) ) )
+                if ( CanTransEffectBeUsed( type ) )
                     {
-                    HandleTransitionEffect( type );
-                    }
-                // In case transition is from idle to dialer show transition effects as well.                 
-                 else if ( idleInFore && !iDialerActive &&
-                          type == EPhoneTransEffectDialerOpen )
-                    {
-                    HandleTransitionEffect( type );
+                    HandleTransitionEffect( type,
+                        static_cast<TPhoneCmdParamTransEffect*>( aCommandParam )->AppUid());
                     }
                 }
             break;
@@ -1615,9 +1601,22 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
     // ** TODO Here we need just to flag if functionality creates blocking dialog.
         case EPhoneDialerCmdLog:
             {
+            BeginTransEffectForAppStartFromDialerLC( LogsUiCmdStarterConsts::KLogsUID3 );
             LogsUiCmdStarter::CmdStartL( LogsUiCmdStarterConsts::KDialledView());
+            EndTransEffect();
             }
             break;
+            
+        case EPhoneDialerCmdContacts:
+            {
+            // Launch Phonebook application
+            TPhoneCmdParamAppInfo appInfoParam;
+            appInfoParam.SetAppUid( KPhoneUidAppPhonebook );
+            BeginTransEffectForAppStartFromDialerLC( appInfoParam.AppUid() );
+            ExecuteCommandL( EPhoneViewActivateApp, &appInfoParam );
+            EndTransEffect();
+            }
+            break;           
 
         case EPhoneDialerCmdSpeedDial:
             {
@@ -3712,12 +3711,12 @@ void CPhoneViewController::SwapEmptyIndicatorPaneInSecureStateL(
 // ---------------------------------------------------------------------------
 //
 void CPhoneViewController::HandleTransitionEffect(
-    TPhoneTransEffectType aType )
+    TPhoneTransEffectType aType, const TUid& aAppUidEffectParam )
     {
     __LOGMETHODSTARTEND(EPhoneUIView,
         "CPhoneViewController::HandleTransitionEffect()" );
 
-    switch ( aType )
+   switch ( aType )
         {
         case EPhoneTransEffectDialerCreate:
         case EPhoneTransEffectDialerOpen:
@@ -3726,7 +3725,8 @@ void CPhoneViewController::HandleTransitionEffect(
                 KTouchDialerOpenEffect,
                 TRect(),
                 AknTransEffect::EParameterType,
-                AknTransEffect::GfxTransParam( KUidPhoneApplication ) );
+                AknTransEffect::GfxTransParam( KUidPhoneApplication,
+                        AknTransEffect::TParameter::EActivateExplicitCancel ) );
             iEffectOngoing = ETrue;
             break;
             }
@@ -3736,10 +3736,22 @@ void CPhoneViewController::HandleTransitionEffect(
                 KTouchDialerCloseEffect,
                 TRect(),
                 AknTransEffect::EParameterType,
-                AknTransEffect::GfxTransParam( KUidPhoneApplication ) );
+                AknTransEffect::GfxTransParam( KUidPhoneApplication,
+                        AknTransEffect::TParameter::EActivateExplicitCancel ) );
             iEffectOngoing = ETrue;
             break;
             }
+        case EPhoneTransEffectAppStartFromDialer:
+            {
+            GfxTransEffect::BeginFullScreen(
+                AknTransEffect::EApplicationStart, 
+                TRect(), 
+                AknTransEffect::EParameterType, 
+                AknTransEffect::GfxTransParam( aAppUidEffectParam,
+                    AknTransEffect::TParameter::EActivateExplicitCancel ) );
+            iEffectOngoing = ETrue;
+            }
+            break;
         case EPhoneTransEffectStop:
             {
             if ( iEffectOngoing )
@@ -3969,6 +3981,82 @@ TBool CPhoneViewController::IsCustomDialerActive() const
                 curController != iDtmfDialerController );
         }
     return ret;
+    }
+
+// -----------------------------------------------------------
+// CPhoneViewController::CanTransEffectBeUsed
+// -----------------------------------------------------------
+//
+TBool CPhoneViewController::CanTransEffectBeUsed( 
+    TPhoneTransEffectType aType )
+    {
+    TBool okToUseEffect( EFalse );
+    
+    TBool isForeground = iAppui->IsForeground();
+    // Check whether the idle is on foreground
+    TBool idleInFore = ForegroundApplicationWindowGroupId() ==  IdleWindowGroupId() ?
+            ETrue : EFalse;
+    
+    if ( isForeground && // Newer run effect if not at front
+         ( ( aType == EPhoneTransEffectDialerCreate && !iDialerActive ) ||
+           ( aType == EPhoneTransEffectDialerOpen && !iDialerActive &&
+             iBubbleWrapper->IsNumberEntryUsed() ) ||
+           ( aType == EPhoneTransEffectDialerClose && iDialerActive ) ) )
+        {
+        okToUseEffect = ETrue;
+        }
+    // In case transition is from idle to dialer show transition effects as well.                 
+    else if ( idleInFore && !iDialerActive &&
+              aType == EPhoneTransEffectDialerOpen )
+        {
+        okToUseEffect = ETrue;
+        }
+    else if ( isForeground && iDialerActive && 
+              aType == EPhoneTransEffectAppStartFromDialer )
+        {
+        okToUseEffect = ETrue;
+        }
+    
+    return okToUseEffect;
+    }
+
+// -----------------------------------------------------------
+// CPhoneViewController::BeginTransEffectForAppStartFromDialerLC
+// -----------------------------------------------------------
+//
+void CPhoneViewController::BeginTransEffectForAppStartFromDialerLC( 
+    const TUid& aAppUid )
+    {
+    TPhoneCmdParamTransEffect effectParam;
+    effectParam.SetType( EPhoneTransEffectAppStartFromDialer );
+    effectParam.SetAppUid( aAppUid );
+    
+    ExecuteCommand( EPhoneViewBeginTransEffect,  &effectParam );
+
+    TCleanupItem operation( EffectCleanup, this );
+    CleanupStack::PushL( operation );
+    }
+
+// -----------------------------------------------------------
+// CPhoneViewController::EndTransEffect
+// -----------------------------------------------------------
+//
+void CPhoneViewController::EndTransEffect()
+    {
+    CleanupStack::PopAndDestroy(); // Call EffectCleanup
+    }
+
+// -----------------------------------------------------------------------------
+// CPhoneViewController::EffectCleanup
+// -----------------------------------------------------------------------------
+//
+void CPhoneViewController::EffectCleanup(TAny* aThis )
+    {
+    TPhoneCmdParamTransEffect effectParam;
+    effectParam.SetType( EPhoneTransEffectStop );
+
+    static_cast<CPhoneViewController*>( aThis )->ExecuteCommand(
+        EPhoneViewEndTransEffect, &effectParam );
     }
 
 // ---------------------------------------------------------------------------

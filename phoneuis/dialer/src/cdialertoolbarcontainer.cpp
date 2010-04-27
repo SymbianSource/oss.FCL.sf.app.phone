@@ -219,6 +219,10 @@ void CDialerToolbarContainer::HandleControlEventL( CCoeControl* aControl, TCoeEv
     {
     if ( aEventType == MCoeControlObserver::EEventStateChanged )
         {
+        // Give dialer a chance to update editor state before handling the button press.
+        // Used to reconfigure editor after user has closed virtual keyboard.
+        iParentControl.PrepareForFocusGainL();
+
         // Handle button press. 
 
         // Multistate buttons change state automatically when pressed. 
@@ -238,13 +242,7 @@ void CDialerToolbarContainer::HandleControlEventL( CCoeControl* aControl, TCoeEv
         
         if ( commandId == EPhoneDialerCmdClear )
             {
-            // simulate backspace
-            TKeyEvent keyEvent;
-            keyEvent.iModifiers = 0;
-            keyEvent.iRepeats = 0;
-            keyEvent.iCode = EKeyBackspace;
-            keyEvent.iScanCode = EStdKeyBackspace;
-            iCoeEnv->SimulateKeyEventL( keyEvent, EEventKey );
+            SimulateBackspace();
             }
         else
             {
@@ -457,6 +455,29 @@ TPoint CDialerToolbarContainer::LayoutButton( TInt aButtonIdx, TPoint aPos )
         }
     
     return nextPos;
+    }
+
+// ---------------------------------------------------------------------------
+// SimulateBackspace
+// Simulate backspace press including key down event, key event, and key up 
+// event
+// ---------------------------------------------------------------------------
+//
+void CDialerToolbarContainer::SimulateBackspace()
+    {
+    TKeyEvent keyEvent;
+    keyEvent.iModifiers = 0;
+    keyEvent.iRepeats = 0;
+    keyEvent.iCode = 0; // key code is always 0 for key up and down events
+    keyEvent.iScanCode = EStdKeyBackspace;
+
+    iCoeEnv->SimulateKeyEventL( keyEvent, EEventKeyDown );
+
+    keyEvent.iCode = EKeyBackspace;
+    iCoeEnv->SimulateKeyEventL( keyEvent, EEventKey );
+    
+    keyEvent.iCode = 0;
+    iCoeEnv->SimulateKeyEventL( keyEvent, EEventKeyUp );
     }
 
 // end of file

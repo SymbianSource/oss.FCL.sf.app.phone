@@ -438,7 +438,6 @@ void CPhoneConference::HandleConferenceIdleL()
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::HandleConferenceIdleL()");
     
-    BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
@@ -482,8 +481,7 @@ void CPhoneConference::HandleConferenceIdleL()
             break;
         }
     
-    EndUiUpdate();
-    EndTransEffect();     
+    EndUiUpdate();  
     }
 
 // -----------------------------------------------------------
@@ -841,7 +839,6 @@ void CPhoneConference::HandleDiallingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::HandleDiallingL()");
     
-    BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC(); 
     
     CloseSelectionListL(); 
@@ -855,8 +852,6 @@ void CPhoneConference::HandleDiallingL( TInt aCallId )
     SetTouchPaneButtons(EPhoneCallSetupAndSingleButtons); 
 
     EndUiUpdate();
-
-    EndTransEffect();
     
     // Set Call Setup CBA 
     UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
