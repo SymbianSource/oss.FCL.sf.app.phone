@@ -27,24 +27,11 @@
 HbWidgetBase::HbWidgetBase( 
         HbWidgetBasePrivate & dd,
         QGraphicsItem * parent,
-        Qt::WindowFlags wFlags )
+        Qt::WindowFlags wFlags ) :d_ptr()
     //:
     //HbAbstractItem( /*dd, parent, wFlags*/ )
     {
     
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbWidgetBase::Q_PROPERTY
-// -----------------------------------------------------------------------------
-//
-void HbWidgetBase::Q_PROPERTY( 
-        HbFontSpec fontSpec READ fontSpec WRITE setFontSpec ):HbWidgetBase ( QGraphicsItem * parent,
-        Qt::WindowFlags wFlags )
-    {
-    SMC_MOCK_METHOD2( void, HbFontSpec fontSpec READ fontSpec WRITE setFontSpec ):HbWidgetBase ( QGraphicsItem *, parent, 
-        Qt::WindowFlags, wFlags )
     }
 
 

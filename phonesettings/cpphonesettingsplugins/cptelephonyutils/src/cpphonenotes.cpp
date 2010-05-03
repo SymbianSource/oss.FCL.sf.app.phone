@@ -28,6 +28,10 @@
 #include <QItemSelectionModel>
 #include <hbstringutil.h>
 #include <hbextendedlocale.h>
+#include <HbInputDialog>
+#include <HbEditorInterface>
+#include <hbinputdef.h>
+#include <hbinputstandardfilters.h>
 
 /*!
   CpPhoneNotes::instance.
@@ -48,10 +52,12 @@ CpPhoneNotes* CpPhoneNotes::instance()
 CpPhoneNotes::CpPhoneNotes(): 
      QObject(NULL), 
      m_notesQueue(NULL),
-     m_isNoteShowingOngoing(false)
+     m_isNoteShowingOngoing(false),
+     m_passwordDialog(NULL),
+     m_passwordValidator(NULL)
     {
     DPRINT << ": IN";
-
+    
     m_notesQueue = new QQueue<QObject*>();
     m_cpSettingsWrapper = new CpSettingsWrapper;
     
@@ -167,88 +173,9 @@ void CpPhoneNotes::showBasicServiceList(
     serviceListPopup->setContentWidget(serviceList.take());
     
     HbAction *backAction = 
-        new HbAction(hbTrId("Back"), serviceListPopup.data());
+        new HbAction(hbTrId("txt_common_button_back"), serviceListPopup.data());
     serviceListPopup->setPrimaryAction(backAction);
     serviceListPopup->exec();
-    
-    DPRINT << ": OUT";
-}
-
-/*!
-  CpPhoneNotes::showBasicServiceCallDivertList.
- */
-void CpPhoneNotes::showBasicServiceCallDivertList(
-    const QString &title,
-    const QList<PSCallDivertingStatus*> &divertStatuses,
-    int &selectionIndex,
-    CallDivertType divertType,
-    CallDivertType &divertDetailType)
-{
-    DPRINT << ": IN";
-    
-    Q_ASSERT(title != "");
-    Q_ASSERT(0 < divertStatuses.size());
-    
-    HbDialog *serviceListPopup = new HbDialog();
-    serviceListPopup->setDismissPolicy(HbDialog::NoDismiss);
-    serviceListPopup->setTimeout(HbPopup::NoTimeout);
-    
-    HbLabel *heading = new HbLabel(title, serviceListPopup);
-    heading->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    serviceListPopup->setHeadingWidget(heading);
-    
-    HbListView *serviceList = new HbListView(serviceListPopup);
-    QStandardItemModel *serviceListModel = new QStandardItemModel(serviceList);
-    for (int i = 0; i < divertStatuses.size(); i++) {
-        PSCallDivertingStatus *divertStatus = divertStatuses.at(i);
-        QString groupName = 
-            basicServiceGroupName( 
-                convertEtelMobileServiceCode(divertStatus->iServiceGroup) );
-        QStandardItem *listItem = new QStandardItem(groupName);
-        serviceListModel->appendRow(listItem);
-    }
-    serviceList->setModel(serviceListModel);
-    serviceList->setSelectionMode(HbAbstractItemView::SingleSelection);
-    if (0 != serviceListModel->rowCount()) {
-        QModelIndex firstItem = serviceList->nextIndex(QModelIndex()); 
-        serviceList->setCurrentIndex(firstItem, QItemSelectionModel::Select);
-    }
-    serviceListPopup->setContentWidget(serviceList);
-    
-    HbAction *backAction = new HbAction(hbTrId("Back"), serviceListPopup);
-    HbAction *numberQueryAction = new HbAction(hbTrId("Number"), serviceListPopup);
-    HbAction *detailsAction = new HbAction(hbTrId("Details"), serviceListPopup);
-    serviceListPopup->setSecondaryAction(backAction);
-    
-    switch (divertType) {
-        case NoCallDivert:
-            break;
-        case CallDivertWithNumber:
-            serviceListPopup->setPrimaryAction(numberQueryAction);
-            break;
-        case CallDivertWithNumberAndTimeout:
-            serviceListPopup->setPrimaryAction(detailsAction);
-            break;
-        default:
-            DPRINT << ", DEFAULT";
-            Q_ASSERT(false);
-            break;
-    }
-    
-    HbAction *userAction = serviceListPopup->exec();
-    if (userAction == numberQueryAction) {
-        divertDetailType = CallDivertWithNumber;
-    } else if (userAction == detailsAction) {
-        divertDetailType = CallDivertWithNumberAndTimeout;
-    } else if (userAction == backAction) {
-        divertDetailType = NoCallDivert;
-    } else {
-        DPRINT << ", WEIRD ACTION";
-        Q_ASSERT(false);
-    }
-    
-    selectionIndex = serviceList->currentIndex().row();
-    delete serviceListPopup;
     
     DPRINT << ": OUT";
 }
@@ -294,30 +221,6 @@ void CpPhoneNotes::cancelNote(int noteId)
 bool CpPhoneNotes::noteShowing()
 {
     return !m_notesQueue->isEmpty();
-}
-
-/*!
-  CpPhoneNotes::activeNoteAboutToClose.
- */
-void CpPhoneNotes::activeNoteAboutToClose()
-{
-    DPRINT << ": IN";
-    
-    if (m_isNoteShowingOngoing) {
-        m_isNoteShowingOngoing = false;
-        QObject* note(NULL);
-        if (!m_notesQueue->isEmpty()) {
-            note = m_notesQueue->dequeue();
-        }
-        if(note) {
-            launchNextNoteIfReady();
-            note->disconnect(this);
-            DPRINT << ", delete note: " << reinterpret_cast<int>(note);
-            note->deleteLater();
-        }
-    }
-    
-    DPRINT << ": OUT";
 }
 
 /*!
@@ -392,15 +295,6 @@ QString CpPhoneNotes::basicServiceGroupName(BasicServiceGroups basicServiceGroup
 }
 
 /*!
-  CpPhoneNotes::convertEtelMobileServiceCode.
-*/
-BasicServiceGroups CpPhoneNotes::convertEtelMobileServiceCode(int serviceCode) const
-{
-    DPRINT << "serviceCode: " << serviceCode;
-    return Tools::convertEtelMobileServiceCode(serviceCode);
-}
-
-/*!
   CpPhoneNotes::showGlobalErrorNote.
  */
 void CpPhoneNotes::showGlobalErrorNote(int &noteId, int errorcode)
@@ -439,18 +333,67 @@ void CpPhoneNotes::showCallDivertDetails(
     // TODO: Orbit layout support is insufficient currently and all text
     // is not shown.
     QString content = "";
-    content.append(hbTrId("To number: "));
+    content.append(hbTrId("txt_phone_info_number"));
     content.append(formatPhoneNumber(divertStatus.iNumber));
     if (0 < divertStatus.iTimeout) {
-        content.append(hbTrId(" Delay time: "));
+        content.append(hbTrId("txt_phone_setlabel_delay"));
         content.append(QString::number(divertStatus.iTimeout));
         content.append(hbTrId(" seconds"));
     }
     divertInfo->setText(content);
-    HbAction *backAction = new HbAction(hbTrId("Back"), divertInfo);
+    HbAction *backAction = new HbAction(hbTrId("txt_common_button_back"), divertInfo);
     divertInfo->setPrimaryAction(backAction);
     divertInfo->exec();
     delete divertInfo;
+    
+    DPRINT << ": OUT";
+}
+
+/*!
+  CpPhoneNotes::showPasswordQueryDialog.
+ */
+void CpPhoneNotes::showPasswordQueryDialog(
+    const QString &title, 
+    const QValidator &validator,
+    int maxPasswordLength,
+    QString &password, 
+    bool &ok)
+{
+    DPRINT << ": IN";
+    
+    QScopedPointer<HbInputDialog> passwordDialog(new HbInputDialog());
+    
+    // configure editor so that only digits can be inputted
+    passwordDialog->setPromptText(title);
+    passwordDialog->setEchoMode(HbLineEdit::Password);
+    passwordDialog->setInputMethodHints(Qt::ImhDigitsOnly);
+    HbLineEdit *hbLineEdit = passwordDialog->lineEdit();
+    hbLineEdit->setMaxLength(maxPasswordLength);
+    HbEditorInterface editorInterface(hbLineEdit);
+    editorInterface.setInputMode(HbInputModeNumeric);
+    editorInterface.setConstraints(HbEditorConstraintFixedInputMode);
+    editorInterface.setFilter(HbDigitsOnlyFilter::instance());
+    
+    m_passwordDialog = passwordDialog.data();
+    m_passwordValidator = &validator;
+    passwordDialog->primaryAction()->setEnabled(false);
+    connect(
+        hbLineEdit, SIGNAL(contentsChanged()), 
+        this, SLOT(passwordTextChanged()));
+    
+    HbAction* action = passwordDialog->exec();
+    if (action == passwordDialog->secondaryAction()) {
+        ok = false;
+    } else {
+        ok = true;
+        password = passwordDialog->value().toString();
+    }
+    
+    m_passwordDialog = NULL;
+    m_passwordValidator = NULL;
+    disconnect(
+        hbLineEdit, SIGNAL(contentsChanged()), 
+        this, SLOT(passwordTextChanged()));
     
     DPRINT << ": OUT";
 }
@@ -511,6 +454,29 @@ void CpPhoneNotes::launchNextNoteIfReady()
     DPRINT << ": OUT";
 }
 
+/*!
+  CpPhoneNotes::activeNoteAboutToClose.
+ */
+void CpPhoneNotes::activeNoteAboutToClose()
+{
+    DPRINT << ": IN";
+    
+    if (m_isNoteShowingOngoing) {
+        m_isNoteShowingOngoing = false;
+        QObject* note(NULL);
+        if (!m_notesQueue->isEmpty()) {
+            note = m_notesQueue->dequeue();
+        }
+        if(note) {
+            launchNextNoteIfReady();
+            note->disconnect(this);
+            DPRINT << ", delete note: " << reinterpret_cast<int>(note);
+            note->deleteLater();
+        }
+    }
+    
+    DPRINT << ": OUT";
+}
 
 /*!
   CpPhoneNotes::handleProgressNoteCanceled().
@@ -520,6 +486,25 @@ void CpPhoneNotes::handleProgressNoteCanceled()
     DPRINT << ": IN";
     
     emit progressNoteCanceled();
+    
+    DPRINT << ": OUT";
+}
+
+/*!
+  CpPhoneNotes::passwordTextChanged().
+ */
+void CpPhoneNotes::passwordTextChanged()
+{
+    DPRINT << ": IN";
+    Q_ASSERT(m_passwordDialog && m_passwordValidator);
+    
+    HbLineEdit *hbLineEdit = m_passwordDialog->lineEdit();
+    int position = 0;
+    QString password = hbLineEdit->text();
+    bool isPasswordValid = 
+        (QValidator::Acceptable == m_passwordValidator->validate(
+            password, position));
+    m_passwordDialog->primaryAction()->setEnabled(isPasswordValid);
     
     DPRINT << ": OUT";
 }

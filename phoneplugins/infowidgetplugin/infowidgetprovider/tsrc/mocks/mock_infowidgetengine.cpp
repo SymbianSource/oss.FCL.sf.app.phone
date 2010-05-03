@@ -17,6 +17,7 @@
 #include <QDebug>
 #include <smcmockclassincludes.h>
 #include "infowidgetnetworkhandler.h"
+#include "infowidgetsathandler.h"
 #include "infowidgetengine.h"
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -61,6 +62,7 @@ void InfoWidgetEngine::logModelData(  )
     {
     SMC_MOCK_METHOD0( void )
     }
+
 
 // -----------------------------------------------------------------------------
 // InfoWidgetEngine::updateNetworkDataToModel
@@ -128,6 +130,39 @@ void InfoWidgetEngine::handleLineError(
     {
     SMC_MOCK_METHOD2( void, int, operation, 
         int, errorCode )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetEngine::suspend
+// -----------------------------------------------------------------------------
+//
+void InfoWidgetEngine::suspend(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetEngine::resume
+// -----------------------------------------------------------------------------
+//
+void InfoWidgetEngine::resume(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetEngine::preferenceChanged
+// -----------------------------------------------------------------------------
+//
+void InfoWidgetEngine::preferenceChanged( 
+        int option,
+        int displaySetting )
+    {
+    SMC_MOCK_METHOD2( void, int, option, 
+        int, displaySetting )
     }
 
 

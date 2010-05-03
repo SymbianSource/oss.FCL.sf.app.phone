@@ -162,172 +162,45 @@ void UT_CpPluginCommon::t_videoSupported()
 /*!
   UT_CpPluginCommon::t_memleak
  */
-void UT_CpPluginCommon::t_convertEtelMobileServiceCode()
-{
-    //
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAllServices), AllTeleAndBearer);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAllTele), AllTele);
-
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EVoiceService), Telephony);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::ETelephony), Telephony);
-    
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAllDataTele), AllDataTele);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EFaxService), Fax);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EShortMessageService), Sms);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAllDataExSms), AllDataExSms);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAllTeleExcSms), AllTeleExcSms);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAllPlmnTele), AllPlmnTele);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTele1), PlmnTele1);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTele2), PlmnTele2);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTele3), PlmnTele3);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTele4), PlmnTele4);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTele5), PlmnTele5);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTele6), PlmnTele6);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTele7), PlmnTele7);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTele8), PlmnTele8);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTele9), PlmnTele9);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTeleA), PlmnTeleA);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTeleB), PlmnTeleB);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTeleC), PlmnTeleC);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTeleD), PlmnTeleD);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTeleE), PlmnTeleE);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnTeleF), PlmnTeleF);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAllBearer), AllBearer);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAllAsync), AllAsync);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAllSync), AllSync);
-    
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::ECircuitDataService), SyncData);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::ESyncData), SyncData);
-    
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPacketDataService), AsyncData);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAsyncData), AsyncData);
-    
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPacketData), PacketData);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPadAccess), PadAccess);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAllPlmnBearer), AllPlmnBearer);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServ1), PlmnBearerServ1);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServ2), PlmnBearerServ2);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServ3), PlmnBearerServ3);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServ4), PlmnBearerServ4);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServ5), PlmnBearerServ5);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServ6), PlmnBearerServ6);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServ7), PlmnBearerServ7);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServ8), PlmnBearerServ8);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServ9), PlmnBearerServ9);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServA), PlmnBearerServA);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServB), PlmnBearerServB);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServC), PlmnBearerServC);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServD), PlmnBearerServD);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServE), PlmnBearerServE);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EPlmnBearerServF), PlmnBearerServF);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAuxVoiceService), AltTele);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAltTele), AltTele);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EServiceUnspecified), Unknown);
-    // ??
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EVoiceGroupCall), Unknown);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EVoiceBroadcast), Unknown);
-    QCOMPARE(Tools::convertEtelMobileServiceCode(
-            RMobilePhone::EAllGprsBearer), Unknown);
-
-}
-
-/*!
-  UT_CpPluginCommon::t_memleak
- */
 void UT_CpPluginCommon::t_errorCodeTextMapping()
 {
     QString text = "";
     Tools::errorCodeTextMapping(KErrGsmSSSubscriptionViolation, text);
     QCOMPARE( text, QString(
-            "Barring operation not successful. Contact your service provider"));
+            "txt_phone_info_barring_operation_not_successful"));
     Tools::errorCodeTextMapping(KErrGsmSSUnknownSubscriber, text);
     QCOMPARE( text, QString(
-            "Not allowed"));
+            "txt_phone_info_not_allowed"));
     Tools::errorCodeTextMapping(KErrGsmSSAbsentSubscriber, text);
     QCOMPARE( text, QString(
-            "Not allowed"));
+            "txt_phone_info_not_allowed"));
     Tools::errorCodeTextMapping(KErrGsmSSIllegalOperation, text);
     QCOMPARE( text, QString(
-            "Not allowed"));
+            "txt_phone_info_not_allowed"));
     Tools::errorCodeTextMapping(KErrGsmSSIllegalSubscriber, text);
     QCOMPARE( text, QString(
-            "Not allowed"));
+            "txt_phone_info_not_allowed"));
     Tools::errorCodeTextMapping(KErrGsmSSIllegalEquipment, text);
     QCOMPARE( text, QString(
-            "Not allowed"));
+            "txt_phone_info_not_allowed"));
     Tools::errorCodeTextMapping(KErrGsmSSCallBarred, text);
     QCOMPARE( text, QString(
-            "Not allowed"));
+            "txt_phone_info_not_allowed"));
     Tools::errorCodeTextMapping(KErrGsmSSDataMissing, text);
     QCOMPARE( text, QString(
-            "Not allowed"));
+            "txt_phone_info_not_allowed"));
     Tools::errorCodeTextMapping(KErrGsmSSIncompatibility, text);
     QCOMPARE( text, QString(
             "Services in conflict"));
     Tools::errorCodeTextMapping(KErrGsmSSSystemFailure, text);
     QCOMPARE( text, QString(
-            "Result unknown"));
+            "txt_phone_info_result_unknown"));
     Tools::errorCodeTextMapping(KErrGsmSSUnexpectedDataValue, text);
     QCOMPARE( text, QString(
-            "Request rejected"));
+            "txt_phone_info_request_rejected"));
     Tools::errorCodeTextMapping(KErrGsmSSResourcesUnavailable, text);
     QCOMPARE( text, QString(
-            "Request rejected"));
+            "txt_phone_info_request_rejected"));
     Tools::errorCodeTextMapping(KErrGsmSSNegativePasswordCheck, text);
     QCOMPARE( text, QString(
             "Password error"));
@@ -336,7 +209,7 @@ void UT_CpPluginCommon::t_errorCodeTextMapping()
             "Password error"));
     Tools::errorCodeTextMapping(KErrGsmSSPasswordAttemptsViolation, text);
     QCOMPARE( text, QString(
-            "Password blocked"));
+            "txt_phone_info_barring_password_blocked"));
     Tools::errorCodeTextMapping(KErrGsmSMSNoNetworkService, text);
     QCOMPARE( text, QString(
             "No network coverage"));
@@ -347,12 +220,12 @@ void UT_CpPluginCommon::t_errorCodeTextMapping()
     QCOMPARE( text, QString(
             "Check network services"));
     Tools::errorCodeTextMapping(KErrGsmSSUnknownAlphabet, text);
-    QCOMPARE( text, QString("Invalid phone number"));
+    QCOMPARE( text, QString("txt_phone_info_invalid_phone_number"));
     
     expect("XQSysInfo::isSupported").returns(false);
     Tools::errorCodeTextMapping(KErrGsmOfflineOpNotAllowed, text);
     QCOMPARE( text, QString(
-            "Not done"));
+            "txt_phone_info_request_not_completed"));
     QVERIFY( verify() );
     
     expect("XQSysInfo::isSupported").returns(true);
@@ -370,7 +243,7 @@ void UT_CpPluginCommon::t_errorCodeTextMapping()
     
     Tools::errorCodeTextMapping(-1, text);
     QCOMPARE( text, QString(
-            "Not done"));
+            "txt_phone_info_request_not_completed"));
     
     QVERIFY( verify() );
         

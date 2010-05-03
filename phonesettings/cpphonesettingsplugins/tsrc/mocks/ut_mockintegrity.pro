@@ -17,13 +17,14 @@
 CONFIG += qtestlib hb
 TEMPLATE = app
 TARGET = 
+MOC_DIR = moc
 
 INCLUDEPATH += .
 INCLUDEPATH += ../../barringplugin/inc
 INCLUDEPATH += ../../callsplugin/src
 INCLUDEPATH += ../../cptelephonyutils/inc
 INCLUDEPATH += ../../divertplugin/src
-INCLUDEPATH += ../../networkplugin/src
+INCLUDEPATH += ../../cpnetworkplugin/src
 INCLUDEPATH += ../../cpnetworkplugin/src
 INCLUDEPATH += ../../telephonyplugin/src
 INCLUDEPATH += /sf/mw/phonesrv/cellular/telephonysettings/xqbindings/psetwrapper/src
@@ -43,7 +44,6 @@ symbian: {
 }
 
 HEADERS += ut_mockintegrity.h
-SOURCES += ut_mockintegrity.cpp
 
 HEADERS += ../../callsplugin/src/cpcallsplugin.h                \
            ../../cptelephonyutils/inc/cpphonenotes.h            \
@@ -59,29 +59,6 @@ HEADERS += ../../callsplugin/src/cpcallsplugin.h                \
            /epoc32/include/mw/xqsettingsmanager.h               \
            /epoc32/include/mw/xqsysinfo.h
 
-SOURCES +=                                  \
-        mock_cpbarringplugin.cpp            \
-        mock_cpbarringplugingroup.cpp       \
-        mock_cpcallsplugin.cpp              \
-        mock_cpcallsplugingroup.cpp         \
-        mock_cpnetworkplugin.cpp            \
-        mock_cpnetworkpluginview.cpp        \
-        mock_cpnetworkplugingroup.cpp       \
-        mock_cpphonenotes.cpp               \
-        mock_cpplugincommon.cpp             \
-        mock_cptelephonypluginview.cpp      \
-        mock_psetcalldivertingwrapper.cpp   \
-        mock_psetcalldivertingwrapper_p.cpp \
-        mock_psetcallwaitingwrapper.cpp     \
-        mock_psetcallwaitingwrapper_p.cpp   \
-        mock_psetcliwrapper.cpp             \
-        mock_psetcliwrapper_p.cpp           \
-        mock_psetnetworkwrapper.cpp         \
-        mock_psetnetworkwrapper_p.cpp       \
-        mock_psetwrapper.cpp                \
-        mock_sssettingswrapper.cpp          \
-        mock_xqsettingskey.cpp              \
-        mock_xqsettingsmanager.cpp          \
-        mock_xqsysinfo.cpp                  \
-        mock_psetcallbarringwrapper.cpp
+SOURCES += *.cpp
+
   

@@ -19,19 +19,28 @@
 #define INFOWIDGETSATHANDLER_H_
 
 #include <QObject>
+#include <rsatservice.h>
 
-class InfoWidgetSatHandler: public QObject 
+
+class InfoWidgetSatHandlerPrivate;
+
+class InfoWidgetSatHandler: public QObject
     {
     Q_OBJECT
     
 public:    
     InfoWidgetSatHandler(QObject *parent = NULL);
     ~InfoWidgetSatHandler();    
-
+    
+    void connect(bool connect);
+        
     const QString& satDisplayText() const; 
     void setSatDisplayText(const QString& displayText);
 
     void logCurrentInfo(); 
+    
+    void handleIdleModeTxtMessage( int idleResult );
+    void handleSatError( int operation, int errorCode );
 
 signals: 
     void handleMessage( int message );
@@ -39,7 +48,13 @@ signals:
 
     
 private: 
-    QString m_displayText; 
+    QString m_displayText;
+    
+    int m_connected;
+    
+    InfoWidgetSatHandlerPrivate *d_ptr;
+    RSatService m_satService;
+    
     }; 
 
 #endif /* INFOWIDGETSATHANDLER_H_ */

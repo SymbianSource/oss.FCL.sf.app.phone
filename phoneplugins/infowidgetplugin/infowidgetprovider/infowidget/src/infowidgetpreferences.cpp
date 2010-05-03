@@ -18,6 +18,12 @@
 #include "infowidgetpreferences.h"
 #include "infowidgetlogging.h"
 
+/*!
+  \class InfoWidgetPreferences
+  \brief Preference store for widget  
+         display etc. options   
+*/
+
 
 /*!
     InfoWidgetPreferences::InfoWidgetPreferences() 
@@ -37,19 +43,38 @@ InfoWidgetPreferences::~InfoWidgetPreferences()
 }
 
 /*!
-    InfoWidgetPreferences::loadPreferences() 
+    InfoWidgetPreferences::storePreferences()
+    
+    Store acceptable preference set  
 */
-void InfoWidgetPreferences::loadPreferences()
+bool InfoWidgetPreferences::storePreferences()
 {
     DPRINT;
+    bool changed(false); 
+    
+    if (validate() && 
+        m_validatedOptions != m_options){
+            DPRINT << ": preferences differ";
+            changed = true; 
+            m_validatedOptions = m_options;
+        }
+    else if (visibleItemCount() <= 0) { 
+        DPRINT << ": invalid options, restoring initial options";
+        restorePreferences();
+    }
+
+    return changed; 
 }
 
 /*!
-    InfoWidgetPreferences::storePreferences() 
+    InfoWidgetPreferences::restorePreferences()
+    
+    Restores last acceptable preference set 
 */
-void InfoWidgetPreferences::storePreferences()
+void InfoWidgetPreferences::restorePreferences()
 {
     DPRINT;
+    m_options = m_validatedOptions; 
 }
 
 /*!
@@ -70,6 +95,23 @@ QString InfoWidgetPreferences::preference(Option preferenceId) const
 }
 
 /*!
+    InfoWidgetPreferences::isPreferenceSet()
+*/
+bool InfoWidgetPreferences::isPreferenceSet(Option preferenceId) const
+{
+    DPRINT << ": preference id: " << static_cast<int>(preferenceId); 
+    return m_options.testFlag(preferenceId); 
+}
+
+/*!
+    InfoWidgetPreferences::preferences()
+*/
+InfoWidgetPreferences::Options InfoWidgetPreferences::preferences() const
+{
+    return m_options; 
+}
+
+/*!
     InfoWidgetPreferences::setPreference() 
 */
 void InfoWidgetPreferences::setPreference(Option preferenceId, 
@@ -81,8 +123,10 @@ void InfoWidgetPreferences::setPreference(Option preferenceId,
     
     if (preferenceString.compare(DISPLAY_SETTING_ON) == 0) {
         m_options |= preferenceId; 
+        emit prefChanged(preferenceId,DisplayOn);
     } else {
-        m_options &= ~preferenceId; 
+        m_options &= ~preferenceId;
+        emit prefChanged(preferenceId,DisplayOff);
     }
     
     DPRINT << ": modified options: " << m_options;
@@ -108,10 +152,35 @@ int InfoWidgetPreferences::visibleItemCount()
     if (m_options.testFlag(DisplaySatText)){
         visibleItems++; 
     }
+    if (m_options.testFlag(DisplaySpn)){
+        visibleItems++; 
+    }
     
     DPRINT << ": visible item count: " << visibleItems;
     return visibleItems; 
 }
+
+/*!
+    InfoWidgetPreferences::validate() 
+*/
+bool InfoWidgetPreferences::validate() 
+{
+    return visibleItemCount() > 0; 
+}
+
+/*!
+   InfoWidgetPreferences::preferenceNames()
+   
+   Convenience function for getting all preference names
+*/
+QStringList InfoWidgetPreferences::preferenceNames()
+{
+    QStringList preferenceList; 
+    preferenceList << "spnDisplay" << "homeZoneDisplay" << 
+            "activeLineDisplay" << "satDisplay" << "mcnDisplay";
+    return preferenceList; 
+}
+
 
 // End of File. 
 

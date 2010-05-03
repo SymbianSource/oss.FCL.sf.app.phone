@@ -26,7 +26,9 @@
 
 #include <QObject>
 #include <QMap>
+#include <apgwgnam.h>
 #include "mphoneviewcommandhandle.h"
+#include "mphonepubsubobserver.h"
 #include "phoneaction.h"
 
 class PhoneUIQtViewIF;
@@ -39,10 +41,12 @@ class PhoneMessageController;
 class PhoneUiCommandController;
 class TelephonyService;
 class QKeyEvent;
+class PhoneIndicatorController;
 
 class PHONEUIQTVIEWADAPTER_EXPORT PhoneUIQtViewAdapter : 
     public QObject, 
-    public MPhoneViewCommandHandle
+    public MPhoneViewCommandHandle,
+    public MPhonePubSubObserver
 {
     Q_OBJECT
 
@@ -145,6 +149,20 @@ public: // From MPhoneViewCommandHandle
     */
     PhoneNoteController* noteController() const;
     
+public: // from MPhonePubSubObserver
+
+        /**
+        * This function is called when there is property value change.
+        * @param aCategory Category of the property
+        * @param aKey Property key that is changed
+        * @param aValue New property value
+        */
+        void HandlePropertyChangedL( 
+            const TUid& aCategory,
+            const TUint aKey,
+            const TInt aValue);
+    
+
 private slots:
 
     /*!
@@ -488,6 +506,24 @@ private:
     */
     void setBubbleSelectionFlag();
     
+    /*!
+        /fn void setHidden()
+        This method sets hidden status.
+    */    
+    void setHidden(bool hidden);
+    
+    /*!
+        /fn void SetHiddenL()
+        This method sets hidden status.
+    */
+    void SetHiddenL(bool hidden);
+    
+    /*!
+        /fn void openContacts()
+        This method opens contacts application.
+    */    
+    void openContacts();
+    
 private:
 
     PhoneUIQtViewIF &m_view;
@@ -499,8 +535,10 @@ private:
     TelephonyService *m_telephonyService;
     PhoneUiCommandController *m_uiCommandController;
     PhoneMessageController *m_messageController;
+    PhoneIndicatorController *m_indicatorController;
     bool m_dialpadAboutToClose;
     bool m_homeScreenToForeground;
+    bool m_carModeEnabled;
 };
 
 #endif // PHONEUIQTVIEWADAPTER_H

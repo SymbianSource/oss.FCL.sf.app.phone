@@ -117,5 +117,5 @@ void PSetCallDivertingWrapper::setNewDefaultNumber(
 //
 void PSetCallDivertingWrapper::getVoiceMailBoxNumber(QString &number)
 {
-    SMC_MOCK_METHOD1( void, QString, number )
+    SMC_MOCK_METHOD1( void, QString&, number )
 }

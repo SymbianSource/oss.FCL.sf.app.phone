@@ -49,7 +49,7 @@ CpTelephonyPluginView::CpTelephonyPluginView() :
     HbDataForm *form = qobject_cast<HbDataForm*>(widget());
     if (form) {
         HbDataFormModel *model = new HbDataFormModel;
-        form->setHeading(hbTrId("Telephone settings"));
+        form->setHeading(hbTrId("txt_phone_subhead_telephone"));
         // Create and initialize plugin's item data helper
         m_helper = initializeItemDataHelper(); 
         QList<CpSettingFormItemData*> items;
@@ -62,11 +62,14 @@ CpTelephonyPluginView::CpTelephonyPluginView() :
         DPRINT << ": Loading cpdivertsplugin";
         items.append(groupItemFromPlugin("cpdivertplugin"));
         
-
         // Load call mailboxes plugin
         DPRINT << ": Loading vmbxcpplugin";
         items.append(groupItemFromPlugin("vmbxcpplugin"));
 
+        // Load barring plugin
+        DPRINT << ": Loading cpbarringplugin";
+        items.append(groupItemFromPlugin("cpbarringplugin"));
+        
         // Insert items to form model
         foreach (CpSettingFormItemData* i, items) {
             model->appendDataFormItem(i);

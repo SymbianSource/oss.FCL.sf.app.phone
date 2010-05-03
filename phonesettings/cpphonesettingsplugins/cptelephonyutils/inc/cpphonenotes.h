@@ -25,6 +25,8 @@
 #include "cptelephonyutilsdefs.h"
 
 class CpSettingsWrapper;
+class HbInputDialog;
+class QValidator;
 
 using namespace CpTelephonyUtils;
 
@@ -91,30 +93,30 @@ public slots: // Slots:
         const QList<unsigned char> &basicServiceGroupIds);
     
     /**
-     Shows the basic service list associated with the call divert status check.
-     @param     title               Heading for the service list.
-     @param     divertStatuses      Divert status information to show.
-     @param     selectionIndex      User selected item on divert statuses list.
-     @param     divertType          Divert type specifying what kind of 
-     divert details user is able to request on divert service group.
-     @param     divertDetailType    On return contains info about what kind
-     of call divert detail user wants to know about selected divert service 
-     group. 
-     */
-    void showBasicServiceCallDivertList(
-        const QString &title, 
-        const QList<PSCallDivertingStatus*> &divertStatuses,
-        int &selectionIndex,
-        CallDivertType divertType,
-        CallDivertType &divertDetailType);
-    
-    /**
      Shows detailed call divert information about the selected divert service
      group.
      @param     divertStatus    Divert status information.
      */
     void showCallDivertDetails(
         const PSCallDivertingStatus &divertStatus);
+    
+    /**
+     Shows password query dialog with OK & Cancel buttons and returns user
+     given password unless user has canceled query. Only valid password is
+     accepted.
+     @param title               Title for the query dialog.
+     @param validator           Password validator.
+     @param maxPasswordLength   Maximum length for the password.  
+     @param password            On return contains user given password.
+     @param ok                  True if the user pressed OK, false if the user 
+                                pressed Cancel.
+     */
+    void showPasswordQueryDialog(
+        const QString &title,
+        const QValidator &validator,
+        int maxPasswordLength,
+        QString &password,
+        bool &ok);
     
     /**
      Cancels specified note.
@@ -127,18 +129,6 @@ public slots: // Slots:
      */
     bool noteShowing();
     
-private slots:
-    
-    /**
-     Handler method for notes' about to close signal.
-     */
-    void activeNoteAboutToClose();
-    
-    /**
-     Handler method for notes' canceled signal.
-     */
-    void handleProgressNoteCanceled();
-
 private:
     
     /**
@@ -147,12 +137,6 @@ private:
      @return    Group name.
      */
     QString basicServiceGroupName(BasicServiceGroups basicServiceGroupId) const;
-    
-    /**
-     Converts etel mobile service code into basic service group enumeration.
-     @param     serviceCode     Etel mobilde service code.
-     */
-    BasicServiceGroups convertEtelMobileServiceCode(int serviceCode) const;
     
     /**
      Formats phone number according to locale specific rules.
@@ -166,6 +150,24 @@ private:
      note currently.
      */
     void launchNextNoteIfReady();
+
+private slots:
+    
+    /**
+     Handler method for notes' about to close signal.
+     */
+    void activeNoteAboutToClose();
+    
+    /**
+     Handler method for notes' canceled signal.
+     */
+    void handleProgressNoteCanceled();
+    
+    /**
+     Used for dynamic enable/disable of password dialog's OK button according
+     to validity of the currently inputted password.
+     */
+    void passwordTextChanged();
     
 private: // Data: 
 
@@ -183,6 +185,15 @@ private: // Data:
       Indicates whether note controller is busy with some note showing.
      */
     bool m_isNoteShowingOngoing;
+    
+    /**
+      Password query dialog. Not own.
+     */
+    HbInputDialog *m_passwordDialog;
 
+    /**
+      Password validator. Not own.
+     */
+    const QValidator *m_passwordValidator;
 };
 #endif // CPPHONENOTES_H

@@ -22,6 +22,7 @@
 #include <QLocale>
 #include <QApplication>
 #include <QTimer>
+#include <QValidator>
 #include <cpitemdatahelper.h>
 #include <psetwrapper.h>
 #include <psetcallbarringwrapper.h>
@@ -30,10 +31,9 @@
 #include "cpphonenotes.h"
 #include "cppluginlogging.h"
 
-Q_DECLARE_METATYPE(PSetCallBarringWrapper::BarringType)
+const int KMaxPasswordLength = 4;
 
-// TODO: use logical identifiers for texts
-// TODO: barring password implementation
+Q_DECLARE_METATYPE(PSetCallBarringWrapper::BarringType)
 
 /*!
   CpBarringPluginGroup::CpBarringPluginGroup.
@@ -41,18 +41,18 @@ Q_DECLARE_METATYPE(PSetCallBarringWrapper::BarringType)
 CpBarringPluginGroup::CpBarringPluginGroup(CpItemDataHelper &helper)
     :
     CpSettingFormItemData(
-        HbDataFormModelItem::GroupItem, hbTrId("Call barring"), 0),
+        HbDataFormModelItem::GroupItem, 
+        hbTrId("txt_phone_subhead_call_barring"), 0),
     m_helper(helper),
+    m_translator(0),
     m_pSetWrapper(0),
     m_barringWrapper(0),
-    m_allOutgoingBarringItem(0),
-    m_outgoingInternationalBarringItem(0),
-    m_outgoingInternationalExceptToHomeCountryBarringItem(0),
-    m_allIncomingBarringItem(0),
-    m_incomingWhenRoamingBarringItem(0),
+    m_editBarringPasswordItem(0),
     m_barringStatusRequestOngoing(false),
     m_activeNoteId(0),
-    m_phoneNotes(NULL)
+    m_phoneNotes(0),
+    m_barringPasswordValidator(0),
+    m_delayedBarringActivationNote(false)
 {
     DPRINT << ": IN";
     
@@ -63,22 +63,21 @@ CpBarringPluginGroup::CpBarringPluginGroup(CpItemDataHelper &helper)
     
     setupLocalization();
     
-    m_pSetWrapper = new PSetWrapper(this); 
+    m_pSetWrapper.reset(new PSetWrapper(NULL));
     m_barringWrapper = &m_pSetWrapper->callBarringWrapper(); 
-    connectToWrapper();
+    setupConnectionsToWrapper();
     
     // itemShown signal is used to trigger barring status query process 
     helper.connectToForm(
         SIGNAL(itemShown(QModelIndex)), 
         this, SLOT(itemShown(QModelIndex)));
     
-    createAllOutgoingBarringItem();
-    createOutgoingInternationalBarringItem();
-    createOutgoingInternationalExceptToHomeCountryBarringItem();
-    createAllIncomingBarringItem();
-    createIncomingWhenRoamingBarringItem();
+    createBarringItems();
     
     m_phoneNotes = CpPhoneNotes::instance();
+    
+    QRegExp regExpression("\\d{4}");
+    m_barringPasswordValidator = new QRegExpValidator(regExpression, this);
     
     DPRINT << ": OUT";
 }
@@ -106,7 +105,16 @@ void CpBarringPluginGroup::itemShown(const QModelIndex& item)
         static_cast<CpSettingFormItemData*>(
             qobject_cast<HbDataFormModel*>(model())->itemFromIndex(item));
     
-    if (formItem->contentWidgetData("checkState").isValid()) {
+    if (!formItem->property("barringType").isValid()) {
+        // Shown item does not belong to the barring settings group.
+        return;
+        }
+    
+    if (formItem == m_editBarringPasswordItem) {
+        return;
+    }
+    
+    if (formItem->isEnabled()) {
         // Initial status for the barring item is already queried. Do not 
         // start querying again if user does close/open for the barring group.
         return;
@@ -115,6 +123,8 @@ void CpBarringPluginGroup::itemShown(const QModelIndex& item)
     // start barring status query
     m_barringRequestQueue.enqueue(formItem);
     processBarringStatusRequestQueue();
+    
+    DPRINT << ": OUT";
 }
 
 
@@ -125,26 +135,28 @@ void CpBarringPluginGroup::setupLocalization()
 {
     DPRINT << ": IN";
     
-    QTranslator translator; 
+    m_translator.reset(new QTranslator);
     QString lang = QLocale::system().name();
     QString path = "z:/resource/qt/translations/";
     QString fullName = path + "telephone_cp_" + lang;
     
     DPRINT << ": loading translation:" << fullName;
-    bool translatorLoaded = translator.load(fullName);
+    bool translatorLoaded = m_translator->load(fullName);
     DPRINT << ": translator loaded: " << translatorLoaded; 
     
     if (translatorLoaded) {
-        qApp->installTranslator(&translator);
+        qApp->installTranslator(m_translator.data());
         DPRINT << ": translator installed"; 
     }
+    
+    DPRINT << ": OUT";
 }
 
 
 /*!
-  CpBarringPluginGroup::connectToWrapper.
+  CpBarringPluginGroup::setupConnectionsToWrapper.
  */
-void CpBarringPluginGroup::connectToWrapper()
+void CpBarringPluginGroup::setupConnectionsToWrapper()
 {
     DPRINT << ": IN";
     
@@ -196,116 +208,94 @@ void CpBarringPluginGroup::connectToWrapper()
             bool)
         )
     );
+    
+    QObject::connect(
+        m_barringWrapper, 
+        SIGNAL(barringPasswordChangeRequestCompleted(int)),
+        this, 
+        SLOT(barringPasswordChangeRequestCompleted(int))
+    );
+    
+    DPRINT << ": OUT";
 }
 
 
 /*!
-  CpBarringPluginGroup::createAllOutgoingBarringItem.
+  CpBarringPluginGroup::createBarringItems.
  */
-void CpBarringPluginGroup::createAllOutgoingBarringItem()
+void CpBarringPluginGroup::createBarringItems()
 {
     DPRINT << ": IN";
     
-    m_allOutgoingBarringItem = new CpSettingFormItemData(
-        HbDataFormModelItem::CheckBoxItem, hbTrId(""), this);
+    createBarringItem(
+        HbDataFormModelItem::CheckBoxItem,
+        QString(""),
+        hbTrId("txt_phone_list_outgoing_calls"),
+        PSetCallBarringWrapper::BarringTypeAllOutgoing);
     
-    m_allOutgoingBarringItem->setContentWidgetData(
-        "text", QVariant(hbTrId("Outgoing calls")));
+    createBarringItem(
+        HbDataFormModelItem::CheckBoxItem,
+        QString(""),
+        hbTrId("txt_phone_list_international_calls"),
+        PSetCallBarringWrapper::BarringTypeOutgoingInternational);
     
-    QVariant value;
-    value.setValue(PSetCallBarringWrapper::BarringTypeAllOutgoing);
-    m_allOutgoingBarringItem->setProperty("barringType", value);
+    createBarringItem(
+        HbDataFormModelItem::CheckBoxItem,
+        QString(""),
+        hbTrId("txt_phone_list_international_calls_except_to_home"),
+        PSetCallBarringWrapper::BarringTypeOutgoingInternationalExceptToHomeCountry);
     
-    appendChild(m_allOutgoingBarringItem);
+    createBarringItem(
+        HbDataFormModelItem::CheckBoxItem,
+        QString(""),
+        hbTrId("txt_phone_list_incoming_calls"),
+        PSetCallBarringWrapper::BarringTypeAllIncoming);
+    
+    createBarringItem(
+        HbDataFormModelItem::CheckBoxItem,
+        QString(""),
+        hbTrId("txt_phone_list_incoming_call_when_abroad"),
+        PSetCallBarringWrapper::BarringTypeIncomingWhenRoaming);
+    
+    // Dummy BarringTypeAllServices is used to indicate that this item belongs 
+    // to the barring settings group. Information is needed in itemShown().
+    m_editBarringPasswordItem = createBarringItem(
+        HbDataFormModelItem::ToggleValueItem,
+        hbTrId("txt_phone_setlabel_edit_barring_password"),
+        hbTrId("txt_phone_setlabel_edit_barring_password_val_edit"),
+        PSetCallBarringWrapper::BarringTypeAllServices);
+    m_editBarringPasswordItem->setContentWidgetData(
+        QString("additionalText"),
+        hbTrId("txt_phone_setlabel_edit_barring_password_val_edit"));
+    
+    DPRINT << ": OUT";
 }
 
 
 /*!
-  CpBarringPluginGroup::createOutgoingInternationalBarringItem.
+  CpBarringPluginGroup::createBarringItem.
  */
-void CpBarringPluginGroup::createOutgoingInternationalBarringItem()
+CpSettingFormItemData *CpBarringPluginGroup::createBarringItem(
+    const HbDataFormModelItem::DataItemType &itemType,
+    const QString &label,
+    const QString &widgetTextData,
+    const PSetCallBarringWrapper::BarringType &barringType)
 {
     DPRINT << ": IN";
     
-    m_outgoingInternationalBarringItem = new CpSettingFormItemData(
-        HbDataFormModelItem::CheckBoxItem, hbTrId(""), this);
+    QScopedPointer<CpSettingFormItemData> barringItem(
+        new CpSettingFormItemData(itemType, label, this));
     
-    m_outgoingInternationalBarringItem->setContentWidgetData(
-        "text", QVariant(hbTrId("International calls")));
-    
-    QVariant value;
-    value.setValue(PSetCallBarringWrapper::BarringTypeOutgoingInternational);
-    m_outgoingInternationalBarringItem->setProperty("barringType", value);
-    
-    appendChild(m_outgoingInternationalBarringItem);
-}
-
-
-/*!
-  CpBarringPluginGroup::
-      createOutgoingInternationalExceptToHomeCountryBarringItem.
- */
-void CpBarringPluginGroup::
-    createOutgoingInternationalExceptToHomeCountryBarringItem()
-{
-    DPRINT << ": IN";
-    
-    m_outgoingInternationalExceptToHomeCountryBarringItem = 
-        new CpSettingFormItemData(
-            HbDataFormModelItem::CheckBoxItem, hbTrId(""), this);
-    
-    m_outgoingInternationalExceptToHomeCountryBarringItem->setContentWidgetData(
-        "text", QVariant(hbTrId("International calls except to home country")));
+    barringItem->setContentWidgetData("text", QVariant(widgetTextData));
+    barringItem->setEnabled(false);
     
     QVariant value;
-    value.setValue(PSetCallBarringWrapper::BarringTypeOutgoingInternationalExceptToHomeCountry);
-    m_outgoingInternationalExceptToHomeCountryBarringItem->setProperty(
-        "barringType", value);
+    value.setValue(barringType);
+    barringItem->setProperty("barringType", value);
     
-    appendChild(m_outgoingInternationalExceptToHomeCountryBarringItem);
-    
-}
-
-
-/*!
-  CpBarringPluginGroup::createAllIncomingBarringItem.
- */
-void CpBarringPluginGroup::createAllIncomingBarringItem()
-{
-    DPRINT << ": IN";
-    
-    m_allIncomingBarringItem = new CpSettingFormItemData(
-        HbDataFormModelItem::CheckBoxItem, hbTrId(""), this);
-    
-    m_allIncomingBarringItem->setContentWidgetData(
-        "text", QVariant(hbTrId("Incoming calls")));
-    
-    QVariant value;
-    value.setValue(PSetCallBarringWrapper::BarringTypeAllIncoming);
-    m_allIncomingBarringItem->setProperty("barringType", value);
-    
-    appendChild(m_allIncomingBarringItem);
-}
-
-
-/*!
-  CpBarringPluginGroup::createIncomingWhenRoamingBarringItem.
- */
-void CpBarringPluginGroup::createIncomingWhenRoamingBarringItem()
-{
-    DPRINT << ": IN";
-    
-    m_incomingWhenRoamingBarringItem = new CpSettingFormItemData(
-        HbDataFormModelItem::CheckBoxItem, hbTrId(""), this);
-    
-    m_incomingWhenRoamingBarringItem->setContentWidgetData(
-        "text", QVariant(hbTrId("Incoming calls when abroad")));
-    
-    QVariant value;
-    value.setValue(PSetCallBarringWrapper::BarringTypeIncomingWhenRoaming);
-    m_incomingWhenRoamingBarringItem->setProperty("barringType", value);
-    
-    appendChild(m_incomingWhenRoamingBarringItem);
+    appendChild(barringItem.data());
+    DPRINT << ": OUT";
+    return barringItem.take();
 }
 
 
@@ -314,10 +304,10 @@ void CpBarringPluginGroup::createIncomingWhenRoamingBarringItem()
  */
 void CpBarringPluginGroup::barringStatusRequestCompleted(
     int result,
-    const QList<unsigned char> & basicServiceGroupIds,
+    const QList<unsigned char> &basicServiceGroupIds,
     PSetCallBarringWrapper::BarringStatus status)
 {
-    DPRINT << ": IN";
+    DPRINT << ": IN" << ": result:" << result << "status:" << status;
     Q_UNUSED(result)
     Q_UNUSED(basicServiceGroupIds)
     
@@ -326,35 +316,58 @@ void CpBarringPluginGroup::barringStatusRequestCompleted(
     if (PSetCallBarringWrapper::BarringErrorNone != result) {
         // Stop status query process for this time. Statuses are tried to 
         // query again for uncompleted items when user expands/opens barring 
-        // view again.
+        // settings group again.
         m_phoneNotes->cancelNote(m_activeNoteId);
         m_phoneNotes->showGlobalErrorNote(m_activeNoteId, result);
         m_barringRequestQueue.clear();
         return;
     }
     
-    // Update check state to correct value. After setting valid value here
-    // status query will not be started again for the item when user collapses
-    // and expands view again.
+    CpSettingFormItemData *itemForCompletedRequest = 
+        m_barringRequestQueue.dequeue();
+    
+    if (!itemForCompletedRequest->isEnabled()) {
+        // After enabling setting item here status query will not be started 
+        // again for the item when user collapses and expands the barring 
+        // settings group again.
+        itemForCompletedRequest->setEnabled(true);
+        // start to observe user initiated state changes
+        m_helper.addConnection(
+            itemForCompletedRequest, SIGNAL(stateChanged(int)),
+            this, SLOT(changeBarringStateRequested(int)));
+    }
+    
     Qt::CheckState checkState = 
         (PSetCallBarringWrapper::BarringStatusActive == status) 
             ? Qt::Checked 
             : Qt::Unchecked;
-    CpSettingFormItemData *itemForCompletedRequest = 
-        m_barringRequestQueue.dequeue();
-    itemForCompletedRequest->setContentWidgetData(
-        "checkState", QVariant(checkState));
-    
-    // start to observe user initiated state changes
-    m_helper.addConnection(
-        itemForCompletedRequest, SIGNAL(stateChanged(int)),
-        this, SLOT(changeBarringStateRequested(int)));
+    updateCheckStateOfItem(*itemForCompletedRequest, checkState);
     
     if (m_barringRequestQueue.isEmpty()) {
         m_phoneNotes->cancelNote(m_activeNoteId);
+        if (m_delayedBarringActivationNote) {
+            m_delayedBarringActivationNote = false;
+            m_phoneNotes->showGlobalNote(
+                m_activeNoteId, 
+                hbTrId("txt_phone_info_barring_activated"),
+                HbMessageBox::MessageTypeInformation);
+        }
+        
+        // Password editing is enabled only after all barring statuses are 
+        // queried. Otherwise user may be able to issue two requests 
+        // simultaneously by hiding status query progress note and clicking 
+        // edit password.
+        if (!m_editBarringPasswordItem->isEnabled()) {
+            m_editBarringPasswordItem->setEnabled(true);
+            m_helper.addConnection(
+                m_editBarringPasswordItem, SIGNAL(clicked(bool)),
+                this, SLOT(changeBarringPasswordRequested(bool)));
+        }
     } else {
         processBarringStatusRequestQueue();
     }
+    
+    DPRINT << ": OUT";
 }
 
 
@@ -367,24 +380,33 @@ void CpBarringPluginGroup::enableBarringRequestCompleted(
     PSetCallBarringWrapper::BarringStatus barringStatus, 
     bool plural)
 {
-    DPRINT << ": IN";
+    DPRINT << ": IN: result:" << result << "barringType:" << barringType 
+        << "barringStatus:" << barringStatus << "plural:" << plural;
     Q_UNUSED(barringType)
     Q_UNUSED(barringStatus)
     Q_UNUSED(plural)
     
-    m_phoneNotes->cancelNote(m_activeNoteId);
-    
     CpSettingFormItemData *barringItem = m_barringRequestQueue.dequeue();
     if (PSetCallBarringWrapper::BarringErrorNone == result) {
-        m_phoneNotes->showGlobalNote(
-            m_activeNoteId, 
-            hbTrId("Barring activated"),
-            HbMessageBox::MessageTypeInformation);
+        if (updateDependentBarringProgramStatuses(*barringItem)) {
+            // Indicate barring activation completion only when dependent 
+            // barring items are also updated.
+            m_delayedBarringActivationNote = true;
+        } else {
+            m_phoneNotes->cancelNote(m_activeNoteId);
+            m_phoneNotes->showGlobalNote(
+                m_activeNoteId, 
+                hbTrId("txt_phone_info_barring_activated"),
+                HbMessageBox::MessageTypeInformation);
+        }
     } else {
-        revertCheckStateForItem(barringItem);
+        revertCheckStateOfItem(barringItem);
         
+        m_phoneNotes->cancelNote(m_activeNoteId);
         m_phoneNotes->showGlobalErrorNote(m_activeNoteId, result);
     }
+    
+    DPRINT << ": OUT";
 }
 
 
@@ -397,7 +419,8 @@ void CpBarringPluginGroup::disableBarringRequestCompleted(
     PSetCallBarringWrapper::BarringStatus barringStatus, 
     bool plural)
 {
-    DPRINT << ": IN";
+    DPRINT << ": IN: result:" << result << "barringType:" << barringType 
+        << "barringStatus:" << barringStatus << "plural:" << plural;
     Q_UNUSED(barringType)
     Q_UNUSED(barringStatus)
     Q_UNUSED(plural)
@@ -408,11 +431,33 @@ void CpBarringPluginGroup::disableBarringRequestCompleted(
     if (PSetCallBarringWrapper::BarringErrorNone == result) {
         m_phoneNotes->showGlobalNote(
             m_activeNoteId, 
-            hbTrId("Barring cancelled"),
+            hbTrId("txt_phone_info_barring_deactivated"),
             HbMessageBox::MessageTypeInformation);
     } else {
-        revertCheckStateForItem(barringItem);
+        revertCheckStateOfItem(barringItem);
         
+        m_phoneNotes->showGlobalErrorNote(m_activeNoteId, result);
+    }
+    
+    DPRINT << ": OUT";
+}
+
+
+/*!
+  CpBarringPluginGroup::barringPasswordChangeRequestCompleted.
+ */
+void CpBarringPluginGroup::barringPasswordChangeRequestCompleted(int result)
+{
+    DPRINT << ": IN: result:" << result;
+    
+    m_phoneNotes->cancelNote(m_activeNoteId);
+    
+    if (PSetCallBarringWrapper::BarringErrorNone == result) {
+        m_phoneNotes->showGlobalNote(
+            m_activeNoteId, 
+            hbTrId("txt_phone_info_password_changed"),
+            HbMessageBox::MessageTypeInformation);
+    } else {
         m_phoneNotes->showGlobalErrorNote(m_activeNoteId, result);
     }
 }
@@ -424,7 +469,7 @@ void CpBarringPluginGroup::disableBarringRequestCompleted(
 void CpBarringPluginGroup::processBarringStatusRequestQueue()
 {
     DPRINT << ": IN";
-
+    
     if ((m_barringStatusRequestOngoing == false) && 
         (!m_barringRequestQueue.isEmpty())) {
         
@@ -436,37 +481,14 @@ void CpBarringPluginGroup::processBarringStatusRequestQueue()
         
         m_barringStatusRequestOngoing = true;
         
-        if (0 == m_activeNoteId) {
-            // Status request note is very first note to show. Launch progress
-            // note only once for status update.
+        if (!m_phoneNotes->noteShowing()) {
+            // Launch progress note only once for status update.
             m_phoneNotes->showGlobalProgressNote(
-                m_activeNoteId, hbTrId("Requesting..."));
+                m_activeNoteId, hbTrId("txt_phone_info_requesting"));
         }
     }
-}
-
-
-/*!
-  CpBarringPluginGroup::revertCheckStateForItem.
- */
-void CpBarringPluginGroup::revertCheckStateForItem(
-    CpSettingFormItemData *barringItem)
-{
-    m_helper.removeConnection(
-        barringItem, SIGNAL(stateChanged(int)),
-        this, SLOT(changeBarringStateRequested(int)));
     
-    HbDataFormModel *formModel = qobject_cast<HbDataFormModel*>(model());
-    QModelIndex modelIndex = formModel->indexFromItem(barringItem);
-    HbCheckBox *checkBox = static_cast<HbCheckBox*>(
-        m_helper.widgetFromModelIndex(modelIndex));
-    Qt::CheckState revertedCheckState = 
-        (checkBox->checkState() == Qt::Checked) ? Qt::Unchecked : Qt::Checked;
-    checkBox->setCheckState(revertedCheckState);
-    
-    m_helper.addConnection(
-        barringItem, SIGNAL(stateChanged(int)),
-        this, SLOT(changeBarringStateRequested(int)));
+    DPRINT << ": OUT";
 }
 
 
@@ -475,9 +497,10 @@ void CpBarringPluginGroup::revertCheckStateForItem(
  */
 void CpBarringPluginGroup::changeBarringStateRequested(int checkState)
 {
-    QObject *signalSender = sender();
+    DPRINT << ": IN";
     
     // find form item for which user has requested barring status change
+    QObject *signalSender = sender();
     HbDataFormModel *formModel = qobject_cast<HbDataFormModel*>(model());
     CpSettingFormItemData* barringItem = NULL;
     int numOfChilds = childCount();
@@ -489,26 +512,260 @@ void CpBarringPluginGroup::changeBarringStateRequested(int checkState)
         }
     }
     
-    // TODO: remove hardcoded password when setting of password is implemented
     if (NULL != barringItem) {
+        QString barringPasswordQueryDialogTitle(
+            hbTrId("txt_phone_info_barring_password"));
+        QString barringPassword;
+        bool okPressed = false;
+        m_phoneNotes->showPasswordQueryDialog(
+            barringPasswordQueryDialogTitle, *m_barringPasswordValidator,
+            KMaxPasswordLength, barringPassword, okPressed);
+        if (!okPressed) {
+            revertCheckStateOfItem(barringItem);
+            return;
+        }
+        
         if (Qt::Checked == checkState) {
             m_barringWrapper->enableBarring(
                 ServiceGroupVoice,
                 qvariant_cast<PSetCallBarringWrapper::BarringType>(
                     barringItem->property("barringType")), 
-                QString("1234"));
+                barringPassword);
         } else {
             m_barringWrapper->disableBarring(
                 ServiceGroupVoice,
                 qvariant_cast<PSetCallBarringWrapper::BarringType>(
                     barringItem->property("barringType")), 
-                QString("1234"));
+                barringPassword);
         }
         
         m_barringRequestQueue.enqueue(barringItem);
         m_phoneNotes->showGlobalProgressNote(
-            m_activeNoteId, hbTrId("Requesting..."));
+            m_activeNoteId, hbTrId("txt_phone_info_requesting"));
     }
+    
+    DPRINT << ": OUT";
+}
+
+
+/*!
+  CpBarringPluginGroup::changeBarringPasswordRequested.
+ */
+void CpBarringPluginGroup::changeBarringPasswordRequested(bool checked)
+{
+    DPRINT << ": IN";
+    Q_UNUSED(checked)
+    
+    bool okPressed = false;
+    
+    QString currentPassword;
+    QString currentPasswordQueryDialogTitle(
+        hbTrId("txt_phone_info_current_password"));
+    m_phoneNotes->showPasswordQueryDialog(
+        currentPasswordQueryDialogTitle, *m_barringPasswordValidator, 
+        KMaxPasswordLength, currentPassword, okPressed);
+    if (!okPressed) {
+        return;
+    }
+    
+    QString newPassword;
+    QString newPasswordQueryDialogTitle(
+        hbTrId("txt_phone_info_new_password"));
+    m_phoneNotes->showPasswordQueryDialog(
+        newPasswordQueryDialogTitle, *m_barringPasswordValidator,
+        KMaxPasswordLength, newPassword, okPressed);
+    if (!okPressed) {
+        return;
+    }
+    
+    QString newPasswordVerifyDialogTitle(
+        hbTrId("txt_phone_info_verify_new_password"));
+    QString newPasswordVerified;
+    QRegExp regExpression(newPassword);
+    QScopedPointer<QValidator> verifyPasswordValidator(
+        new QRegExpValidator(regExpression, NULL));
+    m_phoneNotes->showPasswordQueryDialog(
+        newPasswordVerifyDialogTitle, *verifyPasswordValidator.data(),
+        KMaxPasswordLength, newPasswordVerified, okPressed);
+    
+    if (okPressed) {
+        m_barringWrapper->changeBarringPassword(
+            currentPassword,
+            newPassword,
+            newPasswordVerified);
+        
+        m_phoneNotes->showGlobalProgressNote(
+            m_activeNoteId, hbTrId("txt_phone_info_requesting"));
+    }
+    
+    DPRINT << ": OUT";
+}
+
+
+/*!
+  CpBarringPluginGroup::updateDependentBarringProgramStatuses.
+  According to the ETSI TS 100 548 v7.0.0 specification only one outgoing 
+  and one incoming barring program can be active at the same time. We must,
+  however, query barring statuses again because some networks do not conform
+  to the standards and allow multiple simultaneous barring programs.
+ */
+bool CpBarringPluginGroup::updateDependentBarringProgramStatuses(
+    const CpSettingFormItemData &changedBarringItem)
+{
+    DPRINT << ": IN";
+    
+    CpSettingFormItemData* barringItem = NULL;
+    PSetCallBarringWrapper::BarringType barringType =
+        qvariant_cast<PSetCallBarringWrapper::BarringType>(
+            changedBarringItem.property("barringType"));
+    QList<CpSettingFormItemData*> itemCandidatesForUpdate;
+    switch (barringType) {
+        case PSetCallBarringWrapper::BarringTypeAllOutgoing:
+        {
+            barringItem = &barringItemByProgram(
+                PSetCallBarringWrapper::BarringTypeOutgoingInternational);
+            itemCandidatesForUpdate.append(barringItem);
+            
+            barringItem = &barringItemByProgram(
+                PSetCallBarringWrapper::
+                    BarringTypeOutgoingInternationalExceptToHomeCountry);
+            itemCandidatesForUpdate.append(barringItem);
+            break;
+        }
+        case PSetCallBarringWrapper::BarringTypeOutgoingInternational:
+        {
+            barringItem = &barringItemByProgram(
+                PSetCallBarringWrapper::BarringTypeAllOutgoing);
+            itemCandidatesForUpdate.append(barringItem);
+
+            barringItem = &barringItemByProgram(
+                PSetCallBarringWrapper::
+                    BarringTypeOutgoingInternationalExceptToHomeCountry);
+            itemCandidatesForUpdate.append(barringItem);
+            break;
+        }
+        case PSetCallBarringWrapper::
+            BarringTypeOutgoingInternationalExceptToHomeCountry:
+        {
+            // ETSI TS 100 548 v7.0.0, 1.1.2.2. BOIC barring will be activated 
+            // instead of BOIC-exHC if roamed network does not suport BOIC-exHC
+            // => we must update statuses for all outgoing barring programs. 
+            barringItem = &barringItemByProgram(
+                PSetCallBarringWrapper::BarringTypeAllOutgoing);
+            itemCandidatesForUpdate.append(barringItem);
+
+            barringItem = &barringItemByProgram(
+                PSetCallBarringWrapper::BarringTypeOutgoingInternational);
+            itemCandidatesForUpdate.append(barringItem);
+            
+            barringItem = &barringItemByProgram(
+                PSetCallBarringWrapper::
+                    BarringTypeOutgoingInternationalExceptToHomeCountry);
+            itemCandidatesForUpdate.append(barringItem);
+            break;
+        }
+        case PSetCallBarringWrapper::BarringTypeAllIncoming:
+        {
+            barringItem = &barringItemByProgram(
+                PSetCallBarringWrapper::BarringTypeIncomingWhenRoaming);
+            itemCandidatesForUpdate.append(barringItem);
+            break;
+        }
+        case PSetCallBarringWrapper::BarringTypeIncomingWhenRoaming:
+        {
+            barringItem = &barringItemByProgram(
+                PSetCallBarringWrapper::BarringTypeAllIncoming);
+            itemCandidatesForUpdate.append(barringItem);
+            break;
+        }
+        default:
+            break;
+    }
+    
+    const int numOfItemCandidates = itemCandidatesForUpdate.count();
+    for (int i = 0; i < numOfItemCandidates; i++) {
+        barringItem = itemCandidatesForUpdate[i];
+        Qt::CheckState checkState = static_cast<Qt::CheckState>
+            (barringItem->contentWidgetData("checkState").toInt());
+        if (Qt::Checked == checkState || 
+            PSetCallBarringWrapper::
+                BarringTypeOutgoingInternationalExceptToHomeCountry 
+                    == barringType) {
+            m_barringRequestQueue.enqueue(barringItem);
+        }
+    }
+    
+    processBarringStatusRequestQueue();
+    DPRINT << ": OUT";
+    return (0 < m_barringRequestQueue.count());
+}
+
+
+/*!
+  CpBarringPluginGroup::barringItemByProgram.
+ */
+CpSettingFormItemData &CpBarringPluginGroup::barringItemByProgram(
+    const PSetCallBarringWrapper::BarringType &barringProgram)
+{
+    DPRINT << ": IN";
+    
+    HbDataFormModel *formModel = qobject_cast<HbDataFormModel*>(model());
+    CpSettingFormItemData *item = NULL;
+    int numOfChilds = childCount();
+    for (int childInd = 0; (childInd < numOfChilds) && (!item); childInd++) {
+        CpSettingFormItemData *itemCandidate = 
+            static_cast<CpSettingFormItemData*>(childAt(childInd));
+        PSetCallBarringWrapper::BarringType candidateBarringProgram =
+            qvariant_cast<PSetCallBarringWrapper::BarringType>(
+                itemCandidate->property("barringType"));
+        if (candidateBarringProgram == barringProgram) {
+            item = itemCandidate;
+        }
+    }
+    
+    Q_ASSERT(item);
+    DPRINT << ": OUT";
+    return *item;
+}
+
+
+/*!
+  CpBarringPluginGroup::revertCheckStateOfItem.
+ */
+void CpBarringPluginGroup::revertCheckStateOfItem(
+    CpSettingFormItemData *barringItem)
+{
+    DPRINT << ": IN";
+    
+    Qt::CheckState currentCheckState = static_cast<Qt::CheckState>
+        (barringItem->contentWidgetData("checkState").toInt());
+    Qt::CheckState revertedCheckState = 
+        (currentCheckState == Qt::Checked) ? Qt::Unchecked : Qt::Checked;
+    updateCheckStateOfItem(*barringItem, revertedCheckState);
+    
+    DPRINT << ": OUT";
+}
+
+
+/*!
+  CpBarringPluginGroup::updateCheckStateOfItem.
+ */
+void CpBarringPluginGroup::updateCheckStateOfItem(
+    CpSettingFormItemData &barringItem, const Qt::CheckState &newState)
+{
+    DPRINT << ": IN";
+    
+    m_helper.removeConnection(
+        &barringItem, SIGNAL(stateChanged(int)),
+        this, SLOT(changeBarringStateRequested(int)));
+    
+    barringItem.setContentWidgetData("checkState", QVariant(newState));
+    
+    m_helper.addConnection(
+        &barringItem, SIGNAL(stateChanged(int)),
+        this, SLOT(changeBarringStateRequested(int)));
+    
+    DPRINT << ": OUT";
 }
 
 // End of File. 

@@ -130,7 +130,7 @@ class CPEGsmAudioData : public CPEAudioData,
 
     protected:  // From CPEAudioData
         
-        void DoHandleVolumeChange( TInt aVolume );
+        void DoHandleVolumeChange( TInt aVolume, TBool aSendMsg=EFalse );
     
     private:
         /**

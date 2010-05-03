@@ -25,6 +25,7 @@ class QGraphicsWidget;
 class BubbleDocumentLoader;
 class BubbleHandler;
 class BubbleButtonStyle;
+class BubbleImageManager;
 
 class BubbleWidgetManager : public QObject
 {
@@ -58,11 +59,15 @@ public:
         ConferenceTimer,
         ParticipantList,
         ParticipantListItem,
-        ParticipantListButton
+        ParticipantListButton,
+        MutedIcon
     };
 
 public:
-    BubbleWidgetManager(int style, QObject* parent=0);
+    BubbleWidgetManager(
+        BubbleImageManager& imageManager,
+        int style,
+        QObject* parent=0);
     virtual ~BubbleWidgetManager();
 
     QGraphicsWidget* view(View view);
@@ -90,8 +95,10 @@ private:
     void createDocumentHandlers(View view);
     void applyCustomStyles(View view);
     void setButtonStyle(Widget widget, QGraphicsWidget* button);
+    void setBackground(QGraphicsWidget* widget);
 
 private:
+    BubbleImageManager& mImageManager;
     int mStyleBaseId;
     QString mStylePluginName;
     Qt::Orientation mOrientation;

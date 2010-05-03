@@ -15,6 +15,7 @@
 *
 */
 #include "ut_infowidgetpreferences.h"
+#define private public
 #include "infowidgetpreferences.h"
 #include "qtestmains60.h"
 
@@ -64,20 +65,17 @@ void UT_InfoWidgetPreferences::cleanup()
 
 
 /*!
-  UT_InfoWidgetPreferences::t_loadPreferences
- */
-void UT_InfoWidgetPreferences::t_loadPreferences()
-{
-    m_infoWidgetPreferences->loadPreferences();
-}
-
-
-/*!
   UT_InfoWidgetPreferences::t_storePreferences
  */
 void UT_InfoWidgetPreferences::t_storePreferences()
 {
     m_infoWidgetPreferences->storePreferences();
+    
+    m_infoWidgetPreferences->m_options = (InfoWidgetPreferences::Option)1;
+    m_infoWidgetPreferences->m_validatedOptions = (InfoWidgetPreferences::Option)2;
+    m_infoWidgetPreferences->storePreferences();
+            
+    QVERIFY(verify());
 }
 
 
@@ -151,8 +149,41 @@ void UT_InfoWidgetPreferences::t_visibleItemCount()
         InfoWidgetPreferences::DisplayActiveLine, DISPLAY_SETTING_ON);
     m_infoWidgetPreferences->setPreference(
         InfoWidgetPreferences::DisplaySatText, DISPLAY_SETTING_ON);
+    m_infoWidgetPreferences->setPreference(
+        InfoWidgetPreferences::DisplaySpn, DISPLAY_SETTING_ON);
     visibleItems = m_infoWidgetPreferences->visibleItemCount();
-    QVERIFY(visibleItems == 4);
+    QVERIFY(visibleItems == 5);
+}
+
+/*!
+  UT_InfoWidgetPreferences::t_isPreferenceSet
+ */
+void UT_InfoWidgetPreferences::t_isPreferenceSet()
+{
+    m_infoWidgetPreferences->isPreferenceSet
+        (InfoWidgetPreferences::DisplayHomeZone);
+            
+    QVERIFY(verify());
+}
+
+/*!
+  UT_InfoWidgetPreferences::t_preferences
+ */
+void UT_InfoWidgetPreferences::t_preferences()
+{
+    m_infoWidgetPreferences->preferences();
+                
+    QVERIFY(verify());
+}
+
+/*!
+  UT_InfoWidgetPreferences::t_preferenceNames
+ */
+void UT_InfoWidgetPreferences::t_preferenceNames()
+{
+    m_infoWidgetPreferences->preferenceNames();
+                
+    QVERIFY(verify());
 }
 
 QTEST_MAIN_S60(UT_InfoWidgetPreferences)

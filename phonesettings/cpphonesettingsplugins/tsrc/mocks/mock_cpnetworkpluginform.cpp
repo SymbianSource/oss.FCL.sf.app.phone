@@ -20,7 +20,11 @@
 #include <psetwrapper.h>
 #include "cpnetworkpluginform.h"
 
-
+class CellularDataSettings
+{
+public:
+    CellularDataSettings();
+};
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
@@ -44,6 +48,28 @@ CpNetworkPluginForm::~CpNetworkPluginForm(  )
     {
     
     }
+
+// -----------------------------------------------------------------------------
+// CpNetworkPluginForm::cellularDataUseHomeStateChanged
+// -----------------------------------------------------------------------------
+//
+void CpNetworkPluginForm::cellularDataUseHomeStateChanged( 
+        int index )
+    {
+    SMC_MOCK_METHOD1( void, int, index )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpNetworkPluginForm::cellularDataUseRoamStateChanged
+// -----------------------------------------------------------------------------
+//
+void CpNetworkPluginForm::cellularDataUseRoamStateChanged( 
+        int index )
+    {
+    SMC_MOCK_METHOD1( void, int, index )
+    }
+
 
 // -----------------------------------------------------------------------------
 // CpNetworkPluginForm::networkModeStateChanged

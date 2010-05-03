@@ -61,10 +61,7 @@ bool XQSettingsManager::writeItemValue(
         const XQSettingsKey & key,
         const QVariant & value )
     {
-    Q_UNUSED( key )
-    Q_UNUSED( value )
-    bool variable;
-    return variable;
+    SMC_MOCK_METHOD2( bool, XQSettingsKey &, key, QVariant &, value )
     }
 
 
@@ -76,10 +73,7 @@ bool XQSettingsManager::startMonitoring(
         const XQSettingsKey & key,
         XQSettingsManager::Type type )
     {
-    Q_UNUSED( key )
-    Q_UNUSED( type )
-    bool variable;
-    return variable;
+    SMC_MOCK_METHOD2( bool, XQSettingsKey &, key, XQSettingsManager::Type, type )
     }
 
 
@@ -90,9 +84,7 @@ bool XQSettingsManager::startMonitoring(
 bool XQSettingsManager::stopMonitoring( 
         const XQSettingsKey & key )
     {
-    Q_UNUSED( key )
-    bool variable;
-    return variable;
+    SMC_MOCK_METHOD1( bool, XQSettingsKey &, key )
     }
 
 
@@ -102,9 +94,7 @@ bool XQSettingsManager::stopMonitoring(
 //
 XQSettingsManager::Error XQSettingsManager::error(  ) const
     {
-    
-    XQSettingsManager::Error variable;
-    return variable;
+    SMC_MOCK_METHOD0( XQSettingsManager::Error )
     }
 
 

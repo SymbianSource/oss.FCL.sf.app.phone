@@ -29,7 +29,7 @@ class QSignalMapper;
 class HbToolBar;
 class HbVolumeSliderPopup;
 class Dialpad;
-class QTimer;
+class XqKeyCapture;
 
 #ifdef BUILD_PHONEUIQTVIEW
 #define PHONEUIQTVIEW_EXPORT Q_DECL_EXPORT
@@ -265,12 +265,6 @@ public slots:
     */
     void shutdownPhoneApp();
     
-    /*!
-        \fn void PhoneUIQtView::longEndKeyPressEvent()
-        
-        This is called when end key's long press timer times out.
-    */
-    void longEndKeyPressEvent();
    
 signals:
 
@@ -287,8 +281,6 @@ signals:
         This signal is emitted when key is released.
     */
     void keyReleased (QKeyEvent *event);
-
-    void endKeyLongPress();
     
     /*!
         \fn void command(int command)
@@ -353,7 +345,7 @@ private:
     HbAction            *m_backAction;
     Dialpad             *m_dialpad;
     QSignalMapper       *m_menuSignalMapper;
-    QTimer              *m_longPressTimer;
+    XqKeyCapture        *m_keyCapture;
 };
 
 #endif // PHONEUIQTVIEW_H

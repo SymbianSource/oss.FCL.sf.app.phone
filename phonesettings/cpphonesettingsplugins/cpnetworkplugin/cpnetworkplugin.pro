@@ -17,7 +17,7 @@
 TEMPLATE = lib
 TARGET = cpnetworkplugin
 CONFIG += hb plugin
-INCLUDEPATH += ../cptelephonyutils/inc
+INCLUDEPATH += ../cptelephonyutils/inc 
 
 MOC_DIR = moc
 OBJECTS_DIR = obj
@@ -28,6 +28,8 @@ TRANSLATIONS = telephone_cp.ts
 LIBS += -lcpframework \
         -lpsetwrapper \
         -lcptelephonyutils
+
+symbian*::LIBS += -lcmmanager
 
 include(../cpplugincommon.pri)
 include (cpnetworkplugin.pri)

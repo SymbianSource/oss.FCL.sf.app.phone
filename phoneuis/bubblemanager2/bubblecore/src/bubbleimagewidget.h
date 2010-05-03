@@ -20,24 +20,35 @@
 
 #include <hbwidget.h>
 
-class HbLabel;
+class BubbleImageManager;
 
 class BubbleImageWidget : public HbWidget
     {
     Q_OBJECT
     
 public:
-    explicit BubbleImageWidget( QGraphicsItem* parent = 0 );
+    explicit BubbleImageWidget(
+        const QString& stylePluginName,
+        BubbleImageManager& imageManager,
+        QGraphicsItem* parent = 0 );
     virtual ~BubbleImageWidget();
 
     void setImage(const QString& name);
 
-    void resizeEvent(
-        QGraphicsSceneResizeEvent * event );
-    
+protected slots:
+    void imageLoaded(QString imageFileName);
+
+protected:
+    void paint(
+        QPainter* painter,
+        const QStyleOptionGraphicsItem* option,
+        QWidget* widget);
+
 private:
+    QString mStylePluginName;
+    BubbleImageManager& mImageManager;
     QString  mImageName;
-    HbLabel* mLabel;
+    QGraphicsItem* mDefaultAvatar;
     };
 
 #endif /* BUBBLEIMAGEWIDGET_H_ */

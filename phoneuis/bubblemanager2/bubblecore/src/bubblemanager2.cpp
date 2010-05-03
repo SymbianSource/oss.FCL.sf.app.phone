@@ -30,7 +30,9 @@
 #include "bubbleconferenceheader.h"
 #include "bubbleutils.h"
 #include "bubblewidgetmanager.h"
+#include "bubbleimagemanager.h"
 #include "bubblehandler.h"
+#include "bubbleeffecthandler.h"
 
 
 BubbleManager::BubbleManager( QGraphicsItem *parent ) :
@@ -53,7 +55,12 @@ BubbleManager::BubbleManager( QGraphicsItem *parent ) :
     mConferenceHeader = new BubbleConferenceHeader();
     mConferenceHeader->setBubbleId(BUBBLE_CONF_CALL_ID);
 
-    mWidgetManager = new BubbleWidgetManager(mDefaultStyleBaseId,this);
+    mBubbleImageManager = new BubbleImageManager(this);
+
+    mEffectHandler = new BubbleEffectHandler(this);
+
+    mWidgetManager = new BubbleWidgetManager(
+        *mBubbleImageManager, mDefaultStyleBaseId, this);
     mWidgetManager->setStylePluginName(
         BubbleUtils::stylePluginNameWithPath("bubblestyleplugin.dll"));
 
@@ -137,6 +144,10 @@ void BubbleManager::endChanges()
     if (view) {
         setViewData(view);
         view->show();
+    }
+
+    if (!mActiveHeaders.count()) {
+        mBubbleImageManager->releasePixmaps();
     }
 
     // restore mute state
@@ -269,8 +280,10 @@ void BubbleManager::removeCallHeader( int bubbleId )
 
     for ( int i=0; i < mActiveHeaders.size(); i++ ) {
         if ( mActiveHeaders[i]->bubbleId() == bubbleId ) {
+            QString image = mActiveHeaders[i]->callImage();
             mActiveHeaders[i]->reset();
             mActiveHeaders.remove( i );
+            releaseImageIfNotUsed(image);
             break;
         }
     }
@@ -458,7 +471,7 @@ void BubbleManager::setCallObjectFromTheme(
     findActiveHeader( bubbleId, header );     
     Q_ASSERT( header );
 
-    header->setCallImage("qtg_large_avatar");
+    header->setShowDefaultAvatar(true);
 }
 
 /**
@@ -527,12 +540,22 @@ void BubbleManager::setPhoneMuted(
         Q_ASSERT(mMutedIcon);
         addToLayout(mMutedIcon);
         mMutedIcon->setZValue(10.0);
+        mEffectHandler->addEffect(mMutedIcon,BubbleMutedAppear);
+        mEffectHandler->addEffect(mMutedIcon,BubbleMutedDisappear);
+    }
+
+    if (mMutedIcon) {
+        // run effect when mute status changes
+        if (muted && !mMuted) {
+            mEffectHandler->startEffect(BubbleMutedAppear);
+        } else if (!muted && mMuted) {
+            mEffectHandler->startEffect(BubbleMutedDisappear);
+        } else {
+            mMutedIcon->setVisible(muted);
+        }
     }
 
     mMuted = muted;
-    if (mMutedIcon) {
-        mMutedIcon->setVisible(mMuted);
-    }
 }
 
 /**
@@ -597,6 +620,9 @@ void BubbleManager::addRowToConference( int bubbleId )
     Q_ASSERT( !header->isConference() );
 
     mConferenceHeader->addHeader(header);
+
+    // release image while in conference
+    releaseImageIfNotUsed(header->callImage());
 }
 
 /**
@@ -873,4 +899,23 @@ void BubbleManager::showExpanded( int bubbleId )
     }
 }
 
+void BubbleManager::releaseImageIfNotUsed(
+    const QString& imageFileName)
+{
+    bool used = false;
+
+    if (!imageFileName.isEmpty()) {
+        foreach(BubbleHeader* header, mActiveHeaders) {
+            if (!header->isInConference() &&
+                header->callImage()==imageFileName) {
+                used = true;
+                break;
+            }
+        }
+
+        if (!used) {
+            mBubbleImageManager->unloadImage(imageFileName);
+        }
+    }
+}
 

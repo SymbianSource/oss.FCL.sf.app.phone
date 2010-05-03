@@ -54,12 +54,17 @@ set RUNTESTS=TRUE
 set INSTRUMENT=TRUE
 set REMOVEINSTRUMENT=TRUE
 set DOMODULESTESTS=TRUE
-set ABLD_CALL=abld build winscw udeb -keepgoing
+set SBS_CALL=sbs --config winscw_udeb --keepgoing BUILD
 set PATH_TO_DLL=\epoc32\release\winscw\udeb
 set PATH_TO_COVERAGE_DATA=\coverage_data
+set PATH_TO_RESULT=\test_result
 
 if not exist %PATH_TO_COVERAGE_DATA% (
 mkdir %PATH_TO_COVERAGE_DATA%
+)
+
+if not exist %PATH_TO_RESULT% (
+mkdir %PATH_TO_RESULT%
 )
 
 if [%1] EQU [] ( goto default )
@@ -132,12 +137,11 @@ goto end
 pushd .
 call cd %1
 call qmake
-call bldmake bldfiles
-call abld clean winscw udeb
+call sbs --config winscw_udeb --keepgoing CLEAN
 if [%INSTRUMENT%] EQU [TRUE] (
-call ctcwrap -n %PATH_TO_COVERAGE_DATA%\%1 -i d -C "EXCLUDE=*" -C "NO_EXCLUDE=%TESTED_SRC%" %ABLD_CALL%
+call ctcwrap -2comp -n %PATH_TO_COVERAGE_DATA%\%1 -i d -C "EXCLUDE=*" -C "NO_EXCLUDE=%TESTED_SRC%" "%SBS_CALL%"
 ) else (
-call %ABLD_CALL%
+call %SBS_CALL%
 )
 
 popd
@@ -152,15 +156,10 @@ goto end
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :RUNTESTS
 echo Running tests
-echo Expected user interactions!
-echo 1) User cancels
-echo 2) User selects vmb and inserts number
-echo 3) User selects one of the default numbers
-echo 4) User selects other number, inserts number and cancels
-echo 5) User selects othernumber and find
-echo 6) User selects other number and inserts number and timeout
-echo 7) User selects default number and and cancels in timeout query
-for /f %%a in ('dir /b ut_*') do call %PATH_TO_DLL%\%%a.exe 
+for /f %%a in ('dir /b ut_*') do (
+    call %PATH_TO_DLL%\%%a.exe
+    move \epoc32\winscw\c\data\%%a.log %PATH_TO_RESULT%\%%a.log
+)
 goto end
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::

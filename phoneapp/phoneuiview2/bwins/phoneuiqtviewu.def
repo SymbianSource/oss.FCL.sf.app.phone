@@ -1,5 +1,4 @@
-EXPORTS
-	?setExpandAction@PhoneUIQtView@@UAEXHH@Z @ 1 NONAME ; void PhoneUIQtView::setExpandAction(int, int)
+EXPORTS	?setExpandAction@PhoneUIQtView@@UAEXHH@Z @ 1 NONAME ; void PhoneUIQtView::setExpandAction(int, int)
 	?keyPressed@PhoneUIQtView@@IAEXPAVQKeyEvent@@@Z @ 2 NONAME ; void PhoneUIQtView::keyPressed(class QKeyEvent *)
 	?volumeSliderChanged@PhoneUIQtView@@QAEXH@Z @ 3 NONAME ; void PhoneUIQtView::volumeSliderChanged(int)
 	?menuReference@PhoneUIQtView@@UAEAAVHbMenu@@XZ @ 4 NONAME ; class HbMenu & PhoneUIQtView::menuReference(void)
@@ -60,6 +59,4 @@ EXPORTS
 	?setVolumeSliderValue@PhoneUIQtView@@UAEXHHHH@Z @ 59 NONAME ; void PhoneUIQtView::setVolumeSliderValue(int, int, int, int)
 	?clearAndHideDialpad@PhoneUIQtView@@UAEXXZ @ 60 NONAME ; void PhoneUIQtView::clearAndHideDialpad(void)
 	?isDisabled@PhoneAction@@QBE_NXZ @ 61 NONAME ; bool PhoneAction::isDisabled(void) const
-	?endKeyLongPress@PhoneUIQtView@@IAEXXZ @ 62 NONAME ; void PhoneUIQtView::endKeyLongPress(void)
-	?longEndKeyPressEvent@PhoneUIQtView@@QAEXXZ @ 63 NONAME ; void PhoneUIQtView::longEndKeyPressEvent(void)
 

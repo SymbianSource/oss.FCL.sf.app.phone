@@ -232,6 +232,8 @@ private slots:
     void testNoteController();
     void testHsToForegroundAfterCall();
     void testCipheringInfoChange();
+    void testSetHidden();
+    void testBeginEndUiUpdate();
 
 private:
     PhoneUIQtViewAdapter *m_adapter; // class under test
@@ -640,13 +642,7 @@ void TestPhoneUIQtViewAdapter::testEPhoneViewGetCountOfActiveCallss ()
 void TestPhoneUIQtViewAdapter::testExecuteCommandLwithCmdId ()
 {
     // Default
-    m_adapter->ExecuteCommandL (0);
-    
-    m_adapter->ExecuteCommandL (EPhoneViewBeginUpdate);
-    QVERIFY (m_startChangesCalled == true);
-    
-    m_adapter->ExecuteCommandL (EPhoneViewEndUpdate);
-    QVERIFY (m_endChangesCalled == true);
+    m_adapter->ExecuteCommandL (0);    
 }
 
 void TestPhoneUIQtViewAdapter::testExecuteCommandLwithCmdIdAndCallId ()
@@ -1245,12 +1241,31 @@ void TestPhoneUIQtViewAdapter::testHsToForegroundAfterCall()
 
 void TestPhoneUIQtViewAdapter::testCipheringInfoChange()
 {
+	m_bubble_id = 1;
     TPhoneCmdParamCallHeaderData callHeader;
     callHeader.SetCipheringIndicatorAllowed(true);
     callHeader.SetCiphering(false);
     m_adapter->ExecuteCommandL (EPhoneViewCipheringInfoChange, 1, &callHeader);
     QVERIFY (m_startChangesCalled == true);
     QVERIFY (m_setCipheringCalled == true);
+    QVERIFY (m_endChangesCalled == true);
+    m_setCipheringCalled = false;
+	m_bubble_id = -1;
+    m_adapter->ExecuteCommandL (EPhoneViewCipheringInfoChange, -1, &callHeader);
+    QVERIFY (m_setCipheringCalled == false);
+}
+
+void TestPhoneUIQtViewAdapter::testSetHidden()
+{
+    m_adapter->ExecuteCommandL(EPhoneViewUpdateFSW);
+}
+
+void TestPhoneUIQtViewAdapter::testBeginEndUiUpdate()
+{
+    m_adapter->ExecuteCommand(EPhoneViewBeginUpdate);
+    QVERIFY (m_startChangesCalled == true);
+    
+    m_adapter->ExecuteCommand(EPhoneViewEndUpdate);
     QVERIFY (m_endChangesCalled == true);
 }
 

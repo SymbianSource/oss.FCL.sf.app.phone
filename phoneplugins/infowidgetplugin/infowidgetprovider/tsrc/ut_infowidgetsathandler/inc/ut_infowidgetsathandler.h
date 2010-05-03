@@ -41,6 +41,10 @@ private slots:
     void t_setSatDisplayText();
     void t_logCurrentInfo(); 
     
+    void t_connect();
+    void t_handleIdleModeTxtMessage();
+    void t_handleSatError();
+    
 private:
     
     InfoWidgetSatHandler *m_satHandler;

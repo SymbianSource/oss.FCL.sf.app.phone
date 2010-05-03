@@ -35,6 +35,7 @@ public:
 private:     
     void fillDisplayContainers();
     void fillCurrentWidgetsContainer();
+    void fillParams(const QString & fileName, bool * ok);
     
 private slots:
     void init();
@@ -45,6 +46,7 @@ private slots:
     
     void t_layoutRows(); 
     void t_setLayoutRows();
+    //void t_rowHeight();
     
     void t_layoutInfoDisplay();
     void t_layoutSettingsDisplay();
@@ -53,10 +55,16 @@ private slots:
     void t_loadWidgets();
     void t_loadWidget();
     void t_getWidget();
-    void t_contentWidget();
     void t_hideWidget();
-    void t_hideAll();
+
+    void t_contentWidget();
+    
     void t_showAll();
+    void t_hideAll();
+        
+    void t_reloadWidgets();
+    
+    void t_removeWidget();
     
     // InfoWidgetDocumentLoader tests 
     void t_createObject();

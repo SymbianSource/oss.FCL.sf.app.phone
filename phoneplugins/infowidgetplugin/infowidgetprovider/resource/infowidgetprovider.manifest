@@ -3,5 +3,5 @@
     <widget library="infowidgetprovider"
             uri="infowidgetprovider"
             title="Operator info"
-            description="Info widget for operator info."/>
+            description=""/>
 </widgetprovider>

@@ -15,8 +15,7 @@
 *
 */
 #include <hbinstance.h>
-#include <qsignalmapper>
-#include <qtimer>
+#include <QSignalMapper>
 #include <hbaction.h>
 #include <hbtoolbar.h>
 #include <hbvolumesliderpopup.h>
@@ -26,12 +25,12 @@
 #include <hbmenu.h>
 
 #include <xqserviceutil.h>
+#include <xqkeycapture.h>
 #include <dialpad.h>
 
 #include "phoneuiqtview.h"
 #include "phoneaction.h"
 #include "qtphonelog.h"
-const int LongKeyPressTimeOut(600);
 
 PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
     HbView (parent),
@@ -40,19 +39,15 @@ PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
     m_expandSignalMapper(0),
     m_participantListSignalMapper(0),
     m_volumeCommandId(0),
-    m_longPressTimer(0)
+    m_keyCapture(0)
 {
     setTitle(hbTrId("txt_phone_title_telephone"));
 
-    // Call handling widget
-    m_bubbleManager = new BubbleManager (this);
-    setWidget(m_bubbleManager);
-
-    // Long press timer
-    m_longPressTimer = new QTimer(this);
-    m_longPressTimer->setSingleShot(true);
-    connect(m_longPressTimer, SIGNAL(timeout()), this, SLOT(longEndKeyPressEvent()));
-
+    // Capturing long press of end key
+    m_keyCapture = new XqKeyCapture();
+    m_keyCapture->captureLongKey(Qt::Key_No);
+    m_keyCapture->captureKey(Qt::Key_No);
+    
     // Dialpad
     m_dialpad = new Dialpad(m_window);
     m_dialpad->setCallButtonEnabled(false);
@@ -61,6 +56,10 @@ PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
             SLOT(onEditorContentChanged()));
     connect(m_dialpad,SIGNAL(aboutToClose()),this,
                 SLOT(dialpadClosed()));
+                
+    // Call handling widget
+    m_bubbleManager = new BubbleManager (this);
+    setWidget(m_bubbleManager);
 
     // Set event filter
     m_window.installEventFilter(this);
@@ -76,7 +75,7 @@ PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
     m_bubbleManager->handleOrientationChange(m_window.orientation());
 
     // change exit softkey to back button
-    m_backAction = new HbAction(Hb::BackAction, this);
+    m_backAction = new HbAction(Hb::BackNaviAction, this);
     connect(m_backAction, SIGNAL(triggered()), this, SLOT(backButtonClicked()));
     setNavigationAction(m_backAction);
 
@@ -424,20 +423,21 @@ void PhoneUIQtView::dialpadClosed()
 
 bool PhoneUIQtView::eventFilter(QObject * /*watched*/, QEvent * event)
 {
-    if (event->type() == QEvent::KeyPress) {
+    PHONE_DEBUG2("PhoneUIQtView::eventFilter event type:", event->type());
+    if(event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
         PHONE_DEBUG2("PhoneUIQtView::eventFilter pressed key:", keyEvent->key());
-        if(keyEvent->key() == Qt::Key_No) {
-            m_longPressTimer->stop();
-            m_longPressTimer->start(LongKeyPressTimeOut);
-        }
-        emit keyPressed(keyEvent);
+        PHONE_DEBUG2("PhoneUIQtView::eventFilter isAutoRepeat:", keyEvent->isAutoRepeat());
+        emit keyPressed(keyEvent);        
+        keyEvent->accept();
+        
         return false;
-    } else if (event->type() == QEvent::KeyRelease) {
-        m_longPressTimer->stop();
+    } else if(event->type() == QEvent::KeyRelease) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
         PHONE_DEBUG2("PhoneUIQtView::eventFilter released key:", keyEvent->key());
         emit keyReleased(keyEvent);
+        keyEvent->accept();
+        
         return false;
     } else {
         return false;
@@ -446,8 +446,11 @@ bool PhoneUIQtView::eventFilter(QObject * /*watched*/, QEvent * event)
 
 void PhoneUIQtView::setDialpadPosition()
 {
-    QRectF screenRect = m_window.layoutRect();
-
+    // workaround to tsw error JMKN-83NAPU (fix coming in MCL wk14)
+    // QRectF screenRect(m_window.layoutRect());
+    QRectF screenRect = (m_window.orientation() == Qt::Horizontal) ?
+                        QRectF(0,0,640,360) : QRectF(0,0,360,640);
+                        	
     if (m_window.orientation() == Qt::Horizontal) {
             // dialpad takes half of the screen
         m_dialpad->setPos(QPointF(screenRect.width()/2,
@@ -496,11 +499,4 @@ void PhoneUIQtView::setBackButtonVisible(bool visible)
     else {
         setNavigationAction(0);
     }
-}
-
-void PhoneUIQtView::longEndKeyPressEvent()
-{
-    Q_ASSERT(m_longPressTimer);
-    m_longPressTimer->stop();
-    emit endKeyLongPress();
 }

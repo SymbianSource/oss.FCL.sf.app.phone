@@ -41,10 +41,6 @@ private slots:
     void cleanup();
     void t_createInstance(); 
     
-private:
-    
-    InfoWidgetProvider *m_infoWidgetProvider;
-
 };
 
 #endif // UT_INFOWIDGET_H

@@ -39,6 +39,7 @@
 #include <mccedtmfinterface.h>
 #include <mpecontacthandling.h>
 #include <mpeloghandling.h>
+#include <xqservicerequest.h>
 #include "phoneservices.h"
 #include "parserrecognizer.h"
 
@@ -1426,6 +1427,22 @@ TBool CPEPhoneModel::StepL()
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 17.1" );
             iParserRecognizer = new ParserRecognizer;
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 17.2" );
+            break;
+            }
+            
+        case CPEPhoneModel::EPENetworkHandling:
+            {
+            TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 18.1" );
+            XQServiceRequest request("com.nokia.services.networkhandling","start()");
+            bool res = request.send();
+            if  (!res) {
+                int error = request.latestError();
+                TEFLOGSTRING2( 
+                    KTAOBJECT, 
+                    "CPEPhoneModel::StepL 18.2 error %d",
+                    error );
+            }
+            TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 18.2" );
             continueStepping = EFalse;
             break;
             }

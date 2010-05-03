@@ -31,6 +31,10 @@ public:
     explicit CpNetworkPluginView(QGraphicsItem *parent = 0);
     
     virtual ~CpNetworkPluginView();
+    
+public slots: 
+
+    void SearchAvailableNetworks();
 
 private:
     

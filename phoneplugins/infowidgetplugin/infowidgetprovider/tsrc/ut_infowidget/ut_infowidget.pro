@@ -18,14 +18,13 @@
 CONFIG += qtestlib hb
 TEMPLATE = app
 TARGET = 
-DEPENDPATH  += . ../../infowidget/src ../../infowidget/inc
+DEPENDPATH  += . ../../infowidget/src 
 INCLUDEPATH += .
 INCLUDEPATH += ../common
 INCLUDEPATH += ../../inc/
 INCLUDEPATH += ../../infowidget/inc/
 DEFINES += QT_NO_DEBUG_STREAM
 
-MOC_DIR = moc
 
 QT -= gui
 QT += testlib
@@ -47,9 +46,6 @@ HEADERS += ../../infowidget/inc/infowidget.h
 SOURCES += ../../infowidget/src/infowidget.cpp
 
 # mocks needed for testing
-#HEADERS += hbdocumentloader.h
-#SOURCES += ../mocks/mock_hbdocumentloader.cpp
-
 HEADERS += ../../infowidget/inc/infowidgetpreferences.h
 SOURCES += ../mocks/mock_infowidgetpreferences.cpp
 HEADERS += ../../infowidget/inc/infowidgetengine.h
@@ -58,10 +54,14 @@ HEADERS += ../../infowidget/inc/infowidgetlayoutmanager.h
 SOURCES += ../mocks/mock_infowidgetlayoutmanager.cpp
 HEADERS += ../../infowidget/inc/infowidgetnetworkhandler.h
 SOURCES += ../mocks/mock_infowidgetnetworkhandler.cpp
+HEADERS += ../../infowidget/inc/infowidgetsathandler.h
+SOURCES += ../mocks/mock_infowidgetsathandler.cpp
 
 SOURCES += ../mocks/mock_hbcolorscheme.cpp
 SOURCES += ../mocks/mock_hblabel.cpp
 SOURCES += ../mocks/mock_hbstyleoptionlabel.cpp
 SOURCES += ../mocks/mock_hbmarqueeitem.cpp
 SOURCES += ../mocks/mock_hbwidget.cpp
-
+SOURCES += ../mocks/mock_qgraphicslinearlayout.cpp
+SOURCES += ../mocks/mock_qgraphicslayout.cpp
+SOURCES += ../mocks/mock_hbframedrawer.cpp

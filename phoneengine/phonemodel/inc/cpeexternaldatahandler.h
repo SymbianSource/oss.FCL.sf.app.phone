@@ -22,8 +22,6 @@
 //  INCLUDE FILES
 #include "cpeaudiooutputpreferencemonitor.h"
 #include "cpecalldurationdisplaysettingmonitor.h"
-#include "cpeincallearvolumesettingmonitor.h"
-#include "cpeincallloudspeakervolumesettingmonitor.h"
 #include "cpenetworkregistrationstatusmonitor.h"
 #include "cpeprofilesettingmonitor.h"
 #include "mpeexternaldatahandler.h"
@@ -107,9 +105,7 @@ NONSHARABLE_CLASS( CPEExternalDataHandler )
 
         // Monitor objects
         CPEAudioOutputPreferenceMonitor* iAudioOutputPreferenceMonitor;
-        CPECallDurationDisplaySettingMonitor* iCallDurationDisplay;
-        CPEIncallEarVolumeSettingMonitor* iEarVolumeSetting;
-        CPEIncallLoudspeakerVolumeSettingMonitor* iLoudspeakerVolumeSetting;
+        CPECallDurationDisplaySettingMonitor* iCallDurationDisplay;     
         CPENetworkRegistrationStatusMonitor* iNetworkRegistrationStatus;
         CPEProfileSettingMonitor* iProfileSettings;
         CPEAccessoryModeMonitor* iAccessoryModeMonitor;

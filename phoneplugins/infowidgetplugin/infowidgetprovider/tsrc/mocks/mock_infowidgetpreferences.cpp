@@ -46,7 +46,7 @@ InfoWidgetPreferences::~InfoWidgetPreferences(  )
 // InfoWidgetPreferences::loadPreferences
 // -----------------------------------------------------------------------------
 //
-void InfoWidgetPreferences::loadPreferences(  )
+void InfoWidgetPreferences::restorePreferences(  )
     {
     SMC_MOCK_METHOD0( void )
     }
@@ -56,9 +56,9 @@ void InfoWidgetPreferences::loadPreferences(  )
 // InfoWidgetPreferences::storePreferences
 // -----------------------------------------------------------------------------
 //
-void InfoWidgetPreferences::storePreferences(  )
+bool InfoWidgetPreferences::storePreferences(  )
     {
-    SMC_MOCK_METHOD0( void )
+    SMC_MOCK_METHOD0( bool )
     }
 
 
@@ -72,6 +72,14 @@ QString InfoWidgetPreferences::preference(
     SMC_MOCK_METHOD1( QString, Option, preferenceId )
     }
 
+// -----------------------------------------------------------------------------
+// InfoWidgetPreferences::preferences
+// -----------------------------------------------------------------------------
+//
+InfoWidgetPreferences::Options InfoWidgetPreferences::preferences() const
+    {
+    SMC_MOCK_METHOD0( InfoWidgetPreferences::Options )
+    }
 
 // -----------------------------------------------------------------------------
 // InfoWidgetPreferences::setPreference
@@ -87,6 +95,27 @@ void InfoWidgetPreferences::setPreference(
 
 
 // -----------------------------------------------------------------------------
+// InfoWidgetPreferences::isPreferenceSet
+// -----------------------------------------------------------------------------
+//
+bool InfoWidgetPreferences::isPreferenceSet( Option preferenceId ) const
+    {
+    SMC_MOCK_METHOD1( bool, Option, preferenceId)
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetPreferences::validate
+// -----------------------------------------------------------------------------
+//
+bool InfoWidgetPreferences::validate(  )
+    {
+    SMC_MOCK_METHOD0( bool)
+    }
+
+
+
+// -----------------------------------------------------------------------------
 // InfoWidgetPreferences::visibleItemCount
 // -----------------------------------------------------------------------------
 //
@@ -96,3 +125,14 @@ int InfoWidgetPreferences::visibleItemCount(  )
     }
 
 
+// -----------------------------------------------------------------------------
+// InfoWidgetPreferences::preferenceNames
+// -----------------------------------------------------------------------------
+//
+QStringList InfoWidgetPreferences::preferenceNames() 
+    {
+    SMC_MOCK_METHOD0( QStringList )
+    }
+    
+    
+    

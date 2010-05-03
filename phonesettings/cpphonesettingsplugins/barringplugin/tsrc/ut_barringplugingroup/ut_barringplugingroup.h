@@ -33,21 +33,35 @@ public:
     
     UT_CpBarringPluginGroup();
     ~UT_CpBarringPluginGroup();
-    
+
 private slots:
 
     void init();
     void cleanup();
     
     void t_memleak();
+    void t_translatorInstallationOk();
+    void t_translatorInstallationFails();
+    void t_itemShownNotBarringItem();
+    void t_itemShownBarringStatusRequestOngoing();
+    void t_barringStatusRequestCompletedForUpdateInquiry();
     void t_barringStatusRequestCompletedWithAnError();
     void t_getBarringStatuses();
     void t_enableBarringRequestCompleted();
+    void t_enableBarringRequestCompletedUnknownBarring();
+    void t_enableBAOCRequestCompletedStatusUpdate();
+    void t_enableBOICRequestCompletedStatusUpdate();
+    void t_enableBOICexHCRequestCompletedStatusUpdate();
+    void t_enableBAICRequestCompletedStatusUpdate();
+    void t_enableBICRoamRequestCompletedStatusUpdate();
     void t_disableBarringRequestCompleted();
+    void t_barringPasswordChangeRequestCompleted();
     void t_changeBarringStateRequested();
+    void t_changeBarringPasswordRequested();
 
 signals:
     void simulateCheckStateChange(int checkState);
+    void simulateEditPasswordButtonClicked(bool checked);
     
 private:
     

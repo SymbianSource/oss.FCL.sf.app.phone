@@ -234,6 +234,7 @@ enum
     EPhoneAppShutDown,
     EPhoneViewBackButtonActive,
     EPhoneViewHsToForegroundAfterCall,
+    EPhoneViewOpenContacts,
     EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.
 };
 

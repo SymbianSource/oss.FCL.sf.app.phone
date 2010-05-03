@@ -24,10 +24,12 @@
 class PSetWrapper;
 class QModelIndex;
 class CpPhoneNotes;
+class QValidator;
+class QTranslator;
 
 /*!
     \class CpBarringPluginGroup
-    \brief The class CpBarringPluginGroup defines items shown on UI. 
+    \brief The class CpBarringPluginGroup defines barring items shown on UI. 
  */
 class CpBarringPluginGroup : public CpSettingFormItemData
 {
@@ -45,17 +47,26 @@ public slots:
 private:
     
     void setupLocalization();
-    void connectToWrapper();
+    void setupConnectionsToWrapper();
     
-    void createAllOutgoingBarringItem();
-    void createOutgoingInternationalBarringItem();
-    void createOutgoingInternationalExceptToHomeCountryBarringItem();
-    void createAllIncomingBarringItem();
-    void createIncomingWhenRoamingBarringItem();
+    void createBarringItems();
+    CpSettingFormItemData *createBarringItem(
+        const HbDataFormModelItem::DataItemType &itemType,
+        const QString &label,
+        const QString &widgetTextData,
+        const PSetCallBarringWrapper::BarringType &barringType);
     
     void processBarringStatusRequestQueue();
-    void revertCheckStateForItem(CpSettingFormItemData *barringItem);
-
+    bool updateDependentBarringProgramStatuses(
+        const CpSettingFormItemData &changedBarringItem);
+    CpSettingFormItemData &barringItemByProgram(
+        const PSetCallBarringWrapper::BarringType &barringProgram);
+    void revertCheckStateOfItem(
+        CpSettingFormItemData *barringItem);
+    void updateCheckStateOfItem(
+        CpSettingFormItemData &barringItem, 
+        const Qt::CheckState &newState);
+    
 private slots:
 
     void barringStatusRequestCompleted(
@@ -75,22 +86,25 @@ private slots:
         PSetCallBarringWrapper::BarringStatus barringStatus, 
         bool plural);
     
+    void barringPasswordChangeRequestCompleted(int result);
+    
     void changeBarringStateRequested(int checkState);
+    
+    void changeBarringPasswordRequested(bool checked = false);
     
 private: 
     
     CpItemDataHelper &m_helper;
-    PSetWrapper *m_pSetWrapper;
+    QScopedPointer<QTranslator> m_translator;
+    QScopedPointer<PSetWrapper> m_pSetWrapper;
     PSetCallBarringWrapper *m_barringWrapper;
-    CpSettingFormItemData *m_allOutgoingBarringItem;
-    CpSettingFormItemData *m_outgoingInternationalBarringItem;
-    CpSettingFormItemData *m_outgoingInternationalExceptToHomeCountryBarringItem;
-    CpSettingFormItemData *m_allIncomingBarringItem;
-    CpSettingFormItemData *m_incomingWhenRoamingBarringItem;
+    CpSettingFormItemData *m_editBarringPasswordItem;
     QQueue<CpSettingFormItemData *> m_barringRequestQueue;
     bool m_barringStatusRequestOngoing;
     int m_activeNoteId;
     CpPhoneNotes* m_phoneNotes;
+    QValidator *m_barringPasswordValidator;
+    bool m_delayedBarringActivationNote;
 };
 
 #endif // CPBARRINGPLUGINGROUP_H

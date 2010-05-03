@@ -138,18 +138,6 @@ bool Tools::videoSupported(  )
     SMC_MOCK_METHOD0( bool )
     }
 
-
-// -----------------------------------------------------------------------------
-// Tools::convertEtelMobileServiceCode
-// -----------------------------------------------------------------------------
-//
-BasicServiceGroups Tools::convertEtelMobileServiceCode( 
-        int serviceCode )
-    {
-    SMC_MOCK_METHOD1( BasicServiceGroups, int, serviceCode )
-    }
-
-
 // -----------------------------------------------------------------------------
 // Tools::errorCodeTextMapping
 // -----------------------------------------------------------------------------

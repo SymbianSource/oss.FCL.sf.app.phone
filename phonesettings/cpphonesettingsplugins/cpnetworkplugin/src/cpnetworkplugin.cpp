@@ -48,8 +48,8 @@ QList<CpSettingFormItemData*> CpNetworkPlugin::createSettingFormItemData(
     QList<CpSettingFormItemData*> ret;
     ret.append(new CpSettingFormEntryItemDataImpl<CpNetworkPluginView>(
             itemDataHelper,
-            hbTrId("Mobile network"), 
-            hbTrId("Mobile network settings")));
+            hbTrId("txt_cp_dblist_mobile_network"), 
+            hbTrId("")));
     return ret;
 }
 

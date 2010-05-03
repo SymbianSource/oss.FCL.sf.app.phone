@@ -19,6 +19,12 @@
 #define HSDIALERWIDGET_H
 
 #include <HbWidget>
+#ifdef Q_OS_SYMBIAN
+#include <xqsettingsmanager.h>
+#else
+class XQSettingsManager;
+class XQSettingsKey;
+#endif
 
 #ifndef HOMESCREEN_TEST
     #define HOMESCREEN_TEST_CLASS(aClassName)
@@ -31,7 +37,7 @@
 HOMESCREEN_TEST_CLASS(TestDialerWidgetPlugin)
 
 class XQCallInfo;
-
+class HbFrameItem;
 class HsDialerWidget : public HbWidget
 {
     Q_OBJECT
@@ -40,8 +46,14 @@ public:
     HsDialerWidget(QGraphicsItem* parent = 0, Qt::WindowFlags flags = 0);
     ~HsDialerWidget();
     
+    void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+private:
+    void setItemPositions();
+    
 public slots:
     void startDialer();
+    void updateMissedCallBadge(const XQSettingsKey &key, const QVariant &value);
 
     void onShow();
     void onHide();
@@ -49,9 +61,15 @@ public slots:
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) { Q_UNUSED(event) }
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    
+
 
 private:
     XQCallInfo *mXQCallInfo;
+    HbFrameItem *m_shortcutBadge;
+    HbFrameItem *m_backgroud;
+    XQSettingsManager * m_setManager;
+    int m_missedCalls;
     HOMESCREEN_TEST_FRIEND_CLASS(TestDialerWidgetPlugin)
 };
 

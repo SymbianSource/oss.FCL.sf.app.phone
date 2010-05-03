@@ -46,9 +46,14 @@ HEADERS += ../../infowidget/inc/infowidgetengine.h
 SOURCES += ../../infowidget/src/infowidgetengine.cpp
 
 # mocks needed for testing
-HEADERS += ../../infowidget/inc/infowidgetnetworkhandler.h
+HEADERS += ../../infowidget/inc/infowidgetnetworkhandler.h \
+           ../../infowidget/inc/infowidgetsathandler.h
 HEADERS += /epoc32/include/mw/xqsettingskey.h \
            /epoc32/include/mw/xqsettingsmanager.h
+
 SOURCES += ../mocks/mock_xqsettingsmanager.cpp \
            ../mocks/mock_xqsettingskey.cpp     \
-           ../mocks/mock_infowidgetnetworkhandler.cpp
+           ../mocks/mock_infowidgetnetworkhandler.cpp \
+           ../mocks/mock_infowidgetsathandler.cpp \
+           ../mocks/mock_rsatservice.cpp 
+           

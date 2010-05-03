@@ -35,18 +35,19 @@ symbian {
                    ../phonemediatorcenter/inc
 
     LIBS += -lphoneuiutils \
-            -lbubblemanager2 \
-            -lphoneringingtoneplayer \
-            -lphoneuiqtview \
-            -lphonemediatorcenter \
-            -lxqservice \
-            -lxqserviceutil \
-            -lserviceprovidersettings \
-            -lxqplugins
-
-    defFiles = \
-        "$${LITERAL_HASH}ifdef WINS" \
-            "DEFFILE bwins/phoneuiqtviewadapter.def" \
+        -lbubblemanager2 \
+        -lphoneringingtoneplayer \
+        -lphoneuiqtview \
+        -lphonemediatorcenter \
+        -lxqservice \
+        -lxqserviceutil \
+        -lserviceprovidersettings \
+        -lxqsettingsmanager \
+        -llogsengine \
+        -lxqplugins \
+        -lakncapserverclient
+    defFiles = "$${LITERAL_HASH}ifdef WINS" \
+        "DEFFILE bwins/phoneuiqtviewadapter.def" \
         "$${LITERAL_HASH}else" \
             "DEFFILE eabi/phoneuiqtviewadapter.def" \
         "$${LITERAL_HASH}endif"

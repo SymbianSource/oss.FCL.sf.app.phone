@@ -167,3 +167,8 @@ void PhoneUIQtViewAdapter::dialpadClosed()
 void PhoneUIQtViewAdapter::keyReleased(QKeyEvent */*event*/)
 {}
 
+void PhoneUIQtViewAdapter::HandlePropertyChangedL( 
+    const TUid& aCategory,
+    const TUint aKey,
+    const TInt aValue)
+{}

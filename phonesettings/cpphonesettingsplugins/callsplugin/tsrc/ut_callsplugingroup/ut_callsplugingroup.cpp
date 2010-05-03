@@ -252,13 +252,6 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingGetStatus()
     EXPECT(CpPhoneNotes::showGlobalNote);
     m_callspluginGroup->handleCallWaitingGetStatus(
         PSetCallWaitingWrapper::StatusActive, basicServiceGroupIds);
-    
-    EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showBasicServiceList);
-    basicServiceGroupIds << 0;
-    m_callspluginGroup->handleCallWaitingGetStatus(
-        PSetCallWaitingWrapper::StatusActive, basicServiceGroupIds);
-    
     QVERIFY(verify());
 }
 

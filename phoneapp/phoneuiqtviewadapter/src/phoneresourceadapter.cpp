@@ -74,7 +74,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         translatedActions [PhoneAction::ToolbarButton1] = leftButton;       
         
         PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon (HbIcon("qtg_mono_mute"));
+        rightButton->setIcon (HbIcon("qtg_mono_speaker_off"));
         rightButton->setCommand (EPhoneCallComingCmdSilent);
         translatedActions [PhoneAction::ToolbarButton2] = rightButton;            
         }
@@ -102,7 +102,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         translatedActions [PhoneAction::ToolbarButton1] = leftButton;    
         
         PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon (HbIcon("qtg_mono_mute"));
+        rightButton->setIcon (HbIcon("qtg_mono_speaker_off"));
         rightButton->setDisabled(true);
         translatedActions [PhoneAction::ToolbarButton2] = rightButton;        
         }
@@ -141,7 +141,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         PhoneAction *centerButton2 = new PhoneAction;
         if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
             {
-            centerButton2->setIcon (HbIcon("qtg_mono_loudspeaker"));
+            centerButton2->setIcon (HbIcon("qtg_mono_speaker"));
             centerButton2->setCommand (EPhoneInCallCmdActivateIhf);
             }
         else
@@ -155,7 +155,8 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         rightButton->setIcon(HbIcon("qtg_mono_contacts"));
         rightButton->setDisabled( 
                 (symbianResourceId==
-                 R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA));
+                 R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA));        
+        rightButton->setCommand(EPhoneInCallCmdContacts);
         
         translatedActions[PhoneAction::ToolbarButton4] = rightButton;
         }
@@ -171,7 +172,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         PhoneAction *rightButton = new PhoneAction;
         if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
             {
-            rightButton->setIcon (HbIcon("qtg_mono_loudspeaker"));
+            rightButton->setIcon (HbIcon("qtg_mono_speaker"));
             rightButton->setCommand (EPhoneInCallCmdActivateIhf);
             }
         else
@@ -198,7 +199,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         PhoneAction *centerButton2 = new PhoneAction;
         if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
             {
-            centerButton2->setIcon (HbIcon("qtg_mono_loudspeaker"));
+            centerButton2->setIcon (HbIcon("qtg_mono_speaker"));
             centerButton2->setCommand (EPhoneInCallCmdActivateIhf);
             }
         else
@@ -210,6 +211,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         
         PhoneAction *rightButton = new PhoneAction;
         rightButton->setIcon(HbIcon("qtg_mono_contacts"));
+        rightButton->setCommand(EPhoneInCallCmdContacts);
         translatedActions[PhoneAction::ToolbarButton4] = rightButton;   
         }
         break;
@@ -241,6 +243,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         
         PhoneAction *rightButton = new PhoneAction;
         rightButton->setIcon(HbIcon("qtg_mono_contacts"));
+        rightButton->setCommand(EPhoneInCallCmdContacts);
         translatedActions[PhoneAction::ToolbarButton4] = rightButton;
         }
         break;
@@ -380,7 +383,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         VA_END (list);
         }
         break;
-
+        
     default:
         break;
     }
@@ -395,13 +398,13 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
     switch (symbianResourceId) {
         case R_PHONE_ERROR_CALL_NOT_ALLOWED:
             {
-            ret = hbTrId("Call not allowed");      
+            ret = hbTrId("txt_phone_dpopinfo_not_allowed");      
             }
             break;
             
         case R_ERROR_NOTE_NOT_ALLOWED:
             {
-            ret =  hbTrId("Not allowed");  
+            ret =  hbTrId("txt_phone_dpopinfo_not_allowed");  
             }
             break;
             
@@ -455,6 +458,41 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
         case R_PHONE_INCALL_INFO_NO_NETWORK_SUPPORT:
             {
             ret = hbTrId("txt_phone_info_no_network_support_for_video_call");
+            }
+            break;
+        case R_PHONE_ERROR_EMERGENCY_CALLS_ONLY:
+            {
+            ret = hbTrId("txt_phone_info_emergency_calls_only");         
+            }
+            break;
+        case R_NOTETEXT_NUMBER_NOT_IN_USE:
+            {
+            ret = hbTrId("txt_phone_info_number_not_in_use");         
+            }
+            break;
+        case R_NOTETEXT_NETWORK_BUSY:
+            {
+            ret = hbTrId("txt_phone_info_network_busy");         
+            }
+            break;
+        case R_NOTETEXT_ERROR_IN_CONNECTION:
+            {
+            ret = hbTrId("txt_phone_info_error_in_connection");         
+            }
+            break;
+        case R_PHONEUI_ERROR_EMERGENCY_ATTEMPT_FAILED:
+            {
+            ret = hbTrId("txt_phone_info_emergency_call_failed");         
+            }
+            break;
+        case R_PHONE_SS_NOTIFICATION_INCAL_TRANSFERRED_TEXT:
+            {
+            ret = hbTrId("txt_phone_info_transferred");         
+            }
+            break;
+        case R_PHONE_ERROR_NO_SERVICE:
+            {
+            ret = hbTrId("txt_phone_dpopinfo_no_network_coverage");         
             }
             break;
         default:

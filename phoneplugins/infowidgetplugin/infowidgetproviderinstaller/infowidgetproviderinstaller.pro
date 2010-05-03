@@ -27,6 +27,7 @@ SOURCES += infowidgetproviderinstaller.cpp
 symbian {    
     load(data_caging_paths)
     TARGET.CAPABILITY = ALL -TCB
+    TARGET.UID3 = 0x2002EA1E
     BLD_INF_RULES.prj_exports +=  \
      "$${LITERAL_HASH}include <platform_paths.hrh>" \
      "./rom/infowidgetproviderinstaller.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(infowidgetproviderinstaller.iby)" 

@@ -24,7 +24,8 @@ symbian {
     TARGET.VID = VID_DEFAULT
     TARGET.CAPABILITY = ALL -TCB
     
-    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE  \
+                   $$OS_LAYER_GLIB_SYSTEMINCLUDE
     INCLUDEPATH += ../../inc \
                    ../inc \
                    ../phoneservices/inc \
@@ -71,7 +72,10 @@ symbian {
             -lengineinfo \
             -lparserrecognizer \
             -lmediatorclient \
-            -lestor       
+            -lestor \
+	    -lxqservice \
+            -llibglib
+            
     TARGET.EPOCALLOWDLLDATA =1
     
 }
@@ -88,8 +92,6 @@ HEADERS += ./inc/cpeclientservices.h
 HEADERS += ./inc/cpedevicemodehandler.h
 HEADERS += ./inc/cpeexternaldatahandler.h
 HEADERS += ./inc/cpeidlestatusmonitor.h
-HEADERS += ./inc/cpeincallearvolumesettingmonitor.h
-HEADERS += ./inc/cpeincallloudspeakervolumesettingmonitor.h
 HEADERS += ./inc/cpemanualcallcontrolhandler.h
 HEADERS += ./inc/cpemessagehandler.h
 HEADERS += ./inc/cpemessagehandler.inl
@@ -136,8 +138,6 @@ SOURCES += ./src/cpeclientemergencycallmonitor.cpp
 SOURCES += ./src/cpeclientservices.cpp
 SOURCES += ./src/cpedevicemodehandler.cpp
 SOURCES += ./src/cpeexternaldatahandler.cpp
-SOURCES += ./src/cpeincallearvolumesettingmonitor.cpp
-SOURCES += ./src/cpeincallloudspeakervolumesettingmonitor.cpp
 SOURCES += ./src/cpemessagehandler.cpp
 SOURCES += ./src/cpenetworkregistrationstatusmonitor.cpp
 SOURCES += ./src/cpeprofilesettingmonitor.cpp

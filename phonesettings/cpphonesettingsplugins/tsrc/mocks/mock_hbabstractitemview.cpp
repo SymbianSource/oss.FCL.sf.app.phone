@@ -459,9 +459,8 @@ void HbAbstractItemView::longPressed(
 // -----------------------------------------------------------------------------
 //
 QItemSelectionModel::SelectionFlags HbAbstractItemView::selectionCommand( 
-        const HbAbstractViewItem * item,
-        const QEvent * event,
-        bool contiguousArea )
+        const HbAbstractViewItem *item, 
+        const QEvent *event )
     {
     
     }
@@ -476,29 +475,6 @@ bool HbAbstractItemView::event(
     {
     
     }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::keyPressEvent
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::keyPressEvent( 
-        QKeyEvent * event )
-    {
-    
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::keyReleaseEvent
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::keyReleaseEvent( 
-        QKeyEvent * event )
-    {
-    
-    }
-
 
 // -----------------------------------------------------------------------------
 // HbAbstractItemView::mousePressEvent

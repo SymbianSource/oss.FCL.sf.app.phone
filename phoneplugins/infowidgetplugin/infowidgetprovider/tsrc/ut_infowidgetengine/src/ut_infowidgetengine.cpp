@@ -17,8 +17,11 @@
 #include "ut_infowidgetengine.h"
 #include "infowidgetengine.h"
 #include "qtestmains60.h"
+#include "infowidgetpreferences.h"
+
 // mocked dependencies of the class under test
 #include "infowidgetnetworkhandler.h"
+#include "infowidgetsathandler.h"
 
 const QString KHomeZoneTextTag("HomeZoneText0");    // max length 13
 const TNWViagIndicatorType 
@@ -38,7 +41,6 @@ UT_InfoWidgetEngine::UT_InfoWidgetEngine()
     
 }
 
-
 /*!
   UT_InfoWidgetEngine::~UT_InfoWidgetEngine
  */
@@ -47,13 +49,15 @@ UT_InfoWidgetEngine::~UT_InfoWidgetEngine()
     delete m_infoWidgetEngine;
 }
 
-
 /*!
   UT_InfoWidgetEngine::init
  */
 void UT_InfoWidgetEngine::init()
 {
     initialize();
+    
+    SmcDefaultValue<QString>::SetL("");
+    SmcDefaultValue<const QString & >::SetL("");
     
     EXPECT(InfoWidgetNetworkHandler::logCurrentInfo);
     EXPECT(InfoWidgetNetworkHandler::homeZoneTextTag)
@@ -69,7 +73,6 @@ void UT_InfoWidgetEngine::init()
     QVERIFY(verify());
 }
 
-
 /*!
   UT_InfoWidgetEngine::cleanup
  */
@@ -80,7 +83,6 @@ void UT_InfoWidgetEngine::cleanup()
     delete m_infoWidgetEngine;
     m_infoWidgetEngine = 0;
 }
-
 
 /*!
   UT_InfoWidgetEngine::t_modelData
@@ -93,7 +95,6 @@ void UT_InfoWidgetEngine::t_modelData()
     QVERIFY(data.mcnName() == KMcnName);
     QVERIFY(data.mcnIndicatorType() == KMcnIndicatorType);
 }
-
 
 /*!
   UT_InfoWidgetEngine::t_updateNetworkDataToModel
@@ -120,15 +121,16 @@ void UT_InfoWidgetEngine::t_updateNetworkDataToModel()
     QVERIFY(verify());
 }
 
-
 /*!
   UT_InfoWidgetEngine::t_updateSatDataToModel
  */
 void UT_InfoWidgetEngine::t_updateSatDataToModel()
 {
+    EXPECT(InfoWidgetSatHandler::satDisplayText)
+        .returns(QString(""));
+    
     m_infoWidgetEngine->updateSatDataToModel();
 }
-
 
 /*!
   UT_InfoWidgetEngine::t_updateLineDataToModel
@@ -136,8 +138,9 @@ void UT_InfoWidgetEngine::t_updateSatDataToModel()
 void UT_InfoWidgetEngine::t_updateLineDataToModel()
 {
     m_infoWidgetEngine->updateLineDataToModel();
+    
+    QVERIFY(verify());
 }
-
 
 /*!
   UT_InfoWidgetEngine::t_handleNetworkError
@@ -145,24 +148,85 @@ void UT_InfoWidgetEngine::t_updateLineDataToModel()
 void UT_InfoWidgetEngine::t_handleNetworkError()
 {
     m_infoWidgetEngine->handleNetworkError(0, 0);
+    
+    QVERIFY(verify());
 }
-
 
 /*!
   UT_InfoWidgetEngine::t_handleSatError
  */
-void UT_InfoWidgetEngine:: t_handleSatError()
+void UT_InfoWidgetEngine::t_handleSatError()
 {
     m_infoWidgetEngine->handleSatError(0, 0);
+    
+    QVERIFY(verify());
 }
-
 
 /*!
   UT_InfoWidgetEngine::t_handleLineError
  */
-void UT_InfoWidgetEngine:: t_handleLineError()
+void UT_InfoWidgetEngine::t_handleLineError()
 {
-    m_infoWidgetEngine->handleLineError(0, 0);    
+    m_infoWidgetEngine->handleLineError(0, 0);
+    
+    QVERIFY(verify());
+}
+
+/*!
+  UT_InfoWidgetEngine::t_handleLineError
+ */
+void UT_InfoWidgetEngine::t_logModelData()
+{
+    m_infoWidgetEngine->logModelData();
+    
+    QVERIFY(verify());
+}
+
+/*!
+  UT_InfoWidgetEngine::t_preferenceChanged
+ */
+void UT_InfoWidgetEngine::t_preferenceChanged()
+{
+    m_infoWidgetEngine->preferenceChanged
+        (InfoWidgetPreferences::DisplayMcn,
+            InfoWidgetPreferences::DisplayOn);
+
+    m_infoWidgetEngine->preferenceChanged
+        (InfoWidgetPreferences::DisplayMcn,
+            InfoWidgetPreferences::DisplayOff);
+
+    m_infoWidgetEngine->preferenceChanged
+        (InfoWidgetPreferences::DisplaySatText,
+            InfoWidgetPreferences::DisplayOn);        
+
+    m_infoWidgetEngine->preferenceChanged
+        (InfoWidgetPreferences::DisplaySatText,
+            InfoWidgetPreferences::DisplayOff);        
+
+    m_infoWidgetEngine->preferenceChanged(-1,
+            InfoWidgetPreferences::DisplayOff);        
+
+    QVERIFY(verify());
+}
+
+/*!
+  UT_InfoWidgetEngine::t_suspend
+ */
+void UT_InfoWidgetEngine::t_suspend()
+{
+    m_infoWidgetEngine->suspend();
+        
+    QVERIFY(verify());
+}
+
+/*!
+  UT_InfoWidgetEngine::t_resume
+ */
+void UT_InfoWidgetEngine::t_resume()
+{
+    m_infoWidgetEngine->resume();
+        
+    QVERIFY(verify());
 }
 
 QTEST_MAIN_S60(UT_InfoWidgetEngine)

@@ -24,6 +24,7 @@
 #include <QApplication>
 #include <QTimer>
 #include <cpitemdatahelper.h>
+#include <psetwrapper.h>
 #include "cpbarringplugingroup.h"
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -111,6 +112,15 @@ void CpBarringPluginGroup::disableBarringRequestCompleted(
         bool, plural)
 }
 
+// -----------------------------------------------------------------------------
+// CpBarringPluginGroup::barringPasswordChangeRequestCompleted
+// -----------------------------------------------------------------------------
+//
+void CpBarringPluginGroup::barringPasswordChangeRequestCompleted(int result)
+{
+    SMC_MOCK_METHOD1( void, int, result)
+}
+
 
 // -----------------------------------------------------------------------------
 // CpBarringPluginGroup::changeBarringStateRequested
@@ -119,6 +129,16 @@ void CpBarringPluginGroup::disableBarringRequestCompleted(
 void CpBarringPluginGroup::changeBarringStateRequested(int checkState)
 {
     SMC_MOCK_METHOD1( void, int, checkState)
+}
+
+
+// -----------------------------------------------------------------------------
+// CpBarringPluginGroup::changeBarringPasswordRequested
+// -----------------------------------------------------------------------------
+//
+void CpBarringPluginGroup::changeBarringPasswordRequested(bool checked)
+{
+    SMC_MOCK_METHOD1( void, bool, checked)
 }
 
 

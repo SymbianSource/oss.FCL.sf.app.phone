@@ -16,9 +16,22 @@
 */
 #include <networkhandlingproxy.h>
 #include <nwhandlingengine.h>
+#include "qtestmains60.h"
+#include <xqsettingskey.h>
+#include <xqsettingsmanager.h>
 #include "ut_infowidgetnetworkhandler.h"
 #include "infowidgetnetworkhandler.h"
-#include "qtestmains60.h"
+
+#define EXPECT_EXCEPTION(statements)    \
+{                                       \
+    bool exceptionDetected = false;     \
+    try {                               \
+        statements                      \
+    } catch (...) {                     \
+        exceptionDetected = true;       \
+    }                                   \
+    QVERIFY(true == exceptionDetected); \
+}
 
 const QString KHomeZoneTextTag("HomeZoneText0");    // max length 13
 const TNWViagIndicatorType 
@@ -27,6 +40,7 @@ const TNWViagIndicatorType
 const QString KMcnName("McnNameMcnNameMcnNam");     // max length 20 
 const TNWMCNIndicatorType 
     KMcnIndicatorType = ENWMCNIndicatorTypeActive;
+
 
 /*!
   UT_InfoWidgetNetworkHandler::UT_InfoWidgetNetworkHandler
@@ -48,6 +62,14 @@ UT_InfoWidgetNetworkHandler::~UT_InfoWidgetNetworkHandler()
 }
 
 /*!
+  UT_InfoWidgetNetworkHandler::doLeaveL
+ */
+void UT_InfoWidgetNetworkHandler::doLeaveL()
+{
+    User::Leave(KErrGeneral);
+}
+
+/*!
   UT_InfoWidgetNetworkHandler::generateException
  */
 void UT_InfoWidgetNetworkHandler::generateException()
@@ -62,6 +84,10 @@ void UT_InfoWidgetNetworkHandler::init()
 {
     initialize();
     
+    SmcDefaultValue<QString>::SetL("");
+    SmcDefaultValue<const QString & >::SetL("");
+    QVariant i(1);
+    EXPECT(XQSettingsManager::readItemValue).returns(i);
     EXPECT(CreateL).willOnce(invoke(this, &initializeNetworkInfo));
     m_networkHandler =  new InfoWidgetNetworkHandler();
     
@@ -76,8 +102,12 @@ void UT_InfoWidgetNetworkHandler::cleanup()
 {
     reset();
     
+    QVariant i(1);
+    EXPECT(XQSettingsManager::readItemValue).returns(i);  
     delete m_networkHandler;
     m_networkHandler = 0;
+    
+    QVERIFY(verify());
 }
 
 /*!
@@ -85,6 +115,9 @@ void UT_InfoWidgetNetworkHandler::cleanup()
  */
 void UT_InfoWidgetNetworkHandler::t_homeZoneTextTag()
 {
+    QVariant i(1);
+    EXPECT(XQSettingsManager::readItemValue).returns(i);
+    
     QVERIFY(m_networkHandler->homeZoneTextTag() == KHomeZoneTextTag);
 }
 
@@ -178,7 +211,7 @@ void UT_InfoWidgetNetworkHandler::t_HandleNetworkMessage()
     m_networkHandler->HandleNetworkMessage(
         MNWMessageObserver::ENWMessageStopProtocolStackRequestCompleteFail);
     
-    const int KExpectedNumOfSignalEmissions = 1;
+    const int KExpectedNumOfSignalEmissions = 2;
     QCOMPARE(spy.count(), KExpectedNumOfSignalEmissions);
     
     const QList<QVariant> &arguments = spy.at(0);
@@ -197,6 +230,8 @@ void UT_InfoWidgetNetworkHandler::t_HandleNetworkMessageExceptionWhileEmittingSi
     
     m_networkHandler->HandleNetworkMessage(
         MNWMessageObserver::ENWMessageCurrentCellInfoMessage);
+    
+    QVERIFY(verify());
 }
 
 
@@ -210,11 +245,15 @@ void UT_InfoWidgetNetworkHandler::t_HandleNetworkError()
     qRegisterMetaType<MNWMessageObserver::TNWOperation>
         ("MNWMessageObserver::TNWOperation");
     
-    MNWMessageObserver::TNWOperation operation = MNWMessageObserver::ENWNone;
     const int errorCode = -4;
+    MNWMessageObserver::TNWOperation operation = 
+            MNWMessageObserver::ENWGetServiceProviderName;
+    m_networkHandler->HandleNetworkError(operation, errorCode);
+        
+    operation = MNWMessageObserver::ENWNone;
     m_networkHandler->HandleNetworkError(operation, errorCode);
     
-    const int KExpectedNumOfSignalEmissions = 1;
+    const int KExpectedNumOfSignalEmissions = 2;
     QCOMPARE(spy.count(), KExpectedNumOfSignalEmissions);
     const QList<QVariant> &arguments = spy.at(0);
     QCOMPARE(arguments.count(), 2);
@@ -238,6 +277,8 @@ void UT_InfoWidgetNetworkHandler::t_HandleNetworkErrorExceptionWhileEmittingSign
     MNWMessageObserver::TNWOperation operation = MNWMessageObserver::ENWNone;
     const int errorCode = -4;
     m_networkHandler->HandleNetworkError(operation, errorCode);
+    
+    QVERIFY(verify());
 }
 
 
@@ -252,6 +293,72 @@ void UT_InfoWidgetNetworkHandler::initializeNetworkInfo(
     
     aTNWInfo.iMCNName.Copy(KMcnName.utf16());
     aTNWInfo.iMCNIndicatorType = KMcnIndicatorType;
+}
+
+/*!
+  UT_InfoWidgetNetworkHandler::t_suspend
+ */
+void UT_InfoWidgetNetworkHandler::t_suspend()
+{
+    QVariant i(0);
+    EXPECT(XQSettingsManager::readItemValue).returns(i);
+    m_networkHandler->suspend();
+    
+    QVERIFY(verify());
+}
+
+/*!
+  UT_InfoWidgetNetworkHandler::t_resume
+ */
+void UT_InfoWidgetNetworkHandler::t_resume()
+{
+    QVariant i(0);
+    bool b = true;
+    EXPECT(XQSettingsManager::readItemValue).returns(i);  
+    EXPECT(XQSettingsManager::writeItemValue).returns(b);
+    m_networkHandler->resume();
+    
+    QVERIFY(verify());
+}
+
+/*!
+  UT_InfoWidgetNetworkHandler::t_serviceProviderName
+ */
+void UT_InfoWidgetNetworkHandler::t_serviceProviderName()
+{
+    QString s = "";
+    QCOMPARE(m_networkHandler->serviceProviderName(), s);
+}
+
+/*!
+  UT_InfoWidgetNetworkHandler::t_serviceProviderNameDisplayRequired
+ */
+void UT_InfoWidgetNetworkHandler::t_serviceProviderNameDisplayRequired()
+{
+    QCOMPARE(m_networkHandler->serviceProviderNameDisplayRequired(),true);    
+}
+
+/*!
+  UT_InfoWidgetNetworkHandler::t_logCurrentInfo
+ */
+void UT_InfoWidgetNetworkHandler::t_logCurrentInfo()
+{
+    m_networkHandler->logCurrentInfo();
+    
+    QVERIFY(verify());
+}
+
+/*!
+  UT_InfoWidgetNetworkHandler::t_createLeave
+ */
+void UT_InfoWidgetNetworkHandler::t_createLeave()
+{
+    QVariant i(1);
+    EXPECT(XQSettingsManager::readItemValue).returns(i);
+    EXPECT(CreateL)
+            .willOnce(invokeWithoutArguments(this, &doLeaveL));
+    
+    EXPECT_EXCEPTION(InfoWidgetNetworkHandler * p = new InfoWidgetNetworkHandler(););
 }
 
 QTEST_MAIN_S60(UT_InfoWidgetNetworkHandler)

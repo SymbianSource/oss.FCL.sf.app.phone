@@ -38,7 +38,7 @@
 #include <settingsinternalcrkeys.h>
 #include <starterclient.h>
 #include <rsssettings.h>
-#include <uikoninternalpskeys.h>
+#include <UikonInternalPSKeys.h>
 #include <telephonydomainpstypes.h>
 #include <telinformationpskeys.h>
 #include <coreapplicationuisdomainpskeys.h>
@@ -1659,6 +1659,10 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
         case EPhoneCallComingCmdSoftReject:
             // Open Soft reject message editor
             OpenSoftRejectMessageEditorL();
+            break;
+            
+        case EPhoneInCallCmdContacts:
+            iViewCommandHandle->ExecuteCommand( EPhoneViewOpenContacts );
             break;
             
         default:

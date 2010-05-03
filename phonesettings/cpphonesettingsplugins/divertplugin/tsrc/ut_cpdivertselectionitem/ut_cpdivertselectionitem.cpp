@@ -110,14 +110,6 @@ void UT_CpDivertSelectionItem::t_canSetModelIndex()
 }
 
 /*!
-  UT_CpDivertSelectionItem::t_restore
- */
-void UT_CpDivertSelectionItem::t_restore()
-{
-    m_item->restore();
-}
-
-/*!
   UT_CpDivertSelectionItem::t_createCustomWidget
  */
 void UT_CpDivertSelectionItem::t_createCustomWidget()

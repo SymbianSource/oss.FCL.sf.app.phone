@@ -45,6 +45,11 @@ private slots:
     void t_handleSatError(); 
     void t_handleLineError();
     
+    void t_logModelData();
+    void t_preferenceChanged();
+    void t_suspend();
+    void t_resume();
+    
 private:
     
     InfoWidgetEngine *m_infoWidgetEngine;

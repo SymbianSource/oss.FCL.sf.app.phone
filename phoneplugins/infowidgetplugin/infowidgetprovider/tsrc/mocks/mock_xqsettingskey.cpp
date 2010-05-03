@@ -28,7 +28,9 @@ XQSettingsKey::XQSettingsKey(
         long int uid,
         unsigned long int key )
     {
-    
+    Q_UNUSED(target)
+    Q_UNUSED(uid)
+    Q_UNUSED(key)
     }
 
 
@@ -49,7 +51,7 @@ XQSettingsKey::~XQSettingsKey(  )
 XQSettingsKey::Target XQSettingsKey::target(  ) const
     {
     
-    XQSettingsKey::Target variable;
+    XQSettingsKey::Target variable = (XQSettingsKey::Target)1;
     return variable;
     }
 

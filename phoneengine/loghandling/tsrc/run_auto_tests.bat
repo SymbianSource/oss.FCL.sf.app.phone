@@ -56,7 +56,7 @@ set REMOVETESTS=TRUE
 set INSTRUMENT=TRUE
 set REMOVEINSTRUMENT=TRUE
 set DOMODULESTESTS=TRUE
-set ABLD_CALL=abld test build winscw udeb -keepgoing
+set SBS_CALL=sbs --config winscw_udeb.test --keepgoing BUILD
 set PATH_TO_DLL=\epoc32\release\winscw\udeb
 set PATH_TO_MOVE_DLL=\epoc32\release\winscw\udeb\z\sys\bin
 set PATH_TO_COVERAGE_DATA=\coverage_data
@@ -147,12 +147,11 @@ goto end
 
 pushd .
 call cd %1\group
-call bldmake bldfiles
-call abld test clean winscw udeb
+call sbs --config winscw_udeb.test --keepgoing CLEAN
 if [%INSTRUMENT%] EQU [TRUE] (
-call ctcwrap -n %PATH_TO_COVERAGE_DATA%\%1 -i m -C "EXCLUDE=*" -C "NO_EXCLUDE=%TESTED_SRC%" %ABLD_CALL%
+call ctcwrap -2comp -n %PATH_TO_COVERAGE_DATA%\%1 -i m -C "EXCLUDE=*" -C "NO_EXCLUDE=%TESTED_SRC%" "%SBS_CALL%"
 ) else (
-call %ABLD_CALL%
+call %SBS_CALL%
 )
 
 popd

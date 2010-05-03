@@ -20,19 +20,20 @@ HEADERS += ./inc/infowidgetprovider.h \
            ./infowidget/inc/infowidget.h \
            ./infowidget/inc/infowidgetlayoutmanager.h \
            ./infowidget/inc/infowidgetpreferences.h \
-           ./infowidget/inc/infowidgetengine.h 
+           ./infowidget/inc/infowidgetengine.h \
+           ./infowidget/inc/infowidgetsathandlerprivate.h
 
 symbian: {
     HEADERS += ./infowidget/inc/infowidgetnetworkhandler.h \
                ./infowidget/inc/infowidgetsathandler.h \
                ./infowidget/inc/infowidgetlinehandler.h
-} 
-           
-SOURCES += ./src/infowidgetprovider.cpp \
-            ./infowidget/src/infowidget.cpp \
-           ./infowidget/src/infowidgetlayoutmanager.cpp \
-           ./infowidget/src/infowidgetengine.cpp 
-                    
+}
+SOURCES += infowidget/src/infowidgetsathandlerprivate.cpp \
+    ./src/infowidgetprovider.cpp \
+    ./infowidget/src/infowidget.cpp \
+    ./infowidget/src/infowidgetlayoutmanager.cpp \
+    ./infowidget/src/infowidgetengine.cpp
+    
 symbian: {
     SOURCES += ./infowidget/src/infowidgetpreferences.cpp \
                ./infowidget/src/infowidgetnetworkhandler.cpp \

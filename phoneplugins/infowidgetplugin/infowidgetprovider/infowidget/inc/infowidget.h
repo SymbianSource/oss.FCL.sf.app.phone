@@ -20,19 +20,23 @@
 
 #include <hbwidget.h>
 #include <QGraphicsSceneMouseEvent>
+#include <QList>
 #include <QFlags>
 #include "infowidgetlayoutmanager.h"
 
 class QLabel;
-class QGraphicsLinearLayout; 
+class QGraphicsLinearLayout;
+class QTranslator; 
 class HbDialog;
 class HbIconItem; 
 class HbMarqueeItem;
 class HbLabel; 
 class HbCheckBox; 
-class HbPushButton; 
+class HbPushButton;
+class HbFrameDrawer;
 class InfoWidgetEngine; 
 class InfoWidgetPreferences;
+ 
 
 class InfoWidget : public HbWidget
 {
@@ -48,11 +52,12 @@ public: // From QGraphicsItem.
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF & constraint) const;  
     QSizePolicy sizePolicy () const;  
     
-public: // Property definitions with read and write functions
+public: // Property definitions
     Q_PROPERTY(QString homeZoneDisplay READ homeZoneDisplay WRITE setHomeZoneDisplay)
     Q_PROPERTY(QString mcnDisplay READ mcnDisplay WRITE setMcnDisplay)
     Q_PROPERTY(QString activeLineDisplay READ activeLineDisplay WRITE setActiveLineDisplay)
     Q_PROPERTY(QString satDisplay READ satDisplay WRITE setSatDisplay)
+    Q_PROPERTY(QString spnDisplay READ spnDisplay WRITE setSpnDisplay)
     QString homeZoneDisplay();
     void setHomeZoneDisplay(QString value);
     QString mcnDisplay();
@@ -61,6 +66,8 @@ public: // Property definitions with read and write functions
     void setActiveLineDisplay(QString value);
     QString satDisplay();
     void setSatDisplay(QString value);
+    QString spnDisplay();
+    void setSpnDisplay(QString value);
     
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0); 
@@ -69,21 +76,21 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event); 
     
     void updateInfoDisplay();
-    void initializePreferences(); 
-    
+    bool readPersistentPreferences();
+    void initializeCheckBoxStates(); 
     void changeEvent(QEvent *event);
+    bool installTranslator(QString translationFile); 
+    void removeTranslators(); 
     
 private: 
     void updateItemsVisibility();
     void layoutInfoDisplay(); 
     void layoutSettingsDisplay(); 
-    
     void initializeInfoDisplayItems(); 
-    void initializeSettingsDisplayItems(); 
-     
+    void initializeSettingsDisplayItems();
     void startChanges(); 
     void endChanges(); 
-    
+
 public slots: 
     // Slots from HsWidget
     void onInitialize();
@@ -94,12 +101,11 @@ public slots:
     // Info widget specific slots 
     void readModel(); 
     void handleModelError(int operation,int errorCode);  
-    void homeZoneDisplaySettingChanged(int state);
+    void spnDisplaySettingChanged(int state);
     void mcnDisplaySettingChanged(int state);
-    void activeLineDisplaySettingChanged(int state);
     void satDisplaySettingChanged(int state);
-
     void settingsEditingFinished();
+    void settingsValidationFailed(); 
     
 signals: 
     void setPreferences(const QStringList &names);
@@ -113,14 +119,16 @@ private:
     // Widget preference store  
     InfoWidgetPreferences *m_preferences;
 
-    // Layout for widget
-    InfoWidgetLayoutManager *m_layoutManager;    
+    // Layout manager for widget
+    InfoWidgetLayoutManager *m_layoutManager;
+    
     QGraphicsLinearLayout *m_layout; 
-    
-    bool m_layoutChanging; 
-    bool m_isDragEvent; 
-    QColor m_backGroundColor;
-    
+    QList<QTranslator *> m_translators;
+    QColor m_backGroundColor; 
+    HbFrameDrawer *m_frameDrawer;
+    bool m_layoutChanging;
+    bool m_dragEvent; 
+    bool m_initialized;
 };
 
 

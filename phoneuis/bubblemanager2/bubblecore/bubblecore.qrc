@@ -46,12 +46,12 @@
         <file>themes/icons/hbdefault/scalable/qtg_large_waiting_call.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_large_active_call.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_large_end_call.svg</file>
-        <file>themes/icons/hbdefault/scalable/qtg_large_video_dialled_call.svg</file>
-        <file>themes/icons/hbdefault/scalable/qtg_large_video_missed_call.svg</file>
-        <file>themes/icons/hbdefault/scalable/qtg_large_video_received_call.svg</file>
-        <file>themes/icons/hbdefault/scalable/qtg_large_voip_dialled_call.svg</file>
-        <file>themes/icons/hbdefault/scalable/qtg_large_voip_missed_call.svg</file>
-        <file>themes/icons/hbdefault/scalable/qtg_large_voip_received_call.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_large_video_call_active.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_large_video_call_waiting.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_large_voip_call_active.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_large_voip_call_waiting.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_mono_ciphering_off.svg</file>
+        <file alias="bubble_muted_disappear.fxml">effects/bubble_muted_disappear.fxml</file>
+        <file alias="bubble_muted_appear.fxml">effects/bubble_muted_appear.fxml</file>
     </qresource>
 </RCC>

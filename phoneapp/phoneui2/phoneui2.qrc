@@ -13,9 +13,9 @@
         <file>themes/icons/hbdefault/scalable/qtg_mono_mic_mute.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_mono_mic_unmute.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_mono_dialer.svg</file>
-        <file>themes/icons/hbdefault/scalable/qtg_mono_loudspeaker.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_speaker.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_mono_contacts.svg</file>
-        <file>themes/icons/hbdefault/scalable/qtg_mono_mute.svg</file>
+        <file>themes/icons/hbdefault/scalable/qtg_mono_speaker_off.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_mono_mobile.svg</file>
     </qresource>
 </RCC>

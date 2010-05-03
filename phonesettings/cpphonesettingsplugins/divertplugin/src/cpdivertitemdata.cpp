@@ -19,21 +19,13 @@
 
 
 CpDivertItemData::CpDivertItemData(
-                PsCallDivertingCondition condition,
-                PsServiceGroup serviceGroup,
+                HbDataFormModelItem::DataItemType type,
                 const QString &label,
-                const QString &queryLabel,
-                bool needTimeoutInfo,
                 CpItemDataHelper &helper,
                 const HbDataFormModelItem *parent) :
                 CpSettingFormItemData(
-                        static_cast<HbDataFormModelItem::DataItemType>(
-                                CpDivertSelectionItem::CpDivertSelectionItemId),
+                        static_cast<HbDataFormModelItem::DataItemType>(type),
                         label, parent ),
-                m_serviceGroup(serviceGroup),
-                m_condition(condition),
-                m_queryLabel(queryLabel),
-                m_needTimeoutInfo(needTimeoutInfo),
                 m_helper(helper)
 {
     m_helper.addConnection(
@@ -46,29 +38,10 @@ CpDivertItemData::~CpDivertItemData()
 
 }
 
-PsServiceGroup CpDivertItemData::service()
-{
-    return m_serviceGroup;
-}
-
-PsCallDivertingCondition CpDivertItemData::condition()
-{
-    return m_condition;
-}
-
-QString CpDivertItemData::queryLabel()
-{
-    return m_queryLabel;
-}
-
-bool CpDivertItemData::needTimeoutInfo()
-{
-    return m_needTimeoutInfo;
-}
-
 void CpDivertItemData::thisItemClicked()
 {
     emit itemClicked(*this);
 }
+
 
 // end of file

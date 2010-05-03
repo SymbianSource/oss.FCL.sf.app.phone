@@ -32,7 +32,7 @@ symbian {
                    ../../../../inc \
                    ../../../phoneui2/srcdata
 
-    LIBS += -lphoneqtview
+    LIBS += -lphoneuiqtview
     LIBS += -lbafl
 
     TARGET.CAPABILITY = ALL -TCB

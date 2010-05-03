@@ -34,7 +34,8 @@ symbian {
 
     LIBS += -lbubblemanager2 \
             -lxqserviceutil \
-            -ldialpad
+            -ldialpad \
+            -lxqkeycapture
 
     DEFINES += FT_SYMBIAN_INTEGRATION
 } else:win32 {

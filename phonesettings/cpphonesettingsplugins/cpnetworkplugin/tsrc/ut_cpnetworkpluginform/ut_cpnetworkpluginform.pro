@@ -47,6 +47,7 @@ SOURCES += ut_networkpluginform.cpp
 # code to be tested
 HEADERS += ../../src/cpnetworkplugin.h \
            ../../src/cpnetworkpluginform.h \
+           ../../src/cellulardatasettings.h \
            ../../../cptelephonyutils/inc/cpplugincommon.h \
            ../../../cptelephonyutils/inc/cpphonenotes.h \
            /epoc32/include/platform/mw/psetwrapper.h \
@@ -55,7 +56,7 @@ HEADERS += ../../src/cpnetworkplugin.h \
            /epoc32/include/platform/mw/psetcalldivertingwrapper.h \
            /epoc32/include/platform/mw/psetnetworkwrapper.h
 
-SOURCES += ../../src/cpnetworkpluginform.cpp
+SOURCES += ../../src/cpnetworkpluginform.cpp 
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cpnetworkplugin.cpp \
@@ -75,5 +76,6 @@ SOURCES += ../../../tsrc/mocks/mock_cpnetworkplugin.cpp \
            ../../../tsrc/mocks/mock_hbaction.cpp \
            ../../../tsrc/mocks/mock_qaction.cpp \
            ../../../tsrc/mocks/mock_qobject.cpp \
-           ../../../tsrc/mocks/mock_hblistwidgetitem.cpp 
+           ../../../tsrc/mocks/mock_hblistwidgetitem.cpp \
+           ../../../tsrc/mocks/mock_cellulardatasettings.cpp
            

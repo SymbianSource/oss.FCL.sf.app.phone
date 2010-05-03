@@ -3,7 +3,7 @@
 *  Name        : 
 *  Part of     : 
 *  Description : 
-*  Version     : %version:  1 % 
+*  Version     : %version:  2 % 
 *
 *  Copyright 2008 Nokia.  All rights reserved.
 *  This material, including documentation and any related computer

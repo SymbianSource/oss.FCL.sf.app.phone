@@ -19,6 +19,7 @@
 #define INFOWIDGETPREFERENCES_H
 
 #include <QObject>
+#include <QStringList>
 #include <QFlags>
 
 // Preference string values
@@ -39,7 +40,8 @@ public:
         DisplayHomeZone = 0x1,
         DisplayMcn = 0x2,
         DisplayActiveLine = 0x4, 
-        DisplaySatText = 0x8 
+        DisplaySatText = 0x8,
+        DisplaySpn = 0x10
     };
     Q_DECLARE_FLAGS(Options, Option)
 
@@ -47,19 +49,26 @@ public:
     InfoWidgetPreferences(QObject *parent = NULL);
     ~InfoWidgetPreferences();
 
-    void loadPreferences();
-    void storePreferences();
-    
-public:
+    bool storePreferences();
+    void restorePreferences();
+    QStringList preferenceNames();
+            
+    bool isPreferenceSet(Option preferenceId) const;
     QString preference(Option preferenceId) const;
+    InfoWidgetPreferences::Options preferences() const;
     void setPreference(Option preferenceId, const QString &preferenceString);
-    
-    int visibleItemCount(); 
-    
+     
+    bool validate(); 
+    int visibleItemCount();
+
+signals:
+    void prefChanged(int option,int displaySetting);
+		
 private:
     Q_DISABLE_COPY(InfoWidgetPreferences)
 
     InfoWidgetPreferences::Options m_options; 
+    InfoWidgetPreferences::Options m_validatedOptions;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(InfoWidgetPreferences::Options)

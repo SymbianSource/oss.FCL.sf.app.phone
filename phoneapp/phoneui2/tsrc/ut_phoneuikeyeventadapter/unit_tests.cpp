@@ -63,7 +63,6 @@ private slots:
     void testKeyReleaseEvents();
     void testKeyPressEventsByQtKeys();
     void testLeave();
-    void testEndKeyLongPress();
 
 
 
@@ -199,15 +198,6 @@ void TestPhoneKeyEventAdapter::testLeave ()
     m_leave = false;
     
     delete keyEvent;
-}
-
-void TestPhoneKeyEventAdapter::testEndKeyLongPress()
-{
-    m_keyadapter->endKeyLongPress();
-    QCOMPARE((int)m_eventCode, EEventLongPress);
-    QCOMPARE(m_scan_code, (int)EKeyNo);
-    QCOMPARE(m_code, (int)EKeyNo);
-    QCOMPARE(m_repeats, 0);
 }
 
 PHONE_QT_TEST_MAIN(TestPhoneKeyEventAdapter)

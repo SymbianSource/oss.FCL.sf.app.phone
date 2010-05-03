@@ -53,6 +53,7 @@ private slots:
     void testVoipCallStatusIcon();
     void testNumberTypeIcon();
     void testCipheringIcon();
+    void testAvatar();
 
 private:
     BubbleStylePlugin* mPluginInstance;
@@ -363,6 +364,22 @@ void ut_BubbleStylePlugin::testCipheringIcon()
             item, (HbStyle::Primitive)(BP_Ciphering_icon),
             &option);
     QVERIFY(icon->icon().iconName()=="");
+}
+
+void ut_BubbleStylePlugin::testAvatar()
+{
+    QGraphicsItem *item = mPlugin->createPrimitive(
+        (HbStyle::Primitive)(BP_DefaultAvatar_icon),mParent);
+    QVERIFY(item);
+    QVERIFY(item->parentItem()==mParent);
+
+    HbIconItem* icon = qgraphicsitem_cast<HbIconItem*>(item);
+    QVERIFY(icon);
+    BubbleStyleOption option;
+    mPlugin->updatePrimitive(
+            item, (HbStyle::Primitive)(BP_DefaultAvatar_icon),
+            &option);
+    QVERIFY(icon->icon().iconName()=="qtg_large_avatar");
 }
 
 BUBBLE_TEST_MAIN(ut_BubbleStylePlugin)

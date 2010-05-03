@@ -140,6 +140,7 @@ enum
     EPhoneInCallCmdPrivate,
     EPhoneInCallCmdCbaJoin, // NOT IN MENU!
     EPhoneInCallCmdDialer,
+    EPhoneInCallCmdContacts,
 
     // Enable video
     EPhoneInCallCmdEnableVideo,

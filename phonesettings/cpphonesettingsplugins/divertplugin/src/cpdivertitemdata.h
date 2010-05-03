@@ -26,23 +26,12 @@ class CpDivertItemData : public CpSettingFormItemData
     Q_OBJECT
 public:
     CpDivertItemData(
-        PsCallDivertingCondition condition,
-        PsServiceGroup serviceGroup,
+        HbDataFormModelItem::DataItemType type,
         const QString &label,
-        const QString &queryLabel,
-        bool needTimeoutInfo,
         CpItemDataHelper &helper,
         const HbDataFormModelItem *parent = 0);
     
-    ~CpDivertItemData();
-    
-    PsServiceGroup service();
-    
-    PsCallDivertingCondition condition();
-    
-    QString queryLabel();
-    
-    bool needTimeoutInfo();
+    virtual ~CpDivertItemData();
 
 public slots:
     void thisItemClicked();
@@ -51,11 +40,8 @@ signals:
     void itemClicked(CpDivertItemData &item);
 
 private:
-    PsServiceGroup m_serviceGroup;
-    PsCallDivertingCondition m_condition;
-    QString m_queryLabel;
-    bool m_needTimeoutInfo;
     CpItemDataHelper &m_helper;
 };
+
 
 #endif /* DIVERTINGITEMDATA_H_ */

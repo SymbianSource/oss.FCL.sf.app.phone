@@ -82,9 +82,12 @@ void BubbleExpandedHandler::readBubbleHeader(
 
     mHeading->readBubbleHeader(header);
 
-    if (header.callImage().length()) {
+    if (!mHeader->callImage().isEmpty() ||
+        header.showDefaultAvatar()) {
         mImage->setImage(header.callImage());
         mImage->show();
+    } else {
+        mImage->hide();
     }
 
     setButtons(mHeader->actions());

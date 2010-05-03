@@ -33,7 +33,8 @@ symbian {
     LIBS += -lphoneuiutils \
             -lbubblemanager2 \
             -lxqserviceutil \
-            -ldialpad
+            -ldialpad \
+            -lxqkeycapture
 
     defFiles = \
         "$${LITERAL_HASH}ifdef WINS" \

@@ -35,7 +35,8 @@ DialService::~DialService()
 int DialService::dial(const QString& number)
 {
     PHONE_DEBUG2("DialService::dial number:", number);
-    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(number.utf16 ()));
+    QString simplifiedNumber = simplified(number);
+    TPtrC16 numberPtr(reinterpret_cast<const TUint16*>(simplifiedNumber.utf16()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeCSVoice);
     return m_call.HandleDialServiceCall ();
@@ -45,7 +46,7 @@ int DialService::dial(const QString& number, int contactId)
 {
     PHONE_DEBUG4("DialService::dial number:", number, "contactId:", contactId);
     QString simplifiedNumber = simplified(number);
-    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(simplifiedNumber.utf16 ()));
+    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(simplifiedNumber.utf16()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeCSVoice);
     m_parameters.SetContactId2 (contactId);
@@ -55,7 +56,8 @@ int DialService::dial(const QString& number, int contactId)
 void DialService::dialVideo(const QString& number)
 {
     PHONE_DEBUG2("DialService::dialVideo number:", number);
-    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(number.utf16 ()));
+    QString simplifiedNumber = simplified(number);
+    TPtrC16 numberPtr(reinterpret_cast<const TUint16*>(simplifiedNumber.utf16()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeVideo);
     m_call.HandleDialServiceCall ();
@@ -65,7 +67,7 @@ void DialService::dialVideo(const QString& number, int contactId)
 {
     PHONE_DEBUG4("DialService::dialVideo number:", number, "contactId:", contactId);
     QString simplifiedNumber = simplified(number);
-    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(simplifiedNumber.utf16 ()));
+    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(simplifiedNumber.utf16()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeVideo);
     m_parameters.SetContactId2 (contactId);

@@ -124,7 +124,6 @@ enum {
 */
 const TUint32 KTelGenCmdLaunchLogApp = 0x00000001;
 
-
 #endif      // TELINTERNALPSKEYS_H
 
 // End of file

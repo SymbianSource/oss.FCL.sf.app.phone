@@ -185,6 +185,27 @@ void InfoWidget::setSatDisplay(
 
 
 // -----------------------------------------------------------------------------
+// InfoWidget::spnDisplay
+// -----------------------------------------------------------------------------
+//
+QString InfoWidget::spnDisplay(  )
+    {
+    SMC_MOCK_METHOD0( QString )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidget::setSpnDisplay
+// -----------------------------------------------------------------------------
+//
+void InfoWidget::setSpnDisplay( 
+        QString value )
+    {
+    SMC_MOCK_METHOD1( void, QString, value )
+    }
+
+
+// -----------------------------------------------------------------------------
 // InfoWidget::onInitialize
 // -----------------------------------------------------------------------------
 //
@@ -248,6 +269,17 @@ void InfoWidget::handleModelError(
 
 
 // -----------------------------------------------------------------------------
+// InfoWidget::spnDisplaySettingChanged
+// -----------------------------------------------------------------------------
+//
+void InfoWidget::spnDisplaySettingChanged( 
+        int state )
+    {
+    SMC_MOCK_METHOD1( void, int, state )
+    }
+
+
+// -----------------------------------------------------------------------------
 // InfoWidget::homeZoneDisplaySettingChanged
 // -----------------------------------------------------------------------------
 //
@@ -299,6 +331,18 @@ void InfoWidget::settingsEditingFinished(  )
     {
     SMC_MOCK_METHOD0( void )
     }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidget::settingsValidationFailed
+// -----------------------------------------------------------------------------
+//
+void InfoWidget::settingsValidationFailed(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
 
 
 // -----------------------------------------------------------------------------
@@ -358,10 +402,20 @@ void InfoWidget::updateInfoDisplay(  )
 
 
 // -----------------------------------------------------------------------------
-// InfoWidget::initializePreferences
+// InfoWidget::readPersistentPreferences
 // -----------------------------------------------------------------------------
 //
-void InfoWidget::initializePreferences(  )
+bool InfoWidget::readPersistentPreferences(  )
+    {
+    SMC_MOCK_METHOD0( bool )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidget::initializeCheckBoxStates
+// -----------------------------------------------------------------------------
+//
+void InfoWidget::initializeCheckBoxStates(  )
     {
     SMC_MOCK_METHOD0( void )
     }
@@ -375,6 +429,27 @@ void InfoWidget::changeEvent(
         QEvent * event )
     {
     SMC_MOCK_METHOD1( void, QEvent *, event )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidget::installTranslator
+// -----------------------------------------------------------------------------
+//
+bool InfoWidget::installTranslator( 
+        QString translationFile )
+    {
+    SMC_MOCK_METHOD1( bool, QString, translationFile )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidget::removeTranslators
+// -----------------------------------------------------------------------------
+//
+void InfoWidget::removeTranslators(  )
+    {
+    SMC_MOCK_METHOD0( void )
     }
 
 

@@ -37,13 +37,10 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
 
-    void testConferenceCall();
-
-private:
     void testBasicMtCall();
     void testBasicMoCall();
     void testWaitingCall();
-
+    void testConferenceCall();
     void testEmergencyCall();
 
 private:

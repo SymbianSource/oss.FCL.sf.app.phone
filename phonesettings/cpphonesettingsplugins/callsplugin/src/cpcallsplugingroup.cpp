@@ -457,18 +457,13 @@ void CpCallsPluginGroup::handleCallWaitingGetStatus(
     if (m_callWaitingDistinguishEnabled &&
             status == PSetCallWaitingWrapper::StatusNotProvisioned) {
         emit showGlobalNote(m_activeNoteId, 
-            hbTrId("cw not provisioned"), HbMessageBox::MessageTypeInformation);
+            hbTrId("txt_phone_info_request_not_completed"), HbMessageBox::MessageTypeInformation);
     } else if (status != PSetCallWaitingWrapper::StatusActive) {
         emit showGlobalNote(m_activeNoteId,
-            hbTrId("cw disabled"), HbMessageBox::MessageTypeInformation);
+            hbTrId("txt_phone_info_call_waiting_deactivated"), HbMessageBox::MessageTypeInformation);
     } else {
-        if (basicServiceGroupIds.count() != 0) {
-            emit showBasicServiceList(
-                hbTrId("Active for:"), basicServiceGroupIds);
-        } else {
-            emit showGlobalNote(m_activeNoteId,
-                hbTrId("cw active"), HbMessageBox::MessageTypeInformation);
-        }
+        emit showGlobalNote(m_activeNoteId,
+            hbTrId("txt_phone_info_call_waiting_activated"), HbMessageBox::MessageTypeInformation);
     }
     
     DPRINT << ": OUT";
@@ -485,23 +480,23 @@ void CpCallsPluginGroup::handleCallWaitingChanged(
     emit cancelNote(m_activeNoteId);
     if (result) {
         emit showGlobalNote(m_activeNoteId,
-            hbTrId("Request failed"), 
+            hbTrId("txt_phone_info_request_not_confirmed"), 
             HbMessageBox::MessageTypeWarning);
     } else {
         switch (command){
             case PSetCallWaitingWrapper::ActivateCallWaiting:
                 emit showGlobalNote(m_activeNoteId,
-                    hbTrId("Call waiting activated"), 
+                    hbTrId("txt_phone_info_call_waiting_activated"), 
                     HbMessageBox::MessageTypeInformation);
                 break;
             case PSetCallWaitingWrapper::DeactivateCallWaiting:
                 emit showGlobalNote(m_activeNoteId,
-                    hbTrId("Call waiting disabled"), 
+                    hbTrId("txt_phone_info_call_waiting_deactivated"), 
                     HbMessageBox::MessageTypeInformation);
                 break;
             default: 
                 emit showGlobalNote(m_activeNoteId,
-                    hbTrId("default"), 
+                    hbTrId("txt_phone_info_result_unknown"), 
                     HbMessageBox::MessageTypeInformation);
                 break;
         }
@@ -519,7 +514,7 @@ void CpCallsPluginGroup::handleCallWaitingRequesting(bool ongoing, bool interrup
     Q_ASSERT(!(ongoing && interrupted));
     
     if (ongoing) {
-        emit showGlobalProgressNote(m_activeNoteId, hbTrId("Requesting"));
+        emit showGlobalProgressNote(m_activeNoteId, hbTrId("txt_phone_info_requesting"));
     }
     
     if (interrupted) {

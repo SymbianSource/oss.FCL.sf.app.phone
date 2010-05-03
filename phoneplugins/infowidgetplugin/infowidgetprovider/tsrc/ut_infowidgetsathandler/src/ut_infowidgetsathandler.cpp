@@ -15,6 +15,7 @@
 *
 */
 #include "ut_infowidgetsathandler.h"
+#define private public
 #include "infowidgetsathandler.h"
 #include "qtestmains60.h"
 
@@ -67,8 +68,9 @@ void UT_InfoWidgetSatHandler::cleanup()
  */
 void UT_InfoWidgetSatHandler::t_satDisplayText()
 {
-    const QString& satDisplayText = m_satHandler->satDisplayText();
-    QVERIFY(satDisplayText == QString("SAT DISPLAY TEXT"));
+    QString satDisplayText("satDisplayText");
+    m_satHandler->setSatDisplayText(satDisplayText);
+    QVERIFY(satDisplayText == m_satHandler->satDisplayText());
 }
 
 
@@ -90,6 +92,41 @@ void UT_InfoWidgetSatHandler::t_setSatDisplayText()
 void UT_InfoWidgetSatHandler::t_logCurrentInfo()
 {
     m_satHandler->logCurrentInfo();
+    
+    QVERIFY(verify());
 }
+
+void UT_InfoWidgetSatHandler::t_connect()
+{
+    //}else if (!connect && m_connected){
+    m_satHandler->m_connected = 1;
+    m_satHandler->connect(0);
+    
+        
+    m_satHandler->m_connected = 1;
+    m_satHandler->connect(1);
+    
+    //if(connect && !m_connected){
+    m_satHandler->m_connected = 0;
+    m_satHandler->connect(1);
+    
+    QVERIFY(verify());
+}
+void UT_InfoWidgetSatHandler::t_handleIdleModeTxtMessage()
+{
+    m_satHandler->m_connected = 0;
+    m_satHandler->handleIdleModeTxtMessage(0);
+    m_satHandler->m_connected = 1;
+    m_satHandler->handleIdleModeTxtMessage(0);
+    
+    QVERIFY(verify());
+}
+void UT_InfoWidgetSatHandler::t_handleSatError()
+{
+    m_satHandler->handleSatError(1,1);
+    
+    QVERIFY(verify());
+}
+    
 
 QTEST_MAIN_S60(UT_InfoWidgetSatHandler)

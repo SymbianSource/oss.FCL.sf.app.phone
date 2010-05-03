@@ -35,21 +35,27 @@ const char LAYOUT_PREFIX_SETTINGS_DISPLAY[] = "sd:";
 const char LAYOUT_NAME_CONTENT[] = "content";
 const char LAYOUT_NAME_MCNMARQUEEITEM[] = "mcnMarqueeItem";
 const char LAYOUT_NAME_MCNLABEL[] = "mcnLabel";
-const char LAYOUT_NAME_HOMEZONELABEL[] = "homeZoneLabel";
-const char LAYOUT_NAME_ACTIVELINELABEL[] = "activeLineLabel";
+const char LAYOUT_NAME_SPNLABEL[] = "spnLabel";
+const char LAYOUT_NAME_SATMARQUEEITEM[] = "satMarqueeItem";
 const char LAYOUT_NAME_SATTEXTLABEL[] = "satTextLabel";
-const char LAYOUT_NAME_HOMEZONEICON[] = "homeZoneIcon";
+const char LAYOUT_NAME_SPNICON[] = "spnIcon";
 const char LAYOUT_NAME_MCNICON[] = "mcnIcon";
-const char LAYOUT_NAME_ACTIVELINEICON[] = "activeLineIcon";
 const char LAYOUT_NAME_SATTEXTICON[] = "satTextIcon";
-const char LAYOUT_NAME_HOMEZONECHECKBOX[] = "homeZoneCheckBox";
+const char LAYOUT_NAME_SPNCHECKBOX[] = "spnCheckBox";
 const char LAYOUT_NAME_MCNCHECKBOX[] = "mcnCheckBox";
-const char LAYOUT_NAME_ACTIVELINECHECKBOX[] = "activeLineCheckBox";
 const char LAYOUT_NAME_SATTEXTCHECKBOX[] = "satTextCheckBox";
 const char LAYOUT_NAME_OKBUTTON[] = "okButton";
 const char LAYOUT_NAME_CONTAINER[] = "container";
 const char LAYOUT_NAME_SETTINGSCONTAINER[] = "settingsContainer";
 
+
+/*!
+  \class InfoWidgetDocumentLoader
+  \brief Custom document loader for Operator info widget  
+
+   Derived from HbDocumentLoader.
+    
+*/
 
 /*!
   InfoWidgetDocumentLoader::InfoWidgetDocumentLoader()
@@ -77,14 +83,24 @@ QObject *InfoWidgetDocumentLoader::createObject(
         DPRINT << ": HbMarqueeitem found, OUT";
         return object;
     }
-
-    DPRINT << ": OUT";
     
+    DPRINT << ": OUT";
     return HbDocumentLoader::createObject(type, name);
 }
 
+
 /*!
- */
+  \class InfoWidgetLayoutManager
+  \brief Layout manager class for Operator info widget.   
+
+   Handles layout document loading and accessing the loaded 
+   widgets.   
+    
+*/
+
+/*!
+   InfoWidgetLayoutManager::InfoWidgetLayoutManager()
+*/
 InfoWidgetLayoutManager::InfoWidgetLayoutManager(QObject *parent) 
 : QObject(parent), 
   m_documentLoader(NULL), 
@@ -115,7 +131,8 @@ InfoWidgetLayoutManager::InfoWidgetLayoutManager(QObject *parent)
 }
 
 /*!
- */
+   InfoWidgetLayoutManager::~InfoWidgetLayoutManager()
+*/
 InfoWidgetLayoutManager::~InfoWidgetLayoutManager()
 {
     DPRINT << ": IN";
@@ -128,7 +145,8 @@ InfoWidgetLayoutManager::~InfoWidgetLayoutManager()
 }
 
 /*!
- */
+   InfoWidgetLayoutManager::currentDisplayRole()
+*/
 InfoWidgetLayoutManager::DisplayRole InfoWidgetLayoutManager::currentDisplayRole() 
 {
     DPRINT; 
@@ -136,24 +154,51 @@ InfoWidgetLayoutManager::DisplayRole InfoWidgetLayoutManager::currentDisplayRole
 } 
 
 /*!
- */
+   InfoWidgetLayoutManager::currentWidgetRoles()
+*/
 QList<InfoWidgetLayoutManager::LayoutItemRole> InfoWidgetLayoutManager::currentWidgetRoles() 
 {
     DPRINT; 
     return m_widgets.keys(); 
 } 
 
+/*!
+   InfoWidgetLayoutManager::layoutRows()
+*/
 int InfoWidgetLayoutManager::layoutRows() const 
 {
     DPRINT; 
     return m_layoutRows;
 } 
 
+/*!
+   InfoWidgetLayoutManager::setLayoutRows()
+*/
 void InfoWidgetLayoutManager::setLayoutRows(int rows) 
 {
     DPRINT; 
     m_layoutRows = rows; 
 } 
+
+/*!
+   InfoWidgetLayoutManager::rowHeight()
+*/
+qreal InfoWidgetLayoutManager::rowHeight() const
+{
+    DPRINT; 
+    HbStyle style; 
+    qreal rowHeight;
+
+    bool ok = style.parameter("hb-param-graphic-size-primary-small", 
+            rowHeight);
+    if (!ok) {
+        DPRINT << ": ERROR! Paremeters reading failed!! Using default";
+        rowHeight = 26.8;
+    }
+    
+    DPRINT << ": rowHeight: " << rowHeight;
+    return rowHeight; 
+}
 
 /*!
    InfoWidgetLayoutManager::contentWidget()
@@ -180,6 +225,21 @@ QGraphicsWidget* InfoWidgetLayoutManager::getWidget(LayoutItemRole itemRole)
 }
 
 /*!
+   InfoWidgetLayoutManager::removeWidget();
+*/
+void InfoWidgetLayoutManager::removeWidget(LayoutItemRole itemRole)
+{
+    DPRINT << ": item role: " << itemRole;
+    
+    QGraphicsWidget *widget = m_widgets.value(itemRole); 
+    if (widget) {
+        DPRINT << ": removing widget: " << widget;        
+        m_widgets.remove(itemRole);
+        delete widget;
+    }
+}
+
+/*!
    InfoWidgetLayoutManager::hideWidget();
 */
 void InfoWidgetLayoutManager::hideWidget(LayoutItemRole itemRole)
@@ -189,7 +249,7 @@ void InfoWidgetLayoutManager::hideWidget(LayoutItemRole itemRole)
     QGraphicsWidget *widget = m_widgets.value(itemRole); 
     if (widget) {
         DPRINT << ": hiding widget: " << widget;
-        widget->hide(); 
+        widget->hide();
     }
 }
 
@@ -205,13 +265,12 @@ void InfoWidgetLayoutManager::hideAll()
         iterator.next();
         QGraphicsWidget *widget = iterator.value(); 
         if (widget) {
-            widget->hide(); 
+            widget->hide();
         }
     }
     
     DPRINT << ": OUT";
 }
-
 
 /*!
    InfoWidgetLayoutManager::showAll();
@@ -301,7 +360,10 @@ bool InfoWidgetLayoutManager::loadWidgets(const DisplayRole displayRole,
     
     bool loaded = false;
     m_documentLoader->load(INFOWIDGET_DOCML_FILE, &loaded);
-        
+    Q_ASSERT_X(loaded, 
+            "InfoWidgetLayoutManager", 
+            "Invalid docml file");    
+    
     if (!loaded) {
         qWarning() << "Unable to load .docml:  " << INFOWIDGET_DOCML_FILE;
     }
@@ -344,6 +406,27 @@ bool InfoWidgetLayoutManager::loadWidgets(const DisplayRole displayRole,
 }
 
 /*!
+    InfoWidgetLayoutManager::reloadWidgets()
+*/
+bool InfoWidgetLayoutManager::reloadWidgets(const DisplayRole displayRole)
+{
+    QList<LayoutItemRole> displayWidgetRoles = widgetRoles(displayRole); 
+    bool loadResult(false); 
+    
+    switch (displayRole) {
+        case InfoDisplay:
+            loadResult = loadWidgets(displayRole, 
+                        displayWidgetRoles,
+                        m_infoDisplayWidgets); 
+            break; 
+        case SettingsDisplay: // Fall through 
+        default: 
+            break; 
+    }
+    return loadResult; 
+}
+
+/*!
     InfoWidgetLayoutManager::loadWidget()
     
     Initialize loader with corresponding document file before calling this single widget loader utility   
@@ -372,38 +455,32 @@ QGraphicsWidget* InfoWidgetLayoutManager::loadWidget(InfoWidgetDocumentLoader &l
         case RoleMcnMarqueeItem: 
             widgetName.append(LAYOUT_NAME_MCNMARQUEEITEM);
         break; 
-        case RoleHomeZoneLabel: 
-            widgetName.append(LAYOUT_NAME_HOMEZONELABEL);
+        case RoleSpnLabel: 
+            widgetName.append(LAYOUT_NAME_SPNLABEL);
         break;
         case RoleMcnLabel: 
             widgetName.append(LAYOUT_NAME_MCNLABEL);
         break;
-        case RoleActiveLineLabel: 
-            widgetName.append(LAYOUT_NAME_ACTIVELINELABEL);
+        case RoleSatMarqueeItem: 
+            widgetName.append(LAYOUT_NAME_SATMARQUEEITEM);
         break; 
         case RoleSatTextLabel: 
             widgetName.append(LAYOUT_NAME_SATTEXTLABEL);
         break; 
-        case RoleHomeZoneIcon: 
-            widgetName.append(LAYOUT_NAME_HOMEZONEICON);
+        case RoleSpnIcon: 
+            widgetName.append(LAYOUT_NAME_SPNICON);
         break; 
         case RoleMcnIcon: 
             widgetName.append(LAYOUT_NAME_MCNICON);
         break; 
-        case RoleActiveLineIcon: 
-            widgetName.append(LAYOUT_NAME_ACTIVELINEICON);
-        break; 
         case RoleSatTextIcon: 
             widgetName.append(LAYOUT_NAME_SATTEXTICON);
         break;
-        case RoleHomeZoneCheckBox: 
-            widgetName.append(LAYOUT_NAME_HOMEZONECHECKBOX);
+        case RoleSpnCheckBox: 
+            widgetName.append(LAYOUT_NAME_SPNCHECKBOX);
         break; 
         case RoleMcnCheckBox: 
             widgetName.append(LAYOUT_NAME_MCNCHECKBOX);
-        break; 
-        case RoleActiveLineCheckBox: 
-            widgetName.append(LAYOUT_NAME_ACTIVELINECHECKBOX);
         break; 
         case RoleSatTextCheckBox: 
             widgetName.append(LAYOUT_NAME_SATTEXTCHECKBOX);
@@ -451,35 +528,22 @@ const QList<InfoWidgetLayoutManager::LayoutItemRole> InfoWidgetLayoutManager::wi
         case SettingsDisplay: 
             // Fill supported layout item roles for settings display
             widgetRoles.append(RoleContent); 
-            widgetRoles.append(RoleHomeZoneLabel);
-            widgetRoles.append(RoleMcnLabel); 
-            widgetRoles.append(RoleActiveLineLabel);
-            widgetRoles.append(RoleSatTextLabel);
-            widgetRoles.append(RoleHomeZoneIcon);
-            widgetRoles.append(RoleMcnIcon);
-            widgetRoles.append(RoleActiveLineIcon);
-            widgetRoles.append(RoleSatTextIcon);
-            widgetRoles.append(RoleHomeZoneCheckBox);
+            widgetRoles.append(RoleSpnCheckBox);
             widgetRoles.append(RoleMcnCheckBox);
-            widgetRoles.append(RoleActiveLineCheckBox);
             widgetRoles.append(RoleSatTextCheckBox);
             widgetRoles.append(RoleOkButton);
             widgetRoles.append(RoleSettingsContainer); 
             break;
         case InfoDisplay: 
             // Fill supported layout item roles for info display
-            widgetRoles.append(RoleContent); 
-            widgetRoles.append(RoleHomeZoneLabel);
-            widgetRoles.append(RoleMcnMarqueeItem);
-            widgetRoles.append(RoleActiveLineLabel);
-            widgetRoles.append(RoleSatTextLabel);
-            widgetRoles.append(RoleHomeZoneIcon);
+            widgetRoles.append(RoleContent);
+            widgetRoles.append(RoleSpnIcon);
+            widgetRoles.append(RoleSpnLabel);
             widgetRoles.append(RoleMcnIcon);
-            widgetRoles.append(RoleActiveLineIcon);
+            widgetRoles.append(RoleMcnMarqueeItem);
             widgetRoles.append(RoleSatTextIcon);
-            widgetRoles.append(RoleSettingsContainer); 
+            widgetRoles.append(RoleSatMarqueeItem);
             break;
-            
         default: 
             break; 
     }

@@ -97,25 +97,6 @@ void CpPhoneNotes::showBasicServiceList(
 }
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::showBasicServiceCallDivertList
-// -----------------------------------------------------------------------------
-//
-void CpPhoneNotes::showBasicServiceCallDivertList( 
-        const QString & title,
-        const QList<PSCallDivertingStatus *> & divertStatuses,
-        int & selectionIndex,
-        CallDivertType divertType,
-        CallDivertType & divertDetailType )
-    {
-    SMC_MOCK_METHOD5( void, const QString &, title, 
-        const QList<PSCallDivertingStatus *> &, divertStatuses, 
-        int &, selectionIndex, 
-        CallDivertType, divertType, 
-        CallDivertType &, divertDetailType )
-    }
-
-
-// -----------------------------------------------------------------------------
 // CpPhoneNotes::showCallDivertDetails
 // -----------------------------------------------------------------------------
 //
@@ -124,6 +105,26 @@ void CpPhoneNotes::showCallDivertDetails(
     {
     SMC_MOCK_METHOD1( void, const PSCallDivertingStatus &, divertStatus )
     }
+
+
+// -----------------------------------------------------------------------------
+// CpPhoneNotes::showPasswordQueryDialog
+// -----------------------------------------------------------------------------
+//
+void CpPhoneNotes::showPasswordQueryDialog(
+    const QString &title, 
+    const QValidator &validator,
+    int maxPasswordLength,
+    QString &password, 
+    bool &ok)
+{
+    SMC_MOCK_METHOD5( void, 
+        const QString &, title, 
+        const QValidator &, validator,
+        int, maxPasswordLength,
+        QString &, password,
+        bool &, ok)
+}
 
 
 // -----------------------------------------------------------------------------
@@ -137,6 +138,16 @@ void CpPhoneNotes::cancelNote( int noteId )
 
 
 // -----------------------------------------------------------------------------
+// CpPhoneNotes::noteShowing
+// -----------------------------------------------------------------------------
+//
+bool CpPhoneNotes::noteShowing()
+{
+    SMC_MOCK_METHOD0( bool )
+}
+
+
+// -----------------------------------------------------------------------------
 // CpPhoneNotes::activeNoteAboutToClose
 // -----------------------------------------------------------------------------
 //
@@ -144,6 +155,7 @@ void CpPhoneNotes::activeNoteAboutToClose()
 {
     SMC_MOCK_METHOD0( void )
 }
+
 
 // -----------------------------------------------------------------------------
 // CpPhoneNotes::handleProgressNoteCanceled
@@ -154,11 +166,13 @@ void CpPhoneNotes::handleProgressNoteCanceled()
     SMC_MOCK_METHOD0( void )
 }
 
+
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::noteShowing
+// CpPhoneNotes::passwordTextChanged
 // -----------------------------------------------------------------------------
 //
-bool CpPhoneNotes::noteShowing()
+
+void CpPhoneNotes::passwordTextChanged()
 {
-    SMC_MOCK_METHOD0( bool )
+    SMC_MOCK_METHOD0( void )
 }

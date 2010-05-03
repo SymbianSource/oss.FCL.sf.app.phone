@@ -83,6 +83,9 @@ void CPEGsmAudioData::ConstructL( CPEAudioFactory& aAudioFactory )
     
     iInbandTonePlayer = 
         CPEAudioInbandTonePlayer::NewL( *this, iFsSession, aAudioFactory );
+    TInt volume = iPhoneModel.DataStore()->AudioVolume(); 
+    iInbandTonePlayer->SetVolume( volume );
+    
     iDtmfTonePlayer = CPEAudioDtmfTonePlayer::NewL();
     }
 
@@ -295,10 +298,11 @@ TBool CPEGsmAudioData::DtmfLocalPlayAllowed() const
 // CPEGsmAudioData::DoHandleVolumeChange
 // -----------------------------------------------------------------------------
 //
-void CPEGsmAudioData::DoHandleVolumeChange( TInt aVolume )
+void CPEGsmAudioData::DoHandleVolumeChange( TInt aVolume, TBool aSendMsg)
 
     {
     iInbandTonePlayer->SetVolume( aVolume );
+    CPEAudioData::DoHandleVolumeChange(aVolume , aSendMsg);
     }
 
 // ================= OTHER EXPORTED FUNCTIONS ===============================

@@ -101,4 +101,9 @@ EXPORTS
 	_ZN20PhoneUIQtViewAdapter15convertDurationEi @ 100 NONAME
 	_ZN20PhoneUIQtViewAdapter22setBubbleSelectionFlagEv @ 101 NONAME
 	_ZN20PhoneUIQtViewAdapter25handleCipheringInfoChangeEiP18TPhoneCommandParam @ 102 NONAME
+	_ZN20PhoneUIQtViewAdapter22HandlePropertyChangedLERK4TUidji @ 103 NONAME
+	_ZThn12_N20PhoneUIQtViewAdapter22HandlePropertyChangedLERK4TUidji @ 104 NONAME
+	_ZN20PhoneUIQtViewAdapter10SetHiddenLEb @ 105 NONAME
+	_ZN20PhoneUIQtViewAdapter9setHiddenEb @ 106 NONAME
+	_ZN20PhoneUIQtViewAdapter12openContactsEv @ 107 NONAME
 

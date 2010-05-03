@@ -27,6 +27,7 @@
 
 #include "bubbletest.h"
 #include "bubbleimagewidget.h"
+#include "bubbleimagemanager.h"
 
 class ut_BubbleImageWidget : public QObject
 {
@@ -38,18 +39,33 @@ private slots:
 
     void testPixmap();
     void testWidePixmap();
-    void testVector();
+    void testDefaultAvatar();
+
+private:
+    QString fileNameWithPath(const QString& fileName);    
 
 private:
     BubbleImageWidget* mImage;
     HbMainWindow* mMainWindow;
     int mStyleBaseId;
+    BubbleImageManager* mImageManager;
 };
+
+QString ut_BubbleImageWidget::fileNameWithPath(const QString& fileName)
+{
+#ifdef __WINS__
+    return "c:/data/images/" + fileName;
+#else
+    return ":/data/" + fileName;
+#endif
+}
 
 void ut_BubbleImageWidget::initTestCase()
 {
     mMainWindow = new HbMainWindow();
-    mImage = new BubbleImageWidget();
+    mImageManager = new BubbleImageManager();
+    mImage = new BubbleImageWidget(
+        BUBBLE_STYLE_PLUGIN,*mImageManager);
     mMainWindow->addView(mImage);
     mMainWindow->show();
 }
@@ -57,31 +73,34 @@ void ut_BubbleImageWidget::initTestCase()
 void ut_BubbleImageWidget::cleanupTestCase()
 {
     delete mMainWindow;
+    delete mImageManager;
 }
 
 void ut_BubbleImageWidget::testPixmap()
 {    
-    mImage->setImage(":/data/pixmap.png");
-    mImage->update();
+    mImage->hide();
+    mImage->setImage(fileNameWithPath("pixmap.png"));
+    mImage->show();
     // set same image again
-    mImage->setImage(":/data/pixmap.png");
-    QTest::qWait(100);
+    QTest::qWait(500);
     // there is now way to verify using public API
 }
 
 void ut_BubbleImageWidget::testWidePixmap()
 {
-    mImage->setImage(":/data/pixmap_wide.png");
-    mImage->update();
-    QTest::qWait(100);
+    mImage->hide();
+    mImage->setImage(fileNameWithPath("pixmap_wide.png"));
+    mImage->show();
+    QTest::qWait(500);
     // there is now way to verify using public API
 }
 
-void ut_BubbleImageWidget::testVector()
+void ut_BubbleImageWidget::testDefaultAvatar()
 {
-    mImage->setImage(":/data/vector.svg");
-    mImage->update();
-    QTest::qWait(100);
+    mImage->hide();
+    mImage->setImage("");
+    mImage->show();
+    QTest::qWait(500);
     // there is now way to verify using public API
 }
 

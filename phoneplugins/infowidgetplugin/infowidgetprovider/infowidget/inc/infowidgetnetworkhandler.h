@@ -31,18 +31,32 @@ class InfoWidgetNetworkHandler : public QObject, public MNWMessageObserver
 public:
     InfoWidgetNetworkHandler(QObject *parent = NULL);
     ~InfoWidgetNetworkHandler();    
-    
+
+    QString serviceProviderName() const;
+    bool serviceProviderNameDisplayRequired() const; 
     QString homeZoneTextTag() const; 
     int homeZoneIndicatorType() const; 
-    
     QString mcnName() const; 
     int mcnIndicatorType() const; 
-
+    int networkRegistrationStatus() const;  
+    bool isOnline() const;
+    
     void logCurrentInfo(); 
 
 public: // From MNWMessageObserver
     void HandleNetworkMessage(const TNWMessages aMessage);
     void HandleNetworkError(const TNWOperation aOperation, TInt aErrorCode);
+
+public slots: 
+    void suspend(); 
+    void resume();
+    
+    void enableMcn(); 
+    void disableMcn(); 
+    
+protected:     
+    void writeMcnDisplayState(bool enabled);
+    bool readMcnDisplayState(); 
     
 signals: 
     void networkDataChanged();

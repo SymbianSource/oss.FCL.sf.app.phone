@@ -9,33 +9,33 @@ EXPORTS
 	?getStaticMetaObject@Tools@@SAABUQMetaObject@@XZ @ 8 NONAME ; struct QMetaObject const & Tools::getStaticMetaObject(void)
 	??1CpSettingsWrapper@@UAE@XZ @ 9 NONAME ; CpSettingsWrapper::~CpSettingsWrapper(void)
 	?qt_metacast@CpPhoneNotes@@UAEPAXPBD@Z @ 10 NONAME ; void * CpPhoneNotes::qt_metacast(char const *)
-	?tr@CpPhoneNotes@@SA?AVQString@@PBD0H@Z @ 11 NONAME ; class QString CpPhoneNotes::tr(char const *, char const *, int)
-	?instance@CpPhoneNotes@@SAPAV1@XZ @ 12 NONAME ; class CpPhoneNotes * CpPhoneNotes::instance(void)
-	?tr@CpSettingsWrapper@@SA?AVQString@@PBD0H@Z @ 13 NONAME ; class QString CpSettingsWrapper::tr(char const *, char const *, int)
-	??1CpPhoneNotes@@EAE@XZ @ 14 NONAME ; CpPhoneNotes::~CpPhoneNotes(void)
-	?formatPhoneNumber@CpPhoneNotes@@ABE?AVQString@@V2@@Z @ 15 NONAME ; class QString CpPhoneNotes::formatPhoneNumber(class QString) const
-	?showGlobalNote@CpPhoneNotes@@QAEXAAHABVQString@@W4MessageBoxType@HbMessageBox@@@Z @ 16 NONAME ; void CpPhoneNotes::showGlobalNote(int &, class QString const &, enum HbMessageBox::MessageBoxType)
-	?metaObject@Tools@@UBEPBUQMetaObject@@XZ @ 17 NONAME ; struct QMetaObject const * Tools::metaObject(void) const
-	?readSoftRejectText@CpSettingsWrapper@@QAEXAAVQString@@AA_N@Z @ 18 NONAME ; void CpSettingsWrapper::readSoftRejectText(class QString &, bool &)
-	?getStaticMetaObject@CpSettingsWrapper@@SAABUQMetaObject@@XZ @ 19 NONAME ; struct QMetaObject const & CpSettingsWrapper::getStaticMetaObject(void)
-	?metaObject@CpSettingsWrapper@@UBEPBUQMetaObject@@XZ @ 20 NONAME ; struct QMetaObject const * CpSettingsWrapper::metaObject(void) const
-	?videoSupported@Tools@@SA_NXZ @ 21 NONAME ; bool Tools::videoSupported(void)
-	?showCallDuration@CpSettingsWrapper@@QAE_NXZ @ 22 NONAME ; bool CpSettingsWrapper::showCallDuration(void)
-	?isPhoneOffline@CpSettingsWrapper@@QBE_NXZ @ 23 NONAME ; bool CpSettingsWrapper::isPhoneOffline(void) const
-	?errorCodeTextMapping@Tools@@SA_NHAAVQString@@@Z @ 24 NONAME ; bool Tools::errorCodeTextMapping(int, class QString &)
-	?convertEtelMobileServiceCode@CpPhoneNotes@@ABE?AW4BasicServiceGroups@CpTelephonyUtils@@H@Z @ 25 NONAME ; enum CpTelephonyUtils::BasicServiceGroups CpPhoneNotes::convertEtelMobileServiceCode(int) const
-	?trUtf8@CpPhoneNotes@@SA?AVQString@@PBD0H@Z @ 26 NONAME ; class QString CpPhoneNotes::trUtf8(char const *, char const *, int)
-	?readCenrepString@CpSettingsWrapper@@ABE?AVQString@@JK@Z @ 27 NONAME ; class QString CpSettingsWrapper::readCenrepString(long, unsigned long) const
-	?writeSoftRejectText@CpSettingsWrapper@@QAEHABVQString@@_N@Z @ 28 NONAME ; int CpSettingsWrapper::writeSoftRejectText(class QString const &, bool)
-	?showBasicServiceList@CpPhoneNotes@@QAEXABVQString@@ABV?$QList@E@@@Z @ 29 NONAME ; void CpPhoneNotes::showBasicServiceList(class QString const &, class QList<unsigned char> const &)
-	?setShowCallDuration@CpSettingsWrapper@@QAEH_N@Z @ 30 NONAME ; int CpSettingsWrapper::setShowCallDuration(bool)
-	?qt_metacall@CpPhoneNotes@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 31 NONAME ; int CpPhoneNotes::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?qt_metacall@Tools@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 32 NONAME ; int Tools::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?tr@CpPhoneNotes@@SA?AVQString@@PBD0@Z @ 33 NONAME ; class QString CpPhoneNotes::tr(char const *, char const *)
-	?getStaticMetaObject@CpPhoneNotes@@SAABUQMetaObject@@XZ @ 34 NONAME ; struct QMetaObject const & CpPhoneNotes::getStaticMetaObject(void)
-	?convertEtelMobileServiceCode@Tools@@SA?AW4BasicServiceGroups@CpTelephonyUtils@@H@Z @ 35 NONAME ; enum CpTelephonyUtils::BasicServiceGroups Tools::convertEtelMobileServiceCode(int)
-	?trUtf8@CpSettingsWrapper@@SA?AVQString@@PBD0@Z @ 36 NONAME ; class QString CpSettingsWrapper::trUtf8(char const *, char const *)
-	??_ECpSettingsWrapper@@UAE@I@Z @ 37 NONAME ; CpSettingsWrapper::~CpSettingsWrapper(unsigned int)
+	?passwordTextChanged@CpPhoneNotes@@AAEXXZ @ 11 NONAME ; void CpPhoneNotes::passwordTextChanged(void)
+	?tr@CpPhoneNotes@@SA?AVQString@@PBD0H@Z @ 12 NONAME ; class QString CpPhoneNotes::tr(char const *, char const *, int)
+	?instance@CpPhoneNotes@@SAPAV1@XZ @ 13 NONAME ; class CpPhoneNotes * CpPhoneNotes::instance(void)
+	?tr@CpSettingsWrapper@@SA?AVQString@@PBD0H@Z @ 14 NONAME ; class QString CpSettingsWrapper::tr(char const *, char const *, int)
+	??1CpPhoneNotes@@EAE@XZ @ 15 NONAME ; CpPhoneNotes::~CpPhoneNotes(void)
+	?formatPhoneNumber@CpPhoneNotes@@ABE?AVQString@@V2@@Z @ 16 NONAME ; class QString CpPhoneNotes::formatPhoneNumber(class QString) const
+	?showGlobalNote@CpPhoneNotes@@QAEXAAHABVQString@@W4MessageBoxType@HbMessageBox@@@Z @ 17 NONAME ; void CpPhoneNotes::showGlobalNote(int &, class QString const &, enum HbMessageBox::MessageBoxType)
+	?metaObject@Tools@@UBEPBUQMetaObject@@XZ @ 18 NONAME ; struct QMetaObject const * Tools::metaObject(void) const
+	?readSoftRejectText@CpSettingsWrapper@@QAEXAAVQString@@AA_N@Z @ 19 NONAME ; void CpSettingsWrapper::readSoftRejectText(class QString &, bool &)
+	?getStaticMetaObject@CpSettingsWrapper@@SAABUQMetaObject@@XZ @ 20 NONAME ; struct QMetaObject const & CpSettingsWrapper::getStaticMetaObject(void)
+	?showPasswordQueryDialog@CpPhoneNotes@@QAEXABVQString@@ABVQValidator@@HAAV2@AA_N@Z @ 21 NONAME ; void CpPhoneNotes::showPasswordQueryDialog(class QString const &, class QValidator const &, int, class QString &, bool &)
+	?metaObject@CpSettingsWrapper@@UBEPBUQMetaObject@@XZ @ 22 NONAME ; struct QMetaObject const * CpSettingsWrapper::metaObject(void) const
+	?videoSupported@Tools@@SA_NXZ @ 23 NONAME ; bool Tools::videoSupported(void)
+	?showCallDuration@CpSettingsWrapper@@QAE_NXZ @ 24 NONAME ; bool CpSettingsWrapper::showCallDuration(void)
+	?isPhoneOffline@CpSettingsWrapper@@QBE_NXZ @ 25 NONAME ; bool CpSettingsWrapper::isPhoneOffline(void) const
+	?errorCodeTextMapping@Tools@@SA_NHAAVQString@@@Z @ 26 NONAME ; bool Tools::errorCodeTextMapping(int, class QString &)
+	?trUtf8@CpPhoneNotes@@SA?AVQString@@PBD0H@Z @ 27 NONAME ; class QString CpPhoneNotes::trUtf8(char const *, char const *, int)
+	?readCenrepString@CpSettingsWrapper@@ABE?AVQString@@JK@Z @ 28 NONAME ; class QString CpSettingsWrapper::readCenrepString(long, unsigned long) const
+	?writeSoftRejectText@CpSettingsWrapper@@QAEHABVQString@@_N@Z @ 29 NONAME ; int CpSettingsWrapper::writeSoftRejectText(class QString const &, bool)
+	?showBasicServiceList@CpPhoneNotes@@QAEXABVQString@@ABV?$QList@E@@@Z @ 30 NONAME ; void CpPhoneNotes::showBasicServiceList(class QString const &, class QList<unsigned char> const &)
+	?setShowCallDuration@CpSettingsWrapper@@QAEH_N@Z @ 31 NONAME ; int CpSettingsWrapper::setShowCallDuration(bool)
+	?qt_metacall@CpPhoneNotes@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 32 NONAME ; int CpPhoneNotes::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?qt_metacall@Tools@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 33 NONAME ; int Tools::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?trUtf8@CpSettingsWrapper@@SA?AVQString@@PBD0@Z @ 34 NONAME ; class QString CpSettingsWrapper::trUtf8(char const *, char const *)
+	?tr@CpPhoneNotes@@SA?AVQString@@PBD0@Z @ 35 NONAME ; class QString CpPhoneNotes::tr(char const *, char const *)
+	??_ECpSettingsWrapper@@UAE@I@Z @ 36 NONAME ; CpSettingsWrapper::~CpSettingsWrapper(unsigned int)
+	?getStaticMetaObject@CpPhoneNotes@@SAABUQMetaObject@@XZ @ 37 NONAME ; struct QMetaObject const & CpPhoneNotes::getStaticMetaObject(void)
 	?progressNoteCanceled@CpPhoneNotes@@IAEXXZ @ 38 NONAME ; void CpPhoneNotes::progressNoteCanceled(void)
 	?trUtf8@CpSettingsWrapper@@SA?AVQString@@PBD0H@Z @ 39 NONAME ; class QString CpSettingsWrapper::trUtf8(char const *, char const *, int)
 	?staticMetaObject@CpPhoneNotes@@2UQMetaObject@@B @ 40 NONAME ; struct QMetaObject const CpPhoneNotes::staticMetaObject
@@ -58,8 +58,7 @@ EXPORTS
 	?isFeatureCallWaitingDistiquishNotProvisionedEnabled@CpSettingsWrapper@@QAE_NXZ @ 57 NONAME ; bool CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled(void)
 	?writeCenrepValue@CpSettingsWrapper@@ABEHJKABVQVariant@@@Z @ 58 NONAME ; int CpSettingsWrapper::writeCenrepValue(long, unsigned long, class QVariant const &) const
 	?staticMetaObject@Tools@@2UQMetaObject@@B @ 59 NONAME ; struct QMetaObject const Tools::staticMetaObject
-	?showBasicServiceCallDivertList@CpPhoneNotes@@QAEXABVQString@@ABV?$QList@PAVPSCallDivertingStatus@@@@AAHW4CallDivertType@CpTelephonyUtils@@AAW445@@Z @ 60 NONAME ; void CpPhoneNotes::showBasicServiceCallDivertList(class QString const &, class QList<class PSCallDivertingStatus *> const &, int &, enum CpTelephonyUtils::CallDivertType, enum CpTelephonyUtils::CallDivertType &)
-	?trUtf8@Tools@@SA?AVQString@@PBD0@Z @ 61 NONAME ; class QString Tools::trUtf8(char const *, char const *)
-	?staticMetaObject@CpSettingsWrapper@@2UQMetaObject@@B @ 62 NONAME ; struct QMetaObject const CpSettingsWrapper::staticMetaObject
-	??0CpSettingsWrapper@@QAE@PAVQObject@@@Z @ 63 NONAME ; CpSettingsWrapper::CpSettingsWrapper(class QObject *)
+	?trUtf8@Tools@@SA?AVQString@@PBD0@Z @ 60 NONAME ; class QString Tools::trUtf8(char const *, char const *)
+	?staticMetaObject@CpSettingsWrapper@@2UQMetaObject@@B @ 61 NONAME ; struct QMetaObject const CpSettingsWrapper::staticMetaObject
+	??0CpSettingsWrapper@@QAE@PAVQObject@@@Z @ 62 NONAME ; CpSettingsWrapper::CpSettingsWrapper(class QObject *)
 

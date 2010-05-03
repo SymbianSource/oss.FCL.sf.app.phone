@@ -47,6 +47,26 @@ InfoWidgetNetworkHandler::~InfoWidgetNetworkHandler(  )
 
 
 // -----------------------------------------------------------------------------
+// InfoWidgetNetworkHandler::serviceProviderName
+// -----------------------------------------------------------------------------
+//
+QString InfoWidgetNetworkHandler::serviceProviderName(  ) const
+    {
+    SMC_MOCK_METHOD0( QString )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetNetworkHandler::serviceProviderNameDisplayRequired
+// -----------------------------------------------------------------------------
+//
+bool InfoWidgetNetworkHandler::serviceProviderNameDisplayRequired(  ) const
+    {
+    SMC_MOCK_METHOD0( bool )
+    }
+
+
+// -----------------------------------------------------------------------------
 // InfoWidgetNetworkHandler::homeZoneTextTag
 // -----------------------------------------------------------------------------
 //
@@ -84,6 +104,25 @@ int InfoWidgetNetworkHandler::mcnIndicatorType(  ) const
     {
     SMC_MOCK_METHOD0( int )
     }
+    
+// -----------------------------------------------------------------------------
+// InfoWidgetNetworkHandler::networkRegistrationStatus
+// -----------------------------------------------------------------------------
+//
+int InfoWidgetNetworkHandler::networkRegistrationStatus(  ) const
+    {
+    SMC_MOCK_METHOD0( int )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetNetworkHandler::isOnline
+// -----------------------------------------------------------------------------
+//
+bool InfoWidgetNetworkHandler::isOnline(  ) const
+    {
+    SMC_MOCK_METHOD0( bool )
+    }
 
 
 // -----------------------------------------------------------------------------
@@ -118,3 +157,68 @@ void InfoWidgetNetworkHandler::HandleNetworkError(
     SMC_MOCK_METHOD2( void, const TNWOperation, aOperation, 
         TInt, aErrorCode )
     }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetNetworkHandler::suspend
+// -----------------------------------------------------------------------------
+//
+void InfoWidgetNetworkHandler::suspend(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetNetworkHandler::resume
+// -----------------------------------------------------------------------------
+//
+void InfoWidgetNetworkHandler::resume(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetNetworkHandler::enableMcn
+// -----------------------------------------------------------------------------
+//
+void InfoWidgetNetworkHandler::enableMcn(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetNetworkHandler::disableMcn
+// -----------------------------------------------------------------------------
+//
+void InfoWidgetNetworkHandler::disableMcn(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetNetworkHandler::writeMcnDisplayState
+// -----------------------------------------------------------------------------
+//
+void InfoWidgetNetworkHandler::writeMcnDisplayState( 
+        bool enabled )
+    {
+    SMC_MOCK_METHOD1( void, bool, enabled )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetNetworkHandler::readMcnDisplayState
+// -----------------------------------------------------------------------------
+//
+bool InfoWidgetNetworkHandler::readMcnDisplayState(  )
+    {
+    SMC_MOCK_METHOD0( bool )
+    }
+
+
+
+

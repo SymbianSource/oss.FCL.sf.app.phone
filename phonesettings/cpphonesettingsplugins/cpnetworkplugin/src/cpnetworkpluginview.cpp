@@ -60,4 +60,16 @@ CpNetworkPluginView::~CpNetworkPluginView()
     DPRINT << ": OUT";
 }
 
+/*!
+  CpNetworkPluginView::SearchAvailableNetworks
+ */
+void CpNetworkPluginView::SearchAvailableNetworks()
+{
+    DPRINT << ": IN";
+    
+    m_networkSettingsForm->SearchAvailableNetworks();
+    
+    DPRINT << ": OUT";
+}
+    
 // End of File. 

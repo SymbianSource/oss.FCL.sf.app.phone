@@ -105,4 +105,5 @@ EXPORTS
 	_ZThn28_NK13BubbleManager23selectionIdInConferenceEv @ 104 NONAME
 	_ZThn8_N13BubbleManagerD0Ev @ 105 NONAME
 	_ZThn8_N13BubbleManagerD1Ev @ 106 NONAME
+	_ZN13BubbleManager21releaseImageIfNotUsedERK7QString @ 107 NONAME
 

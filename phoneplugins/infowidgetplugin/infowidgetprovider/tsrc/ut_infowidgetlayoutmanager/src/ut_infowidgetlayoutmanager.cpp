@@ -17,15 +17,17 @@
 #include "ut_infowidgetlayoutmanager.h"
 
 #include <QGraphicsWidget>
-
+#include <hbmarqueeitem.h>
 #define private public
 #include "infowidgetlayoutmanager.h"
 #include "qtestmains60.h"
 
 
-const int KNumOfSettingsDisplayRoles = 15;
-const int KNumOfInfoDisplayRoles = 10;
+const int KNumOfSettingsDisplayRoles = 12;
+const int KNumOfInfoDisplayRoles = 8;
 const QString KInfoWidgetDocmlFile = ":/resource/infowidget.docml";
+const QString KMargueeItemClassName = HbMarqueeItem::staticMetaObject.className();
+
 
 /*!
   UT_InfoWidgetLayoutManager::UT_InfoWidgetLayoutManager
@@ -115,6 +117,15 @@ void UT_InfoWidgetLayoutManager::fillDisplayContainers()
 }
 
 /*!
+  UT_InfoWidgetLayoutManager::fillParams
+ */
+void UT_InfoWidgetLayoutManager::fillParams(const QString & fileName,
+        bool * ok){
+    Q_UNUSED(fileName)
+    *ok = true;
+}
+
+/*!
   UT_InfoWidgetLayoutManager::fillCurrentWidgetsContainer
  */
 void UT_InfoWidgetLayoutManager::fillCurrentWidgetsContainer()
@@ -164,19 +175,15 @@ void UT_InfoWidgetLayoutManager::t_currentWidgetRoles()
         QVERIFY(0 <= roles.indexOf(
             InfoWidgetLayoutManager::RoleContent));
         QVERIFY(0 <= roles.indexOf(
-            InfoWidgetLayoutManager::RoleHomeZoneLabel));
+            InfoWidgetLayoutManager::RoleSpnLabel));
         QVERIFY(0 <= roles.indexOf(
             InfoWidgetLayoutManager::RoleMcnMarqueeItem));
         QVERIFY(0 <= roles.indexOf(
-            InfoWidgetLayoutManager::RoleActiveLineLabel));
+            InfoWidgetLayoutManager::RoleSatMarqueeItem));
         QVERIFY(0 <= roles.indexOf(
-            InfoWidgetLayoutManager::RoleSatTextLabel));
-        QVERIFY(0 <= roles.indexOf(
-            InfoWidgetLayoutManager::RoleHomeZoneIcon));
+            InfoWidgetLayoutManager::RoleSpnIcon));
         QVERIFY(0 <= roles.indexOf(
             InfoWidgetLayoutManager::RoleMcnIcon));
-        QVERIFY(0 <= roles.indexOf(
-            InfoWidgetLayoutManager::RoleActiveLineIcon));
         QVERIFY(0 <= roles.indexOf(
             InfoWidgetLayoutManager::RoleSatTextIcon));
         QVERIFY(0 <= roles.indexOf(
@@ -213,13 +220,20 @@ void UT_InfoWidgetLayoutManager::t_setLayoutRows()
     QVERIFY(KLayoutRows == m_layoutManager->layoutRows());
 }
 
+/*!
+  UT_InfoWidgetLayoutManager::t_setLayoutRows
+ *//*
+void UT_InfoWidgetLayoutManager::t_rowHeight()
+{
+    QVERIFY(m_layoutManager->rowHeight()); 
+}*/
 
 /*!
   UT_InfoWidgetLayoutManager::t_layoutInfoDisplay
  */
 void UT_InfoWidgetLayoutManager::t_layoutInfoDisplay()
 {
-    m_layoutManager->layoutInfoDisplay();
+    QVERIFY(!m_layoutManager->layoutInfoDisplay());
 }
 
 
@@ -228,7 +242,7 @@ void UT_InfoWidgetLayoutManager::t_layoutInfoDisplay()
  */
 void UT_InfoWidgetLayoutManager::t_layoutSettingsDisplay()
 {
-    m_layoutManager->layoutSettingsDisplay();
+    QVERIFY(!m_layoutManager->layoutSettingsDisplay());
 }
 
 /*!
@@ -244,31 +258,26 @@ void UT_InfoWidgetLayoutManager::t_widgetRoles()
         QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleContent));
         QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleHomeZoneLabel));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleMcnLabel));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleActiveLineLabel));
         QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleSatTextLabel));
         QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleHomeZoneIcon));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleMcnIcon));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleActiveLineIcon));
         QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleSatTextIcon));
         QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleHomeZoneCheckBox));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleMcnCheckBox));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleActiveLineCheckBox));
         QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleSatTextCheckBox));
         QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleOkButton));
+        QVERIFY(0 <= settingDisplayRoles.indexOf(
+            InfoWidgetLayoutManager::RoleSpnLabel));
+        QVERIFY(0 <= settingDisplayRoles.indexOf(
+            InfoWidgetLayoutManager::RoleSpnIcon));
+        QVERIFY(0 <= settingDisplayRoles.indexOf(
+            InfoWidgetLayoutManager::RoleSpnCheckBox));
+
         QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleSettingsContainer));
     }
@@ -280,19 +289,15 @@ void UT_InfoWidgetLayoutManager::t_widgetRoles()
         QVERIFY(0 <= infoDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleContent));
         QVERIFY(0 <= infoDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleHomeZoneLabel));
+            InfoWidgetLayoutManager::RoleSpnLabel));
         QVERIFY(0 <= infoDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleMcnMarqueeItem));
         QVERIFY(0 <= infoDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleActiveLineLabel));
+            InfoWidgetLayoutManager::RoleSatMarqueeItem));
         QVERIFY(0 <= infoDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleSatTextLabel));
-        QVERIFY(0 <= infoDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleHomeZoneIcon));
+            InfoWidgetLayoutManager::RoleSpnIcon));
         QVERIFY(0 <= infoDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleMcnIcon));
-        QVERIFY(0 <= infoDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleActiveLineIcon));
         QVERIFY(0 <= infoDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleSatTextIcon));
         QVERIFY(0 <= infoDisplayRoles.indexOf(
@@ -300,14 +305,22 @@ void UT_InfoWidgetLayoutManager::t_widgetRoles()
     }
 }
 
-
 /*!
   UT_InfoWidgetLayoutManager::t_loadWidgets
  */
 void UT_InfoWidgetLayoutManager::t_loadWidgets()
 {
-    bool loadResult; 
-    //m_layoutManager->loadWidgets();
+    QObjectList list = QObjectList();
+    EXPECT(HbDocumentLoader::load)
+        .willOnce(invoke(this, &fillParams)).returns(list);
+    
+    const QList<InfoWidgetLayoutManager::LayoutItemRole> settingDisplayRoles =
+            m_layoutManager->widgetRoles(InfoWidgetLayoutManager::SettingsDisplay);
+    bool loadResult = m_layoutManager->loadWidgets(InfoWidgetLayoutManager::SettingsDisplay, 
+            settingDisplayRoles,
+            m_layoutManager->m_infoDisplayWidgets); 
+    
+    QVERIFY(!loadResult);
 }
 
 /*!
@@ -321,11 +334,16 @@ void UT_InfoWidgetLayoutManager::t_loadWidget()
     QList<InfoWidgetLayoutManager::LayoutItemRole> 
         infoDisplayWidgetRoles = m_layoutManager->widgetRoles(
                 InfoWidgetLayoutManager::InfoDisplay); 
+    
+    infoDisplayWidgetRoles.append(InfoWidgetLayoutManager::RoleUndefined); 
+    infoDisplayWidgetRoles.append(InfoWidgetLayoutManager::RoleContainer);
+    
 
     foreach (currentRole, infoDisplayWidgetRoles) {
         currentWidget = m_layoutManager->loadWidget(*m_documentLoader,
                 InfoWidgetLayoutManager::InfoDisplay,
                 currentRole);
+        QVERIFY(!currentWidget);
     }
     
     QList<InfoWidgetLayoutManager::LayoutItemRole> 
@@ -336,8 +354,14 @@ void UT_InfoWidgetLayoutManager::t_loadWidget()
         currentWidget = m_layoutManager->loadWidget(*m_documentLoader,
                 InfoWidgetLayoutManager::SettingsDisplay,
                 currentRole);
+        QVERIFY(!currentWidget);
     }
-
+    
+    currentWidget = m_layoutManager->loadWidget(*m_documentLoader,
+                (InfoWidgetLayoutManager::DisplayRole)2,
+                        InfoWidgetLayoutManager::RoleLastEnum );
+    
+    QVERIFY(!currentWidget);
 }
 
 /*!
@@ -347,9 +371,23 @@ void UT_InfoWidgetLayoutManager::t_getWidget()
 {
     fillCurrentWidgetsContainer();
     
-    m_layoutManager->getWidget(InfoWidgetLayoutManager::RoleUndefined);
-    m_layoutManager->getWidget(InfoWidgetLayoutManager::RoleContent);
-    m_layoutManager->getWidget(InfoWidgetLayoutManager::RoleLastEnum);
+    QVERIFY(!m_layoutManager->getWidget(InfoWidgetLayoutManager::RoleUndefined));
+    QVERIFY(m_layoutManager->getWidget(InfoWidgetLayoutManager::RoleContent));
+    QVERIFY(!m_layoutManager->getWidget(InfoWidgetLayoutManager::RoleLastEnum));
+}
+
+/*!
+  UT_InfoWidgetLayoutManager::t_removeWidget
+ */
+void UT_InfoWidgetLayoutManager::t_removeWidget()
+{
+    fillCurrentWidgetsContainer();
+        
+    m_layoutManager->removeWidget(InfoWidgetLayoutManager::RoleUndefined);
+    m_layoutManager->removeWidget(InfoWidgetLayoutManager::RoleContent);
+    m_layoutManager->removeWidget(InfoWidgetLayoutManager::RoleLastEnum);
+    
+    QVERIFY(verify());
 }
 
 
@@ -360,7 +398,7 @@ void UT_InfoWidgetLayoutManager::t_contentWidget()
 {
     fillCurrentWidgetsContainer();
     
-    m_layoutManager->contentWidget();
+    QVERIFY(m_layoutManager->contentWidget());
 }
 
 
@@ -374,6 +412,8 @@ void UT_InfoWidgetLayoutManager::t_hideWidget()
     m_layoutManager->hideWidget(InfoWidgetLayoutManager::RoleUndefined);
     m_layoutManager->hideWidget(InfoWidgetLayoutManager::RoleContent);
     m_layoutManager->hideWidget(InfoWidgetLayoutManager::RoleLastEnum);
+    
+    QVERIFY(verify());
 }
 
 
@@ -382,9 +422,9 @@ void UT_InfoWidgetLayoutManager::t_hideWidget()
  */
 void UT_InfoWidgetLayoutManager::t_hideAll()
 {
-    fillCurrentWidgetsContainer();
-    
     m_layoutManager->hideAll();
+    
+    QVERIFY(verify());
 }
 
 
@@ -393,14 +433,35 @@ void UT_InfoWidgetLayoutManager::t_hideAll()
  */
 void UT_InfoWidgetLayoutManager::t_showAll()
 {
-    fillCurrentWidgetsContainer();
-    
+    fillCurrentWidgetsContainer();//times 2 HbDocumentLoader::load
     m_layoutManager->showAll();
+    
+    QVERIFY(verify());
 }
 
+/*!
+  UT_InfoWidgetLayoutManager::t_reloadWidgets
+ */
+void UT_InfoWidgetLayoutManager::t_reloadWidgets()
+{
+    QVERIFY(!m_layoutManager->reloadWidgets(InfoWidgetLayoutManager::SettingsDisplay));
+    QVERIFY(!m_layoutManager->reloadWidgets((InfoWidgetLayoutManager::DisplayRole)101));
+}
+
+/*!
+  UT_InfoWidgetLayoutManager::t_createObject
+ */
 void UT_InfoWidgetLayoutManager::t_createObject()
 {
-    m_documentLoader->createObject(QString(), QString());
+    QObject *object = m_documentLoader->createObject(QString(), QString());
+    QVERIFY(!object);
+    object = m_documentLoader->createObject(KMargueeItemClassName, QString());
+    QVERIFY(object);
+    delete object;
+    
+    //For destructor coverage
+    delete m_layoutManager->m_documentLoader;
+    m_layoutManager->m_documentLoader = NULL;
 }
 
 QTEST_MAIN_S60(UT_InfoWidgetLayoutManager)

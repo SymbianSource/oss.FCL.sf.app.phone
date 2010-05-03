@@ -30,7 +30,8 @@ LIBS += -lhswidgetmodel \
     -lnetworkhandling \
     -lcbsclient \
     -lcbsmcnclient \
-    -lxqsettingsmanager
+    -lxqsettingsmanager \
+    -lsatclient
 }
    
 INCLUDEPATH += ./inc \

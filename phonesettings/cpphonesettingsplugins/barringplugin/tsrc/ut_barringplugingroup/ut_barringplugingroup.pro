@@ -71,3 +71,4 @@ SOURCES += ../../../tsrc/mocks/mock_cpphonenotes.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpplugincommon.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpitemdatahelper.cpp
 SOURCES += ../../../tsrc/mocks/mock_hbcheckbox.cpp
+SOURCES += ../../../tsrc/mocks/mock_qtranslator.cpp

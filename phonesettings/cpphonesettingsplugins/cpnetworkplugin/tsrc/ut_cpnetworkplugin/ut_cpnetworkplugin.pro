@@ -49,3 +49,4 @@ SOURCES += ../../src/cpnetworkplugin.cpp
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cpnetworkpluginview.cpp
+SOURCES += ../../../tsrc/mocks/mock_hbicon.cpp

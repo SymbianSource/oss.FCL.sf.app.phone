@@ -43,6 +43,7 @@ void BubbleHeader::reset()
     mCallImage.clear();
     mIsInConference = false;
     mExpandAction = 0;
+    mShowDefaultAvatar = false;
 }
 
 void BubbleHeader::setIsUsed( bool used )
@@ -198,6 +199,16 @@ void BubbleHeader::setCallImage( const QString& image )
 const QString& BubbleHeader::callImage() const
 {
     return mCallImage;
+}
+
+void BubbleHeader::setShowDefaultAvatar(bool show)
+{
+    mShowDefaultAvatar = show;
+}
+
+bool BubbleHeader::showDefaultAvatar() const
+{
+    return mShowDefaultAvatar;
 }
 
 void BubbleHeader::addAction ( HbAction* action )

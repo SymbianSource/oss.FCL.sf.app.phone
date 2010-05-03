@@ -75,6 +75,7 @@ BubbleTestView::BubbleTestView(HbMainWindow& window, QGraphicsItem *parent) :
 
 BubbleTestView::~BubbleTestView()
 {
+    toolBar()->clearActions();
     delete mBubbleTester;
 }
 
@@ -868,7 +869,7 @@ void BubbleTestView::createToolBarActions()
     connect( mUnmute, SIGNAL(triggered()), this, SLOT(setMuted()), Qt::QueuedConnection );
 
     // not connected to anywhere
-    mActivateLoudspeaker = new HbAction(HbIcon("qtg_mono_loudspeaker"), "", this);
+    mActivateLoudspeaker = new HbAction(HbIcon("qtg_mono_speaker"), "", this);
     mActivateHandset = new HbAction(HbIcon("qtg_mono_mobile"), "", this);
     mSendMessage = new HbAction(HbIcon("qtg_mono_send"), "", this);
     mSilence = new HbAction(HbIcon("qtg_mono_speaker_off"), "", this);

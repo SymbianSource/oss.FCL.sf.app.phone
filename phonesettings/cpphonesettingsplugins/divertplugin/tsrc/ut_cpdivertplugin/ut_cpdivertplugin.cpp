@@ -37,7 +37,7 @@
 #include "cpdivertplugingroup.h"
 
 
-
+Q_DECLARE_METATYPE(PsCallDivertingCondition)
 Q_EXTERN_C const char * qt_plugin_query_verification_data();
 Q_EXTERN_C ::QObject *  qt_plugin_instance();
 
@@ -48,6 +48,12 @@ public:
     ~CPsetContainer(){};
 };
 
+void fillNumber(QString& number)
+{
+    number = "1234567";
+}
+    
+
 /*!
   UT_CpDivertPlugin::UT_CpDivertPlugin
  */
@@ -55,6 +61,8 @@ UT_CpDivertPlugin::UT_CpDivertPlugin()
     : m_divertplugin(NULL)
 {
     const char * verificationData = qt_plugin_query_verification_data();
+	qRegisterMetaType<PsCallDivertingCondition>(
+        "PsCallDivertingCondition");
 }
 
 /*!
@@ -62,6 +70,8 @@ UT_CpDivertPlugin::UT_CpDivertPlugin()
  */
 UT_CpDivertPlugin::~UT_CpDivertPlugin()
 {
+    delete m_divertpluginGroup;
+    delete m_helper;
     delete m_divertplugin;
 }
 
@@ -95,15 +105,15 @@ void UT_CpDivertPlugin::init()
 void UT_CpDivertPlugin::cleanup()
 {
     reset();
+    delete m_divertpluginGroup;
+    m_divertpluginGroup = NULL;
+
+    delete m_helper;
+    m_helper = NULL;
     
     delete m_divertplugin;
     m_divertplugin = NULL;
-    
-    delete m_divertpluginGroup;
-    m_divertpluginGroup = NULL;
-    
-    delete m_helper;
-    m_helper = NULL;
+
 }
 
 /*!
@@ -125,7 +135,7 @@ void UT_CpDivertPlugin::t_createSettingFormItemData()
     
     expect("PSetWrapper::callDivertingWrapper").returns(&tmpDivWrapper); 
     
-    CpDivertPlugin* p = (CpDivertPlugin*)qt_plugin_instance();
+    CpDivertPlugin* p = (CpDivertPlugin*)qt_plugin_instance(); // Get static
     QList<CpSettingFormItemData*> list;
     list.append(p->createSettingFormItemData(itemDataHelper));
     qDeleteAll(list);
@@ -140,35 +150,37 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     //except user cancels
     appendAction("All voice calls:", selectAction, "Cancel");
     expect("PSetCallDivertingWrapper::getDefaultNumbers");
-    m_divertpluginGroup->m_DataItemAllVoiceCalls->setContentWidgetData("number", "");
-    m_divertpluginGroup->m_DataItemAllVoiceCalls->setContentWidgetData(
+    m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData("number", "");
+    m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData(
             "state", CpDivertSelectionCustomitem::Disabled);
-    m_divertpluginGroup->m_DataItemAllVoiceCalls->thisItemClicked();
+    m_divertpluginGroup->m_DataItemVoiceAllCalls->thisItemClicked();
     QVERIFY(verify());
     
-    //except user selects vmb and inserts number
+    //except user selects vmb
     appendAction("All voice calls:", selectItem, "txt_phone_setlabel_voice_mbx");
-    appendAction("Voice mail box number:", insertText, "12345");
-    appendAction("Voice mail box number:", selectAction, "OK");
     expect("PSetCallDivertingWrapper::getDefaultNumbers");
+    expect("PSetCallDivertingWrapper::getVoiceMailBoxNumber").willOnce(invoke(fillNumber));
     expect("SsSettingsWrapper::get");
     expect("PSetCallDivertingWrapper::setCallDiverting");
     expect("CpPhoneNotes::noteShowing").returns(false);
     expect("CpPhoneNotes::showGlobalProgressNote");
-    m_divertpluginGroup->m_DataItemAllVoiceCalls->thisItemClicked();
+    m_divertpluginGroup->m_DataItemVoiceAllCalls->thisItemClicked();
+    QVERIFY(verify()); // Verify item click
     PSCallDivertingCommand command;
     command.iNumber = "12345";
     command.iStatus = DivertingStatusActive;
-    command.iCondition = m_divertpluginGroup->m_DataItemAllVoiceCalls->condition();
+    command.iCondition = qvariant_cast<PsCallDivertingCondition>(
+            m_divertpluginGroup->m_DataItemVoiceAllCalls->property("condition"));
+    command.iServiceGroup = ServiceGroupVoice;
     expect("CpPhoneNotes::showGlobalNote");
     m_divertpluginGroup->handleDivertingChanged(command, false);
     expect("CpPhoneNotes::cancelNote");
     m_divertpluginGroup->divertRequestProcessed();
-    QVERIFY(verify());
+    QVERIFY(verify()); // Verify result processing
 
     //except user selects one of the default numbers
-    m_divertpluginGroup->m_DataItemAllVoiceCalls->setContentWidgetData("number","");
-    m_divertpluginGroup->m_DataItemAllVoiceCalls->setContentWidgetData(
+    m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData("number","");
+    m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData(
             "state", CpDivertSelectionCustomitem::Disabled);
     appendAction("All voice calls:", selectItem, "0401234567");
     expect("PSetCallDivertingWrapper::getDefaultNumbers");
@@ -176,10 +188,12 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     expect("PSetCallDivertingWrapper::setCallDiverting");
     expect("CpPhoneNotes::noteShowing").returns(false);
     expect("CpPhoneNotes::showGlobalProgressNote");
-    m_divertpluginGroup->m_DataItemAllVoiceCalls->thisItemClicked();
+    m_divertpluginGroup->m_DataItemVoiceAllCalls->thisItemClicked();
     command.iNumber = "0401234567";
     command.iStatus = DivertingStatusActive;
-    command.iCondition = m_divertpluginGroup->m_DataItemAllVoiceCalls->condition();
+    command.iCondition = qvariant_cast<PsCallDivertingCondition>(
+            m_divertpluginGroup->m_DataItemVoiceAllCalls->property("condition"));
+    command.iServiceGroup = ServiceGroupVoice;
     expect("CpPhoneNotes::cancelNote");
     expect("CpPhoneNotes::showGlobalNote");
     expect("PSetCallDivertingWrapper::setNewDefaultNumber").with(QString("0401234567"));
@@ -194,10 +208,12 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     expect("PSetCallDivertingWrapper::setCallDiverting"); // Disable divert
     expect("CpPhoneNotes::noteShowing").returns(false);
     expect("CpPhoneNotes::showGlobalProgressNote");
-    m_divertpluginGroup->m_DataItemAllVoiceCalls->thisItemClicked();
+    m_divertpluginGroup->m_DataItemVoiceAllCalls->thisItemClicked();
     command.iNumber = "";
     command.iStatus = DivertingStatusInactive;
-    command.iCondition = m_divertpluginGroup->m_DataItemAllVoiceCalls->condition();
+    command.iCondition = qvariant_cast<PsCallDivertingCondition>(
+            m_divertpluginGroup->m_DataItemVoiceAllCalls->property("condition"));
+    command.iServiceGroup = ServiceGroupVoice;
     expect("CpPhoneNotes::showGlobalNote");
     m_divertpluginGroup->handleDivertingChanged(command, false);
     expect("CpPhoneNotes::cancelNote");
@@ -209,7 +225,7 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     appendAction("Number:", insertText, "12345");
     appendAction("Number:", selectAction, "Cancel");
     expect("PSetCallDivertingWrapper::getDefaultNumbers");
-    m_divertpluginGroup->m_DataItemAllVoiceCalls->thisItemClicked();
+    m_divertpluginGroup->m_DataItemVoiceAllCalls->thisItemClicked();
     QVERIFY(verify());
 }
 
@@ -225,32 +241,37 @@ void UT_CpDivertPlugin::t_itemShown()
     expect("CpPhoneNotes::noteShowing").returns(false);
     expect("CpPhoneNotes::showGlobalProgressNote");
     m_divertpluginGroup->itemShown(
-            model->indexFromItem(m_divertpluginGroup->m_DataItemAllVoiceCalls));
+            model->indexFromItem(m_divertpluginGroup->m_DataItemVoiceAllCalls));
     m_divertpluginGroup->itemShown(
-            model->indexFromItem(m_divertpluginGroup->m_DataItemIfBusy));
+            model->indexFromItem(m_divertpluginGroup->m_DataItemVoiceIfBusy));
     m_divertpluginGroup->itemShown(
-            model->indexFromItem(m_divertpluginGroup->m_DataItemIfNotAnswered));
+            model->indexFromItem(m_divertpluginGroup->m_DataItemVoiceIfNotAnswered));
     m_divertpluginGroup->itemShown(
-            model->indexFromItem(m_divertpluginGroup->m_DataItemIfOutOfReach));
+            model->indexFromItem(m_divertpluginGroup->m_DataItemVoiceIfOutOfReach));
     m_divertpluginGroup->itemShown(
-            model->indexFromItem(m_divertpluginGroup->m_DataItemIfNotAvailable));
+            model->indexFromItem(m_divertpluginGroup->m_DataItemVoiceIfNotAvailable));
     
     QList<PSCallDivertingStatus*> list;
     PSCallDivertingStatus divertStatus;
     list.append(&divertStatus);
-    divertStatus.iCondition = m_divertpluginGroup->m_DataItemAllVoiceCalls->condition();
+    divertStatus.iCondition = qvariant_cast<PsCallDivertingCondition>(
+            m_divertpluginGroup->m_DataItemVoiceAllCalls->property("condition"));
     m_divertpluginGroup->handleDivertingStatus(list, true);
     m_divertpluginGroup->divertRequestProcessed();
-    divertStatus.iCondition = m_divertpluginGroup->m_DataItemIfBusy->condition();
+    divertStatus.iCondition = qvariant_cast<PsCallDivertingCondition>(
+            m_divertpluginGroup->m_DataItemVoiceIfBusy->property("condition"));
     m_divertpluginGroup->handleDivertingStatus(list, true);
     m_divertpluginGroup->divertRequestProcessed();
-    divertStatus.iCondition = m_divertpluginGroup->m_DataItemIfNotAnswered->condition();
+    divertStatus.iCondition = qvariant_cast<PsCallDivertingCondition>(
+            m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->property("condition"));
     m_divertpluginGroup->handleDivertingStatus(list, true);
     m_divertpluginGroup->divertRequestProcessed();
-    divertStatus.iCondition = m_divertpluginGroup->m_DataItemIfOutOfReach->condition();
+    divertStatus.iCondition = qvariant_cast<PsCallDivertingCondition>(
+            m_divertpluginGroup->m_DataItemVoiceIfOutOfReach->property("condition"));
     m_divertpluginGroup->handleDivertingStatus(list, true);
     m_divertpluginGroup->divertRequestProcessed();
-    divertStatus.iCondition = m_divertpluginGroup->m_DataItemIfNotAvailable->condition();
+    divertStatus.iCondition = qvariant_cast<PsCallDivertingCondition>(
+            m_divertpluginGroup->m_DataItemVoiceIfNotAvailable->property("condition"));
     m_divertpluginGroup->handleDivertingStatus(list, true);
     m_divertpluginGroup->divertRequestProcessed();
     
@@ -258,15 +279,15 @@ void UT_CpDivertPlugin::t_itemShown()
 
     // Test, Do not check status again
     m_divertpluginGroup->itemShown(
-            model->indexFromItem(m_divertpluginGroup->m_DataItemAllVoiceCalls));
+            model->indexFromItem(m_divertpluginGroup->m_DataItemVoiceAllCalls));
     m_divertpluginGroup->itemShown(
-            model->indexFromItem(m_divertpluginGroup->m_DataItemIfBusy));
+            model->indexFromItem(m_divertpluginGroup->m_DataItemVoiceIfBusy));
     m_divertpluginGroup->itemShown(
-            model->indexFromItem(m_divertpluginGroup->m_DataItemIfNotAnswered));
+            model->indexFromItem(m_divertpluginGroup->m_DataItemVoiceIfNotAnswered));
     m_divertpluginGroup->itemShown(
-            model->indexFromItem(m_divertpluginGroup->m_DataItemIfOutOfReach));
+            model->indexFromItem(m_divertpluginGroup->m_DataItemVoiceIfOutOfReach));
     m_divertpluginGroup->itemShown(
-            model->indexFromItem(m_divertpluginGroup->m_DataItemIfNotAvailable));
+            model->indexFromItem(m_divertpluginGroup->m_DataItemVoiceIfNotAvailable));
     
 
     QVERIFY(verify());
@@ -280,10 +301,10 @@ void UT_CpDivertPlugin::t_popUpTimerQuery()
     appendAction("If not answered:", selectItem, "0401234567");
     appendAction("Time out", selectAction, "Cancel");
     expect("PSetCallDivertingWrapper::getDefaultNumbers");
-    m_divertpluginGroup->m_DataItemIfNotAnswered->setContentWidgetData("number", "");
-    m_divertpluginGroup->m_DataItemIfNotAnswered->setContentWidgetData(
+    m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->setContentWidgetData("number", "");
+    m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->setContentWidgetData(
             "state", CpDivertSelectionCustomitem::Disabled);
-    m_divertpluginGroup->m_DataItemIfNotAnswered->thisItemClicked();
+    m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->thisItemClicked();
     QVERIFY(verify());
     
     appendAction("If not answered:", selectItem, "Other number");
@@ -294,12 +315,14 @@ void UT_CpDivertPlugin::t_popUpTimerQuery()
     expect("PSetCallDivertingWrapper::getDefaultNumbers");    
     expect("SsSettingsWrapper::get");
     expect("PSetCallDivertingWrapper::setCallDiverting");
-    m_divertpluginGroup->m_DataItemIfNotAnswered->thisItemClicked();
+    m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->thisItemClicked();
     PSCallDivertingCommand command;
     command.iNumber = "12345";
     command.iNoReplyTimer = 15;
     command.iStatus = DivertingStatusActive;
-    command.iCondition = m_divertpluginGroup->m_DataItemIfNotAnswered->condition();
+    command.iCondition = qvariant_cast<PsCallDivertingCondition>(
+            m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->property("condition"));
+    command.iServiceGroup = ServiceGroupVoice;
     expect("CpPhoneNotes::showGlobalNote");
     m_divertpluginGroup->handleDivertingChanged(command, false);
     expect("CpPhoneNotes::cancelNote");
@@ -308,11 +331,13 @@ void UT_CpDivertPlugin::t_popUpTimerQuery()
     
     expect("SsSettingsWrapper::get");
     expect("PSetCallDivertingWrapper::setCallDiverting");
-    m_divertpluginGroup->m_DataItemIfNotAnswered->thisItemClicked();
+    m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->thisItemClicked();
     command.iNumber = "";
     command.iNoReplyTimer = 0;
     command.iStatus = DivertingStatusInactive;
-    command.iCondition = m_divertpluginGroup->m_DataItemIfNotAnswered->condition();
+    command.iCondition = qvariant_cast<PsCallDivertingCondition>(
+            m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->property("condition"));
+    command.iServiceGroup = ServiceGroupVoice;
     expect("CpPhoneNotes::showGlobalNote");
     m_divertpluginGroup->handleDivertingChanged(command, false);
     expect("CpPhoneNotes::cancelNote");
@@ -329,31 +354,42 @@ void UT_CpDivertPlugin::t_handleDivertingChanged()
     PSCallDivertingCommand c;
     
     c.iStatus = DivertingStatusActive;
+    c.iServiceGroup = ServiceGroupAllTeleservices;
     bool bRet = false;
     expect("PSetCallDivertingWrapper::setNewDefaultNumber");
     expect("Tools::voipSupported").returns(bRet);
     m_divertpluginGroup->handleDivertingChanged(c, true);
     
-    expect("PSetCallDivertingWrapper::setNewDefaultNumber");
+    QVERIFY(verify());
+    
     bRet = true;
-    c.iServiceGroup = ServiceGroupVoice;
+    c.iServiceGroup = ServiceGroupAllTeleservices;
+    c.iCondition = DivertConditionUnconditional;
+    expect("PSetCallDivertingWrapper::setNewDefaultNumber");
     expect("Tools::voipSupported").returns(bRet);
     m_divertpluginGroup->handleDivertingChanged(c, false);
     
+    QVERIFY(verify());
+    
     c.iStatus = DivertingStatusInactive;
+    c.iCondition = DivertConditionBusy;
     m_divertpluginGroup->handleDivertingChanged(c, true);
     m_divertpluginGroup->handleDivertingChanged(c, false);
     
     c.iStatus = DivertingStatusNotRegistered;
+    c.iCondition = DivertConditionNoReply;
     m_divertpluginGroup->handleDivertingChanged(c, true);
     
     c.iStatus = DivertingStatusNotProvisioned;
+    c.iCondition = DivertConditionNotReachable;
     m_divertpluginGroup->handleDivertingChanged(c, true);
     
     c.iStatus = DivertingStatusUnknown;
+    c.iCondition = DivertConditionAllCalls;
     m_divertpluginGroup->handleDivertingChanged(c, true);
     
     c.iStatus = (PsCallDivertingStatus)5;
+    c.iCondition = DivertConditionAllConditionalCases;
     m_divertpluginGroup->handleDivertingChanged(c, true);
     
     QVERIFY(verify());
@@ -415,6 +451,7 @@ void UT_CpDivertPlugin::appendAction(
     if (!actionQueue.count()) {
         startTimer(2000);
     }
+    qDebug() << "appendAction(" << dialog << actionType << action <<")";
     actionQueue.append(new dialogAction(dialog, actionType, action));
 }
 
@@ -423,6 +460,7 @@ void UT_CpDivertPlugin::appendAction(
  */
 void UT_CpDivertPlugin::executeAction( const dialogAction &action )
 {
+    qDebug() << "executeAction(" << action.dialog << action.type << action.item <<")";
     switch (action.type) {
     case selectAction:
         doAndVerifyAction(action.dialog, action.item);

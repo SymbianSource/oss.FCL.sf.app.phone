@@ -20,31 +20,27 @@
 #include "infowidgetlogging.h"
 
 
-/*!
+/*! 
  */
 InfoWidgetLineHandler::InfoWidgetLineHandler(QObject *parent):
     QObject(parent), 
     m_activeLine(1)
 {
-    DPRINT << ": IN";
-    DPRINT << ": OUT";
+    DPRINT; 
 }
 
 /*!
  */
 InfoWidgetLineHandler::~InfoWidgetLineHandler()
 {
-    DPRINT << ": IN";
-    DPRINT << ": OUT";
+    DPRINT; 
 }    
 
 /*!
  */
 void InfoWidgetLineHandler::logCurrentInfo()
 {
-    DPRINT << ": IN"; 
-    DPRINT << ": OUT";
-    
+    DPRINT; 
 } 
 
 /*!

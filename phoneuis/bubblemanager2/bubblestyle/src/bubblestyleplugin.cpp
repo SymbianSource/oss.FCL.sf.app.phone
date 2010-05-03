@@ -94,6 +94,10 @@ QGraphicsItem* BubbleStylePlugin::createPrimitive(
         item = icon;
         }
         break;
+    case BP_DefaultAvatar_icon: {
+        HbIconItem* icon = new HbIconItem(parent);
+        item = icon;
+        }
     default:
         break;
     } // switch
@@ -178,6 +182,13 @@ void BubbleStylePlugin::updatePrimitive(
         }
         break;
 
+    case BP_DefaultAvatar_icon: {
+        HbIconItem* icon = static_cast<HbIconItem*>(item);
+        icon->setIconName("qtg_large_avatar");
+        icon->setAspectRatioMode(Qt::KeepAspectRatioByExpanding);
+        icon->setAlignment(Qt::AlignCenter);
+        }
+
     default:
         break;
     } // switch
@@ -255,11 +266,11 @@ void BubbleStylePlugin::setCallStatusIcons(BubbleAnimIconItem* anim, const Bubbl
     case BubbleManagerIF::Alerting:
     case BubbleManagerIF::Waiting:
         if ( opt->mCallFlags & BubbleManagerIF::VoIPCall ) {
-            anim->appendIcon("qtg_large_voip_received_call");
-            anim->appendIcon("qtg_large_voip_dialled_call");
+            anim->appendIcon("qtg_large_voip_call_active");
+            anim->appendIcon("qtg_large_voip_call_waiting");
         } else if ( opt->mCallFlags & BubbleManagerIF::Video ) {
-            anim->appendIcon("qtg_large_video_received_call");
-            anim->appendIcon("qtg_large_video_dialled_call");
+            anim->appendIcon("qtg_large_video_call_active");
+            anim->appendIcon("qtg_large_video_call_waiting");
         } else {
             anim->appendIcon("qtg_large_active_call");
             anim->appendIcon("qtg_large_waiting_call");
@@ -268,18 +279,18 @@ void BubbleStylePlugin::setCallStatusIcons(BubbleAnimIconItem* anim, const Bubbl
     case BubbleManagerIF::Outgoing:
     case BubbleManagerIF::Active:
         if ( opt->mCallFlags & BubbleManagerIF::VoIPCall ) {
-            anim->appendIcon("qtg_large_voip_received_call");
+            anim->appendIcon("qtg_large_voip_call_active");
         } else if ( opt->mCallFlags & BubbleManagerIF::Video ) {
-            anim->appendIcon("qtg_large_video_received_call");
+            anim->appendIcon("qtg_large_video_call_active");
         } else {
             anim->appendIcon("qtg_large_active_call");
         }            
         break;
     case BubbleManagerIF::OnHold:
         if ( opt->mCallFlags & BubbleManagerIF::VoIPCall ) {
-            anim->appendIcon("qtg_large_voip_dialled_call");
+            anim->appendIcon("qtg_large_voip_call_waiting");
         } else if ( opt->mCallFlags & BubbleManagerIF::Video ) {
-            anim->appendIcon("qtg_large_video_dialled_call");
+            anim->appendIcon("qtg_large_video_call_waiting");
         } else {
             anim->appendIcon("qtg_large_waiting_call");
         }                      
@@ -287,9 +298,9 @@ void BubbleStylePlugin::setCallStatusIcons(BubbleAnimIconItem* anim, const Bubbl
     case BubbleManagerIF::Disconnected:
     case BubbleManagerIF::AlertToDisconnected:
         if ( opt->mCallFlags & BubbleManagerIF::VoIPCall ) {
-            anim->appendIcon("qtg_large_voip_missed_call");
+            anim->appendIcon("qtg_large_end_call");
         } else if ( opt->mCallFlags & BubbleManagerIF::Video ) {
-            anim->appendIcon("qtg_large_video_missed_call");
+            anim->appendIcon("qtg_large_end_call");
         } else {
             anim->appendIcon("qtg_large_end_call");
         }           

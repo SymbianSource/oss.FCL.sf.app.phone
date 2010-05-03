@@ -45,7 +45,10 @@ symbian {
     LIBS += -lxqserviceutil
     LIBS += -lxqplugins
     LIBS += -lserviceprovidersettings
-
+    LIBS += -lakncapserverclient
+    LIBS += -lxqsettingsmanager
+    LIBS += -llogsengine
+    
     TARGET.CAPABILITY = ALL -TCB
     DEFINES += FT_SYMBIAN_INTEGRATION
     DEFINES += BUILD_PHONEUIQTVIEWADAPTER
@@ -66,6 +69,8 @@ HEADERS += ../../inc/phonecommandextensionwrapper.h
 SOURCES += ../../src/phonecommandextensionwrapper.cpp
 HEADERS += ../../inc/phonemessagecontroller.h
 SOURCES += ../../src/phonemessagecontroller.cpp
+HEADERS += ../../inc/phoneindicatorcontroller.h
+SOURCES += ../../src/phoneindicatorcontroller.cpp
 SOURCES += phoneuiqtbuttonscontroller_stub.cpp
 HEADERS += phonebubblewrapper.h
 SOURCES += phonebubblewrapper_stub.cpp

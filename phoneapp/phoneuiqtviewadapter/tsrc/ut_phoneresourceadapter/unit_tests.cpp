@@ -112,7 +112,7 @@ void TestPhoneResourceAdapter::testConvert ()
     action = map [PhoneAction::ToolbarButton1];
     QCOMPARE (action->icon (), HbIcon("qtg_mono_send"));    
     action = map [PhoneAction::ToolbarButton2];
-    QCOMPARE (action->icon (), HbIcon("qtg_mono_mute"));
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_speaker_off"));
     QCOMPARE (action->command (), (int)EPhoneCallComingCmdSilent);    
     
     map = m_resourceAdapter->convert (R_PHONEUI_CALLHANDLING_INCOMINGCALL_REJECT_CBA);
@@ -129,7 +129,7 @@ void TestPhoneResourceAdapter::testConvert ()
     action = map [PhoneAction::ToolbarButton1];
     QCOMPARE (action->icon (), HbIcon("qtg_mono_send"));    
     action = map [PhoneAction::ToolbarButton2];
-    QCOMPARE (action->icon (), HbIcon("qtg_mono_mute"));
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_speaker_off"));
     //Command is disabled
     //QCOMPARE (action->command (), (int)EPhoneCallComingCmdReject); 
 
@@ -214,7 +214,7 @@ void TestPhoneResourceAdapter::testConvert ()
     action = map [PhoneAction::ToolbarButton1];
     QCOMPARE (action->icon (), HbIcon("qtg_mono_dialer"));
     action = map [PhoneAction::ToolbarButton2];
-    QCOMPARE (action->icon (), HbIcon("qtg_mono_loudspeaker"));
+    QCOMPARE (action->icon (), HbIcon("qtg_mono_speaker"));
     QCOMPARE (action->command (), (int)EPhoneInCallCmdActivateIhf);        
     
     map = m_resourceAdapter->convert (R_PHONEUI_CONFERENCE_CALL);
@@ -277,8 +277,29 @@ void TestPhoneResourceAdapter::testConvertToString ()
     QString testString11 = m_resourceAdapter->convertToString(R_PHONE_INCALL_INFO_NO_NETWORK_SUPPORT); 
     QVERIFY( false == testString11.isEmpty() );
     
-    QString testString12 = m_resourceAdapter->convertToString(0); 
-    QCOMPARE( testString12, QString ("") );
+    QString testString12 = m_resourceAdapter->convertToString(R_PHONE_ERROR_EMERGENCY_CALLS_ONLY); 
+    QVERIFY( false == testString12.isEmpty() );
+    
+    QString testString13 = m_resourceAdapter->convertToString(R_NOTETEXT_NUMBER_NOT_IN_USE); 
+    QVERIFY( false == testString13.isEmpty() );
+    
+    QString testString14 = m_resourceAdapter->convertToString(R_NOTETEXT_NETWORK_BUSY); 
+    QVERIFY( false == testString14.isEmpty() );
+    
+    QString testString15 = m_resourceAdapter->convertToString(R_NOTETEXT_ERROR_IN_CONNECTION); 
+    QVERIFY( false == testString15.isEmpty() );
+    
+    QString testString16 = m_resourceAdapter->convertToString(R_PHONEUI_ERROR_EMERGENCY_ATTEMPT_FAILED); 
+    QVERIFY( false == testString16.isEmpty() );   
+    
+    QString testString17 = m_resourceAdapter->convertToString(R_PHONE_SS_NOTIFICATION_INCAL_TRANSFERRED_TEXT); 
+    QVERIFY( false == testString17.isEmpty() );    
+ 
+    QString testString18 = m_resourceAdapter->convertToString(R_PHONE_ERROR_NO_SERVICE); 
+    QVERIFY( false == testString18.isEmpty() ); 
+    
+    QString testString99 = m_resourceAdapter->convertToString(0); 
+    QCOMPARE( testString99, QString ("") );
 }
 
 void TestPhoneResourceAdapter::testConvertToString2 ()
@@ -309,7 +330,7 @@ void TestPhoneResourceAdapter::testIncallToolbar (int id)
         QCOMPARE (action->icon (), HbIcon("qtg_mono_mic_unmute"));
         QCOMPARE (action->command (), (int)EPhoneInCallCmdUnmute);    
         action = map [PhoneAction::ToolbarButton3];
-        QCOMPARE (action->icon (), HbIcon("qtg_mono_loudspeaker"));
+        QCOMPARE (action->icon (), HbIcon("qtg_mono_speaker"));
         QCOMPARE (action->command (), (int)EPhoneInCallCmdActivateIhf);        
         break;
     default:    
@@ -319,7 +340,7 @@ void TestPhoneResourceAdapter::testIncallToolbar (int id)
         QCOMPARE (action->icon (), HbIcon("qtg_mono_mic_mute"));
         QCOMPARE (action->command (), (int)EPhoneInCallCmdMute);    
         action = map [PhoneAction::ToolbarButton3];
-        QCOMPARE (action->icon (), HbIcon("qtg_mono_loudspeaker"));
+        QCOMPARE (action->icon (), HbIcon("qtg_mono_speaker"));
         QCOMPARE (action->command (), (int)EPhoneInCallCmdActivateIhf);
         break;
     }

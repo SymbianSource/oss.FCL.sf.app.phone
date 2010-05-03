@@ -60,9 +60,7 @@ CPEExternalDataHandler::~CPEExternalDataHandler()
     delete iTelephonyVariationRepository;
     delete iTelephonySettingsRepository;
     delete iProfileSettings;
-    delete iNetworkRegistrationStatus;
-    delete iLoudspeakerVolumeSetting;
-    delete iEarVolumeSetting;
+    delete iNetworkRegistrationStatus;   
     delete iCallDurationDisplay;
     delete iAudioOutputPreferenceMonitor;
     delete iAccessorySettingsRepository;
@@ -81,9 +79,7 @@ void CPEExternalDataHandler::ConstructL(
     TEFLOGSTRING( KTAOBJECT, "PE CPEExternalDataHandler::BaseConstructL" );
 
     // Instantiate monitor objects
-    iAudioOutputPreferenceMonitor = CPEAudioOutputPreferenceMonitor::NewL( aModel );
-    iEarVolumeSetting = CPEIncallEarVolumeSettingMonitor::NewL( aModel );
-    iLoudspeakerVolumeSetting = CPEIncallLoudspeakerVolumeSettingMonitor::NewL( aModel );
+    iAudioOutputPreferenceMonitor = CPEAudioOutputPreferenceMonitor::NewL( aModel );    
     iCallDurationDisplay = CPECallDurationDisplaySettingMonitor::NewL(); 
     iProfileSettings = CPEProfileSettingMonitor::NewL( aModel );
     
@@ -97,6 +93,7 @@ void CPEExternalDataHandler::ConstructL(
     //iTelephonySettingsRepository = CRepository::NewL( KCRUidTelephonySettings );
     iTelephonyVariationRepository = CRepository::NewL( KCRUidTelVariation );
     //iCoreApplicationRepository = CRepository::NewL( KCRUidCoreApplicationUIs ); 
+   
     TEFLOGSTRING( KTAOBJECT, "PE CPEExternalDataHandler::BaseConstructL 2" );
     }
 
@@ -123,20 +120,10 @@ TInt CPEExternalDataHandler::Get(
         {
         errorCode = iAudioOutputPreferenceMonitor->Get( aValue );
         TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPEAudioOutputPreference, error code: %d", errorCode );
-        }
-    else if ( EPEIncallEarVolumeSetting == aSetting )
-        {
-        errorCode = iEarVolumeSetting->Get( aValue );
-        TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPEIncallEarVolumeSetting, error code: %d", errorCode );
-        }
-    else if ( EPEIncallLoudspeakerVolumeSetting == aSetting )
-        {
-        errorCode = iLoudspeakerVolumeSetting->Get( aValue );
-        TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPEIncallLoudspeakerVolumeSetting, error code: %d", errorCode );
-        }
+        }    
     else if ( EPECallDurationDisplaySetting == aSetting )
         {
-        errorCode = iCallDurationDisplay->GetValue( aValue );
+        errorCode = iCallDurationDisplay->Get( aValue );
         TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPECallDurationDisplaySetting, error code: %d", errorCode );
         }
     else
@@ -196,16 +183,6 @@ TInt CPEExternalDataHandler::Set(
 
     switch ( aSetting )
         {
-        case EPEIncallEarVolumeSetting:
-            {
-            errorCode = iEarVolumeSetting->Set( aValue );
-            break;
-            }
-        case EPEIncallLoudspeakerVolumeSetting:
-            {
-            errorCode = iLoudspeakerVolumeSetting->Set( aValue );
-            break;
-            }
         case EPEEmergencyCallInfo:
             {
             errorCode = RProperty::Set( KPSUidCtsyEmergencyCallInfo, 

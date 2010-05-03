@@ -106,23 +106,29 @@ private:
     /**
      Creates group items.
      */
-    void createVoiceCallItems();
+    void createVoiceCallItems(CpSettingFormItemData *group);
 
     /**
      Creates group items.
      */
-    void createVideoCallItems();
+    void createVideoCallItems(CpSettingFormItemData *parent);
     
     /**
-     Creates group items.
+     Creates single item.
      */
-    void createVoIPCallItems();
+    CpDivertItemData *createDivertItem(
+            PsCallDivertingCondition condition,
+            PsServiceGroup serviceGroup,
+            const QString &label,
+            const QString &queryLabel,
+            bool needTimeoutInfo,
+            CpSettingFormItemData *parent = 0);
     
     /**
      Show to user divert number query list.
      */
     bool popUpVoiceNumberListQuery(
-            const QString& heading, QString& result);
+            const QString& heading, QString& result, PsServiceGroup serviceGroup);
     
     /**
      Show to user number query.
@@ -144,12 +150,13 @@ private:
     /**
      Desides which bsc parameters to use.
      */
-    int bscParam();
+    int bscParam(PsServiceGroup serviceGroup);
     
     /**
      Adds divert data item for wanted parent.
      */
-    void addDivertDataItem(CpDivertItemData* item, CpSettingFormItemData *parent);
+    void addDivertDataItem(
+            CpDivertItemData* item, CpSettingFormItemData *parent);
 
     /**
      Process next divert request.
@@ -167,6 +174,7 @@ private:
      Changes divertItemData data.
      */
     void changeItemData(
+            PsServiceGroup serviceGroup,
             PsCallDivertingCondition condition, 
             PsCallDivertingStatus status,
             const QString& number, 
@@ -175,8 +183,14 @@ private:
     /**
      Reverts divertItemData data to the last known valid values.
      */
-    void revertItemData(PsCallDivertingCondition condition);
+    void revertItemData(
+            PsServiceGroup serviceGroup, PsCallDivertingCondition condition);
 
+    /**
+     Helper function which fetches model item according service and condition.
+     */
+    CpSettingFormItemData* item(
+            PsService service, PsCallDivertingCondition condition);
 private:
     
     /**
@@ -200,7 +214,9 @@ private:
      Synchronizes content and status of divert options dependent from the 
      status of some other divert.
      */
-    void updateDependentDivertOptions();
+    void updateDependentDivertOptions(bool fetchFromNetwork = false);
+    void activateDependentDivertOption(CpDivertItemData* item, bool fetchFromNetwork);
+    void deActivateDependentDivertOption(CpDivertItemData* item) const;
     
     /**
      Synchronizes content and status of not available divert option based on
@@ -218,12 +234,18 @@ private:   // data
     PSetCallDivertingWrapper* m_callDivertingWrapper;
 
     // Not owned objects
-    CpSettingFormItemData *m_csVoiceCallPage;
-    CpDivertItemData *m_DataItemAllVoiceCalls;
-    CpDivertItemData *m_DataItemIfBusy;
-    CpDivertItemData *m_DataItemIfNotAnswered;
-    CpDivertItemData *m_DataItemIfOutOfReach;
-    CpDivertItemData *m_DataItemIfNotAvailable;
+    CpDivertItemData *m_DataItemVoiceAllCalls;
+    CpDivertItemData *m_DataItemVoiceIfBusy;
+    CpDivertItemData *m_DataItemVoiceIfNotAnswered;
+    CpDivertItemData *m_DataItemVoiceIfOutOfReach;
+    CpDivertItemData *m_DataItemVoiceIfNotAvailable;
+    
+    CpDivertItemData *m_DataItemVideoAllCalls;
+    CpDivertItemData *m_DataItemVideoIfBusy;
+    CpDivertItemData *m_DataItemVideoIfNotAnswered;
+    CpDivertItemData *m_DataItemVideoIfOutOfReach;
+    CpDivertItemData *m_DataItemVideoIfNotAvailable;
+    
     int m_activeNoteId;
     int m_activeProgressNoteId;
 

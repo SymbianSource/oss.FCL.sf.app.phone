@@ -367,11 +367,6 @@ void CPEContactMatch::CopyContactFieldsDataL(
 
     iDataStore.SetRemoteTextToSpeechText( aMatch.TextToSpeechTextL(), aCallId );
 
-    if ( aMatch.Number().Length() > 0 )
-        {
-        iDataStore.SetRemotePhoneNumber( aMatch.Number(), aCallId );    
-        }   
-
     TInt phcntfinderNumberType = aMatch.NumberType();
             
     switch ( phcntfinderNumberType )

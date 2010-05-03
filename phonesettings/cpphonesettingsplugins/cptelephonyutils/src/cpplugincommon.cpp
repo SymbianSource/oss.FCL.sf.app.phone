@@ -57,121 +57,6 @@ bool Tools::videoSupported()
 }
 
 /*!
-  Tools::convertEtelMobileServiceCode
-*/
-BasicServiceGroups Tools::convertEtelMobileServiceCode(int serviceCode)
-{
-    DPRINT;
-
-    switch (serviceCode) {
-        case RMobilePhone::EAllServices:
-            return AllTeleAndBearer;
-        case RMobilePhone::EAllTele:
-            return AllTele;
-        case RMobilePhone::EVoiceService:
-        case RMobilePhone::ETelephony:
-            return Telephony;
-        case RMobilePhone::EAllDataTele:
-            return AllDataTele;
-        case RMobilePhone::EFaxService:
-            return Fax;
-        case RMobilePhone::EShortMessageService:
-            return Sms;
-        case RMobilePhone::EAllDataExSms:
-            return AllDataExSms;
-        case RMobilePhone::EAllTeleExcSms:
-            return AllTeleExcSms;
-        case RMobilePhone::EAllPlmnTele:
-            return AllPlmnTele;
-        case RMobilePhone::EPlmnTele1:
-            return PlmnTele1;
-        case RMobilePhone::EPlmnTele2:
-            return PlmnTele2;
-        case RMobilePhone::EPlmnTele3:
-            return PlmnTele3;
-        case RMobilePhone::EPlmnTele4:
-            return PlmnTele4;
-        case RMobilePhone::EPlmnTele5:
-            return PlmnTele5;
-        case RMobilePhone::EPlmnTele6:
-            return PlmnTele6;
-        case RMobilePhone::EPlmnTele7:
-            return PlmnTele7;
-        case RMobilePhone::EPlmnTele8:
-            return PlmnTele8;
-        case RMobilePhone::EPlmnTele9:
-            return PlmnTele9;
-        case RMobilePhone::EPlmnTeleA:
-            return PlmnTeleA;
-        case RMobilePhone::EPlmnTeleB:
-            return PlmnTeleB;
-        case RMobilePhone::EPlmnTeleC:
-            return PlmnTeleC;
-        case RMobilePhone::EPlmnTeleD:
-            return PlmnTeleD;
-        case RMobilePhone::EPlmnTeleE:
-            return PlmnTeleE;
-        case RMobilePhone::EPlmnTeleF:
-            return PlmnTeleF;
-        case RMobilePhone::EAllBearer:
-            return AllBearer;
-        case RMobilePhone::EAllAsync:
-            return AllAsync;
-        case RMobilePhone::EAllSync:
-            return AllSync;
-        case RMobilePhone::ECircuitDataService:
-        case RMobilePhone::ESyncData:
-            return SyncData;
-        case RMobilePhone::EPacketDataService:
-        case RMobilePhone::EAsyncData:
-            return AsyncData;
-        case RMobilePhone::EPacketData:
-            return PacketData;
-        case RMobilePhone::EPadAccess:
-            return PadAccess;
-        case RMobilePhone::EAllPlmnBearer:
-            return AllPlmnBearer;
-        case RMobilePhone::EPlmnBearerServ1:
-            return PlmnBearerServ1;
-        case RMobilePhone::EPlmnBearerServ2:
-            return PlmnBearerServ2;
-        case RMobilePhone::EPlmnBearerServ3:
-            return PlmnBearerServ3;
-        case RMobilePhone::EPlmnBearerServ4:
-            return PlmnBearerServ4;
-        case RMobilePhone::EPlmnBearerServ5:
-            return PlmnBearerServ5;
-        case RMobilePhone::EPlmnBearerServ6:
-            return PlmnBearerServ6;
-        case RMobilePhone::EPlmnBearerServ7:
-            return PlmnBearerServ7;
-        case RMobilePhone::EPlmnBearerServ8:
-            return PlmnBearerServ8;
-        case RMobilePhone::EPlmnBearerServ9:
-            return PlmnBearerServ9;
-        case RMobilePhone::EPlmnBearerServA:
-            return PlmnBearerServA;
-        case RMobilePhone::EPlmnBearerServB:
-            return PlmnBearerServB;
-        case RMobilePhone::EPlmnBearerServC:
-            return PlmnBearerServC;
-        case RMobilePhone::EPlmnBearerServD:
-            return PlmnBearerServD;
-        case RMobilePhone::EPlmnBearerServE:
-            return PlmnBearerServE;
-        case RMobilePhone::EPlmnBearerServF:
-            return PlmnBearerServF;
-        case RMobilePhone::EAuxVoiceService:
-        case RMobilePhone::EAltTele:
-            return AltTele;
-        case RMobilePhone::EServiceUnspecified:
-        default:
-            qDebug() << "CpPhoneNotes::convertEtelMobileServiceCode, DEFAULT";
-            return Unknown;
-    }
-}
-
-/*!
   Tools::errorCodeTextMapping.
  */
 bool Tools::errorCodeTextMapping(const int errorcode, QString &errorText)
@@ -182,7 +67,7 @@ bool Tools::errorCodeTextMapping(const int errorcode, QString &errorText)
 
     switch(errorcode){
         case KErrGsmSSSubscriptionViolation:
-            errorText = hbTrId("Barring operation not successful. Contact your service provider");
+            errorText = hbTrId("txt_phone_info_barring_operation_not_successful");
             break;
         case KErrGsmSSUnknownSubscriber:
         case KErrGsmSSAbsentSubscriber:
@@ -191,24 +76,24 @@ bool Tools::errorCodeTextMapping(const int errorcode, QString &errorText)
         case KErrGsmSSIllegalEquipment:
         case KErrGsmSSCallBarred:
         case KErrGsmSSDataMissing:
-            errorText = hbTrId("Not allowed");
+            errorText = hbTrId("txt_phone_info_not_allowed");
             break;
         case KErrGsmSSIncompatibility:
             errorText = hbTrId("Services in conflict");
             break;
         case KErrGsmSSSystemFailure:
-            errorText = hbTrId("Result unknown");
+            errorText = hbTrId("txt_phone_info_result_unknown");
             break;
         case KErrGsmSSUnexpectedDataValue:
         case KErrGsmSSResourcesUnavailable:
-            errorText = hbTrId("Request rejected");
+            errorText = hbTrId("txt_phone_info_request_rejected");
             break;
         case KErrGsmSSNegativePasswordCheck:
         case KErrGsmSSPasswordRegistrationFailure:
             errorText = hbTrId("Password error");
             break;
         case KErrGsmSSPasswordAttemptsViolation:
-            errorText = hbTrId("Password blocked");
+            errorText = hbTrId("txt_phone_info_barring_password_blocked");
             break;
         case KErrGsmSMSNoNetworkService:
         case KErrGsmNoService:
@@ -233,14 +118,14 @@ bool Tools::errorCodeTextMapping(const int errorcode, QString &errorText)
                     errorText = hbTrId("Operation not possible in Off-line mode");
                 }
             } else {
-                errorText = hbTrId("Not done");
+                errorText = hbTrId("txt_phone_info_request_not_completed");
             }
             break;
         case KErrGsmSSUnknownAlphabet:
-            errorText = hbTrId("Invalid phone number");
+            errorText = hbTrId("txt_phone_info_invalid_phone_number");
             break;
         default:
-            errorText = hbTrId("Not done");
+            errorText = hbTrId("txt_phone_info_request_not_completed");
             break;
     }
 

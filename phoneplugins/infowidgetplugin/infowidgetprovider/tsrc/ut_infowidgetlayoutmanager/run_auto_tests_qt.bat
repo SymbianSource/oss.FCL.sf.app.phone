@@ -54,12 +54,17 @@ set RUNTESTS=TRUE
 set INSTRUMENT=TRUE
 set REMOVEINSTRUMENT=TRUE
 set DOMODULESTESTS=TRUE
-set ABLD_CALL=abld build winscw udeb -keepgoing
+set ABLD_CALL= -2comp  sbs.bat -c winscw_udeb --keepgoing
 set PATH_TO_DLL=\epoc32\release\winscw\udeb
 set PATH_TO_COVERAGE_DATA=\coverage_data
+set PATH_TO_RESULT=\test_result
 
 if not exist %PATH_TO_COVERAGE_DATA% (
 mkdir %PATH_TO_COVERAGE_DATA%
+)
+
+if not exist %PATH_TO_RESULT% (
+mkdir %PATH_TO_RESULT%
 )
 
 if [%1] EQU [] ( goto default )
@@ -132,8 +137,7 @@ goto end
 pushd .
 call cd %1
 call qmake
-call bldmake bldfiles
-call abld clean winscw udeb
+call sbs -c winscw_udeb clean
 if [%INSTRUMENT%] EQU [TRUE] (
 call ctcwrap -n %PATH_TO_COVERAGE_DATA%\%1 -i d -C "EXCLUDE=*" -C "NO_EXCLUDE=%TESTED_SRC%" %ABLD_CALL%
 ) else (
@@ -153,6 +157,7 @@ goto end
 :RUNTESTS
 echo Running tests
 call %PATH_TO_DLL%\ut_infowidgetlayoutmanager.exe -dtextshell --
+move \epoc32\winscw\c\data\ut_infowidgetlayoutmanager.log %PATH_TO_RESULT%\ut_infowidgetlayoutmanager.log
 goto end
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::

@@ -29,8 +29,13 @@ TARGETTYPE              PLUGIN
 // ECOM Dll recognition UID followed by the unique UID for this dll
 UID                     0x10009D8D 0x102828E3
 
-CAPABILITY              CAP_ECOM_PLUGIN NetworkControl NetworkServices ReadDeviceData
+CAPABILITY              CAP_ECOM_PLUGIN NetworkControl NetworkServices ReadDeviceData MultimediaDD
 VENDORID                VID_DEFAULT
+
+#ifndef WINSCW 
+EpocAllowDllData
+#endif
+
 
 SOURCEPATH              ../src
 SOURCE                  csprovider.cpp
@@ -63,7 +68,6 @@ SOURCE                  cspcallarray.cpp
 SOURCE                  csppanic.cpp
 SOURCE                  cspaudiohandler.cpp
 SOURCE                  csppubsublistener.cpp
-SOURCE                  cspcenreplistener.cpp
 SOURCE                  cspetelcallwaitingrequester.cpp
 SOURCE                  cspsupplementaryservicesmonitor.cpp
 SOURCE                  cspcipheringstatusmonitor.cpp
@@ -71,16 +75,13 @@ SOURCE                  cspsssettingshandler.cpp
 SOURCE                  cspuuimessagesender.cpp
 SOURCE                  cspuuimonitor.cpp
 SOURCE                  tcspskypeidparser.cpp
-SOURCE                  cspdevsound.cpp
-SOURCE                  cspmicrophone.cpp
-SOURCE                  cspspeaker.cpp
-SOURCE                  cspaudiostreams.cpp
 SOURCE                  csptimer.cpp
 SOURCE                  cspcallcommandhandler.cpp
 SOURCE                  cspremotealertingtonelistener.cpp
 SOURCE                  cspetellinestatusmonitor.cpp
 SOURCE                  cspclientvideocall.cpp
 SOURCE                  cspclientvoicecall.cpp
+SOURCE					tmshandler.cpp
 
 // user include paths
 USERINCLUDE             ../inc
@@ -91,9 +92,13 @@ USERINCLUDE             ../inc
 APP_LAYER_SYSTEMINCLUDE 
 
 SYSTEMINCLUDE   /epoc32/include/ecom
-SYSTEMINCLUDE   /epoc32/include/mmf/server
-SYSTEMINCLUDE   /epoc32/include/mmf/common
-SYSTEMINCLUDE   /epoc32/include/mda/client
+
+
+MW_LAYER_SYSTEMINCLUDE
+OS_LAYER_LIBC_SYSTEMINCLUDE
+OS_LAYER_GLIB_SYSTEMINCLUDE
+SYSTEMINCLUDE /epoc32/include/stdapis/stlport
+
 
 SOURCEPATH              ../data
 START RESOURCE          102828e3.rss
@@ -109,8 +114,12 @@ LIBRARY                 customapi.lib
 LIBRARY                 esock.lib
 LIBRARY                 serviceprovidersettings.lib // Reading service id and related
 LIBRARY                 featmgr.lib
-LIBRARY                 mmfdevsound.lib
 LIBRARY                 centralrepository.lib 
 LIBRARY                 sssettings.lib
 LIBRARY                 telephonyaudiorouting.lib callprovider.lib cce.lib
+
+LIBRARY                 tmsfactory.lib
+LIBRARY                 tmsapi.lib
+LIBRARY                 libglib.lib
+
 DEBUGLIBRARY            flogger.lib

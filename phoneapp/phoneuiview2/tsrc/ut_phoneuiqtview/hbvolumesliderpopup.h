@@ -19,7 +19,7 @@
 #define HBVOLUMESLIDERPOPUP_H
 
 #include <QObject>
-#include <hbpopupbase.h>
+#include <hbpopup.h>
 
 extern bool m_volumeSliderContructorCalled;
 extern bool m_volumeSliderDesctructorCalled;
@@ -49,7 +49,7 @@ public:
     void setTimeout (int time);
     void show();
     void hide();
-    void setDismissPolicy( HbPopupBase::DismissPolicy value ) {;};
+    void setDismissPolicy( HbPopup::DismissPolicy value ) {;};
     int minimum() {return m_sliderRangeMin;};
     int maximum() {return m_sliderRangeMax;};
     bool isVisible() {return m_isVisible;};

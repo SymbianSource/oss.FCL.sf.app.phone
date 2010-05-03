@@ -37,11 +37,13 @@ private slots:
     void init();
     void cleanup();
 
-    void t_loadPreferences();
     void t_storePreferences();
     void t_preference();
     void t_setPreference();
     void t_visibleItemCount();
+    void t_isPreferenceSet();
+    void t_preferences();
+    void t_preferenceNames();
     
 private:
     

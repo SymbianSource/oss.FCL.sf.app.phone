@@ -36,6 +36,7 @@ public:
     
 public slots:
     void generateException();
+    void doLeaveL();
     
 private slots:
 
@@ -50,6 +51,12 @@ private slots:
     void t_HandleNetworkMessageExceptionWhileEmittingSignal();
     void t_HandleNetworkError();
     void t_HandleNetworkErrorExceptionWhileEmittingSignal();
+    void t_resume();
+    void t_suspend();
+    void t_serviceProviderName();
+    void t_serviceProviderNameDisplayRequired();
+    void t_logCurrentInfo();
+    void t_createLeave();
     
 private:
     

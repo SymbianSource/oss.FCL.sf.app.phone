@@ -16,7 +16,7 @@
 */
 
 #include "ut_cpnetworkpluginview.h"
-#include "qtestmains60.h"
+#include "qtestmains60ui.h"
 #define private public
 #include "cpnetworkpluginview.h"
 
@@ -68,4 +68,4 @@ void ut_cpnetworkpluginview::t_memleak()
     
 }
 
-QTEST_MAIN_S60(ut_cpnetworkpluginview)
+QTEST_MAIN_S60UI(ut_cpnetworkpluginview)

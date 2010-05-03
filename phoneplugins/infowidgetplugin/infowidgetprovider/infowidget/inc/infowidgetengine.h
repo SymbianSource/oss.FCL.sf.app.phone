@@ -56,6 +56,11 @@ public:
         const QString& serviceProviderName() const { return m_serviceProviderName; };
         void setServiceProviderName(const QString& name){ m_serviceProviderName = name; };
         
+        bool serviceProviderNameDisplayRequired() const { 
+            return m_serviceProviderNameDisplayRequired; };
+        void setServiceProviderNameDisplayRequired(bool required){ 
+            m_serviceProviderNameDisplayRequired = required; };
+        
         const QString& homeZoneTextTag() const { return m_homeZoneTextTag; };
         void setHomeZoneTextTag(const QString& tag){ m_homeZoneTextTag = tag; };
 
@@ -66,6 +71,7 @@ public:
         int m_mcnIndicatorType; 
         int m_homeZoneIndicatorType;
         int m_activeLine; 
+        bool m_serviceProviderNameDisplayRequired; 
         
         QString m_mcnName;
         QString m_serviceProviderName;
@@ -94,11 +100,17 @@ public slots:
     void handleSatError(int operation, int errorCode); 
     void handleLineError(int operation, int errorCode);
     
+    void suspend(); 
+    void resume();
+    
+    void preferenceChanged(int option, int displaySetting);
+    
 private: 
     ModelData m_modelData;
     
     // Own
     QScopedPointer<InfoWidgetNetworkHandler> m_networkHandler;
+    QScopedPointer<InfoWidgetSatHandler> m_satHandler;
     }; 
 
 #endif /* INFOWIDGETENGINE_H_ */

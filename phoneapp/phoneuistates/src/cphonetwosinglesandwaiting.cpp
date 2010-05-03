@@ -440,7 +440,7 @@ void CPhoneTwoSinglesAndWaiting::UpdateInCallCbaL()
         } 
     else 
         {
-        iCbaManager->SetCbaL( EPhoneCallHandlingIncomingSoftRejectCBA );
+        iCbaManager->SetCbaL( EPhoneCallHandlingIncomingRejectCBA );
         }
     }
 

@@ -45,7 +45,6 @@ private slots:
     //From QGraphicsItem.
     void t_boundingRect();
     void t_shape();
-    void t_sizeHint();
     void t_sizePolicy();
     
     void t_setHomeZoneDisplay(); 
@@ -58,8 +57,7 @@ private slots:
     void t_mouseReleaseEvent(); 
     void t_mouseMoveEvent(); 
     void t_updateInfoDisplay();
-    void t_initializePreferences();
-    
+    void t_readPersistentPreferences();
 
     void t_onInitialize();
     void t_onUninitialize(); 
@@ -67,9 +65,7 @@ private slots:
     void t_onHide();
     void t_readModel();
     void t_handleModelError();
-    void t_homeZoneDisplaySettingChanged();
     void t_mcnDisplaySettingChanged();
-    void t_activeLineDisplaySettingChanged();
     void t_satDisplaySettingChanged();
     void t_settingsEditingFinished();
 
@@ -82,11 +78,15 @@ private slots:
     void t_startChanges();
     void t_endChanges();
     
+    void t_sizeHint();
+    
     /*
      * Not work from commmand prompt.
      */
     void t_changeEvent();
     
+    
+
 private:
     
     InfoWidget *m_infoWidget;

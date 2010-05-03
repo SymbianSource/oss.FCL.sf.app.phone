@@ -33,9 +33,11 @@
 class BubbleHeader;
 class BubbleConferenceHeader;
 class BubbleWidgetManager;
+class BubbleImageManager;
 class HbAction;
 class HbStackedLayout;
 class BubbleHandler;
+class BubbleEffectHandler;
 
 static const int BUBBLE_MAX_CALL_COUNT = 7;
 static const int BUBBLE_CONF_CALL_ID   = 10;
@@ -341,6 +343,7 @@ private:
     bool findActiveHeader(int bubbleId, BubbleHeader*& header);
     void findNextDrawableHeader(int& index) const;
     void polishEvent();
+    void releaseImageIfNotUsed(const QString& imageFileName);
 
 private slots:
     void showExpanded( int bubbleId );
@@ -357,9 +360,11 @@ private:
     QGraphicsWidget* mMutedIcon;
     bool mSortHeaders;
     BubbleWidgetManager* mWidgetManager;
+    BubbleImageManager* mBubbleImageManager;
     HbStackedLayout* mMainLayout;
     bool mInitialized;
     bool mBubbleSelectionDisabled;
+    BubbleEffectHandler* mEffectHandler;
 };
 
 #endif /* BUBBLEMANAGER2_H */

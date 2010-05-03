@@ -23,6 +23,7 @@ INCLUDEPATH += .
 INCLUDEPATH += ../common
 INCLUDEPATH += ../../inc/
 INCLUDEPATH += ../../infowidget/inc/
+DEFINES += XQSETTINGSMANAGER_NO_LIBRARY
 
 QT -= gui
 QT += testlib
@@ -45,3 +46,8 @@ SOURCES += ../../infowidget/src/infowidgetnetworkhandler.cpp
 
 # mocks needed for testing
 SOURCES += ../mocks/mock_networkhandlingproxy.cpp
+
+HEADERS += /epoc32/include/mw/xqsettingskey.h \
+           /epoc32/include/mw/xqsettingsmanager.h
+SOURCES += ../mocks/mock_xqsettingskey.cpp
+SOURCES += ../mocks/mock_xqsettingsmanager.cpp

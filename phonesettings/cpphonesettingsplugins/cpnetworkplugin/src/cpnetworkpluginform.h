@@ -20,6 +20,7 @@
 
 #include <hbdataform.h>
 #include <QStringList>
+#include <QSharedPointer>
 #include <psetnetworkwrapper.h>
 #include <hbmessagebox.h>
 
@@ -30,6 +31,7 @@ class HbListWidget;
 class PSetNetworkWrapper;
 class CpSettingFormItemData;
 class CpPhoneNotes;
+class CellularDataSettings;
 
 class CpNetworkPluginForm : public HbDataForm
 {
@@ -41,6 +43,8 @@ public:
     
     virtual ~CpNetworkPluginForm();
     
+    void SearchAvailableNetworks();
+    
 signals:
     
     void showGlobalProgressNote(int &noteId, const QString& text);
@@ -50,6 +54,8 @@ signals:
 
 public slots: 
 
+    void cellularDataUseHomeStateChanged(int index);
+    void cellularDataUseRoamStateChanged(int index);
     void networkModeStateChanged(int index);
     void operatorSelectionStateChanged(bool index);
     void networkAccessModeGot(int mode);
@@ -68,6 +74,8 @@ public slots:
 private:     
     HbDataFormModelItem *createNetworkModeItem();
     HbDataFormModelItem *createOperatorSelectionItem();
+    HbDataFormModelItem *createHomeDataUsageItem();
+    HbDataFormModelItem *createRoamDataUsageItem();
     
     void automaticOperatorSelection();
     void manualOperatorSelection();
@@ -94,16 +102,21 @@ private:
     
     QStringList mNetworkModeOptions;
     QStringList mOperatorSelectionOptions;
+    QStringList mCellularUseHomeOptions;
+    QStringList mCellularUseRoamOptions;
     int m_activeNoteId;
     int m_activeProgressNoteId;
     // Own
     PSetWrapper *m_pSetWrapper;
     CpSettingsWrapper *m_cpSettingsWrapper;
+    QSharedPointer<CellularDataSettings> mCellularSettings;
     
     // Not own
     PSetNetworkWrapper *m_psetNetworkWrapper;
     CpSettingFormItemData *m_NetworkModeOptionsItemData;
     CpSettingFormItemData *m_NetworkOperatorSelectionItemData;
+    CpSettingFormItemData *mCellularUseHomeSelectionItemData;
+    CpSettingFormItemData *mCellularUseRoamSelectionItemData;
     QList<PSetNetworkWrapper::NetworkInfo*> *m_networkInfoList;
 };
 

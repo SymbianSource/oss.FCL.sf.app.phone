@@ -94,3 +94,18 @@ void PSetCallBarringWrapper::disableBarring(
     SMC_MOCK_METHOD3( void, int/*PsServiceGroup*/, static_cast<int>(serviceGroup), 
         BarringType, barringType, QString, barringPassword )
     }
+
+// -----------------------------------------------------------------------------
+// PSetCallBarringWrapper::changeBarringPassword
+// -----------------------------------------------------------------------------
+//
+void PSetCallBarringWrapper::changeBarringPassword(
+    const QString &oldPassword, 
+    const QString &newPassword,
+    const QString &verifiedPassword)
+{
+    SMC_MOCK_METHOD3( void, 
+        const QString &, oldPassword, 
+        const QString &, newPassword, 
+        const QString &, verifiedPassword )
+}

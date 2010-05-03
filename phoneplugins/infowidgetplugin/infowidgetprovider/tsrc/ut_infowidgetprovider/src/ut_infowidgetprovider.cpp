@@ -23,6 +23,8 @@
 #include <qservicecontext.h>
 #include <QString>
 
+Q_EXTERN_C const char * qt_plugin_query_verification_data();
+Q_EXTERN_C ::QObject *  qt_plugin_instance();
 
 class MyQServiceInterfaceDescriptor : public QServiceInterfaceDescriptor
 {}; 
@@ -30,16 +32,22 @@ class MyQServiceInterfaceDescriptor : public QServiceInterfaceDescriptor
 class MyQServiceContext : public QServiceContext
 {
 public: 
-    virtual void notify( ContextType type, const QVariant& variant){};
+    virtual void notify( ContextType type, const QVariant& variant){
+    Q_UNUSED(type)
+    Q_UNUSED(variant)
+    };
 }; 
 
 class MyQAbstractSecuritySession : public QAbstractSecuritySession
 {
 public: 
-    virtual bool isAllowed(const QStringList& capabilityList){return true;};
+    virtual bool isAllowed(const QStringList& capabilityList){
+    Q_UNUSED(capabilityList)
+    return true;
+    };
 }; 
 
-QString KValidInfoWidgetInterfaceName("com.nokia.homescreen.widget"); 
+QString KValidInfoWidgetInterfaceName("com.nokia.IHomeScreenWidget"); 
 QString KInvalidInfoWidgetInterfaceName("com");
 
 
@@ -47,10 +55,8 @@ QString KInvalidInfoWidgetInterfaceName("com");
   UT_InfoWidgetProvider::UT_InfoWidgetProvider
  */
 UT_InfoWidgetProvider::UT_InfoWidgetProvider() 
-    : 
-    m_infoWidgetProvider(0)
 {
-    
+    const char * verificationData = qt_plugin_query_verification_data();
 }
 
 
@@ -59,7 +65,7 @@ UT_InfoWidgetProvider::UT_InfoWidgetProvider()
  */
 UT_InfoWidgetProvider::~UT_InfoWidgetProvider()
 {
-    delete m_infoWidgetProvider;
+
 }
 
 
@@ -69,9 +75,7 @@ UT_InfoWidgetProvider::~UT_InfoWidgetProvider()
 void UT_InfoWidgetProvider::init()
 {
     initialize();
-    
-    m_infoWidgetProvider = new InfoWidgetProvider();
-    
+
     QVERIFY(verify());
 }
 
@@ -83,8 +87,7 @@ void UT_InfoWidgetProvider::cleanup()
 {
     reset();
     
-    delete m_infoWidgetProvider;
-    m_infoWidgetProvider = 0;
+    delete (InfoWidgetProvider*)qt_plugin_instance();
 }
 
 
@@ -94,25 +97,23 @@ void UT_InfoWidgetProvider::t_createInstance()
     MyQServiceContext myQServiceContext; 
     MyQAbstractSecuritySession myAbstractSecuritySession; 
     
-    QObject *instanceValue = NULL; 
-
+    QObject *instanceValue = NULL;
+    InfoWidgetProvider* p = (InfoWidgetProvider*)qt_plugin_instance();
     // Test: instance creation with valid interface name
     expect("QtMobility::QServiceInterfaceDescriptor::interfaceName").returns(KValidInfoWidgetInterfaceName);
     expect("InfoWidget::InfoWidget"); 
-    instanceValue = m_infoWidgetProvider->createInstance(myServiceInterfaceDescriptor,
+    instanceValue = p->createInstance(myServiceInterfaceDescriptor,
                                              &myQServiceContext,
                                              &myAbstractSecuritySession);
     Q_ASSERT(instanceValue); 
     
     // Test: instance creation with invalid interface name
     expect("QtMobility::QServiceInterfaceDescriptor::interfaceName").returns(KInvalidInfoWidgetInterfaceName);
-    instanceValue = m_infoWidgetProvider->createInstance(myServiceInterfaceDescriptor,
+    instanceValue = p->createInstance(myServiceInterfaceDescriptor,
                                              &myQServiceContext,
                                              &myAbstractSecuritySession);
     Q_ASSERT(instanceValue == NULL); 
-    
 
 }
-
 
 QTEST_MAIN_S60(UT_InfoWidgetProvider)

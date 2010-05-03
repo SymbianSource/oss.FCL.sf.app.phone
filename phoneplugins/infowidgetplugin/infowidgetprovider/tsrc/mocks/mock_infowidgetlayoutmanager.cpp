@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -86,6 +86,16 @@ void InfoWidgetLayoutManager::setLayoutRows(
 
 
 // -----------------------------------------------------------------------------
+// InfoWidgetLayoutManager::rowHeight
+// -----------------------------------------------------------------------------
+//
+qreal InfoWidgetLayoutManager::rowHeight(  ) const
+    {
+    SMC_MOCK_METHOD0( qreal )
+    }
+
+
+// -----------------------------------------------------------------------------
 // InfoWidgetLayoutManager::layoutInfoDisplay
 // -----------------------------------------------------------------------------
 //
@@ -133,6 +143,16 @@ bool InfoWidgetLayoutManager::loadWidgets(
         TYPE3, widgetMap )
     }
 
+// -----------------------------------------------------------------------------
+// InfoWidgetLayoutManager::reloadWidgets
+// -----------------------------------------------------------------------------
+//
+bool InfoWidgetLayoutManager::reloadWidgets( 
+        const DisplayRole displayRole )
+    {
+    SMC_MOCK_METHOD1( bool, const DisplayRole, displayRole )
+    }
+
 
 // -----------------------------------------------------------------------------
 // InfoWidgetLayoutManager::loadWidget
@@ -147,7 +167,6 @@ QGraphicsWidget* InfoWidgetLayoutManager::loadWidget(
         DisplayRole, displayRole, 
         LayoutItemRole, widgetRole )
     }
-
 
 
 // -----------------------------------------------------------------------------
@@ -168,6 +187,17 @@ QGraphicsWidget * InfoWidgetLayoutManager::getWidget(
 QGraphicsWidget * InfoWidgetLayoutManager::contentWidget(  )
     {
     SMC_MOCK_METHOD0( QGraphicsWidget * )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetLayoutManager::removeWidget
+// -----------------------------------------------------------------------------
+//
+void InfoWidgetLayoutManager::removeWidget( 
+        LayoutItemRole itemRole )
+    {
+    SMC_MOCK_METHOD1( void, LayoutItemRole, itemRole )
     }
 
 

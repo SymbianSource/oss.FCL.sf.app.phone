@@ -24,6 +24,7 @@
 #include <HbCheckBox>
 #include <HbEvent>
 #include <HbColorScheme>
+#include <hbframedrawer.h>
 #include "ut_infowidget.h"
 #include "qtestmains60.h"
 
@@ -103,53 +104,6 @@ void UT_InfoWidget::t_shape()
     m_infoWidget->shape();
 }
 
-/*!
-  UT_InfoWidget::t_sizeHint
- */
-void UT_InfoWidget::t_sizeHint()
-{   
-    const QSizeF KMinimumSize(50, 50);
-    const QSizeF KPreferredSize(70, 70);
-    const QSizeF KDefaultSizeInfoDisplay(70, 160);
-    const QSizeF KDefaultSizeSettingsDisplay(250, 250);
-    
-    // current display is info display
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::InfoDisplay);
-    EXPECT(InfoWidgetLayoutManager::contentWidget);
-    m_qgraphicswidget.setMinimumSize(KMinimumSize);
-    m_qgraphicswidget.setPreferredSize(KPreferredSize);
-    Qt::SizeHint sizeHint = Qt::MinimumSize;
-    QSizeF constraint = QSizeF();
-    QVERIFY(KMinimumSize == m_infoWidget->sizeHint(sizeHint, constraint));
-    
-    // current display is settings display
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::SettingsDisplay);
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::SettingsDisplay);
-    EXPECT(InfoWidgetLayoutManager::contentWidget);
-    QVERIFY(KPreferredSize == m_infoWidget->sizeHint(sizeHint, constraint));
-    
-    QGraphicsWidget* nullPoiter(NULL);
-    // cannot fetch info display size from docml, default size to be used
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::InfoDisplay);
-    EXPECT(InfoWidgetLayoutManager::contentWidget).returns(nullPoiter);
-    QVERIFY(KDefaultSizeInfoDisplay == 
-        m_infoWidget->sizeHint(sizeHint, constraint));
-    
-    // cannot fetch settings display size from docml, default size to be used
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::SettingsDisplay);
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::SettingsDisplay);
-    EXPECT(InfoWidgetLayoutManager::contentWidget).returns(nullPoiter);
-    QVERIFY(KDefaultSizeSettingsDisplay == 
-        m_infoWidget->sizeHint(sizeHint, constraint)); 
-    
-    QVERIFY(verify());
-}
 
 /*!
   UT_InfoWidget::t_sizePolicy
@@ -284,33 +238,23 @@ void UT_InfoWidget::t_updateInfoDisplay()
 {
     HbLabel hbLabel;
     QGraphicsWidget* pointerHbLabel(&hbLabel);
-    
-    EXPECT(InfoWidgetLayoutManager::getWidget)
-        .with(InfoWidgetLayoutManager::RoleHomeZoneLabel)
-        .returns(pointerHbLabel);
+
     EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
         .returns(InfoWidgetLayoutManager::InfoDisplay);
+
+    EXPECT(InfoWidgetLayoutManager::getWidget)
+        .with(InfoWidgetLayoutManager::RoleSpnLabel)
+        .returns(pointerHbLabel);
     
     HbMarqueeItem mcnMarqueeItem; 
     QGraphicsWidget* pointerMcnMarqueeItem(&mcnMarqueeItem);
     EXPECT(InfoWidgetLayoutManager::getWidget)
         .with(InfoWidgetLayoutManager::RoleMcnMarqueeItem)
         .returns(pointerMcnMarqueeItem);
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::InfoDisplay);
     EXPECT(HbMarqueeItem::isAnimating).returns(true);
-    
     EXPECT(InfoWidgetLayoutManager::getWidget)
-        .with(InfoWidgetLayoutManager::RoleActiveLineLabel)
-        .returns(pointerHbLabel);
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::InfoDisplay);
-    
-    EXPECT(InfoWidgetLayoutManager::getWidget)
-        .with(InfoWidgetLayoutManager::RoleSatTextLabel)
-        .returns(pointerHbLabel);
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::InfoDisplay);
+        .with(InfoWidgetLayoutManager::RoleSatMarqueeItem)
+        .returns(pointerMcnMarqueeItem);
     
     m_infoWidget->updateInfoDisplay();
     
@@ -318,46 +262,36 @@ void UT_InfoWidget::t_updateInfoDisplay()
 }
 
 /*!
-  UT_InfoWidget::t_initializePreferences
+  UT_InfoWidget::t_readPersistentPreferences
  */
-void UT_InfoWidget::t_initializePreferences()
+void UT_InfoWidget::t_readPersistentPreferences()
 {    
-    EXPECT(InfoWidgetPreferences::preference)
-        .with(InfoWidgetPreferences::DisplayHomeZone)
-        .returns(KPreferenceOff);
     EXPECT(InfoWidgetPreferences::setPreference)
-        .with(InfoWidgetPreferences::DisplayHomeZone, KPreferenceOff);
+        .with(InfoWidgetPreferences::DisplayHomeZone, QString(""));
 
-    EXPECT(InfoWidgetPreferences::preference)
-        .with(InfoWidgetPreferences::DisplayMcn)
-        .returns(KPreferenceOff);
     EXPECT(InfoWidgetPreferences::setPreference)
-        .with(InfoWidgetPreferences::DisplayMcn, KPreferenceOff);
+        .with(InfoWidgetPreferences::DisplayMcn, QString(""));
     
-    EXPECT(InfoWidgetPreferences::preference)
-        .with(InfoWidgetPreferences::DisplayActiveLine)
-        .returns(KPreferenceOff);
     EXPECT(InfoWidgetPreferences::setPreference)
-        .with(InfoWidgetPreferences::DisplayActiveLine, KPreferenceOff);
+        .with(InfoWidgetPreferences::DisplayActiveLine, QString(""));
     
-    EXPECT(InfoWidgetPreferences::preference)
-        .with(InfoWidgetPreferences::DisplaySatText)
-        .returns(KPreferenceOff);
     EXPECT(InfoWidgetPreferences::setPreference)
-        .with(InfoWidgetPreferences::DisplaySatText, KPreferenceOff);
-    
-    EXPECT(InfoWidgetPreferences::visibleItemCount).returns(0);
+        .with(InfoWidgetPreferences::DisplaySatText, QString(""));
+
     EXPECT(InfoWidgetPreferences::setPreference)
-        .with(InfoWidgetPreferences::DisplayMcn, KPreferenceOn);
+        .with(InfoWidgetPreferences::DisplaySpn, QString(""));
     
-    m_infoWidget->initializePreferences();
+    EXPECT(InfoWidgetPreferences::validate);
+
+    m_infoWidget->readPersistentPreferences();
     
     QVERIFY(verify());
     
     // one visible item initially
-    EXPECT(InfoWidgetPreferences::visibleItemCount).returns(1);
+    EXPECT(InfoWidgetPreferences::validate).returns(true);
+    EXPECT(InfoWidgetPreferences::storePreferences);
     
-    m_infoWidget->initializePreferences();
+    m_infoWidget->readPersistentPreferences();
     
     QVERIFY(verify());
 }
@@ -366,8 +300,22 @@ void UT_InfoWidget::t_initializePreferences()
   UT_InfoWidget::t_onInitialize
  */
 void UT_InfoWidget::t_onInitialize()
-{
-    m_infoWidget->onInitialize(); 
+{    
+    // Test onInitialize sequence where 
+    // meta-object properties have been 
+    // initialized 
+    EXPECT(InfoWidgetPreferences::validate)
+        .returns(true);
+    EXPECT(InfoWidgetPreferences::storePreferences)
+        .returns(true);
+    m_infoWidget->onInitialize();
+    
+    // Test onInitialize sequence where 
+    // meta-object properties are 
+    // uninitialized 
+    EXPECT(InfoWidgetPreferences::validate)
+        .returns(false);
+    m_infoWidget->onInitialize();
 }
 
 /*!
@@ -420,23 +368,9 @@ void UT_InfoWidget::t_handleModelError()
     m_infoWidget->handleModelError(operation, errorCode); 
 }
 
-void UT_InfoWidget::t_homeZoneDisplaySettingChanged()
-{
-    // user enables home zone setting
-    EXPECT(InfoWidgetPreferences::setPreference)
-        .with(InfoWidgetPreferences::DisplayHomeZone, KPreferenceOn);
-    int setting(Qt::Checked);
-    m_infoWidget->homeZoneDisplaySettingChanged(setting);
-    
-    // user disables home zone setting
-    EXPECT(InfoWidgetPreferences::setPreference)
-        .with(InfoWidgetPreferences::DisplayHomeZone, KPreferenceOff);
-    setting = Qt::Unchecked;
-    m_infoWidget->homeZoneDisplaySettingChanged(setting);
-    
-    QVERIFY(verify());
-}
-
+/*!
+  UT_InfoWidget::t_mcnDisplaySettingChanged
+ */
 void UT_InfoWidget::t_mcnDisplaySettingChanged()
 {
     // user enables MCN setting
@@ -450,23 +384,6 @@ void UT_InfoWidget::t_mcnDisplaySettingChanged()
         .with(InfoWidgetPreferences::DisplayMcn, KPreferenceOff);
     setting = Qt::Unchecked;
     m_infoWidget->mcnDisplaySettingChanged(setting);
-    
-    QVERIFY(verify());
-}
-
-void UT_InfoWidget::t_activeLineDisplaySettingChanged()
-{
-    // user enables active line setting
-    EXPECT(InfoWidgetPreferences::setPreference)
-        .with(InfoWidgetPreferences::DisplayActiveLine, KPreferenceOn);
-    int setting(Qt::Checked);
-    m_infoWidget->activeLineDisplaySettingChanged(setting);
-    
-    // user disables active line setting
-    EXPECT(InfoWidgetPreferences::setPreference)
-        .with(InfoWidgetPreferences::DisplayActiveLine, KPreferenceOff);
-    setting = Qt::Unchecked;
-    m_infoWidget->activeLineDisplaySettingChanged(setting);
     
     QVERIFY(verify());
 }
@@ -495,60 +412,48 @@ void UT_InfoWidget::t_settingsEditingFinished()
 
 void UT_InfoWidget::t_updateItemsVisibility()
 {
-    // all items visible
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::InfoDisplay);
+    // All items visible
     EXPECT(InfoWidgetPreferences::preference)
-        .with(InfoWidgetPreferences::DisplayHomeZone)
+        .with(InfoWidgetPreferences::DisplaySpn)
         .returns(KPreferenceOn);
     EXPECT(InfoWidgetPreferences::preference)
         .with(InfoWidgetPreferences::DisplayMcn)
-        .returns(KPreferenceOn);
-    EXPECT(InfoWidgetPreferences::preference)
-        .with(InfoWidgetPreferences::DisplayActiveLine)
         .returns(KPreferenceOn);
     EXPECT(InfoWidgetPreferences::preference)
         .with(InfoWidgetPreferences::DisplaySatText)
         .returns(KPreferenceOn);
     EXPECT(InfoWidgetLayoutManager::setLayoutRows)
-        .with(4);
+        .with(3);
     
     m_infoWidget->updateItemsVisibility();
-
+    QVERIFY(verify());
+    
     // none of items visible
     EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
         .returns(InfoWidgetLayoutManager::InfoDisplay);
     
     EXPECT(InfoWidgetPreferences::preference)
-        .with(InfoWidgetPreferences::DisplayHomeZone)
+        .with(InfoWidgetPreferences::DisplaySpn)
         .returns(KPreferenceOff);
-    EXPECT(InfoWidgetLayoutManager::hideWidget)
-        .with(InfoWidgetLayoutManager::RoleHomeZoneLabel);
-    EXPECT(InfoWidgetLayoutManager::hideWidget)
-        .with(InfoWidgetLayoutManager::RoleHomeZoneIcon);
-    
+    EXPECT(InfoWidgetLayoutManager::removeWidget)
+        .with(InfoWidgetLayoutManager::RoleSpnLabel);
+    EXPECT(InfoWidgetLayoutManager::removeWidget)
+        .with(InfoWidgetLayoutManager::RoleSpnIcon);
+
     EXPECT(InfoWidgetPreferences::preference)
         .with(InfoWidgetPreferences::DisplayMcn)
         .returns(KPreferenceOff);
-    EXPECT(InfoWidgetLayoutManager::hideWidget)
+    EXPECT(InfoWidgetLayoutManager::removeWidget)
         .with(InfoWidgetLayoutManager::RoleMcnMarqueeItem);
-    EXPECT(InfoWidgetLayoutManager::hideWidget)
+    EXPECT(InfoWidgetLayoutManager::removeWidget)
         .with(InfoWidgetLayoutManager::RoleMcnIcon);
-    
-    EXPECT(InfoWidgetPreferences::preference)
-        .with(InfoWidgetPreferences::DisplayActiveLine)
-        .returns(KPreferenceOff);
-    EXPECT(InfoWidgetLayoutManager::hideWidget)
-        .with(InfoWidgetLayoutManager::RoleActiveLineLabel);
-    EXPECT(InfoWidgetLayoutManager::hideWidget)
-        .with(InfoWidgetLayoutManager::RoleActiveLineIcon);
     
     EXPECT(InfoWidgetPreferences::preference)
         .with(InfoWidgetPreferences::DisplaySatText)
         .returns(KPreferenceOff);
-    EXPECT(InfoWidgetLayoutManager::hideWidget)
-        .with(InfoWidgetLayoutManager::RoleSatTextLabel);
-    EXPECT(InfoWidgetLayoutManager::hideWidget)
+    EXPECT(InfoWidgetLayoutManager::removeWidget)
+        .with(InfoWidgetLayoutManager::RoleSatMarqueeItem);
+    EXPECT(InfoWidgetLayoutManager::removeWidget)
         .with(InfoWidgetLayoutManager::RoleSatTextIcon);
     
     EXPECT(InfoWidgetLayoutManager::setLayoutRows)
@@ -591,21 +496,11 @@ void UT_InfoWidget::t_initializeSettingsDisplayItems()
         .with(InfoWidgetLayoutManager::RoleOkButton)
         .returns(&okButton);
     
-    QGraphicsWidget homeZoneBox;
-    EXPECT(InfoWidgetLayoutManager::getWidget)
-        .with(InfoWidgetLayoutManager::RoleHomeZoneCheckBox)
-        .returns(&homeZoneBox);
-
     QGraphicsWidget mcnCheckBox;
     EXPECT(InfoWidgetLayoutManager::getWidget)
         .with(InfoWidgetLayoutManager::RoleMcnCheckBox)
         .returns(&mcnCheckBox);
     
-    QGraphicsWidget activeLineCheckBox;
-    EXPECT(InfoWidgetLayoutManager::getWidget)
-        .with(InfoWidgetLayoutManager::RoleActiveLineCheckBox)
-        .returns(&activeLineCheckBox);
-
     QGraphicsWidget satTextCheckBox;
     EXPECT(InfoWidgetLayoutManager::getWidget)
         .with(InfoWidgetLayoutManager::RoleSatTextCheckBox)
@@ -641,6 +536,51 @@ void UT_InfoWidget::t_changeEvent()
     
     HbEvent event2(HbEvent::ChildFocusIn);
     m_infoWidget->changeEvent(&event2);
+    QVERIFY(verify());
+}
+
+
+/*!
+  UT_InfoWidget::t_sizeHint
+ */
+void UT_InfoWidget::t_sizeHint()
+{   
+    const QSizeF KMinimumSize(33.5, 160);
+    const QSizeF KPreferredSize(134, 160);
+    const QSizeF KDefaultSizeInfoDisplay(100, 100);
+    const QSizeF KDefaultSizeSettingsDisplay(230, 220);
+
+    // Test: initial size after construction  
+    Qt::SizeHint sizeHint = Qt::PreferredSize;
+    QSizeF constraint = QSizeF();
+    QVERIFY(KDefaultSizeInfoDisplay == m_infoWidget->sizeHint(
+            sizeHint, constraint));
+    
+    // Test: size after onInitialize is called 
+    // and current display is InfoDisplay 
+    m_infoWidget->onInitialize();
+    
+    EXPECT(InfoWidgetLayoutManager::currentDisplayRole).
+            returns(InfoWidgetLayoutManager::InfoDisplay);
+    QGraphicsWidget *contentWidget = new QGraphicsWidget;
+    contentWidget->setMinimumSize(KMinimumSize); 
+    EXPECT(InfoWidgetLayoutManager::contentWidget).
+            returns(contentWidget);
+    EXPECT(InfoWidgetPreferences::visibleItemCount).
+            returns(1);
+    
+    // No strict verification, approximate values.
+    // Data in docml is in "un" format and strict comparison to pixels won't work  
+    //QVERIFY(abs(KMinimumSize.width()-m_infoWidget->sizeHint(sizeHint, constraint).width()) < 1);
+    //QVERIFY(abs(KMinimumSize.height()-m_infoWidget->sizeHint(sizeHint, constraint).height()) < 1);
+    QVERIFY(KDefaultSizeInfoDisplay != m_infoWidget->sizeHint(sizeHint, constraint));
+    
+    // Test: size after onInitialize is called 
+    // and current display is SettingsDisplay 
+
+    delete contentWidget;
+    contentWidget = NULL;
+    
     QVERIFY(verify());
 }
 

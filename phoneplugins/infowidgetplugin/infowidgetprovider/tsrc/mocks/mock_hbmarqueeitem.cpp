@@ -26,10 +26,8 @@
 //
 HbMarqueeItem::HbMarqueeItem( 
         QGraphicsItem * parent )
-    //:
-    //HbWidgetBase( /*parent*/ )
     {
-    
+    Q_UNUSED(parent)
     }
 
 
@@ -40,10 +38,9 @@ HbMarqueeItem::HbMarqueeItem(
 HbMarqueeItem::HbMarqueeItem( 
         const QString & text,
         QGraphicsItem * parent )
-    //:
-    //HbWidgetBase( /*text, parent*/ )
     {
-    
+    Q_UNUSED(text)
+    Q_UNUSED(parent)
     }
 
 
@@ -224,10 +221,9 @@ QVariant HbMarqueeItem::itemChange(
 HbMarqueeItem::HbMarqueeItem( 
         HbMarqueeItemPrivate & dd,
         QGraphicsItem * parent )
-    //:
-    //HbWidgetBase( /*dd, parent*/ )
     {
-    
+    Q_UNUSED(dd)
+    Q_UNUSED(parent)
     }
 
 

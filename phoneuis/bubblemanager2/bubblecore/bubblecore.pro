@@ -34,6 +34,8 @@ symbian {
         "$${LITERAL_HASH}endif"
     
     MMP_RULES += defFiles
+
+    LIBS += -lthumbnailmanagerqt
 }
 else:win32 { 
     # Put it to Hb/lib because it is in path

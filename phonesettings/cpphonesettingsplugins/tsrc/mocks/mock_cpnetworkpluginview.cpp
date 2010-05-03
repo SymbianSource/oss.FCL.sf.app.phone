@@ -27,7 +27,7 @@
 CpNetworkPluginView::CpNetworkPluginView( 
         QGraphicsItem * parent )
     :
-    CpBaseSettingView(0, parent),
+    /*CpBaseSettingView(0, parent),*/
     m_networkSettingsForm(0)
     {
     

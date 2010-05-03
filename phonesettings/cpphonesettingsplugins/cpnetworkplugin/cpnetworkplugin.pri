@@ -15,10 +15,14 @@
 #
 
 # Input
-HEADERS += src/cpnetworkplugin.h \
+HEADERS += src/cellulardatasettings.h \
+           src/cellulardatasettings_s60_p.h \
+           src/cpnetworkplugin.h \
            src/cpnetworkpluginview.h \
            src/cpnetworkpluginform.h
 
-SOURCES += src/cpnetworkplugin.cpp \
+SOURCES += src/cellulardatasettings.cpp \
+           src/cellulardatasettings_s60.cpp \
+           src/cpnetworkplugin.cpp \
            src/cpnetworkpluginview.cpp \
            src/cpnetworkpluginform.cpp

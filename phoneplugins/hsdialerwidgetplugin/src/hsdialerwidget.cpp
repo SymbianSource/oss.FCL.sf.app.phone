@@ -15,10 +15,13 @@
 *
 */
 
-#include <QGraphicsLinearLayout>
-#include <HbIconItem>
-#include "hsdialerwidget.h"
+
+#include <QPainter>
+#include <hbframedrawer.h>
+#include <hbframeitem.h>
+#include <hbtextitem.h>
 #ifdef Q_OS_SYMBIAN
+#include <logsdomaincrkeys.h>
 #include "qtphonelog.h"
 #include <xqservicerequest.h>
 #include <xqcallinfo.h>
@@ -27,9 +30,12 @@
 #include <logsservices.h>
 #endif
 
+#include "hsdialerwidget.h"
+
 namespace
 {
     const char KDialerWidgetIcon[] = "qtg_graf_hs_dialer";
+    const char KMissedCallShortcutBadge[] = ":/icons/resource/qtg_fr_shortcut_badge_bg";
 }
 
 /*!
@@ -47,15 +53,36 @@ HsDialerWidget::HsDialerWidget(QGraphicsItem *parent, Qt::WindowFlags flags)
   : HbWidget(parent, flags),
     mXQCallInfo(0)
 {
-    HbIconItem *iconItem = new HbIconItem;
-    HbIcon icon(KDialerWidgetIcon);
-    iconItem->setIcon(icon);
+#ifdef Q_OS_SYMBIAN
+    m_setManager = new XQSettingsManager(this);
 
-    QGraphicsLinearLayout *layout = new QGraphicsLinearLayout;
-    layout->addItem(iconItem);
-    setLayout(layout);
+    XQSettingsKey settingsKey( XQSettingsKey::TargetCentralRepository,
+            KCRUidLogs.iUid, KLogsNewMissedCalls );
 
-    setPreferredSize(icon.size());
+    bool ok = connect( m_setManager,
+            SIGNAL( valueChanged(const XQSettingsKey & ,const QVariant &)),
+                this, SLOT(updateMissedCallBadge(XQSettingsKey,
+                        QVariant)));
+    ASSERT( ok );
+    ok = false;
+    ok = m_setManager->startMonitoring( settingsKey );
+    ASSERT(ok);
+
+#endif
+
+    HbFrameDrawer *drawer = new HbFrameDrawer(
+            KDialerWidgetIcon, HbFrameDrawer::OnePiece);
+    m_backgroud = new HbFrameItem(drawer, this);
+    m_backgroud->setZValue(1);
+
+    drawer = new HbFrameDrawer(KMissedCallShortcutBadge,
+            HbFrameDrawer::ThreePiecesHorizontal );
+
+    m_shortcutBadge = new HbFrameItem(drawer, this);
+    m_shortcutBadge->setZValue(2);
+    m_shortcutBadge->setVisible(true);
+    m_missedCalls=2;
+    setItemPositions();
     resize(preferredSize());
 }
 
@@ -64,6 +91,48 @@ HsDialerWidget::HsDialerWidget(QGraphicsItem *parent, Qt::WindowFlags flags)
 */
 HsDialerWidget::~HsDialerWidget()
 {
+}
+
+void HsDialerWidget::paint(
+        QPainter *painter,
+        const QStyleOptionGraphicsItem *option,
+        QWidget *widget)
+{
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+    painter->setPen(QPen( Qt::transparent ) );
+
+    QRectF rect(m_backgroud->boundingRect());
+    painter->drawRect((int)m_backgroud->pos().x(),
+                      (int)m_backgroud->pos().y(),
+                      rect.toRect().width(),
+                      rect.toRect().height());
+
+    if ( m_shortcutBadge->isVisible())
+        {
+        rect = m_shortcutBadge->boundingRect();
+        HbTextItem *text = new HbTextItem( m_shortcutBadge->graphicsItem());
+        
+        QFont badgefont = font();
+#ifdef Q_OS_SYMBIAN
+        badgefont.setPointSize( 4 );
+#else
+        badgefont.setPointSize( 8 );
+#endif
+        text->setFont(badgefont);
+        text->setText(QString::number(m_missedCalls));
+        text->setZValue(3);
+        text->setTextColor(Qt::white);
+       // text->font().setPointSizeF(2);
+
+        text->setX( ( rect.toRect().width() / 2 ) - 2);
+        text->setY( ( rect.toRect().height() / 5 ) - 1);
+
+        painter->drawRect( (int)m_shortcutBadge->pos().x(),
+                           (int)m_shortcutBadge->pos().y(),
+                           rect.toRect().width(),
+                           rect.toRect().height() );
+    }
 }
 
 /*!
@@ -108,6 +177,22 @@ void HsDialerWidget::startDialer()
 #endif
 }
 
+void HsDialerWidget::updateMissedCallBadge(
+        const XQSettingsKey &key, const QVariant &value)
+{
+#ifdef Q_OS_SYMBIAN
+    if ( key.key() == (quint32)KLogsNewMissedCalls ){
+        m_missedCalls = value.toInt();
+        m_shortcutBadge->setVisible(value.toBool());
+        setItemPositions();
+        m_backgroud->update();
+    }
+#else
+   Q_UNUSED(key);
+   Q_UNUSED(value);
+#endif
+}
+
 /*!
     \fn void HsDialerWidget::onShow()
 
@@ -136,4 +221,23 @@ void HsDialerWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
     Q_UNUSED(event);
     startDialer();
+}
+
+void HsDialerWidget::setItemPositions()
+{
+    HbIcon icon(KDialerWidgetIcon);
+    setPreferredWidth( icon.width());
+    int badgeSize = 20;
+    if ( m_shortcutBadge->isVisible()){
+        m_backgroud->setGeometry(QRectF(QPointF(0,badgeSize / 2 ), 
+                QSizeF(icon.width(),icon.height())));
+        m_shortcutBadge->setGeometry(QRectF(
+                QPointF(m_backgroud->boundingRect().width() - (badgeSize / 2),0 ),
+                QSizeF(badgeSize, badgeSize)));
+        setPreferredHeight(icon.height()+(badgeSize / 2));
+    } else {
+        m_backgroud->setGeometry(QRectF(QPointF(0,0), 
+                QSizeF(icon.width(),icon.height())));
+        setPreferredHeight(icon.height());
+    }
 }

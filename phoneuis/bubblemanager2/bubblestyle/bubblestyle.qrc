@@ -5,5 +5,7 @@
         <file alias="bubbleparticipantlistitem.css">layout/bubbleparticipantlistitem.css</file>
         <file alias="bubbleheadingwidget.widgetml">layout/bubbleheadingwidget.widgetml</file>
         <file alias="bubbleheadingwidget.css">layout/bubbleheadingwidget.css</file>
+        <file alias="bubbleimagewidget.widgetml">layout/bubbleimagewidget.widgetml</file>
+        <file alias="bubbleimagewidget.css">layout/bubbleimagewidget.css</file>
     </qresource>
 </RCC>

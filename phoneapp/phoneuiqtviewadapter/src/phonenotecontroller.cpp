@@ -73,16 +73,29 @@ void PhoneNoteController::showGlobalNote(TPhoneCommandParam *commandParam)
             HbDeviceMessageBox messageBox(noteString, type);
             messageBox.setTimeout(HbDialog::StandardTimeout);
             messageBox.exec();
-        } else {    
-            HbDeviceMessageBox *messageBox = new HbDeviceMessageBox(
-                    noteString, type);
-            messageBox->setTimeout(HbDialog::StandardTimeout);
-            m_messageBoxList.append(messageBox);
+        } else {
+            bool showNote(true);
+            for (int i = 0;i<m_messageBoxList.count(); ++i) {
+                // Do not show same note/text several times, e.g when user hits
+                // the end button several times we should show only one "not allowed"
+                // note.
+                if (noteString == m_messageBoxList.at(i)->text()) {
+                    showNote = false;
+                    break;
+                }
+            }
             
-            if (1 == m_messageBoxList.size()) {
-                QObject::connect(messageBox, SIGNAL(aboutToClose()), 
-                                 this, SLOT(destroyDialog()));            
-                messageBox->show();
+            if (showNote) {
+                HbDeviceMessageBox *messageBox = new HbDeviceMessageBox(
+                        noteString, type);
+                messageBox->setTimeout(HbDialog::StandardTimeout);
+                m_messageBoxList.append(messageBox);
+                
+                if (1 == m_messageBoxList.size()) {
+                    QObject::connect(messageBox, SIGNAL(aboutToClose()), 
+                                     this, SLOT(destroyDialog()));            
+                    messageBox->show();
+                }
             }
         }
     }

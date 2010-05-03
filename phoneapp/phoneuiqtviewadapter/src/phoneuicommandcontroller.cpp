@@ -144,7 +144,8 @@ QList<int> PhoneUiCommandController::menuCommands(
     break;
     case 2: {
         if (!callStates.values().contains(EPEStateRinging) &&
-            !callStates.values().contains(EPEStateDisconnecting)) {
+            !callStates.values().contains(EPEStateDisconnecting) &&
+            !callStates.values().contains(EPEStateDialing)) {
             commands.append(PhoneInCallCmdEndAllCalls);
         }
         if (callStates.values().contains(EPEStateConnected) &&

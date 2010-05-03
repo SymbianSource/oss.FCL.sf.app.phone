@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>resource/qtg_fr_shortcut_badge_bg_r.png</file>
+        <file>resource/qtg_fr_shortcut_badge_bg_c.png</file>
+        <file>resource/qtg_fr_shortcut_badge_bg_l.png</file>
+    </qresource>
+</RCC>

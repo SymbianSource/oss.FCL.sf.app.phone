@@ -216,6 +216,8 @@ EXPORT_C TKeyResponse CPhoneUIController::HandleKeyEventL(
         iStateMachine->State()->HandleKeyMessageL( 
                         MPhoneKeyEvents::EPhoneKeyShortPress, 
                         TKeyCode( aKeyEvent.iCode ) );
+        
+        iStateMachine->State()->HandleDtmfKeyToneL( aKeyEvent, aEventCode );
         }
     else if ( aEventCode == EEventLongPress )
         {
@@ -223,8 +225,12 @@ EXPORT_C TKeyResponse CPhoneUIController::HandleKeyEventL(
                         MPhoneKeyEvents::EPhoneKeyLongPress, 
                         TKeyCode( aKeyEvent.iCode ) );    
         }
+    else 
+        {
+        iStateMachine->State()->HandleDtmfKeyToneL( aKeyEvent, aEventCode );
+        }
     
-    iStateMachine->State()->HandleDtmfKeyToneL( aKeyEvent, aEventCode );
+    
         
     return EKeyWasNotConsumed;
     }

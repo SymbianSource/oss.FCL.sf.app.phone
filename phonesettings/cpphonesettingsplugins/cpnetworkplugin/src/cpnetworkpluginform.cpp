@@ -30,6 +30,7 @@
 #include "cpplugincommon.h"
 #include "cppluginlogging.h"
 #include "cpphonenotes.h"
+#include "cellulardatasettings.h"
 
 /*!
   CpNetworkPluginForm::CpNetworkPluginForm
@@ -39,14 +40,16 @@ CpNetworkPluginForm::CpNetworkPluginForm(QGraphicsItem *parent) :
     m_activeNoteId(0),
     m_activeProgressNoteId(0),
     m_pSetWrapper(NULL),
-    m_cpSettingsWrapper(NULL)
+    m_cpSettingsWrapper(NULL),
+    mCellularSettings()
 {
     DPRINT << ": IN";
     
-    setHeading(hbTrId("Mobile network"));
+    setHeading(hbTrId("txt_cp_subhead_mobile_network"));
     
     QScopedPointer<PSetWrapper> pSetWrapperGuard(new PSetWrapper);
     m_psetNetworkWrapper = &pSetWrapperGuard->networkWrapper();
+    mCellularSettings = QSharedPointer<CellularDataSettings>(new CellularDataSettings);
     connectToNetworkWrapper(*m_psetNetworkWrapper);
     connectToPhoneNotes(*CpPhoneNotes::instance());
     
@@ -57,6 +60,10 @@ CpNetworkPluginForm::CpNetworkPluginForm(QGraphicsItem *parent) :
     model->appendDataFormItem(createNetworkModeItem());
     // #2 Use phone settings for operator selection
     model->appendDataFormItem(createOperatorSelectionItem());
+    // Home network cellular data usage
+    model->appendDataFormItem(createHomeDataUsageItem());
+    // Cellular network data usage when roaming
+    model->appendDataFormItem(createRoamDataUsageItem());
     setModel(model.take());
     m_pSetWrapper = pSetWrapperGuard.take();
     m_cpSettingsWrapper = cpSettingsWrapperGuard.take();
@@ -89,12 +96,14 @@ HbDataFormModelItem *CpNetworkPluginForm::createNetworkModeItem()
 
     m_NetworkModeOptionsItemData = new CpSettingFormItemData(
         HbDataFormModelItem::ComboBoxItem, 
-        hbTrId("Network mode"), 
+        hbTrId("txt_cp_setlabel_network_mode"), 
         NULL );
     QScopedPointer<CpSettingFormItemData> settingFormItemGuard(
         m_NetworkModeOptionsItemData);
     
-    mNetworkModeOptions << hbTrId("Dual mode") << hbTrId("UMTS") << hbTrId("GSM");
+    mNetworkModeOptions << hbTrId("txt_cp_setlabel_network_mode_val_dual_mode")
+                        << hbTrId("txt_cp_setlabel_network_mode_val_umts")
+                        << hbTrId("txt_cp_setlabel_network_mode_val_gsm");
     m_NetworkModeOptionsItemData->setContentWidgetData(
         "items", QVariant(mNetworkModeOptions));
     
@@ -133,7 +142,7 @@ HbDataFormModelItem *CpNetworkPluginForm::createOperatorSelectionItem()
     
     m_NetworkOperatorSelectionItemData = new CpSettingFormItemData(
         HbDataFormModelItem::ToggleValueItem, 
-        hbTrId("Operator selection"), 
+        hbTrId("txt_cp_setlabel_operator_selection"), 
         NULL);
     QScopedPointer<CpSettingFormItemData> settingFormItemGuard(
         m_NetworkOperatorSelectionItemData);
@@ -145,11 +154,11 @@ HbDataFormModelItem *CpNetworkPluginForm::createOperatorSelectionItem()
         switch (mode) {
             case PSetNetworkWrapper::SelectionModeAutomatic: 
                 m_NetworkOperatorSelectionItemData->setContentWidgetData(
-                    "text", QVariant(hbTrId("Automatic")));
+                    "text", QVariant(hbTrId("txt_cp_setlabel_operator_selection_val_automatic")));
                 break;
             case PSetNetworkWrapper::SelectionModeManual: 
                 m_NetworkOperatorSelectionItemData->setContentWidgetData(
-                    "text", QVariant(hbTrId("Manual")));
+                    "text", QVariant(hbTrId("txt_cp_setlabel_operator_selection_val_manual")));
                 break;
             default:
                 break;
@@ -166,6 +175,108 @@ HbDataFormModelItem *CpNetworkPluginForm::createOperatorSelectionItem()
 }
 
 /*!
+  CpNetworkPluginForm::createHomeDataUsageItem
+  */
+HbDataFormModelItem *CpNetworkPluginForm::createHomeDataUsageItem()
+{
+    DPRINT << ": IN";
+    
+    mCellularUseHomeSelectionItemData = new CpSettingFormItemData(
+        HbDataFormModelItem::ComboBoxItem, 
+        hbTrId("txt_cp_setlabel_data_usage_in_home_network"), 
+        NULL);
+    QScopedPointer<CpSettingFormItemData> settingFormItemGuard(
+        mCellularUseHomeSelectionItemData);
+
+    // Populate the dropdown with selection items
+    mCellularUseHomeOptions
+        << hbTrId("txt_cp_setlabel_data_usage_in_val_automatic")
+        << hbTrId("txt_cp_setlabel_data_usage_in_val_confirm")
+        << hbTrId("txt_cp_setlabel_data_usage_in_val_disabled");
+    mCellularUseHomeSelectionItemData->setContentWidgetData(
+        "items",
+        QVariant(mCellularUseHomeOptions));
+
+    // Set initial selection based on current setting
+    mCellularUseHomeSelectionItemData->setContentWidgetData(
+        "currentIndex",
+        mCellularSettings->dataUseHome());      // NOTE: Indexes must match!
+
+    addConnection(
+        mCellularUseHomeSelectionItemData, 
+        SIGNAL(currentIndexChanged(int)),
+        this, 
+        SLOT(cellularDataUseHomeStateChanged(int)));
+    
+    settingFormItemGuard.take();
+    DPRINT << ": OUT";
+    return mCellularUseHomeSelectionItemData;
+}
+
+/*!
+  CpNetworkPluginForm::cellularDataUseHomeStateChanged
+  */
+void CpNetworkPluginForm::cellularDataUseHomeStateChanged(int index)
+{
+    DPRINT << ": IN : index: " << index;
+
+    mCellularSettings->setDataUseHome(index);
+    
+    DPRINT << ": OUT";
+}
+
+/*!
+  CpNetworkPluginForm::createRoamDataUsageItem
+  */
+HbDataFormModelItem *CpNetworkPluginForm::createRoamDataUsageItem()
+{
+    DPRINT << ": IN";
+    
+    mCellularUseRoamSelectionItemData = new CpSettingFormItemData(
+        HbDataFormModelItem::ComboBoxItem, 
+        hbTrId("txt_cp_setlabel_data_usage_when_roaming"), 
+        NULL);
+    QScopedPointer<CpSettingFormItemData> settingFormItemGuard(
+        mCellularUseRoamSelectionItemData);
+
+    // Populate the dropdown with selection items
+    mCellularUseRoamOptions
+        << hbTrId("txt_cp_setlabel_data_usage_when_val_automatic")
+        << hbTrId("txt_cp_setlabel_data_usage_when_val_confirm")
+        << hbTrId("txt_cp_setlabel_data_usage_when_val_disabled");
+    mCellularUseRoamSelectionItemData->setContentWidgetData(
+        "items",
+        QVariant(mCellularUseRoamOptions));
+
+    // Set initial selection based on current setting
+    mCellularUseRoamSelectionItemData->setContentWidgetData(
+        "currentIndex",
+        mCellularSettings->dataUseRoam());      // NOTE: Indexes must match!
+
+    addConnection(
+        mCellularUseRoamSelectionItemData, 
+        SIGNAL(currentIndexChanged(int)),
+        this, 
+        SLOT(cellularDataUseRoamStateChanged(int)));
+    
+    settingFormItemGuard.take();
+    DPRINT << ": OUT";
+    return mCellularUseRoamSelectionItemData;
+}
+
+/*!
+  CpNetworkPluginForm::cellularDataUseRoamStateChanged
+  */
+void CpNetworkPluginForm::cellularDataUseRoamStateChanged(int index)
+{
+    DPRINT << ": IN : index: " << index;
+
+    mCellularSettings->setDataUseRoam(index);
+    
+    DPRINT << ": OUT";
+}
+
+/*!
   CpNetworkPluginForm::networkModeStateChanged
   */
 void CpNetworkPluginForm::networkModeStateChanged(int index)
@@ -174,7 +285,7 @@ void CpNetworkPluginForm::networkModeStateChanged(int index)
     DPRINT << ": IN : index: " << index;
     
     if(isPhoneOnLine()) {
-        if(index == 0){
+        if(index == 0) {
             dualModeSelection();
         } else if(index == 1) {
             umtsSelection();
@@ -208,12 +319,12 @@ void CpNetworkPluginForm::operatorSelectionStateChanged(bool)
             case PSetNetworkWrapper::SelectionModeAutomatic: 
                 manualOperatorSelection();
                 m_NetworkOperatorSelectionItemData->setContentWidgetData(
-                    "text", QVariant(hbTrId("Manual")));
+                    "text", QVariant(hbTrId("txt_cp_setlabel_operator_selection_val_manual")));
                 break;
             case PSetNetworkWrapper::SelectionModeManual: 
                 automaticOperatorSelection();
                 m_NetworkOperatorSelectionItemData->setContentWidgetData(
-                    "text", QVariant(hbTrId("Automatic")));
+                    "text", QVariant(hbTrId("txt_cp_setlabel_operator_selection_val_automatic")));
                 break;
             default:
                 break;
@@ -391,16 +502,16 @@ void CpNetworkPluginForm::networkReqestFailed(
     QString text;
     switch(error) {
         case PSetNetworkWrapper::ErrCauseCallActive:
-            text = hbTrId("Call in progress");
+            text = hbTrId("txt_cp_info_active_calls_must_be_disconnected_befo");
             break;
         case PSetNetworkWrapper::ErrNoNetworkService:
-            text = hbTrId("No network found");
+            text = hbTrId("txt_cp_info_no_operators_found");
             break;
         case PSetNetworkWrapper::ErrOfflineOpNotAllowed:
-            text = hbTrId("Off-line, not alloowed");
+            text = hbTrId("Off-line, not allowed");
             break;
         case PSetNetworkWrapper::ErrNoNetworkAccess:
-            text = hbTrId("No access");
+            text = hbTrId("txt_cp_info_no_access_to_selected_operators_netwo");
             break;
         default:
             break;
@@ -452,7 +563,7 @@ void CpNetworkPluginForm::handleSearchingNetworks(
         QObject::connect(
             CpPhoneNotes::instance(), SIGNAL(progressNoteCanceled()),
             this, SLOT(userCancel()));
-        emit showGlobalProgressNote(m_activeProgressNoteId, hbTrId("Searching..."));
+        emit showGlobalProgressNote(m_activeProgressNoteId, hbTrId("txt_cp_info_updating"));
     } else {
         QObject::disconnect(
             CpPhoneNotes::instance(), SIGNAL(progressNoteCanceled()),
@@ -524,7 +635,7 @@ void CpNetworkPluginForm::showManualSeletiondialog()
 {
     DPRINT << ": IN";
     
-    HbDialog *dialog = createDialog(hbTrId("Available networks"));
+    HbDialog *dialog = createDialog(hbTrId("txt_cp_title_select_operator"));
     HbListWidget *list = new HbListWidget(dialog);
     //then insert found networks
     int itemsCount = m_networkInfoList->count();
@@ -540,7 +651,7 @@ void CpNetworkPluginForm::showManualSeletiondialog()
         list, SIGNAL(activated(HbListWidgetItem*)), 
         dialog, SLOT(close()));
     // Sets the "Cancel"-action/button
-    HbAction *cancelAction = new HbAction(hbTrId("Cancel"));
+    HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"));
     dialog->setPrimaryAction(cancelAction);
     dialog->setContentWidget(list);
     // Launch popup and handle the response
@@ -594,11 +705,11 @@ void CpNetworkPluginForm::restoreUiSelection()
         switch (mode) {
             case PSetNetworkWrapper::SelectionModeAutomatic: 
                 m_NetworkOperatorSelectionItemData->setContentWidgetData(
-                    "text", QVariant(hbTrId("Automatic")));
+                    "text", QVariant(hbTrId("txt_cp_setlabel_operator_selection_val_automatic")));
                 break;
             case PSetNetworkWrapper::SelectionModeManual: 
                 m_NetworkOperatorSelectionItemData->setContentWidgetData(
-                    "text", QVariant(hbTrId("Manual")));
+                    "text", QVariant(hbTrId("txt_cp_setlabel_operator_selection_val_manual")));
                 break;
             default:
                 break;
@@ -718,6 +829,19 @@ bool CpNetworkPluginForm::isPhoneOnLine()
     
     DPRINT << ": OUT : onLine : " << onLine;
     return onLine;
+}
+
+/*!
+  CpNetworkPluginForm::SearchAvailableNetworks
+ */
+void CpNetworkPluginForm::SearchAvailableNetworks()
+{
+    DPRINT << ": IN";
+    
+    m_psetNetworkWrapper->cancelRequest();
+    manualOperatorSelection();
+        
+    DPRINT << ": OUT";
 }
 
 // End of File. 

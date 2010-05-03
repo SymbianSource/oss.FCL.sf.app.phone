@@ -1,12 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <RCC>
-    <qresource prefix="/" >
-        <file>resource/infowidget.png</file>        
-        <file>resource/infowidget.docml</file>        
-        <file>resource/qgn_prop_network_2g.svg</file>
-        <file>resource/qgn_prop_pb_call.svg</file>
-        <file>resource/qgn_prop_pb_sim.svg</file>
-        <file>resource/qgn_stat_zone_home_uni.svg</file>
+    <qresource prefix="/">
+        <file>resource/infowidget.png</file>
+        <file>resource/infowidget.docml</file>
     </qresource>
 </RCC>
-
-

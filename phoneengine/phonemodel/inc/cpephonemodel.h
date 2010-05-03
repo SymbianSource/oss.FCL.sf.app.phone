@@ -77,9 +77,10 @@ NONSHARABLE_CLASS( CPEPhoneModel )
             EPESimStatusMonitorStart,
             EPELogHandlingPhaseTwo,
             EPEContactHandlingPhaseTwo,
-            EPEMediatorCommandHandler
-           ,EPEPhoneServices
-           ,EPEParserRecognizer
+            EPEMediatorCommandHandler,
+            EPEPhoneServices,
+            EPEParserRecognizer,
+            EPENetworkHandling
             };
 
         /**

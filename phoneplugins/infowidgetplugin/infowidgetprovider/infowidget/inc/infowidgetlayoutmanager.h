@@ -54,21 +54,19 @@ public:
         // Content widget, the main widget from document 
         RoleContent,
         // Marquee items 
-        RoleMcnMarqueeItem, 
+        RoleMcnMarqueeItem,
+        RoleSatMarqueeItem,
         // Labels 
-        RoleHomeZoneLabel, 
+        RoleSpnLabel,
         RoleMcnLabel, 
-        RoleActiveLineLabel, 
         RoleSatTextLabel,
-        // Icons 
-        RoleHomeZoneIcon, 
+        // Icons
+        RoleSpnIcon, 
         RoleMcnIcon, 
-        RoleActiveLineIcon, 
         RoleSatTextIcon, 
         // Check boxes 
-        RoleHomeZoneCheckBox, 
+        RoleSpnCheckBox,
         RoleMcnCheckBox, 
-        RoleActiveLineCheckBox, 
         RoleSatTextCheckBox,
         // Buttons 
         RoleOkButton,
@@ -91,17 +89,19 @@ public:
     QList<LayoutItemRole> currentWidgetRoles(); 
     
     int layoutRows() const; 
-    void setLayoutRows(int rows); 
+    void setLayoutRows(int rows);
+    qreal rowHeight() const; 
     
     QGraphicsLayout* layoutInfoDisplay();
     QGraphicsLayout* layoutSettingsDisplay(); 
     
     const QList<InfoWidgetLayoutManager::LayoutItemRole> widgetRoles(
             DisplayRole displayRole) const; 
-    
+
     bool loadWidgets(const DisplayRole displayRole, 
             const QList<LayoutItemRole> &displayWidgets,
             QMap<LayoutItemRole, QGraphicsWidget *> &widgetMap);
+    bool reloadWidgets(const DisplayRole displayRole);
     
     QGraphicsWidget* loadWidget(InfoWidgetDocumentLoader &loader, 
             DisplayRole displayRole, 
@@ -110,9 +110,11 @@ public:
     QGraphicsWidget* getWidget(LayoutItemRole itemRole);
     QGraphicsWidget* contentWidget();
     
+    void removeWidget(LayoutItemRole itemRole);
     void hideWidget(LayoutItemRole itemRole);
     void hideAll();
     void showAll();
+    
     
 private:
     QMap<LayoutItemRole, QGraphicsWidget *> m_widgets; 

@@ -42,7 +42,6 @@ private slots:
     
     void t_createItem();
     void t_canSetModelIndex();
-    void t_restore();
     void t_createCustomWidget();
 private:
     // Not own

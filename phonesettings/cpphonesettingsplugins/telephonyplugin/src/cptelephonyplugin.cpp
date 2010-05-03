@@ -44,7 +44,7 @@ QList<CpSettingFormItemData*> CpTelephonyPlugin::createSettingFormItemData(
 
     QList<CpSettingFormItemData*> ret;
     ret.append(new CpSettingFormEntryItemDataImpl<CpTelephonyPluginView>(
-            itemDataHelper, hbTrId("Telephony"), hbTrId("")));
+            itemDataHelper, hbTrId("txt_cp_dblist_telephone"), hbTrId("")));
     return ret;
 }
 

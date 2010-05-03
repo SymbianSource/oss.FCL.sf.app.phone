@@ -43,6 +43,7 @@ private slots:
     void testSecondaryCli();
     void testTimerCost();
     void testCallImage();
+    void testShowDefaultAvatar();
     void testAddActions();
     void testIsConference();
     void testIsInConference();
@@ -163,6 +164,14 @@ void ut_BubbleHeader::testCallImage()
 {
     bubbleHeader->setCallImage( "image.png" );
     QVERIFY( bubbleHeader->callImage() == "image.png" );
+}
+
+void ut_BubbleHeader::testShowDefaultAvatar()
+{
+    bubbleHeader->setShowDefaultAvatar(true);
+    QVERIFY( bubbleHeader->showDefaultAvatar() == true);
+    bubbleHeader->setShowDefaultAvatar(false);
+    QVERIFY( bubbleHeader->showDefaultAvatar() == false);
 }
 
 void ut_BubbleHeader::testAddActions()

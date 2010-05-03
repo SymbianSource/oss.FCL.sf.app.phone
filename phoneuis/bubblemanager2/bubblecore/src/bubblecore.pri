@@ -28,7 +28,11 @@ HEADERS += ../inc/bubblemanager2.h \
     src/bubblehandler.h \
     src/bubbleexpandedhandler.h \
     src/bubblecollapsedhandler.h \
-    src/bubbleconferencehandler.h
+    src/bubbleconferencehandler.h \
+    src/bubbleimagemanager.h \
+    src/bubbleimagemanager_p.h \
+    src/bubbleeffecthandler.h
+
 SOURCES += src/bubblemanager2.cpp \
     src/bubbleheader.cpp \
     src/bubbleimagewidget.cpp \
@@ -44,4 +48,12 @@ SOURCES += src/bubblemanager2.cpp \
     src/bubblehandler.cpp \
     src/bubbleexpandedhandler.cpp \
     src/bubblecollapsedhandler.cpp \
-    src/bubbleconferencehandler.cpp
+    src/bubbleconferencehandler.cpp \
+    src/bubbleimagemanager.cpp \
+    src/bubbleeffecthandler.cpp
+
+symbian {
+    SOURCES += src/bubbleimagemanager_p.cpp
+} else:win32 {
+    SOURCES += src/bubbleimagemanager_p_stub.cpp
+}

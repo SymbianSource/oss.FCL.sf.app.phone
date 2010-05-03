@@ -237,6 +237,8 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
     holdFlag.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
 
+    SetTouchPaneButtons( EPhoneCallSetupAndSingleButtons );
+    
     // Go to alerting state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateAlertingInSingle );

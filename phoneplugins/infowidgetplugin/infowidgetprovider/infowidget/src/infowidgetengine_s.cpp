@@ -32,7 +32,7 @@ InfoWidgetEngine::InfoWidgetEngine(QObject *parent):
  */
 InfoWidgetEngine::~InfoWidgetEngine()
 {
-DPRINT;
+    DPRINT;
 }    
 
 /*!
@@ -97,17 +97,25 @@ void InfoWidgetEngine::updateLineDataToModel()
     DPRINT;
 }
 
-
+/*!
+   InfoWidgetEngine::handleNetworkError
+ */
 void InfoWidgetEngine::handleNetworkError(int operation, int errorCode)
 {
     DPRINT << ": operation: " << operation << " error code: " << errorCode; 
 }
 
+/*!
+   InfoWidgetEngine::handleSatError
+ */
 void InfoWidgetEngine::handleSatError(int operation, int errorCode)
 {
     DPRINT << ": operation: " << operation << " error code: " << errorCode; 
 }
 
+/*!
+   InfoWidgetEngine::handleLineError
+ */
 void InfoWidgetEngine::handleLineError(int operation, int errorCode)
 {
     DPRINT << ": operation: " << operation << " error code: " << errorCode; 

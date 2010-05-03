@@ -1961,11 +1961,6 @@ void CPEMessageHandler::HandleDialingStateL(
     {
     TEFLOGSTRING( KTAINT, "PE CPEMessageHandler::HandleDialingStateL <");
     
-    if( iCallHandling.GetNumberOfCalls() == 1 )
-        {
-        // Check volume levels - zero level needs to be reset to default value
-        iGsmAudioData.SetDefaultVolume();
-        }
     // Save call direction to engine info.
     iDataStore.SetCallDirection( RMobileCall::EMobileOriginated, aCallId );
     
@@ -2020,11 +2015,7 @@ void CPEMessageHandler::HandleIncomingCallL(
         iGsmAudioData.PlayInbandTone();
         iWaitingCallId = aCallId;
         }
-    else if( numberOfCalls == 1 )
-        {
-        // Check volume levels - zero level needs to be reset to default value
-        iGsmAudioData.SetDefaultVolume();
-        }
+
     if( AutomaticAnswer( aCallId ) )
         {
         TEFLOGSTRING( KTAINT, 

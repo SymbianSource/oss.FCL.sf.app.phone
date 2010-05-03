@@ -11,7 +11,8 @@
 *
 * Contributors:
 *
-* Description:  Example of home screen widget
+* Description:  Infowidgetplugin service manager 
+* registration handler
 *
 */
 

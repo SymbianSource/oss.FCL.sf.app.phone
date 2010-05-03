@@ -45,11 +45,6 @@ public:
     static bool videoSupported();
 
     /*!
-      Service code conversion
-      */
-    static BasicServiceGroups convertEtelMobileServiceCode(int serviceCode);
-
-    /*!
       Error code text conversion
       */
     static bool errorCodeTextMapping(const int errorcode, QString &errorText);

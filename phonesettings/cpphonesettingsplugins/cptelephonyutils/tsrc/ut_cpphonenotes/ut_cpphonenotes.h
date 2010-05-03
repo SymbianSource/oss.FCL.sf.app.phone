@@ -58,8 +58,8 @@ private slots:
     void t_showGlobalNote();
     void t_showGlobalErrorNote();
     void t_showBasicServiceList();
-    void t_showBasicServiceCallDivertList();
     void t_showCallDivertDetails();
+    void t_showPasswordQueryDialog();
     void t_cancelNote();
 
 private:

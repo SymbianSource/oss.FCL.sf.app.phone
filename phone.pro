@@ -24,13 +24,16 @@ SUBDIRS += phoneengine/phonecntfinder2
 SUBDIRS += phoneengine/phoneservices
 SUBDIRS += phoneengine/parserrecognizer
 SUBDIRS += phoneengine/phonemodel
+SUBDIRS += phoneengine/networkhandlingstarter
 SUBDIRS += phoneuis/bubblemanager2
+SUBDIRS += phoneplugins/phoneindicatorplugin
 SUBDIRS += phoneapp/phoneuiview2
 SUBDIRS += phoneapp/phoneuiqtviewadapter
 SUBDIRS += phoneapp/phonestringloader
 SUBDIRS += phoneapp/phoneui2
 SUBDIRS += phonesettings/cpphonesettingsplugins
-SUBDIRS += phoneplugins/hsdialerwidgetplugin
+#SUBDIRS += phoneplugins/hsdialerwidgetplugin
 SUBDIRS += phoneplugins/infowidgetplugin
+SUBDIRS += phoneuis/ussdeditor
 }
           

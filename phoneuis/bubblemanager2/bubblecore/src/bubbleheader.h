@@ -85,6 +85,10 @@ public:
     // caller image
     void setCallImage( const QString& image );
     const QString& callImage() const;
+
+    // default avatar
+    void setShowDefaultAvatar(bool show);
+    bool showDefaultAvatar() const;
     
     // actions
     void addAction( HbAction* action );
@@ -120,6 +124,7 @@ private: //data
     QList<HbAction*> mActions;
     HbAction* mExpandAction;
     bool mIsInConference;
+    bool mShowDefaultAvatar;
     };
 
 #endif /* BUBBLEHEADER_H_ */

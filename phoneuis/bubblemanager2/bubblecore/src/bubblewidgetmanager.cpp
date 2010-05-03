@@ -18,6 +18,7 @@
 #include <QtCore>
 #include <hbstyle.h>
 #include <hbdocumentloader.h>
+#include <hbframeitem.h>
 #include "bubblewidgetmanager.h"
 #include "bubblecontainerwidget.h"
 #include "bubbleimagewidget.h"
@@ -36,16 +37,20 @@ const char *BUBBLE_DOCUMENT_CONTENT = "content";
 class BubbleDocumentLoader : public HbDocumentLoader
 {
 public:
-    BubbleDocumentLoader(const QString& stylePluginName);
+    BubbleDocumentLoader(BubbleImageManager& imageManager,
+                         const QString& stylePluginName);
     virtual QObject *createObject(const QString& type,
                                   const QString &name);
 private:
-    QString mStylePluginName;
+    BubbleImageManager& mImageManager;
+    QString mStylePluginName;    
 };
 
 
-BubbleWidgetManager::BubbleWidgetManager(int style, QObject* parent)
-    : QObject(parent), mStyleBaseId(style),mOrientation(Qt::Vertical)
+BubbleWidgetManager::BubbleWidgetManager(
+    BubbleImageManager& imageManager, int style, QObject* parent)
+    : QObject(parent), mImageManager(imageManager), mStyleBaseId(style),
+      mOrientation(Qt::Vertical)
 {
     // .docml mappings
     mFileNames.insert(SingleCallView,":/xml/bubble_layout_1.docml");
@@ -70,6 +75,7 @@ BubbleWidgetManager::BubbleWidgetManager(int style, QObject* parent)
     mWidgetName.insert(RightButton,    "rightButton");
     mWidgetName.insert(ConferenceTimer,"callTimer");
     mWidgetName.insert(ParticipantList,"participantList");
+    mWidgetName.insert(MutedIcon,      "mutedIcon");
 
     mButtonStyle.insert(LeftButton, new BubbleButtonStyle());
     mButtonStyle.insert(CenterButton, new BubbleButtonStyle());
@@ -113,7 +119,7 @@ QGraphicsWidget* BubbleWidgetManager::loadDocument(
     Qt::Orientation orientation)
 {
     BubbleDocumentLoader* loader =
-        new BubbleDocumentLoader(mStylePluginName);
+        new BubbleDocumentLoader(mImageManager,mStylePluginName);
     bool ok;
 
     loader->load(mFileNames[view],&ok);
@@ -144,6 +150,8 @@ void BubbleWidgetManager::applyCustomStyles(View view)
     setButtonStyle(LeftButton, widget(view,ExpandedBubble,LeftButton));
     setButtonStyle(CenterButton, widget(view,ExpandedBubble,CenterButton));
     setButtonStyle(RightButton, widget(view,ExpandedBubble,RightButton));
+
+    setBackground(widget(view,None,MutedIcon));
 }
 
 void BubbleWidgetManager::setButtonStyle(Widget widget, QGraphicsWidget* button)
@@ -153,6 +161,17 @@ void BubbleWidgetManager::setButtonStyle(Widget widget, QGraphicsWidget* button)
     if (b) {
         Q_ASSERT(mButtonStyle.contains(widget));
         b->setStyle(mButtonStyle.value(widget));
+    }
+}
+
+void BubbleWidgetManager::setBackground(QGraphicsWidget* widget)
+{
+    HbWidget* w;
+    w = qobject_cast<HbWidget*>(widget);
+    if (w) {
+        HbFrameItem* item =
+            new HbFrameItem("qtg_fr_popup_trans",HbFrameDrawer::NinePieces);
+        w->setBackgroundItem(item); // takes ownership
     }
 }
 
@@ -256,8 +275,9 @@ void BubbleWidgetManager::setStylePluginName(const QString& name)
 }
 
 // custom widget loading
-BubbleDocumentLoader::BubbleDocumentLoader(const QString& stylePluginName)
-    : mStylePluginName(stylePluginName)
+BubbleDocumentLoader::BubbleDocumentLoader(
+      BubbleImageManager& imageManager, const QString& stylePluginName)
+    : mImageManager(imageManager), mStylePluginName(stylePluginName)
 {
 }
 
@@ -272,7 +292,8 @@ QObject *BubbleDocumentLoader::createObject(
     }
 
     if ( type == BubbleImageWidget::staticMetaObject.className() ) {
-        QObject *object = new BubbleImageWidget();
+        QObject *object = new BubbleImageWidget(
+            mStylePluginName, mImageManager);
         object->setObjectName(name);
         return object;
     }

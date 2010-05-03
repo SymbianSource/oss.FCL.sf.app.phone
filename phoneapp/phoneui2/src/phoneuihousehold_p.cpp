@@ -210,6 +210,12 @@ void PhoneUiHouseHoldPrivate::ConstructL()
         translator3 = 0;
     }
 	
+    CEikonEnv* env = CEikonEnv::Static();
+    if ( env ) {
+        env->SetSystem(ETrue);
+    }
+    
+	
     PhoneUIQtView *view = new PhoneUIQtView(m_window);
     iViewAdapter = new PhoneUIQtViewAdapter(*view);
     iPhoneUIController = CPhoneUIController::NewL(iViewAdapter);
@@ -224,7 +230,6 @@ void PhoneUiHouseHoldPrivate::ConstructL()
     QObject::connect(view, SIGNAL(keyReleased(QKeyEvent *)), iViewAdapter, SLOT(keyReleased (QKeyEvent *)));
     QObject::connect(view, SIGNAL(keyPressed (QKeyEvent *)), iKeyEventAdapter, SLOT(keyPressed (QKeyEvent *)));
     QObject::connect(view, SIGNAL(keyReleased (QKeyEvent *)), iKeyEventAdapter, SLOT(keyReleased (QKeyEvent *)));
-    QObject::connect(view, SIGNAL(endKeyLongPress()), iKeyEventAdapter, SLOT(endKeyLongPress()));
     QObject::connect(view, SIGNAL(command (int)), iCommandAdapter, SLOT(handleCommand (int)),
                      Qt::QueuedConnection); // async to enable deletion of widget during signal handling
     
