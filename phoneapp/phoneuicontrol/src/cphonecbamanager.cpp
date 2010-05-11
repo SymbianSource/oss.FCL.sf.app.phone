@@ -296,10 +296,14 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
 
     else
         {
-        if ( securityMode )
-        	{
-        	incomingCbaResourceId = EPhoneCallHandlingIncomingRejectCBA;
-        	}
+        if ( securityMode && callIsAlerting )
+            {
+            incomingCbaResourceId = GetIncomingCallSilenceCBA( softRejectActivated );
+            }
+        else if ( securityMode )
+            {
+            incomingCbaResourceId = EPhoneCallHandlingIncomingRejectCBA;
+            }
         else if ( callIsAlerting )
             {
             incomingCbaResourceId = GetIncomingCallSilenceCBA( softRejectActivated );
@@ -461,9 +465,9 @@ TInt CPhoneCbaManager::GetIncomingCallSilenceCBA(
                              ResolveResourceID( EPhoneIncomingCallButtons ) );
 
     if ( iStateMachine.SecurityMode()->IsSecurityMode() )
-    	{
-    	ret = EPhoneCallHandlingIncomingRejectCBA;
-    	}
+        {
+        ret = EPhoneCallHandlingIncomingCBA;
+        }
     else if ( touchpaneButtonsParam.Integer() 
          == R_PHONEUI_INCOMING_CALL_SILENCE_BUTTONS )
         {

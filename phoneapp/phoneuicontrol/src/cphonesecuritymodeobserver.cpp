@@ -205,7 +205,8 @@ CPhoneSecurityModeObserver::CPhoneSecurityModeObserver() :
 	iSimState( ESimSecurityStatusUninitialized ),
 	iEngineCurrentSimState( EPESimStatusUninitialized ),
 	iEnginePreviousSimState(EPESimStatusUninitialized ),
-	iDeviceLockState( EAutolockStatusUninitialized )
+	iDeviceLockState( EAutolockStatusUninitialized ),
+    iSecurityMode( ETrue )
 	{
 	
 	}

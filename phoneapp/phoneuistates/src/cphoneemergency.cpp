@@ -185,10 +185,7 @@ void CPhoneEmergency::HandlePhoneEngineMessageL(
             break;
             
         case MEngineMonitor::EPEMessageColpNumberAvailable:
-            {
             //Don't show COLP note during emergency call.
-            return;                    
-            }
             break; 
 
         default:
@@ -240,6 +237,8 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
                 // Continue displaying current app but set up the
                 // idle screen in the background
                 SetupIdleScreenInBackgroundL();
+                // Update toolbar
+                iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateToolbar );
                 }
 
             else if ( iOnScreenDialer && IsNumberEntryContentStored() )
@@ -257,6 +256,8 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
                 {
                 // Show the number entry if it exists
                 SetNumberEntryVisibilityL(ETrue);
+                // Update toolbar
+                iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateToolbar );
                 }
 
             else
@@ -380,6 +381,8 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
 
         SetTouchPaneButtons( EPhoneEmergencyCallButtons );
 
+        SetToolbarDimming( ETrue );
+
         ShowNoteL( EPhoneEmergencyConnectWaitNote );
 
         UpdateSetupCbaL();
@@ -454,9 +457,6 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
 
     EndUiUpdate();
 
-    //Make sure that toolbar is not shown
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewHideToolbar );
-
     UpdateInCallCbaL();
     }
 
@@ -479,6 +479,7 @@ void CPhoneEmergency::HandleConnectedL( TInt aCallId )
         &emergencyHeaderParam );
 
     EndUiUpdate();
+    SetToolbarDimming( ETrue );
     UpdateInCallCbaL();
     }
 

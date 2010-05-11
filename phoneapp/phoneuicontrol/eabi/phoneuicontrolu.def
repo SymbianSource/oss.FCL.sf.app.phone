@@ -468,4 +468,5 @@ EXPORTS
 	_ZThn8_N20CPhoneStateCallSetupD0Ev @ 467 NONAME
 	_ZThn8_N20CPhoneStateCallSetupD1Ev @ 468 NONAME
 	_ZThn8_NK11CPhoneState17IsMenuBarVisibleLEv @ 469 NONAME
+	_ZN11CPhoneState37ForwardPEMessageToPhoneCustomizationLEii @ 470 NONAME
 

@@ -56,6 +56,7 @@
 CPhoneMenuController::CPhoneMenuController( CEikonEnv& aEikEnv ): 
     iMenuResourceId( 0 ),
     iOkMenuResourceId( 0 ),
+    iSecurityMode( ETrue ),
     iEikEnv( aEikEnv )
     {
     }
@@ -227,6 +228,13 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
         {
         switch( menuItemArray[ i ] )
             {
+            case EPhoneDialerCallSettings:
+                if ( iSecurityMode )
+                    {
+                    menuPane->DeleteMenuItem( menuItemArray[ i ] );
+                    }
+                break;
+
             case EPhoneInCallCmdAnswer:
                 if ( iConferenceAndWaitingVideoFlag )
                     {
@@ -470,8 +478,8 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
 
             case EPhoneDialerCallHandling:
                 {
-                // no active call
-                if ( onScreenDialer && !iCallInProgress )
+                // no active call or security mode
+                if ( ( onScreenDialer && !iCallInProgress ) || iSecurityMode )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[i] );                    
                     }                

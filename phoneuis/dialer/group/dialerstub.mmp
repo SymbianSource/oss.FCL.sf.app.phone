@@ -60,6 +60,7 @@ APP_LAYER_SYSTEMINCLUDE
 LIBRARY euser.lib eikcore.lib estor.lib etext.lib 
 LIBRARY cone.lib ws32.lib bmpanim.lib 
 LIBRARY eikcoctl.lib fbscli.lib bafl.lib 
+LIBRARY peninputclient.lib
 
 LIBRARY commonengine.lib
 

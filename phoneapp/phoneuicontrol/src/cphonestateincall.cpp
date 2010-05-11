@@ -191,6 +191,8 @@ EXPORT_C void CPhoneStateInCall::HandlePhoneEngineMessageL(
         {
         case MEngineMonitor::EPEMessageIdle:
             HandleIdleL( aCallId );
+            // Forward idle message to phone customization 
+            CPhoneState::ForwardPEMessageToPhoneCustomizationL( aMessage, aCallId );
             break;
 
         case MEngineMonitor::EPEMessageAudioMuteChanged:

@@ -80,6 +80,7 @@ LIBRARY         featmgr.lib // FeatureManager
 LIBRARY         connmon.lib // RConnectionMonitor
 LIBRARY         avkon.lib // AknTextUtils
 LIBRARY         ProfileEngine.lib
+LIBRARY         hal.lib
 
 // RemCon
 LIBRARY         remconcoreapi.lib

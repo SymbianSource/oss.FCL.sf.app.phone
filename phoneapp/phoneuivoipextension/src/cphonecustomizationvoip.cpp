@@ -60,6 +60,7 @@
 #include "cphonevcchandler.h"
 #include "cphonecallforwardqueryhandler.h"
 #include "cphonekeys.h"
+#include "phoneui.hrh"
 
 // CONSTANTS
 const TInt KMaxLengthForSIPURIFirstLine = 15;
@@ -385,13 +386,19 @@ TBool CPhoneCustomizationVoip::HandleCommandL( TInt aCommand )
             handled = ETrue;
             }
             break;
+        case EPhoneCmdUnattendedTransferCallBackCancel:
+            if ( NeedToRestoreKeyLock() )
+                 {
+                 SetKeyLockEnabledL( ETrue );
+                 SetNeedToRestoreKeyLock( EFalse );
+                 }
+            // intended fall-through
         case EPhoneInCallCmdUnattendedTransfer:
         case EPhoneCmdTransferDialerOk:
         case EPhoneCmdTransferDialerExit:
         case EPhoneCmdTransferDialerSearch:
         case EPhoneCmdTransferDialerContactFetch:
         case EPhoneCmdUnattendedTransferCallBackOk:
-        case EPhoneCmdUnattendedTransferCallBackCancel:
             // intended fall-through
             iTransferCmdHandler->HandleCommandL( aCommand );
             handled = ETrue;
@@ -429,6 +436,15 @@ TBool CPhoneCustomizationVoip::HandleCommandL( TInt aCommand )
             handled = ETrue;
             break;
             
+       case EPhoneCmdRejectUnattendedTransfer:
+            if ( NeedToRestoreKeyLock() )
+                {
+                SetKeyLockEnabledL( ETrue );
+                SetNeedToRestoreKeyLock( EFalse );
+                } 
+            handled = ETrue;
+            break;
+			
         default:
             {
             RArray<CTelMenuExtension::TCallInfo> array;
@@ -598,8 +614,11 @@ TBool CPhoneCustomizationVoip::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageTransferring:
             {
             iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveGlobalNote );
-            CPhoneState* phoneState = 
-                static_cast< CPhoneState* >( iStateMachine.State() );    
+            break;
+            }
+        case MEngineMonitor::EPEMessageTransferDone:
+            {
+            iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveGlobalNote );
             SendGlobalInfoNoteL( EPhoneInCallTransferred );
             break; 
             }
@@ -610,9 +629,28 @@ TBool CPhoneCustomizationVoip::HandlePhoneEngineMessageL(
             }
         case MEngineMonitor::EPEMessageTransferCallBackRequest:
             {
+            if ( iStateMachine.State()->IsKeyLockOn()  )
+                {
+                SetNeedToRestoreKeyLock( ETrue );
+                SetKeyLockEnabledL( EFalse );      
+                }
             iTransferCmdHandler->LaunchCallBackQueryL();
             break;
             }
+		case MEngineMonitor::EPEMessageIdle:
+            {
+            TPhoneCmdParamInteger activeCallCount;
+            iViewCommandHandle.ExecuteCommandL(
+                    EPhoneViewGetCountOfActiveCalls, &activeCallCount );
+            
+            if ( ENoActiveCalls == activeCallCount.Integer() 
+                 && NeedToRestoreKeyLock() )
+                {
+                SetKeyLockEnabledL( ETrue );
+                SetNeedToRestoreKeyLock( EFalse );
+                }
+			break;
+			}
         default:
             handled = EFalse;
             break;
@@ -1528,6 +1566,52 @@ HBufC* CPhoneCustomizationVoip::PhoneNumberFromEntryLC() const
         &stringParam );
     
     return phoneNumber;
+    }
+
+// ---------------------------------------------------------------------------
+// CPhoneCustomizationVoip::SetKeyLockEnabledL
+// ---------------------------------------------------------------------------
+//
+void CPhoneCustomizationVoip::SetKeyLockEnabledL( TBool aEnabled )
+    {
+    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
+        "CPhoneCustomizationVoip::CPhoneCustomizationVoip::SetKeyLockEnabledL" );
+    if ( aEnabled )
+        {
+        iViewCommandHandle.ExecuteCommandL(
+                                  EPhoneViewEnableKeyLock );
+        }
+    else
+        {
+        iViewCommandHandle.ExecuteCommandL(
+                              EPhoneViewDisableKeyLockWithoutNote );
+        }           
+    }
+
+// ---------------------------------------------------------------------------
+// CPhoneCustomizationVoip::SetNeedToRestoreKeyLock
+// ---------------------------------------------------------------------------
+//
+void CPhoneCustomizationVoip::SetNeedToRestoreKeyLock( TBool aRestore )
+    {
+    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
+          "CPhoneCustomizationVoip::CPhoneCustomizationVoip::SetNeedToRestoreKeyLock" );
+    __PHONELOG1( EBasic, PhoneUIVoIPExtension, 
+               "CPhoneCustomizationVoip::AwrNeedToRestoreKeyLock:%d", aRestore );
+    iNeedToRestoreKeyLock = aRestore;
+    }
+
+// -----------------------------------------------------------
+// CPhoneCustomizationVoip::NeedToRestoreKeyLock
+// -----------------------------------------------------------
+//
+TBool CPhoneCustomizationVoip::NeedToRestoreKeyLock() const
+    {
+    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
+          "CPhoneCustomizationVoip::CPhoneCustomizationVoip::NeedToRestoreKeyLock" );
+    __PHONELOG1( EBasic, PhoneUIVoIPExtension, 
+            "CPhoneCustomizationVoip::NeedToRestoreKeyLock:%d", iNeedToRestoreKeyLock );
+    return iNeedToRestoreKeyLock;
     }
 
 // End of File

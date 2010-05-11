@@ -245,26 +245,32 @@ class CPhoneKeyEventForwarder
          */
         TInt iScanCode;
 
-        /*
+        /**
         * Has information of used qwerty keyboard.
         * Own.
         */
         CPhoneQwertyHandler* iQwertyHandler;
         
-        /*
+        /**
          * Time of the previous key press. Used for multitap behaviour.
          */
         TTime iPreviousKeyPressTime;
         
-        /*
+        /**
          * Keycode of the previous keypress. Used for multitap behaviour.
          */
         TInt iPreviousScanCode;
         
-        /*
+        /**
          * Points to next character in multitap character list.
          */
         TInt iMultitapIndex;
+        
+        /**
+         * True if there has been a key event but not a closing key up event.
+         * Needed to detect situations where key up event is handled before key event.
+         */
+        TBool iExpectKeyUpEvent;
     };
 
 #endif      // CPHONEKEYEVENTFORWARDER_H

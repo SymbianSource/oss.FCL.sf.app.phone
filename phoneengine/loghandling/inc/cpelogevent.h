@@ -236,14 +236,7 @@ class CPELogEvent : public CBase
          * @param    aLogInfo      Log info containing remote contact.
          */
         void SetRemoteContact( CLogEvent& aEvent, const CPELogInfo& aLogInfo );
-        
-        /**
-         * Removes from event data the given tag and data attached to it.
-         * @since    S60 v5.1
-         * @param    aTag          Tag to be removed
-         */
-        void RemoveTagFromDataFieldL( const TDesC8& aTag );
-        
+              
     private:    // Data
         // Owner of the object.
         CPELogHandling& iOwner;

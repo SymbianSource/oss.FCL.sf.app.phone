@@ -370,6 +370,25 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         * @return  Phone number
         */
         HBufC* PhoneNumberFromEntryLC() const;
+		
+		/**
+         * Enables or disables key lock.
+         * @param aEnabled ETrue if keylock is enabled,
+         * EFalse if disabled.
+         */
+        void SetKeyLockEnabledL( TBool aEnabled );
+
+		/**
+		* Keylock was on before and needs to be restored.
+		* @param aRestore ETrue if keylock needs to be restored.
+		*/
+	    void SetNeedToRestoreKeyLock( TBool aRestore );
+		
+		/* Check if keylock was on before and needs to be restored.
+		 * @return ETrue if keylock needs to be restored.
+		 */
+	    TBool NeedToRestoreKeyLock() const;
+	    
         
     private: // Data
 		        
@@ -418,6 +437,12 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
          * Call forward handler.
          */
         CPhoneCallForwardQueryHandler* iCallForwardHandler;
+        
+        /**
+         * Boolean flag. ETrue if keylock was on before and
+         * needs to be restored.
+         */
+        TBool iNeedToRestoreKeyLock;
 		
     };
 

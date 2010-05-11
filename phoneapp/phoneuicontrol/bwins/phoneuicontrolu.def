@@ -236,4 +236,5 @@ EXPORTS
 	??0CPhoneStateMachine@@IAE@PAVMPhoneViewCommandHandle@@@Z @ 235 NONAME ; CPhoneStateMachine::CPhoneStateMachine(class MPhoneViewCommandHandle *)
 	??1CPhoneStateStartup@@UAE@XZ @ 236 NONAME ; CPhoneStateStartup::~CPhoneStateStartup(void)
 	?HandleKeyMessageL@CPhoneState@@UAEXW4TPhoneKeyEventMessages@MPhoneKeyEvents@@W4TKeyCode@@@Z @ 237 NONAME ; void CPhoneState::HandleKeyMessageL(enum MPhoneKeyEvents::TPhoneKeyEventMessages, enum TKeyCode)
+	?ForwardPEMessageToPhoneCustomizationL@CPhoneState@@IAEHHH@Z @ 238 NONAME ; int CPhoneState::ForwardPEMessageToPhoneCustomizationL(int, int)
 

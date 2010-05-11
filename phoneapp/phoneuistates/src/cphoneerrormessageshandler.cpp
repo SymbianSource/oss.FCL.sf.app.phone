@@ -395,7 +395,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
         case ECCPErrorNoAnswerForVideo:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNotePhoneOutOf3GCoverage );   
+                SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue16 );   
                 }
             else
                 {

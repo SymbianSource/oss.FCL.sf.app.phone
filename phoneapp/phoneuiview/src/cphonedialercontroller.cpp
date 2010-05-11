@@ -149,7 +149,8 @@ EXPORT_C CPhoneDialerController::CPhoneDialerController(
                                         CPhoneBubbleWrapper* aBubbleWrapper,
                                         CCoeEnv& aCoeEnv ):
     iCoeEnv( aCoeEnv ),
-    iBubbleWrapper( aBubbleWrapper )
+    iBubbleWrapper( aBubbleWrapper ),
+    iRestrictedDialer( ETrue )
     {
     }
 

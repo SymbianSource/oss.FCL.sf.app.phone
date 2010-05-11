@@ -295,9 +295,10 @@ void CDialerKeyPadContainer::SetEasyDialingLayout()
             // Calculate corresponding index in iButtons array
             TInt idx = col + row * colCount;
             
-            // Set mode and variety so that correct button internal layout will be used
+            // Set mode and variety so that correct button internal layout will be used.
+            // Always use ED mode, so that text labels are visible even when ED is off.
             iButtons[idx]->SetVariety( iVariety );
-            iButtons[idx]->SetOperationMode( iOperatingMode );
+            iButtons[idx]->SetOperationMode( EModeEasyDialing );
             
             // Layout button
             TRect buttonRect = firstButtonRect;

@@ -28,6 +28,7 @@ class CAknsLayeredBackgroundControlContext;
 class TPhoneCommandParam;
 class CEikButtonGroupContainer;
 class MPhoneViewObserver;
+class MPhoneViewControllerObserver;
 
 // CLASS DECLARATION
 
@@ -38,7 +39,7 @@ class CPhoneView : public CCoeControl, public MCoeView
     {
     public:  // Constructors and destructor        
 
-        static CPhoneView* NewL( TRect aRect, CEikButtonGroupContainer& aCba );
+        static CPhoneView* NewL( TRect aRect, CEikButtonGroupContainer& aCba, MPhoneViewControllerObserver* aViewController );
 
         virtual ~CPhoneView();
 
@@ -208,7 +209,7 @@ class CPhoneView : public CCoeControl, public MCoeView
 
     private:
 
-        CPhoneView( CEikButtonGroupContainer& aCba );
+        CPhoneView( CEikButtonGroupContainer& aCba, MPhoneViewControllerObserver* aViewController );
 
         void ConstructL( TRect aRect );
 
@@ -255,7 +256,9 @@ class CPhoneView : public CCoeControl, public MCoeView
         
         MPhoneViewObserver* iObserver;
         
-        TBool iDialerActivation;
+        TBool iDialerActivation;       
+        
+        MPhoneViewControllerObserver* iViewControllerObserver;
         };
 
 #endif // __CPHONEVIEW_H

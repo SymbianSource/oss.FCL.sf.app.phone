@@ -357,6 +357,12 @@ private:
       * Not own.
       */
      MPhCntStoreLoaderObserver* iStoreLoaderObserver;
+     
+     /**
+     * Stored contact store for callback usage.
+     */
+     MVPbkContactStore* iContactStore;
+     
     };
 
 #endif // CPHCNTCONTACTMANAGER_H

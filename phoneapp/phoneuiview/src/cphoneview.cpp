@@ -38,7 +38,8 @@
 #include "cphonestatuspane.h"
 #include "tphonecmdparambitmap.h"
 #include "phonelogger.h"
-#include "mphoneviewobserver.h" 
+#include "mphoneviewobserver.h"
+#include "mphoneviewcontrollerobserver.h"
 
 #include <AknUtils.h> // needed for AKN_LAF_COLOR in 3.0 environment
 
@@ -65,8 +66,10 @@ enum TPhoneBgLayers
 // might leave.
 // -----------------------------------------------------------------------------
 //
-CPhoneView::CPhoneView( CEikButtonGroupContainer& aCba ) :
-    iCba ( aCba )
+CPhoneView::CPhoneView( CEikButtonGroupContainer& aCba, MPhoneViewControllerObserver* aViewController ) :
+    iSecurityMode( ETrue ),
+    iCba ( aCba ),
+    iViewControllerObserver ( aViewController )
     {
     }
 
@@ -97,9 +100,9 @@ void CPhoneView::ConstructL( TRect aRect )
 // Two-phased constructor.
 // -----------------------------------------------------------------------------
 //
-CPhoneView* CPhoneView::NewL( TRect aRect, CEikButtonGroupContainer& aCba )
+CPhoneView* CPhoneView::NewL( TRect aRect, CEikButtonGroupContainer& aCba, MPhoneViewControllerObserver* aViewController )
     {
-    CPhoneView* self = new ( ELeave ) CPhoneView( aCba );
+    CPhoneView* self = new ( ELeave ) CPhoneView( aCba, aViewController );
     
     CleanupStack::PushL( self );
     self->ConstructL( aRect );
@@ -138,6 +141,9 @@ void CPhoneView::ViewActivatedL(
     const TDesC8& /*aCustomMessage*/ )
     {
     __LOGMETHODSTARTEND(EPhoneUIView, "CPhoneView::ViewActivatedL()");
+
+    iViewControllerObserver->AllowInCallBubbleInSpecialCases();
+    
     switch ( aCustomMessageId.iUid )
         {
         case KTouchDiallerViewCommand:
@@ -186,7 +192,7 @@ void CPhoneView::ViewDeactivated()
     {
     __LOGMETHODSTARTEND(EPhoneUIView, "CPhoneView::ViewDeactivated()");
     SetActivatePreviousApp( EFalse );
-  
+    iViewControllerObserver->SetIncallBubbleVisibility( EFalse );
     DrawDeferred();
     }
 

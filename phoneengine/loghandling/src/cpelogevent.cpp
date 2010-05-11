@@ -658,7 +658,12 @@ void CPELogEvent::SetRemoteParty( CLogEvent& aEvent,
     {
     if ( KNullDesC() != aLogInfo.Name() )
         {
-        aEvent.SetRemoteParty( aLogInfo.Name() );
+        // This if clause fixes ou1cimx1#320365 Wrong address shown in received log entry
+        if ( aLogInfo.EventType() != CPELogInfo::EPEVoIPEvent ||
+             KNullDesC() == aEvent.RemoteParty() )
+            {
+            aEvent.SetRemoteParty( aLogInfo.Name() );
+            }
         }
     }
 
@@ -670,22 +675,18 @@ void CPELogEvent::SetRemoteParty( CLogEvent& aEvent,
 void CPELogEvent::SetRemoteContact( CLogEvent& aEvent, 
         const CPELogInfo& aLogInfo )
     {
-    if ( KNullDesC() != aLogInfo.PhoneNumber() )
+    if ( KNullDesC() != aLogInfo.PhoneNumber() )      
         {
-        aEvent.SetNumber( aLogInfo.PhoneNumber() );
-       
-        if ( CPELogInfo::EPEVoIPEvent == aLogInfo.EventType() )
+        if ( aLogInfo.EventType() != CPELogInfo::EPEVoIPEvent ||
+             ( KNullDesC() == aEvent.Number() &&
+               KErrNotFound == iEvent->Data().Find( KLogsDataFldTag_URL ) ) )
             {
-            TRAPD( error, RemoveTagFromDataFieldL( KLogsDataFldTag_URL ) );
-            if( error )
-                {
-                TEFLOGSTRING2( KTAERROR, 
-                    "LOG CPELogEvent::SetRemoteContact()>RemoveTagFromDataFieldL(), error=%d", error )
-                }
+            aEvent.SetNumber( aLogInfo.PhoneNumber() );
             }
         }
     
-    if ( KNullDesC() != aLogInfo.VoipAddress() )
+    else if ( KNullDesC() != aLogInfo.VoipAddress() &&
+              KNullDesC() == aEvent.Number())
         {
         TRAPD( error, SetDataFieldL( KLogsDataFldTag_URL, aLogInfo.VoipAddress() ) );
         if ( error )
@@ -693,38 +694,6 @@ void CPELogEvent::SetRemoteContact( CLogEvent& aEvent,
             TEFLOGSTRING2( KTAERROR, 
                 "LOG CPELogEvent::SetRemoteContact()>SetDataFieldL(), error=%d", error )
             }
-        aEvent.SetNumber( KNullDesC() );
-        }
-    }
-
-// -----------------------------------------------------------------------------
-// CPELogEvent::RemoveTagFromDataFieldL
-// -----------------------------------------------------------------------------
-//
-void CPELogEvent::RemoveTagFromDataFieldL( const TDesC8& aTag )
-    {
-    __ASSERT_ALWAYS( aTag.Length() != 0 ,
-        User::Leave( KErrArgument ) );
-
-    TInt index = iEvent->Data().Find( aTag );
-    if ( KErrNotFound != index  )
-        {
-        HBufC8* eventData = iEvent->Data().AllocLC();
-        TPtrC8 urlData = eventData->Mid( index );
-        TInt otherTag = urlData.Find( KLogsDataFldNameDelimiter );
-       
-        const TInt dlLen = KLogsDataFldNameDelimiter().Length();
-        if ( KErrNotFound == otherTag )
-            {
-            eventData->Des().Delete( index - dlLen, urlData.Length() + dlLen );
-            }
-        else
-            {
-            eventData->Des().Delete( index - dlLen, otherTag );
-            }
-        iEvent->SetDataL( *eventData );
-
-        CleanupStack::PopAndDestroy( eventData );
         }
     }
 

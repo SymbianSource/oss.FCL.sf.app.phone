@@ -36,6 +36,8 @@
 #include "mnumberentry.h"
 #include "mphonesecuritymodechangeobserver.h"
 
+#include "mphoneviewcontrollerobserver.h"
+
 // FORWARD DECLARATIONS
 class CPhoneButtonsController;
 class CLogsClient;
@@ -79,6 +81,7 @@ class MPhoneNumberEntryChangedHandler;
 class MPhoneViewCustomization;
 class CPhoneEasyDialingController;
 class CPhoneDtmfDialerController;
+class CAknIncallBubble;
 
 class CPhoneViewController :
     public CBase,
@@ -86,7 +89,8 @@ class CPhoneViewController :
     public MPhoneStatusPaneObserver,
     public MPhoneViewBlockingDialogObserver,
     public MNumberEntryObserver,
-	public MPhoneSecurityModeChangeObserver
+	public MPhoneSecurityModeChangeObserver,
+	public MPhoneViewControllerObserver
     {
     public:  // Constructors and destructor
 
@@ -259,6 +263,16 @@ class CPhoneViewController :
 // From MPhoneSecurityModeChangeObserver
 
 		IMPORT_C void HandleSecurityModeChanged( TBool aIsEnabled );
+		
+		/**
+        * Sets incall small bubble´s visibility in special cases.
+        */ 
+		void AllowInCallBubbleInSpecialCases();
+		
+		/**
+        * Sets value for incall bubble visibility.
+        */ 
+		void SetIncallBubbleVisibility( TBool aIncallBubbleVisible );
 
     private:     // New functions
 
@@ -796,6 +810,8 @@ class CPhoneViewController :
         // Boolean flag. ETrue if the application needs to return
         // to the foreground after call ended
         TBool iNeedToReturnToForegroundAppAfterCall;
+        
+        CAknIncallBubble* iIncallBubble;
     };
 
 #endif // CPHONEVIEWCONTROLLER_H

@@ -55,6 +55,7 @@
 #include <textresolver.h>
 #include <phoneappvoipcommands.hrh>
 #include <hwrmdomainpskeys.h>
+#include <hal.h>
 
 #include "phoneui.pan"
 #include "cphonestate.h"
@@ -257,12 +258,7 @@ EXPORT_C void CPhoneState::HandlePhoneEngineMessageL(
 
         case MEngineMonitor::EPEMessageCallSecureStatusChanged:
             HandleCallSecureStatusChangeL( aCallId );
-
-            if ( iCustomization )
-                {
-                iCustomization->HandlePhoneEngineMessageL( aMessage,
-                    aCallId );
-                }
+            ForwardPEMessageToPhoneCustomizationL( aMessage, aCallId );
             break;
 
         case MEngineMonitor::EPEMessageActivateWarrantyMode:
@@ -380,11 +376,7 @@ EXPORT_C void CPhoneState::HandlePhoneEngineMessageL(
 
             TBool handled( EFalse );
 
-            if ( iCustomization )
-                {
-                handled = iCustomization->HandlePhoneEngineMessageL(
-                                aMessage, aCallId );
-                }
+            handled = ForwardPEMessageToPhoneCustomizationL( aMessage, aCallId );
 
             if ( EFalse == handled )
                 {
@@ -843,28 +835,39 @@ EXPORT_C void CPhoneState::HandleErrorL( const TPEErrorInfo& aErrorInfo )
 void CPhoneState::HandleChangedCallDurationL( TInt aCallId )
     {
      __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::HandleChangedCallDurationL() ");
-    // Get the call duration
-    TTime time( 0 );
-    TTimeIntervalSeconds timeInterval =
-        iStateMachine->PhoneEngineInfo()->CallDuration( aCallId );
-    time += timeInterval;
-
-    // Read format string from AVKON resource
-    TBuf<KPhoneMaxCharsInNote> timeDurationFormatString( KNullDesC );
-    LoadResource( timeDurationFormatString, EPhoneCallDurationFormatString );
-
-    // Format the time
-    TBuf<KPhoneMaxTimeDisplayTextLength> timeString( KNullDesC );
-    time.FormatL( timeString, timeDurationFormatString );
-
-    // Localize time format
-    AknTextUtils::LanguageSpecificNumberConversion( timeString );
-
-    // update the call header call duration
-    iViewCommandHandle->ExecuteCommandL(
-        EPhoneViewUpdateCallHeaderCallDuration,
-        aCallId,
-        timeString );
+    
+    TInt ret = KErrNone;
+    TInt isDisplayOn;
+    
+    ret = HAL::Get( HALData::EDisplayState, isDisplayOn );
+    
+    // Update only if the display is on or if HAL::Get returns an error, 
+    // in which case display value cannot be trusted.
+    if ( ret || isDisplayOn )
+        {
+        // Get the call duration
+        TTime time( 0 );
+        TTimeIntervalSeconds timeInterval =
+            iStateMachine->PhoneEngineInfo()->CallDuration( aCallId );
+        time += timeInterval;
+        
+        // Read format string from AVKON resource
+        TBuf<KPhoneMaxCharsInNote> timeDurationFormatString( KNullDesC );
+        LoadResource( timeDurationFormatString, EPhoneCallDurationFormatString );
+        
+        // Format the time
+        TBuf<KPhoneMaxTimeDisplayTextLength> timeString( KNullDesC );
+        time.FormatL( timeString, timeDurationFormatString );
+        
+        // Localize time format
+        AknTextUtils::LanguageSpecificNumberConversion( timeString );
+        
+        // update the call header call duration
+        iViewCommandHandle->ExecuteCommandL(
+            EPhoneViewUpdateCallHeaderCallDuration,
+            aCallId,
+            timeString );
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -4724,8 +4727,8 @@ EXPORT_C void CPhoneState::SetToolbarButtonLoudspeakerEnabled()
         {
         TPhoneCmdParamInteger integerParam;
         integerParam.SetInteger( EPhoneInCallCmdActivateIhf );
-        TRAP_IGNORE( iViewCommandHandle->ExecuteCommandL(
-            EPhoneViewEnableToolbarButton, &integerParam ));
+        iViewCommandHandle->ExecuteCommand(
+            EPhoneViewEnableToolbarButton, &integerParam );
         }
     }
 
@@ -4776,6 +4779,26 @@ void CPhoneState::HandleEasyDialingCommandsL( TInt aCommandId )
         default:
             break;
         }
+    }
+
+// -----------------------------------------------------------
+// CPhoneState::ForwardPEMessageToPhoneCustomizationL
+// Forward Phone Engine messages to Phone customization
+// (other items were commented in a header).
+// -----------------------------------------------------------
+//
+EXPORT_C TBool CPhoneState::ForwardPEMessageToPhoneCustomizationL(
+    const TInt aMessage,
+    TInt aCallId )
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneState::ForwardPEMessageToPhoneCustomizationL() " );
+    TBool handled = EFalse;
+    
+    if ( iCustomization )
+       {
+       handled = iCustomization->HandlePhoneEngineMessageL( aMessage, aCallId );
+       }
+    return handled;
     }
 
 //  End of File

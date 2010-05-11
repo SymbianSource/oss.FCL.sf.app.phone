@@ -35,6 +35,7 @@
 #include <dialingextensioninterface.h>
 #include <easydialingcommands.hrh>
 #include <dialer.rsg>
+#include <featmgr.h>
 
 #include "cdialer.h"
 #include "dialercommon.h"
@@ -81,6 +82,10 @@ EXPORT_C CDialer* CDialer::NewL( const CCoeControl& aContainer,
 EXPORT_C CDialer::~CDialer()
     {
     DIALER_PRINT("CDialer::~CDialer<"); 
+    #ifdef RD_SCALABLE_UI_V2
+    iPeninputServer.RemovePenUiActivationHandler( this );
+    iPeninputServer.Close();
+    #endif
     AknsUtils::DeregisterControlPosition( this );
 
     delete iKeypadArea;
@@ -134,6 +139,13 @@ void CDialer::ConstructL(
     SetComponentsToInheritVisibility( EFalse );
 
     ActivateL();
+    #ifdef RD_SCALABLE_UI_V2
+    if ( AknLayoutUtils::PenEnabled() )
+        {
+        User::LeaveIfError( iPeninputServer.Connect() );
+        iPeninputServer.AddPenUiActivationHandler( this, EPluginInputModeAll ); 
+        }
+    #endif
     DIALER_PRINT("CDialer::ConstructL>");
     }
 
@@ -825,24 +837,28 @@ void CDialer::UpdateEdwinState( TEditorType aType )
 void CDialer::LoadEasyDialingPlugin()
     {
     DIALER_PRINT( "CDialer::LoadEasyDialingPlugin" )
-    TRAPD( error, 
+            
+    if ( FeatureManager::FeatureSupported( KFeatureIdProductIncludesHomeScreenEasyDialing ) )
         {
-        iEasyDialer = CDialingExtensionInterface::NewL();
-        iEasyDialer->InitializeL( *this );
-        
-        iDialingExtensionObserver = CDialingExtensionObserver::NewL( iEasyDialer, iNumberEntry, this );
-        iEasyDialer->AddObserverL( iDialingExtensionObserver );
-        } );
-
-    if ( error )
-        {
-        DIALER_PRINT( "CDialer::LoadEasyDialingPlugin, load failed" )
-                
-        delete iEasyDialer;
-        iEasyDialer = NULL;
-        
-        delete iDialingExtensionObserver;
-        iDialingExtensionObserver = NULL;
+        TRAPD( error, 
+            {
+            iEasyDialer = CDialingExtensionInterface::NewL();
+            iEasyDialer->InitializeL( *this );
+            
+            iDialingExtensionObserver = CDialingExtensionObserver::NewL( iEasyDialer, iNumberEntry, this );
+            iEasyDialer->AddObserverL( iDialingExtensionObserver );
+            } );
+    
+        if ( error )
+            {
+            DIALER_PRINT( "CDialer::LoadEasyDialingPlugin, load failed" )
+                    
+            delete iEasyDialer;
+            iEasyDialer = NULL;
+            
+            delete iDialingExtensionObserver;
+            iDialingExtensionObserver = NULL;
+            }
         }
     }
 
@@ -890,4 +906,26 @@ void CDialer::LayoutNumberEntry( const TRect& aParent, TInt aVariety )
     iNumberEntry->SetRect( neRect );
     }
 
+// ---------------------------------------------------------------------------
+// CDialer::OnPeninputUiDeactivated
+//
+// Gets called when the virtual keyboard editor is closed.
+// ---------------------------------------------------------------------------
+//
+void CDialer::OnPeninputUiDeactivated()
+    {
+    DIALER_PRINT( "CDialer::OnPeninputUiDeactivated" )
+    FocusChanged( EDrawNow );
+    }
+
+// ---------------------------------------------------------------------------
+// CDialer::OnPeninputUiActivated
+//
+// Gets called when the virtual keyboard editor is opened.
+// ---------------------------------------------------------------------------
+//
+void CDialer::OnPeninputUiActivated()
+    {
+    DIALER_PRINT( "CDialer::OnPeninputUiActivated" )
+    }
 // End of File

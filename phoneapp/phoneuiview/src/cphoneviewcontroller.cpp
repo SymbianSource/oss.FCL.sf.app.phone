@@ -135,6 +135,7 @@
 
 #include <dialingextensioninterface.h>
 #include <easydialingcommands.hrh>
+#include <AknIncallBubbleNotify.h>
 
 // Kastor effect IDs, aknskincontent/101f84b9.sel
 // These effects cannot be used for internal transitions (Call UI<->Dialer)
@@ -151,7 +152,6 @@ const TInt KTouchDialerCloseEffect = 5;
 //
 CPhoneViewController::CPhoneViewController() :
     iEikEnv( *CEikonEnv::Static() ),
-    iNeedToReturnToForegroundAppAfterCall( EFalse ),
     iHelpCommand( KINCAL_HLP_CALL_HANDLING ),
     iBlockingDialogIsDisplayed( EFalse ),
     iIdleUid( KErrNotFound ),
@@ -159,7 +159,9 @@ CPhoneViewController::CPhoneViewController() :
     iEffectOngoing( EFalse ),
     iSendBack( ETrue ),
     iDialerActive( EFalse ),
-    iPriotityChanged( EFalse )
+    iPriotityChanged( EFalse ),
+    iSecurityMode( ETrue ),
+    iNeedToReturnToForegroundAppAfterCall( EFalse )
     {
     }
 
@@ -180,7 +182,7 @@ void CPhoneViewController::ConstructL( TRect aRect )
     iAppui = (CAknAppUi*)iEikEnv.EikAppUi();
     iCba = iEikEnv.AppUiFactory()->Cba();
 
-	iPhoneView = CPhoneView::NewL( aRect, *iCba );
+	iPhoneView = CPhoneView::NewL( aRect, *iCba, this );
 
     iBubbleWrapper = CPhoneBubbleWrapper::NewL( iPhoneView, aRect  );
 
@@ -257,6 +259,8 @@ void CPhoneViewController::ConstructL( TRect aRect )
     // if you are using sgc-client's session to capserver,
     //you are not allowed to close the session.
     iAknUiServerClient = CAknSgcClient::AknSrv();
+    
+    iIncallBubble = CAknIncallBubble::NewL();
     }
 
 // -----------------------------------------------------------------------------
@@ -329,7 +333,8 @@ CPhoneViewController::~CPhoneViewController()
 //    delete iStatusPane; <-- CCoeStatic are destroyed outside application
 
     iApaLsSession.Close();
-
+    
+    delete iIncallBubble;
     }
 
 // ---------------------------------------------------------
@@ -3626,7 +3631,7 @@ void CPhoneViewController::SwitchLayoutToFlatStatusPaneL( TBool aSwitch )
         // need to do PushDefault for navipane and SwitchLayoutL for
         // statuspane.
         if ( currentLayout != R_AVKON_STATUS_PANE_LAYOUT_USUAL_FLAT ||
-             currentLayout != R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL )
+             currentLayout != R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL_FLAT )
             {
             SwapEmptyIndicatorPaneInSecureStateL( ETrue );
 
@@ -3641,7 +3646,7 @@ void CPhoneViewController::SwitchLayoutToFlatStatusPaneL( TBool aSwitch )
             else
                 {
                 iStatusPane->StatusPane().SwitchLayoutL
-                ( R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL );
+                        ( R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL_FLAT );
                 }
             }
         }
@@ -3651,7 +3656,7 @@ void CPhoneViewController::SwitchLayoutToFlatStatusPaneL( TBool aSwitch )
         // layout is something else there is no need to do Pop and
         // SwitchLayoutL for statuspane.
         if ( currentLayout == R_AVKON_STATUS_PANE_LAYOUT_USUAL_FLAT ||
-             currentLayout == R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL )
+             currentLayout == R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL_FLAT )
             {
             SwapEmptyIndicatorPaneInSecureStateL( EFalse );
             
@@ -3663,7 +3668,7 @@ void CPhoneViewController::SwitchLayoutToFlatStatusPaneL( TBool aSwitch )
             else
                 {
                 iStatusPane->StatusPane().SwitchLayoutL
-                        ( R_AVKON_WIDESCREEN_PANE_LAYOUT_IDLE );
+                        ( R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL_FLAT );
                 }
             }
         }
@@ -3775,6 +3780,8 @@ void CPhoneViewController::SetControltoDialerL()
     __PHONELOG1( EBasic, EPhoneUIView,
         "CPhoneViewController::SetControltoDialerL iDialerActive (%d)", iDialerActive );
 
+    SetIncallBubbleVisibility( ETrue );
+
     if ( !iDialerActive )
         {
         iDialerActive = ETrue;
@@ -3820,11 +3827,8 @@ void CPhoneViewController::SetControltoCallHandlingL()
     __PHONELOG1( EBasic, EPhoneUIView,
         "CPhoneViewController::SetControltoCallHandlingL iDialerActive (%d)", iDialerActive );
 
-    // Do not show toolbar if emergency call is active
-    if ( !iIncallIndicator->IsEmergencyCall() )
-        {
-        iToolbarController->ShowToolbar();
-        }
+    SetIncallBubbleVisibility( EFalse );
+    iToolbarController->ShowToolbar();
     if ( iDialerActive )
         {
         iDialerActive = EFalse;
@@ -4082,6 +4086,38 @@ void CPhoneViewController::SetNeedToReturnToForegroundAppAfterCall(
 TBool CPhoneViewController::GetNeedToReturnToForegroundAppAfterCall() const
     {
     return iNeedToReturnToForegroundAppAfterCall;
+    }
+
+// ---------------------------------------------------------------------------
+// CPhoneViewController::AllowInCallBubbleInSpecialCases
+// ---------------------------------------------------------------------------
+//
+void CPhoneViewController::AllowInCallBubbleInSpecialCases()
+{
+    // this method can be used for special cases like dialer
+ 
+    if( iDialerActive )
+    {
+        SetIncallBubbleVisibility( ETrue );
+    }
+    else
+    {
+        SetIncallBubbleVisibility( EFalse );
+    }
+ 
+}
+                    
+// ---------------------------------------------------------------------------
+// CPhoneViewController::SetIncallBubbleVisibility
+// ---------------------------------------------------------------------------
+//
+void CPhoneViewController::SetIncallBubbleVisibility( TBool aVisible )
+    {
+    __PHONELOG1( EBasic, EPhoneUIView,
+        "CPhoneViewController::SetIncallBubbleVisibility(%d)",
+        aVisible );
+
+        TRAP_IGNORE( iIncallBubble->SetIncallBubbleAllowedInUsualL( aVisible ) ); 
     }
 
 // End of File

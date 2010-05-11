@@ -725,6 +725,15 @@ class CPhoneState :
         */
         IMPORT_C TInt CustomizedDialerCbaResourceIdL();
         
+        /**
+        * Forwards Phone Engine messages to Phone customization
+        * @param aMessage Message from Phone Engine
+        * @param aCallId Call id the message concerns
+        * @return ETrue if message was handled
+        */
+        IMPORT_C TBool ForwardPEMessageToPhoneCustomizationL(
+            const TInt aMessage,
+            TInt aCallId );
 
     protected: // NumberEntry functions.
 

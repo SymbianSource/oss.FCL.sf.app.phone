@@ -74,6 +74,7 @@ CPhCntContactManager::~CPhCntContactManager()
         {
         TRAP_IGNORE( iContactManager->ContactStoresL().CloseAll( *this ) );
         }
+    delete iContactStore;
     delete iContactManager;
     delete iContactStoreUris;
     }
@@ -360,6 +361,12 @@ MPbk2ContactNameFormatter& CPhCntContactManager::ContactNameFormatter()
 //
 void CPhCntContactManager::OpenComplete()
     {
+    if ( iStoreLoaderObserver )
+        {      
+        iStoreLoaderObserver->ContactStoreLoadingCompleted(
+           iContactStore, KErrNone );
+        iStoreLoaderObserver = NULL;
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -370,17 +377,16 @@ void CPhCntContactManager::OpenComplete()
 void CPhCntContactManager::StoreReady(
     MVPbkContactStore& aContactStore )
     {
+    
     TVPbkContactStoreUriPtr uri = aContactStore.StoreProperties().Uri();
 
-    if ( iStoreLoaderObserver
-            && !iContactStoreUris->ContactStores().IsIncluded( uri ) )
+    if ( !iContactStoreUris->ContactStores().IsIncluded( uri ) )
         {
         TRAP_IGNORE( iContactStoreUris->AddContactStoreL( uri ) );
-
-        iStoreLoaderObserver->ContactStoreLoadingCompleted(
-            &aContactStore, KErrNone );
-        iStoreLoaderObserver = NULL;
         }
+    
+    iContactStore = &aContactStore;
+     
     iContactStoreUris->StoreReady( uri );
     }
 

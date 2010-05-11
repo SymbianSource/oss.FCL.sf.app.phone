@@ -141,6 +141,9 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventL(
         "CPhoneKeyEventForwarder::OfferKeyEventL");
 
     TKeyResponse ret( EKeyWasNotConsumed );
+    
+    // After event key, expect to have key up event.
+    iExpectKeyUpEvent = ( aType == EEventKey );
 
     ret = OfferKeyEventBeforeControlStackL( aKeyEvent, aType );
 
@@ -150,8 +153,16 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventL(
         TKeyEvent keyEvent = aKeyEvent;
         keyEvent.iCode = iKeyPressedDown;
         
-        // Start and stop dtmf
-        iStateMachine->State()->HandleDtmfKeyToneL( keyEvent, aType );
+        // Do not handle dtmf tone if the type is EEventKey but we are not
+        // expecting key up event. This happens if the key up event has been
+        // handled by some CActiveSchedulerWait object somewhere in the execution 
+        // of function OfferKeyEventBeforeControlStackL.
+        if ( iExpectKeyUpEvent || aType != EEventKey )
+            {
+            // Start and stop dtmf
+            iStateMachine->State()->HandleDtmfKeyToneL( keyEvent, aType );
+            }
+        
         // Open number entry view if any allowed character key
         // is pressed on homescreen or in-call ui
         if ( aType != EEventKeyUp && IsKeyAllowed( keyEvent ) )
@@ -434,12 +445,27 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyDownBeforeControlStackL(
         {
         iLongPressKeyEventTimer->CancelTimer();
         }
+    
+    // Don't initiate long tap timer if all these are true 
+    // a) key event is not from virtual dialer
+    // b) device is in qwerty mode
+    // c) phone number editor is alpha mode, i.e. not in numeric mode
+    // This is to prevent phone app's long tap functionality with qwerty 
+    // long presses, and to have the normal editor long press behaviour 
+    // instead.
+    TBool preventLongTap = 
+            !IsKeySimulatedByTouchDialer( aKeyEvent ) && 
+            iQwertyHandler->IsQwertyInput() &&
+            iViewCommandHandle->HandleCommandL( EPhoneViewIsNumberEntryNumericMode ) != EPhoneViewResponseSuccess;
 
-    // Re-start the timer
-    iLongPressKeyEventTimer->After(
-        KPhoneLongPressKeyEventDuration,
-        TCallBack( DoHandleLongPressKeyEventCallbackL,
-        this ) );
+    if ( !preventLongTap ) 
+        {
+        // Start long press timer
+        iLongPressKeyEventTimer->After(
+            KPhoneLongPressKeyEventDuration,
+            TCallBack( DoHandleLongPressKeyEventCallbackL,
+            this ) );
+        }
 
     return ( EKeyWasNotConsumed );
     }
@@ -499,20 +525,6 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyBeforeControlStackL(
             }
         }
     
-    // Prevent repeats of DTMF keys anyway
-    if ( response == EKeyWasNotConsumed )
-        {
-        // Convert event.
-        keyEvent.iCode = iKeyPressedDown;
-        if ( aKeyEvent.iRepeats > 0 &&
-             aKeyEvent.iCode != EKeyF18 &&   // EKeyF18 is used for AknCCPU support
-             CPhoneKeys::IsDtmfTone( keyEvent, EEventKey ) )
-            {
-            // Do not repeat dtmf characters
-            response = EKeyWasConsumed;
-            }
-        }
-
     return response;
     }
 
@@ -657,6 +669,7 @@ void CPhoneKeyEventForwarder::ConvertKeyCode( TUint& aCode,
             switch ( aKeyEvent.iScanCode )
                 {
                 case EStdKeyEnter:
+                case EStdKeyNkpEnter:
                     aCode = EKeyEnter;
                     break;
                 case EStdKeyYes:

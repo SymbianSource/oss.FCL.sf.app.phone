@@ -307,14 +307,5 @@ TInt CPhoneIncallIndicator::DoUpdate( TAny* aAny )
     return KErrNone;
     }
 
-// ---------------------------------------------------------
-// CPhoneIncallIndicator::IsEmergencyCall
-// ---------------------------------------------------------
-//
-TBool CPhoneIncallIndicator::IsEmergencyCall()
-    {
-    return iEmergency;
-    }
-
 //  End of File  
 

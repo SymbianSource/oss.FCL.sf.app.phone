@@ -24,6 +24,8 @@
 #include <coecntrl.h>
 #include <coemain.h>
 
+#include <peninputsrveventhandler.h>
+#include <peninputclient.h>
 #include "mnumberentry.h"
 #include "mphoneqwertymodeobserver.h"
 
@@ -123,7 +125,8 @@ NONSHARABLE_CLASS(CDialer) :
 	public CCoeControl, 
 	public MNumberEntry, 
 	public MCoeControlObserver,
-	public MPhoneQwertyModeObserver
+	public MPhoneQwertyModeObserver,
+    public MPenUiActivationHandler
     {
     public:  // Constructors and destructor
 
@@ -413,6 +416,18 @@ NONSHARABLE_CLASS(CDialer) :
          */
         void LayoutNumberEntry( const TRect& aParent, TInt aVariety );
         
+    public:
+
+        /**
+         * @see MPenUiActivationHandler
+         */
+        void OnPeninputUiDeactivated();
+
+        /**
+         * @see MPenUiActivationHandler
+         */        
+        void OnPeninputUiActivated();
+        
     private:    // Data
           
         // Keypad container  - owned
@@ -459,7 +474,12 @@ NONSHARABLE_CLASS(CDialer) :
          * Is qwerty mode on.
          */
         TBool iQwertyMode;
-        
+
+        /**
+         * Server wich sends events via callback when the virtual keyboard is opened/closed.
+         */		
+        RPeninputServer iPeninputServer;
+
         /**
          * Current type of the editor field. The field is numeric unless
          * the device is in QWERTY mode and there is some consumer (like VoIP, EasyDialing)

@@ -131,7 +131,6 @@ void CPhoneToolbarController::ConstructL()
             CleanupStack::Pop( button );
             CleanupStack::PopAndDestroy( tooltipText );
             }
-        TRAP_IGNORE(iToolbar->DisableToolbarL( ETrue ));
         }
     }
     
@@ -395,7 +394,17 @@ void CPhoneToolbarController::SetWiredAccFlag( TPhoneCommandParam* aCommandParam
         iWiredAccFlag = accFlag->Boolean();        
         if ( iCallInProgress ) 
             {
-            SetToolbarButtonDimmed( EPhoneInCallCmdActivateIhf, iWiredAccFlag );
+            if ( iWiredAccFlag )
+                {
+                // Dim toolbar button 
+                iToolbar->SetItemDimmed( EPhoneInCallCmdActivateIhf, ETrue, ETrue );
+                }
+            else if ( !iDimActivateIhf )
+                {
+                // Don't undim ActivateIhf button, if it was intended to be dimmed all the time
+                iToolbar->SetItemDimmed( EPhoneInCallCmdActivateIhf, EFalse, ETrue );
+                }
+            
             UpdateToolbar(); 
             }
         }
@@ -452,6 +461,7 @@ void CPhoneToolbarController::DimToolbar( const TBool aDimmed )
         {
         iToolbar->SetItemDimmed( EPhoneInCallCmdActivateIhf, aDimmed, ETrue );
         }
+    iDimActivateIhf = aDimmed;
     }
 
 // ---------------------------------------------------------
@@ -462,8 +472,28 @@ void CPhoneToolbarController::SetToolbarButtonDimmed( const TInt aCommandId, con
     {
  // __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneToolbarController::SetToolbarButtonDimmed()" );
 
-    // Dim toolbar button 
-    iToolbar->SetItemDimmed( aCommandId, aDimmed, ETrue );
+    if ( aCommandId == EPhoneInCallCmdActivateIhf ) 
+        {
+        if ( aDimmed )
+            {
+            // Dim toolbar button 
+            iToolbar->SetItemDimmed( aCommandId, aDimmed, ETrue );
+            }
+        else
+            {
+            // Don't undim IHF if wired acc is connected. 
+            if ( !iWiredAccFlag )
+                {
+                iToolbar->SetItemDimmed( aCommandId, aDimmed, ETrue );
+                }
+            }
+        iDimActivateIhf = aDimmed;
+        }
+    else
+        {
+        // Dim/undim toolbar button 
+        iToolbar->SetItemDimmed( aCommandId, aDimmed, ETrue );
+        }
     }
 
 // END

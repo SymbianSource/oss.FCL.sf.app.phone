@@ -15,12 +15,17 @@
 *
 */
 
-
+#include <MVPbkContactLink.h>
 #include <CVPbkContactLinkArray.h>
-#include <TVPbkContactStoreUriPtr.h>
 #include <MVPbkContactStoreList.h>
+#include <CVPbkContactStoreUriArray.h>
+#include <TVPbkContactStoreUriPtr.h>
+#include <MVPbkContactStore.h>
+#include <MVPbkContactStoreProperties.h>
+#include <talogger.h>
 #include "cphcntstoreloaderimpl.h"
 #include "MPhCntContactManager.h"
+#include "cphcntcontactstoreuris.h"
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -176,13 +181,32 @@ void CPhCntStoreLoaderImpl::DoMakeAsyncRequestL()
 //
 TBool CPhCntStoreLoaderImpl::IsContactStoreLoadedL( 
         const TDesC8& aContactLink ) const
-    {
-    CVPbkContactLinkArray* linkArray = CVPbkContactLinkArray::NewLC( 
-        aContactLink, iContactManager.ContactStoresL() );
+    {    
+    TBool storeLoaded = EFalse;
+    CPhCntContactStoreUris& storeUris = iContactManager.ContactStoreUrisL();
+    CVPbkContactStoreUriArray* uriArray = storeUris.ActiveContactStoresL(); 
+    CleanupStack::PushL( uriArray );
     
-    TBool storeLoaded( linkArray->Count() != 0 );
-    CleanupStack::PopAndDestroy( linkArray );
-    
+    if ( uriArray->Count() > 0 ) 
+        {  
+        MVPbkContactLink* link = iContactManager.ConvertDescriptorToLinkL( aContactLink );
+        if( link )
+            {
+            for ( int i=0; i<uriArray->Count();i++ )
+                {           
+                if ((*uriArray)[i].Compare( 
+                    link->ContactStore().StoreProperties().Uri(), 
+                    TVPbkContactStoreUriPtr::EContactStoreUriAllComponents ) 
+                        == KErrNone )
+                    {
+                    storeLoaded = ETrue;
+                    break;
+                    }
+                }
+            delete link;
+            }
+    }
+    CleanupStack::PopAndDestroy( uriArray );
     return storeLoaded;
     }
 

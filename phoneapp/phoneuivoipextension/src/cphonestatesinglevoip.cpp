@@ -114,7 +114,9 @@ void CPhoneStateSingleVoIP::HandlePhoneEngineMessageL(
         {
         case MEngineMonitor::EPEMessageUnattendedTransferRequest:
             LaunchUnattendedTransferAcceptanceQueryL();
-            break;
+            // Forward message to phone customization 
+			CPhoneState::ForwardPEMessageToPhoneCustomizationL( aMessage, aCallId );
+			break;
         default:
             CPhoneSingleCall::HandlePhoneEngineMessageL( 
                 aMessage, aCallId );

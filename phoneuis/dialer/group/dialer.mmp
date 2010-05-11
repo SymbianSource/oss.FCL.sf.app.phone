@@ -74,6 +74,8 @@ LIBRARY PtiEngine.lib
 LIBRARY centralrepository.lib
 LIBRARY cenrepnotifhandler.lib 
 LIBRARY serviceprovidersettings.lib
+LIBRARY featmgr.lib
+LIBRARY peninputclient.lib
 
 // Keypad resources. Header is generated only for the
 // default variant, all the variants use the same header.

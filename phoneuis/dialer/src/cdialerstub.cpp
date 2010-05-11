@@ -463,4 +463,25 @@ void CDialer::UpdateEdwinState( TEditorType /* aType */ )
     // Empty
     }
 
+// ---------------------------------------------------------------------------
+// CDialer::OnPeninputUiDeactivated
+//
+// Gets called when the virtual keyboard editor is closed.
+// ---------------------------------------------------------------------------
+//
+void CDialer::OnPeninputUiDeactivated()
+    {
+    // Empty
+    }
+
+// ---------------------------------------------------------------------------
+// CDialer::OnPeninputUiActivated
+//
+// Gets called when the virtual keyboard editor is opened.
+// ---------------------------------------------------------------------------
+//	
+void CDialer::OnPeninputUiActivated()
+    {
+    // Empty
+    }
 // End of File

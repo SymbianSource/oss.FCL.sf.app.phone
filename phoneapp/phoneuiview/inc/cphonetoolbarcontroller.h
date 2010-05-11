@@ -180,6 +180,9 @@ private: // data
     
     TBool iCallInProgress;
 
+    // Dim activate IHF button
+    TBool iDimActivateIhf;
+    
     };
 
 #endif // CPHONETOOLBARCONTROLLER_H
