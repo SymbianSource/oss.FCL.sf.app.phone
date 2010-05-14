@@ -38,6 +38,8 @@
 #include "phoneuicommandadapter.h"
 #include "phonenotecontroller.h"
 #include "qtphonelog.h"
+#include "cphoneclearblacklist.h"
+#include "hbinstance.h"
 
 PhoneUiHouseHoldPrivate::PhoneUiHouseHoldPrivate(HbMainWindow &window) :
     iAppsReady (0), iStartupSignalRecoveryId (0), iLightIdleReached (EFalse),
@@ -209,13 +211,7 @@ void PhoneUiHouseHoldPrivate::ConstructL()
         delete translator3;
         translator3 = 0;
     }
-	
-    CEikonEnv* env = CEikonEnv::Static();
-    if ( env ) {
-        env->SetSystem(ETrue);
-    }
-    
-	
+
     PhoneUIQtView *view = new PhoneUIQtView(m_window);
     iViewAdapter = new PhoneUIQtViewAdapter(*view);
     iPhoneUIController = CPhoneUIController::NewL(iViewAdapter);
@@ -232,6 +228,8 @@ void PhoneUiHouseHoldPrivate::ConstructL()
     QObject::connect(view, SIGNAL(keyReleased (QKeyEvent *)), iKeyEventAdapter, SLOT(keyReleased (QKeyEvent *)));
     QObject::connect(view, SIGNAL(command (int)), iCommandAdapter, SLOT(handleCommand (int)),
                      Qt::QueuedConnection); // async to enable deletion of widget during signal handling
+    QObject::connect(view, SIGNAL(windowActivated()), iViewAdapter, SLOT(handleWindowActivated()));
+    QObject::connect(view, SIGNAL(windowDeactivated()), iViewAdapter, SLOT(handleWindowDeactivated()));
     
     QObject::connect(iViewAdapter->noteController(), SIGNAL(command (int)), 
                      iCommandAdapter, SLOT(handleCommand (int))); 
@@ -364,5 +362,15 @@ void PhoneUiHouseHoldPrivate::ConstructL()
         {
         iOnScreenDialer = ETrue;
         }
+
+     HbMainWindow *main = hbInstance->allMainWindows().at(0);
+    RWindow *win = static_cast<RWindow *>(main->effectiveWinId()->DrawableWindow());
+
+    CEikonEnv* env = CEikonEnv::Static();
+    if ( env ) {
+        env->SetSystem(ETrue);
+        // Blacklist singleton is initialized here
+        CPhoneClearBlacklist::CreateL( env->WsSession(), *win);
+    }
 }
 

@@ -43,7 +43,7 @@ public:
     
     virtual ~CpNetworkPluginForm();
     
-    void SearchAvailableNetworks();
+    void searchAvailableNetworks();
     
 signals:
     
@@ -70,6 +70,7 @@ public slots:
     void handleNetworkChanged(
         PSetNetworkWrapper::NetworkInfo& currentInfo,
         PSetNetworkWrapper::RegistrationStatus& status);
+    void finishedManualSelectiondialog(HbAction* action);
 
 private:     
     HbDataFormModelItem *createNetworkModeItem();
@@ -88,7 +89,7 @@ private:
     void addItemToListWidget(
         HbListWidget* w, const QString& item, const int& data) const;
     
-    void showManualSeletiondialog();
+    void showManualSelectiondialog();
     void restoreUiSelection();
     QString networkName(PSetNetworkWrapper::NetworkInfo &info);
 
@@ -110,6 +111,7 @@ private:
     PSetWrapper *m_pSetWrapper;
     CpSettingsWrapper *m_cpSettingsWrapper;
     QSharedPointer<CellularDataSettings> mCellularSettings;
+    HbDialog *m_dialog; 
     
     // Not own
     PSetNetworkWrapper *m_psetNetworkWrapper;

@@ -102,6 +102,8 @@
 #include "cphonenumberentrymanager.h"
 #include "tphonecmdparamsfidata.h" 
 #include "mphonestorage.h"
+#include "phoneconstants.h"
+#include "cphoneclearblacklist.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -810,6 +812,9 @@ EXPORT_C void CPhoneState::HandleErrorL( const TPEErrorInfo& aErrorInfo )
         default:
             break;
         }
+
+    // clear call blacklist if call failure occurs
+    CPhoneClearBlacklist::Instance()->ClearBlackListOnNextKey();
     }
 
 // -----------------------------------------------------------
@@ -880,6 +885,8 @@ EXPORT_C void CPhoneState::HandleDisconnectingL( TInt aCallId )
 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId,
         &callHeaderParam );    
+
+    CPhoneClearBlacklist::Instance()->ClearBlackListOnNextKey();
     }
 
 // -----------------------------------------------------------
@@ -1138,7 +1145,7 @@ void CPhoneState::SendKeyPressL(
             {
             HBufC* phoneNumber = PhoneNumberFromEntryLC();
             // Save the phone number
-            __PHONELOG1( EBasic, EPhoneControl, "SetPhoneNumber: %S ", phoneNumber->Des() );
+            __PHONELOG1( EBasic, EPhoneControl, "SetPhoneNumber: %S ", phoneNumber );
             iStateMachine->PhoneEngineInfo()->SetPhoneNumber( *phoneNumber );
 
             // Convert key code to western.
@@ -2848,39 +2855,29 @@ void CPhoneState::HandleInitiatedEmergencyWhileActiveVideoL()
 void CPhoneState::HandleShowImeiL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::HandleShowImeiL( ) ");
-
-    if ( IsOnScreenDialerSupported() )
-        {
-        NumberEntryClearL();
-        }
-    else
-        {
-        // Remove number entry from screen
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-        }
-
+    
     // Fetch IMEI
     TBuf<RMobilePhone::KPhoneSerialNumberSize> serialNumber;
-    TPEPhoneIdentityParameters phoneIdentityParameters = iStateMachine->
-        PhoneEngineInfo()->PhoneIdentityParameters();
+    TPEPhoneIdentityParameters phoneIdentityParameters = 
+        iStateMachine->PhoneEngineInfo()->PhoneIdentityParameters();
     serialNumber = phoneIdentityParameters.iSerialNumber;
-
-    // Add it to the resource string
-    HBufC* buf = StringLoader::LoadLC(
+    
+    HBufC* imeiNoteText = StringLoader::LoadLC(
         CPhoneMainResourceResolver::Instance()->
         ResolveResourceID(
         EPhonePhoneImeiString ), serialNumber );
-
-    TPhoneCmdParamNote noteParam;
-    noteParam.SetType( EPhoneNoteCustom );
-    noteParam.SetResourceId( CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( EPhoneInformationWaitNote ) );
-    noteParam.SetText( *buf );
-
-    // Display note
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNote, &noteParam );
-
-    CleanupStack::PopAndDestroy( buf );
+    
+    TPhoneCmdParamGlobalNote noteParam;
+    noteParam.SetType( EAknGlobalInformationNote );
+    noteParam.SetTone( EAvkonSIDInformationTone );
+    noteParam.SetText( *imeiNoteText );
+    noteParam.SetTimeout( KPhoneNoteNoTimeout );
+    
+    iViewCommandHandle->ExecuteCommandL( 
+        EPhoneViewShowGlobalNote, 
+        &noteParam );
+    
+    CleanupStack::PopAndDestroy( imeiNoteText );
     }
 
 // -----------------------------------------------------------
@@ -2918,51 +2915,43 @@ void CPhoneState::HandleCallSecureStatusChangeL( TInt aCallId )
 void CPhoneState::HandleShowLifeTimerL()
    {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::HandleShowLifeTimerL( ) ");
-    if ( IsOnScreenDialerSupported() )
-        {
-        NumberEntryClearL();
-        }
-    else
-        {
-        // Remove number entry from screen
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-        }
-
+    
     // Fetch LifeTime
-    TPELifeTimeData lifeTimeData = iStateMachine->
-        PhoneEngineInfo()->LifeTimerData();
-
+    TPELifeTimeData lifeTimeData = 
+        iStateMachine->PhoneEngineInfo()->LifeTimerData();
+    
     TLocale locale;
     TBuf<KTimerTextLength> lifetimerText;
     lifetimerText.NumFixedWidth(
         lifeTimeData.iHours,
         EDecimal,
         KPhoneLifeTimerHoursLength );
-
-    lifetimerText.Append(locale.TimeSeparator( KTimerMinuteSeparator ) );   // minute seperator
-
+    
+    lifetimerText.Append(locale.TimeSeparator( KTimerMinuteSeparator ) );
+    
     TBuf<KPhoneLifeTimerMinutesLength> mins;
     mins.NumFixedWidth(
         lifeTimeData.iMinutes,
         EDecimal,
         KPhoneLifeTimerMinutesLength );
-
+    
     lifetimerText.Append(mins);
-
-    // Add it to the resource string
+    
     HBufC* buf = StringLoader::LoadLC(
         CPhoneMainResourceResolver::Instance()->
         ResolveResourceID(
         EPhoneLifeTimeFormat ), lifetimerText );
-    TPhoneCmdParamNote noteParam;
-    noteParam.SetType( EPhoneNoteCustom );
-    noteParam.SetResourceId( CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( EPhoneInformationWaitNote ) );
+    
+    TPhoneCmdParamGlobalNote noteParam;
+    noteParam.SetType( EAknGlobalInformationNote );
+    noteParam.SetTone( EAvkonSIDInformationTone );
     noteParam.SetText( *buf );
-
-    // Display note
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNote, &noteParam );
-
+    noteParam.SetTimeout( KPhoneNoteNoTimeout );
+    
+    iViewCommandHandle->ExecuteCommandL( 
+        EPhoneViewShowGlobalNote, 
+        &noteParam );
+    
     CleanupStack::PopAndDestroy( buf );
     }
 

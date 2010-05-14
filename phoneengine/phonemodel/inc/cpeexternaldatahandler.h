@@ -26,6 +26,7 @@
 #include "cpeprofilesettingmonitor.h"
 #include "mpeexternaldatahandler.h"
 #include "cpeaccessorymodemonitor.h"
+#include "penetworkhandler.h"
 #include <e32base.h>
 
 // FORWARD DECLARATIONS
@@ -109,6 +110,7 @@ NONSHARABLE_CLASS( CPEExternalDataHandler )
         CPENetworkRegistrationStatusMonitor* iNetworkRegistrationStatus;
         CPEProfileSettingMonitor* iProfileSettings;
         CPEAccessoryModeMonitor* iAccessoryModeMonitor;
+        PeNetworkHandler* iNetworkHandler;
 
         // Repository objects
         CRepository* iAccessorySettingsRepository;

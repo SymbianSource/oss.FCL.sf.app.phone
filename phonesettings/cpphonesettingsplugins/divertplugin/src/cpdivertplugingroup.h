@@ -34,6 +34,8 @@ class HbComboBox;
 class PSCallDivertingCommand;
 class HbListWidget;
 class CpDivertItemData;
+class QEventLoop; 
+class HbLineEdit; 
 
 using namespace CpTelephonyUtils;
 
@@ -101,6 +103,11 @@ public slots:
      Slot which handles item updating when it is needed.
      */
     void itemShown(const QModelIndex& item);
+    
+    void voiceNumberListQueryClosed(HbAction* action);
+    void popUpNumberEditorClosed(HbAction* action);
+    void popUpTimerQueryClosed(HbAction* action);
+    
 private:     
     
     /**
@@ -133,7 +140,7 @@ private:
     /**
      Show to user number query.
      */
-    bool popUpNumberEditor(
+    void popUpNumberEditor(
             const QString& heading, QString& result);
     
     
@@ -145,7 +152,7 @@ private:
     /**
      Show to user divert time out query list.
      */
-    bool popUpTimerQuery(int &timeout) const;
+    bool popUpTimerQuery(int &timeout);
     
     /**
      Desides which bsc parameters to use.
@@ -245,7 +252,7 @@ private:   // data
     CpDivertItemData *m_DataItemVideoIfNotAnswered;
     CpDivertItemData *m_DataItemVideoIfOutOfReach;
     CpDivertItemData *m_DataItemVideoIfNotAvailable;
-    
+
     int m_activeNoteId;
     int m_activeProgressNoteId;
 
@@ -258,8 +265,17 @@ private:   // data
     QQueue<CpDivertRequestQueueItem> m_divertRequestQueue;
 
     CpItemDataHelper &m_helper;
+    
+    int m_divertTimeout;
+    
+    HbListWidget *m_voiceNumberList;
+    HbListWidget *m_popupTimerList; 
+    QString m_divertNumber; 
+    HbLineEdit *m_voiceNumberEditor; 
+    QEventLoop *m_eventLoop; 
+    
 };
 
 #endif // CPDIVERTPLUGINGROUP_H
 
-// end of file
+

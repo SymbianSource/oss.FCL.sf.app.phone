@@ -20,8 +20,9 @@ TARGET =
 TARGET.UID3 = 0xEEE39B3F
 DEPENDPATH += .
 INCLUDEPATH += .
-CONFIG += hb
+#CONFIG += hb
 CONFIG += qtestlib
+QT -= gui
 
 symbian {
 
@@ -44,5 +45,12 @@ symbian {
 HEADERS += ../../inc/phoneservices.h
 HEADERS += ../../inc/dialservice.h
 HEADERS += ../../inc/dtmfservice.h
+HEADERS += ../../inc/keysequencerecognitionservice.h
+HEADERS += ../../inc/dialservicedepricated.h
+HEADERS += ../../inc/dtmfservicedepricated.h
+HEADERS += ../../inc/keysequencerecognitionservicedepricated.h
 SOURCES += ../../src/phoneservices.cpp
+SOURCES += ../../src/dialservicedepricated.cpp
+SOURCES += ../../src/dtmfservicedepricated.cpp
+SOURCES += ../../src/keysequencerecognitionservicedepricated.cpp
 SOURCES += unit_tests.cpp

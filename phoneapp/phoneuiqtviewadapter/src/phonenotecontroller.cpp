@@ -69,33 +69,36 @@ void PhoneNoteController::showGlobalNote(TPhoneCommandParam *commandParam)
     QString noteString = globalNoteText(globalNoteParam);
     
     if (false == noteString.isNull()) {
-        if (globalNoteParam->WaitForReady()) {
-            HbDeviceMessageBox messageBox(noteString, type);
-            messageBox.setTimeout(HbDialog::StandardTimeout);
-            messageBox.exec();
-        } else {
-            bool showNote(true);
-            for (int i = 0;i<m_messageBoxList.count(); ++i) {
-                // Do not show same note/text several times, e.g when user hits
-                // the end button several times we should show only one "not allowed"
-                // note.
-                if (noteString == m_messageBoxList.at(i)->text()) {
-                    showNote = false;
-                    break;
-                }
+        bool showNote(true);
+        for (int i = 0; i < m_messageBoxList.count(); ++i) {
+            // Do not show same note/text several times, e.g when user hits
+            // the end button several times we should show only one "not allowed"
+            // note.
+            if (noteString == m_messageBoxList.at(i)->text()) {
+                showNote = false;
+                break;
+            }
+        }
+        
+        if (showNote) {
+            QScopedPointer<HbDeviceMessageBox> messageBox( 
+                new HbDeviceMessageBox(noteString, type));
+            
+            int timeout = globalNoteParam->Timeout();
+            if (timeout == 0) {
+                messageBox->setTimeout(HbDialog::StandardTimeout);
+            } else {
+                messageBox->setTimeout(timeout);
             }
             
-            if (showNote) {
-                HbDeviceMessageBox *messageBox = new HbDeviceMessageBox(
-                        noteString, type);
-                messageBox->setTimeout(HbDialog::StandardTimeout);
-                m_messageBoxList.append(messageBox);
-                
-                if (1 == m_messageBoxList.size()) {
-                    QObject::connect(messageBox, SIGNAL(aboutToClose()), 
-                                     this, SLOT(destroyDialog()));            
-                    messageBox->show();
-                }
+            HbDeviceMessageBox *messageBoxPtr = messageBox.data();
+            m_messageBoxList.append(messageBoxPtr);
+            messageBox.take();
+            
+            if (1 == m_messageBoxList.size()) {
+                QObject::connect(messageBoxPtr, SIGNAL(aboutToClose()), 
+                                 this, SLOT(destroyDialog()));
+                messageBoxPtr->show();
             }
         }
     }
@@ -163,7 +166,7 @@ void PhoneNoteController::removeGlobalWaitNote()
     
     if (m_progressDialog) {
         m_queryCanceledCommand = -1;
-        m_progressDialog->cancel();
+        m_progressDialog->close();
     }
 }
 
@@ -222,7 +225,7 @@ void PhoneNoteController::queryTimeout()
     int sendCommand = m_timeoutCommand;
     if (m_progressDialog) {
         m_queryCanceledCommand = -1;
-        m_progressDialog->cancel();
+        m_progressDialog->close();
     }
     if (sendCommand != -1) {        
         emit command(sendCommand);
@@ -274,7 +277,15 @@ void PhoneNoteController::showDtmfNote(TPhoneCmdParamNote* noteParam)
                     noteParam->Text().Length()) ); 
                   
             connect(hbactions.at(0), SIGNAL(triggered()), m_signalMapper, SLOT(map()));
-            m_dtmfNote->setPrimaryAction(hbactions.at(0));
+
+            int count = m_dtmfNote->actions().count();
+            for (int i=count;0<i;i--) {
+                QAction *action = m_dtmfNote->actions().at(i-1);
+                m_dtmfNote->removeAction(action);
+                //TODO
+                //delete action;
+            }
+            m_dtmfNote->addAction(hbactions.at(0));
             m_signalMapper->setMapping(hbactions.at(0), hbactions.at(0)->data().toInt());
             
             QObject::connect(m_dtmfNote, SIGNAL(aboutToClose()), 
@@ -309,11 +320,16 @@ void PhoneNoteController::showDefaultQuery(TPhoneCmdParamQuery* params)
                 m_actions.append(hbactions.at(i));
             }
             
-            if (hbactions.count() == 1) {
-                m_queryNote->setPrimaryAction(hbactions.at(0));
-            } else if (hbactions.count() > 1) {
-                m_queryNote->setPrimaryAction(hbactions.at(0));
-                m_queryNote->setSecondaryAction(hbactions.at(1));
+            int count = m_queryNote->actions().count();
+            for (int i=count;0<i;i--) {
+                QAction *action = m_queryNote->actions().at(i-1);
+                m_queryNote->removeAction(action);
+                //TODO
+                //delete action;
+            }
+            
+            for (int i=0;i<hbactions.count();i++) {
+                m_queryNote->addAction(hbactions.at(i));
             }
             
             m_queryNote->show();

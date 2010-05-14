@@ -28,6 +28,7 @@
 
 #include "mpecallhandling.h"
 #include "mpecallcontrolif.h" 
+#include "mpekeysequencerecognitionif.h"
 
 // CONSTANTS
 const TInt KModeNormal = 0;  // Normal System mode  
@@ -105,7 +106,11 @@ class MPEServiceHandling;
 *  @lib phoneenginebase.dll
 *  @since S60_5.0
 */
-NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase, public MPECallControlIF
+NONSHARABLE_CLASS( CPEMessageHandler ) 
+    : 
+        public CBase, 
+        public MPECallControlIF,
+        public MPEKeySequenceRecognitionIF
     {
     public:  // Destructor
 
@@ -598,7 +603,13 @@ NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase, public MPECallControlIF
         */ 
         TInt HandleDialServiceCall(
             const TBool aClientCall );
-        
+    
+    public: // from MPEKeySequenceRecognitionIF
+        /**
+         * Executes provided key sequence if recognized.
+         */ 
+        TBool ExecuteKeySequenceL(const TDesC16 &aSequence);
+    
     private: // New functions
         
         /**

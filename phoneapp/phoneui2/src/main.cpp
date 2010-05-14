@@ -25,7 +25,7 @@
 
 int main (int argc, char *argv[])
 {
-    HbApplication app (argc, argv);
+    HbApplication app (argc, argv, Hb::NoSplash);
     HbPhoneMainWindow window;
     return app.exec ();
 }

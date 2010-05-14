@@ -28,11 +28,13 @@ symbian {
 }
 
 #
-HEADERS += ../../../bubblecore/src/bubbleheadingwidget.h
+HEADERS += ../../../bubblecore/src/bubbleheadingwidget.h \
+           ../../../bubblecore/src/bubblebutton.h
+
 SOURCES += ut_bubbleheadingwidget.cpp \
            ../../../bubblecore/src/bubbleheadingwidget.cpp \
-           ../../../bubblecore/src/bubblestyleoption.cpp \
            ../../../bubblecore/src/bubbleheader.cpp \
            ../../../bubblecore/src/bubbleutils.cpp \
-           ../../../bubblecore/src/bubblebuttonstyle.cpp
+           ../../../bubblecore/src/bubblebutton.cpp
 
+RESOURCES += ut_bubbleheadingwidget.qrc

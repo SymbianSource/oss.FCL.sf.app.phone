@@ -30,15 +30,6 @@ symbian: {
     BLD_INF_RULES.prj_exports += \
     "$${LITERAL_HASH}include <platform_paths.hrh>" \
     "./rom/bubblemanager.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(bubblemanager.iby)"
-
-    # qt plugin stub
-    pluginstub.sources += bubblestyleplugin.dll
-    pluginstub.path = $$QT_PLUGINS_BASE_DIR/phone
-    DEPLOYMENT += pluginstub
-    # for target
-    BLD_INF_RULES.prj_exports += \
-    "./qmakepluginstubs/bubblestyleplugin.qtplugin  /$$HW_ZDIR$$RESOURCE_FILES_DIR/qt/plugins/phone/bubblestyleplugin.qtplugin"    
 }
 
 SUBDIRS += ./bubblecore
-SUBDIRS += ./bubblestyle

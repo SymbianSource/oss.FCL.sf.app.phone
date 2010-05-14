@@ -1,4 +1,5 @@
-EXPORTS	?setExpandAction@PhoneUIQtView@@UAEXHH@Z @ 1 NONAME ; void PhoneUIQtView::setExpandAction(int, int)
+EXPORTS
+	?setExpandAction@PhoneUIQtView@@UAEXHH@Z @ 1 NONAME ; void PhoneUIQtView::setExpandAction(int, int)
 	?keyPressed@PhoneUIQtView@@IAEXPAVQKeyEvent@@@Z @ 2 NONAME ; void PhoneUIQtView::keyPressed(class QKeyEvent *)
 	?volumeSliderChanged@PhoneUIQtView@@QAEXH@Z @ 3 NONAME ; void PhoneUIQtView::volumeSliderChanged(int)
 	?menuReference@PhoneUIQtView@@UAEAAVHbMenu@@XZ @ 4 NONAME ; class HbMenu & PhoneUIQtView::menuReference(void)
@@ -59,4 +60,5 @@ EXPORTS	?setExpandAction@PhoneUIQtView@@UAEXHH@Z @ 1 NONAME ; void PhoneUIQtView
 	?setVolumeSliderValue@PhoneUIQtView@@UAEXHHHH@Z @ 59 NONAME ; void PhoneUIQtView::setVolumeSliderValue(int, int, int, int)
 	?clearAndHideDialpad@PhoneUIQtView@@UAEXXZ @ 60 NONAME ; void PhoneUIQtView::clearAndHideDialpad(void)
 	?isDisabled@PhoneAction@@QBE_NXZ @ 61 NONAME ; bool PhoneAction::isDisabled(void) const
+	?networkNameChanged@PhoneUIQtView@@QAEXW4NetworkMode@QSystemNetworkInfo@QtMobility@@ABVQString@@@Z @ 62 NONAME ; void PhoneUIQtView::networkNameChanged(enum QtMobility::QSystemNetworkInfo::NetworkMode, class QString const &)
 

@@ -355,7 +355,6 @@ private:
     QVector<BubbleHandler*> mActiveHandlers;
 
     int mIsReadyToDraw;
-    int mDefaultStyleBaseId;
     bool mMuted;
     QGraphicsWidget* mMutedIcon;
     bool mSortHeaders;

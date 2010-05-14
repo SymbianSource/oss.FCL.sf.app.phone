@@ -20,7 +20,9 @@
 
 #include <hbwidget.h>
 
-class BubbleStyleOption;
+class HbIconItem;
+class HbTextItem;
+class HbFontSpec;
 class BubbleHeader;
 
 class BubbleHeadingWidget : public HbWidget
@@ -30,7 +32,7 @@ class BubbleHeadingWidget : public HbWidget
     Q_PROPERTY(QString layoutOption READ layout WRITE setLayout)
 
 public:
-    BubbleHeadingWidget(const QString& stylePluginName, QGraphicsItem* item=0);
+    BubbleHeadingWidget(QGraphicsItem* item=0);
     virtual ~BubbleHeadingWidget();
 
     int lineCount() const;
@@ -46,29 +48,29 @@ public:
 private:
     void createPrimitives();
     void updatePrimitives();
-    void initStyleOption(BubbleStyleOption& option);
-
-    void polishEvent();
 
 protected:
+    void polishEvent();
     void changeEvent(QEvent *event);
+    void showEvent(QShowEvent *event);
 
 private:
-    QString mStylePluginName;
-
     int lines;
     QString layoutOption;
 
     const BubbleHeader* mHeader;
 
     // primitives
-    QGraphicsItem* mStatusIcon;
-    QGraphicsItem* mNumberTypeIcon;
-    QGraphicsItem* mCipheringIcon;
-    QGraphicsItem* mText1;
-    QGraphicsItem* mText2;
-    QGraphicsItem* mText3;
+    //BubbleAnimIconItem* mStatusIcon;
+    HbIconItem* mStatusIcon;
+    HbIconItem* mNumberTypeIcon;
+    HbIconItem* mCipheringIcon;
+    HbTextItem* mText1;
+    HbTextItem* mText2;
+    HbTextItem* mText3;
     int mCallTimerTextLine;
+    HbFontSpec* mCliFont;
+    HbFontSpec* mTextFont;
 };
 
 #endif // BUBBLEHEADINGWIDGET_H

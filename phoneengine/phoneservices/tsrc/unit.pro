@@ -19,3 +19,4 @@ TEMPLATE = subdirs
 SUBDIRS += ut_phoneservices
 SUBDIRS += ut_dialservice
 SUBDIRS += ut_dtmfservice
+SUBDIRS += ut_keysequencerecognitionservice

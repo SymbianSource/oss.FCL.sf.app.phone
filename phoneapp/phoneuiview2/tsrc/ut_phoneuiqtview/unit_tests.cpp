@@ -43,7 +43,7 @@ static const int KMINVOLUME = 0;
 static const int KVOLUMECOMMAND = 5;
 
 bool m_qtimer_stop_called;
-
+QString m_networkName;
 
 #define PHONE_QT_VIEW_TEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
@@ -93,6 +93,7 @@ private slots:
     void testDialpadText();
     void testSetMenuActions();
     void testLongEndKeyPressEventOutsideTelephony();
+    void testNetworkNameChanged();
 
 private:
     int createCallHeader();
@@ -118,8 +119,9 @@ TestPhoneUIQtView::~TestPhoneUIQtView ()
 
 void TestPhoneUIQtView::initTestCase ()
 {	
-    m_main_window = new HbMainWindow(); 
+    m_main_window = new HbMainWindow();
     m_view = new PhoneUIQtView(*m_main_window);
+    QCOMPARE(m_networkName, QString("Unit test network"));
 }
 
 void TestPhoneUIQtView::cleanupTestCase ()
@@ -399,6 +401,22 @@ void TestPhoneUIQtView::testLongEndKeyPressEventOutsideTelephony()
 
     QVERIFY(returnValue == true);
     QCOMPARE(spy.count(), 1);*/
+}
+
+void TestPhoneUIQtView::testNetworkNameChanged()
+{
+    // Title is changed only for GmsMode
+    m_view->networkNameChanged(QSystemNetworkInfo::GsmMode, QString("test"));
+    QCOMPARE(m_networkName, QString("test"));
+
+    // Other modes shouldn't affect the title
+    m_view->networkNameChanged(QSystemNetworkInfo::CdmaMode, QString("another operator"));
+    QCOMPARE(m_networkName, QString("test"));
+}
+
+void HbView::setTitle (const QString &title)
+{
+    m_networkName = title;
 }
 
 PHONE_QT_VIEW_TEST_MAIN(TestPhoneUIQtView)

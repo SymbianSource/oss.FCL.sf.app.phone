@@ -42,7 +42,6 @@
         <file>themes/icons/hbdefault/scalable/qtg_fr_btn_red_pressed_t.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_fr_btn_red_pressed_tl.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_fr_btn_red_pressed_tr.svg</file>
-        <file>resources/qgn_indi_call_muted.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_large_waiting_call.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_large_active_call.svg</file>
         <file>themes/icons/hbdefault/scalable/qtg_large_end_call.svg</file>
@@ -53,5 +52,13 @@
         <file>themes/icons/hbdefault/scalable/qtg_mono_ciphering_off.svg</file>
         <file alias="bubble_muted_disappear.fxml">effects/bubble_muted_disappear.fxml</file>
         <file alias="bubble_muted_appear.fxml">effects/bubble_muted_appear.fxml</file>
+        <file alias="bubbleheadingwidget.widgetml">xml/bubbleheadingwidget.widgetml</file>
+        <file alias="bubbleimagewidget.css">xml/bubbleimagewidget.css</file>
+        <file alias="bubbleimagewidget.widgetml">xml/bubbleimagewidget.widgetml</file>
+        <file alias="bubbleparticipantlistitem.css">xml/bubbleparticipantlistitem.css</file>
+        <file alias="bubbleparticipantlistitem.widgetml">xml/bubbleparticipantlistitem.widgetml</file>
+        <file alias="bubbleheadingwidget.css">xml/bubbleheadingwidget.css</file>
+        <file alias="qtg_mono_call_diverted.svg">themes/icons/hbdefault/scalable/qtg_mono_call_diverted.svg</file>
+        <file alias="bubble_icon_anim.axml">resources/bubble_icon_anim.axml</file>
     </qresource>
 </RCC>

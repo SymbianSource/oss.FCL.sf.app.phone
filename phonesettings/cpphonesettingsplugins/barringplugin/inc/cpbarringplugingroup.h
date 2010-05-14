@@ -25,8 +25,9 @@ class PSetWrapper;
 class QModelIndex;
 class CpPhoneNotes;
 class QValidator;
-class QTranslator;
+class HbDataFormModel;
 
+    
 /*!
     \class CpBarringPluginGroup
     \brief The class CpBarringPluginGroup defines barring items shown on UI. 
@@ -36,6 +37,15 @@ class CpBarringPluginGroup : public CpSettingFormItemData
     Q_OBJECT
     
 public:
+    
+    // Change barring password operation phases
+    enum ChangeBarringPasswordPhase
+    {
+        NonePhase,
+        CurrentPasswordPhase,
+        NewPasswordPhase,
+        VerifyNewPasswordPhase
+    };
 
     explicit CpBarringPluginGroup(CpItemDataHelper &helper);
     ~CpBarringPluginGroup();
@@ -46,7 +56,6 @@ public slots:
     
 private:
     
-    void setupLocalization();
     void setupConnectionsToWrapper();
     
     void createBarringItems();
@@ -92,10 +101,17 @@ private slots:
     
     void changeBarringPasswordRequested(bool checked = false);
     
+    void completeBarringStateChangeRequestHandling(
+            QString barringPassword,
+            bool okPressed);
+    
+    void changeBarringPasswordPhasesHandling(
+            QString barringPassword,
+            bool okPressed);
+    
 private: 
     
     CpItemDataHelper &m_helper;
-    QScopedPointer<QTranslator> m_translator;
     QScopedPointer<PSetWrapper> m_pSetWrapper;
     PSetCallBarringWrapper *m_barringWrapper;
     CpSettingFormItemData *m_editBarringPasswordItem;
@@ -105,6 +121,13 @@ private:
     CpPhoneNotes* m_phoneNotes;
     QValidator *m_barringPasswordValidator;
     bool m_delayedBarringActivationNote;
+    CpSettingFormItemData* m_clickedBarringItem; // Not own.
+    ChangeBarringPasswordPhase m_changeBarringPasswordPhase;
+    QString m_currentPassword;
+    QString m_newPassword;
+    QString m_newPasswordVerified;
+    QValidator* m_verifyPasswordValidator; // Own.
+    HbDataFormModel* m_model;
 };
 
 #endif // CPBARRINGPLUGINGROUP_H

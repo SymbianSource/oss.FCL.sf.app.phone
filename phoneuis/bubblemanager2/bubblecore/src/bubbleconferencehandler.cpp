@@ -17,7 +17,6 @@
 
 #include <QtGui>
 #include <hbaction.h>
-#include <hbpushbutton.h>
 #include <hbtextitem.h>
 #include <hblabel.h>
 #include <hblistview.h>
@@ -27,9 +26,9 @@
 #include "bubbleconferencehandler.h"
 #include "bubbleconferenceheader.h"
 #include "bubbleutils.h"
-#include "bubblebuttonstyle.h"
 #include "bubbleparticipantlistitem.h"
 #include "bubbleparticipantlistmodel.h"
+#include "bubblebutton.h"
 
 static const int BUBBLE_SELECTION_TIMEOUT = 3000;
 
@@ -50,13 +49,13 @@ BubbleConferenceHandler::BubbleConferenceHandler(
     mTimerLabel->setAlignment(Qt::AlignLeft);
 
     mButtonCenter =
-        qobject_cast<HbPushButton*>(widget(BubbleWidgetManager::CenterButton));
+        qobject_cast<BubbleButton*>(widget(BubbleWidgetManager::CenterButton));
     Q_ASSERT(mButtonCenter);
     mButtonLeft =
-        qobject_cast<HbPushButton*>(widget(BubbleWidgetManager::LeftButton));
+        qobject_cast<BubbleButton*>(widget(BubbleWidgetManager::LeftButton));
     Q_ASSERT(mButtonLeft);
     mButtonRight =
-        qobject_cast<HbPushButton*>(widget(BubbleWidgetManager::RightButton));
+        qobject_cast<BubbleButton*>(widget(BubbleWidgetManager::RightButton));
     Q_ASSERT(mButtonRight);
 
     mList =
@@ -70,8 +69,10 @@ BubbleConferenceHandler::BubbleConferenceHandler(
             widgetManager.createParticipantListItem());
     Q_ASSERT(mPrototype);
     mList->setItemPrototype(mPrototype);
-    connect(mPrototype,SIGNAL(selectionChanged(int)),
-            SLOT(handleItemSelected(int)));
+    connect(mList->selectionModel(),
+            SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+            this,
+            SLOT(handleItemSelected(QModelIndex,QModelIndex)));
 
     mSelectionTimer = new QTimer(this);
     connect(mSelectionTimer,SIGNAL(timeout()),SLOT(clearSelection()));
@@ -107,6 +108,13 @@ void BubbleConferenceHandler::readBubbleHeader( const BubbleHeader& header )
     Q_ASSERT(header.isConference());
     mHeader = static_cast<const BubbleConferenceHeader*>(&header);
 
+    // set actions to item prototype
+    QList<HbAbstractViewItem*> prototypes = mList->itemPrototypes();
+    QList<HbAction*> actions = mHeader->participantListActions();
+    foreach (HbAction* action, actions ) {
+        mPrototype->addAction(action);
+    }
+
     // populate participant list model
     QList<BubbleHeader*> participants = mHeader->headers();
     foreach(BubbleHeader* participant, participants) {
@@ -115,13 +123,6 @@ void BubbleConferenceHandler::readBubbleHeader( const BubbleHeader& header )
             participant->cli(),
             (int)participant->callState(),
             !(mHeader->callFlags()&BubbleManagerIF::NoCiphering));
-    }
-
-    // set actions to item prototype
-    QList<HbAbstractViewItem*> prototypes = mList->itemPrototypes();
-    QList<HbAction*> actions = mHeader->participantListActions();
-    foreach (HbAction* action, actions ) {
-        mPrototype->addAction(action);
     }
 
     if (header.timerCost().length()) {
@@ -188,15 +189,21 @@ void BubbleConferenceHandler::updateTimerDisplayNow()
     mTimerLabel->update();
 }
 
-void BubbleConferenceHandler::handleItemSelected(int row)
+void BubbleConferenceHandler::handleItemSelected(
+    const QModelIndex & current,
+    const QModelIndex & previous )
 {
-    Q_ASSERT( mHeader != 0 );
-    // need to cast constness away
-    BubbleConferenceHeader& mutableHeader =
-        const_cast<BubbleConferenceHeader&>(*mHeader);
-    mutableHeader.setSelectedHeader(mModel->bubbleId(row));
-    mSelectionTimer->stop();
-    mSelectionTimer->start(BUBBLE_SELECTION_TIMEOUT);
+    Q_UNUSED(previous);
+
+    if (current.isValid()) {
+        Q_ASSERT( mHeader != 0 );
+        // need to cast constness away
+        BubbleConferenceHeader& mutableHeader =
+            const_cast<BubbleConferenceHeader&>(*mHeader);
+        mutableHeader.setSelectedHeader(mModel->bubbleId(current.row()));
+        mSelectionTimer->stop();
+        mSelectionTimer->start(BUBBLE_SELECTION_TIMEOUT);
+    }
 }
 
 void BubbleConferenceHandler::clearSelection()

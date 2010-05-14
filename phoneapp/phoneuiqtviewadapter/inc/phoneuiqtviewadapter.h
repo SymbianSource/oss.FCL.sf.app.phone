@@ -180,6 +180,20 @@ private slots:
     */
     void keyReleased(QKeyEvent *event);
     
+    /*!
+        \fn void PhoneUIQtViewAdapter::handleWindowActivated ()
+        
+        PhoneView calls this method when window is activated;
+    */
+    void handleWindowActivated();
+    
+    /*!
+        \fn void PhoneUIQtViewAdapter::handleWindowDeactivated ()
+        
+        PhoneView calls this method when window is deactivated.
+    */
+    void handleWindowDeactivated();
+    
 private:
 
     /*!

@@ -416,4 +416,6 @@ EXPORTS
 	_ZThn4_N26CPhoneResourceResolverBaseD1Ev @ 415 NONAME
 	_ZThn4_NK13CPhoneStorage17GetBlockedKeyListEv @ 416 NONAME
 	_ZThn4_NK26CPhoneResourceResolverBase17ResolveResourceIDERKi @ 417 NONAME
+	_ZN24TPhoneCmdParamGlobalNote10SetTimeoutEi @ 418 NONAME
+	_ZNK24TPhoneCmdParamGlobalNote7TimeoutEv @ 419 NONAME
 

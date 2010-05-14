@@ -41,7 +41,8 @@ CpNetworkPluginForm::CpNetworkPluginForm(QGraphicsItem *parent) :
     m_activeProgressNoteId(0),
     m_pSetWrapper(NULL),
     m_cpSettingsWrapper(NULL),
-    mCellularSettings()
+    mCellularSettings(),
+    m_dialog(NULL)
 {
     DPRINT << ": IN";
     
@@ -67,7 +68,12 @@ CpNetworkPluginForm::CpNetworkPluginForm(QGraphicsItem *parent) :
     setModel(model.take());
     m_pSetWrapper = pSetWrapperGuard.take();
     m_cpSettingsWrapper = cpSettingsWrapperGuard.take();
-    
+
+    if(!isPhoneOnLine()) {
+        DPRINT << "offline, set dimmed";
+        m_NetworkOperatorSelectionItemData->setEnabled(false);
+    }
+
     DPRINT << ": OUT";
 }
 
@@ -312,7 +318,7 @@ void CpNetworkPluginForm::operatorSelectionStateChanged(bool)
     // #2C operator selection mode changed
     DPRINT << ": IN ";
     
-    if(isPhoneOnLine()) {
+    if (isPhoneOnLine()) {
         PSetNetworkWrapper::NetworkSelectionMode mode;
         m_psetNetworkWrapper->getNetworkSelectionMode(mode);
         switch (mode) {
@@ -449,7 +455,7 @@ void CpNetworkPluginForm::availableNetworksGot(
     DPRINT << ": IN";
     
     m_networkInfoList = &networkInfoList;
-    showManualSeletiondialog();
+    showManualSelectiondialog();
     
     DPRINT << ": OUT";
 }
@@ -525,7 +531,7 @@ void CpNetworkPluginForm::networkReqestFailed(
        }
     else if(type == PSetNetworkWrapper::RequestSetNetwork && 
             error == PSetNetworkWrapper::ErrNoNetworkAccess) {
-        showManualSeletiondialog();
+        showManualSelectiondialog();
     }
     else if(type == PSetNetworkWrapper::RequestSetNetwork ||
             type == PSetNetworkWrapper::RequestSetNetworkAutomatic ||
@@ -552,7 +558,7 @@ void CpNetworkPluginForm::userCancel()
 
 
 /*!
-  CpNetworkPluginForm::userCancel
+  CpNetworkPluginForm::handleSearchingNetworks
   */
 void CpNetworkPluginForm::handleSearchingNetworks(
     PSetNetworkWrapper::RequestType &type)
@@ -577,7 +583,7 @@ void CpNetworkPluginForm::handleSearchingNetworks(
 
 
 /*!
-  CpNetworkPluginForm::userCancel
+  CpNetworkPluginForm::handleRequestingSelectedNetwork
   */
 void CpNetworkPluginForm::handleRequestingSelectedNetwork(bool ongoing)
 {
@@ -601,7 +607,7 @@ void CpNetworkPluginForm::handleRequestingSelectedNetwork(bool ongoing)
 
 
 /*!
-  CpNetworkPluginForm::userCancel
+  CpNetworkPluginForm::handleNetworkChanged
   */
 void CpNetworkPluginForm::handleNetworkChanged(
     PSetNetworkWrapper::NetworkInfo& currentInfo,
@@ -629,64 +635,88 @@ void CpNetworkPluginForm::handleNetworkChanged(
 
 
 /*!
-  CpNetworkPluginForm::showManualSeletiondialog
+  CpNetworkPluginForm::showManualSelectiondialog
   */
-void CpNetworkPluginForm::showManualSeletiondialog()
+void CpNetworkPluginForm::showManualSelectiondialog()
 {
     DPRINT << ": IN";
     
-    HbDialog *dialog = createDialog(hbTrId("txt_cp_title_select_operator"));
-    HbListWidget *list = new HbListWidget(dialog);
+    QScopedPointer<HbDialog> dialog(
+        createDialog(hbTrId("txt_cp_title_select_operator")));
+    HbListWidget *list = new HbListWidget(dialog.data());
     //then insert found networks
     int itemsCount = m_networkInfoList->count();
-    for(int i = 0; i < itemsCount; i++)
-        {
+    for (int i = 0; i < itemsCount; i++) {
         PSetNetworkWrapper::NetworkInfo *info = m_networkInfoList->at(i);
         QString text = networkName(*info);
         addItemToListWidget(list, text, i);
         DPRINT << ":  " << info;
-        }
+    }
     // Connect list item activation signal to close the popup
     connect(
         list, SIGNAL(activated(HbListWidgetItem*)), 
-        dialog, SLOT(close()));
+        dialog.data(), SLOT(close()));
     // Sets the "Cancel"-action/button
     HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"));
-    dialog->setPrimaryAction(cancelAction);
+    dialog->addAction(cancelAction);
     dialog->setContentWidget(list);
     // Launch popup and handle the response
-    if (dialog->exec() != cancelAction) {
-        // Update the view with selected text
-        int seletion = 0;
-        if(list->currentItem()) {
-            seletion = list->currentItem()->data().toInt();
-            DPRINT << ": seletion : " << seletion;
-        }
-        PSetNetworkWrapper::NetworkInfo param;
-        param.m_id.m_countryCode = 
-            m_networkInfoList->at(seletion)->m_id.m_countryCode;
-        param.m_id.m_networkCode = 
-            m_networkInfoList->at(seletion)->m_id.m_networkCode;
-        param.m_mode = PSetNetworkWrapper::SelectionModeManual;
-        DPRINT << ": m_countryCode : " << param.m_id.m_countryCode;
-        DPRINT << ": m_networkCode : " << param.m_id.m_networkCode;
-        DPRINT << ": m_mode : " << param.m_mode;
-        m_psetNetworkWrapper->selectNetwork(param);
+    dialog->open(this, SLOT(finishedManualSelectiondialog(HbAction*)));
+    if (m_dialog) {
+        m_dialog->deleteLater();
+        m_dialog = NULL;
     }
-    else {
-        DPRINT << ": Cancel";
-        m_psetNetworkWrapper->cancelRequest();
-        restoreUiSelection();
-    }
-
-    disconnect(
-        list, SIGNAL(activated(HbListWidgetItem*)), 
-        dialog, SLOT(close()));
-    delete dialog;
+    m_dialog = dialog.take();
     
     DPRINT << ": OUT";
 }
 
+
+/*!
+  CpNetworkPluginForm::finishedManualSelectiondialog.
+ */
+void CpNetworkPluginForm::finishedManualSelectiondialog(HbAction* action)
+{
+    DPRINT << ": IN";
+    
+    if (m_dialog) {
+        QList<QAction *> actionList = m_dialog->actions();
+        bool cancelAction = actionList.contains(action);
+        if (!cancelAction) {
+            // Update the view with selected text
+            QGraphicsWidget *contectWidget = m_dialog->contentWidget();
+            HbListWidget *list(NULL);
+            if (contectWidget) {
+                list = qobject_cast<HbListWidget *>(contectWidget);
+            }
+            if (list) {
+                int seletion = 0;
+                if(list->currentItem()) {
+                    seletion = list->currentItem()->data().toInt();
+                    DPRINT << ": seletion : " << seletion;
+                }
+                PSetNetworkWrapper::NetworkInfo param;
+                param.m_id.m_countryCode = 
+                    m_networkInfoList->at(seletion)->m_id.m_countryCode;
+                param.m_id.m_networkCode = 
+                    m_networkInfoList->at(seletion)->m_id.m_networkCode;
+                param.m_mode = PSetNetworkWrapper::SelectionModeManual;
+                DPRINT << ": m_countryCode : " << param.m_id.m_countryCode;
+                DPRINT << ": m_networkCode : " << param.m_id.m_networkCode;
+                DPRINT << ": m_mode : " << param.m_mode;
+                m_psetNetworkWrapper->selectNetwork(param);
+            }
+        } else {
+            DPRINT << ": Cancel";
+            m_psetNetworkWrapper->cancelRequest();
+            restoreUiSelection();
+        }
+        m_dialog->deleteLater();
+        m_dialog = NULL;
+    }
+    
+    DPRINT << ": OUT";
+}
 
 /*!
   CpNetworkPluginForm::restoreUiSelection
@@ -832,9 +862,9 @@ bool CpNetworkPluginForm::isPhoneOnLine()
 }
 
 /*!
-  CpNetworkPluginForm::SearchAvailableNetworks
+  CpNetworkPluginForm::searchAvailableNetworks
  */
-void CpNetworkPluginForm::SearchAvailableNetworks()
+void CpNetworkPluginForm::searchAvailableNetworks()
 {
     DPRINT << ": IN";
     

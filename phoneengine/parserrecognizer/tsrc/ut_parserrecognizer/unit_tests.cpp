@@ -25,6 +25,7 @@
 QString apiString;
 QString methodString;
 bool sendCalled;
+bool gSendRequestResult = true;
 
 class TestParserRecognizer : public QObject
 {
@@ -50,6 +51,8 @@ private slots:
     void testShowVersion();
     void testShowWLANMacAddress();
     void testSSRequestFailed();
+    void testSendRequestFail();
+    void testSimultaneousRequests();
 
 private:
     ParserRecognizer *parserRecognizer; // class under test
@@ -62,11 +65,22 @@ XQServiceRequest::XQServiceRequest(QString const& api, QString const& method, bo
     methodString = method;
 }
 
+bool XQServiceRequest::send()
+{
+    sendCalled = true;
+    return gSendRequestResult;
+}
+
 bool XQServiceRequest::send(QVariant& retValue)
 {
     Q_UNUSED(retValue);
     sendCalled = true;
-    return true;
+    return gSendRequestResult;
+}
+
+void XQServiceRequest::setSynchronous(const bool &synchronous)
+{
+    Q_UNUSED(synchronous);
 }
 
 XQServiceRequest::~XQServiceRequest()
@@ -94,6 +108,7 @@ void TestParserRecognizer::init ()
     apiString = "";
     methodString = "";
     sendCalled = false;
+    gSendRequestResult = true;
     parserRecognizer = new ParserRecognizer;
 }
 
@@ -120,10 +135,12 @@ void TestParserRecognizer::testActivateRfsNormal()
 
 void TestParserRecognizer::testActivateWarrantyMode()
 {
+    // Lifetimer is implemented by phone and should not be handled 
+    // by the recognizer.
     parserRecognizer->sendMessage(MEngineMonitor::EPEMessageActivateWarrantyMode, 0);
-    QCOMPARE(apiString, QString("com.nokia.services.telephony"));
-    QCOMPARE(methodString, QString("activateWarrantyMode()"));
-    QCOMPARE(sendCalled, true);
+    QCOMPARE(apiString, QString(""));
+    QCOMPARE(methodString, QString(""));
+    QCOMPARE(sendCalled, false);
 }
 
 void TestParserRecognizer::testShowBTDeviceAddress()
@@ -152,26 +169,29 @@ void TestParserRecognizer::testActivateBTDebugMode()
 
 void TestParserRecognizer::testShowIMEI()
 {
+    // IMEI code showing is implemented by phone and should not be handled 
+    // by the recognizer.
     parserRecognizer->sendMessage(MEngineMonitor::EPEMessageShowIMEI, 0);
-    QCOMPARE(apiString, QString("com.nokia.services.telephony"));
-    QCOMPARE(methodString, QString("showIMEICode()"));
-    QCOMPARE(sendCalled, true);
+    QCOMPARE(apiString, QString(""));
+    QCOMPARE(methodString, QString(""));
+    QCOMPARE(sendCalled, false);
 }
 
 void TestParserRecognizer::testShowVersion()
 {
     parserRecognizer->sendMessage(MEngineMonitor::EPEMessageShowVersion, 0);
-    QCOMPARE(apiString, QString("com.nokia.services.telephony"));
+    QCOMPARE(apiString, QString("com.nokia.services.devicemanager"));
     QCOMPARE(methodString, QString("showVersionNumber()"));
     QCOMPARE(sendCalled, true);
 }
 
 void TestParserRecognizer::testShowWLANMacAddress()
 {
+    // WLAN address showing not supported currently (TB 10.1)
     parserRecognizer->sendMessage(MEngineMonitor::EPEMessageShowWlanMacAddress, 0);
-    QCOMPARE(apiString, QString("com.nokia.services.wlan"));
-    QCOMPARE(methodString, QString("showWLANMacAddress()"));
-    QCOMPARE(sendCalled, true);
+    QCOMPARE(apiString, QString(""));
+    QCOMPARE(methodString, QString(""));
+    QCOMPARE(sendCalled, false);
 }
 
 void TestParserRecognizer::testSSRequestFailed()
@@ -180,6 +200,27 @@ void TestParserRecognizer::testSSRequestFailed()
     QCOMPARE(apiString, QString("com.nokia.services.telephony"));
     QCOMPARE(methodString, QString("supplementaryServiceRequestFailed()"));
     QCOMPARE(sendCalled, true);
+}
+
+void TestParserRecognizer::testSendRequestFail()
+{
+    gSendRequestResult = false;
+    parserRecognizer->sendMessage(MEngineMonitor::EPEMessageShowVersion, 0);
+    QCOMPARE(apiString, QString("com.nokia.services.devicemanager"));
+    QCOMPARE(methodString, QString("showVersionNumber()"));
+    QCOMPARE(sendCalled, true);
+}
+
+void TestParserRecognizer::testSimultaneousRequests()
+{
+    parserRecognizer->sendMessage(MEngineMonitor::EPEMessageShowVersion, 0);
+    QCOMPARE(apiString, QString("com.nokia.services.devicemanager"));
+    QCOMPARE(methodString, QString("showVersionNumber()"));
+    QCOMPARE(sendCalled, true);
+    
+    sendCalled = false;
+    parserRecognizer->sendMessage(MEngineMonitor::EPEMessageShowVersion, 0);
+    QCOMPARE(sendCalled, false);
 }
 
 QTEST_MAIN(TestParserRecognizer)

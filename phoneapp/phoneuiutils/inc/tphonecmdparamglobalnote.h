@@ -80,6 +80,13 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         */
         IMPORT_C void SetSoftkeys( TInt aSoftkeys );
 
+        /**
+        * Sets timeout for a note.
+        * @param    aTimeout    Timeout in milliseconds. If timeout == 0 then 
+        * default timeout is used. If timeout < 0 the note is not closed 
+        * automatically.
+        */
+        IMPORT_C void SetTimeout( TInt aTimeout );
         
         /**
         * Returns the global note type
@@ -115,8 +122,14 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         * Returns the global note softkeys.
         * @return Returns the global note softkeys
         */
-        IMPORT_C TInt Softkeys() const;      
- 
+        IMPORT_C TInt Softkeys() const;
+        
+        /**
+         * Returns the timeout value.
+         * @return   Timeout value.
+         */
+        IMPORT_C TInt Timeout() const;
+    
     private:    
         
         /**
@@ -148,7 +161,11 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         * Global note softkeys
         */
         TInt iSoftkeys;
-
+        
+        /**
+        * Timeout for a note.
+        */
+        TInt iTimeout;
     };
 
 #endif // __TPHONECMDPARAMGLOBALNOTE_H

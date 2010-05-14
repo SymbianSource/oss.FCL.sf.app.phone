@@ -166,7 +166,10 @@ void CPhoneTwoSinglesAndWaiting::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageIdle:
             HandleIdleL( aCallId );
             break;
-            
+        case MEngineMonitor::EPEMessageConnected:
+            UpdateInCallCbaL();
+            CPhoneTwoSingles::HandlePhoneEngineMessageL( aMessage, aCallId );
+            break;           
         default:
             CPhoneTwoSingles::HandlePhoneEngineMessageL( aMessage, aCallId );
             break;

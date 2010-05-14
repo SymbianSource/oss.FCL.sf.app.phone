@@ -30,6 +30,6 @@ symbian {
 #
 HEADERS += ../../../bubblecore/src/bubblecontainerwidget.h
 SOURCES += ut_bubblecontainerwidget.cpp \
-           ../../../bubblecore/src/bubblecontainerwidget.cpp \
-           ../../../bubblecore/src/bubblestyleoption.cpp
+           ../../../bubblecore/src/bubblecontainerwidget.cpp
+
 

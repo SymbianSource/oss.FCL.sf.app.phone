@@ -15,6 +15,7 @@
  *
  */
 
+#include <QEventLoop>
 #include <hbdataformmodel.h>
 #include <hbdataformmodelitem.h>
 #include <hblineedit.h>
@@ -27,9 +28,6 @@
 #include <hblistwidget.h>
 #include <hblistwidgetitem.h>
 #include <hblabel.h>
-#include <QApplication>
-#include <QLocale>
-#include <QTranslator>
 #include <cpitemdatahelper.h>
 #include "cpdivertselectionitem.h"
 #include "cpdivertplugingroup.h"
@@ -41,6 +39,11 @@
 
 Q_DECLARE_METATYPE(PsCallDivertingCondition)
 Q_DECLARE_METATYPE(PsServiceGroup)
+
+// CONSTANTS 
+const QString KVoiceMail("voiceMail");
+const QString KVideoMail("voiceMail");
+const QString KOtherNumber("otherNumber");
 
 /*!
   CpDivertPluginGroup::CpDivertPluginGroup.
@@ -61,7 +64,8 @@ CpDivertPluginGroup::CpDivertPluginGroup(CpItemDataHelper &helper)
        m_activeNoteId(0),
        m_activeProgressNoteId(0),
        m_divertToVoiceMailBox(false),
-       m_helper(helper)
+       m_helper(helper),
+       m_divertTimeout(0)
 {
     DPRINT << ": IN";
     
@@ -72,18 +76,6 @@ CpDivertPluginGroup::CpDivertPluginGroup(CpItemDataHelper &helper)
     
     qRegisterMetaType<PsServiceGroup>(
         "PsServiceGroup");
-    
-    // Localization file loading
-    QTranslator translator; 
-    QString lang = QLocale::system().name();
-    QString path = "z:/resource/qt/translations/";
-    DPRINT << ": loading translation: " << QString(path + "telephone_cp_" + lang);
-    bool translatorLoaded = translator.load(path + "telephone_cp_" + lang);
-    DPRINT << ": translator loaded: " << translatorLoaded; 
-    if (translatorLoaded) {
-        qApp->installTranslator(&translator);
-        DPRINT << ": translator installed"; 
-    }
     
     m_pSetWrapper = new PSetWrapper; 
     DPRINT << ": PSetWrapper created";
@@ -124,6 +116,9 @@ CpDivertPluginGroup::CpDivertPluginGroup(CpItemDataHelper &helper)
     // Create grouped setting items
     createVoiceCallItems(this);
     createVideoCallItems(this);
+    
+    m_eventLoop = new QEventLoop(this); 
+    
     DPRINT << ": OUT";
 }
 
@@ -289,8 +284,9 @@ void CpDivertPluginGroup::itemShown(const QModelIndex& item)
 {
     DPRINT << ": IN";
     DPRINT << "item:" << item;
+    
     HbDataFormModelItem* modelItem = 
-            qobject_cast<HbDataFormModel*>(model())->itemFromIndex(item);
+            qobject_cast<const HbDataFormModel*>(item.model())->itemFromIndex(item);
     
     if (!modelItem->contentWidgetData("number").isValid() &&
         (static_cast<HbDataFormModelItem::DataItemType>
@@ -712,107 +708,168 @@ bool CpDivertPluginGroup::popUpVoiceNumberListQuery(
         const QString& heading, QString& result, PsServiceGroup serviceGroup)
 {
     DPRINT << ": IN";
-    const QString KVoiceMail("voiceMail");
-    const QString KVideoMail("voiceMail");
-    const QString KOtherNumber("otherNumber");
     
     bool requestOK(false);
-    m_divertToVoiceMailBox = false;
-    QStringList defNumbers;
-    HbDialog *dialog = createDialog(heading);
-    HbListWidget *list = new HbListWidget(dialog);
-    if (serviceGroup == ServiceGroupVoice) {
-        addItemToListWidget(
-            list, hbTrId("txt_phone_setlabel_voice_mbx"), KVoiceMail );
-    } else if(serviceGroup == ServiceGroupData) {
-        // TODO: Implement video voicemail
-    }
 
-    // Add "old" divert number to list
-    m_callDivertingWrapper->getDefaultNumbers(defNumbers);
-    int count(defNumbers.count());
-    for (int i = 0; i < count; i++) {
-        addItemToListWidget(list, defNumbers[i], defNumbers[i]);
-    }
-    addItemToListWidget(list, hbTrId("txt_phone_list_enter_number_manually"), KOtherNumber );
-    // Connect list item activation signal to close the popup
-    connect(
-        list, SIGNAL(activated(HbListWidgetItem*)), 
-        dialog, SLOT(close()));
-    // Sets the "Cancel"-action/button
-    HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"));
-    dialog->setPrimaryAction(cancelAction);
-    dialog->setContentWidget(list);
-    // Launch popup and handle the response
-    if (dialog->exec() != cancelAction) {
-        // Update the view with selected text
-        QString data = list->currentItem()->data().toString();
-        if (data == KVoiceMail) {
-            m_callDivertingWrapper->getVoiceMailBoxNumber(result);
-            if (result.size()) {
-                // voicemailboxnumber found
-                m_divertToVoiceMailBox = true;
-                requestOK = true;
-            }
-        } else if (data == KOtherNumber) {
-            requestOK = popUpNumberEditor(hbTrId("txt_phone_info_number"), result);
-        } else {
-            //TODO if matched contact name not work
-            result = data;
-            requestOK = true;
+    if (!m_eventLoop->isRunning()){
+        m_divertNumber = ""; 
+        m_divertToVoiceMailBox = false;
+        QStringList defNumbers;
+        HbDialog *dialog = createDialog(heading);
+        m_voiceNumberList = new HbListWidget(dialog);
+        if (serviceGroup == ServiceGroupVoice) {
+            addItemToListWidget(
+                    m_voiceNumberList, hbTrId("txt_phone_setlabel_voice_mbx"), KVoiceMail );
+        } else if(serviceGroup == ServiceGroupData) {
+            // TODO: Implement video voicemail
         }
-    }
-    else {
-        DPRINT << ": Cancel";
-    }
-    disconnect(
-        list, SIGNAL(activated(HbListWidgetItem*)), 
-        dialog, SLOT(close()));
-    delete dialog;
     
+        // Add "old" divert number to list
+        m_callDivertingWrapper->getDefaultNumbers(defNumbers);
+        int count(defNumbers.count());
+        for (int i = 0; i < count; i++) {
+            addItemToListWidget(m_voiceNumberList, defNumbers[i], defNumbers[i]);
+        }
+        addItemToListWidget(m_voiceNumberList, hbTrId("txt_phone_list_enter_number_manually"), KOtherNumber );
+        dialog->setContentWidget(m_voiceNumberList);
+        
+        // Connect list item activation signal to close the popup
+        QObject::connect(m_voiceNumberList, 
+                SIGNAL(activated(HbListWidgetItem*)), 
+                dialog, 
+                SLOT(close()), 
+                Qt::UniqueConnection);
+        
+        // Sets the "Cancel"-action/button
+        HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"));
+        dialog->addAction(cancelAction);
+        QObject::connect(cancelAction, 
+                SIGNAL(triggered(bool)), 
+                dialog, 
+                SLOT(close()));
+        
+        dialog->open(this, SLOT(voiceNumberListQueryClosed(HbAction *))); 
+        
+        QPointer<QObject> guard = this;
+        m_eventLoop->exec(); 
+        if (guard.isNull()) {
+            requestOK = false;
+        } else if (!m_divertNumber.isEmpty()) {
+            result = m_divertNumber;
+            requestOK = true;
+        }    
+    }
+    
+    DPRINT << ": OUT : result:" << result;
     DPRINT << ": OUT : requestOK :" << requestOK;
     return requestOK;
 }
 
 /*!
+    CpDivertPluginGroup::voiceNumberListQueryClosed()
+*/
+void CpDivertPluginGroup::voiceNumberListQueryClosed(HbAction* action)
+{
+    DPRINT << ": IN";
+    
+    bool exitLoop(true); 
+    
+    // Enter if cancel wasn't selected 
+    if (!action) {  
+        // Update the view with selected text
+        QString data = m_voiceNumberList->currentItem()->data().toString();
+        DPRINT << ": data: " << data; 
+        
+        if (data == KVoiceMail) {
+            m_callDivertingWrapper->getVoiceMailBoxNumber(m_divertNumber);
+            if (!m_divertNumber.isEmpty()) {
+                DPRINT << ": voicemailboxnumber found";
+            }
+            
+            m_eventLoop->quit();
+            
+        } else if (data == KOtherNumber) {
+                // Event loop is terminated by popUpNumberEditorClosed
+                exitLoop = false;
+                
+                DPRINT << ": open popUpNumberEditor";                
+                popUpNumberEditor(hbTrId("txt_phone_info_number"), m_divertNumber);
+        } else {
+            //TODO if matched contact name not work
+            DPRINT << ": else";
+            m_divertNumber = data;
+        }        
+        
+    }
+    
+    if (exitLoop) {
+        DPRINT << ": quit eventloop";
+        m_eventLoop->quit();
+    }
+    
+    DPRINT << ": OUT";
+}
+
+/*!
   CpDivertPluginGroup::popUpNumberEditor.
  */
-bool CpDivertPluginGroup::popUpNumberEditor(
+void CpDivertPluginGroup::popUpNumberEditor(
         const QString& heading, QString& result)
 {
     DPRINT << ": IN";
 
-    bool requestOK(false);
+    Q_UNUSED(result); 
+    
     HbDialog *dialog = createDialog(heading);
-    HbLineEdit *editor = new HbLineEdit(dialog);
-    HbEditorInterface editorInterface(editor);
-    editorInterface.setUpAsPhoneNumberEditor();
-    dialog->setContentWidget(editor);
+
+    m_voiceNumberEditor = new HbLineEdit(dialog);
+    m_voiceNumberEditor->setInputMethodHints(Qt::ImhDialableCharactersOnly);    
+    dialog->setContentWidget(m_voiceNumberEditor);
+    
     HbAction *okAction = new HbAction(hbTrId("txt_common_button_ok"));
     dialog->addAction(okAction);
+    
     HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"));
-    dialog->setSecondaryAction(cancelAction);
+    dialog->addAction(cancelAction);
     
-    HbAction *resultAction = dialog->exec();
-    if (resultAction == cancelAction) {
-        DPRINT << ": canceled";
-    }
-    else {
-        result = editor->text();
-        DPRINT << ": number "
-            << result;
-        if (result.count()) {
-            requestOK = true;
-        }
-        else {
-            CpPhoneNotes::instance()->showGlobalNote(m_activeNoteId, 
-                hbTrId("txt_phone_info_invalid_phone_number"), HbMessageBox::MessageTypeWarning);
-        }
-    }
-    delete dialog;
+    dialog->open(this, SLOT(popUpNumberEditorClosed(HbAction*)));
     
-    DPRINT << ": OUT : requestOK :" << requestOK;
-    return requestOK;
+    DPRINT << ": OUT";
+}
+
+/*!
+  CpDivertPluginGroup::popUpNumberEditorClosed.
+ */
+void CpDivertPluginGroup::popUpNumberEditorClosed(HbAction* action)
+{
+    DPRINT << ": IN";
+    
+    bool cancelled(true); 
+    if (action) {
+        if (action->text() == hbTrId("txt_common_button_ok")) 
+            {
+            cancelled = false;  
+            DPRINT << ": ok selected";
+            }
+    }
+    
+    if (!cancelled) {
+        m_divertNumber = m_voiceNumberEditor->text();
+            DPRINT << ": m_divertNumber "
+                << m_divertNumber;
+            if (m_divertNumber.isEmpty()) {
+                CpPhoneNotes::instance()->showGlobalNote(m_activeNoteId, 
+                    hbTrId("txt_phone_info_invalid_phone_number"), HbMessageBox::MessageTypeWarning);
+            }
+    }
+    
+    if (m_voiceNumberEditor) {
+        delete m_voiceNumberEditor;
+        m_voiceNumberEditor = NULL; 
+    } 
+    
+    m_eventLoop->quit();
+    DPRINT << ": OUT";
 }
 
 /*!
@@ -845,50 +902,80 @@ void CpDivertPluginGroup::setCallDiverting(PSCallDivertingCommand& command)
 /*!
   CpDivertPluginGroup::popUpTimerQuery.
  */
-bool CpDivertPluginGroup::popUpTimerQuery(int &timeout) const
+bool CpDivertPluginGroup::popUpTimerQuery(int &timeout) 
 {
     DPRINT << ": IN";
+    Q_UNUSED(timeout); 
     
     bool requestOK(false);
-    HbDialog *dialog = createDialog(hbTrId("Time out"));
-    HbListWidget *list = new HbListWidget(dialog);
-    addItemToListWidget(list, hbTrId("5 second"), 5 );
-    addItemToListWidget(list, hbTrId("10 second"), 10);
-    addItemToListWidget(list, hbTrId("15 second"), 15);
-    addItemToListWidget(list, hbTrId("20 second"), 20);
-    addItemToListWidget(list, hbTrId("25 second"), 25);
-    addItemToListWidget(list, hbTrId("30 second"), 30);
-    // Connect list item activation signal to close the popup
-    connect(
-        list, SIGNAL(activated(HbListWidgetItem*)), 
-        dialog, SLOT(close()));
-    // Sets the "Cancel"-action/button
-    HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"));
-    dialog->setPrimaryAction(cancelAction);
-    dialog->setContentWidget(list);
-    // Launch popup and handle the response
-    if (dialog->exec() != cancelAction) {
-        // Update the view with selected text
-        if (list->currentItem()) {
-            timeout = list->currentItem()->data().toInt();
+    m_divertTimeout = 0; 
+    
+    if (!m_eventLoop->isRunning()) {
+        HbDialog *dialog = createDialog(hbTrId("txt_phone_title_delay"));
+        
+        if (m_popupTimerList) {
+            m_popupTimerList = new HbListWidget(dialog);
+            
+            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_5_seconds"), 5 );
+            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_10_seconds"), 10);
+            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_15_seconds"), 15);
+            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_20_seconds"), 20);
+            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_25_seconds"), 25);
+            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_30_seconds"), 30);
+            
+            // Connect list item activation signal to close the popup
+            QObject::connect(
+                    m_popupTimerList, SIGNAL(activated(HbListWidgetItem*)), 
+                    dialog, SLOT(close()), 
+                    Qt::UniqueConnection);
         }
-        requestOK = true;
+        
+        // Sets the "Cancel"-action/button
+        HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"));
+        dialog->addAction(cancelAction);
+        dialog->setContentWidget(m_popupTimerList);
+    
+        dialog->open(this, SLOT(popUpTimerQueryClosed(HbAction *))); 
+        
+        QPointer<QObject> guard = this;
+        m_eventLoop->exec(); 
+        if (guard.isNull()) {
+            requestOK = false;
+        } else if (m_divertTimeout > 0) {
+            requestOK = true;
+        }
     }
-    else {
-        DPRINT << ": Cancel";
-    }
-
-    disconnect(
-        list, SIGNAL(activated(HbListWidgetItem*)), 
-        dialog, SLOT(close()));
-    delete dialog;
     
     DPRINT << ": OUT : requestOK :" << requestOK;
     return requestOK;
 }
 
 /*!
-  CpDivertPluginGroup::setbscParam.
+  CpDivertPluginGroup::popUpTimerQueryClosed.
+ */
+void CpDivertPluginGroup::popUpTimerQueryClosed(HbAction* action)
+{
+    // If not cancel action selected 
+    if (!action) {
+        // Update the view with selected text
+        if (m_popupTimerList->currentItem()) {
+            m_divertTimeout = 
+                    m_popupTimerList->currentItem()->data().toInt();
+        }
+    }
+    else {
+        DPRINT << ": Cancel";
+    }
+
+    DPRINT << ": quit eventloop";
+    m_eventLoop->quit();
+
+    DPRINT << ": OUT: timeout: " << m_divertTimeout;
+}
+
+
+/*!
+  CpDivertPluginGroup::bscParam.
  */
 int CpDivertPluginGroup::bscParam(PsServiceGroup serviceGroup)
 {

@@ -17,7 +17,6 @@
 
 #include <QtGui>
 #include <hbaction.h>
-#include <hbpushbutton.h>
 #include <hbtextitem.h>
 
 #include "bubblemanager2.h"
@@ -26,6 +25,7 @@
 #include "bubbleutils.h"
 #include "bubbleimagewidget.h"
 #include "bubbleheadingwidget.h"
+#include "bubblebutton.h"
 
 BubbleExpandedHandler::BubbleExpandedHandler(
     BubbleWidgetManager& widgetManager,
@@ -42,13 +42,13 @@ BubbleExpandedHandler::BubbleExpandedHandler(
         widget(BubbleWidgetManager::Image));
     Q_ASSERT(mImage);
 
-    mButtonCenter = qobject_cast<HbPushButton*>(
+    mButtonCenter = qobject_cast<BubbleButton*>(
         widget(BubbleWidgetManager::CenterButton));
     Q_ASSERT(mButtonCenter);
-    mButtonLeft = qobject_cast<HbPushButton*>(
+    mButtonLeft = qobject_cast<BubbleButton*>(
         widget(BubbleWidgetManager::LeftButton));
     Q_ASSERT(mButtonLeft);
-    mButtonRight = qobject_cast<HbPushButton*>(
+    mButtonRight = qobject_cast<BubbleButton*>(
         widget(BubbleWidgetManager::RightButton));
     Q_ASSERT(mButtonRight);
 

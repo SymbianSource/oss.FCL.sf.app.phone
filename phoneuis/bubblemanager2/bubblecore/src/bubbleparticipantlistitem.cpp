@@ -15,28 +15,22 @@
 *
 */
 
-#include <QtGui>
+#include <QGraphicsLinearLayout>
 #include <hbiconitem.h>
-#include <hbframeitem.h>
 #include <hbtextitem.h>
-#include <hbiconitem.h>
 #include <hbaction.h>
 #include <hbpushbutton.h>
-#include <hblabel.h>
+#include <hbstyleloader.h>
+#include <hbabstractitemview.h>
+#include <hblistviewitem.h>
 
 #include "bubbleparticipantlistitem.h"
-#include "bubbleprimitives.h"
-#include "bubblestyleoption.h"
-#include "bubblebuttonstyle.h"
+#include "bubblemanagerif.h"
+#include "bubbleutils.h"
 
 BubbleParticipantListItem::BubbleParticipantListItem(
-    const QString& stylePluginName,
-    BubbleButtonStyle& buttonStyle,
     QGraphicsItem *parent) :
-    HbListViewItem(parent),
-    mStylePluginName(stylePluginName),
-    mButtonStyle(buttonStyle),
-    mBackground(0),
+    HbAbstractViewItem(parent),
     mText(0),
     mStatusIcon(0),
     mCipheringIcon(0),
@@ -45,15 +39,12 @@ BubbleParticipantListItem::BubbleParticipantListItem(
     mButton2(0),
     mExpanded(false)
 {
-    mStylePluginBaseId = style()->registerPlugin(mStylePluginName);
-    Q_ASSERT(pluginBaseId()!=-1);
+    HbStyleLoader::registerFilePath(":/bubbleparticipantlistitem.css");
+    HbStyleLoader::registerFilePath(":/bubbleparticipantlistitem.widgetml");
 }
 
 BubbleParticipantListItem::~BubbleParticipantListItem()
 {
-    if (prototype()==(HbAbstractViewItem*)this) {
-        style()->unregisterPlugin(mStylePluginName);
-    }
 }
 
 HbAbstractViewItem* BubbleParticipantListItem::createItem()
@@ -63,46 +54,36 @@ HbAbstractViewItem* BubbleParticipantListItem::createItem()
 
 void BubbleParticipantListItem::updateChildItems()
 {
-    setPluginBaseId(mStylePluginBaseId);
+    HbAbstractViewItem::updateChildItems();
+
     setFocusPolicy(Qt::ClickFocus); // to enable expanding
 
     // create primitives
-    if (!mBackground) {
-        mBackground = style()->createPrimitive(
-                (HbStyle::Primitive)(pluginBaseId()+BP_Bubble_frame), this);
-        if ( mBackground ) {
-            style()->setItemName( mBackground, "background" );
-        }
-    }
-
     if (!mText) {
-        mText = style()->createPrimitive(
-                (HbStyle::Primitive)(pluginBaseId()+BP_Text1_text), this);
-        if ( mText ) {
-            style()->setItemName( mText, "text" );
-        }
+        mText = new HbTextItem(this);
+        style()->setItemName( mText, "text" );
     }
 
     if (!mCipheringIcon) {
-        mCipheringIcon = style()->createPrimitive(
-                (HbStyle::Primitive)(pluginBaseId()+BP_Ciphering_icon), this);
-        if ( mCipheringIcon ) {
-            style()->setItemName( mCipheringIcon, "ciphering" );
-        }
+        mCipheringIcon = new HbIconItem(this);
+        style()->setItemName( mCipheringIcon, "ciphering" );
     }
 
     if (!mStatusIcon) {
-        mStatusIcon = style()->createPrimitive(
-                (HbStyle::Primitive)(pluginBaseId()+BP_CallStatus_icon), this);
-        if ( mStatusIcon ) {
-            style()->setItemName( mStatusIcon, "icon" );
-        }
+        mStatusIcon = new HbIconItem(this);
+        style()->setItemName( mStatusIcon, "icon" );
     }
 
     if (!mExpandIcon) {
         mExpandIcon = new HbIconItem(this);
-        if ( mExpandIcon ) {
-            style()->setItemName( mExpandIcon, "expand-indi" );
+        style()->setItemName( mExpandIcon, "expand-indi" );
+
+        // for expand/collapse controls
+        if (itemView()) {
+            connect( itemView()->selectionModel(),
+                     SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+                     this,
+                     SLOT(currentIndexChanged(QModelIndex,QModelIndex)) );
         }
     }
 
@@ -113,14 +94,8 @@ void BubbleParticipantListItem::updateChildItems()
         Q_ASSERT(p->mActions.count()==2);
         HbAction* action = p->mActions.at(0);
         mButton1 = new HbPushButton(this);
-        mButton1->setStyle(&mButtonStyle);
         mButton1->setIcon(action->icon());
         style()->setItemName( mButton1, "button-1" );
-        HbTextItem* label = static_cast<HbTextItem*>(
-            mButton1->primitive(HbStyle::P_PushButton_text));
-        if (label) {
-            label->setTextColor( Qt::white );
-        }
 
         // connect first action
         connect(mButton1,
@@ -137,14 +112,8 @@ void BubbleParticipantListItem::updateChildItems()
         Q_ASSERT(p->mActions.count()==2);
         HbAction* action = p->mActions.at(1);
         mButton2 = new HbPushButton(this);
-        mButton2->setStyle(&mButtonStyle);
         mButton2->setIcon(action->icon());
         style()->setItemName( mButton2, "button-2" );
-        HbTextItem* label = static_cast<HbTextItem*>(
-            mButton2->primitive(HbStyle::P_PushButton_text));
-        if (label) {
-            label->setTextColor( Qt::white );
-        }
 
         // connect second action
         connect(mButton2,
@@ -158,53 +127,29 @@ void BubbleParticipantListItem::updateChildItems()
         mButton2 = 0;
     }
 
-    // update primitives
-    BubbleStyleOption option;
-    HbWidget::initStyleOption(&option);
-
-    // check canConvert()
-    option.mCallState = (BubbleManagerIF::PhoneCallState)
-                         modelIndex().data(Qt::DecorationRole).toInt();
-    option.mText1 = modelIndex().data(Qt::DisplayRole).toString();
-    option.mCliLineNumber = 1;
-    bool ciphering = modelIndex().data(Qt::StatusTipRole).toBool();
-    if (!ciphering) {
-        option.mCallFlags = BubbleManagerIF::NoCiphering;
-    }
-
-    if (mBackground) {
-        style()->updatePrimitive(
-            mBackground,
-            (HbStyle::Primitive)(pluginBaseId()+BP_Bubble_frame),
-            &option);
-    }
-
     if (mText) {
-        style()->updatePrimitive(
-            mText,
-            (HbStyle::Primitive)(pluginBaseId()+BP_Text1_text),
-            &option);
+        mText->setText(modelIndex().data(Qt::DisplayRole).toString());
     }
+
+    int state = (BubbleManagerIF::PhoneCallState)
+        modelIndex().data(Qt::DecorationRole).toInt();
 
     if (mStatusIcon) {
-        style()->updatePrimitive(
-            mStatusIcon,
-            (HbStyle::Primitive)(pluginBaseId()+BP_CallStatus_icon),
-            &option );
+        BubbleUtils::setCallStatusIcon(state,0,*mStatusIcon);
     }
 
     if (mCipheringIcon) {
-        style()->updatePrimitive(
-            mCipheringIcon,
-            (HbStyle::Primitive)(pluginBaseId()+BP_Ciphering_icon),
-            &option );
+        int flags = !modelIndex().data(Qt::StatusTipRole).toBool() ?
+                    BubbleManagerIF::NoCiphering : 0;
+
+        BubbleUtils::setCipheringIcon(state,flags,*mCipheringIcon);
     }
 
     if (mExpandIcon) {
         if (mExpanded) {
-            mExpandIcon->setIcon(HbIcon("qtg_small_expand"));
-        } else {
             mExpandIcon->setIcon(HbIcon("qtg_small_collapse"));
+        } else {
+            mExpandIcon->setIcon(HbIcon("qtg_small_expand"));
         }
     }
 
@@ -219,26 +164,7 @@ void BubbleParticipantListItem::polish(HbStyleParameters& params)
         setProperty("layoutOption","collapsed");
     }
 
-    HbListViewItem::polish(params);
-}
-
-void BubbleParticipantListItem::receivedFocus()
-{
-    HbListViewItem::receivedFocus();
-    BubbleParticipantListItem* p =
-        static_cast<BubbleParticipantListItem*>(prototype());
-    if ( p->mActions.count() == 2 ) {
-        // supports two buttons layout only
-
-        setExpanded(true);
-        emit p->selectionChanged(modelIndex().row());
-    }
-}
-
-void BubbleParticipantListItem::lostFocus()
-{
-    HbListViewItem::lostFocus();
-    setExpanded(false);
+    HbAbstractViewItem::polish(params);
 }
 
 void BubbleParticipantListItem::setExpanded(bool expanded)
@@ -258,5 +184,23 @@ void BubbleParticipantListItem::clearActions()
     mExpanded = false;
 }
 
+void BubbleParticipantListItem::currentIndexChanged(
+    const QModelIndex &current,
+    const QModelIndex &previous)
+{
+    Q_UNUSED(previous);
 
+    if (modelIndex() == current) {
+        if ( !mExpanded ) {
+            setExpanded(true);
+        }
+    } else if (mExpanded) {
+        setExpanded(false);
+    }
+}
+
+int BubbleParticipantListItem::type() const
+{
+    return HbListViewItem::Type;
+}
 

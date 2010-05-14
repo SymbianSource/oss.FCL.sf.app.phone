@@ -44,7 +44,6 @@ public:
     void SetServiceIdCommand( TUint32 aServiceId );
     
 private slots:
-    void testExecuteKeySequence ();
     void testPlayDTMFTone ();
     void testStopDTMFPlay ();
 
@@ -142,7 +141,7 @@ void TestDTMFService::SetContactId2( const TInt aContactId )
 
 void TestDTMFService::SetServiceIdCommand( TUint32 aServiceId )
 {
-
+    Q_UNUSED(aServiceId)
 }
 
 TInt TestDTMFService::HandleDialServiceCall( const TBool aClientCall )
@@ -150,14 +149,6 @@ TInt TestDTMFService::HandleDialServiceCall( const TBool aClientCall )
     m_handleDialCallCalled = true;
     m_clientCall = aClientCall;
     return KErrNone;
-}
-
-void TestDTMFService::testExecuteKeySequence()
-{
-    m_dtmfService->executeKeySequence(QString("*#0000#"));
-    QString keySequence((QChar*)m_phoneNumber.Ptr(), m_phoneNumber.Length());
-    QVERIFY (m_setPhoneNumberCalled == true);
-    QCOMPARE (keySequence, QString("*#0000#"));
 }
 
 void TestDTMFService::testPlayDTMFTone()

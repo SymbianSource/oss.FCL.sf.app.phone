@@ -47,7 +47,6 @@ private:
 private:
     BubbleImageWidget* mImage;
     HbMainWindow* mMainWindow;
-    int mStyleBaseId;
     BubbleImageManager* mImageManager;
 };
 
@@ -64,8 +63,7 @@ void ut_BubbleImageWidget::initTestCase()
 {
     mMainWindow = new HbMainWindow();
     mImageManager = new BubbleImageManager();
-    mImage = new BubbleImageWidget(
-        BUBBLE_STYLE_PLUGIN,*mImageManager);
+    mImage = new BubbleImageWidget(*mImageManager);
     mMainWindow->addView(mImage);
     mMainWindow->show();
 }

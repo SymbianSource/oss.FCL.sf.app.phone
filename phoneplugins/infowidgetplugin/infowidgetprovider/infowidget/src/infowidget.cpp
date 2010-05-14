@@ -129,12 +129,8 @@ InfoWidget::~InfoWidget()
 {
     DPRINT << ": IN"; 
     
-    // Clean layout container, 
-    // layout manager handles layout item cleanup
-    for (int i=0; i < m_layout->count(); i++) {
-        DPRINT << ": item(" << i << ") removed from layout";
-        m_layout->removeAt(i);
-        } 
+    // Layout manager item cleanup
+    m_layoutManager->destroyObjects(); 
     
     if (m_frameDrawer) {
         delete m_frameDrawer;
@@ -409,10 +405,8 @@ void InfoWidget::layoutInfoDisplay()
     
     m_layoutManager->showAll(); 
     updateItemsVisibility(); 
-
-    m_layout->invalidate();
     m_layout->activate(); 
-    
+
     endChanges(); 
     
     DPRINT << ": OUT";

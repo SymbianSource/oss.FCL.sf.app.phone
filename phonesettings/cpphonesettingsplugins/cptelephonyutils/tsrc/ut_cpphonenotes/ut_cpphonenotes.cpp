@@ -219,7 +219,7 @@ void UT_CpPhoneNotes::t_showPasswordQueryDialog()
     QRegExp regExpression("\\d{4}");
     QRegExpValidator validator(regExpression, this);
     CpPhoneNotes::instance()->showPasswordQueryDialog(
-        queryTitle, validator, 5, password, okPressed);
+        queryTitle, validator, 5);
 
 }
 
@@ -229,7 +229,11 @@ void UT_CpPhoneNotes::t_showPasswordQueryDialog()
  */
 void UT_CpPhoneNotes::t_cancelNote()
 {
+    CpPhoneNotes::instance()->cancelNote(m_noteid1);
     CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid1, "test");
+    CpPhoneNotes::instance()->noteShowing();
+    CpPhoneNotes::instance()->cancelNote(m_noteid1);
+        
     QTest::qWait(5000);
 }
 

@@ -44,3 +44,13 @@ CpNetworkPluginView::~CpNetworkPluginView(  )
     }
 
 
+// -----------------------------------------------------------------------------
+// CpNetworkPluginView::SearchAvailableNetworks
+// -----------------------------------------------------------------------------
+//
+void CpNetworkPluginView::SearchAvailableNetworks(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+

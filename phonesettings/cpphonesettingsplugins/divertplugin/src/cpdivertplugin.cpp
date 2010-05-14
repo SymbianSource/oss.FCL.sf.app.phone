@@ -26,7 +26,6 @@ CpDivertPlugin::CpDivertPlugin()
 {
     // Install plugin specific msg handler
     INSTALL_TRACE_MSG_HANDLER;
-    
     DPRINT;
 }
 

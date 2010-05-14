@@ -280,32 +280,10 @@ void InfoWidget::spnDisplaySettingChanged(
 
 
 // -----------------------------------------------------------------------------
-// InfoWidget::homeZoneDisplaySettingChanged
-// -----------------------------------------------------------------------------
-//
-void InfoWidget::homeZoneDisplaySettingChanged( 
-        int state )
-    {
-    SMC_MOCK_METHOD1( void, int, state )
-    }
-
-
-// -----------------------------------------------------------------------------
 // InfoWidget::mcnDisplaySettingChanged
 // -----------------------------------------------------------------------------
 //
 void InfoWidget::mcnDisplaySettingChanged( 
-        int state )
-    {
-    SMC_MOCK_METHOD1( void, int, state )
-    }
-
-
-// -----------------------------------------------------------------------------
-// InfoWidget::activeLineDisplaySettingChanged
-// -----------------------------------------------------------------------------
-//
-void InfoWidget::activeLineDisplaySettingChanged( 
         int state )
     {
     SMC_MOCK_METHOD1( void, int, state )
@@ -341,8 +319,6 @@ void InfoWidget::settingsValidationFailed(  )
     {
     SMC_MOCK_METHOD0( void )
     }
-
-
 
 
 // -----------------------------------------------------------------------------

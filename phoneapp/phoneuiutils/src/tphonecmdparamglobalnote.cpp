@@ -35,8 +35,9 @@ EXPORT_C TPhoneCmdParamGlobalNote::TPhoneCmdParamGlobalNote():
     iTextResourceId( 0 ),
     iText( KNullDesC ),
     iTone( EAvkonSIDErrorTone ),
-    iWaitforReady ( EFalse )
-    ,iSoftkeys( 0 )
+    iWaitforReady ( EFalse ),
+    iSoftkeys( 0 ),
+    iTimeout( 0 )
     {
     iParamId = EPhoneParamIdGlobalNote;
     }
@@ -112,6 +113,17 @@ EXPORT_C void TPhoneCmdParamGlobalNote::SetSoftkeys( TInt aSoftkeys )
    }
 
 // ---------------------------------------------------------
+// TPhoneCmdParamGlobalNote::SetTimeout
+// Sets the timeout value for a note.
+// (other items were commented in a header).
+// ---------------------------------------------------------
+//
+EXPORT_C void TPhoneCmdParamGlobalNote::SetTimeout( TInt aTimeout )
+{
+    iTimeout = aTimeout;
+}
+
+// ---------------------------------------------------------
 // TPhoneCmdParamGlobalNote::Type
 // Returns the global note type
 // (other items were commented in a header).
@@ -176,5 +188,15 @@ EXPORT_C TInt TPhoneCmdParamGlobalNote::Softkeys() const
    {
    return iSoftkeys;
    }
+
+// ---------------------------------------------------------
+// TPhoneCmdParamGlobalNote::Timeout
+// Returns the timeout value.
+// ---------------------------------------------------------
+//
+EXPORT_C TInt TPhoneCmdParamGlobalNote::Timeout() const
+    {
+    return iTimeout;
+    }
 
 //  End of File  

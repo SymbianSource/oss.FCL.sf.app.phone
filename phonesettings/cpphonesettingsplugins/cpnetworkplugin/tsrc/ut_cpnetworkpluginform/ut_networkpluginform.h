@@ -23,7 +23,6 @@
 #include <psetnetworkwrapper.h>
 
 class CpNetworkPluginForm;
-//class PSetNetworkWrapper;
 
 class UT_CpNetworkPluginForm : public QObject, MockService
 {

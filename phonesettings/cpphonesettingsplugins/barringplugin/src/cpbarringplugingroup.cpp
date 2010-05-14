@@ -18,9 +18,6 @@
 #include <hbdataformmodel.h>
 #include <hbdataformmodelitem.h>
 #include <HbCheckBox>
-#include <QTranslator>
-#include <QLocale>
-#include <QApplication>
 #include <QTimer>
 #include <QValidator>
 #include <cpitemdatahelper.h>
@@ -44,7 +41,6 @@ CpBarringPluginGroup::CpBarringPluginGroup(CpItemDataHelper &helper)
         HbDataFormModelItem::GroupItem, 
         hbTrId("txt_phone_subhead_call_barring"), 0),
     m_helper(helper),
-    m_translator(0),
     m_pSetWrapper(0),
     m_barringWrapper(0),
     m_editBarringPasswordItem(0),
@@ -52,7 +48,11 @@ CpBarringPluginGroup::CpBarringPluginGroup(CpItemDataHelper &helper)
     m_activeNoteId(0),
     m_phoneNotes(0),
     m_barringPasswordValidator(0),
-    m_delayedBarringActivationNote(false)
+    m_delayedBarringActivationNote(false),
+    m_clickedBarringItem(NULL),
+    m_changeBarringPasswordPhase(NonePhase),
+    m_verifyPasswordValidator(NULL),
+    m_model(0)
 {
     DPRINT << ": IN";
     
@@ -60,8 +60,6 @@ CpBarringPluginGroup::CpBarringPluginGroup(CpItemDataHelper &helper)
     // information for barring items.
     qRegisterMetaType<PSetCallBarringWrapper::BarringType>(
         "PSetCallBarringWrapper::BarringType");
-    
-    setupLocalization();
     
     m_pSetWrapper.reset(new PSetWrapper(NULL));
     m_barringWrapper = &m_pSetWrapper->callBarringWrapper(); 
@@ -90,6 +88,10 @@ CpBarringPluginGroup::~CpBarringPluginGroup()
 {
     DPRINT << ": IN";
     
+    if (m_verifyPasswordValidator) {
+        delete m_verifyPasswordValidator;                    
+    }
+    
     DPRINT << ": OUT";
 }
 
@@ -103,13 +105,15 @@ void CpBarringPluginGroup::itemShown(const QModelIndex& item)
     
     CpSettingFormItemData* formItem = 
         static_cast<CpSettingFormItemData*>(
-            qobject_cast<HbDataFormModel*>(model())->itemFromIndex(item));
+            qobject_cast<const HbDataFormModel*>(item.model())->itemFromIndex(item));
     
     if (!formItem->property("barringType").isValid()) {
         // Shown item does not belong to the barring settings group.
         return;
         }
     
+    m_model = const_cast<HbDataFormModel*>(qobject_cast<const HbDataFormModel*>(item.model()));
+        
     if (formItem == m_editBarringPasswordItem) {
         return;
     }
@@ -123,31 +127,6 @@ void CpBarringPluginGroup::itemShown(const QModelIndex& item)
     // start barring status query
     m_barringRequestQueue.enqueue(formItem);
     processBarringStatusRequestQueue();
-    
-    DPRINT << ": OUT";
-}
-
-
-/*!
-  CpBarringPluginGroup::setupLocalization.
- */
-void CpBarringPluginGroup::setupLocalization()
-{
-    DPRINT << ": IN";
-    
-    m_translator.reset(new QTranslator);
-    QString lang = QLocale::system().name();
-    QString path = "z:/resource/qt/translations/";
-    QString fullName = path + "telephone_cp_" + lang;
-    
-    DPRINT << ": loading translation:" << fullName;
-    bool translatorLoaded = m_translator->load(fullName);
-    DPRINT << ": translator loaded: " << translatorLoaded; 
-    
-    if (translatorLoaded) {
-        qApp->installTranslator(m_translator.data());
-        DPRINT << ": translator installed"; 
-    }
     
     DPRINT << ": OUT";
 }
@@ -498,55 +477,72 @@ void CpBarringPluginGroup::processBarringStatusRequestQueue()
 void CpBarringPluginGroup::changeBarringStateRequested(int checkState)
 {
     DPRINT << ": IN";
-    
+    Q_UNUSED(checkState)
     // find form item for which user has requested barring status change
     QObject *signalSender = sender();
-    HbDataFormModel *formModel = qobject_cast<HbDataFormModel*>(model());
-    CpSettingFormItemData* barringItem = NULL;
+        
     int numOfChilds = childCount();
-    for (int i = 0; (i < numOfChilds) && (barringItem == NULL); i++) {
+    for (int i = 0; (i < numOfChilds) && (m_clickedBarringItem == NULL); i++) {
         HbDataFormModelItem* itemCandidate = childAt(i);
-        QModelIndex modelIndex = formModel->indexFromItem(itemCandidate);
+        QModelIndex modelIndex = m_model->indexFromItem(itemCandidate);
         if (signalSender == m_helper.widgetFromModelIndex(modelIndex)) {
-            barringItem = static_cast<CpSettingFormItemData*>(itemCandidate);
+            m_clickedBarringItem = static_cast<CpSettingFormItemData*>(itemCandidate);
         }
     }
     
-    if (NULL != barringItem) {
+    if (NULL != m_clickedBarringItem) {
         QString barringPasswordQueryDialogTitle(
             hbTrId("txt_phone_info_barring_password"));
-        QString barringPassword;
-        bool okPressed = false;
+        
+        QObject::connect(
+            m_phoneNotes, SIGNAL(passwordQueryCompleted(QString, bool)),
+            this, SLOT(completeBarringStateChangeRequestHandling(QString, bool)));
         m_phoneNotes->showPasswordQueryDialog(
             barringPasswordQueryDialogTitle, *m_barringPasswordValidator,
-            KMaxPasswordLength, barringPassword, okPressed);
-        if (!okPressed) {
-            revertCheckStateOfItem(barringItem);
-            return;
-        }
-        
-        if (Qt::Checked == checkState) {
-            m_barringWrapper->enableBarring(
-                ServiceGroupVoice,
-                qvariant_cast<PSetCallBarringWrapper::BarringType>(
-                    barringItem->property("barringType")), 
-                barringPassword);
-        } else {
-            m_barringWrapper->disableBarring(
-                ServiceGroupVoice,
-                qvariant_cast<PSetCallBarringWrapper::BarringType>(
-                    barringItem->property("barringType")), 
-                barringPassword);
-        }
-        
-        m_barringRequestQueue.enqueue(barringItem);
-        m_phoneNotes->showGlobalProgressNote(
-            m_activeNoteId, hbTrId("txt_phone_info_requesting"));
+            KMaxPasswordLength);
     }
     
     DPRINT << ": OUT";
 }
 
+/*!
+  CpBarringPluginGroup::completeBarringStateChangeRequestHandling.
+ */
+void CpBarringPluginGroup::completeBarringStateChangeRequestHandling(
+        QString barringPassword,
+        bool okPressed)
+{
+    DPRINT << ": IN";
+    
+	QObject::disconnect(
+        m_phoneNotes, SIGNAL(passwordQueryCompleted(QString, bool)),
+        this, SLOT(completeBarringStateChangeRequestHandling(QString, bool)));
+    if (okPressed) {
+        QVariant checkState = m_clickedBarringItem->contentWidgetData("checkState");
+        if (Qt::Checked == checkState.toInt()) {
+            m_barringWrapper->enableBarring(
+                ServiceGroupVoice,
+                qvariant_cast<PSetCallBarringWrapper::BarringType>(
+                    m_clickedBarringItem->property("barringType")), 
+                barringPassword);
+        } else {
+            m_barringWrapper->disableBarring(
+                ServiceGroupVoice,
+                qvariant_cast<PSetCallBarringWrapper::BarringType>(
+                    m_clickedBarringItem->property("barringType")), 
+                barringPassword);
+        }
+        
+        m_barringRequestQueue.enqueue(m_clickedBarringItem);
+        m_phoneNotes->showGlobalProgressNote(
+            m_activeNoteId, hbTrId("txt_phone_info_requesting"));
+    } else {
+        revertCheckStateOfItem(m_clickedBarringItem);
+    }
+    m_clickedBarringItem = NULL;
+        
+    DPRINT << ": OUT";
+}
 
 /*!
   CpBarringPluginGroup::changeBarringPasswordRequested.
@@ -556,48 +552,86 @@ void CpBarringPluginGroup::changeBarringPasswordRequested(bool checked)
     DPRINT << ": IN";
     Q_UNUSED(checked)
     
-    bool okPressed = false;
-    
-    QString currentPassword;
+    m_changeBarringPasswordPhase = CurrentPasswordPhase;
     QString currentPasswordQueryDialogTitle(
         hbTrId("txt_phone_info_current_password"));
+    QObject::connect(
+        m_phoneNotes, SIGNAL(passwordQueryCompleted(QString, bool)),
+        this, SLOT(changeBarringPasswordPhasesHandling(QString, bool)));
     m_phoneNotes->showPasswordQueryDialog(
-        currentPasswordQueryDialogTitle, *m_barringPasswordValidator, 
-        KMaxPasswordLength, currentPassword, okPressed);
-    if (!okPressed) {
-        return;
-    }
+        currentPasswordQueryDialogTitle, 
+        *m_barringPasswordValidator, 
+        KMaxPasswordLength);
     
-    QString newPassword;
-    QString newPasswordQueryDialogTitle(
-        hbTrId("txt_phone_info_new_password"));
-    m_phoneNotes->showPasswordQueryDialog(
-        newPasswordQueryDialogTitle, *m_barringPasswordValidator,
-        KMaxPasswordLength, newPassword, okPressed);
-    if (!okPressed) {
-        return;
-    }
-    
-    QString newPasswordVerifyDialogTitle(
-        hbTrId("txt_phone_info_verify_new_password"));
-    QString newPasswordVerified;
-    QRegExp regExpression(newPassword);
-    QScopedPointer<QValidator> verifyPasswordValidator(
-        new QRegExpValidator(regExpression, NULL));
-    m_phoneNotes->showPasswordQueryDialog(
-        newPasswordVerifyDialogTitle, *verifyPasswordValidator.data(),
-        KMaxPasswordLength, newPasswordVerified, okPressed);
-    
-    if (okPressed) {
-        m_barringWrapper->changeBarringPassword(
-            currentPassword,
-            newPassword,
-            newPasswordVerified);
+    DPRINT << ": OUT";
+}
+
+/*!
+  CpBarringPluginGroup::changeBarringPasswordPhasesHandling.
+ */
+void CpBarringPluginGroup::changeBarringPasswordPhasesHandling(
+        QString barringPassword,
+        bool okPressed)
+{
+    DPRINT << ": IN";
         
-        m_phoneNotes->showGlobalProgressNote(
-            m_activeNoteId, hbTrId("txt_phone_info_requesting"));
+    if (okPressed) {
+        switch (m_changeBarringPasswordPhase) {
+            case CurrentPasswordPhase: {
+                m_changeBarringPasswordPhase = NewPasswordPhase;
+                m_currentPassword = barringPassword;
+                QString newPasswordQueryDialogTitle(
+                    hbTrId("txt_phone_info_new_password"));
+                m_phoneNotes->showPasswordQueryDialog(
+                    newPasswordQueryDialogTitle, 
+                    *m_barringPasswordValidator,
+                    KMaxPasswordLength);
+                }
+                break; 
+            case NewPasswordPhase: {
+                m_changeBarringPasswordPhase = VerifyNewPasswordPhase;
+                m_newPassword = barringPassword;
+                QString newPasswordVerifyDialogTitle(
+                    hbTrId("txt_phone_info_verify_new_password"));
+                QRegExp regExpression(m_newPassword);
+                if(m_verifyPasswordValidator) {
+                    delete m_verifyPasswordValidator;
+                    m_verifyPasswordValidator = NULL;
+                }
+                m_verifyPasswordValidator = new QRegExpValidator(regExpression, NULL);
+                m_phoneNotes->showPasswordQueryDialog(
+                    newPasswordVerifyDialogTitle, 
+                    *m_verifyPasswordValidator,
+                    KMaxPasswordLength);
+                }
+                break; 
+            case VerifyNewPasswordPhase: {
+                m_changeBarringPasswordPhase = NonePhase;
+                m_newPasswordVerified = barringPassword;
+                m_barringWrapper->changeBarringPassword(
+                    m_currentPassword,
+                    m_newPassword,
+                    m_newPasswordVerified);
+                m_phoneNotes->showGlobalProgressNote(
+                    m_activeNoteId, 
+                    hbTrId("txt_phone_info_requesting"));
+                QObject::disconnect(
+                    m_phoneNotes, SIGNAL(passwordQueryCompleted(QString, bool)),
+                    this, SLOT(changeBarringPasswordPhasesHandling(QString, bool)));
+                }
+                break;
+            default: 
+                DPRINT << "Error: unknown enum value";
+                break; 
+        }
     }
-    
+    else {
+        QObject::disconnect(
+            m_phoneNotes, SIGNAL(passwordQueryCompleted(QString, bool)),
+            this, SLOT(changeBarringPasswordPhasesHandling(QString, bool)));
+        m_changeBarringPasswordPhase = NonePhase;
+    }
+        
     DPRINT << ": OUT";
 }
 
@@ -709,7 +743,6 @@ CpSettingFormItemData &CpBarringPluginGroup::barringItemByProgram(
 {
     DPRINT << ": IN";
     
-    HbDataFormModel *formModel = qobject_cast<HbDataFormModel*>(model());
     CpSettingFormItemData *item = NULL;
     int numOfChilds = childCount();
     for (int childInd = 0; (childInd < numOfChilds) && (!item); childInd++) {

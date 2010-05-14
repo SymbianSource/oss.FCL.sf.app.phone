@@ -117,7 +117,6 @@ void UT_CpBarringPluginGroup::init()
     CPsetContainer &dummyContainer = reinterpret_cast<CPsetContainer &>(*this);
     m_barringWrapperMock = new PSetCallBarringWrapper(dummyContainer);
     EXPECT(PSetWrapper::callBarringWrapper).returns(m_barringWrapperMock);
-    EXPECT(QTranslator::load).returns(true);
     
     CpItemDataHelper itemDataHelper;
     m_barringpluginGroup = new CpBarringPluginGroup(itemDataHelper);
@@ -159,54 +158,6 @@ void UT_CpBarringPluginGroup::cleanup()
 void UT_CpBarringPluginGroup::t_memleak()
 {
     
-}
-
-
-/*!
-  UT_CpBarringPluginGroup::t_translatorInstallationOk
- */
-void UT_CpBarringPluginGroup::t_translatorInstallationOk()
-{
-    CPsetContainer &dummyContainer = reinterpret_cast<CPsetContainer &>(*this);
-    CpItemDataHelper itemDataHelper;
-    
-    EXPECT(PSetWrapper::callBarringWrapper).returns(m_barringWrapperMock);
-    EXPECT(QTranslator::load).returns(true);
-    
-    CpBarringPluginGroup *barringpluginGroup = 
-        new CpBarringPluginGroup(itemDataHelper);
-    
-    QString expectedTranslation("translation");
-    EXPECT(QTranslator::translate).returns(expectedTranslation);
-    QString actualTranslation = hbTrId("txt_sourcetext");
-    QCOMPARE(actualTranslation, expectedTranslation);
-    
-    delete barringpluginGroup;
-    
-    QVERIFY(verify());
-}
-
-
-/*!
-  UT_CpBarringPluginGroup::t_translatorInstallationFails
- */
-void UT_CpBarringPluginGroup::t_translatorInstallationFails()
-{
-    CPsetContainer &dummyContainer = reinterpret_cast<CPsetContainer &>(*this);
-    CpItemDataHelper itemDataHelper;
-    
-    EXPECT(PSetWrapper::callBarringWrapper).returns(m_barringWrapperMock);
-    EXPECT(QTranslator::load).returns(false);
-    
-    CpBarringPluginGroup *barringpluginGroup = 
-        new CpBarringPluginGroup(itemDataHelper);
-    
-    QString translation = hbTrId("txt_sourcetext");
-    QCOMPARE(translation, QString("txt_sourcetext"));
-    
-    delete barringpluginGroup;
-    
-    QVERIFY(verify());
 }
 
 

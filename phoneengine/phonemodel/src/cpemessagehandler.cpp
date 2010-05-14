@@ -1318,7 +1318,8 @@ TInt CPEMessageHandler::UpdateClientInfo(
         "PE CPEMessageHandler::UpdateClientInfo, allowmatch: %d", 
         clientInformation.AllowMatch() );
     
-    if ( clientInformation.AllowMatch() && ( aCallId != KPEEmergencyCallId ) )
+    if ( EPECallOriginSAT != iDataStore.CallOrigin(aCallId) && 
+       ( aCallId != KPEEmergencyCallId ) )
         {
         TEFLOGSTRING2( 
             KTAINT, 
@@ -1341,10 +1342,6 @@ TInt CPEMessageHandler::UpdateClientInfo(
             KTAINT, 
             "PE CPEMessageHandler::UpdateClientInfo > MPEContactHandling::FindContactInfoSync( EPEFindWithPhoneNumber ), error code: %d", 
             errorCode );
-        }
-    else if ( clientInformation.Name().Length() )
-        {
-        iDataStore.SetRemoteName( clientInformation.Name(), aCallId );
         }
     
     // Calls have to log also without a contact (ECCPErrorNotFound).
@@ -1862,6 +1859,10 @@ TInt CPEMessageHandler::HandleDialCallL(
     if ( aClientCall )
         {
         HandleClientCallData();
+        }
+    else 
+        {
+        iDataStore.SetCallOriginCommand(EPECallOriginPhone);
         }
         
     //Get number of calls
@@ -3003,4 +3004,30 @@ TInt CPEMessageHandler::HandleDialServiceCall(
     return errorCode;
     }
 
-//  End of File  
+
+// -----------------------------------------------------------------------------
+// CPEMessageHandler::ExecuteKeySequenceL
+// Only sequences which are not issued with send-key are handled here. SS 
+// commands etc. are processed in HandleDialCallL().
+// -----------------------------------------------------------------------------
+//
+TBool CPEMessageHandler::ExecuteKeySequenceL( const TDesC16 &aSequence )
+{
+    TBool keySequenceProcessed( EFalse );
+    
+    iOptions->SetOptionStatus( KPhoneOptionInCall, 
+        ( iCallHandling.GetNumberOfCalls() > 0 ) );
+    iOptions->SetOptionStatus( KPhoneOptionSend, EFalse );
+    iOptions->SetOptionStatus( KPhoneOptionVoipCall, EFalse );
+    
+    if ( iParser->ParseL( aSequence, *iResult, *iOptions ) )
+        {
+        keySequenceProcessed = ETrue;
+        iGsmParserErrorCode = ECCPErrorNone;
+        iParserHandlerContainer->ProcessL( *iResult );
+        }
+    
+    return keySequenceProcessed;
+}
+
+//  End of File

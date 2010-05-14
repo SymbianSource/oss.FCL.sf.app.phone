@@ -70,9 +70,9 @@ void NetworkHandlingStarterPrivate::ShowNote()
         hbTrId("txt_phone_info_network_lost_select_network"), 
         HbMessageBox::MessageTypeQuestion);
     HbAction *primaryAction = new HbAction(hbTrId("txt_common_button_yes"), m_note);
-    m_note->setPrimaryAction(primaryAction);
+    m_note->setAction(primaryAction, HbDeviceMessageBox::AcceptButtonRole); 
     HbAction *secondaryAction = new HbAction(hbTrId("txt_common_button_no"), m_note);
-    m_note->setSecondaryAction(secondaryAction);
+    m_note->setAction(secondaryAction,HbDeviceMessageBox::RejectButtonRole); 
     QObject::connect(
         primaryAction, SIGNAL(triggered()),
         this, SLOT(LaunchCpNetworkPluginView()));

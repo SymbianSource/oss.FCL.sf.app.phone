@@ -60,9 +60,7 @@ BubbleManager::BubbleManager( QGraphicsItem *parent ) :
     mEffectHandler = new BubbleEffectHandler(this);
 
     mWidgetManager = new BubbleWidgetManager(
-        *mBubbleImageManager, mDefaultStyleBaseId, this);
-    mWidgetManager->setStylePluginName(
-        BubbleUtils::stylePluginNameWithPath("bubblestyleplugin.dll"));
+        *mBubbleImageManager, this);
 
     mMainLayout = new HbStackedLayout(this);
     mMainLayout->setContentsMargins(0.0,0.0,0.0,0.0);
@@ -715,6 +713,7 @@ void BubbleManager::setExpandedConferenceCallHeader(
     Q_ASSERT( mIsReadyToDraw > 0 );
     if ( mConferenceHeader->isUsed() ) {
         mConferenceHeader->setExpanded(expanded);
+        mSortHeaders = true;
     }
 }
 
@@ -874,20 +873,27 @@ void BubbleManager::showExpanded( int bubbleId )
         int expanded = mActiveHeaders[0]->bubbleId();
         if ( bubbleId != expanded ) {
             startChanges();
-            // find header
+
             BubbleHeader* header = 0;
-            for ( int i=0; i < mActiveHeaders.size(); i++ ) {
-                if ( mActiveHeaders[i]->bubbleId() == bubbleId ) {
-                    header = mActiveHeaders[i];
-                    mActiveHeaders.remove(i);
-                    break;
+
+            if (bubbleId == BUBBLE_CONF_CALL_ID) {
+                header = mConferenceHeader;
+            } else {
+                // find header
+                for ( int i=0; i < mActiveHeaders.size(); i++ ) {
+                    if ( mActiveHeaders[i]->bubbleId() == bubbleId ) {
+                        header = mActiveHeaders[i];
+                        mActiveHeaders.remove(i);
+                        break;
+                    }
                 }
+
+                Q_ASSERT(header);
+
+                // set it first
+                mActiveHeaders.insert(0,header);
             }
 
-            Q_ASSERT(header);
-
-            // set it first
-            mActiveHeaders.insert(0,header);
             endChanges();
 
             // trigger the expand action

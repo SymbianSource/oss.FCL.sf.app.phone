@@ -21,15 +21,11 @@ call runtest.cmd ut_bubbleutils
 call runtest.cmd ut_bubbleheader
 call runtest.cmd ut_bubbleconferenceheader
 call runtest.cmd ut_bubblepartlistmodel
-call runtest.cmd ut_bubblestyleoption
 call runtest.cmd ut_bubblecontainerwidget
 call runtest.cmd ut_bubbleheadingwidget
 call runtest.cmd ut_bubbleimagewidget
 call runtest.cmd ut_bubbleparticipantlistitem
-call runtest.cmd ut_bubblebuttonstyle
-call runtest.cmd ut_bubbleanimiconitem
-call runtest.cmd ut_bubblestyleplugin
-call runtest.cmd mt_bubblemanager2
+rem call runtest.cmd mt_bubblemanager2
 )
 
 @echo off
@@ -38,15 +34,11 @@ call runtest_w32.cmd ut_bubbleutils
 call runtest_w32.cmd ut_bubbleheader
 call runtest_w32.cmd ut_bubbleconferenceheader
 call runtest_w32.cmd ut_bubblepartlistmodel
-call runtest_w32.cmd ut_bubblestyleoption
 call runtest_w32.cmd ut_bubblecontainerwidget
 call runtest_w32.cmd ut_bubbleheadingwidget
 call runtest_w32.cmd ut_bubbleimagewidget
 call runtest_w32.cmd ut_bubbleparticipantlistitem
-call runtest_w32.cmd ut_bubblebuttonstyle
-call runtest_w32.cmd ut_bubbleanimiconitem
-call runtest_w32.cmd ut_bubblestyleplugin
-call runtest_w32.cmd mt_bubblemanager2
+rem call runtest_w32.cmd mt_bubblemanager2
 )
 
 @echo off
@@ -56,14 +48,11 @@ call ctcpost^
  ut_bubbleheader\mon.sym ut_bubbleheader\mon.dat^
  ut_bubbleconferenceheader\mon.sym ut_bubbleconferenceheader\mon.dat^
  ut_bubblepartlistmodel\mon.sym ut_bubblepartlistmodel\mon.dat^
- ut_bubblestyleoption\mon.sym ut_bubblestyleoption\mon.dat^
  ut_bubblecontainerwidget\mon.sym ut_bubblecontainerwidget\mon.dat^
  ut_bubbleheadingwidget\mon.sym ut_bubbleheadingwidget\mon.dat^
  ut_bubbleimagewidget\mon.sym ut_bubbleimagewidget\mon.dat^
  ut_bubbleparticipantlistitem\mon.sym ut_bubbleparticipantlistitem\mon.dat^
- ut_bubblebuttonstyle\mon.sym ut_bubblebuttonstyle\mon.dat^
  ut_bubbleanimiconitem\mon.sym ut_bubbleanimiconitem\mon.dat^
- ut_bubblestyleplugin\mon.sym ut_bubblestyleplugin\mon.dat^
   -p profile.txt
 call ctc2html -i profile.txt
 )

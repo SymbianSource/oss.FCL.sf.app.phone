@@ -23,10 +23,17 @@
 
 class XQServiceRequest : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
+
 public:
     XQServiceRequest(QString const& api, QString const& method, bool const& sync = true);
     ~XQServiceRequest();
+    bool send();
     bool send(QVariant& retValue);
+    void setSynchronous(const bool &synchronous);
+
+signals:
+    void requestCompleted(const QVariant& value) ;
+    void requestError(int err);
 };
 #endif

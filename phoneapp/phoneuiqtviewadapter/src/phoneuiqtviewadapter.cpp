@@ -209,6 +209,7 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TInt aCa
         m_view.removeExpandAction(bubble);
         m_bubbleWrapper->removeCallHeader (aCallId);
         m_bubbleWrapper->bubbleManager().endChanges();
+        m_indicatorController->clearActiveCallData();
         }
         break;
     case EPhoneViewRemoveFromConference:
@@ -484,6 +485,16 @@ void PhoneUIQtViewAdapter::keyReleased(QKeyEvent */*event*/)
     }
 }
 
+void PhoneUIQtViewAdapter::handleWindowActivated()
+{
+    m_indicatorController->disableActiveCallIndicator();
+}
+
+void PhoneUIQtViewAdapter::handleWindowDeactivated()
+{
+    m_indicatorController->enableActiveCallIndicator();
+}
+
 void PhoneUIQtViewAdapter::setTopApplication (TPhoneCommandParam *commandParam)
 {
     TPhoneCmdParamInteger *integerParam = static_cast<TPhoneCmdParamInteger *> (commandParam);
@@ -548,6 +559,7 @@ void PhoneUIQtViewAdapter::createCallHeader(
     if (1 == m_bubbleWrapper->bubbles().keys().count()) {
         setHidden(false);
     }
+    m_indicatorController->setActiveCallData( data.CLIText(), KNullDesC );
 }
 
 void PhoneUIQtViewAdapter::createEmergencyCallHeader(
@@ -1028,6 +1040,7 @@ void PhoneUIQtViewAdapter::removeAllCallHeaders()
             m_bubbleWrapper->bubbleManager().endChanges();
         }
     }
+    m_indicatorController->clearActiveCallData();
 }
 
 void PhoneUIQtViewAdapter::getNumberFromDialpad(
@@ -1074,13 +1087,15 @@ void PhoneUIQtViewAdapter::setMenu()
 
 void PhoneUIQtViewAdapter::setCallMenu()
 {
-    int bubbleId = m_bubbleWrapper->bubbleManager().expandedBubble();
-    int callId = m_bubbleWrapper->callIdByBubbleId(bubbleId);
-    m_uiCommandController->setCallMenuActions(
-            m_bubbleWrapper->callStates(),
-            m_bubbleWrapper->serviceIds(),
-            m_bubbleWrapper->serviceIdByCallId(callId),
-            callId );
+    if ( 0<m_bubbleWrapper->callStates().keys().size() ) {
+        int bubbleId = m_bubbleWrapper->bubbleManager().expandedBubble();
+        int callId = m_bubbleWrapper->callIdByBubbleId(bubbleId);
+        m_uiCommandController->setCallMenuActions(
+                m_bubbleWrapper->callStates(),
+                m_bubbleWrapper->serviceIds(),
+                m_bubbleWrapper->serviceIdByCallId(callId),
+                callId );
+    }
 
 }
 

@@ -66,6 +66,7 @@ CPEExternalDataHandler::~CPEExternalDataHandler()
     delete iAccessorySettingsRepository;
     delete iAccessoryModeMonitor;
     delete iCoreApplicationRepository;
+    delete iNetworkHandler;
     }
 
 // -----------------------------------------------------------------------------
@@ -83,6 +84,7 @@ void CPEExternalDataHandler::ConstructL(
     iCallDurationDisplay = CPECallDurationDisplaySettingMonitor::NewL(); 
     iProfileSettings = CPEProfileSettingMonitor::NewL( aModel );
     
+    iNetworkHandler = new PeNetworkHandler(aModel);
     //TODO
     /*
     iNetworkRegistrationStatus = CPENetworkRegistrationStatusMonitor::NewL( aModel );

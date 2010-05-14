@@ -40,19 +40,19 @@ static void cpPhoneSettingsPluginsMsgOutput(QtMsgType type, const char *msg)
     
     case QtDebugMsg:
         RDebug::Printf("CpPhoneSettingsPlugins Debug: %s\n", msg);
-        break;
-        
+        break;        
     case QtWarningMsg:
         RDebug::Printf("CpPhoneSettingsPlugins Warning: %s\n", msg);
         break;
-
     case QtCriticalMsg:
         RDebug::Printf("CpPhoneSettingsPlugins Critical: %s\n", msg);
-        break;
-        
+        break;        
     case QtFatalMsg:
         RDebug::Printf("CpPhoneSettingsPlugins Fatal: %s\n", msg);
         abort();
+        break; 
+    default:
+        break; 
     }
 }
 
@@ -71,7 +71,7 @@ static void cpPhoneSettingsPluginsMsgOutput(QtMsgType type, const char *msg)
   Debug macros
   */
 #define DPRINT qDebug() << __PRETTY_FUNCTION__
-
+#define DWARNING qWarning() << __PRETTY_FUNCTION__
 
 #endif // CPPHONESETTINGSPLUGINSLOGGING_H
 

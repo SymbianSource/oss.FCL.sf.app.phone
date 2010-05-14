@@ -17,7 +17,8 @@
 
 TEMPLATE = lib
 TARGET = phoneuiqtview
-CONFIG += hb
+CONFIG += hb mobility
+MOBILITY += systeminfo
 
 symbian {
     TARGET.CAPABILITY = ALL -TCB

@@ -20,6 +20,8 @@
 
 #include <qobject.h>
 #include <cpplugininterface.h>
+#include "cpphonelocalisation.h"
+
 
 class CpNetworkPlugin : public QObject, public CpPluginInterface
 {
@@ -39,6 +41,9 @@ public:
     QList<CpSettingFormItemData*> createSettingFormItemData(
         CpItemDataHelper &itemDataHelper) const;
 
+private:
+    
+    QScopedPointer<CpPhoneLocalisation> m_localisation; 
 };
 
 #endif  // CPNETWORKPLUGIN_H

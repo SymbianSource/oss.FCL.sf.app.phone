@@ -16,17 +16,24 @@
 */
 
 #include <hbiconitem.h>
+#include <hbaction.h>
+#include <hbtextitem.h>
+#include <hbstringutil.h>
+#include <hbiconanimator.h>
+#include <hbcolorscheme.h>
+
 #include "bubblemanager2.h"
 #include "bubbleutils.h"
 #include "bubbleheader.h"
-#include "bubblestyleoption.h"
-#include "bubblebuttonstyle.h"
-#include "hbpushbutton.h"
-#include "hbaction.h"
+#include "bubblebutton.h"
 
 void BubbleUtils::setCallHeaderTexts3Lines(
     const BubbleHeader& header,
-    BubbleStyleOption& option )
+    HbTextItem& textLine1,
+    HbTextItem& textLine2,
+    HbTextItem& textLine3,
+    int& cliLineNumber,
+    int& timerLineNumber)
 {
     switch( header.callState() ) {
     case BubbleManager::Incoming:
@@ -34,39 +41,31 @@ void BubbleUtils::setCallHeaderTexts3Lines(
     case BubbleManager::AlertToDisconnected:
     {
         if ( header.secondaryCli().length() ) {
-            option.mText1.append( header.cli() );
-            option.mText1Clip = header.cliClipDirection();
-            option.mText2.append( header.secondaryCli() );
-            option.mText2Clip = header.secondaryCliClipDirection();
-            option.mText3.append( header.text() );
-            option.mText3Clip = header.textClipDirection();
-            option.mCliLineNumber = 1;
+            setText(textLine1, header.cli(), header.cliClipDirection());
+            setText(textLine2, header.secondaryCli(),
+                    header.secondaryCliClipDirection());
+            setText(textLine3, header.text(), header.textClipDirection());
+            cliLineNumber = 1;
         } else {
-            option.mText1.append( header.cli() );
-            option.mText1Clip = header.cliClipDirection();
-            option.mText2.append( header.text() );
-            option.mText2Clip = header.textClipDirection();
-            option.mCliLineNumber = 1;
+            setText(textLine1,header.cli(), header.cliClipDirection());
+            setText(textLine2,header.text(), header.textClipDirection());
+            cliLineNumber = 1;
         }
         break;
     }
-    
+
     case BubbleManager::Outgoing:
     {
         if ( header.secondaryCli().length() ) {
-            option.mText1.append( header.text() );
-            option.mText1Clip = header.textClipDirection();
-            option.mText2.append( header.cli() );
-            option.mText2Clip = header.cliClipDirection();
-            option.mText3.append( header.secondaryCli() );
-            option.mText3Clip = header.secondaryCliClipDirection();
-            option.mCliLineNumber = 2;
+            setText(textLine1, header.text(), header.textClipDirection());
+            setText(textLine2, header.cli(), header.cliClipDirection());
+            setText(textLine3, header.secondaryCli(),
+                    header.secondaryCliClipDirection());
+            cliLineNumber = 2;
         } else {
-            option.mText1.append( header.text() );
-            option.mText1Clip = header.textClipDirection();
-            option.mText2.append( header.cli() );
-            option.mText2Clip = header.cliClipDirection();
-            option.mCliLineNumber = 2;
+            setText(textLine1, header.text(), header.textClipDirection());
+            setText(textLine2, header.cli(), header.cliClipDirection());
+            cliLineNumber = 2;
         }
         break;
     }
@@ -75,42 +74,34 @@ void BubbleUtils::setCallHeaderTexts3Lines(
     case BubbleManager::Alerting:
     {
         if ( header.secondaryCli().length() ) {
-            option.mText1.append( header.cli() );
-            option.mText1Clip = header.cliClipDirection();
-            option.mText2.append( header.secondaryCli() );
-            option.mText2Clip = header.secondaryCliClipDirection();
-            option.mText3.append( header.timerCost() );
-            option.mText3Clip = Qt::ElideRight;
-            option.mCliLineNumber = 1;
-            option.mTimerLineNumber = 3;
+            setText(textLine1, header.cli(), header.cliClipDirection());
+            setText(textLine2, header.secondaryCli(),
+                    header.secondaryCliClipDirection());
+            setText(textLine3, header.timerCost(), Qt::ElideRight);
+            cliLineNumber = 1;
+            timerLineNumber = 3;
         } else {
-            option.mText1.append( header.cli() );
-            option.mText1Clip = header.cliClipDirection();
-            option.mText2.append( header.timerCost() );
-            option.mText2Clip = Qt::ElideRight;
-            option.mCliLineNumber = 1;
-            option.mTimerLineNumber = 2;
+            setText(textLine1, header.cli(), header.cliClipDirection());
+            setText(textLine2, header.timerCost(), Qt::ElideRight);
+            cliLineNumber = 1;
+            timerLineNumber = 2;
         }
         break;
     }
-    
+
     case BubbleManager::OnHold:
     case BubbleManager::Disconnected:
     {
         if ( header.secondaryCli().length() ) {
-            option.mText1.append( header.cli() );
-            option.mText1Clip = header.cliClipDirection();
-            option.mText2.append( header.secondaryCli() );
-            option.mText2Clip = header.secondaryCliClipDirection();
-            option.mText3.append( header.text() );
-            option.mText3Clip = header.textClipDirection();
-            option.mCliLineNumber = 1;
+            setText(textLine1, header.cli(), header.cliClipDirection());
+            setText(textLine2, header.secondaryCli(),
+                    header.secondaryCliClipDirection());
+            setText(textLine3, header.text(), header.textClipDirection());
+            cliLineNumber = 1;
         } else {
-            option.mText1.append( header.cli() );
-            option.mText1Clip = header.cliClipDirection();
-            option.mText2.append( header.text() );
-            option.mText2Clip = header.textClipDirection();
-            option.mCliLineNumber = 1;
+            setText(textLine1, header.cli(), header.cliClipDirection());
+            setText(textLine2, header.text(), header.textClipDirection());
+            cliLineNumber = 1;
         }
         break;
     }
@@ -123,43 +114,38 @@ void BubbleUtils::setCallHeaderTexts3Lines(
 
 void BubbleUtils::setCallHeaderTexts2Lines(
     const BubbleHeader& header,
-    BubbleStyleOption& option )
+    HbTextItem& textLine1,
+    HbTextItem& textLine2,
+    int& cliLineNumber,
+    int& timerLineNumber)
 {
     switch( header.callState() ) {
     case BubbleManager::Active:
-        option.mText1.append( header.cli() );
-        option.mText1Clip = header.cliClipDirection();
-        option.mText2.append( header.timerCost() );
-        option.mText2Clip = Qt::ElideRight;
-        option.mCliLineNumber = 1;
-        option.mTimerLineNumber = 2;
+        setText(textLine1, header.cli(), header.cliClipDirection());
+        setText(textLine2, header.timerCost(), Qt::ElideRight);
+        cliLineNumber = 1;
+        timerLineNumber = 2;
         break;
 
 
     case BubbleManager::OnHold:
     case BubbleManager::Disconnected:
-        option.mText1.append( header.cli() );
-        option.mText1Clip = header.cliClipDirection();
-        option.mText2.append( header.text() );
-        option.mText2Clip = header.textClipDirection();
-        option.mCliLineNumber = 1;
+        setText(textLine1, header.cli(), header.cliClipDirection());
+        setText(textLine2, header.text(), header.textClipDirection());
+        cliLineNumber = 1;
         break;
 
     case BubbleManager::Waiting:
     case BubbleManager::AlertToDisconnected:
-        option.mText1.append( header.cli() );
-        option.mText1Clip = header.cliClipDirection();
-        option.mText2.append( header.text() );
-        option.mText2Clip = header.textClipDirection();
-        option.mCliLineNumber = 1;
+        setText(textLine1, header.cli(), header.cliClipDirection());
+        setText(textLine2, header.text(), header.textClipDirection());
+        cliLineNumber = 1;
         break;
 
     case BubbleManager::Outgoing:
-        option.mText1.append(header.text());
-        option.mText1Clip = header.textClipDirection();
-        option.mText2.append(header.cli());
-        option.mText2Clip = header.cliClipDirection();
-        option.mCliLineNumber = 2;
+        setText(textLine1, header.text(), header.textClipDirection());
+        setText(textLine2, header.cli(), header.cliClipDirection());
+        cliLineNumber = 2;
         break;
 
     default:
@@ -168,49 +154,148 @@ void BubbleUtils::setCallHeaderTexts2Lines(
     } // switch
 }
 
+void BubbleUtils::setText(
+    HbTextItem& item,
+    const QString& text,
+    Qt::TextElideMode clip)
+{
+    if (clip == Qt::ElideLeft) {
+        // convert phonenumber to phone ui language
+        QString converted = HbStringUtil::convertDigits(text);
+        item.setText(converted);
+    } else {
+        item.setText( text );
+    }
+    item.setElideMode( clip );
+}
+
 bool BubbleUtils::compareHeaders(
     const BubbleHeader* header1,
     const BubbleHeader* header2 )
 {
-    if ( header1->callState() < header2->callState() ) {
+    // sort according to call states, but keep conference header
+    // last, it shown at foreground only when expanded.
+    if ( (header1->callState() < header2->callState()) ||
+         header1->isConference() ) {
         return false;
     } else {
         return true;
     }
 }
 
-QString BubbleUtils::stylePluginNameWithPath(const QString& pluginName)
-{
-    QString nameWithPath;
-
-#if defined(Q_OS_SYMBIAN)
-    nameWithPath.append("z:/resource/qt/plugins/phone/");
-    nameWithPath.append(pluginName);
-#elif defined(Q_OS_WIN)
-    nameWithPath.append("c:/hb/bin/");
-    nameWithPath.append(pluginName);
-#else // Q_OS_UNIX
-    nameWithPath.append("/home/lib/");
-    nameWithPath.append(pluginName);
-#endif
-
-    return nameWithPath;
-}
-
 void BubbleUtils::setButtonStyleForAction(
-    HbPushButton& button,
+    BubbleButton& button,
     const HbAction& action)
 {
-    BubbleButtonStyle* style =
-        static_cast<BubbleButtonStyle*>(button.style());
-
     if (action.softKeyRole()==QAction::PositiveSoftKey) {
-        style->setButtonColor(BubbleButtonStyle::Green);
+        button.setButtonType(BubbleButton::GreenButton);
     } else if (action.softKeyRole()==QAction::NegativeSoftKey) {
-        style->setButtonColor(BubbleButtonStyle::Red);
+        button.setButtonType(BubbleButton::RedButton);
     } else {
-        style->setButtonColor(BubbleButtonStyle::Default);
+        button.setButtonType(BubbleButton::DefaultButton);
     }
 
+    button.updatePrimitives();
+}
+
+void BubbleUtils::setCallStatusIcon(
+    int callState,
+    int callFlags,
+    HbIconItem& icon)
+{
+    bool showIcon = true;
+
+    switch(callState) {
+    case BubbleManagerIF::Incoming:
+    case BubbleManagerIF::Alerting:
+    case BubbleManagerIF::Waiting:
+        // from bubble_icon_anim.axml
+        if ( callFlags & BubbleManagerIF::VoIPCall ) {
+            icon.setIconName("voip_call_waiting_anim");
+        } else if ( callFlags & BubbleManagerIF::Video ) {
+            icon.setIconName("video_call_waiting_anim");
+        } else {
+            icon.setIconName("voice_call_waiting_anim");
+        }
+        break;
+    case BubbleManagerIF::Outgoing:
+    case BubbleManagerIF::Active:
+        if ( callFlags & BubbleManagerIF::VoIPCall ) {
+            icon.setIconName("qtg_large_voip_call_active");
+        } else if ( callFlags & BubbleManagerIF::Video ) {
+            icon.setIconName("qtg_large_video_call_active");
+        } else {
+            icon.setIconName("qtg_large_active_call");
+        }
+        break;
+    case BubbleManagerIF::OnHold:
+        if ( callFlags & BubbleManagerIF::VoIPCall ) {
+            icon.setIconName("qtg_large_voip_call_waiting");
+        } else if ( callFlags & BubbleManagerIF::Video ) {
+            icon.setIconName("qtg_large_video_call_waiting");
+        } else {
+            icon.setIconName("qtg_large_waiting_call");
+        }
+        break;
+    case BubbleManagerIF::Disconnected:
+    case BubbleManagerIF::AlertToDisconnected:
+        if ( callFlags & BubbleManagerIF::VoIPCall ) {
+            icon.setIconName("qtg_large_end_call");
+        } else if ( callFlags & BubbleManagerIF::Video ) {
+            icon.setIconName("qtg_large_end_call");
+        } else {
+            icon.setIconName("qtg_large_end_call");
+        }
+        break;
+    default:
+        icon.setIcon(HbIcon());
+        showIcon = false;
+        break;
+    }
+
+    if (showIcon) {
+        icon.show();
+    }
+}
+
+void BubbleUtils::setNumberTypeIcon(
+    int callState,
+    int callFlags,
+    HbIconItem& icon)
+{
+    if ( (( callState == BubbleManagerIF::Incoming ) ||
+          ( callState == BubbleManagerIF::Waiting )) &&
+         (callFlags & BubbleManagerIF::Diverted) ) {
+        icon.setIcon( HbIcon(":/qtg_mono_call_diverted.svg") );
+
+        // temporary, diverted icon is not yet in theme and
+        // because of that css coloring doesn't work
+        QColor color;
+        color = HbColorScheme::color("qtc_list_item_title_normal");
+        if (color.isValid()) {
+            icon.setColor(Qt::white);
+        }
+
+        icon.show();
+    } else {
+        icon.setIcon( HbIcon() );
+        icon.hide();
+    }
+}
+
+void BubbleUtils::setCipheringIcon(
+    int callState,
+    int callFlags,
+    HbIconItem& icon)
+{
+    Q_UNUSED(callState)
+
+    if (callFlags & BubbleManagerIF::NoCiphering) {
+        icon.setIcon( HbIcon("qtg_mono_ciphering_off") );
+        icon.show();
+    } else {
+        icon.setIcon( HbIcon() );
+        icon.hide();
+    }
 }
 

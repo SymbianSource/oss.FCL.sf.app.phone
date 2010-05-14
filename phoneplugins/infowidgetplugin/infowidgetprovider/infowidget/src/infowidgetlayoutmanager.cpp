@@ -34,10 +34,8 @@ const char LAYOUT_PREFIX_INFO_DISPLAY[] = "id:";
 const char LAYOUT_PREFIX_SETTINGS_DISPLAY[] = "sd:";
 const char LAYOUT_NAME_CONTENT[] = "content";
 const char LAYOUT_NAME_MCNMARQUEEITEM[] = "mcnMarqueeItem";
-const char LAYOUT_NAME_MCNLABEL[] = "mcnLabel";
 const char LAYOUT_NAME_SPNLABEL[] = "spnLabel";
 const char LAYOUT_NAME_SATMARQUEEITEM[] = "satMarqueeItem";
-const char LAYOUT_NAME_SATTEXTLABEL[] = "satTextLabel";
 const char LAYOUT_NAME_SPNICON[] = "spnIcon";
 const char LAYOUT_NAME_MCNICON[] = "mcnIcon";
 const char LAYOUT_NAME_SATTEXTICON[] = "satTextIcon";
@@ -140,9 +138,39 @@ InfoWidgetLayoutManager::~InfoWidgetLayoutManager()
     if (m_documentLoader) { 
         delete m_documentLoader;
     }
-    
+
     DPRINT << ": OUT";
 }
+
+/*!
+   InfoWidgetLayoutManager::destroyObjects()
+   
+   Call on destruction for freeing  
+   loaded objects. Parent items are deleted 
+   causing deletion of corresponding object tree 
+*/
+void InfoWidgetLayoutManager::destroyObjects()
+{
+    DPRINT << ": IN";
+    
+    // Destroy parent items 
+    QGraphicsWidget *contentInfoDisplay =  
+            m_infoDisplayWidgets.value(RoleContent); 
+    if (contentInfoDisplay) {
+        delete contentInfoDisplay;
+        m_infoDisplayWidgets.clear(); 
+    }
+    
+    QGraphicsWidget *contentSettingsDisplay=  
+            m_settingsDisplayWidgets.value(RoleContent); 
+    if (contentSettingsDisplay) {
+        delete contentSettingsDisplay;
+        m_settingsDisplayWidgets.clear(); 
+    }
+
+    DPRINT << ": OUT";    
+}
+
 
 /*!
    InfoWidgetLayoutManager::currentDisplayRole()
@@ -347,60 +375,48 @@ bool InfoWidgetLayoutManager::loadWidgets(const DisplayRole displayRole,
         QMap<LayoutItemRole, QGraphicsWidget *> &widgetMap)
 {
     DPRINT << ": IN";
-    bool loadResult(true); 
+    bool loadResult(false); 
 
     // Cleanup previously loaded content in case of any data  
     widgetMap.clear(); 
     
     if (!m_documentLoader) {
         m_documentLoader = new InfoWidgetDocumentLoader;
-    }
-    
+    }    
     Q_ASSERT(m_documentLoader); 
     
     bool loaded = false;
     m_documentLoader->load(INFOWIDGET_DOCML_FILE, &loaded);
+    
     Q_ASSERT_X(loaded, 
             "InfoWidgetLayoutManager", 
             "Invalid docml file");    
     
-    if (!loaded) {
-        qWarning() << "Unable to load .docml:  " << INFOWIDGET_DOCML_FILE;
-    }
-    else {
-        DPRINT << ": document " << INFOWIDGET_DOCML_FILE << " loaded successfully"; 
-        
-        QGraphicsWidget *widget(NULL);
-        LayoutItemRole currentWidgetRole;
-        bool allWidgetsLoaded(true); 
-        
-        foreach (currentWidgetRole, displayWidgets) {
-            DPRINT << ": iterating displayWidgets, current role: " << static_cast<int>(currentWidgetRole);
-            
-            widget = loadWidget(*m_documentLoader, displayRole, currentWidgetRole);
-               if (widget) {
-                   DPRINT << ": widget found, inserting to widget map";
-                   widgetMap.insert(currentWidgetRole, widget);
-                   widget = NULL;
-               } else {
-                   allWidgetsLoaded = false; 
-                   DPRINT << ": ERROR, widget not found!";
-               }
+    DPRINT << ": document " << INFOWIDGET_DOCML_FILE << " loaded successfully"; 
+    
+    QGraphicsWidget *widget(NULL);
+    LayoutItemRole currentWidgetRole;
+    
+    foreach (currentWidgetRole, displayWidgets) {
+        DPRINT << ": iterating displayWidgets, current role: " << static_cast<int>(currentWidgetRole);
+    
+        widget = loadWidget(*m_documentLoader, displayRole, currentWidgetRole);
+        if (widget) {
+            DPRINT << ": widget found, inserting to widget map";
+            widgetMap.insert(currentWidgetRole, widget);
+            widget = NULL;
+        } else {
+            DCRITICAL << ": ERROR, widget not found!";
         }
-        
-        DPRINT << ": allWidgetsLoaded: " << allWidgetsLoaded;
-                
-        int widgetCount = widgetMap.count(); 
-        DPRINT << ": loaded widgets count: " << widgetCount;
-        if (widgetCount == displayWidgets.count()) {
-            DPRINT << ": all widgets loaded";
-            loadResult = true;
-            } else {
-                DPRINT << ": error, all widgets were not loaded";
-                loadResult = false;
-            }        
     }
-        
+    
+    if (widgetMap.count() == displayWidgets.count()) {
+        DPRINT << ": all widgets loaded";
+        loadResult = true;
+    } else {
+        DCRITICAL << ": error, all widgets were not loaded";
+    }        
+    
     DPRINT << ": OUT";
     return loadResult; 
 }
@@ -458,14 +474,8 @@ QGraphicsWidget* InfoWidgetLayoutManager::loadWidget(InfoWidgetDocumentLoader &l
         case RoleSpnLabel: 
             widgetName.append(LAYOUT_NAME_SPNLABEL);
         break;
-        case RoleMcnLabel: 
-            widgetName.append(LAYOUT_NAME_MCNLABEL);
-        break;
         case RoleSatMarqueeItem: 
             widgetName.append(LAYOUT_NAME_SATMARQUEEITEM);
-        break; 
-        case RoleSatTextLabel: 
-            widgetName.append(LAYOUT_NAME_SATTEXTLABEL);
         break; 
         case RoleSpnIcon: 
             widgetName.append(LAYOUT_NAME_SPNICON);
@@ -501,11 +511,8 @@ QGraphicsWidget* InfoWidgetLayoutManager::loadWidget(InfoWidgetDocumentLoader &l
         }
     
     widget = qobject_cast<QGraphicsWidget *>(loader.findWidget(widgetName));
-    
-    if (widget) {
-        DPRINT << ": widget found: " << widgetName;
-    } else {
-        DPRINT << ": ERROR, widget not found!";
+    if (!widget) {
+        DCRITICAL << ": ERROR, widget " << widgetName << " not found!";
     }
            
     DPRINT << ": OUT";
@@ -524,9 +531,9 @@ const QList<InfoWidgetLayoutManager::LayoutItemRole> InfoWidgetLayoutManager::wi
     
     QList<LayoutItemRole> widgetRoles; 
     
+    // Fill supported layout item roles for specific display
     switch (displayRole) {
         case SettingsDisplay: 
-            // Fill supported layout item roles for settings display
             widgetRoles.append(RoleContent); 
             widgetRoles.append(RoleSpnCheckBox);
             widgetRoles.append(RoleMcnCheckBox);
@@ -535,7 +542,6 @@ const QList<InfoWidgetLayoutManager::LayoutItemRole> InfoWidgetLayoutManager::wi
             widgetRoles.append(RoleSettingsContainer); 
             break;
         case InfoDisplay: 
-            // Fill supported layout item roles for info display
             widgetRoles.append(RoleContent);
             widgetRoles.append(RoleSpnIcon);
             widgetRoles.append(RoleSpnLabel);

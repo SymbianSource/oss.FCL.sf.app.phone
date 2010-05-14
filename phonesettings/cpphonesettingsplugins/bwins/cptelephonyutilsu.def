@@ -19,7 +19,7 @@ EXPORTS
 	?metaObject@Tools@@UBEPBUQMetaObject@@XZ @ 18 NONAME ; struct QMetaObject const * Tools::metaObject(void) const
 	?readSoftRejectText@CpSettingsWrapper@@QAEXAAVQString@@AA_N@Z @ 19 NONAME ; void CpSettingsWrapper::readSoftRejectText(class QString &, bool &)
 	?getStaticMetaObject@CpSettingsWrapper@@SAABUQMetaObject@@XZ @ 20 NONAME ; struct QMetaObject const & CpSettingsWrapper::getStaticMetaObject(void)
-	?showPasswordQueryDialog@CpPhoneNotes@@QAEXABVQString@@ABVQValidator@@HAAV2@AA_N@Z @ 21 NONAME ; void CpPhoneNotes::showPasswordQueryDialog(class QString const &, class QValidator const &, int, class QString &, bool &)
+	?finishedPasswordQueryDialog@CpPhoneNotes@@QAEXPAVHbAction@@@Z @ 21 NONAME ; void CpPhoneNotes::finishedPasswordQueryDialog(class HbAction *)
 	?metaObject@CpSettingsWrapper@@UBEPBUQMetaObject@@XZ @ 22 NONAME ; struct QMetaObject const * CpSettingsWrapper::metaObject(void) const
 	?videoSupported@Tools@@SA_NXZ @ 23 NONAME ; bool Tools::videoSupported(void)
 	?showCallDuration@CpSettingsWrapper@@QAE_NXZ @ 24 NONAME ; bool CpSettingsWrapper::showCallDuration(void)
@@ -51,14 +51,30 @@ EXPORTS
 	?qt_metacall@CpSettingsWrapper@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 50 NONAME ; int CpSettingsWrapper::qt_metacall(enum QMetaObject::Call, int, void * *)
 	?noteShowing@CpPhoneNotes@@QAE_NXZ @ 51 NONAME ; bool CpPhoneNotes::noteShowing(void)
 	?showCallDivertDetails@CpPhoneNotes@@QAEXABVPSCallDivertingStatus@@@Z @ 52 NONAME ; void CpPhoneNotes::showCallDivertDetails(class PSCallDivertingStatus const &)
-	?numberGroupingSupported@CpSettingsWrapper@@QBE_NXZ @ 53 NONAME ; bool CpSettingsWrapper::numberGroupingSupported(void) const
-	?launchNextNoteIfReady@CpPhoneNotes@@AAEXXZ @ 54 NONAME ; void CpPhoneNotes::launchNextNoteIfReady(void)
-	?tr@CpSettingsWrapper@@SA?AVQString@@PBD0@Z @ 55 NONAME ; class QString CpSettingsWrapper::tr(char const *, char const *)
-	?cancelNote@CpPhoneNotes@@QAEXH@Z @ 56 NONAME ; void CpPhoneNotes::cancelNote(int)
-	?isFeatureCallWaitingDistiquishNotProvisionedEnabled@CpSettingsWrapper@@QAE_NXZ @ 57 NONAME ; bool CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled(void)
-	?writeCenrepValue@CpSettingsWrapper@@ABEHJKABVQVariant@@@Z @ 58 NONAME ; int CpSettingsWrapper::writeCenrepValue(long, unsigned long, class QVariant const &) const
-	?staticMetaObject@Tools@@2UQMetaObject@@B @ 59 NONAME ; struct QMetaObject const Tools::staticMetaObject
-	?trUtf8@Tools@@SA?AVQString@@PBD0@Z @ 60 NONAME ; class QString Tools::trUtf8(char const *, char const *)
-	?staticMetaObject@CpSettingsWrapper@@2UQMetaObject@@B @ 61 NONAME ; struct QMetaObject const CpSettingsWrapper::staticMetaObject
-	??0CpSettingsWrapper@@QAE@PAVQObject@@@Z @ 62 NONAME ; CpSettingsWrapper::CpSettingsWrapper(class QObject *)
+	?passwordQueryCompleted@CpPhoneNotes@@IAEXVQString@@_N@Z @ 53 NONAME ; void CpPhoneNotes::passwordQueryCompleted(class QString, bool)
+	?numberGroupingSupported@CpSettingsWrapper@@QBE_NXZ @ 54 NONAME ; bool CpSettingsWrapper::numberGroupingSupported(void) const
+	?launchNextNoteIfReady@CpPhoneNotes@@AAEXXZ @ 55 NONAME ; void CpPhoneNotes::launchNextNoteIfReady(void)
+	?tr@CpSettingsWrapper@@SA?AVQString@@PBD0@Z @ 56 NONAME ; class QString CpSettingsWrapper::tr(char const *, char const *)
+	?cancelNote@CpPhoneNotes@@QAEXH@Z @ 57 NONAME ; void CpPhoneNotes::cancelNote(int)
+	?isFeatureCallWaitingDistiquishNotProvisionedEnabled@CpSettingsWrapper@@QAE_NXZ @ 58 NONAME ; bool CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled(void)
+	?showPasswordQueryDialog@CpPhoneNotes@@QAEXABVQString@@ABVQValidator@@H@Z @ 59 NONAME ; void CpPhoneNotes::showPasswordQueryDialog(class QString const &, class QValidator const &, int)
+	?writeCenrepValue@CpSettingsWrapper@@ABEHJKABVQVariant@@@Z @ 60 NONAME ; int CpSettingsWrapper::writeCenrepValue(long, unsigned long, class QVariant const &) const
+	?staticMetaObject@Tools@@2UQMetaObject@@B @ 61 NONAME ; struct QMetaObject const Tools::staticMetaObject
+	?trUtf8@Tools@@SA?AVQString@@PBD0@Z @ 62 NONAME ; class QString Tools::trUtf8(char const *, char const *)
+	?staticMetaObject@CpSettingsWrapper@@2UQMetaObject@@B @ 63 NONAME ; struct QMetaObject const CpSettingsWrapper::staticMetaObject
+	??0CpSettingsWrapper@@QAE@PAVQObject@@@Z @ 64 NONAME ; CpSettingsWrapper::CpSettingsWrapper(class QObject *)
+	?qt_metacast@CpPhoneLocalisation@@UAEPAXPBD@Z @ 65 NONAME ; void * CpPhoneLocalisation::qt_metacast(char const *)
+	?installTranslator@CpPhoneLocalisation@@QAE_NW4TranslationFileId@1@@Z @ 66 NONAME ; bool CpPhoneLocalisation::installTranslator(enum CpPhoneLocalisation::TranslationFileId)
+	?trUtf8@CpPhoneLocalisation@@SA?AVQString@@PBD0H@Z @ 67 NONAME ; class QString CpPhoneLocalisation::trUtf8(char const *, char const *, int)
+	?tr@CpPhoneLocalisation@@SA?AVQString@@PBD0H@Z @ 68 NONAME ; class QString CpPhoneLocalisation::tr(char const *, char const *, int)
+	?qt_metacall@CpPhoneLocalisation@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 69 NONAME ; int CpPhoneLocalisation::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?trUtf8@CpPhoneLocalisation@@SA?AVQString@@PBD0@Z @ 70 NONAME ; class QString CpPhoneLocalisation::trUtf8(char const *, char const *)
+	?staticMetaObject@CpPhoneLocalisation@@2UQMetaObject@@B @ 71 NONAME ; struct QMetaObject const CpPhoneLocalisation::staticMetaObject
+	??0CpPhoneLocalisation@@QAE@PAVQObject@@@Z @ 72 NONAME ; CpPhoneLocalisation::CpPhoneLocalisation(class QObject *)
+	??_ECpPhoneLocalisation@@UAE@I@Z @ 73 NONAME ; CpPhoneLocalisation::~CpPhoneLocalisation(unsigned int)
+	?metaObject@CpPhoneLocalisation@@UBEPBUQMetaObject@@XZ @ 74 NONAME ; struct QMetaObject const * CpPhoneLocalisation::metaObject(void) const
+	?tr@CpPhoneLocalisation@@SA?AVQString@@PBD0@Z @ 75 NONAME ; class QString CpPhoneLocalisation::tr(char const *, char const *)
+	??1CpPhoneLocalisation@@UAE@XZ @ 76 NONAME ; CpPhoneLocalisation::~CpPhoneLocalisation(void)
+	?getStaticMetaObject@CpPhoneLocalisation@@SAABUQMetaObject@@XZ @ 77 NONAME ; struct QMetaObject const & CpPhoneLocalisation::getStaticMetaObject(void)
+	?removeTranslators@CpPhoneLocalisation@@QAEXXZ @ 78 NONAME ; void CpPhoneLocalisation::removeTranslators(void)
 

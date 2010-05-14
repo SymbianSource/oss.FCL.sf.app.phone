@@ -42,4 +42,6 @@ SOURCES += ../../infowidget/src/infowidgetlayoutmanager.cpp
 # mocks needed for testing
 SOURCES += ../mocks/mock_hbdocumentloader.cpp
 SOURCES += ../mocks/mock_hbmarqueeitem.cpp
+SOURCES += ../mocks/mock_hbstyle.cpp
+#SOURCES += ../mocks/mock_hbwidget.cpp
 RESOURCES = ../../infowidgetprovider.qrc

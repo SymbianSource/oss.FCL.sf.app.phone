@@ -24,9 +24,6 @@
 #include <hbdataformviewitem.h>
 #include <hbcheckbox.h>
 #include <QString>
-#include <QApplication>
-#include <QLocale>
-#include <QTranslator>
 #include <hblineedit.h>
 #include <hbcombobox.h>
 #include <hbdeviceprogressdialog.h>
@@ -45,18 +42,6 @@ CpCallsPluginGroup::CpCallsPluginGroup(CpItemDataHelper &helper)
      m_helper(helper)
 {
     DPRINT << ": IN";
-
-    // Localization file loading
-    QTranslator translator; 
-    QString lang = QLocale::system().name();
-    QString path = "z:/resource/qt/translations/";
-    DPRINT << ": loading translation: " << QString(path + "telephone_cp_" + lang);
-    bool translatorLoaded = translator.load(path + "telephone_cp_" + lang);
-    DPRINT << ": translator loaded: " << translatorLoaded; 
-    if (translatorLoaded) {
-        qApp->installTranslator(&translator);
-        DPRINT << ": translator installed"; 
-    }
 
     m_cpSettingsWrapper = new CpSettingsWrapper;
     m_pSetWrapper = new PSetWrapper; 
@@ -91,13 +76,6 @@ CpCallsPluginGroup::CpCallsPluginGroup(CpItemDataHelper &helper)
     DPRINT << "SsSettingsWrapper created";
     
     CpPhoneNotes *phoneNotes = CpPhoneNotes::instance();
-    QObject::connect(
-        this, 
-        SIGNAL(showBasicServiceList(
-            const QString&, const QList<unsigned char> &)),
-        phoneNotes, 
-        SLOT(showBasicServiceList(
-            const QString&, const QList<unsigned char> &)));
     QObject::connect(
         this, 
         SIGNAL(showGlobalProgressNote(int &, const QString&)),
@@ -164,19 +142,26 @@ void CpCallsPluginGroup::createShowCallDurationItem()
     // Read show call duration value from Cenrep 
     bool showCallDurationStatus = m_cpSettingsWrapper->showCallDuration();
     DPRINT << "showCallDurationStatus:" << showCallDurationStatus;
-    m_DataItemShowCallDuration = new CpSettingFormItemData(
-        HbDataFormModelItem::CheckBoxItem, hbTrId("") ,this);
-    m_DataItemShowCallDuration->setContentWidgetData(
-        "text", QVariant(hbTrId("Show call duration")));
+
+    m_DataItemShowCallDuration =
+        new CpSettingFormItemData(
+            HbDataFormModelItem::ToggleValueItem,
+            hbTrId("txt_phone_formlabel_show_call_duration"),
+            this);
+
     if (showCallDurationStatus) {
         m_DataItemShowCallDuration->setContentWidgetData(
-            "checkState", QVariant(Qt::Checked));
+            "text", QVariant(hbTrId("txt_phone_setlabel_val_yes")));
+        m_DataItemShowCallDuration->setContentWidgetData(
+            "additionalText", QVariant(hbTrId("txt_phone_setlabel_val_no")));
     } else {
         m_DataItemShowCallDuration->setContentWidgetData(
-            "checkState", QVariant(Qt::Unchecked));
+            "text", QVariant(hbTrId("txt_phone_setlabel_val_no")));
+        m_DataItemShowCallDuration->setContentWidgetData(
+            "additionalText", QVariant(hbTrId("txt_phone_setlabel_val_yes")));
     }
+
     appendChild( m_DataItemShowCallDuration ); 
-    
     DPRINT << ": OUT";
 }
     
@@ -247,18 +232,16 @@ void CpCallsPluginGroup::createCallWaitingtem()
 
     m_DataItemCallWaiting = 
         new CpSettingFormItemData(
-            HbDataFormModelItem::ComboBoxItem,
+            HbDataFormModelItem::ToggleValueItem,
             hbTrId("txt_phone_setlabel_call_waiting"),
             this);
-    QStringList list;
-    QMapIterator<int, QString> mapIterator(m_callWaitingSettingMap);
-    while (mapIterator.hasNext()) {
-        mapIterator.next();
-        list << mapIterator.value(); 
-        }; 
-    m_DataItemCallWaiting->setContentWidgetData("items", QVariant(list));
+
+    m_DataItemCallWaiting->setContentWidgetData(
+        "text", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_check_status")));
+    m_DataItemCallWaiting->setContentWidgetData(
+        "additionalText", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_check_status")));
+
     appendChild(m_DataItemCallWaiting);
-    
     DPRINT << ": OUT";
 }
 
@@ -270,8 +253,8 @@ void CpCallsPluginGroup::connectShowCallDurationItem()
     DPRINT << ": IN";
     
     m_helper.addConnection(
-        m_DataItemShowCallDuration, SIGNAL(stateChanged(int)),
-        this, SLOT(showCallDurationStateChanged(int)));
+        m_DataItemShowCallDuration, SIGNAL(clicked()),
+        this, SLOT(showCallDurationStateChanged()));
 
     DPRINT << ": OUT";
 }
@@ -322,8 +305,8 @@ void CpCallsPluginGroup::connectCallWaitingItem()
     DPRINT << ": IN";
 
     m_helper.addConnection(
-        m_DataItemCallWaiting, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(callWaitingCurrentIndexChanged(int)));
+        m_DataItemCallWaiting, SIGNAL(clicked()),
+        this, SLOT(callWaitingCurrentIndexChanged()));
 
     DPRINT << ": OUT";
 }
@@ -331,15 +314,19 @@ void CpCallsPluginGroup::connectCallWaitingItem()
 /*!
   CpCallsPluginGroup::showCallDurationStateChanged.
  */
-void CpCallsPluginGroup::showCallDurationStateChanged(int state)
+void CpCallsPluginGroup::showCallDurationStateChanged()
 {
     DPRINT << ": IN";
 
-    DPRINT << "state:" << state;
-    if (state == Qt::Checked) {
+    QVariant text = m_DataItemShowCallDuration->contentWidgetData("text");
+    QString showCallDurationText = text.toString();
+
+    if (showCallDurationText == hbTrId("txt_phone_setlabel_val_yes")) {
         m_cpSettingsWrapper->setShowCallDuration(true);
-    } else {
+    } else if (showCallDurationText == hbTrId("txt_phone_setlabel_val_no")){
         m_cpSettingsWrapper->setShowCallDuration(false);
+    } else {
+        DPRINT << "nothing done";
     }
 
     DPRINT << ": OUT";
@@ -354,7 +341,7 @@ void CpCallsPluginGroup::softRejectTextChanged()
     
     QVariant text = m_DataItemSoftRejectTextEditor->contentWidgetData("text");
     QString softRejectText = text.toString();  
-    if (!softRejectText.isNull()) {
+    if (!softRejectText.isEmpty()) {
         DPRINT << "softRejectText:" << softRejectText;
         m_cpSettingsWrapper->writeSoftRejectText(softRejectText, true);
     }
@@ -365,42 +352,37 @@ void CpCallsPluginGroup::softRejectTextChanged()
 /*!
   CpCallsPluginGroup::callWaitingCurrentIndexChanged.
  */
-void CpCallsPluginGroup::callWaitingCurrentIndexChanged(int index)
+void CpCallsPluginGroup::callWaitingCurrentIndexChanged()
 {
     DPRINT << ": IN";
-    DPRINT << "index:" << index;
 
-    if ( index >= 0 ) {
-        QString settingMapString = m_callWaitingSettingMap.value(index);
-        DPRINT << "settingMapString:" << settingMapString;
-        switch (index) {
-            case PSetCallWaitingWrapper::ActivateCallWaiting: {
-                DPRINT << "activate";
-                m_callWaitingWrapper->setCallWaiting(
-                        PSetCallWaitingWrapper::ActivateCallWaiting,
-                        AllTeleAndBearer);
-                }
-                break; 
-            case PSetCallWaitingWrapper::DeactivateCallWaiting: {
-                DPRINT << "deactivate";
-                m_callWaitingWrapper->setCallWaiting(
-                        PSetCallWaitingWrapper::DeactivateCallWaiting,
-                        AllTeleAndBearer);
-                }
-                break; 
-            case PSetCallWaitingWrapper::CheckCallWaitingStatus: {
-                DPRINT << "check status";
-                m_callWaitingWrapper->getCallWaitingStatus();
-                }
-                break;
-            default: 
-                DPRINT << "Error: unknown enum value";
-                break; 
-        }
-    } else {
-        DPRINT << "Error: negative index!";
+    QVariant text = m_DataItemCallWaiting->contentWidgetData("text");
+    QString callWaitingText = text.toString();
+
+    if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_check_status")) {
+        // Clicked first time, user want to check feature status
+        DPRINT << "checking status";
+        m_callWaitingWrapper->getCallWaitingStatus();
     }
-    
+
+    else if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_on")) {
+        DPRINT << "activate";
+        // User want to activate call waiting feature
+        m_callWaitingWrapper->setCallWaiting(
+            PSetCallWaitingWrapper::ActivateCallWaiting,
+            AllTeleAndBearer);
+    }
+    else if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_off")) {
+        DPRINT << "deactivate";
+        // User want to deactivate call waiting feature
+        m_callWaitingWrapper->setCallWaiting(
+            PSetCallWaitingWrapper::DeactivateCallWaiting,
+            AllTeleAndBearer);
+    }
+    else {
+        DPRINT << "nothing done";
+    }
+
     DPRINT << ": OUT";
 }
 
@@ -434,13 +416,6 @@ void CpCallsPluginGroup::insertMappedListItems()
     m_cliSettingMap.insert(ClirExplicitSuppress, hbTrId("txt_phone_setlabel_val_yes"));
     m_cliSettingMap.insert(ClirExplicitInvoke, hbTrId("txt_phone_setlabel_val_no"));
 
-    m_callWaitingSettingMap.insert(
-        PSetCallWaitingWrapper::ActivateCallWaiting, hbTrId("txt_phone_setlabel_call_waiting_val_on"));
-    m_callWaitingSettingMap.insert(
-        PSetCallWaitingWrapper::DeactivateCallWaiting, hbTrId("txt_phone_setlabel_call_waiting_val_off"));
-    m_callWaitingSettingMap.insert(
-        PSetCallWaitingWrapper::CheckCallWaitingStatus, hbTrId("Check status"));
-    
     DPRINT << ": OUT";
 }
 
@@ -451,21 +426,39 @@ void CpCallsPluginGroup::handleCallWaitingGetStatus(
     PSetCallWaitingWrapper::PsCallWaitingStatus status,
     const QList<unsigned char> &basicServiceGroupIds)
 {
-    DPRINT << ": IN";
+    DPRINT << ": IN status: " << status;
+    // This happens only in the very first time when clicked.
+
     emit cancelNote(m_activeNoteId);
     
-    if (m_callWaitingDistinguishEnabled &&
-            status == PSetCallWaitingWrapper::StatusNotProvisioned) {
-        emit showGlobalNote(m_activeNoteId, 
-            hbTrId("txt_phone_info_request_not_completed"), HbMessageBox::MessageTypeInformation);
-    } else if (status != PSetCallWaitingWrapper::StatusActive) {
-        emit showGlobalNote(m_activeNoteId,
-            hbTrId("txt_phone_info_call_waiting_deactivated"), HbMessageBox::MessageTypeInformation);
-    } else {
-        emit showGlobalNote(m_activeNoteId,
-            hbTrId("txt_phone_info_call_waiting_activated"), HbMessageBox::MessageTypeInformation);
+    bool alsCaseOnly = false;
+    if (1 == basicServiceGroupIds.count() &&
+        AltTele == static_cast<BasicServiceGroups>(basicServiceGroupIds.at(0))) {
+        DPRINT << "Status is only for als";
+        alsCaseOnly = true;
     }
-    
+
+    if (m_callWaitingDistinguishEnabled &&
+            PSetCallWaitingWrapper::StatusNotProvisioned == status) {
+        DPRINT << ": not provisioned";
+        emit showGlobalNote(m_activeNoteId,
+            hbTrId("txt_phone_info_request_not_completed"), 
+            HbMessageBox::MessageTypeInformation);
+    } else if (PSetCallWaitingWrapper::StatusActive == status && !alsCaseOnly) {
+        DPRINT << ": status active";
+        m_DataItemCallWaiting->setContentWidgetData(
+            "text", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_on")));
+        m_DataItemCallWaiting->setContentWidgetData(
+            "additionalText", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_off")));
+
+    } else {
+        DPRINT << ": status not active";
+        m_DataItemCallWaiting->setContentWidgetData(
+            "text", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_off")));
+        m_DataItemCallWaiting->setContentWidgetData(
+            "additionalText", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_on")));
+    }
+
     DPRINT << ": OUT";
 }
 

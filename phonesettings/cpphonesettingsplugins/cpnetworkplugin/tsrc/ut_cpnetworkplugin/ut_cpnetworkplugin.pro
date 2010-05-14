@@ -22,7 +22,7 @@ DEPENDPATH += . ../../src/
 INCLUDEPATH += .
 INCLUDEPATH +=../../../inc 
 INCLUDEPATH +=../../../cptelephonyutils/inc
-DEFINES += BUILD_NETWORKPLUGIN
+DEFINES += BUILD_CPTELEPHONYUTILS
 
 QT -= gui
 QT += testlib
@@ -43,10 +43,12 @@ SOURCES += ut_cpnetworkplugin.cpp
 
 # code to be tested
 HEADERS += ../../src/cpnetworkplugin.h \
-           ../../src/cpnetworkpluginview.h
+           ../../src/cpnetworkpluginview.h \
+           ../../../cptelephonyutils/inc/cpphonelocalisation.h           
        
 SOURCES += ../../src/cpnetworkplugin.cpp 
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cpnetworkpluginview.cpp
+SOURCES += ../../../tsrc/mocks/mock_cpphonelocalisation.cpp
 SOURCES += ../../../tsrc/mocks/mock_hbicon.cpp

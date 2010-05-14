@@ -175,12 +175,12 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
         &callHeaderParam );
 
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer ||
+    /*if ( !iOnScreenDialer ||
          !IsNumberEntryVisibleL() ||
          !IsDTMFEditorVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-        }
+        }*/
 
     SetToolbarButtonLoudspeakerEnabled();
 

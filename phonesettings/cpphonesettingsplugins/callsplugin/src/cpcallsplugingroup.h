@@ -59,9 +59,9 @@ private:
     
 public slots:
     
-    void showCallDurationStateChanged(int state);
+    void showCallDurationStateChanged();
     void softRejectTextChanged();
-    void callWaitingCurrentIndexChanged(int index);
+    void callWaitingCurrentIndexChanged();
     void cliCurrentIndexChanged(int index);
     
     // Call waiting slots
@@ -76,9 +76,6 @@ public slots:
     
 signals:
     
-    void showBasicServiceList(
-        const QString& title, 
-        QList<unsigned char> basicServiceGroupIds);
     void showGlobalProgressNote(int &noteId, const QString& text);
     void showGlobalNote(
         int &noteId, const QString& text, HbMessageBox::MessageBoxType);
@@ -104,7 +101,6 @@ private:
     
     // List data mappings 
     QMap<int, QString> m_cliSettingMap;
-    QMap<int, QString> m_callWaitingSettingMap;
     
     bool m_callWaitingDistinguishEnabled;
     int m_activeNoteId;

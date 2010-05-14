@@ -85,6 +85,8 @@ public:
     InfoWidgetLayoutManager(QObject *parent = 0);
     ~InfoWidgetLayoutManager();
     
+    void destroyObjects(); 
+    
     DisplayRole currentDisplayRole(); 
     QList<LayoutItemRole> currentWidgetRoles(); 
     

@@ -89,4 +89,7 @@ EXPORTS
 	_ZThn28_N13PhoneUIQtView27clearParticipantListActionsEv @ 88 NONAME
 	_ZThn8_N13PhoneUIQtViewD0Ev @ 89 NONAME
 	_ZThn8_N13PhoneUIQtViewD1Ev @ 90 NONAME
+	_ZN13PhoneUIQtView18networkNameChangedEN10QtMobility18QSystemNetworkInfo11NetworkModeERK7QString @ 91 NONAME
+	_ZN13PhoneUIQtView15windowActivatedEv @ 92 NONAME
+	_ZN13PhoneUIQtView17windowDeactivatedEv @ 93 NONAME
 

@@ -22,6 +22,7 @@
 #include <hbview.h>
 #include "phoneuiqtviewif.h"
 #include <bubblemanagerif.h>
+#include <qsysteminfo.h>
 
 class BubbleManager;
 class HbAction;
@@ -36,6 +37,9 @@ class XqKeyCapture;
 #else
 #define PHONEUIQTVIEW_EXPORT Q_DECL_IMPORT
 #endif
+
+using namespace QtMobility;
+
 
 class PHONEUIQTVIEW_EXPORT PhoneUIQtView : public HbView, public PhoneUIQtViewIF
 {
@@ -265,6 +269,13 @@ public slots:
     */
     void shutdownPhoneApp();
     
+    /*!
+        \fn void PhoneUIQtView::networkNameChanged(QSystemNetworkInfo::NetworkMode mode, const QString &netName)
+        
+        Network name change is informed via this method.
+    */
+    void networkNameChanged(QSystemNetworkInfo::NetworkMode mode, const QString &netName);
+    
    
 signals:
 
@@ -296,6 +307,19 @@ signals:
     */
     void dialpadIsAboutToClose();
     
+    /*!
+         \fn void windowActivated();
+         
+         This signal is emitted when window is activated
+     */
+    void windowActivated();
+    
+    /*!
+         \fn void windowDeactivated();
+         
+         This signal is emitted when window is deactivated
+     */
+    void windowDeactivated();
     
 protected:
 
@@ -346,6 +370,7 @@ private:
     Dialpad             *m_dialpad;
     QSignalMapper       *m_menuSignalMapper;
     XqKeyCapture        *m_keyCapture;
+    QSystemNetworkInfo  *m_networkInfo;
 };
 
 #endif // PHONEUIQTVIEW_H

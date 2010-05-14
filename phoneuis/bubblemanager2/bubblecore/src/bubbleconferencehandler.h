@@ -23,7 +23,7 @@
 
 class BubbleHeader;
 class HbAction;
-class HbPushButton;
+class BubbleButton;
 class HbLabel;
 class BubbleConferenceHeader;
 class HbListWidgetItem;
@@ -31,6 +31,7 @@ class BubbleParticipantListItem;
 class HbListView;
 class BubbleParticipantListModel;
 class QTimer;
+class QModelIndex;
 
 class BubbleConferenceHandler : public BubbleHandler
     {
@@ -60,15 +61,16 @@ protected:
     void conferenceRemoved();
 
 protected slots:
-    void handleItemSelected(int row);
+    void handleItemSelected( const QModelIndex& current,
+                             const QModelIndex& previous);
     void clearSelection();
 
 protected: //data
     const BubbleConferenceHeader* mHeader;
     HbLabel* mTimerLabel;
-    HbPushButton* mButtonCenter;
-    HbPushButton* mButtonLeft;
-    HbPushButton* mButtonRight;
+    BubbleButton* mButtonCenter;
+    BubbleButton* mButtonLeft;
+    BubbleButton* mButtonRight;
     HbListView* mList;
     BubbleParticipantListModel* mModel;
     BubbleParticipantListItem* mPrototype; // not owned

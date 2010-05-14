@@ -44,6 +44,16 @@ InfoWidgetLayoutManager::~InfoWidgetLayoutManager(  )
 
 
 // -----------------------------------------------------------------------------
+// InfoWidgetLayoutManager::destroyObjects
+// -----------------------------------------------------------------------------
+//
+void InfoWidgetLayoutManager::destroyObjects(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
 // InfoWidgetLayoutManager::currentDisplayRole
 // -----------------------------------------------------------------------------
 //

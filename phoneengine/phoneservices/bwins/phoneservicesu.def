@@ -1,8 +1,8 @@
 EXPORTS
 	??_EPhoneServices@@UAE@I@Z @ 1 NONAME ; PhoneServices::~PhoneServices(unsigned int)
 	?tr@PhoneServices@@SA?AVQString@@PBD0H@Z @ 2 NONAME ; class QString PhoneServices::tr(char const *, char const *, int)
-	??0PhoneServices@@QAE@AAVMPECallControlIF@@AAVMPECallSettersIF@@PAVQObject@@@Z @ 3 NONAME ; PhoneServices::PhoneServices(class MPECallControlIF &, class MPECallSettersIF &, class QObject *)
-	??1PhoneServices@@UAE@XZ @ 4 NONAME ; PhoneServices::~PhoneServices(void)
+	??1PhoneServices@@UAE@XZ @ 3 NONAME ; PhoneServices::~PhoneServices(void)
+	??0PhoneServices@@QAE@AAVMPECallControlIF@@AAVMPECallSettersIF@@AAVMPEKeySequenceRecognitionIF@@PAVQObject@@@Z @ 4 NONAME ; PhoneServices::PhoneServices(class MPECallControlIF &, class MPECallSettersIF &, class MPEKeySequenceRecognitionIF &, class QObject *)
 	?trUtf8@PhoneServices@@SA?AVQString@@PBD0H@Z @ 5 NONAME ; class QString PhoneServices::trUtf8(char const *, char const *, int)
 	?metaObject@PhoneServices@@UBEPBUQMetaObject@@XZ @ 6 NONAME ; struct QMetaObject const * PhoneServices::metaObject(void) const
 	?trUtf8@PhoneServices@@SA?AVQString@@PBD0@Z @ 7 NONAME ; class QString PhoneServices::trUtf8(char const *, char const *)

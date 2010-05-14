@@ -27,8 +27,7 @@ class BubbleContainerWidget : public HbWidget
     Q_OBJECT
 
 public:
-    BubbleContainerWidget(const QString& stylePluginName,
-                          QGraphicsItem* item=0);
+    BubbleContainerWidget(QGraphicsItem* item=0);
     virtual ~BubbleContainerWidget();
 
 signals:
@@ -47,8 +46,9 @@ private:
         const QStyleOptionGraphicsItem *option,
         QWidget *widget = 0);
 
+    void showEvent(QShowEvent *event);
+
 private:
-    QString mStylePluginName;
     HbFrameItem* mBackground;
     bool mPressed;
 };

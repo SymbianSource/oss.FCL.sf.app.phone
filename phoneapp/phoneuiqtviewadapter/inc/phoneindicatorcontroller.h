@@ -32,6 +32,11 @@ public:
     PhoneIndicatorController(QObject *parent = 0);
     virtual ~PhoneIndicatorController();
     
+    void setActiveCallData( const TDesC &text, const TDesC &icon );
+    void clearActiveCallData();
+    void enableActiveCallIndicator();
+    void disableActiveCallIndicator();
+    
 private slots:
     void updateMissedCallIndicator(const XQSettingsKey &key, const QVariant &value);
     void setMissedallIndicatorData();
@@ -41,6 +46,9 @@ private:
     LogsModel  *m_logsModel;
     LogsFilter *m_missedCallsFilter;
     XQSettingsManager * m_setManager;
+    
+    QString m_cli;
+    QString m_callImage;
     };
 
 #endif /* PHONEINDICATORCONTROLLER_H_ */

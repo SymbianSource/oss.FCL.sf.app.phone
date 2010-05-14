@@ -12,4 +12,6 @@ EXPORTS
 	??1ParserRecognizer@@UAE@XZ @ 11 NONAME ; ParserRecognizer::~ParserRecognizer(void)
 	?qt_metacall@ParserRecognizer@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 12 NONAME ; int ParserRecognizer::qt_metacall(enum QMetaObject::Call, int, void * *)
 	?trUtf8@ParserRecognizer@@SA?AVQString@@PBD0H@Z @ 13 NONAME ; class QString ParserRecognizer::trUtf8(char const *, char const *, int)
+	?requestCompleted@ParserRecognizer@@AAEXABVQVariant@@@Z @ 14 NONAME ; void ParserRecognizer::requestCompleted(class QVariant const &)
+	?requestError@ParserRecognizer@@AAEXH@Z @ 15 NONAME ; void ParserRecognizer::requestError(int)
 

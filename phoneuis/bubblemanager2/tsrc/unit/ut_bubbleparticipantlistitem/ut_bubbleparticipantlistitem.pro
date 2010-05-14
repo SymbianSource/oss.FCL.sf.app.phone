@@ -28,9 +28,13 @@ symbian {
 }
 
 #
-HEADERS += ../../../bubblecore/src/bubbleparticipantlistitem.h
+HEADERS += ../../../bubblecore/src/bubbleparticipantlistitem.h \
+           ../../../bubblecore/src/bubblebutton.h
+
 SOURCES += ut_bubbleparticipantlistitem.cpp \
            ../../../bubblecore/src/bubbleparticipantlistitem.cpp \
-           ../../../bubblecore/src/bubblestyleoption.cpp \
-           ../../../bubblecore/src/bubblebuttonstyle.cpp
+           ../../../bubblecore/src/bubbleutils.cpp \
+           ../../../bubblecore/src/bubbleheader.cpp \
+           ../../../bubblecore/src/bubbleconferenceheader.cpp \
+           ../../../bubblecore/src/bubblebutton.cpp
 

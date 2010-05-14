@@ -16,9 +16,6 @@
  */
 
 #include "cpnetworkpluginview.h"
-#include <QApplication>
-#include <QLocale>
-#include <QTranslator>
 #include "cpnetworkpluginform.h"
 #include "cppluginlogging.h"
 
@@ -31,21 +28,9 @@ CpNetworkPluginView::CpNetworkPluginView(QGraphicsItem *parent) :
 {
     DPRINT << ": IN";
     
-    // Localization file loading
-    QTranslator translator; 
-    QString lang = QLocale::system().name();
-    QString path = "z:/resource/qt/translations/";
-    DPRINT << ": loading translation: " << QString(path + "telephone_cp_" + lang);
-    bool translatorLoaded = translator.load(path + "telephone_cp_" + lang);
-    DPRINT << ": translator loaded: " << translatorLoaded; 
-    if (translatorLoaded) {
-        qApp->installTranslator(&translator);
-        DPRINT << ": translator installed"; 
-    }
-    
     m_networkSettingsForm = new CpNetworkPluginForm();
     // base class takes ownership of the form
-    this->setSettingForm(m_networkSettingsForm);
+    this->setWidget(m_networkSettingsForm);
     
     DPRINT << ": OUT";
     }
@@ -67,7 +52,7 @@ void CpNetworkPluginView::SearchAvailableNetworks()
 {
     DPRINT << ": IN";
     
-    m_networkSettingsForm->SearchAvailableNetworks();
+    m_networkSettingsForm->searchAvailableNetworks();
     
     DPRINT << ": OUT";
 }

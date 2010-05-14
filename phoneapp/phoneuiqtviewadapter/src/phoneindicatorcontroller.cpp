@@ -29,7 +29,7 @@
 #endif
 
 PhoneIndicatorController::PhoneIndicatorController(QObject *parent):
-    QObject(parent), m_missedCallsFilter(0), m_logsModel(0)
+    QObject(parent), m_logsModel(0), m_missedCallsFilter(0)
 {
 #ifdef Q_OS_SYMBIAN
     m_setManager = new XQSettingsManager(this);
@@ -61,6 +61,42 @@ PhoneIndicatorController::~PhoneIndicatorController()
     delete m_missedCallsFilter;
     delete m_logsModel;
 #endif
+}
+
+void PhoneIndicatorController::setActiveCallData( 
+        const TDesC &text, const TDesC &icon )
+{
+    m_cli = QString::fromUtf16 (text.Ptr (), text.Length ());
+    m_callImage = QString::fromUtf16 (icon.Ptr (), icon.Length ());
+}
+
+void PhoneIndicatorController::clearActiveCallData()
+{
+    m_cli.clear();
+    m_callImage.clear();
+    disableActiveCallIndicator();
+}
+
+void PhoneIndicatorController::enableActiveCallIndicator()
+{
+    if (!m_cli.isEmpty()){
+        QString indicatorType(indicatorName(PhoneActiveCallIndicator));
+        QVariantMap parameters;
+        
+        parameters.insert(
+                QVariant(HbIndicatorInterface::PrimaryTextRole ).toString(),
+                m_cli);
+        
+        parameters.insert(QVariant( HbIndicatorInterface::DecorationNameRole).toString(),
+                m_callImage);
+        
+        m_indicator.activate(indicatorType, parameters);
+    }
+}
+void PhoneIndicatorController::disableActiveCallIndicator()
+{
+    QString indicatorType(indicatorName(PhoneActiveCallIndicator));
+    m_indicator.deactivate(indicatorType);
 }
 
 void PhoneIndicatorController::updateMissedCallIndicator(

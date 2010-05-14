@@ -19,23 +19,38 @@
 #include "cpnetworkpluginview.h"
 #include "cppluginlogging.h"
 
+
 /*!
   CpNetworkPlugin::CpNetworkPlugin
  */
-CpNetworkPlugin::CpNetworkPlugin() : QObject(0)
+CpNetworkPlugin::CpNetworkPlugin() : 
+    QObject(0),
+    m_localisation(0)
 {
     INSTALL_TRACE_MSG_HANDLER;
+    DPRINT << ": IN";
     
-    DPRINT;
+    // Set scoped pointer 
+    m_localisation.reset(new CpPhoneLocalisation); 
+    
+    // Install required translations
+    m_localisation->installTranslator(
+            CpPhoneLocalisation::
+            TranslationFileCommon);
+    
+    DPRINT << ": OUT";
 }
+
 
 /*!
   CpNetworkPlugin::~CpNetworkPlugin
  */
 CpNetworkPlugin::~CpNetworkPlugin()
 {
+    DPRINT;
     UNINSTALL_TRACE_MSG_HANDLER;
 }
+
 
 /*!
   CpNetworkPlugin::createSettingFormItemData
@@ -48,9 +63,10 @@ QList<CpSettingFormItemData*> CpNetworkPlugin::createSettingFormItemData(
     QList<CpSettingFormItemData*> ret;
     ret.append(new CpSettingFormEntryItemDataImpl<CpNetworkPluginView>(
             itemDataHelper,
-            hbTrId("txt_cp_dblist_mobile_network"), 
+            hbTrId("txt_cp_dblist_mobile_network"),
             hbTrId("")));
     return ret;
 }
+
 
 Q_EXPORT_PLUGIN2(CpNetworkPlugin, CpNetworkPlugin);

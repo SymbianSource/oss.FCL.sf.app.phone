@@ -1417,7 +1417,8 @@ TBool CPEPhoneModel::StepL()
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 16.1" );
             __ASSERT_DEBUG( iMessageHandler, Panic( EPEPanicNullPointer ) );
             __ASSERT_DEBUG( iEngineInfo, Panic( EPEPanicNullPointer ) );
-            iPhoneServices = new PhoneServices (*iMessageHandler, *iEngineInfo);
+            iPhoneServices = new PhoneServices(
+                *iMessageHandler, *iEngineInfo, *iMessageHandler);
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 16.2" );
             break;
             }

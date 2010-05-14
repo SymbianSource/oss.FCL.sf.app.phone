@@ -18,32 +18,33 @@
 
 #include <QPainter>
 #include <hbstyle.h>
+#include <hbiconitem.h>
+#include <hbstyleloader.h>
 #include "bubbleimagemanager.h"
 #include "bubbleimagewidget.h"
-#include "bubbleprimitives.h"
-#include "bubblestyleoption.h"
 
-BubbleImageWidget::BubbleImageWidget(const QString& stylePluginName,
-    BubbleImageManager& imageManager, QGraphicsItem* parent)
-    : HbWidget(parent), mStylePluginName(stylePluginName),
-      mImageManager(imageManager), mDefaultAvatar(0)
+BubbleImageWidget::BubbleImageWidget(
+    BubbleImageManager& imageManager,
+    QGraphicsItem* parent)
+    : HbWidget(parent),
+      mImageManager(imageManager),
+      mDefaultAvatar(0)
 {
-    setPluginBaseId(style()->registerPlugin(mStylePluginName));
-    Q_ASSERT(pluginBaseId()!=-1);
-
     // create avatar
-    delete mDefaultAvatar;
-    mDefaultAvatar = style()->createPrimitive(
-        (HbStyle::Primitive)(pluginBaseId()+BP_DefaultAvatar_icon), this);
+    mDefaultAvatar = new HbIconItem(this);
     style()->setItemName( mDefaultAvatar, "default_avatar" );
+    mDefaultAvatar->setAspectRatioMode(Qt::KeepAspectRatioByExpanding);
+    mDefaultAvatar->setAlignment(Qt::AlignCenter);
 
-    connect(&mImageManager,SIGNAL(pixmapReady(QString)),
-            this,SLOT(imageLoaded(QString)));
+    connect(&mImageManager, SIGNAL(pixmapReady(QString)),
+            this, SLOT(imageLoaded(QString)));
+
+    HbStyleLoader::registerFilePath(":/bubbleimagewidget.css");
+    HbStyleLoader::registerFilePath(":/bubbleimagewidget.widgetml");
 }
 
 BubbleImageWidget::~BubbleImageWidget()
 {
-    style()->unregisterPlugin(mStylePluginName);
 }
 
 void BubbleImageWidget::setImage(const QString& name)
@@ -52,13 +53,10 @@ void BubbleImageWidget::setImage(const QString& name)
 
     if (!mImageName.isEmpty()) {
         mDefaultAvatar->setVisible(false);
+        mDefaultAvatar->setIcon(HbIcon());
         mImageManager.loadImage(mImageName);
     } else {
-        BubbleStyleOption option;
-        style()->updatePrimitive(
-                mDefaultAvatar,
-                (HbStyle::Primitive)(pluginBaseId()+BP_DefaultAvatar_icon),
-                 &option);
+        mDefaultAvatar->setIconName("qtg_large_avatar");
         mDefaultAvatar->setVisible(true);
     }
 }

@@ -14,29 +14,52 @@
  * Description:  
  *
  */
-
 #include <cpsettingformentryitemdataimpl.h>
 #include <cpitemdatahelper.h>
 #include "cptelephonyplugin.h"
 #include "cptelephonypluginview.h"
 #include "cppluginlogging.h"
 
-CpTelephonyPlugin::CpTelephonyPlugin() : QObject(0)
+
+/*!
+    CpTelephonyPlugin::CpTelephonyPlugin() 
+*/
+CpTelephonyPlugin::CpTelephonyPlugin() : 
+    QObject(0),
+    m_localisation(0)
 {
     // Install plugin specific msg handler
     INSTALL_TRACE_MSG_HANDLER;  
+    DPRINT << ": IN";
+    
+    // Set scoped pointer 
+    m_localisation.reset(new CpPhoneLocalisation(this)); 
+    
+    // Install required translations
+    m_localisation->installTranslator(
+            CpPhoneLocalisation::
+            TranslationFileCommon);
+    m_localisation->installTranslator(
+            CpPhoneLocalisation::
+            TranslationFileTelephoneCp);
 
-    DPRINT; 
+    DPRINT << ": OUT"; 
 }
 
+/*!
+    CpTelephonyPlugin::~CpTelephonyPlugin() 
+*/
 CpTelephonyPlugin::~CpTelephonyPlugin()
 {
     DPRINT; 
-
+    
     // Uninstall plugin specific msg handler
     UNINSTALL_TRACE_MSG_HANDLER; 
 }
 
+/*!
+    CpTelephonyPlugin::createSettingFormItemData() const
+*/
 QList<CpSettingFormItemData*> CpTelephonyPlugin::createSettingFormItemData(
         CpItemDataHelper &itemDataHelper) const
 {

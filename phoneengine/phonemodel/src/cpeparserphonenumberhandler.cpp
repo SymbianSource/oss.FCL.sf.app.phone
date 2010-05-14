@@ -220,8 +220,7 @@ TBool CPEParserPhoneNumberHandler::IsPhoneOffline()
         {
         isPhoneOffline = ETrue;
         }
-    //TODO
-    isPhoneOffline = EFalse;
+
     return isPhoneOffline;
     }
     

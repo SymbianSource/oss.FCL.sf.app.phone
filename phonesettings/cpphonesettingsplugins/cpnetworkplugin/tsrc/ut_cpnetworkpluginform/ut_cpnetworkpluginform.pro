@@ -50,6 +50,7 @@ HEADERS += ../../src/cpnetworkplugin.h \
            ../../src/cellulardatasettings.h \
            ../../../cptelephonyutils/inc/cpplugincommon.h \
            ../../../cptelephonyutils/inc/cpphonenotes.h \
+           ../../../cptelephonyutils/inc/cpphonelocalisation.h \
            /epoc32/include/platform/mw/psetwrapper.h \
            /epoc32/include/platform/mw/psetcliwrapper.h \
            /epoc32/include/platform/mw/psetcallwaitingwrapper.h \
@@ -64,6 +65,7 @@ SOURCES += ../../../tsrc/mocks/mock_cpnetworkplugin.cpp \
            ../../../tsrc/mocks/mock_psetnetworkwrapper.cpp \
            ../../../tsrc/mocks/mock_cpplugincommon.cpp \
            ../../../tsrc/mocks/mock_cpphonenotes.cpp \
+           ../../../tsrc/mocks/mock_cpphonelocalisation.cpp \
            ../../../tsrc/mocks/mock_hbdataform.cpp \
            ../../../tsrc/mocks/mock_hbabstractitemview.cpp \
            ../../../tsrc/mocks/mock_hbscrollarea.cpp \

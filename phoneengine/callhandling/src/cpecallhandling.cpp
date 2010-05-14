@@ -2407,15 +2407,13 @@ void  CPECallHandling::SetCallOrigin( const TInt aCallId, const MCCECall& aCall 
     if ( callType == CCPCall::ECallTypeCSVoice || callType == CCPCall::ECallTypeVideo )
         {
         const CCCECallParameters& params = static_cast<const CCCECallParameters&>( parameters );
-        
-        // do not overwrite if it's client call, which CCE is not aware of 
-        if ( iModel.DataStore()->CallOrigin( aCallId ) == EPECallOriginPhone )
-            {                                                
-            if ( params.Origin() == CCCECallParameters::ECCECallOriginSAT )
-                {
-                iModel.DataStore()->SetCallOrigin( EPECallOriginSAT, aCallId );
-                }
-            }                    
+                                                    
+        if ( params.Origin() == CCCECallParameters::ECCECallOriginSAT )
+            {
+            iModel.DataStore()->SetCallOrigin( EPECallOriginSAT, aCallId );
+            iModel.DataStore()->SetRemoteName( params.AlphaId(), aCallId );
+            iModel.DataStore()->SetRemotePhoneNumber( KNullDesC(), aCallId );
+            }                 
         }                
     }
 

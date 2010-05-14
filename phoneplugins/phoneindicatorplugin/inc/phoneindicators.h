@@ -29,12 +29,14 @@ enum Interaction
 {
     InteractionNone,
     OpenMissedCallView,
+    SwitchBackToCall,
     Deactivate
 };
 
 enum PhoneIndicatorTypes
 {
-    PhoneMissedCallIndicator = 0
+    PhoneMissedCallIndicator = 0,
+    PhoneActiveCallIndicator
 };
 
 inline QString indicatorName(int indicatorType) {
@@ -46,15 +48,15 @@ struct PhoneIndicatorInfo
     const char *icon;
     const char *primaryText;
     const char *secondaryText;
-    HbIndicatorInterface::GroupPriority priority;
     Interaction interaction;
 };
 
 Q_DECLARE_METATYPE(PhoneIndicatorInfo)
 
-static const int PhoneIndicatorCount = 1;
+static const int PhoneIndicatorCount = 2;
 static const PhoneIndicatorInfo IndicatorInfos[PhoneIndicatorCount] = {
-    {"qtg_mono_info.svg",   "Missed call", "Name/Number", HbIndicatorInterface::GroupPriorityHigh, OpenMissedCallView } // TODO: change icon
+    {"qtg_mono_info.svg",   "Missed call", "Name/Number", OpenMissedCallView },
+    {"qtg_mono_info.svg",   "Active call", " ", SwitchBackToCall }
 };
 
 #endif // PHONEINDICATORS_H

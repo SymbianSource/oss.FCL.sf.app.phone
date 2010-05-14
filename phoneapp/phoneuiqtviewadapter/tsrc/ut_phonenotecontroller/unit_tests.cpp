@@ -26,6 +26,7 @@
 #include "tphonecmdparamglobalnote.h"
 #include "tphonecmdparamquery.h"
 #include "phoneresourceadapter.h"
+#include "phoneconstants.h"
 
 #define PHONE_QT_NOTE_CONTROLLER_TEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
@@ -100,11 +101,14 @@ void TestPhoneNoteController::cleanup ()
 void TestPhoneNoteController::testShowGlobalNoteDefault ()
 {
     TPhoneCmdParamGlobalNote globalNoteParam;
+    globalNoteParam.SetTimeout(0);
     globalNoteParam.SetWaitForReady(ETrue);
-    
     m_noteController->showGlobalNote(&globalNoteParam);
+    QTest::qWait(2500);
     
-    QTest::qWait(5000);
+    globalNoteParam.SetTimeout(KPhoneNoteNoTimeout);
+    m_noteController->showGlobalNote(&globalNoteParam);
+    QTest::qWait(2500);
 }
 
 void TestPhoneNoteController::testShowGlobalInfoNoteWithResourceId ()

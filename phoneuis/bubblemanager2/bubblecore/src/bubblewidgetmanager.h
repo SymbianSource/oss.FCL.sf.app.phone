@@ -24,7 +24,6 @@
 class QGraphicsWidget;
 class BubbleDocumentLoader;
 class BubbleHandler;
-class BubbleButtonStyle;
 class BubbleImageManager;
 
 class BubbleWidgetManager : public QObject
@@ -66,7 +65,6 @@ public:
 public:
     BubbleWidgetManager(
         BubbleImageManager& imageManager,
-        int style,
         QObject* parent=0);
     virtual ~BubbleWidgetManager();
 
@@ -85,8 +83,6 @@ public:
 
     QGraphicsWidget* createParticipantListItem();
 
-    void setStylePluginName(const QString& name);
-
 public slots:
     void handleOrientationChange(Qt::Orientation orientation);
 
@@ -99,8 +95,6 @@ private:
 
 private:
     BubbleImageManager& mImageManager;
-    int mStyleBaseId;
-    QString mStylePluginName;
     Qt::Orientation mOrientation;
     QMap<int,BubbleDocumentLoader*>  mDocumentLoaders;
     QMap<int,QList<BubbleHandler*>*> mDocumentHandlers;
@@ -111,7 +105,6 @@ private:
     QMap<int,QString> mWidgetPrefix;
     QMap<int,QString> mWidgetName;
     QMap<int,QString> mOrientationName;
-    QMap<int,BubbleButtonStyle*> mButtonStyle;
 };
 
 #endif // BUBBLEWIDGETMANAGER_H

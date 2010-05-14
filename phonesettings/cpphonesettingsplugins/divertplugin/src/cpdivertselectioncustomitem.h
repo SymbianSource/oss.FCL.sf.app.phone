@@ -75,7 +75,6 @@ private:
 private:
     QGraphicsGridLayout *layout;
     HbCheckBox *checkbox;
-    //HbLabel *numberValueLabel;
     HbLabel *timeoutLabel;
     HbLabel *timeoutValueLabel;
     int m_state;

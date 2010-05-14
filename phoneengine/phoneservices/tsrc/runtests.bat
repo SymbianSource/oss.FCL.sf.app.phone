@@ -27,3 +27,7 @@ type \epoc32\winscw\c\private\E31F4ECE\ut_dialservice.log
 del \epoc32\winscw\c\private\EEE39B2F\ut_dtmfservice.log
 \epoc32\release\winscw\udeb\ut_dtmfservice.exe -o ut_dtmfservice.log
 type \epoc32\winscw\c\private\EEE39B2F\ut_dtmfservice.log
+
+del \epoc32\winscw\c\private\E31F4ECF\ut_keysequencerecognitionservice.log
+\epoc32\release\winscw\udeb\ut_keysequencerecognitionservice.exe -o ut_keysequencerecognitionservice.log
+type \epoc32\winscw\c\private\E31F4ECF\ut_keysequencerecognitionservice.log

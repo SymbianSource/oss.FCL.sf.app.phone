@@ -20,46 +20,32 @@
 #include <hbframeitem.h>
 #include <hbframedrawer.h>
 #include "bubblecontainerwidget.h"
-#include "bubbleprimitives.h"
-#include "bubblestyleoption.h"
 
-BubbleContainerWidget::BubbleContainerWidget(
-    const QString& stylePluginName, QGraphicsItem* item)
-    : HbWidget(item), mStylePluginName(stylePluginName),
-      mBackground(0)
+BubbleContainerWidget::BubbleContainerWidget(QGraphicsItem* item)
+    : HbWidget(item), mBackground(0)
 {
-    setPluginBaseId(style()->registerPlugin(mStylePluginName));
-    Q_ASSERT(pluginBaseId()!=-1);
-
     createPrimitives();
     updatePrimitives();
+    Q_ASSERT(mBackground);
 }
 
 BubbleContainerWidget::~BubbleContainerWidget()
 {
-    style()->unregisterPlugin(mStylePluginName);
 }
 
 void BubbleContainerWidget::createPrimitives()
 {
-    QGraphicsItem *background = style()->createPrimitive(
-        (HbStyle::Primitive)(pluginBaseId()+BP_Bubble_frame), this);
-    style()->setItemName(mBackground, "background");
-
     delete mBackground;
-    mBackground =
-        qgraphicsitem_cast<HbFrameItem*>(background);
+    mBackground = new HbFrameItem(this);
+    style()->setItemName(mBackground, "background");
+    mBackground->setZValue(-1.0);
+    mBackground->setVisible(false); // background in drawn in paint()
 }
 
 void BubbleContainerWidget::updatePrimitives()
 {
-    if (mBackground) {
-        BubbleStyleOption option;
-        style()->updatePrimitive(
-            mBackground, (HbStyle::Primitive)(pluginBaseId()+BP_Bubble_frame),
-            &option);
-        mBackground->setVisible(false); // background in drawn in paint()
-    }
+    mBackground->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
+    mBackground->frameDrawer().setFrameGraphicsName("qtg_fr_list_normal");
 }
 
 void BubbleContainerWidget::mousePressEvent(
@@ -89,7 +75,7 @@ void BubbleContainerWidget::mouseMoveEvent(
 }
 
 void BubbleContainerWidget::mouseReleaseEvent(
-    QGraphicsSceneMouseEvent * event)
+    QGraphicsSceneMouseEvent *event)
 {
     if (event->button() != Qt::LeftButton) {
         event->ignore();
@@ -111,8 +97,12 @@ void BubbleContainerWidget::paint(
     Q_UNUSED(widget)
     Q_UNUSED(option)
 
-    if (mBackground) {
-        mBackground->frameDrawer().paint(painter,boundingRect());
-    }
+    mBackground->frameDrawer().paint(painter,boundingRect());
+}
+
+void BubbleContainerWidget::showEvent(QShowEvent *event)
+{
+    Q_UNUSED(event)
+    mPressed = false;
 }
 

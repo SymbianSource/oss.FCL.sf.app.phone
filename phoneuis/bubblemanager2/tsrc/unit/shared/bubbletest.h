@@ -35,16 +35,4 @@ int main(int argc, char *argv[]) \
     return ret; \
 }
 
-// style plugin name
-#if defined(Q_OS_SYMBIAN)
-    const char* BUBBLE_STYLE_PLUGIN = \
-        "z:/resource/qt/plugins/phone/bubblestyleplugin.dll";
-#elif defined(Q_OS_WIN)
-    const char* BUBBLE_STYLE_PLUGIN = \
-        "c:/hb/bin/bubblestyleplugin.dll";
-#else // Q_OS_UNIX
-    const char* BUBBLE_STYLE_PLUGIN = \
-        "/home/lib/libbubblestyleplugin.so";
-#endif
-
 #endif // BUBBLETEST_H

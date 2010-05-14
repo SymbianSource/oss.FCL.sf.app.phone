@@ -39,7 +39,7 @@ public slots:
         Phone Application. It is intended to be used via Qt Highway.
         
         Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dial(QString)");
+        XQServiceRequest snd("com.nokia.symbian.ICallDial","dial(QString)");
         snd << "0501234567";        
     */
     int dial(const QString& number);
@@ -53,7 +53,7 @@ public slots:
         identifier.
         
         Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dial(QString,int)");
+        XQServiceRequest snd("com.nokia.symbian.ICallDial","dial(QString,int)");
         snd << "0501234567" << 123456;        
     */
     int dial(const QString& number, int contactId);
@@ -65,7 +65,7 @@ public slots:
         Phone Application. It is intended to be used via Qt Highway.
         
         Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dial(QString)");
+        XQServiceRequest snd("com.nokia.symbian.ICallDial","dial(QString)");
         snd << "0501234567";        
     */
     void dialVideo(const QString& number);
@@ -79,7 +79,7 @@ public slots:
         identifier.
         
         Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dial(QString,int)");
+        XQServiceRequest snd("com.nokia.symbian.ICallDial","dial(QString,int)");
         snd << "0501234567" << 123456;        
     */
     void dialVideo(const QString& number, int contactId);
@@ -91,7 +91,7 @@ public slots:
         Phone Application. It is intended to be used via Qt Highway.
         
         Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dialVoip(QString)");
+        XQServiceRequest snd("com.nokia.symbian.ICallDial","dialVoip(QString)");
         snd << "address@domain";        
     */
     void dialVoip(const QString& address);
@@ -105,7 +105,7 @@ public slots:
         identifier.
         
         Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dialVoip(QString,int)");
+        XQServiceRequest snd("com.nokia.symbian.ICallDial","dialVoip(QString,int)");
         snd << "address@domain" << 123456;        
     */
     void dialVoip(const QString& address, int contactId);
@@ -118,7 +118,7 @@ public slots:
         Call is made by given service (id).
         
         Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dialVoipService(QString,int)");
+        XQServiceRequest snd("com.nokia.symbian.ICallDial","dialVoipService(QString,int)");
         snd << "address@domain" << 123;        
     */
     void dialVoipService(const QString& address, int serviceId);
@@ -133,7 +133,7 @@ public slots:
         identifier.
         
         Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dialVoipService(QString,int,int)");
+        XQServiceRequest snd("com.nokia.symbian.ICallDial","dialVoipService(QString,int,int)");
         snd << "address@domain" << 123 << 12345;        
     */
     void dialVoipService(const QString& address, int serviceId, int contactId);

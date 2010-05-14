@@ -20,6 +20,8 @@ TARGET =
 TARGET.UID3 = 0xE31F4ECF
 DEPENDPATH += .
 CONFIG += qtestlib
+QT -= gui
+
 symbian {
 	INCLUDEPATH +=./
 	INCLUDEPATH +=../../../../inc

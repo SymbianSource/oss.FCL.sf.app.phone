@@ -286,7 +286,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         VA_LIST list;
         VA_START (list, symbianResourceId);
         int intValue = VA_ARG (list, int);
-        text->setText(hbTrId("txt_phone_other_call_ln", intValue));
+        text->setText(hbTrId("txt_phone_other_call_ln").arg(intValue));
         translatedActions [PhoneAction::Text] = text;
         VA_END (list);
         }
@@ -383,7 +383,32 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         VA_END (list);
         }
         break;
-        
+    case R_PHONE_IMEI_STRING:
+        {
+        QScopedPointer<PhoneAction> text(new PhoneAction);
+        VA_LIST list;
+        VA_START(list, symbianResourceId);
+        const TDesC *string = static_cast<TDesC*>(VA_ARG(list, TDesC*));
+        QString serialNumber = 
+            QString::fromUtf16(string->Ptr(), string->Length());
+        text->setText(hbTrId("txt_phone_info_serial_no").arg(serialNumber));
+        translatedActions[PhoneAction::Text] = text.take();
+        VA_END(list);
+        }
+        break;
+    case R_PHONEUI_LIFE_TIMER_STRING:
+        {
+        QScopedPointer<PhoneAction> text(new PhoneAction);
+        VA_LIST list;
+        VA_START(list, symbianResourceId);
+        const TDesC *string = static_cast<TDesC*>(VA_ARG(list, TDesC*));
+        QString lifeTimerText =
+            QString::fromUtf16(string->Ptr(), string->Length());
+        text->setText(hbTrId("txt_phone_info_life_timer").arg(lifeTimerText));
+        translatedActions[PhoneAction::Text] = text.take();
+        VA_END(list);
+        }
+        break;
     default:
         break;
     }
@@ -523,7 +548,7 @@ QString PhoneResourceAdapter::convertToString(
 
 int PhoneResourceAdapter::defaultToolbarResourceId() const
 {
-    return R_PHONEUI_CALLHANDLING_INCOMINGCALL_CBA;
+    return R_PHONEUI_INCALL_DIALER_CBA; //R_PHONEUI_CALLHANDLING_INCOMINGCALL_CBA;
 }
 
 QString PhoneResourceAdapter::convertCommandToString(

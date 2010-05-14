@@ -18,8 +18,10 @@
 #ifndef CPTELEPHONYPLUGIN_H
 #define CPTELEPHONYPLUGIN_H
 
-#include <qobject.h>
+#include <QObject>
+#include <QList>
 #include <cpplugininterface.h>
+#include "cpphonelocalisation.h"
 
 /*!
     \class CpTelephonyPlugin
@@ -43,6 +45,10 @@ public:
      */
     QList<CpSettingFormItemData*> createSettingFormItemData(
             CpItemDataHelper &itemDataHelper) const;
+    
+private: 
+    
+    QScopedPointer<CpPhoneLocalisation> m_localisation; 
 };
 
 #endif /* CPTELEPHONYPLUGIN_H */

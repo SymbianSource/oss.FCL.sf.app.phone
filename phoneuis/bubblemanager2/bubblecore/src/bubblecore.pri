@@ -18,7 +18,6 @@ HEADERS += ../inc/bubblemanager2.h \
     src/bubbleimagewidget.h \
     src/bubbleheader.h \
     src/bubbleutils.h \
-    src/bubblebuttonstyle.h \
     src/bubbleconferenceheader.h \
     src/bubbleparticipantlistitem.h \
     src/bubbleparticipantlistmodel.h \
@@ -31,14 +30,14 @@ HEADERS += ../inc/bubblemanager2.h \
     src/bubbleconferencehandler.h \
     src/bubbleimagemanager.h \
     src/bubbleimagemanager_p.h \
-    src/bubbleeffecthandler.h
+    src/bubbleeffecthandler.h \
+    src/bubblebutton.h
+
 
 SOURCES += src/bubblemanager2.cpp \
     src/bubbleheader.cpp \
     src/bubbleimagewidget.cpp \
     src/bubbleutils.cpp \
-    src/bubblestyleoption.cpp \
-    src/bubblebuttonstyle.cpp \
     src/bubbleconferenceheader.cpp \
     src/bubbleparticipantlistitem.cpp \
     src/bubbleparticipantlistmodel.cpp \
@@ -50,7 +49,8 @@ SOURCES += src/bubblemanager2.cpp \
     src/bubblecollapsedhandler.cpp \
     src/bubbleconferencehandler.cpp \
     src/bubbleimagemanager.cpp \
-    src/bubbleeffecthandler.cpp
+    src/bubbleeffecthandler.cpp \
+    src/bubblebutton.cpp
 
 symbian {
     SOURCES += src/bubbleimagemanager_p.cpp

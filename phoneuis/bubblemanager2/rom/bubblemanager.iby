@@ -23,8 +23,4 @@
 
 file=ABI_DIR/BUILD_DIR/bubblemanager2.dll       SHARED_LIB_DIR/bubblemanager2.dll
 
-//indicator popup plugin
-file=ABI_DIR/BUILD_DIR/bubblestyleplugin.dll    SHARED_LIB_DIR/bubblestyleplugin.dll
-data=DATAZ_/resource/qt/plugins/phone/bubblestyleplugin.qtplugin    resource/qt/plugins/phone/bubblestyleplugin.qtplugin
-
 #endif // __BUBBLEMANAGER_IBY__

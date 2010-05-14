@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -38,6 +38,7 @@ CpBarringPluginGroup::CpBarringPluginGroup(
     :CpSettingFormItemData(HbDataFormModelItem::GroupItem, hbTrId("Barring"),0),
     m_helper(helper)
     {
+    
     }
 
 
@@ -55,10 +56,11 @@ CpBarringPluginGroup::~CpBarringPluginGroup(  )
 // CpBarringPluginGroup::itemShown
 // -----------------------------------------------------------------------------
 //
-void CpBarringPluginGroup::itemShown(const QModelIndex& item)
-{
-    SMC_MOCK_METHOD1( void, QModelIndex &, item )
-}
+void CpBarringPluginGroup::itemShown( 
+        const QModelIndex & item )
+    {
+    SMC_MOCK_METHOD1( void, const QModelIndex &, item )
+    }
 
 
 // -----------------------------------------------------------------------------
@@ -150,3 +152,29 @@ void CpBarringPluginGroup::processBarringStatusRequestQueue()
 {
     SMC_MOCK_METHOD0( void )    
 }
+
+
+// -----------------------------------------------------------------------------
+// CpBarringPluginGroup::completeBarringStateChangeRequestHandling
+// -----------------------------------------------------------------------------
+//
+void CpBarringPluginGroup::completeBarringStateChangeRequestHandling(
+        QString barringPassword,
+        bool okPressed)
+{
+    SMC_MOCK_METHOD2( void, QString, barringPassword, bool, okPressed)
+}
+
+
+// -----------------------------------------------------------------------------
+// CpBarringPluginGroup::changeBarringPasswordPhasesHandling
+// -----------------------------------------------------------------------------
+//
+void CpBarringPluginGroup::changeBarringPasswordPhasesHandling(
+        QString barringPassword,
+        bool okPressed)
+{
+    SMC_MOCK_METHOD2( void, QString, barringPassword, bool, okPressed)
+}
+
+

@@ -46,7 +46,7 @@ private slots:
     
     void t_layoutRows(); 
     void t_setLayoutRows();
-    //void t_rowHeight();
+    void t_rowHeight();
     
     void t_layoutInfoDisplay();
     void t_layoutSettingsDisplay();
@@ -65,6 +65,8 @@ private slots:
     void t_reloadWidgets();
     
     void t_removeWidget();
+    
+    void t_destroyObjects();
     
     // InfoWidgetDocumentLoader tests 
     void t_createObject();

@@ -223,6 +223,7 @@ const TInt KMaxAppendLength = 64;
 // From CPhoneNoteUtilities
 const TInt KPhoneNoteSoftkeysUseDefault = 0;
 const TInt KPhoneNoteGraphicNone = -1;
+const TInt KPhoneNoteNoTimeout = -1;
 
 // State machine ordinal number
 static const TInt KPhoneUiStateMachineOrdinal = 1;

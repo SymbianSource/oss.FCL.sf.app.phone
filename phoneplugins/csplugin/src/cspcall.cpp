@@ -1339,14 +1339,13 @@ void CSPCall::UpdateCallInfoImpl( RMobileCall::TMobileCallInfoV7 aCallInfo )
 void CSPCall::UpdateCallOrigin( RMobileCall::TMobileCallInfoV7 aCallInfo )
     {
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallOrigin <");
-   
-    if ( iMobileOriginated )
+
+    if ( RMobileCall::EOriginatorSIM == aCallInfo.iCallParamOrigin )
         {
-        if ( RMobileCall::EOriginatorSIM == aCallInfo.iCallParamOrigin )
-            {
-            iParams->SetOrigin(CCCECallParameters::ECCECallOriginSAT);
-            }
+        iParams->SetOrigin(CCCECallParameters::ECCECallOriginSAT);
+        iParams->SetAlphaId(aCallInfo.iAlphaId);
         }
+
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallOrigin >");
     }
 

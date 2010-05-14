@@ -22,7 +22,7 @@
 
 class BubbleHeader;
 class HbAction;
-class HbPushButton;
+class BubbleButton;
 class BubbleImageWidget;
 class BubbleHeadingWidget;
 
@@ -56,9 +56,9 @@ protected: //data
 
     BubbleImageWidget* mImage;
 
-    HbPushButton* mButtonCenter;
-    HbPushButton* mButtonLeft;
-    HbPushButton* mButtonRight;
+    BubbleButton* mButtonCenter;
+    BubbleButton* mButtonLeft;
+    BubbleButton* mButtonRight;
     };
 
 #endif /* BUBBLEEXPANDEDHANDLER_H_ */

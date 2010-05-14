@@ -39,7 +39,6 @@ enum TPEExternalDataId
     EPECallDurationDisplaySetting,
     EPEDialPrefixChangeSetting,
     EPEDialPrefixTextSetting,  
-    EPENetworkRegistrationStatus,
     EPETelephonyVariationFlags,
     EPEAccessoryMode,
     EPEEmergencyCallInfo,

@@ -22,13 +22,15 @@
 #include <cppluginlogging.h>
 
 
+/*!
+  CpDivertSelectionCustomitem::CpDivertSelectionCustomitem.
+ */
 CpDivertSelectionCustomitem::CpDivertSelectionCustomitem(
         QGraphicsItem *parent /**=0*/,
         Qt::WindowFlags wFlags /**=0*/):
         HbWidget(parent, wFlags),
         layout(NULL),
         checkbox(NULL),
-        //numberValueLabel(NULL),
         timeoutLabel(NULL),
         timeoutValueLabel(NULL),
         m_state(Disabled)
@@ -42,17 +44,10 @@ CpDivertSelectionCustomitem::CpDivertSelectionCustomitem(
     layout->setRowMaximumHeight(1,0);
 
     checkbox = new HbCheckBox(this);
-    checkbox->setBackgroundItem(HbStyle::P_DataItem_background);
-
     HbStyle::setItemName(checkbox, "dataItem_ContentWidget");
 
     layout->addItem(checkbox, 0, 0, 1, 2);
-
     connect(checkbox,SIGNAL(clicked()), this, SIGNAL(clicked()));
-
-    //numberValueLabel = new HbLabel(this);
-    //layout->addItem(numberValueLabel, 0, 1);
-    //connect(numberValueLabel,SIGNAL(clicked()), this, SIGNAL(clicked()));
 
     timeoutLabel = new HbLabel(this);
     HbStyle::setItemName(timeoutLabel, "dataItem_ContentWidget");
@@ -61,7 +56,6 @@ CpDivertSelectionCustomitem::CpDivertSelectionCustomitem(
 
     timeoutLabel->hide();
     timeoutValueLabel = new HbLabel(this);
-    timeoutValueLabel->setBackgroundItem(HbStyle::P_DataItem_background);
     HbStyle::setItemName(timeoutValueLabel, "dataItem_ContentWidget");
     timeoutValueLabel->hide();
     layout->addItem(timeoutValueLabel, 1, 1);
@@ -69,42 +63,69 @@ CpDivertSelectionCustomitem::CpDivertSelectionCustomitem(
     setLayout(layout);
 }
 
+
+/*!
+  CpDivertSelectionCustomitem::~CpDivertSelectionCustomitem. 
+ */
 CpDivertSelectionCustomitem::~CpDivertSelectionCustomitem()
 {
     DPRINT;
 }
 
+
+/*!
+  CpDivertSelectionCustomitem::number.
+ */
 const QString CpDivertSelectionCustomitem::number() const
 {
     DPRINT;
     return checkbox->text();
 }
 
-void CpDivertSelectionCustomitem::setNumber( const QString& number )
+
+/*!
+  CpDivertSelectionCustomitem::setNumber.
+ */
+void CpDivertSelectionCustomitem::setNumber(const QString& number)
 {
-    DPRINT << number;
-    
+    DPRINT << number;    
     checkbox->setText(number);
 }
 
+
+/*!
+  CpDivertSelectionCustomitem::timeout.
+ */
 int CpDivertSelectionCustomitem::timeout() const
 {
     DPRINT;
     return timeoutValueLabel->plainText().toInt();
 }
 
-void CpDivertSelectionCustomitem::setTimeout( int timeout)
+
+/*!
+  CpDivertSelectionCustomitem::setTimeout.
+ */
+void CpDivertSelectionCustomitem::setTimeout(int timeout)
 {
     DPRINT << timeout;
     timeoutValueLabel->setPlainText(QString::number(timeout));
 }
 
+
+/*!
+  CpDivertSelectionCustomitem::timeoutText.
+ */
 const QString CpDivertSelectionCustomitem::timeoutText() const
 {
     DPRINT;
     return timeoutLabel->plainText();
 }
 
+
+/*!
+  CpDivertSelectionCustomitem::setTimeoutText.
+ */
 void CpDivertSelectionCustomitem::setTimeoutText( const QString& text )
 {
     DPRINT << text;
@@ -120,22 +141,31 @@ void CpDivertSelectionCustomitem::setTimeoutText( const QString& text )
     }
 }
 
+
+/*!
+  CpDivertSelectionCustomitem::state.
+ */
 int CpDivertSelectionCustomitem::state() const
 {
     DPRINT << m_state;
-    
     return m_state;
 }
 
+
+/*!
+  CpDivertSelectionCustomitem::setState.
+ */
 void CpDivertSelectionCustomitem::setState(int state)
 {
     DPRINT << state;
-    
     m_state = state;
-    
     updateCheckState();
 }
 
+
+/*!
+  CpDivertSelectionCustomitem::updateCheckState.
+ */
 void CpDivertSelectionCustomitem::updateCheckState()
 {
     DPRINT << m_state;
@@ -155,3 +185,5 @@ void CpDivertSelectionCustomitem::updateCheckState()
             break;
     }
 }
+
+// End of File. 

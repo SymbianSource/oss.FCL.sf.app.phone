@@ -55,6 +55,16 @@ signals:
      */
     void progressNoteCanceled();
     
+    /**
+     This signal is emitted when the user coplete password query.
+     @param password            On return contains user given password.
+     @param ok                  True if the user pressed OK, false if the user 
+                                pressed Cancel.
+     */
+    void passwordQueryCompleted(
+        QString password,
+        bool okPressed);
+    
 public slots: // Slots: 
     
     /**
@@ -106,17 +116,12 @@ public slots: // Slots:
      accepted.
      @param title               Title for the query dialog.
      @param validator           Password validator.
-     @param maxPasswordLength   Maximum length for the password.  
-     @param password            On return contains user given password.
-     @param ok                  True if the user pressed OK, false if the user 
-                                pressed Cancel.
+     @param maxPasswordLength   Maximum length for the password.
      */
     void showPasswordQueryDialog(
         const QString &title,
         const QValidator &validator,
-        int maxPasswordLength,
-        QString &password,
-        bool &ok);
+        int maxPasswordLength);
     
     /**
      Cancels specified note.
@@ -128,6 +133,11 @@ public slots: // Slots:
      Retuns true if note is currently shown.
      */
     bool noteShowing();
+    
+    /**
+     Slot for HbDialog finished singal.
+     */
+    void finishedPasswordQueryDialog(HbAction* action);
     
 private:
     
@@ -187,7 +197,7 @@ private: // Data:
     bool m_isNoteShowingOngoing;
     
     /**
-      Password query dialog. Not own.
+      Password query dialog. Own.
      */
     HbInputDialog *m_passwordDialog;
 

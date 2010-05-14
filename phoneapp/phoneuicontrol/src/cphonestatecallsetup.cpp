@@ -121,6 +121,10 @@ EXPORT_C TBool CPhoneStateCallSetup::HandleCommandL( TInt aCommand )
     
     switch( aCommand )
         {
+        case EPhoneInCallCmdDialer:
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewOpenDialer );
+            break;
+            
         case EPhoneNumberAcqCmdAddToContacts:
             {
             // If call setup is ongoing then add to contacts query should
@@ -581,10 +585,10 @@ void CPhoneStateCallSetup::HandleConnectedL( TInt aCallId )
     BeginUiUpdateLC();
         
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
+    /*if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-        }
+        }*/
     
     // Update the single call
     CPhoneState::UpdateSingleActiveCallL( aCallId );

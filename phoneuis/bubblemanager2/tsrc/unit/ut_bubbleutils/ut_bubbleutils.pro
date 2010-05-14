@@ -27,11 +27,12 @@ symbian {
     DESTDIR = ./
 }
 
-#
+HEADERS += ../../../bubblecore/src/bubblebutton.h
+
 SOURCES += ut_bubbleutils.cpp \
            ../../../bubblecore/src/bubbleheader.cpp \
+           ../../../bubblecore/src/bubbleconferenceheader.cpp \
            ../../../bubblecore/src/bubbleutils.cpp \
-           ../../../bubblecore/src/bubblestyleoption.cpp \
-           ../../../bubblecore/src/bubblebuttonstyle.cpp
+           ../../../bubblecore/src/bubblebutton.cpp
 
 

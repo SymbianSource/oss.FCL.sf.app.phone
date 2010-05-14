@@ -23,7 +23,7 @@
 
 
 DialService::DialService(MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent) : 
-    XQServiceProvider(QLatin1String("com.nokia.services.telephony"), parent), m_call (call), m_parameters (parameters)
+    XQServiceProvider(QLatin1String("com.nokia.symbian.ICallDial"), parent), m_call (call), m_parameters (parameters)
 {
     publishAll();
 }

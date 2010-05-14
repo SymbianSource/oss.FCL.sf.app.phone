@@ -20,7 +20,8 @@ TARGET =
 TARGET.UID3 = 0xEA9BEF3F
 DEPENDPATH += . ../../src/
 INCLUDEPATH += .
-CONFIG += hb qtestlib
+CONFIG += hb qtestlib //mobility
+//MOBILITY += systeminfo
 
 symbian {
 
@@ -55,10 +56,12 @@ HEADERS += ../../inc/phoneuiqtview.h \
            ../../inc/phoneuiqtviewif.h \
            ../../inc/phoneaction.h \
            hbtoolbar.h \
-           hbvolumesliderpopup.h
+           hbvolumesliderpopup.h \
+           qsysteminfo.h
 SOURCES += ../../src/phoneuiqtview.cpp \
            ../../src/phoneaction.cpp \
            unit_tests.cpp \
            hbtoolbar.cpp \
-           hbvolumesliderpopup.cpp 
+           hbvolumesliderpopup.cpp \
+           qsysteminfo.cpp 
            

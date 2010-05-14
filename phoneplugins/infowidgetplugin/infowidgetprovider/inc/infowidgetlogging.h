@@ -16,7 +16,7 @@
  */
 
 #ifndef INFOWIDGETLOGGING_H
-#define INFOWIDGETLOGGING
+#define INFOWIDGETLOGGING_H
 
 #include <QDebug>
 
@@ -33,29 +33,26 @@
 #ifdef Q_OS_SYMBIAN
 #include <e32debug.h>
 
-static void cpPhoneSettingsPluginsMsgOutput(QtMsgType type, const char *msg)
+static void infoWidgetMsgOutput(QtMsgType type, const char *msg)
 {
     switch (type) {
-    
+        
     case QtDebugMsg:
         RDebug::Printf("InfoWidget Debug: %s\n", msg);
         break;
-        
     case QtWarningMsg:
         RDebug::Printf("InfoWidget Warning: %s\n", msg);
         break;
-
     case QtCriticalMsg:
         RDebug::Printf("InfoWidget Critical: %s\n", msg);
         break;
-        
     case QtFatalMsg:
         RDebug::Printf("InfoWidget Fatal: %s\n", msg);
         abort();
     }
 }
 
-    #define INSTALL_TRACE_MSG_HANDLER qInstallMsgHandler(cpPhoneSettingsPluginsMsgOutput)
+    #define INSTALL_TRACE_MSG_HANDLER qInstallMsgHandler(infoWidgetMsgOutput)
     #define UNINSTALL_TRACE_MSG_HANDLER qInstallMsgHandler(0)
 #endif //Q_OS_SYMBIAN
 #else 
@@ -67,7 +64,8 @@ static void cpPhoneSettingsPluginsMsgOutput(QtMsgType type, const char *msg)
   Debug macros
   */
 #define DPRINT qDebug() << __PRETTY_FUNCTION__
-
+#define DWARNING qWarning() << __PRETTY_FUNCTION__
+#define DCRITICAL qCritical() << __PRETTY_FUNCTION__
 
 #endif // INFOWIDGETLOGGING
 

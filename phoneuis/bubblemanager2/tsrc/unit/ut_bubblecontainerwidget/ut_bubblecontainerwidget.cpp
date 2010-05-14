@@ -40,8 +40,6 @@ private slots:
     void testRightMouseClick();
     void testMouseMove();
 
-    //void testInvalidStylePlugin();
-
 private:
     BubbleContainerWidget* mContainer;
     HbMainWindow* mMainWindow;
@@ -51,7 +49,7 @@ private:
 void ut_BubbleContainerWidget::initTestCase()
 {
     mMainWindow = new HbMainWindow();
-    mContainer = new BubbleContainerWidget(BUBBLE_STYLE_PLUGIN);
+    mContainer = new BubbleContainerWidget();
     mMainWindow->addView(mContainer);
     mMainWindow->show();
 }
@@ -98,15 +96,6 @@ void ut_BubbleContainerWidget::testMouseMove()
     QTest::mouseMove( mMainWindow->viewport(), windowPos2 );
     QCOMPARE( spy.count(), 0 );
 }
-
-/*void ut_BubbleContainerWidget::testInvalidStylePlugin()
-{
-    // this just shouldn't crash
-    BubbleContainerWidget *cnt =
-        new BubbleContainerWidget("c:\foobar.dll");
-    HbView* view = mMainWindow->addView(cnt);
-    mMainWindow->setCurrentView(view);
-}*/
 
 BUBBLE_TEST_MAIN(ut_BubbleContainerWidget)
 #include "ut_bubblecontainerwidget.moc"

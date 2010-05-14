@@ -27,7 +27,6 @@
 
 #include "bubbletest.h"
 #include "bubbleparticipantlistitem.h"
-#include "bubblebuttonstyle.h"
 
 class ut_BubbleParticipantListItem : public QObject
 {
@@ -43,17 +42,16 @@ private slots:
 private:
     BubbleParticipantListItem* mItem;
     HbMainWindow* mMainWindow;
-    BubbleButtonStyle* mButtonStyle;
     int mStyleBaseId;
 };
 
 void ut_BubbleParticipantListItem::initTestCase()
 {
     mMainWindow = new HbMainWindow();
-    mButtonStyle = new BubbleButtonStyle();
-    mItem = new BubbleParticipantListItem(BUBBLE_STYLE_PLUGIN,*mButtonStyle);
+    mItem = new BubbleParticipantListItem();
     mMainWindow->addView(mItem);
-    HbListViewItem* item = static_cast<HbListViewItem*>(mItem);
+    BubbleParticipantListItem* item =
+        static_cast<BubbleParticipantListItem*>(mItem);
     item->updateChildItems();
     mMainWindow->show();
 }
@@ -62,7 +60,6 @@ void ut_BubbleParticipantListItem::cleanupTestCase()
 {
     mItem->clearActions();
     delete mMainWindow;
-    delete mButtonStyle;
 }
 
 void ut_BubbleParticipantListItem::testCreateItem()

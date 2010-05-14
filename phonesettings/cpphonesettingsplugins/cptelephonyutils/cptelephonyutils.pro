@@ -23,8 +23,13 @@ INCLUDEPATH += inc
 SOURCEPATH += src
 
 # Input
-HEADERS += inc/cpplugincommon.h inc/cpphonenotes.h
-SOURCES += src/cpphonenotes.cpp
+HEADERS += inc/cpplugincommon.h \
+           inc/cpphonenotes.h \
+           inc/cpphonelocalisation.h
+           
+SOURCES += src/cpphonenotes.cpp \
+           src/cpphonelocalisation.cpp 
+           
 symbian: {
     SOURCES += src/cpplugincommon.cpp 
     }

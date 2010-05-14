@@ -12,4 +12,6 @@ EXPORTS
 	_ZNK16ParserRecognizer10metaObjectEv @ 11 NONAME
 	_ZTI16ParserRecognizer @ 12 NONAME
 	_ZTV16ParserRecognizer @ 13 NONAME
+	_ZN16ParserRecognizer16requestCompletedERK8QVariant @ 14 NONAME
+	_ZN16ParserRecognizer12requestErrorEi @ 15 NONAME
 

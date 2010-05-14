@@ -93,4 +93,6 @@ EXPORTS
 	?setHidden@PhoneUIQtViewAdapter@@AAEX_N@Z @ 92 NONAME ; void PhoneUIQtViewAdapter::setHidden(bool)
 	?SetHiddenL@PhoneUIQtViewAdapter@@AAEX_N@Z @ 93 NONAME ; void PhoneUIQtViewAdapter::SetHiddenL(bool)
 	?openContacts@PhoneUIQtViewAdapter@@AAEXXZ @ 94 NONAME ; void PhoneUIQtViewAdapter::openContacts(void)
+	?handleWindowDeactivated@PhoneUIQtViewAdapter@@AAEXXZ @ 95 NONAME ; void PhoneUIQtViewAdapter::handleWindowDeactivated(void)
+	?handleWindowActivated@PhoneUIQtViewAdapter@@AAEXXZ @ 96 NONAME ; void PhoneUIQtViewAdapter::handleWindowActivated(void)
 

@@ -47,6 +47,8 @@ private slots:
     void t_homeZoneIndicatorType();
     void t_mcnName();
     void t_mcnIndicatorType();
+    void t_isOnline();
+    void t_networkRegistrationStatus();
     void t_HandleNetworkMessage();
     void t_HandleNetworkMessageExceptionWhileEmittingSignal();
     void t_HandleNetworkError();

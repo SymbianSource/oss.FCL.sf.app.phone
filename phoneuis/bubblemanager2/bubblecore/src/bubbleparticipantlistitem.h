@@ -18,52 +18,47 @@
 #ifndef BUBBLEPARTICIPANTLISTITEM_H
 #define BUBBLEPARTICIPANTLISTITEM_H
 
-#include <hblistviewitem.h>
+#include <hbabstractviewitem.h>
 
 class QGraphicsItem;
 class HbPushButton;
-class BubbleButtonStyle;
 class HbAction;
 class HbIconItem;
+class HbFrameItem;
+class HbTextItem;
 
-class BubbleParticipantListItem : public HbListViewItem
+class BubbleParticipantListItem : public HbAbstractViewItem
 {
     Q_OBJECT
 
 public:
-    BubbleParticipantListItem(
-        const QString& stylePluginName,
-        BubbleButtonStyle& buttonStyle,
-        QGraphicsItem *parent = 0);
+    BubbleParticipantListItem(QGraphicsItem *parent = 0);
 
     ~BubbleParticipantListItem();
 
     HbAbstractViewItem* createItem();
 
     void updateChildItems();
-    void receivedFocus();
-    void lostFocus();
     void setExpanded(bool expanded);
     void addAction(HbAction* action);
     void clearActions();
 
-signals:
-    void selectionChanged(int row);
-
 private:
     void polish(HbStyleParameters& params);
 
+    int type() const;
+
+private slots:
+    void currentIndexChanged(const QModelIndex &current,
+                             const QModelIndex &previous);
+
 private:
-    QString mStylePluginName;
-    int mStylePluginBaseId;
-    BubbleButtonStyle& mButtonStyle;
-    QGraphicsItem* mBackground;
-    QGraphicsItem* mText;
-    QGraphicsItem* mStatusIcon;
-    QGraphicsItem* mCipheringIcon;
-    HbIconItem*    mExpandIcon;
-    HbPushButton*  mButton1;
-    HbPushButton*  mButton2;
+    HbTextItem* mText;
+    HbIconItem* mStatusIcon;
+    HbIconItem* mCipheringIcon;
+    HbIconItem* mExpandIcon;
+    HbPushButton* mButton1;
+    HbPushButton* mButton2;
     QList<HbAction*> mActions;
 
     bool mExpanded;

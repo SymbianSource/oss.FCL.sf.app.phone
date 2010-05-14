@@ -313,4 +313,6 @@ EXPORTS
 	?Bitmap@TPhoneCmdParamBitmap@@QBEPAVCFbsBitmap@@XZ @ 312 NONAME ; class CFbsBitmap * TPhoneCmdParamBitmap::Bitmap(void) const
 	?SetTone@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 313 NONAME ; void TPhoneCmdParamGlobalNote::SetTone(int)
 	?After@CPhoneTimer@@QAEXVTTimeIntervalMicroSeconds32@@VTCallBack@@@Z @ 314 NONAME ; void CPhoneTimer::After(class TTimeIntervalMicroSeconds32, class TCallBack)
+	?SetTimeout@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 315 NONAME ; void TPhoneCmdParamGlobalNote::SetTimeout(int)
+	?Timeout@TPhoneCmdParamGlobalNote@@QBEHXZ @ 316 NONAME ; int TPhoneCmdParamGlobalNote::Timeout(void) const
 

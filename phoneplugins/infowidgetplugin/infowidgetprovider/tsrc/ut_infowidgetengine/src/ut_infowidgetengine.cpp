@@ -23,6 +23,8 @@
 #include "infowidgetnetworkhandler.h"
 #include "infowidgetsathandler.h"
 
+const QString KSpnName("Spn name");    // 
+
 const QString KHomeZoneTextTag("HomeZoneText0");    // max length 13
 const TNWViagIndicatorType 
     KHomeZoneIndicatorType = ENWViagIndicatorTypeHomeZone;
@@ -60,13 +62,22 @@ void UT_InfoWidgetEngine::init()
     SmcDefaultValue<const QString & >::SetL("");
     
     EXPECT(InfoWidgetNetworkHandler::logCurrentInfo);
-    EXPECT(InfoWidgetNetworkHandler::homeZoneTextTag)
-        .returns(KHomeZoneTextTag);
-    EXPECT(InfoWidgetNetworkHandler::homeZoneIndicatorType)
-        .returns(KHomeZoneIndicatorType);
+    EXPECT(InfoWidgetNetworkHandler::isOnline)
+        .returns(true);    
+    
+    EXPECT(InfoWidgetNetworkHandler::serviceProviderName)
+        .returns(KSpnName);
+    EXPECT(InfoWidgetNetworkHandler::serviceProviderNameDisplayRequired)
+        .returns(true);
+
     EXPECT(InfoWidgetNetworkHandler::mcnName).returns(KMcnName);
     EXPECT(InfoWidgetNetworkHandler::mcnIndicatorType)
         .returns(KMcnIndicatorType);
+
+    EXPECT(InfoWidgetNetworkHandler::homeZoneIndicatorType)
+        .returns(KHomeZoneIndicatorType);
+    EXPECT(InfoWidgetNetworkHandler::homeZoneTextTag)
+        .returns(KHomeZoneTextTag);
     
     m_infoWidgetEngine = new InfoWidgetEngine();
     
@@ -90,6 +101,8 @@ void UT_InfoWidgetEngine::cleanup()
 void UT_InfoWidgetEngine::t_modelData()
 {
     const InfoWidgetEngine::ModelData& data = m_infoWidgetEngine->modelData();
+    QVERIFY(data.serviceProviderName() == KSpnName);
+    QVERIFY(data.serviceProviderNameDisplayRequired() == true);
     QVERIFY(data.homeZoneTextTag() == KHomeZoneTextTag);
     QVERIFY(data.homeZoneIndicatorType() == KHomeZoneIndicatorType);
     QVERIFY(data.mcnName() == KMcnName);
@@ -101,24 +114,58 @@ void UT_InfoWidgetEngine::t_modelData()
  */
 void UT_InfoWidgetEngine::t_updateNetworkDataToModel()
 {
+    // Test: network status is online
     EXPECT(InfoWidgetNetworkHandler::logCurrentInfo);
-    EXPECT(InfoWidgetNetworkHandler::homeZoneTextTag)
-        .returns(KHomeZoneTextTag);
-    EXPECT(InfoWidgetNetworkHandler::homeZoneIndicatorType)
-        .returns(KHomeZoneIndicatorType);
+    EXPECT(InfoWidgetNetworkHandler::isOnline)
+        .returns(true);    
+    
+    EXPECT(InfoWidgetNetworkHandler::serviceProviderName)
+        .returns(KSpnName);
+    EXPECT(InfoWidgetNetworkHandler::serviceProviderNameDisplayRequired)
+        .returns(true);
+
     EXPECT(InfoWidgetNetworkHandler::mcnName).returns(KMcnName);
     EXPECT(InfoWidgetNetworkHandler::mcnIndicatorType)
         .returns(KMcnIndicatorType);
-    QSignalSpy spy(m_infoWidgetEngine, SIGNAL(modelChanged()));
+
+    EXPECT(InfoWidgetNetworkHandler::homeZoneIndicatorType)
+        .returns(KHomeZoneIndicatorType);
+    EXPECT(InfoWidgetNetworkHandler::homeZoneTextTag)
+        .returns(KHomeZoneTextTag);
     
+    QSignalSpy spy(m_infoWidgetEngine, SIGNAL(modelChanged()));
     m_infoWidgetEngine->updateNetworkDataToModel();
     
     const int KExpectedNumOfSignalEmissions = 1;
     QCOMPARE(spy.count(), KExpectedNumOfSignalEmissions);
-    const QList<QVariant> &arguments = spy.at(0);
+    const QList<QVariant> &arguments = spy.takeFirst(); 
     QCOMPARE(arguments.count(), 0);
     
     QVERIFY(verify());
+    
+    // Test: network status is offline
+    EXPECT(InfoWidgetNetworkHandler::logCurrentInfo);
+    EXPECT(InfoWidgetNetworkHandler::isOnline)
+          .returns(false);    
+    EXPECT(InfoWidgetNetworkHandler::serviceProviderName).times(0);
+    EXPECT(InfoWidgetNetworkHandler::serviceProviderNameDisplayRequired).times(0);
+    EXPECT(InfoWidgetNetworkHandler::mcnName).times(0);
+    EXPECT(InfoWidgetNetworkHandler::mcnIndicatorType).times(0);
+    EXPECT(InfoWidgetNetworkHandler::homeZoneIndicatorType).times(0);
+    EXPECT(InfoWidgetNetworkHandler::homeZoneTextTag).times(0);
+      
+    m_infoWidgetEngine->updateNetworkDataToModel();
+    QCOMPARE(spy.count(), KExpectedNumOfSignalEmissions);
+    const QList<QVariant> &arguments2 = spy.takeFirst(); 
+    QCOMPARE(arguments2.count(), 0);
+    
+    QVERIFY(verify());
+    
+    const InfoWidgetEngine::ModelData& data = m_infoWidgetEngine->modelData();
+    QVERIFY(data.serviceProviderName() == QString(""));
+    QVERIFY(data.homeZoneTextTag() == QString(""));
+    QVERIFY(data.mcnName() == QString(""));
+    
 }
 
 /*!

@@ -46,9 +46,9 @@ CpCallsPluginGroup::~CpCallsPluginGroup(  )
 // CpCallsPluginGroup::showCallDurationStateChanged
 // -----------------------------------------------------------------------------
 //
-void CpCallsPluginGroup::showCallDurationStateChanged( int state )
+void CpCallsPluginGroup::showCallDurationStateChanged( )
     {
-    Q_UNUSED( state )
+
     }
 
 
@@ -66,9 +66,9 @@ void CpCallsPluginGroup::softRejectTextChanged(  )
 // CpCallsPluginGroup::callWaitingCurrentIndexChanged
 // -----------------------------------------------------------------------------
 //
-void CpCallsPluginGroup::callWaitingCurrentIndexChanged( int index )
+void CpCallsPluginGroup::callWaitingCurrentIndexChanged( )
     {
-    Q_UNUSED( index )
+
     }
 
 

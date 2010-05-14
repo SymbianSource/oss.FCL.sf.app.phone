@@ -21,6 +21,7 @@
 #include <hbwidget.h>
 
 class BubbleImageManager;
+class HbIconItem;
 
 class BubbleImageWidget : public HbWidget
     {
@@ -28,7 +29,6 @@ class BubbleImageWidget : public HbWidget
     
 public:
     explicit BubbleImageWidget(
-        const QString& stylePluginName,
         BubbleImageManager& imageManager,
         QGraphicsItem* parent = 0 );
     virtual ~BubbleImageWidget();
@@ -45,10 +45,9 @@ protected:
         QWidget* widget);
 
 private:
-    QString mStylePluginName;
     BubbleImageManager& mImageManager;
     QString  mImageName;
-    QGraphicsItem* mDefaultAvatar;
+    HbIconItem* mDefaultAvatar;
     };
 
 #endif /* BUBBLEIMAGEWIDGET_H_ */

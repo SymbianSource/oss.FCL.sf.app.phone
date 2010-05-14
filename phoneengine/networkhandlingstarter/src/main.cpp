@@ -15,7 +15,7 @@
  *
  */
 #include <QLocale>
-#include <QTranslator>
+#include <hbtranslator.h>
 #include <hbapplication.h>
 #include <hbmainwindow.h>
 #include <networkhandlingstarter.h>
@@ -27,23 +27,19 @@ int main(int argc, char **argv)
 {
     HbApplication app(argc, argv);
     
-    // Load telephone_cp translator
-    QTranslator translator; 
-    QString lang = QLocale::system().name();
-    QString path = "z:/resource/qt/translations/";
-    bool translatorLoaded = translator.load(path + "telephone_cp_" + lang);
-    if (translatorLoaded) {
-        app.installTranslator(&translator);
-    }
-    // Load common translator
-    QTranslator commontranslator;
-    translatorLoaded = commontranslator.load( path + "common_" + lang);
-    if (translatorLoaded) {
-        app.installTranslator(&commontranslator);
-    }
+    // Load translators
+    HbTranslator *commonTranslator = new HbTranslator("common");
+    HbTranslator *control_panelTranslator = new HbTranslator("control_panel");
+    HbTranslator *telephone_cpTranslator = new HbTranslator("telephone_cp"); 
     
     HbMainWindow mainWindow;
     NetworkHandlingStarter service;
-    return app.exec();
+    int err = app.exec();
+    
+    delete commonTranslator;
+    delete control_panelTranslator;
+    delete telephone_cpTranslator;
+    
+    return err;
 }
 

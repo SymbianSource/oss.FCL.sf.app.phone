@@ -18,9 +18,6 @@
 #include "cptelephonypluginview.h"
 #include "cppluginlogging.h"
 #include <QPluginLoader>
-#include <QApplication>
-#include <QLocale>
-#include <QTranslator>
 #include <hbdataformmodel.h>
 #include <cpplugininterface.h>
 #include <cpsettingformitemdata.h>
@@ -28,23 +25,15 @@
 #include <cppluginutility.h>
 #include <cppluginloader.h>
 
+
+/*!
+    CpTelephonyPluginView::CpTelephonyPluginView()
+*/
 CpTelephonyPluginView::CpTelephonyPluginView() : 
     CpBaseSettingView(0,0),
     m_helper(NULL)
 {
     DPRINT << ": IN";
-    
-    // Localization file loading
-    QTranslator translator; 
-    QString lang = QLocale::system().name();
-    QString path = "z:/resource/qt/translations/";
-    DPRINT << ": loading translation: " << QString(path + "telephone_cp_" + lang);
-    bool translatorLoaded = translator.load(path + "telephone_cp_" + lang);
-    DPRINT << ": translator loaded: " << translatorLoaded; 
-    if (translatorLoaded) {
-        qApp->installTranslator(&translator);
-        DPRINT << ": translator installed"; 
-    }
     
     HbDataForm *form = qobject_cast<HbDataForm*>(widget());
     if (form) {
@@ -81,6 +70,9 @@ CpTelephonyPluginView::CpTelephonyPluginView() :
     DPRINT << ": OUT";
 }
 
+/*!
+    CpTelephonyPluginView::~CpTelephonyPluginView()
+*/
 CpTelephonyPluginView::~CpTelephonyPluginView()
 {
     DPRINT << ": IN";
@@ -90,6 +82,9 @@ CpTelephonyPluginView::~CpTelephonyPluginView()
     DPRINT << ": OUT";
 }
 
+/*!
+    CpTelephonyPluginView::groupItemFromPlugin()
+*/
 QList<CpSettingFormItemData*> CpTelephonyPluginView::groupItemFromPlugin( const QString& plugin )
 {
     DPRINT << ": IN";
@@ -110,6 +105,9 @@ QList<CpSettingFormItemData*> CpTelephonyPluginView::groupItemFromPlugin( const 
     return items;
 }
 
+/*!
+    CpTelephonyPluginView::initializeItemDataHelper()
+*/
 CpItemDataHelper* CpTelephonyPluginView::initializeItemDataHelper()
 {
     DPRINT;

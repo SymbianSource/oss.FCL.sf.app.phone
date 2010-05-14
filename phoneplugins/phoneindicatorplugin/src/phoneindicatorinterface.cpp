@@ -17,18 +17,22 @@
 
 #include "Phoneindicatorinterface.h"
 #include "phoneindicators.h"
+
 #include <QTime>
 #include <QStringList> 
 #ifdef Q_OS_SYMBIAN
 #include <logsservices.h>
 #include <xqservicerequest.h>
+#include <eikenv.h>
+#include <apgtask.h>
+
 #endif
 
 PhoneIndicatorInterface::PhoneIndicatorInterface(
                 const QString &indicatorType,
                 int typeIndex,
                 Interaction interaction) :
-        HbIndicatorInterface( indicatorType, IndicatorInfos[typeIndex].priority,
+        HbIndicatorInterface( indicatorType, HbIndicatorInterface::NotificationCategory,
         (interaction == InteractionNone) ? NoInteraction : InteractionActivated),
         m_typeIndex(typeIndex),
         m_interaction(interaction),
@@ -62,6 +66,16 @@ bool PhoneIndicatorInterface::handleInteraction(InteractionType type)
 #endif
             }
             break;
+        case SwitchBackToCall: {
+#ifdef Q_OS_SYMBIAN
+            RWsSession& wsSession = CEikonEnv::Static()->WsSession();
+            TApaTaskList taskList( wsSession );
+            const TUid KUidPhoneApp = { 0x100058B3 };   // Phone application
+            TApaTask task = taskList.FindApp(KUidPhoneApp);
+            task.BringToForeground();
+#endif
+            }
+            break;
         case Deactivate:
             emit deactivate();
             break;
@@ -81,7 +95,7 @@ QVariant PhoneIndicatorInterface::indicatorData(int role) const
         return map.value( (QVariant(PrimaryTextRole)).toString()).toString();
     } else if (role == SecondaryTextRole ) {
         return map.value( (QVariant(SecondaryTextRole)).toString()).toString();
-    } else if (role == IconNameRole) {
+    } else if (role == MonoDecorationNameRole) {
         return m_icon;
     } else if (role == DecorationNameRole) {
         return map.value( (QVariant(DecorationNameRole)).toString()).toString();
@@ -93,7 +107,7 @@ bool PhoneIndicatorInterface::handleClientRequest(RequestType type, const QVaria
 {
     bool handled(false);
     switch (type) {
-        // TODO:
+        
     case RequestActivate:
         if (m_parameter != parameter) {
             m_parameter = parameter;

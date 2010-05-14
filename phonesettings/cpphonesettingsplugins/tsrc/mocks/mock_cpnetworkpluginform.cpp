@@ -49,6 +49,16 @@ CpNetworkPluginForm::~CpNetworkPluginForm(  )
     
     }
 
+
+// -----------------------------------------------------------------------------
+// CpNetworkPluginForm::searchAvailableNetworks
+// -----------------------------------------------------------------------------
+//
+void CpNetworkPluginForm::searchAvailableNetworks(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
 // -----------------------------------------------------------------------------
 // CpNetworkPluginForm::cellularDataUseHomeStateChanged
 // -----------------------------------------------------------------------------

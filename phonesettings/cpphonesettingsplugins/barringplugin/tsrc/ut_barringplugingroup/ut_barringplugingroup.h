@@ -40,8 +40,6 @@ private slots:
     void cleanup();
     
     void t_memleak();
-    void t_translatorInstallationOk();
-    void t_translatorInstallationFails();
     void t_itemShownNotBarringItem();
     void t_itemShownBarringStatusRequestOngoing();
     void t_barringStatusRequestCompletedForUpdateInquiry();

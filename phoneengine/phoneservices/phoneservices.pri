@@ -17,12 +17,20 @@
 SOURCES=\
     ./src/phoneservices.cpp \
     ./src/dialservice.cpp \
-    ./src/dtmfservice.cpp
+    ./src/dtmfservice.cpp \
+    ./src/keysequencerecognitionservice.cpp \
+    ./src/dialservicedepricated.cpp \
+    ./src/dtmfservicedepricated.cpp \
+    ./src/keysequencerecognitionservicedepricated.cpp
 
 HEADERS=\
     ./inc/phoneservices.h \
     ./inc/dialservice.h \
-    ./inc/dtmfservice.h
+    ./inc/dtmfservice.h \
+    ./inc/keysequencerecognitionservice.h \
+    ./inc/dialservicedepricated.h \
+    ./inc/dtmfservicedepricated.h \
+    ./inc/keysequencerecognitionservicedepricated.h
     
 PHONESERVICES_API_HEADERS=\
 		./inc/phoneservices.h

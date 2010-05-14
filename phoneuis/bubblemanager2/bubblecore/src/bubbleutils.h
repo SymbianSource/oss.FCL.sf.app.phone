@@ -23,29 +23,57 @@
 class BubbleHeader;
 class BubbleCallIndicator;
 class HbIconItem;
-class BubbleStyleOption;
-class HbPushButton;
+class BubbleButton;
 class HbAction;
+class HbTextItem;
 
 class BubbleUtils
     {
 public:
     static void setCallHeaderTexts3Lines(
         const BubbleHeader& header,
-        BubbleStyleOption& option );
+        HbTextItem& textLine1,
+        HbTextItem& textLine2,
+        HbTextItem& textLine3,
+        int& cliLineNumber,
+        int& timerLineNumber);
 
     static void setCallHeaderTexts2Lines(
         const BubbleHeader& header,
-        BubbleStyleOption& option );
+        HbTextItem& textLine1,
+        HbTextItem& textLine2,
+        int& cliLineNumber,
+        int& timerLineNumber);
 
     static bool compareHeaders(
         const BubbleHeader* header1,
-        const BubbleHeader* header2 );
+        const BubbleHeader* header2);
 
-    static QString stylePluginNameWithPath(const QString& pluginName);
+    static void setButtonStyleForAction(
+        BubbleButton& button,
+        const HbAction& action);
 
-    static void setButtonStyleForAction(HbPushButton& button,
-                                        const HbAction& action);
+    static void setCallStatusIcon(
+        int callState,
+        int callFlags,
+        HbIconItem& icon);
+
+    static void setNumberTypeIcon(
+        int callState,
+        int callFlags,
+        HbIconItem& icon);
+
+    static void setCipheringIcon(
+        int callState,
+        int callFlags,
+        HbIconItem& icon);
+
+private:
+    static void setText(
+        HbTextItem& item,
+        const QString& text,
+        Qt::TextElideMode clip);
+
     };
 
 #endif /* BUBBLEUTILS_H_ */

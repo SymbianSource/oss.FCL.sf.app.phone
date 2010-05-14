@@ -233,6 +233,16 @@ void TestPhoneResourceAdapter::testConvert ()
     action = map[PhoneAction::Text];
     QVERIFY( false == action->text().isEmpty() );
     
+    map = m_resourceAdapter->convert(R_PHONE_IMEI_STRING, &buffer);
+    QCOMPARE(map.size(), 1);
+    action = map[PhoneAction::Text];
+    QVERIFY( false == action->text().isEmpty() );
+
+    map = m_resourceAdapter->convert(R_PHONEUI_LIFE_TIMER_STRING, &buffer);
+    QCOMPARE(map.size(), 1);
+    action = map[PhoneAction::Text];
+    QVERIFY( false == action->text().isEmpty() );
+    
     // TODO
     map = m_resourceAdapter->convert (R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA);
     

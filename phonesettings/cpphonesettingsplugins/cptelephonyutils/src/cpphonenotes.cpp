@@ -57,7 +57,7 @@ CpPhoneNotes::CpPhoneNotes():
      m_passwordValidator(NULL)
     {
     DPRINT << ": IN";
-    
+
     m_notesQueue = new QQueue<QObject*>();
     m_cpSettingsWrapper = new CpSettingsWrapper;
     
@@ -77,6 +77,10 @@ CpPhoneNotes::~CpPhoneNotes()
         delete note;
     }
     delete m_notesQueue;
+    if(m_passwordDialog) {
+        delete m_passwordDialog;
+    }
+        
     
     DPRINT << ": OUT";
 }
@@ -92,6 +96,9 @@ void CpPhoneNotes::showGlobalProgressNote(
     HbDeviceProgressDialog *note = 
         new HbDeviceProgressDialog(HbProgressDialog::WaitDialog, this);
     note->setText(text);
+    QAction *action = new QAction(hbTrId("txt_common_button_hide"), this);
+    //Ownership of action is not transferred. Deleted when note closes.
+    note->setAction(action, HbDeviceProgressDialog::CancelButtonRole );
     noteId = reinterpret_cast<int>(note);
     DPRINT << ", NOTEID: " << noteId;
     QObject::connect(
@@ -175,7 +182,12 @@ void CpPhoneNotes::showBasicServiceList(
     HbAction *backAction = 
         new HbAction(hbTrId("txt_common_button_back"), serviceListPopup.data());
     serviceListPopup->setPrimaryAction(backAction);
-    serviceListPopup->exec();
+    
+    HbDialog *serviceListPopupDialog = serviceListPopup.take();
+    QObject::connect(
+        serviceListPopupDialog, SIGNAL(finished(HbAction*)), 
+        serviceListPopupDialog, SLOT(deleteLater()));
+    serviceListPopupDialog->show();
     
     DPRINT << ": OUT";
 }
@@ -195,10 +207,7 @@ void CpPhoneNotes::cancelNote(int noteId)
             QObject *note = m_notesQueue->at(index);
             DPRINT << ": NOTEID: " << noteId;
             if (qobject_cast<HbDeviceProgressDialog *>(note)) {
-              //  QObject::disconnect(
-                //    note, SIGNAL(cancelled()),
-                  //  this, SLOT(ProgresNoteCanceled()));
-                static_cast<HbDeviceProgressDialog *>(note)->cancel();
+                static_cast<HbDeviceProgressDialog *>(note)->close();
             } else if (qobject_cast<HbDeviceMessageBox *>(note)) {
                 static_cast<HbDeviceMessageBox *>(note)->close();
             } else {
@@ -326,9 +335,9 @@ void CpPhoneNotes::showCallDivertDetails(
 {
     DPRINT << ": IN";
     
-    HbMessageBox *divertInfo = 
-            new HbMessageBox(HbMessageBox::MessageTypeInformation);
-    divertInfo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QScopedPointer<HbMessageBox> divertInfoScopedPointer(
+        new HbMessageBox(HbMessageBox::MessageTypeInformation));
+    divertInfoScopedPointer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
     // TODO: Orbit layout support is insufficient currently and all text
     // is not shown.
@@ -340,11 +349,17 @@ void CpPhoneNotes::showCallDivertDetails(
         content.append(QString::number(divertStatus.iTimeout));
         content.append(hbTrId(" seconds"));
     }
-    divertInfo->setText(content);
-    HbAction *backAction = new HbAction(hbTrId("txt_common_button_back"), divertInfo);
-    divertInfo->setPrimaryAction(backAction);
-    divertInfo->exec();
-    delete divertInfo;
+    divertInfoScopedPointer->setText(content);
+    HbAction *backAction = new HbAction(
+        hbTrId("txt_common_button_back"), 
+        divertInfoScopedPointer.data());
+    divertInfoScopedPointer->setPrimaryAction(backAction);
+    
+    HbMessageBox *divertInfo = divertInfoScopedPointer.take();
+    QObject::connect(
+            divertInfo, SIGNAL(finished(HbAction*)), 
+            divertInfo, SLOT(deleteLater()));
+    divertInfo->show();
     
     DPRINT << ": OUT";
 }
@@ -355,9 +370,7 @@ void CpPhoneNotes::showCallDivertDetails(
 void CpPhoneNotes::showPasswordQueryDialog(
     const QString &title, 
     const QValidator &validator,
-    int maxPasswordLength,
-    QString &password, 
-    bool &ok)
+    int maxPasswordLength)
 {
     DPRINT << ": IN";
     
@@ -370,32 +383,53 @@ void CpPhoneNotes::showPasswordQueryDialog(
     HbLineEdit *hbLineEdit = passwordDialog->lineEdit();
     hbLineEdit->setMaxLength(maxPasswordLength);
     HbEditorInterface editorInterface(hbLineEdit);
-    editorInterface.setInputMode(HbInputModeNumeric);
-    editorInterface.setConstraints(HbEditorConstraintFixedInputMode);
+    
+    editorInterface.setMode(HbInputModeNumeric);
+    editorInterface.setInputConstraints(HbEditorConstraintFixedInputMode);
+    
     editorInterface.setFilter(HbDigitsOnlyFilter::instance());
     
-    m_passwordDialog = passwordDialog.data();
     m_passwordValidator = &validator;
     passwordDialog->primaryAction()->setEnabled(false);
     connect(
         hbLineEdit, SIGNAL(contentsChanged()), 
         this, SLOT(passwordTextChanged()));
     
-    HbAction* action = passwordDialog->exec();
-    if (action == passwordDialog->secondaryAction()) {
-        ok = false;
-    } else {
-        ok = true;
-        password = passwordDialog->value().toString();
-    }
-    
-    m_passwordDialog = NULL;
-    m_passwordValidator = NULL;
-    disconnect(
-        hbLineEdit, SIGNAL(contentsChanged()), 
-        this, SLOT(passwordTextChanged()));
-    
+    passwordDialog->open(this, SLOT(finishedPasswordQueryDialog(HbAction*)));
+	if(m_passwordDialog) {
+		m_passwordDialog->deleteLater();
+		m_passwordDialog = NULL;
+	}
+    m_passwordDialog = passwordDialog.take();
+        
     DPRINT << ": OUT";
+}
+
+/*!
+  CpPhoneNotes::finishedPasswordQueryDialog.
+ */
+void CpPhoneNotes::finishedPasswordQueryDialog(HbAction* action)
+{
+    bool ok;
+    QString password;
+    if(m_passwordDialog) {
+        if (action == m_passwordDialog->secondaryAction()) {
+            ok = false;
+        } else {
+            ok = true;
+            password = m_passwordDialog->value().toString();
+        }
+        
+        disconnect(
+            m_passwordDialog->lineEdit(), SIGNAL(contentsChanged()), 
+            this, SLOT(passwordTextChanged()));
+        
+        m_passwordDialog->deleteLater();
+        m_passwordDialog = NULL;
+        m_passwordValidator = NULL;
+        
+        emit passwordQueryCompleted(password, ok);
+    }
 }
 
 /*!
@@ -442,7 +476,7 @@ void CpPhoneNotes::launchNextNoteIfReady()
             static_cast<HbDeviceProgressDialog *>(note)->show();
         } else if (qobject_cast<HbDeviceMessageBox *>(note)) {
             DPRINT << ", show HbDeviceMessageBox";    
-            static_cast<HbDeviceMessageBox *>(note)->exec();
+            static_cast<HbDeviceMessageBox *>(note)->show();
         } else {
             DPRINT << ", UNKNOWN NOTE";
             Q_ASSERT(false);
@@ -471,6 +505,11 @@ void CpPhoneNotes::activeNoteAboutToClose()
             launchNextNoteIfReady();
             note->disconnect(this);
             DPRINT << ", delete note: " << reinterpret_cast<int>(note);
+            HbDeviceProgressDialog *pNote = 
+                qobject_cast<HbDeviceProgressDialog *>(note);
+            if(pNote){
+                delete pNote->action();
+            }
             note->deleteLater();
         }
     }

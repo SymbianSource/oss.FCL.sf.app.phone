@@ -42,7 +42,6 @@ HEADERS += ../../../bubblecore/src/bubbleimagewidget.h \
            ../../../bubblecore/src/bubbleimagemanager_p.h
 SOURCES += ut_bubbleimagewidget.cpp \
            ../../../bubblecore/src/bubbleimagewidget.cpp \
-           ../../../bubblecore/src/bubblestyleoption.cpp \
            ../../../bubblecore/src/bubbleimagemanager.cpp
 
 symbian {

@@ -52,7 +52,7 @@ private:
 void ut_BubbleHeadingWidget::initTestCase()
 {
     mMainWindow = new HbMainWindow();
-    mHeading = new BubbleHeadingWidget(BUBBLE_STYLE_PLUGIN);
+    mHeading = new BubbleHeadingWidget();
     mMainWindow->addView(mHeading);
     mMainWindow->show();
 }
@@ -92,7 +92,7 @@ void ut_BubbleHeadingWidget::testTwoLinedHeading()
     header.setSecondaryCli("12345",Qt::ElideLeft);
     header.setText("",Qt::ElideRight);
     header.setTimerCost("0:00");
-    header.setCallState(BubbleManagerIF::Active);
+    header.setCallState(BubbleManagerIF::Outgoing);
     header.setCallFlag(BubbleManagerIF::NoCiphering);
 
     mHeading->setLineCount(2);

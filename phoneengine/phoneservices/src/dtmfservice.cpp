@@ -1,5 +1,5 @@
 /*!
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -20,21 +20,21 @@
 #include "dtmfservice.h"
 #include "qtphonelog.h"
 
-DTMFService::DTMFService(MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent) : 
-    XQServiceProvider(QLatin1String("com.nokia.services.telephony.dtmf"), parent), m_call (call), m_parameters (parameters)
+DTMFService::DTMFService(
+    MPECallControlIF &call, 
+    MPECallSettersIF &parameters, 
+    QObject* parent) 
+    : 
+    XQServiceProvider(
+        QLatin1String("com.nokia.symbian.IDtmfPlay"), parent), 
+    m_call(call), 
+    m_parameters(parameters)
 {
     publishAll();
 }
 
 DTMFService::~DTMFService()
 {
-}
-
-void DTMFService::executeKeySequence(const QString& keySequence)
-{
-    PHONE_DEBUG2("DTMFService::executeKeySequence keySequence:", keySequence);
-    TPtrC16 keySequencePtr (reinterpret_cast<const TUint16*>(keySequence.utf16 ()));
-    m_parameters.SetPhoneNumber (keySequencePtr);   
 }
 
 void DTMFService::playDTMFTone(const QChar& keyToPlay)

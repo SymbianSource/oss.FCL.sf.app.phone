@@ -18,6 +18,10 @@
 TEMPLATE = lib
 TARGET = phoneengine
 
+CONFIG += mobility
+MOBILITY = systeminfo
+QT -= gui
+QT += network
 
 symbian {
     TARGET.UID3 = 0x1000A86C
@@ -126,6 +130,7 @@ HEADERS += ./inc/telephonyvariant.hrh
 HEADERS += ./inc/telinternalcrkeys.h
 HEADERS += ./inc/telinternalpskeys.h
 HEADERS += ./inc/telinternalpstypes.h
+HEADERS += ./inc/penetworkhandler.h
 
 SOURCES += ./src/cpeaccessorymodemonitor.cpp
 SOURCES += ./src/cpeactivestarter.cpp
@@ -162,6 +167,7 @@ SOURCES += ./src/phoneengineproxy.cpp
 SOURCES += ./src/cperemotepartyinfomediator.cpp 
 SOURCES += ./src/cperemotepartyinfoproxy.cpp
 SOURCES += ./src/tperemotepartyinfomediatorupdater.cpp
+SOURCES += ./src/penetworkhandler.cpp
 
 include(api_headers.pri)
     

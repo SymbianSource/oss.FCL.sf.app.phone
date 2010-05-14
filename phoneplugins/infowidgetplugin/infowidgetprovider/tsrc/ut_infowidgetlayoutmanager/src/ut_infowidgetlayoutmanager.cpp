@@ -15,20 +15,21 @@
 *
 */
 #include "ut_infowidgetlayoutmanager.h"
-
 #include <QGraphicsWidget>
-#include <hbmarqueeitem.h>
+#include <hbmarqueeitem>
+#include <hbstyle>
 #define private public
 #include "infowidgetlayoutmanager.h"
 #include "qtestmains60.h"
 
 
-const int KNumOfSettingsDisplayRoles = 12;
-const int KNumOfInfoDisplayRoles = 8;
+
+const int KNumOfSettingsDisplayRoles = 6;
+const int KNumOfInfoDisplayRoles = 7;
 const QString KInfoWidgetDocmlFile = ":/resource/infowidget.docml";
 const QString KMargueeItemClassName = HbMarqueeItem::staticMetaObject.className();
 
-
+//class HbStyle;
 /*!
   UT_InfoWidgetLayoutManager::UT_InfoWidgetLayoutManager
  */
@@ -186,8 +187,6 @@ void UT_InfoWidgetLayoutManager::t_currentWidgetRoles()
             InfoWidgetLayoutManager::RoleMcnIcon));
         QVERIFY(0 <= roles.indexOf(
             InfoWidgetLayoutManager::RoleSatTextIcon));
-        QVERIFY(0 <= roles.indexOf(
-            InfoWidgetLayoutManager::RoleSettingsContainer));
     }
     
     activeLayout= m_layoutManager->layoutSettingsDisplay(); 
@@ -222,11 +221,19 @@ void UT_InfoWidgetLayoutManager::t_setLayoutRows()
 
 /*!
   UT_InfoWidgetLayoutManager::t_setLayoutRows
- *//*
+ */
 void UT_InfoWidgetLayoutManager::t_rowHeight()
 {
-    QVERIFY(m_layoutManager->rowHeight()); 
-}*/
+    bool b = false;
+    EXPECT(HbStyle::parameter).returns(b);
+    m_layoutManager->rowHeight();
+    
+    b = true;
+    EXPECT(HbStyle::parameter).returns(b);
+    m_layoutManager->rowHeight();
+    
+    QVERIFY(verify()); 
+}
 
 /*!
   UT_InfoWidgetLayoutManager::t_layoutInfoDisplay
@@ -258,26 +265,13 @@ void UT_InfoWidgetLayoutManager::t_widgetRoles()
         QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleContent));
         QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleMcnLabel));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleSatTextLabel));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleMcnIcon));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleSatTextIcon));
+            InfoWidgetLayoutManager::RoleSpnCheckBox));
         QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleMcnCheckBox));
         QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleSatTextCheckBox));
         QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleOkButton));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleSpnLabel));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleSpnIcon));
-        QVERIFY(0 <= settingDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleSpnCheckBox));
-
         QVERIFY(0 <= settingDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleSettingsContainer));
     }
@@ -300,8 +294,6 @@ void UT_InfoWidgetLayoutManager::t_widgetRoles()
             InfoWidgetLayoutManager::RoleMcnIcon));
         QVERIFY(0 <= infoDisplayRoles.indexOf(
             InfoWidgetLayoutManager::RoleSatTextIcon));
-        QVERIFY(0 <= infoDisplayRoles.indexOf(
-            InfoWidgetLayoutManager::RoleSettingsContainer));
     }
 }
 
@@ -446,6 +438,22 @@ void UT_InfoWidgetLayoutManager::t_reloadWidgets()
 {
     QVERIFY(!m_layoutManager->reloadWidgets(InfoWidgetLayoutManager::SettingsDisplay));
     QVERIFY(!m_layoutManager->reloadWidgets((InfoWidgetLayoutManager::DisplayRole)101));
+}
+
+/*!
+  UT_InfoWidgetLayoutManager::t_destroyObjects
+ */
+void UT_InfoWidgetLayoutManager::t_destroyObjects()
+{
+    m_layoutManager->destroyObjects();
+    
+    QGraphicsWidget *widgetInfo = new QGraphicsWidget();
+    QGraphicsWidget *widgetSettings = new QGraphicsWidget(); 
+    m_layoutManager->m_infoDisplayWidgets.insert(InfoWidgetLayoutManager::RoleContent, widgetInfo);
+    m_layoutManager->m_settingsDisplayWidgets.insert(InfoWidgetLayoutManager::RoleContent, widgetSettings);
+    m_layoutManager->destroyObjects();
+    
+    QVERIFY(verify());
 }
 
 /*!

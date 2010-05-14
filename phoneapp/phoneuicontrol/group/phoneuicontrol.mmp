@@ -70,6 +70,7 @@ USERINCLUDE     ../../phoneuiutils/inc
 USERINCLUDE     ../../phoneui2/srcdata
 USERINCLUDE     ../../phoneuistates/inc
 USERINCLUDE     ../../phonemediatorcenter/inc
+USERINCLUDE     ../../phoneuiutils/inc
 
 APP_LAYER_SYSTEMINCLUDE         // Application layer domain APIs
 SYSTEMINCLUDE   ../../../inc    // Telephony internal headers

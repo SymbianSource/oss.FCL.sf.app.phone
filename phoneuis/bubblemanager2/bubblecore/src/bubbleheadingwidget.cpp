@@ -18,32 +18,56 @@
 #include <hbstyle.h>
 #include <hbmainwindow.h>
 #include <hbevent.h>
+#include <hbiconitem.h>
+#include <hbtextitem.h>
+#include <hbfontspec.h>
+#include <hbdeviceprofile.h>
+#include <hbstyleloader.h>
+#include <hbiconanimationmanager.h>
+#include <hbiconanimator.h>
+
 #include "bubbleheadingwidget.h"
-#include "bubbleprimitives.h"
-#include "bubblestyleoption.h"
 #include "bubblemanager2.h"
 #include "bubbleutils.h"
 #include "bubbleheader.h"
 
-BubbleHeadingWidget::BubbleHeadingWidget(
-    const QString& stylePluginName, QGraphicsItem* item)
-    : HbWidget(item), mStylePluginName(stylePluginName), mStatusIcon(0),
-      mNumberTypeIcon(0), mCipheringIcon(0), mText1(0), mText2(0), mText3(0)
+BubbleHeadingWidget::BubbleHeadingWidget(QGraphicsItem* item)
+    : HbWidget(item), mStatusIcon(0), mNumberTypeIcon(0),
+      mCipheringIcon(0), mText1(0), mText2(0), mText3(0)
 {
-    setPluginBaseId(style()->registerPlugin(mStylePluginName));
-    Q_ASSERT(pluginBaseId()!=-1);
-
     createPrimitives();
+
+    HbStyleLoader::registerFilePath(":/bubbleheadingwidget.css");
+    HbStyleLoader::registerFilePath(":/bubbleheadingwidget.widgetml");
+
+    // font is update in code, because cli position is changing
+    mCliFont = new HbFontSpec(HbFontSpec::Primary);
+    mTextFont = new HbFontSpec(HbFontSpec::Secondary);
+
+    HbDeviceProfile profile;
+    mCliFont->setTextHeight(4*HbDeviceProfile::current().unitValue());
+    mTextFont->setTextHeight(4*HbDeviceProfile::current().unitValue());
+
+    HbIconAnimationManager *mgr = HbIconAnimationManager::global();
+    mgr->addDefinitionFile(":/bubble_icon_anim.axml");
 }
 
 BubbleHeadingWidget::~BubbleHeadingWidget()
 {
-    style()->unregisterPlugin(mStylePluginName);
+    delete mCliFont;
+    delete mTextFont;
 }
 
 void BubbleHeadingWidget::reset()
 {
     mHeader = 0;
+    mText1->setText(QString());
+    mText2->setText(QString());
+    mText3->setText(QString());
+    mStatusIcon->hide();
+    mStatusIcon->animator().stopAnimation();
+    mNumberTypeIcon->hide();
+    mCipheringIcon->hide();
 }
 
 void BubbleHeadingWidget::readBubbleHeader(const BubbleHeader& header)
@@ -54,127 +78,88 @@ void BubbleHeadingWidget::readBubbleHeader(const BubbleHeader& header)
 
 void BubbleHeadingWidget::createPrimitives()
 {
-    delete mText1;
-    mText1 = style()->createPrimitive(
-            (HbStyle::Primitive)(pluginBaseId()+BP_Text1_text), this);
+    mText1 = new HbTextItem(this);
     style()->setItemName( mText1, "text_line_1" );
 
-    delete mText2;
-    mText2 = style()->createPrimitive(
-            (HbStyle::Primitive)(pluginBaseId()+BP_Text2_text), this);
+    mText2 = new HbTextItem(this);
     style()->setItemName( mText2, "text_line_2" );
 
-    delete mText3;
-    mText3 = style()->createPrimitive(
-            (HbStyle::Primitive)(pluginBaseId()+BP_Text3_text), this);
+    mText3 = new HbTextItem(this);
     style()->setItemName( mText3, "text_line_3" );
 
-    delete mNumberTypeIcon;
-    mNumberTypeIcon = style()->createPrimitive(
-            (HbStyle::Primitive)(pluginBaseId()+BP_NumberType_icon), this);
+    //mStatusIcon = new BubbleAnimIconItem(BUBBLE_ICON_ANIM_INTERVAL, this);
+    mStatusIcon = new HbIconItem(this);
+    style()->setItemName( mStatusIcon, "status_icon" );
+
+    mNumberTypeIcon = new HbIconItem(this);
     style()->setItemName( mNumberTypeIcon, "number_type_icon" );
 
-    delete mCipheringIcon;
-    mCipheringIcon = style()->createPrimitive(
-            (HbStyle::Primitive)(pluginBaseId()+BP_Ciphering_icon), this);
+    mCipheringIcon = new HbIconItem(this);
     style()->setItemName( mCipheringIcon, "ciphering_icon" );
-
-    delete mStatusIcon;
-    mStatusIcon = style()->createPrimitive(
-            (HbStyle::Primitive)(pluginBaseId()+BP_CallStatus_icon), this);
-    style()->setItemName( mStatusIcon, "status_icon" );
 }
 
 void BubbleHeadingWidget::updatePrimitives()
 {
-    BubbleStyleOption option;
-    initStyleOption(option);
+    if (mHeader!=0) {
+        BubbleUtils::setCallStatusIcon(
+            mHeader->callState(), mHeader->callFlags(), *mStatusIcon);
 
-    if (mText1) {
-        style()->updatePrimitive(
-                mText1,
-                (HbStyle::Primitive)(pluginBaseId()+BP_Text1_text),
-                 &option);
-    }
+        BubbleUtils::setNumberTypeIcon(
+            mHeader->callState(), mHeader->callFlags(), *mNumberTypeIcon);
 
-    if (mText2) {
-        style()->updatePrimitive(
-                mText2,
-                (HbStyle::Primitive)(pluginBaseId()+BP_Text2_text),
-                &option);
-    }
+        BubbleUtils::setCipheringIcon(
+            mHeader->callState(), mHeader->callFlags(), *mCipheringIcon);
 
-    if (mText3) {
-        style()->updatePrimitive(
-                mText3,
-                (HbStyle::Primitive)(pluginBaseId()+BP_Text3_text),
-                &option);
-    }
+        // update text lines
+        int cliLine = 0;
 
-    if (mStatusIcon) {
-        style()->updatePrimitive(
-                mStatusIcon,
-                (HbStyle::Primitive)(pluginBaseId()+BP_CallStatus_icon),
-                &option);
-    }
+        if (lines==3) {
+            BubbleUtils::setCallHeaderTexts3Lines(
+                *mHeader, *mText1, *mText2, *mText3, cliLine,
+                mCallTimerTextLine );
+        } else if (lines==2) {
+            BubbleUtils::setCallHeaderTexts2Lines(
+                *mHeader, *mText1, *mText2, cliLine,
+                mCallTimerTextLine );
+        } else {
+            // todo: 1-line
+            BubbleUtils::setCallHeaderTexts2Lines(
+                *mHeader, *mText1, *mText2, cliLine,
+                mCallTimerTextLine );
+        }
 
-    if (mNumberTypeIcon) {
-        style()->updatePrimitive(
-                mNumberTypeIcon,
-                (HbStyle::Primitive)(pluginBaseId()+BP_NumberType_icon),
-                &option);
-    }
-
-    if (mCipheringIcon) {
-        style()->updatePrimitive(
-                mCipheringIcon,
-                (HbStyle::Primitive)(pluginBaseId()+BP_Ciphering_icon),
-                &option);
+        // update font
+        if (cliLine==2) {
+            mText1->setFontSpec(*mTextFont);
+            mText2->setFontSpec(*mCliFont);
+            mText3->setFontSpec(*mTextFont);
+        } else {
+            mText1->setFontSpec(*mCliFont);
+            mText2->setFontSpec(*mTextFont);
+            mText3->setFontSpec(*mTextFont);
+        }
     }
 
     repolish();
 }
 
-void BubbleHeadingWidget::initStyleOption(BubbleStyleOption& option)
-{
-    HbWidget::initStyleOption(&option);
-
-    if (mHeader!=0) {
-        option.mCallState = mHeader->callState();
-        option.mCallFlags = mHeader->callFlags();
-
-        if (lines==3) {
-            BubbleUtils::setCallHeaderTexts3Lines( *mHeader, option );
-        } else if (lines==2) {
-            BubbleUtils::setCallHeaderTexts2Lines( *mHeader, option );
-        } else {
-            // todo: 1-line
-            BubbleUtils::setCallHeaderTexts2Lines( *mHeader, option );
-        }
-
-        mCallTimerTextLine = option.mTimerLineNumber;
-    }
-}
-
 void BubbleHeadingWidget::polishEvent()
 {
-    if (mText1 && mText2 && mText3) {
-        if (lines == 3) {
-            setLayout("three_lines");
-            mText1->setVisible(true);
-            mText2->setVisible(true);
-            mText3->setVisible(true);
-        } else if (lines == 2) {
-            setLayout("two_lines");
-            mText1->setVisible(true);
-            mText2->setVisible(true);
-            mText3->setVisible(false);
-        } else if (lines == 1) {
-            setLayout("one_line");
-            mText1->setVisible(true);
-            mText2->setVisible(true);
-            mText3->setVisible(false);
-        }
+    if (lines == 3) {
+        setLayout("three_lines");
+        mText1->setVisible(true);
+        mText2->setVisible(true);
+        mText3->setVisible(true);
+    } else if (lines == 2) {
+        setLayout("two_lines");
+        mText1->setVisible(true);
+        mText2->setVisible(true);
+        mText3->setVisible(false);
+    } else if (lines == 1) {
+        setLayout("one_line");
+        mText1->setVisible(true);
+        mText2->setVisible(true);
+        mText3->setVisible(false);
     }
 
     HbWidget::polishEvent();
@@ -206,24 +191,12 @@ void BubbleHeadingWidget::setLayout(const QString& layout)
 void BubbleHeadingWidget::updateTimerDisplayNow()
 {
     if ( mHeader && ( mHeader->callState() == BubbleManager::Active ) ) {
-        BubbleStyleOption option;
-
         if ( mCallTimerTextLine == 2 ) {
-            option.mText2 = mHeader->timerCost();
-            option.mText2Clip = Qt::ElideRight;
-            option.mTimerLineNumber = mCallTimerTextLine;
-            style()->updatePrimitive(
-                    mText2,
-                    (HbStyle::Primitive)(pluginBaseId()+BP_Text2_text),
-                    &option);
+            mText2->setText(mHeader->timerCost());
+            mText2->setElideMode(Qt::ElideRight);
         } else if ( mCallTimerTextLine == 3 ) {
-            option.mText3 = mHeader->timerCost();
-            option.mText3Clip = Qt::ElideRight;
-            option.mTimerLineNumber = mCallTimerTextLine;
-            style()->updatePrimitive(
-                    mText3,
-                    (HbStyle::Primitive)(pluginBaseId()+BP_Text3_text),
-                    &option);
+            mText3->setText(mHeader->timerCost());
+            mText3->setElideMode(Qt::ElideRight);
         }
     }
 }
@@ -237,3 +210,8 @@ void BubbleHeadingWidget::changeEvent(QEvent *event)
     HbWidget::changeEvent(event);
 }
 
+void BubbleHeadingWidget::showEvent(QShowEvent *event)
+{
+    Q_UNUSED(event)
+    mStatusIcon->animator().startAnimation();
+}

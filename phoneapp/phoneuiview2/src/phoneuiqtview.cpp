@@ -39,9 +39,14 @@ PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
     m_expandSignalMapper(0),
     m_participantListSignalMapper(0),
     m_volumeCommandId(0),
-    m_keyCapture(0)
+    m_keyCapture(0),
+    m_networkInfo(0)
 {
-    setTitle(hbTrId("txt_phone_title_telephone"));
+    // Set network name
+    m_networkInfo = new QSystemNetworkInfo(this);
+    QString networkName = m_networkInfo->networkName(QSystemNetworkInfo::GsmMode);
+    connect(m_networkInfo, SIGNAL (networkNameChanged(QSystemNetworkInfo::NetworkMode,QString)), this, SLOT(networkNameChanged(QSystemNetworkInfo::NetworkMode, QString)));
+    setTitle(networkName);
 
     // Capturing long press of end key
     m_keyCapture = new XqKeyCapture();
@@ -439,7 +444,15 @@ bool PhoneUIQtView::eventFilter(QObject * /*watched*/, QEvent * event)
         keyEvent->accept();
         
         return false;
-    } else {
+    } else if (event->type() == QEvent::WindowActivate){
+        PHONE_DEBUG("PhoneUIQtView::eventFilter WindowActivate");
+        emit windowActivated();
+        return false;
+    } else if (event->type() == QEvent::WindowDeactivate){
+        PHONE_DEBUG("PhoneUIQtView::eventFilter WindowDeactivate");
+        emit windowDeactivated();
+        return false;
+    }else{
         return false;
     }
 }
@@ -499,4 +512,11 @@ void PhoneUIQtView::setBackButtonVisible(bool visible)
     else {
         setNavigationAction(0);
     }
+}
+
+void PhoneUIQtView::networkNameChanged(QSystemNetworkInfo::NetworkMode mode, const QString &netName)
+{
+    if(mode == QSystemNetworkInfo::GsmMode) {
+        setTitle(netName);
+    }	
 }

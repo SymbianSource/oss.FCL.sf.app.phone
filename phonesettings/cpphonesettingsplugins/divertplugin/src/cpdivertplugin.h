@@ -30,8 +30,7 @@ class CpDivertPlugin : public QObject, public CpPluginInterface
 
 public:
 
-    CpDivertPlugin();
-    
+    CpDivertPlugin();    
     ~CpDivertPlugin();
     
     /**

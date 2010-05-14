@@ -20,6 +20,7 @@
 #include <xqsettingskey.h>
 #include <xqsettingsmanager.h>
 #include "ut_infowidgetnetworkhandler.h"
+#define private public
 #include "infowidgetnetworkhandler.h"
 
 #define EXPECT_EXCEPTION(statements)    \
@@ -151,6 +152,38 @@ void UT_InfoWidgetNetworkHandler::t_mcnIndicatorType()
 
 
 /*!
+  UT_InfoWidgetNetworkHandler::t_isOnline
+ */
+void UT_InfoWidgetNetworkHandler::t_isOnline()
+{
+    m_networkHandler->m_nwInfo.iRegistrationStatus = 
+            static_cast<TNWRegistrationStatus>(ENWRegisteredBusy);
+    QVERIFY(m_networkHandler->isOnline() == true);
+    m_networkHandler->m_nwInfo.iRegistrationStatus = 
+            static_cast<TNWRegistrationStatus>(ENWRegisteredOnHomeNetwork);
+    QVERIFY(m_networkHandler->isOnline() == true);
+    m_networkHandler->m_nwInfo.iRegistrationStatus = 
+            static_cast<TNWRegistrationStatus>(ENWRegisteredRoaming);
+    QVERIFY(m_networkHandler->isOnline() == true);
+    
+    m_networkHandler->m_nwInfo.iRegistrationStatus = 
+            static_cast<TNWRegistrationStatus>(ENWRegistrationUnknown);
+    QVERIFY(m_networkHandler->isOnline() == false);
+}
+
+
+/*!
+  UT_InfoWidgetNetworkHandler::t_networkRegistrationStatus
+ */
+void UT_InfoWidgetNetworkHandler::t_networkRegistrationStatus()
+{
+    m_networkHandler->m_nwInfo.iRegistrationStatus = 
+                static_cast<TNWRegistrationStatus>(ENWRegistrationUnknown);
+    QVERIFY(m_networkHandler->networkRegistrationStatus() == 0);
+}
+
+
+/*!
   UT_InfoWidgetNetworkHandler::t_HandleNetworkMessage
  */
 void UT_InfoWidgetNetworkHandler::t_HandleNetworkMessage()
@@ -211,7 +244,7 @@ void UT_InfoWidgetNetworkHandler::t_HandleNetworkMessage()
     m_networkHandler->HandleNetworkMessage(
         MNWMessageObserver::ENWMessageStopProtocolStackRequestCompleteFail);
     
-    const int KExpectedNumOfSignalEmissions = 2;
+    const int KExpectedNumOfSignalEmissions = 3;
     QCOMPARE(spy.count(), KExpectedNumOfSignalEmissions);
     
     const QList<QVariant> &arguments = spy.at(0);
@@ -335,7 +368,13 @@ void UT_InfoWidgetNetworkHandler::t_serviceProviderName()
  */
 void UT_InfoWidgetNetworkHandler::t_serviceProviderNameDisplayRequired()
 {
-    QCOMPARE(m_networkHandler->serviceProviderNameDisplayRequired(),true);    
+    m_networkHandler->m_nwInfo.iServiceProviderNameDisplayReq = 
+                RMobilePhone::KDisplaySPNRequired; 
+    QVERIFY(m_networkHandler->serviceProviderNameDisplayRequired() == true);
+
+    m_networkHandler->m_nwInfo.iServiceProviderNameDisplayReq = 
+            RMobilePhone::KDisplaySPNNotRequired; 
+    QVERIFY(m_networkHandler->serviceProviderNameDisplayRequired() == false);
 }
 
 /*!

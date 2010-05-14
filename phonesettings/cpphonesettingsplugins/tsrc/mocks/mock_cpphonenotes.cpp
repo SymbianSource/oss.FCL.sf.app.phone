@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -48,15 +48,16 @@ CpPhoneNotes::~CpPhoneNotes(  )
 
     }
 
-
-
 // -----------------------------------------------------------------------------
 // CpPhoneNotes::showGlobalProgressNote
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::showGlobalProgressNote( int & noteId, const QString & text )
+void CpPhoneNotes::showGlobalProgressNote( 
+        int & noteId,
+        const QString & text )
     {
-    SMC_MOCK_METHOD2( void, int &, noteId, const QString &, text )
+    SMC_MOCK_METHOD2( void, int &, noteId, 
+        const QString &, text )
     }
 
 
@@ -79,22 +80,27 @@ void CpPhoneNotes::showGlobalNote(
 // CpPhoneNotes::showGlobalErrorNote
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::showGlobalErrorNote( int & noteId, int errorCode )
+void CpPhoneNotes::showGlobalErrorNote( 
+        int & noteId,
+        int errorCode )
     {
-    SMC_MOCK_METHOD2( void, int &, noteId, int, errorCode )
+    SMC_MOCK_METHOD2( void, int &, noteId, 
+        int, errorCode )
     }
+
 
 // -----------------------------------------------------------------------------
 // CpPhoneNotes::showBasicServiceList
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::showBasicServiceList(
-    const QString &title, 
-    const QList<unsigned char> &basicServiceGroupIds)
-{
+void CpPhoneNotes::showBasicServiceList( 
+        const QString & title,
+        const QList<unsigned char> & basicServiceGroupIds )
+    {
     SMC_MOCK_METHOD2( void, const QString &, title, 
         const QList<unsigned char> &, basicServiceGroupIds )
-}
+    }
+
 
 // -----------------------------------------------------------------------------
 // CpPhoneNotes::showCallDivertDetails
@@ -111,27 +117,23 @@ void CpPhoneNotes::showCallDivertDetails(
 // CpPhoneNotes::showPasswordQueryDialog
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::showPasswordQueryDialog(
-    const QString &title, 
-    const QValidator &validator,
-    int maxPasswordLength,
-    QString &password, 
-    bool &ok)
-{
-    SMC_MOCK_METHOD5( void, 
-        const QString &, title, 
-        const QValidator &, validator,
-        int, maxPasswordLength,
-        QString &, password,
-        bool &, ok)
-}
+void CpPhoneNotes::showPasswordQueryDialog( 
+        const QString & title,
+        const QValidator & validator,
+        int maxPasswordLength )
+    {
+    SMC_MOCK_METHOD3( void, const QString &, title, 
+        const QValidator &, validator, 
+        int, maxPasswordLength )
+    }
 
 
 // -----------------------------------------------------------------------------
 // CpPhoneNotes::cancelNote
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::cancelNote( int noteId )
+void CpPhoneNotes::cancelNote( 
+        int noteId )
     {
     SMC_MOCK_METHOD1( void, int, noteId )
     }
@@ -141,10 +143,21 @@ void CpPhoneNotes::cancelNote( int noteId )
 // CpPhoneNotes::noteShowing
 // -----------------------------------------------------------------------------
 //
-bool CpPhoneNotes::noteShowing()
-{
+bool CpPhoneNotes::noteShowing(  )
+    {
     SMC_MOCK_METHOD0( bool )
-}
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpPhoneNotes::finishedPasswordQueryDialog
+// -----------------------------------------------------------------------------
+//
+void CpPhoneNotes::finishedPasswordQueryDialog( 
+        HbAction * action )
+    {
+    //SMC_MOCK_METHOD1( void, HbAction *, action )
+    }
 
 
 // -----------------------------------------------------------------------------
@@ -172,7 +185,10 @@ void CpPhoneNotes::handleProgressNoteCanceled()
 // -----------------------------------------------------------------------------
 //
 
+
 void CpPhoneNotes::passwordTextChanged()
 {
     SMC_MOCK_METHOD0( void )
 }
+
+
