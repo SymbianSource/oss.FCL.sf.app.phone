@@ -513,6 +513,10 @@ void CEasyDialingListBox::HandleLongTapEventL( const TPoint& /*aPenEventLocation
     ReportListBoxEventL( static_cast<MEikListBoxObserver::TListBoxEvent>
             ( KEasyDialingContactLongTapped ) );
     iPointerLongPressHandled = ETrue;
+    
+    TPointerEvent simulatedButtonUpEvent( TPointerEvent::EButton1Up, 0,
+                                          TPoint(), TPoint() );
+    TRAP_IGNORE( CEikFormattedCellListBox::HandlePointerEventL( simulatedButtonUpEvent ) );
     }
 
 

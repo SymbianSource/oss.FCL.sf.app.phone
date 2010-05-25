@@ -124,11 +124,10 @@ void CPhCntCreateNewContactParams::ConstructL()
     
     AiwContactAssign::TAiwSingleContactAssignDataV1 data = 
         AiwContactAssign::TAiwSingleContactAssignDataV1();
-        
-    // EHideEditorExit has to be set because otherwise AIW provider offers
-    // exit menu item which will also exit the phone application.
-    data.SetFlags( AiwContactAssign::ECreateNewContact | 
-                   AiwContactAssign::EHideEditorExit ); 
+    
+	// By default an existing contact is opened, we'll override this behaviour
+	// by setting the ECreateNewContact flag
+    data.SetFlags( AiwContactAssign::ECreateNewContact );
 
     iGenericParamList->AppendL(
         TAiwGenericParam(
@@ -191,8 +190,6 @@ void CPhCntUpdateExistingContact::ConstructL()
     AiwContactAssign::TAiwSingleContactAssignDataV1 data = 
         AiwContactAssign::TAiwSingleContactAssignDataV1();
         
-    data.SetFlags( AiwContactAssign::EHideEditorExit );
-    
     iGenericParamList->AppendL(
         TAiwGenericParam(
             EGenericParamPhoneNumber,

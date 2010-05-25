@@ -70,7 +70,7 @@ class CEasyDialingContactDataManager;
 class CEDContactorService;
 class CEikMenuPane;
 class CAsyncCallBack;
-
+class CEikLabel;
 
 // CLASS DECLARATION
 
@@ -122,6 +122,11 @@ public: // from CCoeControl
     * From CCoeControl
     */
     void MakeVisible( TBool aVisible );
+ 
+    /**
+    * From CCoeControl
+    */
+    void HandleResourceChange( TInt aType );
 
 protected:
 
@@ -436,7 +441,11 @@ private:
      */  
     TBool CanListBoxEffectBeUsed() const;
 
-
+    /**
+     * Sets correct info label text color from theme.
+     */  
+    void SetInfoLabelColourL();
+    
 private:
 
     /** Textual version of current search string. */
@@ -517,12 +526,29 @@ private:
     /** Action to be launched next asynchronously. */
     TEasyDialingAction iActionToBeLaunched;
     
+    /** Contact link related to the asynchronous action. */
+    HBufC8* iContactToBeLaunched;
+    
+    /** Contact name related to the asynchronous action. */
+    HBufC* iContactToBeLaunchedName;
+    
     /** Key event to be simulated asynchronously. */
     TKeyEvent iKeyEventToSimulate;
     
     /** Is virtual keyboard currently open or not.*/
     TBool iVirtualKeyboardOpen;
+
+    /** First line of info text shown when number entry is empty. Owned. */
+    HBufC* iInfoLabelTextLine1;
     
+    /** Second line of info text shown when number entry is empty. Owned. */
+    HBufC* iInfoLabelTextLine2;
+    
+    /** Label for showing first line of info text when number entry is empty. Owned. */
+    CEikLabel* iInfoLabelLine1;
+    
+    /** Label for showing second line of info text when number entry is empty. Owned. */
+    CEikLabel* iInfoLabelLine2;
 };
 
 

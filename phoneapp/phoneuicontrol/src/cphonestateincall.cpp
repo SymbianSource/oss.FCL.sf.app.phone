@@ -300,8 +300,6 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
     // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
   
-    //Make sure that toolbar is not shown
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewHideToolbar );
     BeginUiUpdateLC();
     SetDefaultFlagsL();
     if ( IsNumberEntryUsedL() )
@@ -363,6 +361,9 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
 
     // Go to idle state
     iStateMachine->ChangeState( EPhoneStateIdle );
+
+    //Make sure that toolbar is not shown
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewHideToolbar );
     }
 
 // -----------------------------------------------------------

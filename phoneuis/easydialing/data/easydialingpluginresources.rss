@@ -209,5 +209,15 @@ RESOURCE MENU_PANE r_easydialing_options_on_off_cascade_menu
        };
    }
 
+//----------------------------------------------------------------------------
+// r_qtn_easydial_enter_number
+//
+// Info text shown in dialer when when number entry is empty.
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_easydial_enter_number
+    {
+    buf = qtn_easydial_enter_number;
+    }
 
 // End of File

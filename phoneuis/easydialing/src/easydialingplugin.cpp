@@ -34,6 +34,8 @@
 #include <e32cmn.h>
 #include <bidivisual.h>
 
+#include <aknlayoutscalable_avkon.cdl.h>
+
 // Predictive search header files
 #include <CPsSettings.h>
 #include <CPsQuery.h>
@@ -62,6 +64,8 @@
 // AIW header files
 #include <AiwContactAssignDataTypes.h>
 #include <AiwContactSelectionDataTypes.h>
+
+#include <StringLoader.h>
 
 // CCA contactor service.
 #include "edcontactorservice.h"
@@ -267,6 +271,11 @@ CEasyDialingPlugin::~CEasyDialingPlugin()
         GfxTransEffect::Deregister( iContactListBox );
         }
     
+    delete iInfoLabelLine1;
+    delete iInfoLabelLine2;
+    delete iInfoLabelTextLine1;
+    delete iInfoLabelTextLine2;
+
     delete iContactListBox;
 
     if (iContactLauncher)
@@ -285,6 +294,9 @@ CEasyDialingPlugin::~CEasyDialingPlugin()
         iAsyncCallBack->Cancel();
         }
     delete iAsyncCallBack;
+    
+    delete iContactToBeLaunched;
+    delete iContactToBeLaunchedName;
     
     OstTrace0( TRACE_NORMAL, CEASYDIALINGPLUGIN_UNLOAD_PLUGIN, "Plugin unloaded" );
     LOGSTRING("EasyDialingPlugin: Plugin unloaded");
@@ -324,6 +336,40 @@ void CEasyDialingPlugin::InitializeL( CCoeControl& aParent )
     
     SetFocus( EFalse );
     iContactListBox->ActivateL();
+    
+    _LIT( KEDNewLine, "\n" );
+    HBufC* infoLabelText = StringLoader::LoadLC( R_QTN_EASYDIAL_ENTER_NUMBER, iCoeEnv );
+    TInt newLine = infoLabelText->Find( KEDNewLine );
+    if ( newLine == KErrNotFound )
+        {
+        iInfoLabelTextLine1 = infoLabelText;
+        CleanupStack::Pop( infoLabelText );
+        iInfoLabelTextLine2 = HBufC::NewL(0);
+        }
+    else
+        {
+        iInfoLabelTextLine1 = infoLabelText->Left( newLine ).AllocL();
+        iInfoLabelTextLine2 = infoLabelText->Mid( newLine + 1 ).AllocL();
+        CleanupStack::PopAndDestroy( infoLabelText );
+        }
+            
+    iInfoLabelLine1 = new( ELeave ) CEikLabel;
+    iInfoLabelLine1->SetContainerWindowL( *this );
+    iInfoLabelLine1->SetParent( this );
+    iInfoLabelLine1->SetMopParent( this ); 
+    iInfoLabelLine1->SetLabelAlignment( ELayoutAlignCenter );
+    iInfoLabelLine1->SetTextL( *iInfoLabelTextLine1 );
+    iInfoLabelLine1->ActivateL();
+
+    iInfoLabelLine2 = new( ELeave ) CEikLabel;
+    iInfoLabelLine2->SetContainerWindowL( *this );
+    iInfoLabelLine2->SetParent( this );
+    iInfoLabelLine2->SetMopParent( this ); 
+    iInfoLabelLine2->SetLabelAlignment( ELayoutAlignCenter );
+    iInfoLabelLine2->SetTextL( *iInfoLabelTextLine2 );
+    iInfoLabelLine2->ActivateL();
+
+    SetInfoLabelColourL();
     
     GfxTransEffect::Register( iContactListBox, 
                               KGfxContactListBoxUid, EFalse );
@@ -567,7 +613,7 @@ TKeyResponse CEasyDialingPlugin::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEve
 //
 TInt CEasyDialingPlugin::CountComponentControls() const
     {
-    return iNumberOfNames > 0 ? 1 : 0;
+    return iNumberOfNames > 0 ? 3 : 2;
     }
 
 
@@ -578,7 +624,17 @@ TInt CEasyDialingPlugin::CountComponentControls() const
 //
 CCoeControl* CEasyDialingPlugin::ComponentControl( TInt aIndex ) const
     {
-    return aIndex == 0 ? iContactListBox : NULL;
+    switch ( aIndex )
+        {
+        case 0:
+            return iInfoLabelLine1;
+        case 1:
+            return iInfoLabelLine2;
+        case 2:
+            return iContactListBox;
+        default:
+            return NULL;
+        }
     }
 
 
@@ -600,6 +656,15 @@ void CEasyDialingPlugin::MakeVisible( TBool aVisible )
         }
     }
 
+// -----------------------------------------------------------------------------
+// HandleResourceChange
+//
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::HandleResourceChange( TInt /*aType*/ )
+    {
+    TRAP_IGNORE( SetInfoLabelColourL() );
+    }
 
 // -----------------------------------------------------------------------------
 // SizeChanged
@@ -623,6 +688,26 @@ void CEasyDialingPlugin::SizeChanged()
         itemToMakeVisible = iNumberOfNames - 1;
         } 
     iContactListBox->ScrollToMakeItemVisible( itemToMakeVisible );
+
+    // get info label locations and fonts from layout
+    TRect baseRect = Rect();
+    TAknTextComponentLayout labelLayoutLine1 = 
+        AknLayoutScalable_Avkon::main_pane_empty_t1( 0 );
+    TAknTextComponentLayout labelLayoutLine2 = 
+        AknLayoutScalable_Avkon::main_pane_empty_t2( 0 );
+    AknLayoutUtils::LayoutLabel( iInfoLabelLine1, baseRect, labelLayoutLine1 );
+    AknLayoutUtils::LayoutLabel( iInfoLabelLine2, baseRect, labelLayoutLine2 );
+    
+    // the layouts used place the text too low, so center the labels vertically
+    TInt labelHeight = iInfoLabelLine2->Rect().iBr.iY - iInfoLabelLine1->Rect().iTl.iY;
+    TInt centeredTop = ( baseRect.Height() - labelHeight ) / 2;
+    TInt offset = centeredTop - iInfoLabelLine1->Rect().iTl.iY;
+    iInfoLabelLine1->SetPosition( TPoint( iInfoLabelLine1->Rect().iTl.iX,
+                                          iInfoLabelLine1->Rect().iTl.iY + offset ) );
+    iInfoLabelLine2->SetPosition( TPoint( iInfoLabelLine2->Rect().iTl.iX,
+                                          iInfoLabelLine2->Rect().iTl.iY + offset ) );
+    
+    TRAP_IGNORE( SetInfoLabelColourL() );
     }
 
 
@@ -638,6 +723,7 @@ void CEasyDialingPlugin::FocusChanged( TDrawNow aDrawNow )
         {
         // To be on the safe side, cancel async callback and reset input block.
         CancelActionLaunchAndInputBlock();
+        iContactListBox->View()->ItemDrawer()->ClearFlags( CListItemDrawer::ESingleClickDisabledHighlight );
         }
     CCoeControl::FocusChanged( aDrawNow );
     InformObservers( MDialingExtensionObserver::EFocusChanged );
@@ -677,10 +763,18 @@ void CEasyDialingPlugin::SetInputL( const TDesC& aSearchString )
         // However if user empties number entry, then it's feasible to show
         // effect.
         HideContactListBoxWithEffect();
+        iInfoLabelLine1->SetTextL( *iInfoLabelTextLine1 );
+        iInfoLabelLine2->SetTextL( *iInfoLabelTextLine2 );
+        iInfoLabelLine1->DrawDeferred();
+        iInfoLabelLine2->DrawDeferred();
         Reset();
         }
     else // proper search string
         {
+        iInfoLabelLine1->SetTextL( KNullDesC );
+        iInfoLabelLine2->SetTextL( KNullDesC );
+        iInfoLabelLine1->DrawDeferred();
+        iInfoLabelLine2->DrawDeferred();
         iSearchString.Copy( aSearchString.Left( iSearchString.MaxLength() ) );
         LaunchSearchL();
         }
@@ -1127,6 +1221,8 @@ void CEasyDialingPlugin::HandlePsResultsUpdateL( RPointerArray<CPsClientData>& a
         iContactListBox->ScrollToMakeItemVisible( iNumberOfNames-1 );
 
         ShowContactListBoxWithEffect();
+        iContactListBox->View()->ItemDrawer()->ClearFlags( CListItemDrawer::ESingleClickDisabledHighlight );
+        static_cast<CEasyDialingListBoxView*>( iContactListBox->View() )->SetCurrentItemIndexToNone();
         }
     else
         {  
@@ -1193,9 +1289,9 @@ void CEasyDialingPlugin::CCASimpleNotifyL( TNotifyType aType, TInt aReason )
 void CEasyDialingPlugin::LaunchCurrentContactL()
     {
     __ASSERT_DEBUG( iNumberOfNames > 0, EasyDialingPanic( EEasyDialingPanicNoResults ) );
-    __ASSERT_DEBUG( iContactListBox->CurrentItemIndex() >= 0, EasyDialingPanic( EEasyDialingPanicNoContactSelected ) );
+    __ASSERT_DEBUG( iContactToBeLaunched, EasyDialingPanic( EEasyDialingPanicNoContactSelected ) );
 
-    if (( iContactLauncherActive ) || ( iNumberOfNames == 0 ) || ( !iContactListBox ) || ( iContactListBox->CurrentItemIndex() < 0 ))
+    if (( iContactLauncherActive ) || ( iNumberOfNames == 0 ) || ( !iContactListBox ) || ( !iContactToBeLaunched ))
         {
         OstTrace0( TRACE_ERROR, CEASYDIALINGPLUGIN_LAUNCHCURRENTCONTACTL_ERROR, "LaunchCurrentContactL: Parameter error" );
         LOGSTRING("EasyDialingPlugin: LaunchCurrentContactL - Parameter error");
@@ -1213,22 +1309,22 @@ void CEasyDialingPlugin::LaunchCurrentContactL()
     
     launchParameters->SetContactDataFlag(MCCAParameter::EContactLink);
 
-    // Get the contact link of the current contact item.
-    HBufC8* contact8 = iContactListBox->CurrentContactLinkLC();
-    
-    // Expand it into 16-bit descriptor because cca launcher api expects this. 
-    HBufC16* contact16 = HBufC16::NewLC( contact8->Length() );
-    contact16->Des().Copy( *contact8 );
+    // Expand contact link into 16-bit descriptor because cca launcher api expects this. 
+    HBufC16* contact16 = HBufC16::NewLC( iContactToBeLaunched->Length() );
+    contact16->Des().Copy( *iContactToBeLaunched );
 
     launchParameters->SetContactDataL( *contact16 );
 
     CleanupStack::PopAndDestroy( contact16 );
-    CleanupStack::PopAndDestroy( contact8 );
 
-    TPtrC selectedName = iListBoxModel->MdcaPoint( iContactListBox->CurrentItemIndex() );
-    OstTraceExt1( TRACE_NORMAL, CEASYDIALINGPLUGIN_LAUNCHCURRENTCONTACTL_LAUNCH_CCA, "Launch CL for contact: '%S'", selectedName );
-    LOGSTRING1("EasyDialingPlugin: Launch CL for contact: '%S'", &selectedName );
+    OstTraceExt1( TRACE_NORMAL, CEASYDIALINGPLUGIN_LAUNCHCURRENTCONTACTL_LAUNCH_CCA, "Launch CL for contact: '%S'", *iContactToBeLaunchedName );
+    LOGSTRING1("EasyDialingPlugin: Launch CL for contact: '%S'", iContactToBeLaunchedName );
 
+    delete iContactToBeLaunched;
+    iContactToBeLaunched = NULL;
+    delete iContactToBeLaunchedName;
+    iContactToBeLaunchedName = NULL;    
+    
     iContactLauncher->LaunchAppL( *launchParameters, this );
 
     // Ownership of parameter transferred to CCA launcher => pop but do not destroy.
@@ -1621,6 +1717,31 @@ void CEasyDialingPlugin::AsyncSimulateKeyEvent( const TKeyEvent& aKeyEvent )
 void CEasyDialingPlugin::AsyncActionLaunchL( TEasyDialingAction aAction )
     {
     iActionToBeLaunched = aAction;
+
+    delete iContactToBeLaunched;
+    iContactToBeLaunched = NULL;
+    delete iContactToBeLaunchedName;
+    iContactToBeLaunchedName = NULL;
+       
+    if ( aAction == ECallCurrentContact
+            || aAction == EVideoCallCurrentContact
+            || aAction == ESendMessageCurrentContact
+            || aAction == ELaunchCurrentContact )
+        {
+        // Need to save current contact link and name. Listbox current item
+        // index might not be correct when callback is handled.
+        iContactToBeLaunched = iContactListBox->CurrentContactLinkLC();
+        CleanupStack::Pop( iContactToBeLaunched );
+        
+        TPtrC contactString( iListBoxModel->MdcaPoint( iContactListBox->CurrentItemIndex() ) );
+        TPtrC fullNameSeparators;
+        TInt error = TextUtils::ColumnText( fullNameSeparators, 1, &contactString );
+        __ASSERT_DEBUG( error == KErrNone, EasyDialingPanic( EEasyDialingPanicInvalidListBoxModelString ) );
+        
+        // Remove highlight separators. It is possible that some contactor API has problem with them.
+        iContactToBeLaunchedName = AllocWithoutHighlightSeparatorsLC( fullNameSeparators );
+        CleanupStack::Pop( iContactToBeLaunchedName );
+        }
     
     CancelActionLaunchAndInputBlock();
     
@@ -1715,18 +1836,6 @@ void CEasyDialingPlugin::DoLaunchActionL( )
         return;
         }
  
-    // Get current contact link.
-    HBufC8* contact8 = iContactListBox->CurrentContactLinkLC();
-    
-    TPtrC contactString( iListBoxModel->MdcaPoint( iContactListBox->CurrentItemIndex() ) );
-    
-    TPtrC fullNameSeparators;
-    TInt error = TextUtils::ColumnText( fullNameSeparators , 1, &contactString );
-    __ASSERT_DEBUG( error == KErrNone, EasyDialingPanic( EEasyDialingPanicInvalidListBoxModelString ) );
-    
-    // Remove highlight separators. It is possible that some contactor API has problem with them.
-    HBufC* fullName = AllocWithoutHighlightSeparatorsLC( fullNameSeparators );
-    
     VPbkFieldTypeSelectorFactory::TVPbkContactActionTypeSelector selector( 
             VPbkFieldTypeSelectorFactory::EEmptySelector );
     
@@ -1769,20 +1878,24 @@ void CEasyDialingPlugin::DoLaunchActionL( )
             break;
             
         default:
-            CleanupStack::PopAndDestroy( fullName );           
-            CleanupStack::PopAndDestroy( contact8 );
+            delete iContactToBeLaunched;
+            iContactToBeLaunched = NULL;
+            delete iContactToBeLaunchedName;
+            iContactToBeLaunchedName = NULL;
             __ASSERT_DEBUG( EFalse, EasyDialingPanic( EEasyDialingActionNotSupported ) );
             return;
         }
 
-    CEDContactorService::TCSParameter param( selector, *contact8, 
+    CEDContactorService::TCSParameter param( selector, *iContactToBeLaunched, 
                                              CEDContactorService::TCSParameter::EEnableDefaults, 
-                                             *fullName );
+                                             *iContactToBeLaunchedName );
 
     iContactorService->ExecuteServiceL( param );
 
-    CleanupStack::PopAndDestroy( fullName );
-    CleanupStack::PopAndDestroy( contact8 );
+    delete iContactToBeLaunched;
+    iContactToBeLaunched = NULL;
+    delete iContactToBeLaunchedName;
+    iContactToBeLaunchedName = NULL;
     }
 
 
@@ -1832,6 +1945,8 @@ void CEasyDialingPlugin::HandleListBoxEventL( CEikListBox* /*aListBox*/, TListBo
         case EEventFlickStopped:
         case EEventPanningStopped:
         case KEasyDialingScrollingStopped:
+            iContactListBox->View()->ItemDrawer()->ClearFlags( CListItemDrawer::ESingleClickDisabledHighlight );
+            static_cast<CEasyDialingListBoxView*>( iContactListBox->View() )->SetCurrentItemIndexToNone();
             iContactDataManager->Pause( EFalse );
             
             // Touching the listbox always removes the visual focus from any list item.
@@ -1995,6 +2110,25 @@ TBool CEasyDialingPlugin::CanListBoxEffectBeUsed() const
     
     return canBeUsed;
     }
+
+// -----------------------------------------------------------------------------
+// CEasyDialingPlugin::SetInfoLabelColourL
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::SetInfoLabelColourL()
+    {
+    MAknsSkinInstance* skin = AknsUtils::SkinInstance();
+    TRgb skinColor;
+    TInt error = AknsUtils::GetCachedColor( skin, skinColor,
+            KAknsIIDQsnTextColors, EAknsCIQsnTextColorsCG6 );
+            
+    if ( error == KErrNone )
+        {
+        iInfoLabelLine1->OverrideColorL( EColorLabelText, skinColor );
+        iInfoLabelLine2->OverrideColorL( EColorLabelText, skinColor );
+        }    
+    }
+
 
 /*
  * ==============================================================================

@@ -80,45 +80,74 @@ CBubbleTouchPane::~CBubbleTouchPane()
 void CBubbleTouchPane::SizeChanged( )
     {
     if ( !iButtons.Count() )
+        {
         return;
-    
+        }
+
     // button index
     //  1 2  OR  1 2 3 4
     //  3 4
-    TInt i = 0;
-    
+    TInt buttonInd = 0;
+
     TInt rows = 0;
     TInt columns = 0;
     BubbleLayout6::button_grp_row_column_count(0, rows, columns);
-    for ( TInt row = 0; row < rows; row++ )
+    if ( Layout_Meta_Data::IsLandscapeOrientation() &&
+        !Layout_Meta_Data::IsMirrored() )
         {
+        // Set places of the touch buttons so that they correspond places in portrait.
+        // However, don't change order if mirrored display is used. 
         for ( TInt col = 0; col < columns; col++ )
             {
-            TAknLayoutRect buttonPane;        
-            buttonPane.LayoutRect( 
-                Rect(), 
-                BubbleLayout6::cell_call6_button_pane(0, col, row) );
-            
-            if ( i < iButtons.Count() && iButtons[i] )
+            for ( TInt row = rows - 1; row >= 0; row-- )
                 {
-                // Button control layout according to background
-                AknLayoutUtils::LayoutControl( 
-                    iButtons[i], 
-                    buttonPane.Rect(), 
-                    BubbleLayout6::button_call6_background_graphics(0)); 
-                
-                TAknLayoutText text;
-                text.LayoutText( buttonPane.Rect(), 
-                        BubbleLayout6::button_call6_function_text(0));
-
-                TAknLayoutRect icon;
-                icon.LayoutRect( buttonPane.Rect(), 
-                        BubbleLayout6::button_call6_function_graphics(0));   
-                
-                iButtons[i]->SetIconSize( icon.Rect().Size() );
-                iButtons[i++]->SetLayout( text, icon.Rect() );
+                SetButtonLayout( buttonInd, col, row );
+                buttonInd++;
                 }
-            }            
+            }
+        }
+    else
+        {
+        for ( TInt row = 0; row < rows; row++ )
+            {
+            for ( TInt col = 0; col < columns; col++ )
+                {
+                SetButtonLayout( buttonInd, col, row );
+                buttonInd++;
+                }
+            }
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// SetButtonLayout
+// ---------------------------------------------------------------------------
+//
+void CBubbleTouchPane::SetButtonLayout( TInt aButtonIndex, TInt aColumn, TInt aRow )
+    {
+    TAknLayoutRect buttonPane;        
+    buttonPane.LayoutRect( 
+        Rect(), 
+        BubbleLayout6::cell_call6_button_pane(0, aColumn, aRow) );
+
+    if ( aButtonIndex < iButtons.Count() && iButtons[aButtonIndex] )
+        {
+        // Button control layout according to background
+        AknLayoutUtils::LayoutControl( 
+            iButtons[aButtonIndex], 
+            buttonPane.Rect(), 
+            BubbleLayout6::button_call6_background_graphics(0)); 
+
+        TAknLayoutText text;
+        text.LayoutText( buttonPane.Rect(), 
+                BubbleLayout6::button_call6_function_text(0));
+
+        TAknLayoutRect icon;
+        icon.LayoutRect( buttonPane.Rect(), 
+                BubbleLayout6::button_call6_function_graphics(0));   
+
+        iButtons[aButtonIndex]->SetIconSize( icon.Rect().Size() );
+        iButtons[aButtonIndex]->SetLayout( text, icon.Rect() );
         }
     }
 

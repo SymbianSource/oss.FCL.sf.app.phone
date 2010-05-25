@@ -265,6 +265,14 @@ void CPhoneRingingToneServer::PlayTtsTone( const RMessage2& aMessage )
     TProfileRingingType ringingType = (TProfileRingingType)aMessage.Int2();
 
     TInt ttsLen = aMessage.GetDesLength( 0 );
+    
+    if( ttsLen <= 0 )
+        {        
+        PHONEUIVIEW_PRINTF("CPhoneRingingToneServer::PlayTtsTone: TTS length error: %d!", ttsLen);       
+        PHONEUIVIEW_PRINT("CPhoneRingingToneServer::PlayTtsTone >");         
+        return;          
+        }
+    
     HBufC* textToSay = HBufC::New( ttsLen );
     if ( !textToSay )
         {

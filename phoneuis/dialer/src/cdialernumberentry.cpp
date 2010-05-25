@@ -98,7 +98,7 @@ void CDialerNumberEntry::ConstructL()
     iFrameContext = CAknsFrameBackgroundControlContext::NewL(
             KAknsIIDNone, TRect(0,0,4,4), TRect(1,1,3,3), EFalse );
             
-    iFrameContext->SetFrame( KAknsIIDQsnFrCall2Rect );
+    iFrameContext->SetFrame( KAknsIIDQsnFrInput );
     
     iFrameContext->SetParentContext( 
         AknsDrawUtils::ControlContextOfParent(this) );
@@ -434,7 +434,7 @@ void CDialerNumberEntry::Draw( const TRect& /*aRect*/ ) const
                              (CWindowGc&) gc,  
                              iOuterRect,
                              iInnerRect,
-                             KAknsIIDQsnFrCall2Rect,
+                             KAknsIIDQsnFrInput,
                              KAknsIIDDefault ))
         {
         DIALER_PRINT("numberentry::Draw.Frame.failed"); 
@@ -496,7 +496,7 @@ void CDialerNumberEntry::SetLayout()
     AknsDrawUtils::PrepareFrame( skin,
                                  iOuterRect,
                                  iInnerRect,
-                                 KAknsIIDQsnFrCall2Rect,
+                                 KAknsIIDQsnFrInput,
                                  KAknsIIDDefault ); 
     // Label layout
 

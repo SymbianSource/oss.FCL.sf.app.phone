@@ -237,17 +237,7 @@ void CBubbleOutlookBottomRight::DoCall2LayoutL()
                 outerRect,
                 innerRect,
                 iBubble );
-                
-            if ( iHeader->CallObjectImage()  &&
-                 !iHeader->CallObjectText().Length() )
-                {
-                // Add transparency
-                BubbleUtils::AddTransparencyToBubbleImageL( 
-                    KAknsIIDQsnFrCall2RectCoMask, // gradient tp mask
-                    outerRect,
-                    innerRect,
-                    iBubble );                    
-                }                
+                          
             break;
             }
         case CBubbleManager::EDisconnected:
@@ -270,22 +260,18 @@ void CBubbleOutlookBottomRight::DoCall2LayoutL()
             BubbleLayout2::BubbleFrameInnerOuterRects( frameRect, 
                                                        outerRect, 
                                                        innerRect);
-            
-            TAknsItemID coMaskFrameId;
+
             if ( callState == CBubbleManager::EOnHold )
                 {
                 iFrameId = KAknsIIDQsnFrCall2Bubble;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleCoMask;
                 }
             else if ( callState == CBubbleManager::EDisconnected )
                 {
                 iFrameId = KAknsIIDQsnFrCall2BubbleSecondDisconn;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleSecondCoMask;
                 }
             else
                 {
                 iFrameId = KAknsIIDQsnFrCall2BubbleSecond;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleSecondCoMask;
                 }
             
             iOuterRect = outerRect;

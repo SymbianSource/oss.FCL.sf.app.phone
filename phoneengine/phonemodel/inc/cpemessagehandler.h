@@ -761,6 +761,11 @@ NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase
         TInt HandleDialCallL( const TBool aClientCall );      
 
         /**
+        * Reset CCCECallParameters to prevent of use a previous call´s parameters
+        */
+        void ResetClientCallData();
+
+        /**
         * Checks if there are any connected video calls
         * @return   EFalse: no active video call,
         *           ETrue: active video call

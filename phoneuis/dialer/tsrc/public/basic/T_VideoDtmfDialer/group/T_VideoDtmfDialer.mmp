@@ -33,7 +33,9 @@ SOURCE          T_VideoDtmfDialerAppView.cpp
 
 SOURCEPATH        ../group
 
-USERINCLUDE     ../inc 
+USERINCLUDE     ../../../../../../../phoneapp/phoneuiutils/inc/ 
+USERINCLUDE     ../inc
+
 APP_LAYER_SYSTEMINCLUDE
 SYSTEMINCLUDE   ../../../../../inc    // Telephony internal headers
 

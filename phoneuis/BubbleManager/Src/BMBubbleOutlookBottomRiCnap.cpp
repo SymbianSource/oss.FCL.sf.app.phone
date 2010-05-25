@@ -242,18 +242,7 @@ void CBubbleOutlookBottomRightCnap::DoCall2LayoutL()
                 iFrameId,
                 outerRect,
                 innerRect,
-                iBubble );
-                
-            if ( iHeader->CallObjectImage() &&
-                 !iHeader->CallObjectText().Length() )
-                {
-                // Add transparency
-                BubbleUtils::AddTransparencyToBubbleImageL( 
-                    KAknsIIDQsnFrCall2RectCoMask, // gradient tp mask
-                    outerRect,
-                    innerRect,
-                    iBubble );                    
-                }    
+                iBubble );  
                                 
             break;
             }
@@ -277,22 +266,18 @@ void CBubbleOutlookBottomRightCnap::DoCall2LayoutL()
             BubbleLayout2::BubbleFrameInnerOuterRects( frameRect, 
                                                        outerRect, 
                                                        innerRect);
-        
-            TAknsItemID coMaskFrameId;
+
             if ( callState == CBubbleManager::EOnHold )
                 {
                 iFrameId = KAknsIIDQsnFrCall2Bubble;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleCoMask;    
                 }
             else if ( callState == CBubbleManager::EDisconnected )
                 {
                 iFrameId = KAknsIIDQsnFrCall2BubbleSecondDisconn;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleSecondCoMask;            
                 }
             else
                 {
                 iFrameId = KAknsIIDQsnFrCall2BubbleSecond;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleSecondCoMask;                
                 }                
             
             // for possible frame draw

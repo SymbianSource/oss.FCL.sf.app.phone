@@ -218,6 +218,8 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
     if ( aCallId == KEmergencyCallId )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
+        // Make sure that toolbar is not shown any more
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewHideToolbar );
         // Remove emergency connecting note if still there
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNote );
         // Close menu bar, if it is displayed
@@ -338,6 +340,14 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
         // Close menu bar, if it is displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
+        // Dim toolbar items
+        SetToolbarDimming( ETrue );
+
+        // Request that dimmed toolbar is visible.
+        // Do it already here. Otherwice a white/black toolbar area is shortly shown and
+        // a white screen can be a result when touching it.
+        iViewCommandHandle->HandleCommandL( EPhoneViewShowToolbar );
+
         // Disable global notes when the phone is dialling
         TPhoneCmdParamBoolean globalNotifierParam;
         globalNotifierParam.SetBoolean( ETrue );
@@ -380,8 +390,6 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNaviPaneAudioVolume );
 
         SetTouchPaneButtons( EPhoneEmergencyCallButtons );
-
-        SetToolbarDimming( ETrue );
 
         ShowNoteL( EPhoneEmergencyConnectWaitNote );
 

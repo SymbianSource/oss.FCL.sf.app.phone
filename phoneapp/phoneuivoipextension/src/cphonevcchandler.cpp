@@ -312,7 +312,7 @@ void CPhoneVccHandler::HandoverInProgressNoteL( TInt aCommand )
     
       if ( tone == 1 )
            {
-           globalNoteParam.SetTone( EAvkonSIDConfirmationTone );
+           globalNoteParam.SetTone( EAvkonSIDDefaultSound );
            }
        else
            {

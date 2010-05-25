@@ -1868,6 +1868,10 @@ TInt CPEMessageHandler::HandleDialCallL(
         {
         HandleClientCallData();
         }
+    else
+        {
+        ResetClientCallData();
+        }
         
     //Get number of calls
     numberOfCalls = iCallHandling.GetNumberOfCalls();
@@ -1920,6 +1924,23 @@ TInt CPEMessageHandler::HandleDialCallL(
     TEFLOGSTRING2( KTAINT, "PE CPEMessageHandler::HandleDialCallL: errorCode = %d", errorCode );
         
     return errorCode;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEMessageHandler::ResetClientCallData
+// Reset CCCECallParameters to prevent of use a previous call´s parameters
+// -----------------------------------------------------------------------------
+//
+void CPEMessageHandler::ResetClientCallData()
+    {
+    TEFLOGSTRING( KTAINT, "PE CPEMessageHandler::ResetClientCallData()" );
+
+    CCCECallParameters& params = iDataStore.CallParameters();
+    params.SetLineType( CCCECallParameters::ECCELineTypePrimary );
+    params.SetUUSId( KNullDesC() );
+    params.SetBearer( KNullDesC8() );
+    params.SetSubAddress( KNullDesC() );
+    params.SetOrigin( CCCECallParameters::ECCECallOriginPhone );
     }
 
 // -----------------------------------------------------------------------------

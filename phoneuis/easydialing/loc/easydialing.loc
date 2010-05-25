@@ -35,4 +35,12 @@
 //
 #define qtn_easy_dialing_off "Off"
 
+//d: Info text shown in dialer when when number entry is empty.
+//d: Text is shown in the place of the contact matches listbox.
+//d: Text can span multiple lines. Line breaks must be indicated with \n
+//l: main_list_empty_pane
+//r:9.2
+//
+#define qtn_easydial_enter_number "Enter number or name"
+
 // End of File

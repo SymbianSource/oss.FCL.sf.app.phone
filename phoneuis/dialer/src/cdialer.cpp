@@ -26,6 +26,7 @@
 #include <AknUtils.h>
 #include <AknsUtils.h>
 #include <aknappui.h>
+#include <aknsoundsystem.h>
 #include <aknlayoutscalable_apps.cdl.h>
 #include <layoutmetadata.cdl.h>
 #include <data_caging_path_literals.hrh>    // for KDC_APP_RESOURCE_DIR
@@ -35,6 +36,7 @@
 #include <dialingextensioninterface.h>
 #include <easydialingcommands.hrh>
 #include <dialer.rsg>
+#include <phoneui.rsg>
 #include <featmgr.h>
 
 #include "cdialer.h"
@@ -137,6 +139,9 @@ void CDialer::ConstructL(
     SetRect( aRect );
     
     SetComponentsToInheritVisibility( EFalse );
+    
+    // By default, numeric keysounds are disabled.
+    DisableNumericKeySounds( ETrue );
 
     ActivateL();
     #ifdef RD_SCALABLE_UI_V2
@@ -260,6 +265,10 @@ void CDialer::UpdateNumberEntryConfiguration()
         }
     
     UpdateEdwinState( editorType );
+    
+    // Numeric keysound are disabled in if not in alpha mode. 
+    // In numeric mode numeric keys should play DTMF only.
+    DisableNumericKeySounds( editorType != EAlphanumericEditor );
     }
 
 // ---------------------------------------------------------------------------
@@ -828,6 +837,30 @@ void CDialer::UpdateEdwinState( TEditorType aType )
         {
         DIALER_PRINTF( "CDialer::ConfigureEditorSettings, RESULT: %d", result )
         }
+    }
+
+// ---------------------------------------------------------------------------
+// CDialer::SetNumericKeySounds
+// ---------------------------------------------------------------------------
+//
+void CDialer::DisableNumericKeySounds( TBool aDisable )
+    {
+    CAknAppUi *appUi = static_cast<CAknAppUi*>( ControlEnv()->AppUi() );
+    CAknKeySoundSystem* keySounds = appUi->KeySounds();
+    
+    if ( aDisable && !iNumericKeySoundsDisabled )
+        {
+        // Disable numeric key sounds. This is done only if key sounds were not disabled previously,
+        // to avoid situation that there were multiple key sound contexts in the stack. 
+        TRAP_IGNORE( keySounds->PushContextL( R_PHONEUI_DEFAULT_SKEY_LIST ) );
+        }
+    else if ( !aDisable && iNumericKeySoundsDisabled )
+        {
+        // Remove numeric key sound disabling.
+        keySounds->PopContext();
+        }
+
+    iNumericKeySoundsDisabled = aDisable;
     }
 
 // ---------------------------------------------------------------------------

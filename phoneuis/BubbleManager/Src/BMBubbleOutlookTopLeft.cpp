@@ -210,17 +210,7 @@ void CBubbleOutlookTopLeft::DoCall2LayoutL()
                 outerRect,
                 innerRect,
                 iBubble );
-                
-            if ( iHeader->CallObjectImage() &&
-                 !iHeader->CallObjectText().Length() )
-                {
-                // Add transparency
-                BubbleUtils::AddTransparencyToBubbleImageL( 
-                    KAknsIIDQsnFrCall2RectCoMask, // gradient tp mask
-                    outerRect,
-                    innerRect,
-                    iBubble );                    
-                }                
+              
             break;
             }
         case CBubbleManager::EDisconnected:

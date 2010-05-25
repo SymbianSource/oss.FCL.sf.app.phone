@@ -23,11 +23,17 @@ PRJ_PLATFORMS
 DEFAULT
 
 PRJ_EXPORTS
-../data/silence.rul\
-	/epoc32/RELEASE/winscw/UDEB/Z/private/10282BC4/Rules/silence.rul
+../data/silenceringingtone_activate.rul\
+	/epoc32/RELEASE/winscw/UDEB/Z/private/10282BC4/Rules/silenceringingtone_activate.rul
 
-../data/silence.rul\
-	/epoc32/data/Z/private/10282BC4/Rules/silence.rul
+../data/silenceringingtone_activate.rul\
+	/epoc32/data/Z/private/10282BC4/Rules/silenceringingtone_activate.rul
+
+../data/silenceringingtone_silence.rul\
+	/epoc32/RELEASE/winscw/UDEB/Z/private/10282BC4/Rules/silenceringingtone_silence.rul
+
+../data/silenceringingtone_silence.rul\
+	/epoc32/data/Z/private/10282BC4/Rules/silenceringingtone_silence.rul
 
 ../data/silenceactionplugin_stub.SIS\
     /epoc32/data/z/system/install/silenceactionplugin_stub.SIS

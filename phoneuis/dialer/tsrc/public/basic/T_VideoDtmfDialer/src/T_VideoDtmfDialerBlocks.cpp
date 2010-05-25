@@ -114,9 +114,9 @@ TInt CT_VideoDtmfDialer::CreateDialerL(CStifItemParser& /*aItem*/)
     {
     if( iVideoDtmfDialerControl )
 	    {
-	    iDialer = CDialer::NewL( 
-	    	*iVideoDtmfDialerControl, 
-	    	CEikonEnv::Static()->EikAppUi()->ClientRect() );
+	    iDialer = CDialer::NewL( *iVideoDtmfDialerControl, 
+	    	CEikonEnv::Static()->EikAppUi()->ClientRect(),
+	    	NULL );
 	    iNumberEntry = iDialer->NumberEntry();
 
 	    return KErrNone;

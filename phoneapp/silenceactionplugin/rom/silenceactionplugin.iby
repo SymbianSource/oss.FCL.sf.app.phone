@@ -22,7 +22,8 @@
 #ifdef RD_CONTEXT_FRAMEWORK
 
 ECOM_PLUGIN( silenceactionplugin.dll, silenceactionplugin.rsc )
-data=\epoc32\data\Z\private\10282BC4\Rules\silence.rul    private\10282BC4\Rules\silence.rul
+data=\epoc32\data\Z\private\10282BC4\Rules\silenceringingtone_activate.rul    private\10282BC4\Rules\silenceringingtone_activate.rul
+data=\epoc32\data\Z\private\10282BC4\Rules\silenceringingtone_silence.rul    private\10282BC4\Rules\silenceringingtone_silence.rul
 data=ZSYSTEM\install\silenceactionplugin_stub.SIS     System\Install\silenceactionplugin_stub.SIS
 
 #endif	// RD_CONTEXT_FRAMEWORK

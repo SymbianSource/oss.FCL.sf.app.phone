@@ -240,17 +240,6 @@ void CBubbleOutlookBottomCnap::DoCall2LayoutL()
                 outerRect,
                 innerRect,
                 iBubble );
-                
-            if ( iHeader->CallObjectImage() &&
-                 !iHeader->CallObjectText().Length() )
-                {
-                // Add transparency
-                BubbleUtils::AddTransparencyToBubbleImageL( 
-                    KAknsIIDQsnFrCall2RectCoMask, // gradient tp mask
-                    outerRect,
-                    innerRect,
-                    iBubble );                    
-                }    
                                 
             break;
             }
@@ -275,21 +264,17 @@ void CBubbleOutlookBottomCnap::DoCall2LayoutL()
                                                        outerRect, 
                                                        innerRect);
         
-            TAknsItemID coMaskFrameId;
             if ( callState == CBubbleManager::EOnHold )
                 {
                 iFrameId = KAknsIIDQsnFrCall2Bubble;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleCoMask;    
                 }
             else if ( callState == CBubbleManager::EDisconnected )
                 {
-                iFrameId = KAknsIIDQsnFrCall2BubbleFirstDisconn;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleFirstCoMask;            
+                iFrameId = KAknsIIDQsnFrCall2BubbleFirstDisconn;           
                 }
             else
                 {
-                iFrameId = KAknsIIDQsnFrCall2BubbleFirst;
-                coMaskFrameId = KAknsIIDQsnFrCall2BubbleFirstCoMask;                
+                iFrameId = KAknsIIDQsnFrCall2BubbleFirst;               
                 }                
             
             // for possible frame draw
@@ -368,15 +353,6 @@ void CBubbleOutlookBottomCnap::DoCall2LayoutL()
                 innerRect,
                 iBubble );
             
-            
-            // Add transparency
-            BubbleUtils::AddTransparencyToBubbleImageL( 
-                coMaskFrameId,
-                outerRect,
-                innerRect,
-                iBubble ); 
-            
-                
             break;
             }        
                 

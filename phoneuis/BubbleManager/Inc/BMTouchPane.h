@@ -163,7 +163,15 @@ class CBubbleTouchPane : public CCoeControl,
         * Replaces button with other.
         */
         void ReplaceButtonL( TInt aButtonIndex, TInt aResourceId );
-        
+
+        /**
+        * Set used button layout.
+        * @param aButtonIndex Button index.
+        * @param aColumn Column index.
+        * @param aRow Row index.
+        */
+        void SetButtonLayout( TInt aButtonIndex, TInt aColumn, TInt aRow );
+
     private:
 
         /**

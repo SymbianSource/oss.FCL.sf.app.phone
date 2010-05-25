@@ -142,6 +142,8 @@
 const TInt KTouchDialerOpenEffect  = 3;
 const TInt KTouchDialerCloseEffect = 5;
 
+const TInt KDialerInputMaxChars( 100 );
+
 // ================= MEMBER FUNCTIONS =======================
 
 // ---------------------------------------------------------------------------
@@ -178,6 +180,8 @@ void CPhoneViewController::ConstructL( TRect aRect )
     // Reserve the title pane
     iStatusPane->AddTitlePaneHandlerL( *this );
     iStatusPane->ReserveTitlePane( *this );
+    // Set status pane dimming
+    iStatusPane->StatusPane().SetDimmed( iSecurityMode );
 
     iAppui = (CAknAppUi*)iEikEnv.EikAppUi();
     iCba = iEikEnv.AppUiFactory()->Cba();
@@ -2167,12 +2171,39 @@ EXPORT_C void CPhoneViewController::HandleSecurityModeChanged( TBool aIsEnabled 
 	iMenuController->SetSecurityMode( aIsEnabled );
 	if ( iDialer )
 		{
-		iDialerController->SetRestrictedDialer( aIsEnabled );
+        CDialingExtensionInterface* easyDialing = iDialer->GetEasyDialingInterface();
+        if ( easyDialing )
+            {
+            if ( aIsEnabled )
+                {
+                // Reset the Easy Dialing just in case, this clears the existing matches
+                // when restricted mode is activated
+                easyDialing->Reset();
+                }
+            else
+                {
+                if ( easyDialing->IsEnabled() )
+                    {
+                    // If Easy Dialing is enabled, set the input from the numeric entry
+                    // field for updating the search result when restricted mode is
+                    // deactivated.
+                    TBuf<KDialerInputMaxChars> buf;
+                    iDialer->NumberEntry()->GetTextFromNumberEntry( buf );
+                    easyDialing->SetInputL( buf );
+                    }
+                }
+            }
+        iDialerController->SetRestrictedDialer( aIsEnabled );
 		if ( iSecurityMode != aIsEnabled )
 			{
 			iDialer->RelayoutAndDraw();
 			}
 		}
+    if ( iSecurityMode != aIsEnabled )
+        {
+        // Update status pane dimming
+        iStatusPane->StatusPane().SetDimmed( aIsEnabled );
+        }
 	iSecurityMode = aIsEnabled;
 	}
 
@@ -3623,53 +3654,32 @@ void CPhoneViewController::SwitchLayoutToFlatStatusPaneL( TBool aSwitch )
     __LOGMETHODSTARTEND(EPhoneUIView,
         "CPhoneViewController::SwitchLayoutToFlatStatusPaneL()" );
 
-    TInt currentLayout = iStatusPane->StatusPane().CurrentLayoutResId();
-
     if ( aSwitch )
         {
-        // If current layout is different than flat layout then we
-        // need to do PushDefault for navipane and SwitchLayoutL for
-        // statuspane.
-        if ( currentLayout != R_AVKON_STATUS_PANE_LAYOUT_USUAL_FLAT ||
-             currentLayout != R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL_FLAT )
+        SwapEmptyIndicatorPaneInSecureStateL( ETrue );
+        if ( !Layout_Meta_Data::IsLandscapeOrientation() )
             {
-            SwapEmptyIndicatorPaneInSecureStateL( ETrue );
-
-            // Push default so that Operator name can be shown in title pane.
-            iStatusPane->NaviPane().PushDefaultL();
-
-            if ( !Layout_Meta_Data::IsLandscapeOrientation() )
-                {
-                iStatusPane->StatusPane().SwitchLayoutL
-                ( R_AVKON_STATUS_PANE_LAYOUT_USUAL_FLAT );
-                }
-            else
-                {
-                iStatusPane->StatusPane().SwitchLayoutL
-                        ( R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL_FLAT );
-                }
+            iStatusPane->StatusPane().SwitchLayoutL
+                    ( R_AVKON_STATUS_PANE_LAYOUT_USUAL_FLAT );
+            }
+        else
+            {
+            iStatusPane->StatusPane().SwitchLayoutL
+                    ( R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL_FLAT );
             }
         }
     else
         {
-        // If current layout is flat layout then do Pop for navipane,
-        // layout is something else there is no need to do Pop and
-        // SwitchLayoutL for statuspane.
-        if ( currentLayout == R_AVKON_STATUS_PANE_LAYOUT_USUAL_FLAT ||
-             currentLayout == R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL_FLAT )
+        SwapEmptyIndicatorPaneInSecureStateL( EFalse );
+        if ( !Layout_Meta_Data::IsLandscapeOrientation() )
             {
-            SwapEmptyIndicatorPaneInSecureStateL( EFalse );
-            
-            if ( !Layout_Meta_Data::IsLandscapeOrientation() )
-                {
-                iStatusPane->StatusPane().SwitchLayoutL
-                        ( R_AVKON_STATUS_PANE_LAYOUT_IDLE );
-                }
-            else
-                {
-                iStatusPane->StatusPane().SwitchLayoutL
-                        ( R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL_FLAT );
-                }
+            iStatusPane->StatusPane().SwitchLayoutL
+                    ( R_AVKON_STATUS_PANE_LAYOUT_IDLE );
+            }
+        else
+            {
+            iStatusPane->StatusPane().SwitchLayoutL
+                    ( R_AVKON_WIDESCREEN_PANE_LAYOUT_USUAL_FLAT );
             }
         }
     // ApplyCurrentSettingsL is called whenever statuspane
@@ -3786,9 +3796,6 @@ void CPhoneViewController::SetControltoDialerL()
         {
         iDialerActive = ETrue;
 
-        // Hide in-call view toolbar
-        iToolbarController->HideToolbar();
-
         // Ensure that toolbar and menu commands are up-to-date 
         TBuf<1> temp; // we are only interested if the text is empty or not
         iDialer->GetTextFromNumberEntry( temp );
@@ -3798,23 +3805,27 @@ void CPhoneViewController::SetControltoDialerL()
         iDialerView->DrawableWindow()->SetOrdinalPosition(
             iPhoneView->DrawableWindow()->OrdinalPosition() );
 
+        // Hide in-call view toolbar
+        iToolbarController->HideToolbar();
+        
         SwitchLayoutToFlatStatusPaneL( ETrue );
-
-        iPhoneView->DrawableWindow()->SetOrdinalPosition( -1 );
-        iPhoneView->MakeVisible( EFalse );
-
-        // Update control stack
-        iAppui->AddToStackL( iDialerView );
-        iAppui->RemoveFromStack( iPhoneView );
 
         // Don't make dialer view visible before status pane is updated.
         // This prevents unnecessary resizings.
+        // But do it right away after it. Otherwice a black toolbar area is shortly shown.
         iDialerView->MakeVisible( ETrue );
         // Number entry is emptied when dialer is hidden but drawing doesn't
         // succeed at that point as dialer is hidden first. So must draw
         // dialer as soon as it becomes visible to prevent the flashing of
         // number entry (DrawDeferred() isn't fast enough here).
         iDialerView->DrawNow();
+      
+        iPhoneView->DrawableWindow()->SetOrdinalPosition( -1 );
+        iPhoneView->MakeVisible( EFalse );
+
+        // Update control stack
+        iAppui->AddToStackL( iDialerView );
+        iAppui->RemoveFromStack( iPhoneView );
         }
     }
 

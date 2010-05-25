@@ -35,7 +35,6 @@
 #include <AknsConstants.h>   // KAknsMessageSkinChange
 #include <bautils.h>
 #include <StringLoader.h>
-#include <aknsoundsystem.h>
 #include <aknnotewrappers.h> // for Notification for startup...
 #include <eikbtgpc.h>
 #include <eiksoftkeyimage.h> // EikSoftkeyImage
@@ -129,10 +128,6 @@ void CPhoneAppUI::ConstructL()
         
     iEnvChangeNotifier->Start();
 
-    // Push key sounds to sound system.
-    CAknKeySoundSystem* keySounds = KeySounds();
-    keySounds->PushContextL( R_PHONEUI_DEFAULT_SKEY_LIST );
-   
     iPhoneViewController = CPhoneViewController::NewL( ClientRect() );
     iPhoneUIController = CPhoneUIController::NewL( *iPhoneViewController );
 

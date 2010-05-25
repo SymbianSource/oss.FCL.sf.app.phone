@@ -74,7 +74,6 @@ CPhCntContactManager::~CPhCntContactManager()
         {
         TRAP_IGNORE( iContactManager->ContactStoresL().CloseAll( *this ) );
         }
-    delete iContactStore;
     delete iContactManager;
     delete iContactStoreUris;
     }

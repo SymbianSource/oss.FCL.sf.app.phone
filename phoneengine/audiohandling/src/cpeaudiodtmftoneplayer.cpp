@@ -33,7 +33,7 @@
 
 // CONSTANTS
 const TInt KDtmfSilent = 0;
-const TInt KDtmfPauseAfterTone = 100000;
+const TInt KDtmfPauseAfterTone = 45000;
 const TInt KDtmfToneZero = 0;
 const TInt KBufSize = 10;
 _LIT( KPhoneTone_Asterisk, "*+w" );

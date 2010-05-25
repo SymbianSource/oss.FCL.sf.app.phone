@@ -397,6 +397,11 @@ NONSHARABLE_CLASS(CDialer) :
         void UpdateEdwinState( TEditorType aType );
 
         /**
+         * Disables numeric key sounds, or removed disabling.
+         */
+        void DisableNumericKeySounds( TBool aSounds );
+
+        /**
          * Loads easydialing plugin. If loading fails (for instance when
          * easydialing feature flag is not enabled in the device),
          * iEasyDialer will be NULL after this function returns.
@@ -486,6 +491,12 @@ NONSHARABLE_CLASS(CDialer) :
          * for the alphabetic characters.
          */
         TEditorType iEditorType;
+        
+        /*
+         * ETrue if numeric keysounds are disabled. They are disabled when number
+         * key should produce DTMF tone.
+         */
+        TBool iNumericKeySoundsDisabled;
     };
 
 #endif      // CDIALER_H
