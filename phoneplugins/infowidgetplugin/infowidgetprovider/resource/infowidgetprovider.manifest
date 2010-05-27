@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<widgetprovider>
-    <widget library="infowidgetprovider"
-            uri="infowidgetprovider"
-            title="Operator info"
-            description=""/>
-</widgetprovider>

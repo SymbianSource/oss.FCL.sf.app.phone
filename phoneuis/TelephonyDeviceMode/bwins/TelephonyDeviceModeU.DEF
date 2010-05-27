@@ -1,3 +1,0 @@
-EXPORTS
-	?CTelDMHandlerCreateL@@YAPAVCTelDMHandler@@XZ @ 1 NONAME ; class CTelDMHandler * CTelDMHandlerCreateL(void)
-
