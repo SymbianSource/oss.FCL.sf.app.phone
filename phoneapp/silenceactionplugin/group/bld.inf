@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -24,16 +24,10 @@ DEFAULT
 
 PRJ_EXPORTS
 ../data/silenceringingtone_activate.rul\
-	/epoc32/RELEASE/winscw/UDEB/Z/private/10282BC4/Rules/silenceringingtone_activate.rul
-
-../data/silenceringingtone_activate.rul\
-	/epoc32/data/Z/private/10282BC4/Rules/silenceringingtone_activate.rul
+	z:/private/10282BC4/Rules/silenceringingtone_activate.rul
 
 ../data/silenceringingtone_silence.rul\
-	/epoc32/RELEASE/winscw/UDEB/Z/private/10282BC4/Rules/silenceringingtone_silence.rul
-
-../data/silenceringingtone_silence.rul\
-	/epoc32/data/Z/private/10282BC4/Rules/silenceringingtone_silence.rul
+	z:/private/10282BC4/Rules/silenceringingtone_silence.rul
 
 ../data/silenceactionplugin_stub.SIS\
     /epoc32/data/z/system/install/silenceactionplugin_stub.SIS
