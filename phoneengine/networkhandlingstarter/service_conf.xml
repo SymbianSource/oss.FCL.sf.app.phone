@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<service name="com.nokia.services"  filepath="must-not-be-empty" >
+  <description>Networkhandling services</description>
+  <interface name="networkhandling" version="1.0" capabilities="">
+    <description>Networkhandling starter interface</description>
+  </interface>
+</service>

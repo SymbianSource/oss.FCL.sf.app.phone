@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widgetprovider>
+    <widget library="hsdialerwidgetplugin"
+            uri="hsdialerwidgetplugin"
+            title="Dialer"
+            iconuri="qtg_graf_hs_dialer.svg"
+            description="The dialer is used to make phone calls."/>
+</widgetprovider>

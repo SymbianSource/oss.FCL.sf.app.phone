@@ -1,0 +1,17 @@
+EXPORTS
+	?metaObject@ParserRecognizer@@UBEPBUQMetaObject@@XZ @ 1 NONAME ; struct QMetaObject const * ParserRecognizer::metaObject(void) const
+	?tr@ParserRecognizer@@SA?AVQString@@PBD0H@Z @ 2 NONAME ; class QString ParserRecognizer::tr(char const *, char const *, int)
+	??0ParserRecognizer@@QAE@PAVQObject@@@Z @ 3 NONAME ; ParserRecognizer::ParserRecognizer(class QObject *)
+	?tr@ParserRecognizer@@SA?AVQString@@PBD0@Z @ 4 NONAME ; class QString ParserRecognizer::tr(char const *, char const *)
+	?qt_metacast@ParserRecognizer@@UAEPAXPBD@Z @ 5 NONAME ; void * ParserRecognizer::qt_metacast(char const *)
+	?getStaticMetaObject@ParserRecognizer@@SAABUQMetaObject@@XZ @ 6 NONAME ; struct QMetaObject const & ParserRecognizer::getStaticMetaObject(void)
+	??_EParserRecognizer@@UAE@I@Z @ 7 NONAME ; ParserRecognizer::~ParserRecognizer(unsigned int)
+	?sendMessage@ParserRecognizer@@QAEXHH@Z @ 8 NONAME ; void ParserRecognizer::sendMessage(int, int)
+	?trUtf8@ParserRecognizer@@SA?AVQString@@PBD0@Z @ 9 NONAME ; class QString ParserRecognizer::trUtf8(char const *, char const *)
+	?staticMetaObject@ParserRecognizer@@2UQMetaObject@@B @ 10 NONAME ; struct QMetaObject const ParserRecognizer::staticMetaObject
+	??1ParserRecognizer@@UAE@XZ @ 11 NONAME ; ParserRecognizer::~ParserRecognizer(void)
+	?qt_metacall@ParserRecognizer@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 12 NONAME ; int ParserRecognizer::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?trUtf8@ParserRecognizer@@SA?AVQString@@PBD0H@Z @ 13 NONAME ; class QString ParserRecognizer::trUtf8(char const *, char const *, int)
+	?requestCompleted@ParserRecognizer@@AAEXABVQVariant@@@Z @ 14 NONAME ; void ParserRecognizer::requestCompleted(class QVariant const &)
+	?requestError@ParserRecognizer@@AAEXH@Z @ 15 NONAME ; void ParserRecognizer::requestError(int)
+

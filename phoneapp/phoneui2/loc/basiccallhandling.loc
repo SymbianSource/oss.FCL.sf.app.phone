@@ -1,0 +1,164 @@
+/*
+* Copyright (c) 2002-2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*     This is a localisation file for Phone
+*     A .loc file is the one and only place where the logical strings
+*     to be localised are defined.
+*
+*/
+
+
+// LOCALISATION STRINGS
+
+// d: It is used as softkey text. If the
+// d: softkey is pressed, then a call is dropped.
+// l: control_pane_t1/opt7
+// w:
+//
+#define text_softkey_drop "End call"
+
+// d: It is text for option in menu in call coming in
+// d: state. It answers the incoming call.
+// l: list_single_pane_t1_cp2
+// w:
+//
+#define qtn_call_answer_option "Answer"
+
+// d: It is text for option in menu in call coming in
+// d: state. It rejects the incoming call.
+// l: list_single_pane_t1_cp2
+// w:
+//
+#define qtn_call_reject_option "Reject"
+
+// d: It is used in error note when
+// d: call termination cause is 'number not in use'.
+// l: popup_note_window
+// w:
+//
+#define text_unassigned_number "Number not in use"
+
+// d: It is used in error note when
+// d: call termination cause is 'number busy'.
+// l: popup_note_window
+// w:
+//
+#define text_user_busy "Number busy"
+
+// d: It is used in error note when
+// d: call termination cause is 'no answer'.
+// l: popup_note_window
+// w:
+//
+#define text_no_answer "No answer"
+
+// d: It is used in error note when
+// d: call termination cause is 'network busy'.
+// l: popup_note_window
+// w:
+//
+#define text_network_busy "Network busy"
+
+// d: It is used in error note when
+// d: call termination cause is 'network failure'.
+// l: popup_note_window
+// w:
+//
+#define text_network_failure "Error in connection"
+
+// d: It is used in error note when
+// d: call termination cause is 'invalid number'.
+// l: popup_note_window
+// w:
+//
+#define text_invalid_number "Invalid phone number"
+
+// d: It is used in error note when
+// d: call termination cause is 'number barred'.
+// l: popup_note_window
+// w:
+//
+#define text_cterm_nbr_barred "Number barred"
+
+// d: It is used in error note when
+// d: call termination cause is 'number not in closed group'.
+// l: popup_note_window
+// w:
+//
+#define text_cterm_nbr_not_in_cug "Number not in closed group"
+
+// d: It is used in error note when call is terminated
+// d: because outgoing calls were barred in CUG.
+// l: popup_note_window
+// w:
+//
+#define text_cterm_d_barred_in_cug "Call barred in closed group"
+
+// d: It is used in error note when call is terminated
+// d: because no CUG was selected.
+// l: popup_note_window
+// w:
+//
+#define text_cterm_d_no_cug_selected "Select closed group"
+
+// d: It is used in error note when call is terminated
+// d: because CUG index was unknown
+// l: popup_note_window
+// w:
+//
+#define text_cterm_d_unknown_cug_index "Closed group unknown"
+
+// d: It is used in error note when call is terminated
+// d: because CUG index was not compatible with basic service.
+// l: popup_note_window
+// w:
+//
+#define text_cterm_d_cug_bs_incompab "Service not possible in this group"
+
+// d: It is used in error note when call is terminated
+// d: because of unspecified CUG call failure
+// l: popup_note_window
+// w:
+//
+#define text_cterm_d_cug_call_failur "Check closed user group"
+
+// d: It is used in error note when call is terminated
+// d: because CLIR was not subscribed.
+// l: popup_note_window
+// w:
+//
+#define text_cterm_d_clir_not_subscr "Check own number sending"
+
+// d: It's a menu item. When it's selected, the call will be
+// d: answered and audio will be routed to handportable mode.
+// l: list_single_pane_t1_cp2
+// w:
+// r: 3.0
+//
+#define qtn_call_answer_hp_vt_option "Answer to handportable"
+
+// d: It is displayed as a note when user makes long voice key press
+// d: while there is already active call.
+// l: popup_note_window
+//
+#define text_call_in_progress "Call in progress"
+
+// d: Answers call and routes audios to
+// d: loudspeaker( or headset if connected )
+// l: control_pane_t3/opt7
+// w:
+//
+#define qtn_msk_call_answer_loudspeaker "Answer"
+
+// End of File

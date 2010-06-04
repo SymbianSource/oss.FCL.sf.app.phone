@@ -1,0 +1,245 @@
+/*
+* Copyright (c) 2002-2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains declarations for commands of PhoneAppS60.
+*     The file can be included in C++ or resource file.
+*     
+*
+*/
+
+
+#ifndef PHONEAPPCOMMANDS_HRH
+#define PHONEAPPCOMMANDS_HRH
+
+
+#include    <bldvariant.hrh>
+
+//  CONSTANTS
+
+#define KPhoneCmdBase 6000
+enum 
+    {
+    // commands for all
+    EPhoneCmdDoNothing = KPhoneCmdBase,
+    EPhoneCmdCancel,
+    EPhoneCmdOptions,
+    EPhoneCmdOkOptions,
+    EPhoneCmdBack,
+    EPhoneCmdEnd,
+    EPhoneCmdEndAll,
+    EPhoneCmdIhfToggle,
+    EPhoneCmdNameDialer,
+    EPhoneLongMSKAnswer,
+    EPhoneLongSendActivateHandsfree,
+    EPhoneActivateForegroundReq, // doesn't leave
+    EPhoneCancelForegroundReq, // doesn't leave
+    EPhoneCmdToForeground, // doesn't leave
+    EPhoneCmdOk,
+    EPhoneCmdYes,
+    EPhoneCmdNo,
+    EPhoneCmdExit,
+    EPhoneCmdRedialQuit,
+    EPhoneCmdYesAlsLineChange,
+    EPhoneCmdNoAlsLineChange,
+    EPhoneCmdYesBtDisconnectQuery,
+    EPhoneCmdNoBtDisconnectQuery,
+
+    // commands for idle state.
+    EPhoneSoftkeyLeft,
+    EPhoneSoftkeyRight,
+    EPhoneIdleActivateNumberAcq,
+    EPhoneTogglEPhoneLines,
+    // for ShortcutManager
+    EPhoneSelectionKey,    // OK key
+    EPhoneScrollkeyLeft,
+    EPhoneScrollkeyUp,
+    EPhoneScrollkeyRight,
+    EPhoneScrollkeyDown,
+
+    // commands for number acquisition.
+    EPhoneNumberAcqCmdPbkOperation,
+    EPhoneNumberAcqCmdSave,
+    EPhoneNumberAcqCmdAddToName,
+    EPhoneNumberAcqCmdCall,
+    EPhoneNumberAcqCmdVideoCall,
+    EPhoneNumberAcqCmdSpeedDial,
+    EPhoneNumberAcqCmdSendCommand,
+    EPhoneNumberAcqCmdSendMessage,
+    EPhoneNumberAcqCmdHashCheck,  // NOT IN MENU.
+    EPhoneNumberAcqSecurityDialer, // NOT IN MENU.
+
+    // CDMA specific
+    EPhoneNumberAcqCmdAddToContacts,
+    EPhoneNumberAcqCmdInsertPause,
+    EPhoneNumberAcqCmdInsertTimedPause,
+    EPhoneNumberAcqCmdInsertHardPause,
+    // commands for call coming in
+    EPhoneCallComingCmdReject,
+    EPhoneCallComingCmdAnswer,
+    EPhoneCallComingCmdAnswerHandPortable,
+    EPhoneCallComingCmdAnswerHandPortableVideo,
+    EPhoneCallComingCmdSilent,
+    EPhoneCallComingCmdOptions,
+    EPhoneCallComingCmdAnswerWithHandsfree,
+    EPhoneCallComingLongMSKAnswer,
+    EPhoneCallComingCmdProcessSend, // NOT IN MENU
+    //        Soft Reject
+    EPhoneCallComingCmdSoftReject,
+    // CDMA specific
+    EPhoneCallComingCmdIgnore,
+    EPhoneCallComingCmdHelp,
+
+    // commands for call setup
+    EPhoneCallSetupCmdEnd,
+    // commands for incall
+    EPhoneInCallCmdSwap,
+    EPhoneInCallCmdAnswer,
+    EPhoneInCallCmdAnswerHandPortable,
+    EPhoneInCallCmdReject,
+    EPhoneInCallCmdHold,
+    EPhoneInCallCmdUnhold,
+    EPhoneInCallCmdEndThisActiveCall,
+    EPhoneInCallCmdEndThisHeldCall,
+    EPhoneInCallCmdEndThisOutgoingCall,
+    EPhoneInCallCmdEndAllCalls,
+    EPhoneInCallCmdHandset,
+    EPhoneInCallCmdBtHandsfree,
+    EPhoneInCallCmdActivateIhf,
+    EPhoneInCallCmdDeactivateIhf,
+    EPhoneInCallCmdMute,
+    EPhoneInCallCmdUnmute,
+    EPhoneInCallCmdNewCall,
+    EPhoneInCallCmdCreateConference,
+    EPhoneInCallCmdConferenceMenu,
+    EPhoneInCallCmdPrivateSelection,
+    EPhoneInCallCmdJoin,
+    EPhoneInCallCmdDropSelection,
+    EPhoneInCallCmdTransfer,
+    EPhoneInCallCmdReplace,
+    EPhoneInCallCmdDtmfListQuery,
+    EPhoneInCallCmdDtmfManualQuery,
+    EPhoneInCallCmdCancelSendingDtmfString,
+    EPhoneInCallCmdContinueSendingDtmfString,
+    EPhoneInCallCmdVoiceMode,
+    EPhoneInCallCmdSendToCallerMenu,    
+    EPhoneInCallCmdSendNew,
+    EPhoneInCallCmdSendFile,
+    EPhoneInCallCmdProcessSend, // NOT IN MENU!
+    EPhoneInCallCmdDrop,
+    EPhoneInCallCmdPrivate,
+    EPhoneInCallCmdCbaJoin, // NOT IN MENU!
+    EPhoneInCallCmdDialer,
+    EPhoneInCallCmdContacts,
+
+    // Enable video
+    EPhoneInCallCmdEnableVideo,
+    // Disable video
+    EPhoneInCallCmdDisableVideo,
+    // Use primary camera
+    EPhoneInCallCmdPrimaryCamera,
+    // Use secondary camera
+    EPhoneInCallCmdSecondaryCamera,
+    EPhoneInCallCmdActivatEPhonebook, // NOT IN MENU!
+
+    EPhoneInCallCmdConferenceHold, // JMK
+    EPhoneInCallCmdConferenceUnhold, // JMK
+    EPhoneInCallCmdNewCallFind,
+    EPhoneInCallCmdNewCallCall,
+    EPhoneInCallCmdGoToIdle,
+    EPhoneInCallCmdParticipants,
+    
+    // CDMA specific
+    EPhoneInCallCmdMulticall3WayCall,
+    EPhoneInCallCmdMulticallIgnore,
+    EPhoneInCallCmdFlash,
+    EPhoneInCallCmdHelp,
+    EPhoneInCallCmdEmergencyActivateIhf,
+    EPhoneInCallCmdEmergencyDeactivateIhf,
+    EPhoneInCallCmdEmergencyHandset,
+    EPhoneInCallPhoneInfo,
+    // CDMA Emergency specific
+    EPhoneEmergencyCmdYes,
+    EPhoneEmergencyCmdNo,
+    EPhoneEmergencyCmdExit,    //6121
+    // Settings GUI (commands useful to many GUI's)
+    EPhoneCmdSettingsUiOptions,
+    EPhoneCmdSettingsUiBack,
+    EPhoneCmdSettingsUiOpen,
+    EPhoneCmdSettingsUiExit,
+    // Settings GUI - Data Parameters GUI (commands specific to DataParameters)
+    EPhoneCmdDataParametersRestoreSettings,
+    EPhoneCmdRelease,   
+    // DTMF specific
+    EPhoneCmdDtmfSearch,
+    EPhoneCmdDtmfOk,
+    EPhoneCmdDtmfSpeedDialOk,
+    EPhoneInCallCmdDtmfListViewSearch,    
+    // other commands
+    EPhoneCmdWaitNoteOk,
+    EPhoneCmdVideoCallMemoryLowNoteDismissed,
+    EPhoneCmdSecurityInd, // NOT to leave
+    EPhoneInCallCmdSwitchToVideo,
+    EPhoneInCallCmdSwitchToVoice,
+    EPhoneCmdYesSwitchToVideo,
+    EPhoneCmdNoSwitchToVideo,
+    EPhoneCmdYesSwitchToVoice,
+    EPhoneCmdNoSwitchToVoice,    
+    EPhoneMediatorSetPhoneNumber,
+    EPhoneCmdCoverUiShowMultimediaRingingTone,
+    EPhoneInCallCmdLockKeypad,
+    EPhoneInCallCmdLockScreen,
+    EPhoneCmdYesVideoFailedNoMemorySwitchToVoice,
+    EPhoneCmdNoVideoFailedNoMemorySwitchToVoice,
+    EPhoneInCallCmdSetVolumeLevel,
+    
+    //Dialer commands
+    EPhoneDialerCmdLog,
+    EPhoneDialerCmdContacts,
+    EPhoneDialerCmdClear,  
+    EPhoneDialerCallHandling,
+    EPhoneDialerCmdTouchInput,
+    EPhoneDialerCmdSpeedDial,
+    EPhoneDialerCmdEditText,
+    EPhoneDialerCallSettings,   
+    EPhoneDtmfDialerCancel, 
+    EPhoneDtmfDialerExit,
+    EPhoneIsDTMFDialerVisible,
+    EPhoneDialerCmdHelp,
+    EPhoneDialerCmdHelpDtmf,
+    EPhoneIsCustomizedDialerVisible,
+
+    EPhoneCmdVideoCallOutOfMemory,
+
+// <-- QT PHONE START -->
+    EPhoneCmdUpdateUiControls,
+// <-- QT PHONE END -->
+   
+    EPhoneCmdLast
+    };
+    
+    
+// Command range for custom menu commands.
+// Custom commands can be used for menu extensions.
+#define KPhoneCustomCmdBase 8000
+#define KPhoneCustomCmdLast 8500
+
+enum
+    {
+    EPhoneCmdCustomFirst = KPhoneCustomCmdBase,
+    EPhoneCmdCustomLast = KPhoneCustomCmdLast
+    };
+
+#endif
+
+// End of File

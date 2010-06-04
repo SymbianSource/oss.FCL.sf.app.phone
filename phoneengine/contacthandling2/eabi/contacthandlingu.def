@@ -1,0 +1,21 @@
+EXPORTS
+	_ZN23CPEContactHandlingDummy19FindContactInfoSyncEi17TPEFindContactKey @ 1 NONAME
+	_ZN23CPEContactHandlingDummy20GetSpeedDialLocationEiR4TBufILi100EE @ 2 NONAME
+	_ZN23CPEContactHandlingDummy4NewLEv @ 3 NONAME
+	_ZN23CPEContactHandlingProxy17CreateFirstPhaseLEv @ 4 NONAME
+	_ZN23CPEContactHandlingProxy18CreateSecondPhaseLER21MPEPhoneModelInternalR3RFs @ 5 NONAME
+	_ZN23CPEContactHandlingProxy19FindContactInfoSyncEi17TPEFindContactKey @ 6 NONAME
+	_ZN23CPEContactHandlingProxy20GetSpeedDialLocationEiR4TBufILi100EE @ 7 NONAME
+	_ZTI15CPEContactMatch @ 8 NONAME ; #<TI>#
+	_ZTI18CPEContactHandling @ 9 NONAME ; #<TI>#
+	_ZTI23CPEContactHandlingDummy @ 10 NONAME ; #<TI>#
+	_ZTI23CPEContactHandlingProxy @ 11 NONAME ; #<TI>#
+	_ZTV15CPEContactMatch @ 12 NONAME ; #<VT>#
+	_ZTV18CPEContactHandling @ 13 NONAME ; #<VT>#
+	_ZTV23CPEContactHandlingDummy @ 14 NONAME ; #<VT>#
+	_ZTV23CPEContactHandlingProxy @ 15 NONAME ; #<VT>#
+	_ZThn4_N23CPEContactHandlingDummy19FindContactInfoSyncEi17TPEFindContactKey @ 16 NONAME ; #<thunk>#
+	_ZThn4_N23CPEContactHandlingDummy20GetSpeedDialLocationEiR4TBufILi100EE @ 17 NONAME ; #<thunk>#
+	_ZThn4_N23CPEContactHandlingProxy19FindContactInfoSyncEi17TPEFindContactKey @ 18 NONAME ; #<thunk>#
+	_ZThn4_N23CPEContactHandlingProxy20GetSpeedDialLocationEiR4TBufILi100EE @ 19 NONAME ; #<thunk>#
+
