@@ -17,6 +17,7 @@
 
 
 // INCLUDES
+#include <ScreensaverInternalPSKeys.h>
 #include <eikmenub.h> 
 #include <eikenv.h>
 #include <StringLoader.h>
@@ -39,6 +40,7 @@
 #include "tphonecmdparamcallstatedata.h"
 #include "phonestatedefinitionsgsm.h"
 #include "phonelogger.h"
+#include "cphonepubsubproxy.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -78,6 +80,11 @@ EXPORT_C void CPhoneTwoSingles::ConstructL()
     globalNotifierParam.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
+    
+    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                    KPSUidScreenSaver,
+                    KScreenSaverAllowScreenSaver,
+                    EPhoneScreensaverAllowed );
     }
 
 // -----------------------------------------------------------
@@ -388,6 +395,11 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSingles::HandleIncomingL()");
+    
+    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                    KPSUidScreenSaver,
+                    KScreenSaverAllowScreenSaver,
+                    EPhoneScreensaverNotAllowed );
     
     BeginUiUpdateLC();
     

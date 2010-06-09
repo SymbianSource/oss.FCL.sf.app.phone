@@ -102,3 +102,5 @@ LIBRARY         serviceprovidersettings.lib
 LIBRARY         starterclient.lib
 
 LIBRARY         phonemediatorcenter.lib
+
+LIBRARY         peninputclient.lib

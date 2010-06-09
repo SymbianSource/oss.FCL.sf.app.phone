@@ -172,11 +172,11 @@ void CPhoneEmergency::HandlePhoneEngineMessageL(
             CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
             if ( iStateMachine->PhoneEngineInfo()->CallState( KPEEmergencyCallId ) == EPEStateDialing )
                 {
-                TPhoneCmdParamBoolean isProgressNoteVisible;
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewGetIsProgressNoteVisible,
-                      &isProgressNoteVisible );
+                TPhoneCmdParamBoolean isNoteVisible;
+                iViewCommandHandle->ExecuteCommandL( EPhoneViewGetIsNoteVisible,
+                      &isNoteVisible );
 
-                if ( !isProgressNoteVisible.Boolean() )
+                if ( !isNoteVisible.Boolean() )
                     {
                     ShowNoteL( EPhoneEmergencyConnectWaitNote );
                     UpdateSetupCbaL();
@@ -667,15 +667,6 @@ TBool CPhoneEmergency::HandleCommandL( TInt aCommand )
 
     switch( aCommand )
         {
-        case EPhoneInCallCmdDtmfManualQuery:
-            if ( iStateMachine->PhoneEngineInfo()->CallState( KPEEmergencyCallId ) == EPEStateDialing )
-                {
-                // Remove emergency connecting note
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNote );
-                }
-            commandStatus = CPhoneGsmInCall::HandleCommandL( aCommand );
-            break;
-
         case EPhoneDtmfDialerExit:      // fall through
         case EPhoneDtmfDialerCancel:
              {
@@ -683,11 +674,11 @@ TBool CPhoneEmergency::HandleCommandL( TInt aCommand )
                  {
                  CloseDTMFEditorL();
 
-                 TPhoneCmdParamBoolean isProgressNoteVisible;
-                 iViewCommandHandle->ExecuteCommandL( EPhoneViewGetIsProgressNoteVisible,
-                        &isProgressNoteVisible );
+                 TPhoneCmdParamBoolean isNoteVisible;
+                 iViewCommandHandle->ExecuteCommandL( EPhoneViewGetIsNoteVisible,
+                        &isNoteVisible );
 
-                 if ( !isProgressNoteVisible.Boolean() )
+                 if ( !isNoteVisible.Boolean() )
                      {
                      ShowNoteL( EPhoneEmergencyConnectWaitNote );
                      UpdateSetupCbaL();

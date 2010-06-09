@@ -347,6 +347,7 @@ enum TPhoneRssBase
     EPhoneNoteNoService,
     EPhoneNoteCallInfoCauseValue16,
     EPhoneNoteCallInfoCauseValue18,
+    EPhoneNoteCallInfoCauseValue21,
     EPhoneNoteCallInfoCauseValue22,
     EPhoneNoteCallInfoCauseValue34,
     EPhoneNoteCallInfoCauseValue38,

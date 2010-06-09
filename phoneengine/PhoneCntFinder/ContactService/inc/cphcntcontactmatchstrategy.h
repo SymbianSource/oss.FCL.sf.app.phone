@@ -55,12 +55,14 @@ public:
      * @param aContactManager Contact manager.
      * @param aUriArray Array of contact store URI's used.
      * @param aObserver Observer for finding contacts.
+     * @param aMatchFlags A bitset of flags for matching strategy. Has zero or
+     * more CVPbkPhoneNumberMatchStrategy::TVPbkPhoneNumberMatchFlags flags set.
      */
     static CPhCntContactMatchStrategy* NewL(
         CVPbkContactManager& aContactManager,
         CPhCntContactStoreUris& aContactStoreUris,
         MVPbkContactFindObserver& aObserver,
-        CVPbkPhoneNumberMatchStrategy::TVPbkPhoneNumberMatchFlags aMatchFlag );
+        TUint32 aMatchFlags );
 
     /**
      * Destructor.
@@ -135,13 +137,10 @@ protected:
         CVPbkContactManager& aContactManager,
         CPhCntContactStoreUris& aContactStoreUris,
         MVPbkContactFindObserver& aObserver,
-        CVPbkPhoneNumberMatchStrategy::TVPbkPhoneNumberMatchFlags aMatchFlag );
+        TUint32 aMatchFlags );
 
     void ConstructL();
 
-protected: // data
-    CVPbkPhoneNumberMatchStrategy::TVPbkPhoneNumberMatchFlags iMatchFlag;
-	
 private: // data
 
     /**
@@ -199,6 +198,18 @@ private: // data
      * Own.
      */
     CCntRawPhoneNumberExtractor* iNumberExtractor;
+
+protected:  // data
+
+    /**
+     * A bitset of matching strategy flags. Changed from
+     * CVPbkPhoneNumberMatchStrategy::TVPbkPhoneNumberMatchFlags enum to TUint32
+     * in order to support multiple flags, as in
+     * CVPbkPhoneNumberMatchStrategy::TConfig.
+	 * 
+	 * Protected because a unit test class derives from this class.
+     */
+    TUint32 iMatchFlags;
 
     };
 

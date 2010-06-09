@@ -154,8 +154,17 @@ EXPORT_C void CPhoneStateInCall::HandleKeyMessageL(
                     }
                 else
                     {
-                    HandleCommandL( EPhoneCmdOptions );
-                    }
+                    TPhoneCmdParamInteger numberEntryCountParam;
+                    iViewCommandHandle->ExecuteCommandL( 
+                           EPhoneViewGetNumberEntryCount,
+                           &numberEntryCountParam );
+                    
+                    TInt neLength( numberEntryCountParam.Integer() );
+                    if ( neLength > 0 )
+                       {
+                       HandleCommandL( EPhoneNumberAcqCmdSendCommand );
+                       }
+                    }      
                 }
             break;
 #endif            

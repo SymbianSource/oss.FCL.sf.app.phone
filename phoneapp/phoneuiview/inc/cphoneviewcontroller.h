@@ -24,6 +24,7 @@
 #include <e32base.h>
 #include <cntdef.h>
 #include <cphcntspeeddialmonitor.h>
+#include <AknsSrvClient.h>
 
 #include "mphoneviewcommandhandle.h"
 #include "cphonerecoverysystem.h"
@@ -89,8 +90,9 @@ class CPhoneViewController :
     public MPhoneStatusPaneObserver,
     public MPhoneViewBlockingDialogObserver,
     public MNumberEntryObserver,
-	public MPhoneSecurityModeChangeObserver,
-	public MPhoneViewControllerObserver
+    public MPhoneSecurityModeChangeObserver,
+    public MPhoneViewControllerObserver,
+    public MAknsSkinChangeObserver
     {
     public:  // Constructors and destructor
 
@@ -664,6 +666,33 @@ class CPhoneViewController :
          */
         static void EffectCleanup(TAny* aThis );
         
+    private: 
+        /**
+         * Called by the skin server when skin content is changed and the
+         * connected client wants to be informed.
+         *
+         * @see MAknsSkinChangeObserver
+         */
+         void SkinContentChanged();
+
+         /**
+         * Called by the skin server to indicate that the current skin
+         * configuration has changed.
+         *
+         * @see MAknsSkinChangeObserver
+         */
+         void SkinConfigurationChanged(
+             const TAknsSkinStatusConfigurationChangeReason aReason );
+
+         /**
+         * Called by the skin server to indicate that the available
+         * skin packages have changed.
+         *
+         * @see MAknsSkinChangeObserver
+         */
+         void SkinPackageChanged(
+             const TAknsSkinStatusPackageChangeReason aReason );
+        
     private:    // Data
 
         CPhoneView* iPhoneView;
@@ -812,6 +841,9 @@ class CPhoneViewController :
         TBool iNeedToReturnToForegroundAppAfterCall;
         
         CAknIncallBubble* iIncallBubble;
+        
+        // Server wich sends events about background image changes
+        RAknsSrvSession iSkinServerSession;
     };
 
 #endif // CPHONEVIEWCONTROLLER_H

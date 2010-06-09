@@ -383,6 +383,10 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 {
                 SendGlobalInfoNoteL( EPhoneNoteCalledNumberHasBarredIncomingCalls );
                 }
+            else if ( IsVoiceCall( aErrorInfo.iCallId ))
+                {
+                SendGlobalWarningNoteL( EPhoneNoteCallInfoCauseValue21 );
+                }
             break;
             
         case ECCPErrorMovedPermanently:
@@ -578,4 +582,23 @@ TBool CPhoneErrorMessagesHandler::IsVideoCall( const TInt aCallId ) const
         ->CallType( aCallId )== EPECallTypeVideo );
     }
     
+// -----------------------------------------------------------
+// CPhoneErrorMessagesHandler::IsVoiceCall
+// -----------------------------------------------------------
+//
+TBool CPhoneErrorMessagesHandler::IsVoiceCall( const TInt aCallId ) const
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneErrorMessagesHandler::IsVoiceCall() ");
+
+    if( aCallId == KErrNotFound )
+        {
+       // Illegal call id, check call type command
+        return ( iStateMachine->PhoneEngineInfo()->CallTypeCommand()
+            == EPECallTypeCSVoice );  
+        }
+     
+    return ( iStateMachine->PhoneEngineInfo()
+            ->CallType( aCallId )== EPECallTypeCSVoice );
+	}
+
 // End of File

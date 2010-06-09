@@ -27,6 +27,7 @@
 #include <connect/sbdefs.h>
 #include <videotelcontrolmediatorapi.h>
 #include <MediatorDomainUIDs.h>
+#include <ScreensaverInternalPSKeys.h>
 
 #include "cphonesinglecall.h"
 #include "tphonecmdparamstring.h"
@@ -114,6 +115,10 @@ EXPORT_C void CPhoneSingleCall::ConstructL()
     iCallId = callStateData.CallId();
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
 
+    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                    KPSUidScreenSaver,
+                    KScreenSaverAllowScreenSaver,
+                    EPhoneScreensaverAllowed );
     
     // Update phone number availability for menu use
     PhoneNumberAvailableInPhoneEngineL( callStateData.CallId() );
@@ -494,6 +499,11 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::HandleIncomingL()");
     
+    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                    KPSUidScreenSaver,
+                    KScreenSaverAllowScreenSaver,
+                    EPhoneScreensaverNotAllowed );
+    
     BeginUiUpdateLC();
     
     // Hide the number entry if it exists
@@ -607,6 +617,11 @@ void CPhoneSingleCall::HandleDiallingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::HandleDiallingL()");
+    
+    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                    KPSUidScreenSaver,
+                    KScreenSaverAllowScreenSaver,
+                    EPhoneScreensaverNotAllowed );
     
     BeginUiUpdateLC();
     

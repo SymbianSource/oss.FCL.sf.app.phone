@@ -171,3 +171,5 @@ LIBRARY         phonemediatorcenter.lib
 LIBRARY         serviceprovidersettings.lib
 
 LIBRARY         musmanagerclient.lib
+
+LIBRARY         aknskinsrv.lib

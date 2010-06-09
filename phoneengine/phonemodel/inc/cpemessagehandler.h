@@ -593,6 +593,13 @@ NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase
         * Handle disable service
         */     
         void HandleDisableService();
+        
+        /**
+        * Adds SIM rejected MO CS call to logs. 
+        * @param aCallId is the identification number of the call.   
+        * @return KErrNone if succesfull
+        */
+        TInt AddSIMRejectedMoCsCallToLog( const TInt aCallId );
    
     private: // New functions
         

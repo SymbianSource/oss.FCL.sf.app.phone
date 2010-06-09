@@ -123,8 +123,6 @@ void CEasyDialingListBoxItemDrawer::DrawItemText(
         transApi->StopDrawing();
         }
 
-//    TBool removeicon = (!aItemIsSelected && !ItemMarkReverse()) || (aItemIsSelected && ItemMarkReverse());
-
     CEasyDialingListBoxData::TExtendedColors colors;
     colors.iText = iTextColor;
     colors.iBack = iBackColor;

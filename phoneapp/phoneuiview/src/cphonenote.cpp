@@ -88,7 +88,9 @@ TBool CPhoneNote::OkToExitL( TInt aCommand )
     // Let the command observer process the command
     iCommandObserver.ProcessCommandL( aCommand );
 
-    return EFalse; // so that the dialog will not disappear
+    // So that the dialog will not disappear, or must disappear
+    // EPhoneInCallCmdDtmfManualQuery since it can be already deleted.
+    return ( aCommand == EPhoneInCallCmdDtmfManualQuery ); 
     }
     
 // ---------------------------------------------------------

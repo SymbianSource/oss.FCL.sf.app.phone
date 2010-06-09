@@ -980,8 +980,15 @@ void CPEPhoneModel::SendMessage(
 	    TPEErrorInfo errorInfo = iEngineInfo->ErrorInfo();
     	errorInfo.iCallId = aCallId;
     	errorInfo.iErrorType = EPECcp;
-        iEngineMonitor.HandleError( errorInfo );
-	    }
+
+        if ( ECCPErrorCCCallRejected == errorInfo.iErrorCode )
+            {
+            // Call direction is not set if the call was rejected before Dialing-state
+            iEngineInfo->SetCallDirection( RMobileCall::EMobileOriginated, aCallId );
+            iMessageHandler->AddSIMRejectedMoCsCallToLog( aCallId );
+            }
+    	iEngineMonitor.HandleError( errorInfo );
+  	    }
     else if ( message == MEngineMonitor::EPEMessageServiceHandlingError )
         {
         TEFLOGSTRING( 

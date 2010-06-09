@@ -159,9 +159,15 @@ void CDialerNumberEntry::SetFocus( TBool aFocus, TDrawNow aDrawNow )
     {
     DIALER_PRINT("numberentry::SetFocus<");
     
-    CCoeControl::SetFocus( aFocus, aDrawNow );
-    iEditor->SetFocus( aFocus );
+    if ( aFocus != IsFocused() )
+        {
+        CCoeControl::SetFocus( aFocus, aDrawNow );
+        }
     
+    if ( aFocus != iEditor->IsFocused() )
+        {
+        iEditor->SetFocus( aFocus );
+        }
     DIALER_PRINT("numberentry::SetFocus>");
     }
 

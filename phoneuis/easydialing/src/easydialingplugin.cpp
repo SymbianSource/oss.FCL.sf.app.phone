@@ -61,10 +61,6 @@
 // Service provider settings api
 #include <spsettingsvoiputils.h>
 
-// AIW header files
-#include <AiwContactAssignDataTypes.h>
-#include <AiwContactSelectionDataTypes.h>
-
 #include <StringLoader.h>
 
 // CCA contactor service.
@@ -136,7 +132,7 @@ inline TBool HighlightingSupportedForScript( TText aChar );
 
 TBool IsStrictlyBidirectional( const TDesC& aText );
 
-static HBufC* AllocWithoutHighlightSeparatorsLC( TDesC& aDesc );
+static HBufC* AllocWithoutHighlightSeparatorsLC( const TDesC& aDesc );
 
 static TBool IsItuTCharacter( TChar aChar );
 
@@ -195,9 +191,6 @@ void CEasyDialingPlugin::ConstructL()
     iContactStoreUriArray->AppendL( TVPbkContactStoreUriPtr( VPbkContactStoreUris::DefaultCntDbUri() ) );
     iContactManager = CVPbkContactManager::NewL( *iContactStoreUriArray );
     
-    // Set contact store observer to listen to contact store events.
-    iContactManager->ContactStoresL().OpenAllL( *this );
-    
     iContactDataManager = new (ELeave) CEasyDialingContactDataManager(iContactManager);
     iContactDataManager->ConstructL();
     iContactDataManager->SetObserver(this);
@@ -246,11 +239,6 @@ CEasyDialingPlugin::~CEasyDialingPlugin()
     {
     iObservers.Reset();
     
-    if ( iContactManager )
-        {
-        TRAP_IGNORE( iContactManager->ContactStoresL().CloseAll( *this ) );
-        }
-
     delete iCenrepListener;
     delete iContactDataManager;
     delete iPredictiveSearchQuery;
@@ -258,7 +246,7 @@ CEasyDialingPlugin::~CEasyDialingPlugin()
     delete iContactStoreUriArray;
     iContactDataStores.ResetAndDestroy();
 
-    if (iPredictiveContactSearchHandler)
+    if ( iPredictiveContactSearchHandler )
         {
         iPredictiveContactSearchHandler->RemoveObserver(this);
         }
@@ -278,7 +266,7 @@ CEasyDialingPlugin::~CEasyDialingPlugin()
 
     delete iContactListBox;
 
-    if (iContactLauncher)
+    if ( iContactLauncher )
         {
         iContactLauncher->Close();
         }
@@ -719,7 +707,7 @@ void CEasyDialingPlugin::SizeChanged()
 void CEasyDialingPlugin::FocusChanged( TDrawNow aDrawNow )
     {
     iContactListBox->SetFocus( IsFocused() );
-    if( !IsFocused() )
+    if ( !IsFocused() )
         {
         // To be on the safe side, cancel async callback and reset input block.
         CancelActionLaunchAndInputBlock();
@@ -763,18 +751,12 @@ void CEasyDialingPlugin::SetInputL( const TDesC& aSearchString )
         // However if user empties number entry, then it's feasible to show
         // effect.
         HideContactListBoxWithEffect();
-        iInfoLabelLine1->SetTextL( *iInfoLabelTextLine1 );
-        iInfoLabelLine2->SetTextL( *iInfoLabelTextLine2 );
-        iInfoLabelLine1->DrawDeferred();
-        iInfoLabelLine2->DrawDeferred();
+        SetInfoLabelVisibleL( ETrue );
         Reset();
         }
     else // proper search string
         {
-        iInfoLabelLine1->SetTextL( KNullDesC );
-        iInfoLabelLine2->SetTextL( KNullDesC );
-        iInfoLabelLine1->DrawDeferred();
-        iInfoLabelLine2->DrawDeferred();
+        SetInfoLabelVisibleL( EFalse );
         iSearchString.Copy( aSearchString.Left( iSearchString.MaxLength() ) );
         LaunchSearchL();
         }
@@ -793,69 +775,6 @@ TInt CEasyDialingPlugin::MatchingContactCount()
 
 
 // -----------------------------------------------------------------------------
-// CEasyDialingPlugin::StoreReady
-// From MVPbkContactStoreListObserver.
-//
-// -----------------------------------------------------------------------------
-//
-void CEasyDialingPlugin::StoreReady(MVPbkContactStore& /* aContactStore */)
-    {
-    
-    }
-
-
-// -----------------------------------------------------------------------------
-// CEasyDialingPlugin::StoreUnavailable
-// From MVPbkContactStoreListObserver.
-//
-// -----------------------------------------------------------------------------
-//
-void CEasyDialingPlugin::StoreUnavailable(MVPbkContactStore& /* aContactStore */, TInt /* aReason */)
-    {
-    
-    }
-
-
-// -----------------------------------------------------------------------------
-// CEasyDialingPlugin::HandleStoreEventL
-// From MVPbkContactStoreListObserver.
-//
-// -----------------------------------------------------------------------------
-//
-void CEasyDialingPlugin::HandleStoreEventL( MVPbkContactStore& /* aContactStore */, 
-                        TVPbkContactStoreEvent aStoreEvent)
-    {
-    // Store's observers are informed one by one using active object so one shouldn't
-    // perform search syncronously as one must try to ensure that PCS has had a
-    // chance to update its store. However there seems to be no way to be
-    // 100% sure that PCS is up-to-date when search is launched: telephony app
-    // has such a high priority and there are no APIs to query PCS' status.
-    switch ( aStoreEvent.iEventType )
-        {
-        case TVPbkContactStoreEvent::EContactAdded:
-        case TVPbkContactStoreEvent::EContactDeleted:
-        case TVPbkContactStoreEvent::EContactChanged:
-            {
-            DoHandleContactsChangedL();
-            }
-            break;
-       
-        default:
-            break;
-        }
-    }
-
-// -----------------------------------------------------------------------------
-// CEasyDialingPlugin::OpenComplete
-// From MVPbkContactStoreListObserver.
-//
-// -----------------------------------------------------------------------------
-//
-void CEasyDialingPlugin::OpenComplete()
-    {
-    }
-
-// -----------------------------------------------------------------------------
 // EasyDialingSettingsChanged
 // From MEasyDialingCenrepListenerObserver
 // -----------------------------------------------------------------------------
@@ -866,10 +785,15 @@ void CEasyDialingPlugin::EasyDialingSettingsChanged( TInt aValue )
         {
         Reset();
         InformObservers( MDialingExtensionObserver::EEasyDialingDisabled );
+        TRAP_IGNORE( SetInfoLabelVisibleL( EFalse ) );
         }
     else if ( aValue == 1 )
         {
         InformObservers( MDialingExtensionObserver::EEasyDialingEnabled );
+        if ( iSearchString.Length() == 0 )
+            {
+            TRAP_IGNORE( SetInfoLabelVisibleL( ETrue ) );
+            }
         }
     MakeVisible( aValue );
     }
@@ -906,6 +830,8 @@ void CEasyDialingPlugin::NameOrderChanged()
     if ( iPredictiveContactSearchHandler )
         {
         TRAP_IGNORE( SetSortOrderL( iContactDataManager->NameOrder() ) );
+        // Refresh current results if needed
+        TRAP_IGNORE( DoHandleContactsChangedL() );
         }
     }
 
@@ -926,7 +852,6 @@ void CEasyDialingPlugin::FavouritesChanged()
 //
 void CEasyDialingPlugin::InformContactorEvent( MEDContactorObserver::TEvent aEvent )
     {
-
     // This callback function simply propagates the events to its own listener.
     switch ( aEvent )
         {
@@ -958,7 +883,6 @@ void CEasyDialingPlugin::InformContactorEvent( MEDContactorObserver::TEvent aEve
 //
 void CEasyDialingPlugin::Draw( const TRect& /* aRect */ ) const
     {
-    return;
     }
 
 
@@ -1054,6 +978,18 @@ void CEasyDialingPlugin::HandlePsError( TInt aErrorCode )
 void CEasyDialingPlugin::CachingStatus( TCachingStatus& aStatus, TInt& aError )
     {
     OstTraceExt2( TRACE_NORMAL, CEASYDIALINGPLUGIN_CACHINGSTATUS, "PCS CachingStatus: %d, error: %d", ( TUint )( aStatus ), aError );
+    
+    switch ( aStatus )
+        {
+        case ECacheUpdateContactRemoved:
+        case ECacheUpdateContactModified:
+        case ECacheUpdateContactAdded:
+            TRAP_IGNORE( DoHandleContactsChangedL() );
+            break;
+        default:
+            break;
+        }
+    
     LOGSTRING2("EasyDialingPlugin: PCS CachingStatus: %d, error: %d", aStatus, aError );
     }
 
@@ -1255,17 +1191,6 @@ void CEasyDialingPlugin::CCASimpleNotifyL( TNotifyType aType, TInt aReason )
 
     CAknAppUi* appUi = static_cast<CAknAppUi*>( iCoeEnv->AppUi() );
     appUi->HandleCommandL( EPhoneCmdBlockingDialogClosed );
-    
-    // If contacts have been edited during contact launcher being open, a new search
-    // needs to be done.
-    if ( iNewSearchNeeded )
-        {
-        // The cached information in contact data manager may be outdated. Call to reload makes sure that when the 
-        // search is made, all data is loaded again.
-        iContactDataManager->Reload();
-        
-        LaunchSearchL();
-        }
 
     // Give up focus, if iRememberFocus flag is not set.
     if ( !iRememberFocus )
@@ -1986,6 +1911,14 @@ void CEasyDialingPlugin::AknInputBlockCancel()
 //
 void CEasyDialingPlugin::HandleGainingForeground()
     {
+    if ( iNewSearchNeeded && IsEnabled() )
+        {
+        // The cached information in contact data manager may be outdated. Call to reload makes sure that when the 
+        // search is made, all data is loaded again.
+        iContactDataManager->Reload();
+        
+        LaunchSearchL();
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -2023,19 +1956,29 @@ void CEasyDialingPlugin::HandleLosingForeground()
 //
 void CEasyDialingPlugin::DoHandleContactsChangedL()
     {
-    if ( iSearchString.Length() > 0 )
+    if ( iSearchString.Length() > 0 && IsEnabled() )
         {
-        if ( iContactLauncherActive )
+        CAknAppUi* appUi = static_cast<CAknAppUi*>( iCoeEnv->AppUi() );
+        if ( appUi->IsForeground() )
             {
-            // Set the flag to make a search when communication launcher exits.
-            iNewSearchNeeded = ETrue;
+            // Do new search immediately, if contacts change while we are on the
+            // foreground. This can happen for example if view is switched to
+            // dialer while deletion of multiple contacts is still ongoing or if
+            // PCS takes so long to update the cache that view gets changed 
+            // before the update is ready.
+            iContactDataManager->Reload(); // to update thumbnails
+            AsyncActionLaunchL( ELaunchSearch );
             }
         else
             {
-            // We get here if user e.g. leaves dialer open and goes to Contacts
-            // application and does some editing.
-            iContactDataManager->Reload(); // to update thumbnails
-            AsyncActionLaunchL( ELaunchSearch );
+            // Set the flag to make a search when we come back to foreground.
+            // This way, we don't make unnecessary searches when several
+            // contacts are imported or deleted, for example.
+            iNewSearchNeeded = ETrue;
+            
+            // Hide previous results so that they won't show up before the
+            // the new search is ready.
+            iContactListBox->MakeVisible( EFalse );
             }
         }
     }
@@ -2127,6 +2070,26 @@ void CEasyDialingPlugin::SetInfoLabelColourL()
         iInfoLabelLine1->OverrideColorL( EColorLabelText, skinColor );
         iInfoLabelLine2->OverrideColorL( EColorLabelText, skinColor );
         }    
+    }
+
+// -----------------------------------------------------------------------------
+// CEasyDialingPlugin::SetInfoLabelVisibleL
+// -----------------------------------------------------------------------------
+//
+void CEasyDialingPlugin::SetInfoLabelVisibleL( TBool aVisible )
+    {
+    if ( aVisible )
+        {
+        iInfoLabelLine1->SetTextL( *iInfoLabelTextLine1 );
+        iInfoLabelLine2->SetTextL( *iInfoLabelTextLine2 );
+        }
+    else
+        {
+        iInfoLabelLine1->SetTextL( KNullDesC );
+        iInfoLabelLine2->SetTextL( KNullDesC );
+        }    
+    iInfoLabelLine1->DrawDeferred();
+    iInfoLabelLine2->DrawDeferred();
     }
 
 
@@ -2319,7 +2282,7 @@ TBool IsStrictlyBidirectional( const TDesC& aText )
 // removed.
 // -----------------------------------------------------------------------------
 //
-static HBufC* AllocWithoutHighlightSeparatorsLC( TDesC& aDesc )
+static HBufC* AllocWithoutHighlightSeparatorsLC( const TDesC& aDesc )
     {
     HBufC* resultDesc = aDesc.AllocLC();
     TPtr ptr = resultDesc->Des();

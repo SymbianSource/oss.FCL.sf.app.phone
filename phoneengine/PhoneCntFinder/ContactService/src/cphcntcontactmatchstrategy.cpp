@@ -20,10 +20,12 @@
 #include <centralrepository.h>
 #include <telconfigcrkeys.h>
 #include <CVPbkContactStoreUriArray.h>
+#include <cntdb.h>  // KBestMatchingPhoneNumbers
 
 #include "cphcntcontactmatchstrategy.h"
 #include "cphcntcontactstoreuris.h"
 #include "CPhoneRawMatchNumberExtractor.h"
+
 
 // Digit count used to match CS number.
 const TInt KPhCntMatchMin = 7;
@@ -37,11 +39,11 @@ CPhCntContactMatchStrategy::CPhCntContactMatchStrategy(
     CVPbkContactManager& aContactManager,
     CPhCntContactStoreUris& aContactStoreUris,
     MVPbkContactFindObserver& aObserver,
-    CVPbkPhoneNumberMatchStrategy::TVPbkPhoneNumberMatchFlags aMatchFlag ) :
+    TUint32 aMatchFlags ) :
     iContactManager( aContactManager ),
     iContactStoreUris( aContactStoreUris ),
     iObserver( aObserver ),
-    iMatchFlag( aMatchFlag )
+    iMatchFlags( aMatchFlags )
     {
     iContactStoreUris.SetObserver( *this );
     }
@@ -91,14 +93,14 @@ CPhCntContactMatchStrategy* CPhCntContactMatchStrategy::NewL(
     CVPbkContactManager& aContactManager,
     CPhCntContactStoreUris& aContactStoreUris,
     MVPbkContactFindObserver& aObserver,
-    CVPbkPhoneNumberMatchStrategy::TVPbkPhoneNumberMatchFlags aMatchFlag )
+    TUint32 aMatchFlags )
     {
     CPhCntContactMatchStrategy* self = 
         new( ELeave ) CPhCntContactMatchStrategy( 
             aContactManager,
             aContactStoreUris, 
             aObserver,
-            aMatchFlag );
+            aMatchFlags );
     CleanupStack::PushL( self );
     self->ConstructL();
     CleanupStack::Pop( self );
@@ -242,10 +244,10 @@ void CPhCntContactMatchStrategy::MatchL(
 TInt CPhCntContactMatchStrategy::DoCreateMatchStrategy()
     {
     CVPbkPhoneNumberMatchStrategy::TConfig config( 
-            iNumberOfDigits,
+            KBestMatchingPhoneNumbers,
             *iUriArray,
             CVPbkPhoneNumberMatchStrategy::EVPbkSequentialMatch, 
-            iMatchFlag
+            iMatchFlags
             );
     TRAPD( err, iMatchStrategy = CVPbkPhoneNumberMatchStrategy::NewL( 
                     config, 

@@ -22,6 +22,7 @@
 #include <bldvariant.hrh>
 #include <featmgr.h>
 #include <PtiDefs.h>
+#include <AknUtils.h>
 
 #include "mphonestatemachine.h"
 #include "mphonekeyeventhandler.h"
@@ -79,6 +80,13 @@ CPhoneKeyEventForwarder::~CPhoneKeyEventForwarder()
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneKeyEventForwarder::~CPhoneKeyEventForwarder");
 
+    if ( AknLayoutUtils::PenEnabled() ) 
+        {
+        iPeninputServer.RemovePenUiActivationHandler( this );
+        }
+    
+    iPeninputServer.Close();
+    
     if ( iEikonEnv )
         {
         iEikonEnv->EikAppUi()->RemoveFromStack( this );
@@ -227,6 +235,13 @@ void CPhoneKeyEventForwarder::ConstructL( const TRect& aRect )
             static_cast<CDialer*>( ptrParam.Pointer() );
             
     iQwertyHandler->AddQwertyModeObserverL( *qwertyObserver );
+    
+    if ( AknLayoutUtils::PenEnabled() )
+        {
+        User::LeaveIfError( iPeninputServer.Connect() );
+        iPeninputServer.AddPenUiActivationHandler( this, EPluginInputModeAll );
+        iVirtualKeyBoardOpen = iPeninputServer.IsVisible();
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -419,6 +434,32 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventAfterControlStackL(
     return EKeyWasNotConsumed;
     }
 
+// ---------------------------------------------------------------------------
+// CPhoneKeyEventForwarder::OnPeninputUiDeactivated
+//
+// Gets called when the virtual keyboard editor is closed.
+// ---------------------------------------------------------------------------
+//
+void CPhoneKeyEventForwarder::OnPeninputUiDeactivated()
+    {
+    __LOGMETHODSTARTEND( EPhoneControl,
+            "CPhoneKeyEventForwarder::OnPeninputUiDeactivated");
+    iVirtualKeyBoardOpen = EFalse;
+    }
+
+// ---------------------------------------------------------------------------
+// CPhoneKeyEventForwarder::OnPeninputUiActivated
+//
+// Gets called when the virtual keyboard editor is opened.
+// ---------------------------------------------------------------------------
+//
+void CPhoneKeyEventForwarder::OnPeninputUiActivated()
+    {
+    __LOGMETHODSTARTEND( EPhoneControl,
+            "CPhoneKeyEventForwarder::OnPeninputUiActivated");
+    iVirtualKeyBoardOpen = ETrue;
+    }
+
 // -----------------------------------------------------------
 // CPhoneKeyEventForwarder::HandleEventKeyDownBeforeControlStackL
 // -----------------------------------------------------------
@@ -457,6 +498,11 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyDownBeforeControlStackL(
             !IsKeySimulatedByTouchDialer( aKeyEvent ) && 
             iQwertyHandler->IsQwertyInput() &&
             iViewCommandHandle->HandleCommandL( EPhoneViewIsNumberEntryNumericMode ) != EPhoneViewResponseSuccess;
+    
+    // Prevent long tap functionality for key events coming from virtual touch keyboard.
+    // Virtual touch keyboard has own editing functionality for long presses, and telephony
+    // should not add conflicting behaviour on top of that.
+    preventLongTap = preventLongTap || iVirtualKeyBoardOpen;
 
     if ( !preventLongTap ) 
         {

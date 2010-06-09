@@ -98,7 +98,7 @@ CEasyDialingListBox::CEasyDialingListBox() :
 //
 CEasyDialingListBox::~CEasyDialingListBox()
     {
-    delete iBGContext;    
+    delete iBGContext;
     delete iLongTapDetector;
     }
 
@@ -121,7 +121,7 @@ void CEasyDialingListBox::ConstructL( TInt aFlags,
     
     iBGContext = CAknsFrameBackgroundControlContext::NewL( KAknsIIDQsnFrPopupSub,
             Rect(), Rect(), EFalse );
-       
+    
     // ContactDataManager is accessed from SizeChanged. If list item size
     // changes -> thumbnail size changes
     iContactDataManager = aContactDataManager;
@@ -178,7 +178,7 @@ void CEasyDialingListBox::FocusChanged( TDrawNow aDrawNow )
 //
 void CEasyDialingListBox::CreateItemDrawerL()
     {
-    CEasyDialingListBoxData* celldata = CEasyDialingListBoxData::NewL();
+    CEasyDialingListBoxData* celldata = CEasyDialingListBoxData::NewL( *iEikonEnv );
     CleanupStack::PushL( celldata );
     iItemDrawer = new(ELeave) CEasyDialingListBoxItemDrawer(Model(), iEikonEnv->NormalFont(), celldata);
     CleanupStack::Pop( celldata );  

@@ -192,7 +192,6 @@ void CPhoneView::ViewDeactivated()
     {
     __LOGMETHODSTARTEND(EPhoneUIView, "CPhoneView::ViewDeactivated()");
     SetActivatePreviousApp( EFalse );
-    iViewControllerObserver->SetIncallBubbleVisibility( EFalse );
     DrawDeferred();
     }
 

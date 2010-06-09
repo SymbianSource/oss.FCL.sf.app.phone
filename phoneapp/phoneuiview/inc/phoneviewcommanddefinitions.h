@@ -233,6 +233,8 @@ enum
     EPhoneViewSetConferenceAndWaitingVideo,
     EPhoneViewLaunchMultimediaSharing,
     EPhoneViewGetQwertyModeObserver,
+    EPhoneViewSetIncallBubbleTrue,
+    EPhoneViewSetIncallBubbleFalse,
 
     EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.
 };

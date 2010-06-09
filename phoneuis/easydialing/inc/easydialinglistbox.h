@@ -185,7 +185,7 @@ private:
     
     /** Background control context. Owned. */
     CAknsFrameBackgroundControlContext* iBGContext;
-        
+    
     /** Pointer to a contact data manager; Not Own. */
     CEasyDialingContactDataManager* iContactDataManager;
     

@@ -22,6 +22,8 @@
 // INCLUDES
 #include    <bldvariant.hrh> //Feature flags
 #include    <coecntrl.h>
+#include    <peninputsrveventhandler.h>
+#include    <peninputclient.h>
  
 // FORWARD DECLARATIONS
 class MPhoneStateMachine;
@@ -38,7 +40,8 @@ class MPhoneQwertyModeObserver;
 *
 */
 class CPhoneKeyEventForwarder 
-    : public CCoeControl 
+    : public CCoeControl,
+    public MPenUiActivationHandler
     {
     public:  // Constructors and destructor      
         
@@ -114,6 +117,17 @@ class CPhoneKeyEventForwarder
         TKeyResponse OfferKeyEventAfterControlStackL( 
                 const TKeyEvent& aKeyEvent,
                 TEventCode aType );
+
+        /**
+         * @see MPenUiActivationHandler
+         */
+        void OnPeninputUiDeactivated();
+
+        /**
+         * @see MPenUiActivationHandler
+         */        
+        void OnPeninputUiActivated();
+        
 
     private:
 
@@ -271,6 +285,16 @@ class CPhoneKeyEventForwarder
          * Needed to detect situations where key up event is handled before key event.
          */
         TBool iExpectKeyUpEvent;
+        
+        /**
+         * Server that sends events via callback when the virtual keyboard is opened/closed.
+         */     
+        RPeninputServer iPeninputServer;
+        
+        /**
+         * Status of virtual keyboard.
+         */     
+        TBool iVirtualKeyBoardOpen;
     };
 
 #endif      // CPHONEKEYEVENTFORWARDER_H

@@ -301,7 +301,16 @@ EXPORT_C void CPhoneStateIdle::HandleKeyMessageL(
                     }
                 else
                     {
-                    HandleCommandL( EPhoneCmdOptions );
+                    TPhoneCmdParamInteger numberEntryCountParam;
+                    iViewCommandHandle->ExecuteCommandL( 
+                            EPhoneViewGetNumberEntryCount,
+                            &numberEntryCountParam );
+                    
+                    TInt neLength( numberEntryCountParam.Integer() );
+                    if ( neLength > 0 )
+                        {
+                        HandleSendCommandL();
+                        }
                     }               
                 }
             break;

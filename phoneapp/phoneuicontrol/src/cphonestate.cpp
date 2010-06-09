@@ -1359,6 +1359,14 @@ EXPORT_C void CPhoneState::HandlePhoneForegroundEventL()
             }
         }
 
+    if( NumberEntryManagerL()->IsNumberEntryUsedL() )
+        {
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetIncallBubbleTrue );
+        }
+    else
+        {
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetIncallBubbleFalse );
+        }
      }
 
 // -----------------------------------------------------------
@@ -1380,6 +1388,8 @@ EXPORT_C void CPhoneState::HandlePhoneFocusLostEventL()
         {
         CloseCustomizedDialerL();
         }
+
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetIncallBubbleTrue );
     }
 // ---------------------------------------------------------
 // CPhoneState::HandleIdleForegroundEventL

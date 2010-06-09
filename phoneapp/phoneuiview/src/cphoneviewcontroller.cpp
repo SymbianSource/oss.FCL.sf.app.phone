@@ -265,6 +265,8 @@ void CPhoneViewController::ConstructL( TRect aRect )
     iAknUiServerClient = CAknSgcClient::AknSrv();
     
     iIncallBubble = CAknIncallBubble::NewL();
+    
+    User::LeaveIfError( iSkinServerSession.Connect( this ) );
     }
 
 // -----------------------------------------------------------------------------
@@ -290,6 +292,8 @@ CPhoneViewController::~CPhoneViewController()
     {
     __LOGMETHODSTARTEND( EPhoneUIView,
                         "CPhoneViewController::~CPhoneViewController()" );
+    iSkinServerSession.Close();
+    
     delete iButtonsController;
     delete iDialerController;
     delete iToolbarController;
@@ -642,6 +646,20 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
         case EPhoneViewLaunchMultimediaSharing:
             {
             LaunchMultimediaSharingL();
+            }
+            break;
+
+        case EPhoneViewSetIncallBubbleTrue:
+            {
+            // Allow small call bubble, if call handling view is in background and allow for dialer also
+            SetIncallBubbleVisibility( ETrue );
+            }
+            break;
+
+        case EPhoneViewSetIncallBubbleFalse:
+            {
+            // Don't allow small call bubble, if call handling view is not in foreground
+            SetIncallBubbleVisibility( EFalse );
             }
             break;
 
@@ -2171,33 +2189,49 @@ EXPORT_C void CPhoneViewController::HandleSecurityModeChanged( TBool aIsEnabled 
 	iMenuController->SetSecurityMode( aIsEnabled );
 	if ( iDialer )
 		{
-        CDialingExtensionInterface* easyDialing = iDialer->GetEasyDialingInterface();
-        if ( easyDialing )
+        iDialerController->SetRestrictedDialer( aIsEnabled );
+	
+        if ( iDialerActive && iSecurityMode != aIsEnabled )
             {
+            CDialingExtensionInterface* easyDialing = iDialer->GetEasyDialingInterface();
+            if ( easyDialing )
+                {
+                if ( aIsEnabled )
+                    {
+                    // Reset the Easy Dialing just in case, this clears the existing matches
+                    // when restricted mode is activated
+                    easyDialing->Reset();
+                    }
+                else
+                    {
+                    if ( easyDialing->IsEnabled() )
+                        {
+                        // If Easy Dialing is enabled, set the input from the numeric entry
+                        // field for updating the search result when restricted mode is
+                        // deactivated.
+                        TBuf<KDialerInputMaxChars> buf;
+                        iDialer->NumberEntry()->GetTextFromNumberEntry( buf );
+                        TRAP_IGNORE( easyDialing->SetInputL( buf ) );
+                        }
+                    }
+                }
+            iDialer->RelayoutAndDraw();
+            
+            // also update cba if security mode changes while dialer is open
+            TPhoneCmdParamInteger integerParam;
             if ( aIsEnabled )
                 {
-                // Reset the Easy Dialing just in case, this clears the existing matches
-                // when restricted mode is activated
-                easyDialing->Reset();
+                iNoteController->DestroyNote();
+                integerParam.SetInteger( CPhoneMainResourceResolver::Instance()->
+                        ResolveResourceID( EPhoneEmergencyModeNoteCBA ) );
                 }
             else
                 {
-                if ( easyDialing->IsEnabled() )
-                    {
-                    // If Easy Dialing is enabled, set the input from the numeric entry
-                    // field for updating the search result when restricted mode is
-                    // deactivated.
-                    TBuf<KDialerInputMaxChars> buf;
-                    iDialer->NumberEntry()->GetTextFromNumberEntry( buf );
-                    easyDialing->SetInputL( buf );
-                    }
+                integerParam.SetInteger( CPhoneMainResourceResolver::Instance()->
+                        ResolveResourceID( EPhoneNumberAcqCBA ) );
                 }
+            TRAP_IGNORE( ExecuteCommandL( EPhoneViewUpdateCba, &integerParam ) );
             }
-        iDialerController->SetRestrictedDialer( aIsEnabled );
-		if ( iSecurityMode != aIsEnabled )
-			{
-			iDialer->RelayoutAndDraw();
-			}
 		}
     if ( iSecurityMode != aIsEnabled )
         {
@@ -3711,7 +3745,7 @@ void CPhoneViewController::SwapEmptyIndicatorPaneInSecureStateL(
                                     iStatusPane->StatusPane().SwapControlL(
             TUid::Uid( EEikStatusPaneUidIndic ), iIndiContainer );
             }
-        else
+        else if ( iPreviousIndicatorControl )
             {
             //Restore previous indicator control
             iStatusPane->StatusPane().SwapControlL(
@@ -4128,7 +4162,36 @@ void CPhoneViewController::SetIncallBubbleVisibility( TBool aVisible )
         "CPhoneViewController::SetIncallBubbleVisibility(%d)",
         aVisible );
 
-        TRAP_IGNORE( iIncallBubble->SetIncallBubbleAllowedInUsualL( aVisible ) ); 
+    TRAP_IGNORE( iIncallBubble->SetIncallBubbleAllowedInUsualL( aVisible ) ); 
     }
 
+// ---------------------------------------------------------------------------
+// CPhoneViewController::SkinContentChanged
+// ---------------------------------------------------------------------------
+//
+void CPhoneViewController::SkinContentChanged()
+    {
+    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneViewController::SkinContentChanged()" );
+    iPhoneView->DrawNow();
+    }
+
+// ---------------------------------------------------------------------------
+// CPhoneViewController::SkinConfigurationChanged
+// ---------------------------------------------------------------------------
+//
+void CPhoneViewController::SkinConfigurationChanged( const TAknsSkinStatusConfigurationChangeReason /*aReason*/ )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneViewController::SkinConfigurationChanged()" );
+    iPhoneView->DrawNow();
+    }
+
+// ---------------------------------------------------------------------------
+// CPhoneViewController::SkinPackageChanged
+// ---------------------------------------------------------------------------
+//
+void CPhoneViewController::SkinPackageChanged( const TAknsSkinStatusPackageChangeReason /*aReason*/ )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneViewController::SkinPackageChanged()" );
+    iPhoneView->DrawNow();
+    }
 // End of File

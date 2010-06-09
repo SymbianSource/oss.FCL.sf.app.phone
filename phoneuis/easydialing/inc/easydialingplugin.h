@@ -30,9 +30,6 @@
 #include "medcontactorobserver.h"
 #include "easydialingcontactdatamanager.h"  // for TNameOrder
 
-// Phonebook engine API
-#include <MVPbkContactStoreListObserver.h>
-
 // ListBox Observer API
 #include <eiklbo.h>
 
@@ -78,7 +75,6 @@ class CEikLabel;
 * Easy dialing plugin.
 */
 class CEasyDialingPlugin : public CDialingExtensionInterface,
-                           public MVPbkContactStoreListObserver,
                            public MPsResultsObserver,
                            public MCCAObserver,
                            public MEasyDialingCenrepListenerObserver,
@@ -219,27 +215,6 @@ public: // from CDialingExtensionInterface
 
 public:
 
-    /**
-     * From MVPbkContactStoreListObserver.
-     */
-    void StoreReady(MVPbkContactStore& aContactStore);
-    
-    /**
-     * From MVPbkContactStoreListObserver.
-     */
-    void StoreUnavailable(MVPbkContactStore& aContactStore, TInt aReason);
-    
-    /**
-     * From MVPbkContactStoreListObserver.
-     */
-    void HandleStoreEventL( MVPbkContactStore& aContactStore, 
-                            TVPbkContactStoreEvent aStoreEvent);
-    
-    /**
-     * From MVPbkContactStoreListObserver.
-     */
-    void OpenComplete();
-    
     /**
     * From MEasyDialingCenrepListenerObserver.
     */
@@ -445,6 +420,11 @@ private:
      * Sets correct info label text color from theme.
      */  
     void SetInfoLabelColourL();
+    
+    /**
+     * Sets info label visibility.
+     */  
+    void SetInfoLabelVisibleL( TBool aVisible );
     
 private:
 

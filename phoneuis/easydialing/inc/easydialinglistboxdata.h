@@ -62,20 +62,15 @@ public:
     
     
     /**
-    * Constructor.
-    */
-    CEasyDialingListBoxData();
-       
-    /**
      * Destructor
      */
     ~CEasyDialingListBoxData();
        
     /**
-    * Second phase constructor of the class.
+    * Two phased constructor of the class.
     * @return   Pointer to the instance. 
     */
-    static CEasyDialingListBoxData* NewL();
+    static CEasyDialingListBoxData* NewL( CCoeEnv& aCoeEnv );
      
     /**
     * Draws selected item.
@@ -100,7 +95,7 @@ public:
     * @param    aContactDataManager Contact data manager.
     */
     void SetContactDataManager( CEasyDialingContactDataManager* aContactDataManager );
-
+    
     /**
     * Sets a pointer to listbox class. Called from listbox constructor.
     * @param    aControl    Pointer to easy dialing listbox cotrol.
@@ -114,6 +109,14 @@ public:
     
 protected:
         
+    /**
+    * C++ Constructor
+    */
+    CEasyDialingListBoxData( CCoeEnv& aCoeEnv );
+    
+    /**
+     * Second phase constructor 
+     */
     void ConstructLD();
    
 private:
@@ -150,7 +153,7 @@ private:
         const TRect& aItemRect,
         TBool aHighlight,
         const TExtendedColors& aColors ) const;
-
+    
     /**
      * Draws the Contact Thumbnail Icon if any else draws the dummy contact thumbnail.
      * @param   aGc Graphics context.
@@ -174,7 +177,7 @@ private:
      * must be unmirrored, because the mirroring is done as the last thing
      * before drawing.
      * @param   aGc Graphics context.
-     * @param   aNameRectUnMirrored Name rect, where fav star is contained
+     * @param   aNameRectUnMirrored Name rect, after which the icon is drawn
      * @param   aEffectiveRect The whole listbox item rect. Used for mirroring.
      */
     void DrawFavouriteIcon(
@@ -183,6 +186,9 @@ private:
             TRect aEffectiveRect) const;
     
 private:
+    
+    /** Control environment */
+    CCoeEnv& iCoeEnv;
     
     /** Font to be used showing contact name. Not owned. */
     CFont* iContactNameFont;
@@ -198,10 +204,10 @@ private:
     
     /** Action Menu RightPointing Arrow. Owned. */
     CGulIcon* iArrowPointingLeft;
-
+    
     /** Action icon color bitmap. Owned. */
     CFbsBitmap* iColorBitmap;
-
+    
     /** Default image for contacts with no own thumbnail. Owned. */
     CGulIcon* iDummyThumbnail;
     

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api id="c883bcedfe2b2b72959090b59f8a33a2" dataversion="2.0">
+  <name>telephony_bubble_extension_api</name>
+  <description>This API enables customization of call handling UI (call bubbles). Certain indicators and caller image can be replaced with plug-in based implementation.</description>
+  <type>c++</type>
+  <collection>phoneuis</collection>
+  <libs/>
+  <release category="platform" sinceversion="5.2"/>
+  <attributes>
+    <htmldocprovided>no</htmldocprovided>
+    <adaptation>no</adaptation>
+  </attributes>
+</api>

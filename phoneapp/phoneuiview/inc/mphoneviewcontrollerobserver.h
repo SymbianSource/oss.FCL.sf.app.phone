@@ -38,11 +38,6 @@ class MPhoneViewControllerObserver
     * Sets incall small bubble´s visibility in special cases.
     */
     virtual void AllowInCallBubbleInSpecialCases() = 0;
-	 
-    /**
-    * Sets Incall bubble´s visibility.
-    */   
-    virtual void SetIncallBubbleVisibility( TBool aIncallBubbleVisible ) = 0;
     };
 
 #endif /* MPHONEVIEWCONTROLLEROBSERVER_H_ */

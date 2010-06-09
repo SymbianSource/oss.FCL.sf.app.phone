@@ -17,6 +17,7 @@
 
 
 // INCLUDES
+#include <ScreensaverInternalPSKeys.h>
 #include <eikmenub.h> 
 #include <eikenv.h>
 #include <StringLoader.h>
@@ -41,6 +42,7 @@
 #include "tphonecmdparamcallstatedata.h"
 #include "cphonekeys.h"
 #include "phonelogger.h"
+#include "cphonepubsubproxy.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -81,6 +83,10 @@ void CPhoneConference::ConstructL()
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
     
+    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                    KPSUidScreenSaver,
+                    KScreenSaverAllowScreenSaver,
+                    EPhoneScreensaverAllowed ); 
   
     DefineAndSetHoldFlagL();
     
@@ -461,7 +467,12 @@ void CPhoneConference::HandleConferenceIdleL()
                 EPhoneViewGetCallIdByState, &callStateData );
                 
             if( callStateData.CallId() > KErrNotFound )
-                {
+                {            
+                CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                                KPSUidScreenSaver,
+                                KScreenSaverAllowScreenSaver,
+                                EPhoneScreensaverNotAllowed );
+            
                 UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
                 iStateMachine->ChangeState( EPhoneStateWaitingInSingle );    
                 }
@@ -839,6 +850,11 @@ void CPhoneConference::HandleDiallingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::HandleDiallingL()");
     
+    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                    KPSUidScreenSaver,
+                    KScreenSaverAllowScreenSaver,
+                    EPhoneScreensaverNotAllowed );
+    
     BeginUiUpdateLC(); 
     
     CloseSelectionListL(); 
@@ -921,6 +937,11 @@ void CPhoneConference::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::HandleIncomingL()");
+    
+    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                    KPSUidScreenSaver,
+                    KScreenSaverAllowScreenSaver,
+                    EPhoneScreensaverNotAllowed );
     
     BeginUiUpdateLC();
     

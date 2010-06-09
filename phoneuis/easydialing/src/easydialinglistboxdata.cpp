@@ -60,14 +60,14 @@ _LIT( KHighlightSeparatorCharAsLit, "\x1F" );
 const TInt KContactNameFontHeightPercent = 35;
 
 // KCompanyNameFontHeightPercent is company name font height relative to list item height.
-const TInt KCompanyNameFontHeightPercent = 30;
+const TInt KCompanyNameFontHeightPercent = 28;
 
-// KTextBoundingBoxHeightPercent gives the text bounding box height in percentages 
+// KTextBoundingBoxHeightPercent gives the text bounding box height in percents
 // relative to font height. This must be over 100, or part of the text cuts off.
 const TInt KTextBoundingBoxHeightPercent = 120;
 
 // KTextPlacementPercent controls how text is placed vertically within its bounding box. 
-// The value is between 0 and 100. 0 means in top part, 50 mean in the middle, 100 means in the
+// The value is between 0 and 100. 0 means in top part, 50 means in the middle, 100 means in the
 // bottom. 
 const TInt KTextPlacementPercent = 70;
 
@@ -228,8 +228,8 @@ iMatchingBack(KRgbDarkYellow)
 // 
 // -----------------------------------------------------------------------------
 //
-CEasyDialingListBoxData::CEasyDialingListBoxData() :
-CFormattedCellListBoxData()
+CEasyDialingListBoxData::CEasyDialingListBoxData( CCoeEnv& aCoeEnv ) :
+CFormattedCellListBoxData(), iCoeEnv( aCoeEnv )
     {
     }
 
@@ -242,7 +242,7 @@ CEasyDialingListBoxData::~CEasyDialingListBoxData()
     {
     // Release fonts. ReleaseFont function can cope with null pointer
     // so we don't need to null check them.
-    CWsScreenDevice& screenDev = *( CEikonEnv::Static()->ScreenDevice() );
+    CWsScreenDevice& screenDev = *( iCoeEnv.ScreenDevice() );
     screenDev.ReleaseFont( iContactNameFont );
     screenDev.ReleaseFont( iCompanyNameFont );
     
@@ -260,9 +260,9 @@ CEasyDialingListBoxData::~CEasyDialingListBoxData()
 // 
 // -----------------------------------------------------------------------------
 //
-CEasyDialingListBoxData* CEasyDialingListBoxData::NewL()
+CEasyDialingListBoxData* CEasyDialingListBoxData::NewL( CCoeEnv& aCoeEnv )
     {
-    CEasyDialingListBoxData* self = new (ELeave) CEasyDialingListBoxData();
+    CEasyDialingListBoxData* self = new (ELeave) CEasyDialingListBoxData( aCoeEnv );
     
     CleanupStack::PushL( self );
     self->ConstructLD();
@@ -562,8 +562,8 @@ void CEasyDialingListBoxData::DrawArrowIcon(
 //
 void CEasyDialingListBoxData::DrawFavouriteIcon(
         CWindowGc& aGc, 
-         TRect aNameRectUnMirrored,
-         TRect aEffectiveRect) const
+        TRect aNameRectUnMirrored,
+        TRect aEffectiveRect ) const
     {
     TRect favouriteIconBoundingBox;
 
@@ -577,7 +577,7 @@ void CEasyDialingListBoxData::DrawFavouriteIcon(
     aGc.SetBrushStyle( CGraphicsContext::ENullBrush );
     TRect sourceRect( TPoint(0,0), favouriteIconBoundingBox.Size() );
 
-    if( AknsUtils::SkinInstance()->GetCachedItemData(KAknsIIDQgnFsContactsFavorite) )
+    if ( AknsUtils::SkinInstance()->GetCachedItemData(KAknsIIDQgnFsContactsFavorite) )
         {
         AknsDrawUtils::DrawCachedImage( AknsUtils::SkinInstance(), aGc, sourceRect, 
                 KAknsIIDQgnFsContactsFavorite );
@@ -587,8 +587,8 @@ void CEasyDialingListBoxData::DrawFavouriteIcon(
         // Set size for the bitmap and mask
         AknIconUtils::SetSize( iFavouriteIcon->Bitmap(), favouriteIconBoundingBox.Size() );
         AknIconUtils::SetSize( iFavouriteIcon->Mask(), favouriteIconBoundingBox.Size() );
-        aGc.BitBltMasked( favouriteIconBoundingBox.iTl , iFavouriteIcon->Bitmap(), 
-                sourceRect, iFavouriteIcon->Mask(), ETrue);
+        aGc.BitBltMasked( favouriteIconBoundingBox.iTl, iFavouriteIcon->Bitmap(), 
+                sourceRect, iFavouriteIcon->Mask(), ETrue );
         }
     }
 // -----------------------------------------------------------------------------
@@ -625,7 +625,7 @@ void CEasyDialingListBoxData::HandleItemSizeChange()
 //
 void CEasyDialingListBoxData::ObtainFonts( TInt aItemHeight )
     {
-    CWsScreenDevice& screenDev = *( CEikonEnv::Static()->ScreenDevice() );
+    CWsScreenDevice& screenDev = *( iCoeEnv.ScreenDevice() );
     
     // Release previous fonts. ReleaseFont function can cope with null pointers
     // so we don't need to null check them.
@@ -1078,7 +1078,7 @@ static TInt DrawTextWithMatchHighlightL(
     aGc.UseFont( aFont );
     aGc.SetBrushStyle( CGraphicsContext::ENullBrush );
 
-    while ( TextUtils::ColumnText( textPiece , textPieceIndex, visualBuf, KHighlightSeparatorChar) == KErrNone ) 
+    while ( TextUtils::ColumnText( textPiece, textPieceIndex, visualBuf, KHighlightSeparatorChar) == KErrNone ) 
         {
         if (! DrawPieceOfText( aBoundingBox, xOffset, aGc, textPiece, match, aFont, aColors, aHighLight ))
             {

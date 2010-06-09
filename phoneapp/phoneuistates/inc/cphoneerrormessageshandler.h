@@ -109,6 +109,11 @@ class CPhoneErrorMessagesHandler : public CBase,
         * Return ETrue if video call.
         */
         TBool IsVideoCall( const TInt aCallId ) const;
+        
+        /**
+        * Return ETrue if voice call.
+        */
+        TBool IsVoiceCall( const TInt aCallId ) const;
  
     protected:
 		

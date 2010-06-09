@@ -1443,7 +1443,11 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
         case EPhoneNoteCalledNumberHasBarredIncomingCalls:
             retVal = R_NOTE_CALLED_NUMBER_HAS_BARRED_INCOMING_CALLS;
             break;
-
+            
+        case EPhoneNoteCallInfoCauseValue21:
+            retVal = R_CALL_INFO_CAUSE_VALUE21;
+            break;
+            
         case EPhoneNoteCallInfoCauseValue22:
             retVal = R_CALL_INFO_CAUSE_VALUE22;
             break;
