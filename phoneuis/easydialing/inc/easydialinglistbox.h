@@ -148,10 +148,11 @@ public:
     TInt CurrentContactDataIndex();
     
     /**
-     * Return contact link of current item packaged in HBufC object. 
-     * @return  Contact link.
+     * Return contact link of current item packaged in HBufC object. If no item is
+	 * selected in listbox returns NULL.
+     * @return  Contact link. Ownership is transferred to the caller.
      */
-    HBufC8* CurrentContactLinkLC();
+    HBufC8* CurrentContactLinkL();
     
 public:
     /**

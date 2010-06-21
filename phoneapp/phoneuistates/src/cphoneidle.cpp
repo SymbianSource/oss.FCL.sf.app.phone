@@ -188,7 +188,7 @@ EXPORT_C void CPhoneIdle::HandleErrorL( const TPEErrorInfo& aErrorInfo )
             &blockingDialogStatus );
         }
     
-    CPhoneState::HandleErrorL( aErrorInfo );
+    CPhoneStateIdle::HandleErrorL( aErrorInfo );
     }
 
 // End of File

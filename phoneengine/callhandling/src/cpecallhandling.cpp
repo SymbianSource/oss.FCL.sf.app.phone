@@ -675,6 +675,7 @@ EXPORT_C TInt CPECallHandling::DialCall(
                 {
                 // Dial request passed on successfully: forward new call id
                 aCallId = callData->GetCallId();
+                iModel.SendMessage( MEngineMonitor::EPEMessageInitiatedMoCall, aCallId );
                 }
             }
         }

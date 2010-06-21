@@ -37,6 +37,7 @@
 #include "tphonecmdparamstring.h"
 #include "cphonemainresourceresolver.h"
 #include "mphonestatemachine.h"
+#include "mphonesecuritymodeobserver.h"
 #include "cphonelogger.h"
 #include "cphonecenrepproxy.h"
 #include "phoneui.pan"
@@ -210,7 +211,7 @@ void CPhoneCustomizationVoip::CustomizeMenuPaneL(
             {
             case EPhoneDialerCmdTouchInput:
                 {
-                if ( !VoIPSupportedL() )
+                if ( !VoIPSupportedL() || iStateMachine.SecurityMode()->IsSecurityMode() )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] ); 
                     }

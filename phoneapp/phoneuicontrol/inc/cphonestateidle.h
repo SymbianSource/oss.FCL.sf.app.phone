@@ -46,7 +46,6 @@ class CPhoneStateIdle : public CPhoneState
         EDialMethodSendCommand      = 2,
         /** Dial is initiated by one key dialing. */
         EDialMethodOneKeyDialing    = 3
-
         };
     
         /**
@@ -80,7 +79,7 @@ class CPhoneStateIdle : public CPhoneState
         */
         IMPORT_C virtual void HandlePhoneEngineMessageL(
             const TInt aMessage, 
-            TInt aCallId );       
+            TInt aCallId );
             
         IMPORT_C virtual TBool HandleCommandL( TInt aCommand );
         
@@ -99,7 +98,15 @@ class CPhoneStateIdle : public CPhoneState
         /**
         * Indicates when the Phone app has lost focus.
         */
-		IMPORT_C virtual void HandlePhoneFocusLostEventL();
+        IMPORT_C virtual void HandlePhoneFocusLostEventL();
+        
+        /**
+        * HandleError
+        * Implements error handling framework
+        * @param aErrorInfo: the error info
+        */
+        IMPORT_C virtual void HandleErrorL( 
+                const TPEErrorInfo& aErrorInfo );
 
     protected:
 
@@ -211,8 +218,20 @@ class CPhoneStateIdle : public CPhoneState
         */
         IMPORT_C virtual void HandleSendCommandL();
         
+    protected:
+        
+        /**
+        * Sets iBubbleInitialized value.
+        */
+        void SetBubbleInitialized( TBool aValue );
+         
+        /**
+        * Gets iBubbleInitialized value.
+        */
+        TBool IsBubbleInitialized();
+        
     private: // New functions
-
+        
         /**
         * A message handling function for EPEMessageIncoming
         * @param aCallId: the call id of the call
@@ -292,15 +311,38 @@ class CPhoneStateIdle : public CPhoneState
 
          /**
           * Returns options menu id when number entry is visible.
-		  * If easydialing is in focus, id is asked from it.
+          * If easydialing is in focus, id is asked from it.
           * @return Menu resource id.
           */   
          TInt GetNumberAcqMenuIdL();
          
+         /**
+          * Launches initializing call bubble.
+          */
+         void DisplayInitializingCallL( TInt aCallId );
+         
+         /**
+          * Updates existing call bubble.
+          */
+         TBool UpdateCallBubbleL( TInt aCallId );
+         
+         /**
+          * Handles initialized call error.
+          */
+         void HandleInitializingCallErrorL( TInt aCallId );
+         
+         /**
+          * Changes state to aState and resets iBubbleInitialized
+          * value to false.
+          */
+         void ChangeTo( TInt aState );
+         
     private:
-        // indicates that incomming call is arrived.
-        TBool iIncommingCall;
-  
+         // indicates that incomming call is arrived.
+         TBool iIncommingCall;
+        
+         // Indicates call bubble is already initiliazed.
+         TBool iBubbleInitialized;
     };
 
 #endif // CPHONESTATEIDLE

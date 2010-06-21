@@ -189,7 +189,8 @@ private: // data
         EButtonsDimJoin    = 512,
         EButtonsVideoCallOngoing = 1024,
         EButtonsDimSilence  = 2048,
-        EButtonsDimCreateConference = 4096  
+        EButtonsDimCreateConference = 4096,  
+        EButtonsDimHold = 8192
         };
     TInt iFlags;
     };

@@ -32,6 +32,7 @@ class MPhoneViewCommandHandle;
 class CPhoneTimer;
 class CPhoneQwertyHandler;
 class MPhoneQwertyModeObserver;
+class CEikMenuBar;
 
 // CLASS DECLARATION
 
@@ -295,6 +296,12 @@ class CPhoneKeyEventForwarder
          * Status of virtual keyboard.
          */     
         TBool iVirtualKeyBoardOpen;
+        
+        /**
+         * Application menu.
+         * Not owned.
+         */     
+        CEikMenuBar* iMenu;
     };
 
 #endif      // CPHONEKEYEVENTFORWARDER_H

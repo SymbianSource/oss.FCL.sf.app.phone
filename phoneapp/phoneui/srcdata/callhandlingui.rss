@@ -775,7 +775,7 @@ RESOURCE BUBBLE_TOUCH_PANE r_phoneui_call_setup_buttons
     {
     buttons =
         {
-        r_phoneui_ihf_toggle_button,
+        r_phoneui_hold_toggle_button,
         r_phoneui_end_outgoing_call_button
         };
     }

@@ -228,13 +228,6 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
         {
         switch( menuItemArray[ i ] )
             {
-            case EPhoneDialerCallSettings:
-                if ( iSecurityMode )
-                    {
-                    menuPane->DeleteMenuItem( menuItemArray[ i ] );
-                    }
-                break;
-
             case EPhoneInCallCmdAnswer:
                 if ( iConferenceAndWaitingVideoFlag )
                     {
@@ -299,15 +292,6 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                     }
                 break;    
                 
-            case EPhoneInCallCmdSendToCallerMenu:
-            	{
-            	if ( iSecurityMode )
-            		{
-            		menuPane->DeleteMenuItem( menuItemArray[ i ] ); 
-            		}
-            	}
-            break;
-                                
             case EPhoneNumberAcqCmdSendCommand:
                 if ( !iServiceCodeFlag || iNumberEntryEmpty || iInvalidCsPhoneNumber )
                     {
@@ -520,7 +504,7 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                 break;
             case EPhoneCmdDtmfOk:
                 {
-                if ( onScreenDialer && iNumberEntryEmpty )
+                if ( ( onScreenDialer && iNumberEntryEmpty ) || iSecurityMode )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[i] );                     
                     }
@@ -561,18 +545,19 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                     }
                 }
                 break;
-			
+
+            case EPhoneDialerCallSettings: // Fall through
+            case EPhoneInCallCmdSendToCallerMenu: // Fall through
+            case EAknCmdEditItemPlaceHolder: // Fall through
             case EPhoneDialerCmdHelp: // Fall through 
             case EPhoneDialerCmdHelpDtmf: // Fall through
             case EPhoneInCallCmdHelp:
-                {
                 if ( iSecurityMode )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[i] );
                     }
-                }
-			break;
-			
+                break;
+
             default:
                 break;                                                                                                
              

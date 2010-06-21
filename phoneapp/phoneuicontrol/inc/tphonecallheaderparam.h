@@ -70,6 +70,17 @@ class TPhoneCallHeaderParam
         void SetOutgoingCallHeaderParamsL(
                 const TInt aCallId,
                 TPhoneCmdParamCallHeaderData* aCallHeaderData );
+        
+       /**
+       * Sets info to initializing call header.
+       * @param aCallId - call id.
+       * @param aCallHeaderData - Call header parameter into which the text/picture
+       *                          parameters will be set.
+       */
+        void SetIniticalizingCallHeaderParamsL(
+                const TInt aCallId,
+                TPhoneCmdParamCallHeaderData* aCallHeaderData );
+				
         /**
         * Updates call header info. 
         * NOTE: This method is used when state receives
@@ -141,7 +152,8 @@ class TPhoneCallHeaderParam
         */
         void SetBasicCallHeaderParamsL(
             const TInt aCallId, 
-            TPhoneCmdParamCallHeaderData* aCallHeaderData );
+            TPhoneCmdParamCallHeaderData* aCallHeaderData,
+            TBool aInitializing );
         
         /**
         * Sets divert indication to call header if necessary
@@ -246,7 +258,14 @@ class TPhoneCallHeaderParam
         void SetPhoneNumberAvailabilityL( 
                 const TInt aNumberLength,
                 const TBool aContactInfoAvailable );
-                
+        
+        /**
+        * Set call header labels.
+        * @param aCallHeaderData - call header params.
+        */
+        void SetCallHeaderLabels( 
+               TPhoneCmdParamCallHeaderData* aCallHeaderData );
+        
     private:
         
         MPhoneCallHeaderManagerUtility& iManagerUtility;

@@ -226,14 +226,23 @@ void TPhoneCallHeaderParam::SetCallerImage(
 //
 void TPhoneCallHeaderParam::SetBasicCallHeaderParamsL(
         const TInt aCallId, 
-        TPhoneCmdParamCallHeaderData* aCallHeaderData )
+        TPhoneCmdParamCallHeaderData* aCallHeaderData,
+        TBool aInitializing )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetBasicCallHeaderParamsL( ) ");
     // Set call header call state
-    aCallHeaderData->SetCallState( 
-        iStateMachine.PhoneEngineInfo()->CallState( aCallId ) );
-
-    // Set call header type            
+    if( aInitializing )
+        {
+        // fake state to initializing call this way we get correct bubble to screen.
+        aCallHeaderData->SetCallState( EPEStateDialing );
+        }
+    else
+        {
+        aCallHeaderData->SetCallState( 
+                iStateMachine.PhoneEngineInfo()->CallState( aCallId ) );
+        }
+    
+    // Set call header type.
     aCallHeaderData->SetCallType( GetCallType( aCallId, aCallHeaderData ) );
     aCallHeaderData->SetCallFlag( CallHeaderType() );
     
@@ -527,7 +536,7 @@ void TPhoneCallHeaderParam::SetIncomingCallHeaderParamsL(
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetIncomingCallHeaderParamsL( ) ");
     // Set basic params must be called before update is called.
-    SetBasicCallHeaderParamsL( aCallId, aCallHeaderData );
+    SetBasicCallHeaderParamsL( aCallId, aCallHeaderData, EFalse );
     
     // Set call header labels
     SetCallHeaderTexts( 
@@ -552,9 +561,34 @@ void TPhoneCallHeaderParam::SetOutgoingCallHeaderParamsL(
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetOutgoingCallHeaderParamsL( ) ");
     // Set basic params must be called before update is called.
-    SetBasicCallHeaderParamsL( aCallId, aCallHeaderData );
-    
+    SetBasicCallHeaderParamsL( aCallId, aCallHeaderData, EFalse );
     // Set call header labels
+    SetCallHeaderLabels( aCallHeaderData );
+    SetCliParamatersL( aCallId, aCallHeaderData );
+    }
+
+// ---------------------------------------------------------------------------
+//  TPhoneCallHeaderParam::SetIniticalizingCallHeaderParamsL
+// ---------------------------------------------------------------------------
+//
+void TPhoneCallHeaderParam::SetIniticalizingCallHeaderParamsL(
+        const TInt aCallId,
+        TPhoneCmdParamCallHeaderData* aCallHeaderData )
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetIniticalizingCallHeaderParamsL( ) ");
+    // Set basic params must be called before update is called.
+    SetBasicCallHeaderParamsL( aCallId, aCallHeaderData, ETrue );
+    // Set call header labels
+    SetCallHeaderLabels( aCallHeaderData );
+    }
+
+// ---------------------------------------------------------------------------
+//  TPhoneCallHeaderParam::SetCallHeaderLabels
+// ---------------------------------------------------------------------------
+//
+void TPhoneCallHeaderParam::SetCallHeaderLabels( 
+       TPhoneCmdParamCallHeaderData* aCallHeaderData )
+    {
     if ( aCallHeaderData->CallType() == EPECallTypeVideo )
         {
         iManagerUtility.LoadCallHeaderTexts( 
@@ -569,8 +603,6 @@ void TPhoneCallHeaderParam::SetOutgoingCallHeaderParamsL(
                 EPhoneOutgoingCallLabelShort, 
                 aCallHeaderData );
         }
-    
-    SetCliParamatersL( aCallId, aCallHeaderData );
     }
 
 // ---------------------------------------------------------------------------

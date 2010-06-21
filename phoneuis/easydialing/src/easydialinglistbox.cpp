@@ -491,14 +491,23 @@ TInt CEasyDialingListBox::CurrentContactDataIndex()
 
 
 // -----------------------------------------------------------------------------
-// CurrentContactLinkLC
+// CurrentContactLinkL
 // 
 // -----------------------------------------------------------------------------
 //
-HBufC8* CEasyDialingListBox::CurrentContactLinkLC()
+HBufC8* CEasyDialingListBox::CurrentContactLinkL()
     {
     TInt index = CurrentContactDataIndex();
-    return iContactDataManager->ContactLinkLC( index );
+    if ( index >= 0 )
+        {
+        HBufC8* packedContact = iContactDataManager->ContactLinkLC( index );
+        CleanupStack::Pop( packedContact );
+        return packedContact;
+        }
+    else
+        {
+        return NULL;
+        }
     }
 
 
@@ -533,7 +542,18 @@ void CEasyDialingListBox::HandlePointerEventL(const TPointerEvent& aPointerEvent
         iPointerLongPressHandled = EFalse;
         }
     
-    iLongTapDetector->PointerEventL(aPointerEvent);
+    // check if pointer event is over item
+    TInt itemIndex( KErrNotFound );
+    TPoint pointerPos( aPointerEvent.iPosition );
+    TBool pointerIsOverAnItem = iView->XYPosToItemIndex( pointerPos, itemIndex );
+    
+    // long tap is started only if pointer is over an actual item
+    // (not over margin or other empty listbox area)
+    if ( pointerIsOverAnItem || aPointerEvent.iType != TPointerEvent::EButton1Down )
+        {
+        iLongTapDetector->PointerEventL(aPointerEvent);
+        }
+    
     if ( iPointerLongPressHandled )
         {
         // No further handling is made after long tap on list item

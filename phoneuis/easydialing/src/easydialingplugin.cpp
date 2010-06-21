@@ -1655,8 +1655,14 @@ void CEasyDialingPlugin::AsyncActionLaunchL( TEasyDialingAction aAction )
         {
         // Need to save current contact link and name. Listbox current item
         // index might not be correct when callback is handled.
-        iContactToBeLaunched = iContactListBox->CurrentContactLinkLC();
-        CleanupStack::Pop( iContactToBeLaunched );
+        TRAPD( err, iContactToBeLaunched = iContactListBox->CurrentContactLinkL() );
+        if ( err || !iContactToBeLaunched )
+            {
+            // Can't find contact for the action - probably because listbox
+            // has lost the selection somehow. This shouldn't happen, but if it does
+            // return without trying to launch any action.
+            return;
+            }
         
         TPtrC contactString( iListBoxModel->MdcaPoint( iContactListBox->CurrentItemIndex() ) );
         TPtrC fullNameSeparators;

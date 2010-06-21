@@ -428,6 +428,8 @@ TPtrC CPEPhoneModel::NameByMessageFromPhoneEngine(
             return MESSAGE("EPEMessageInitiatedEmergencyCall");
         case MEngineMonitor::EPEMessageInitiatedEmergencyWhileActiveVideo:
             return MESSAGE("EPEMessageInitiatedEmergencyWhileActiveVideo");
+        case MEngineMonitor::EPEMessageInitiatedMoCall:
+            return MESSAGE("EPEMessageInitiatedMoCall");
         case MEngineMonitor::EPEMessagePacketNetworkDetached:
             return MESSAGE("EPEMessagePacketNetworkDetached");
         case MEngineMonitor::EPEMessageRemoteBusy:

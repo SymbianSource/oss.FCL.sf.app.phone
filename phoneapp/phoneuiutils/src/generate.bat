@@ -14,9 +14,9 @@ rem
 rem Description: Generate string tables and move headers.
 rem
 
-perl %EPOCROOT%epoc32\tools\stringtable.pl phoneloggerviewcommands.st
-perl %EPOCROOT%epoc32\tools\stringtable.pl phonestatestrings.st
-perl %EPOCROOT%epoc32\tools\stringtable.pl phonestatestringsgsm.st
+perl %EPOCROOT%epoc32\tools\stringtable.pl .\phoneloggerviewcommands.st
+perl %EPOCROOT%epoc32\tools\stringtable.pl .\phonestatestrings.st
+perl %EPOCROOT%epoc32\tools\stringtable.pl .\phonestatestringsgsm.st
 
 perl ..\..\phoneui\internal\tools\add_copyright.pl
 

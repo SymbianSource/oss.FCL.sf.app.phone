@@ -395,6 +395,7 @@ NONSHARABLE_CLASS( MEngineMonitor )
         EPEMessageIncoming,
         EPEMessageInitiatedEmergencyCall,
         EPEMessageInitiatedEmergencyWhileActiveVideo,
+        EPEMessageInitiatedMoCall, // MO call setup has started but not yet in Dialing state
         EPEMessageInvalidSpeedDial,
         EPEMessageIssuingUSSDRequest,
         EPEMessageIssuedUSSDRequest,

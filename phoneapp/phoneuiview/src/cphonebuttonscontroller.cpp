@@ -353,6 +353,9 @@ void CPhoneButtonsController::SetButtonEnabled(
             case EPhoneInCallCmdCreateConference:
                 iFlags &= ~EButtonsDimCreateConference;
                 break;
+            case EPhoneInCallCmdHold:
+                iFlags &= ~EButtonsDimHold;
+                break;
             default:
                 break;                
             }
@@ -387,6 +390,9 @@ void CPhoneButtonsController::SetButtonDisabled(
                 break;
            case EPhoneInCallCmdCreateConference:
                 iFlags |= EButtonsDimCreateConference;
+                break;
+           case EPhoneInCallCmdHold:
+                iFlags |= EButtonsDimHold;
                 break;
             default:
                 break;                
@@ -626,7 +632,7 @@ void CPhoneButtonsController::SetButtonDimming()
                 }
             case EPhoneInCallCmdHold:
                 {
-                if ( iFlags & EButtonsVideoCallOngoing )
+                if ( iFlags & EButtonsVideoCallOngoing || iFlags & EButtonsDimHold )
                     {
                     iTouchPane.SetButtonDimmed( commandId, ETrue );
                     }

@@ -153,21 +153,26 @@ void CDialerNumberEntry::SetNumberEntryObserver(
         
 // ---------------------------------------------------------------------------
 // CDialerNumberEntry::SetFocus
+// 
+// IsFocused() and iEditor->IsFocused() may return other values besides ETrue
+// and EFalse. This is why we need to check their return values against zero
+// and use the result in comparison against aFocus.
 // ---------------------------------------------------------------------------
 //
 void CDialerNumberEntry::SetFocus( TBool aFocus, TDrawNow aDrawNow )
     {
     DIALER_PRINT("numberentry::SetFocus<");
     
-    if ( aFocus != IsFocused() )
+    if ( aFocus != ( IsFocused() ? ETrue : EFalse ) )
         {
         CCoeControl::SetFocus( aFocus, aDrawNow );
         }
     
-    if ( aFocus != iEditor->IsFocused() )
+    if ( aFocus != ( iEditor->IsFocused() ? ETrue : EFalse ) )
         {
         iEditor->SetFocus( aFocus );
         }
+    
     DIALER_PRINT("numberentry::SetFocus>");
     }
 

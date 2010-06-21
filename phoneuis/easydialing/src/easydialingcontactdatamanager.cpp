@@ -610,15 +610,12 @@ HBufC8* CEasyDialingContactDataManager::ContactLinkLC( TInt aIndex )
     {
     LOGSTRING( "CEasyDialingContactDataManager: ContactLinkLC" );
 
-    if( aIndex >= 0 )
+    if ( aIndex < 0 || aIndex >= iContactDataArray.Count() )
         {
-        // If the parsed index is valid, return the availability.
-        return iContactDataArray[ aIndex ]->ContactLink()->PackLC();
+        User::Leave( KErrArgument );
         }
-    else 
-        {
-        return NULL; 
-        }
+    
+    return iContactDataArray[ aIndex ]->ContactLink()->PackLC();
     }
 
 

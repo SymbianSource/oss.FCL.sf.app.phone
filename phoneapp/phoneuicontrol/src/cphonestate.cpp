@@ -371,6 +371,11 @@ EXPORT_C void CPhoneState::HandlePhoneEngineMessageL(
             accessoryBtHandler->SetBTDebugModeL();
             CleanupStack::PopAndDestroy( accessoryBtHandler );
             break;
+        
+        case MEngineMonitor::EPEMessageInitiatedMoCall:
+            // Message should be only handled by CPhoneStateIdle, 
+            // if state is something else than idle then do nothing.
+            break;
 
         default:
 
@@ -738,35 +743,40 @@ EXPORT_C void CPhoneState::HandleErrorL( const TPEErrorInfo& aErrorInfo )
             }
             break;
 
-            case ECCPErrorCCServiceNotAvailable:
+        case ECCPErrorCCServiceNotAvailable:
+            {
+            if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                if( IsVideoCall( aErrorInfo.iCallId ) )
-    				{
-    			    CPhoneReconnectQuery::InstanceL()->ShowReconnectQueryL( EFalse );
-    				}
+                CPhoneReconnectQuery::InstanceL()->ShowReconnectQueryL( EFalse );
                 }
-                break;
+            }
+            break;
 
-            case ECCPErrorBadRequest:
+        case ECCPErrorBadRequest:
+            {
+            TPECallType callType =
+                iStateMachine->PhoneEngineInfo()->CallTypeCommand();
+
+            if( callType == EPECallTypeVideo )
                 {
-                TPECallType callType =
-                    iStateMachine->PhoneEngineInfo()->CallTypeCommand();
-
-                if( callType == EPECallTypeVideo )
-                    {
-                        // Dialling MO video call cannot reach 3G network.
-                        __PHONELOG1( EBasic, EPhoneControl,
-                            "PhoneUIControl: CPhoneState::HandleErrorL - ShowReconnectQueryL vid 2, callid%d ",
-                            aErrorInfo.iCallId );
-                        CPhoneReconnectQuery::InstanceL()->ShowReconnectQueryL( ETrue );
-                    }
+                    // Dialling MO video call cannot reach 3G network.
+                    __PHONELOG1( EBasic, EPhoneControl,
+                        "PhoneUIControl: CPhoneState::HandleErrorL - ShowReconnectQueryL vid 2, callid%d ",
+                        aErrorInfo.iCallId );
+                    CPhoneReconnectQuery::InstanceL()->ShowReconnectQueryL( ETrue );
                 }
-                break;
+            }
+            break;
 
-        case ECCPErrorVideoCallNotSupportedByNetwork:
+        case ECCPErrorVideoCallNotSupportedByNetwork: // Flow trough
         case ECCPErrorVideoCallSetupFailed:
         case ECCPErrorNotReached:
-           // If call id found and seems to be Video Call
+        case ECCPErrorCCBearerCapabilityNotCurrentlyAvailable:
+        case ECCPErrorCCBearerCapabilityNotAuthorised:
+        case ECCPErrorServiceSettingError:
+        case ECCPErrorNoAnswerForVideo:
+            {
+            // If call id found and seems to be Video Call
             if ( IsVideoCall( aErrorInfo.iCallId ) )
                 {
                 // Get active call count
@@ -788,6 +798,7 @@ EXPORT_C void CPhoneState::HandleErrorL( const TPEErrorInfo& aErrorInfo )
                               ECCPErrorNotReached == aErrorInfo.iErrorCode );
                     }
                 }
+            }
             break;
 
         case ECCPErrorNoService:
@@ -1772,7 +1783,7 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
 //
 EXPORT_C TBool CPhoneState::ProcessCommandL( TInt /*aCommand*/ )
     {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::ProcessCommandL() ");
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::ProcessCommandL() ");
     // no implementation.
     return EFalse;
     }
@@ -2199,6 +2210,17 @@ EXPORT_C void CPhoneState::DisplayHeaderForOutgoingCallL(
     CallheaderManagerL()->DisplayHeaderForOutgoingCallL(aCallId);
     }
 
+
+// -----------------------------------------------------------
+// CPhoneState::DisplayHeaderForInitializingCallL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneState::DisplayHeaderForInitializingCallL( TInt aCallId )
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::DisplayHeaderForInitializingCallL( ) ");
+    CallheaderManagerL()->DisplayHeaderForInitializingCallL( aCallId );
+    }
+	
 // -----------------------------------------------------------
 // CPhoneState::UpdateSingleActiveCallL
 // -----------------------------------------------------------
@@ -2211,6 +2233,8 @@ EXPORT_C void CPhoneState::UpdateSingleActiveCallL( TInt aCallId )
     CaptureKeysDuringCallNotificationL( EFalse );
 
     BeginUiUpdateLC();
+
+    SetTouchPaneButtonEnabled( EPhoneInCallCmdHold );
 
     // Update call state
     TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -2727,16 +2751,25 @@ void CPhoneState::UpdateIncallIndicatorL( TInt aCallState )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::UpdateIncallIndicatorL( ) ");
     TPhoneCmdParamIncallIndicatorData incallIndicatorParam;
-
-    // Set the state
+    // Set the state.
     incallIndicatorParam.SetCallState( aCallState );
 
+    if((aCallState == EPSCTsyCallStateUninitialized) || 
+       (aCallState == EPSCTsyCallStateNone))
+        {
+        incallIndicatorParam.SetLittleBubbleVisible( EFalse );
+        }
+    else
+        {
+        SetLittleBubbleVisibilityL(&incallIndicatorParam);
+        }
+    
     // Set mode
     incallIndicatorParam.SetMode(
        CPhonePubSubProxy::Instance()->Value(
             KPSUidCtsyCallInformation,
             KCTsyCallType ) );
-
+            
     TInt activeCallId = GetActiveCallIdL();
     if ( activeCallId > KErrNone )
         {
@@ -2752,8 +2785,7 @@ void CPhoneState::UpdateIncallIndicatorL( TInt aCallState )
     incallIndicatorParam.SetMute( audioMute );
 
     // Set the voice privacy status
-    if ( activeCallId > KErrNotFound &&
-         activeCallId != KConferenceCallId  )
+    if ( activeCallId > KErrNotFound && activeCallId != KConferenceCallId  )
         {
         incallIndicatorParam.SetCiphering(
             iStateMachine->PhoneEngineInfo()->IsSecureCall( activeCallId ) );
@@ -2771,27 +2803,7 @@ void CPhoneState::UpdateIncallIndicatorL( TInt aCallState )
         {
         incallIndicatorParam.SetEmergency( ETrue );
         }
-
-    if( aCallState == EPSCTsyCallStateDisconnecting )
-        {
-        if ( TopAppIsDisplayedL() )
-            {
-            if ( ( !IsOnScreenDialerSupported() ) ||
-                 ( IsOnScreenDialerSupported() && !IsNumberEntryVisibleL() ) )
-                {
-                // Phone application is in the foreground so we don't need to
-                // display the little bubble. If we don't hide it here then
-                // it will appear for a short time. We don't want that.
-                incallIndicatorParam.SetLittleBubbleVisible( EFalse );
-                }
-            }
-        }
-    // TODO: Refactor -> this looks really dubious.
-    else
-        {
-        incallIndicatorParam.SetLittleBubbleVisible( ETrue );
-        }
-
+    
     // Update the in-call indicator
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateIncallIndicator,
         &incallIndicatorParam );
@@ -3063,14 +3075,15 @@ void CPhoneState::HandleInitiatedEmergencyWhileActiveVideoL()
 
     // We have existing video call so need to release dataport before continuing
     // emergency call. Otherwise we will face problems with dataport use later.
-    CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( KMediatorVideoTelephonyDomain,
-                                                                     KCatPhoneToVideotelCommands,
-                                                                     EVtCmdReleaseDataport,
-                                                               TVersion( KPhoneToVideotelCmdVersionMajor,
-                                                                         KPhoneToVideotelCmdVersionMinor,
-                                                                         KPhoneToVideotelCmdVersionBuild ),
-                                                               KNullDesC8,
-                                                               CPhoneContinueEmergencyCallCommand::NewL( *iStateMachine ) );
+    CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( 
+            KMediatorVideoTelephonyDomain,
+            KCatPhoneToVideotelCommands,
+            EVtCmdReleaseDataport,
+            TVersion( KPhoneToVideotelCmdVersionMajor,
+                    KPhoneToVideotelCmdVersionMinor,
+                    KPhoneToVideotelCmdVersionBuild ),
+            KNullDesC8,
+            CPhoneContinueEmergencyCallCommand::NewL( *iStateMachine ) );
     }
 
 // -----------------------------------------------------------
@@ -3754,6 +3767,15 @@ EXPORT_C void CPhoneState::SetTouchPaneButtons( TInt aResourceId )
     {
     if ( FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
         {
+        // Display Video Share button instead of Hold Button if
+        // the feature is enabled and video sharing is currently available.
+        if ( aResourceId == EPhoneIncallButtons &&
+             FeatureManager::FeatureSupported( KFeatureIdFfEntryPointForVideoShare ) &&
+             CPhonePubSubProxy::Instance()->Value
+                ( KPSUidCoreApplicationUIs, KCoreAppUIsVideoSharingIndicator ) )
+            {
+            aResourceId = EPhoneIncallVideoShareButtons;
+            }
         TPhoneCmdParamInteger integerParam;
         integerParam.SetInteger( CPhoneMainResourceResolver::Instance()->
                                  ResolveResourceID( aResourceId ) );
@@ -4404,7 +4426,6 @@ void CPhoneState::ShowDtmfDialerL()
     booleanParam.SetBoolean( ETrue );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfDialerViewVisible,
                                          &booleanParam );
-
     if ( IsNumberEntryUsedL() )
         {
         // Store the number entry content to cache
@@ -4424,6 +4445,16 @@ void CPhoneState::ShowDtmfDialerL()
 
     // Update CBA
     iCbaManager->UpdateInCallCbaL();
+    
+    if( EPSCTsyCallStateDialling == 
+        CPhonePubSubProxy::Instance()->Value(KPSUidCtsyCallInformation, KCTsyCallState ) )
+        {
+        // Call indicator update to ensure that small call 
+        // bubble is shown in dtmf dialer during dialing
+        // call this needs to be done because when call is 
+        // initialized small call bubble visibility is set to false.
+        UpdateIncallIndicatorL(EPSCTsyCallStateDialling);
+        }
     }
 
 // -----------------------------------------------------------
@@ -4743,6 +4774,21 @@ EXPORT_C void CPhoneState::SetToolbarButtonLoudspeakerEnabled()
     }
 
 // ---------------------------------------------------------
+// CPhoneState::SetToolbarButtonHandsetEnabled
+// ---------------------------------------------------------
+//
+EXPORT_C void CPhoneState::SetToolbarButtonHandsetEnabled()
+    {
+    if ( FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
+        {
+        TPhoneCmdParamInteger integerParam;
+        integerParam.SetInteger( EPhoneInCallCmdHandset );
+        iViewCommandHandle->ExecuteCommand(
+            EPhoneViewEnableToolbarButton, &integerParam );
+        }
+    }
+
+// ---------------------------------------------------------
 // CPhoneState::HandleEasyDialingCommandsL
 // ---------------------------------------------------------
 //
@@ -4809,6 +4855,41 @@ EXPORT_C TBool CPhoneState::ForwardPEMessageToPhoneCustomizationL(
        handled = iCustomization->HandlePhoneEngineMessageL( aMessage, aCallId );
        }
     return handled;
+    }
+
+// -----------------------------------------------------------
+// CPhoneState::SetLittleBubbleVisibilityL
+// -----------------------------------------------------------
+//
+void CPhoneState::SetLittleBubbleVisibilityL(
+        TPhoneCommandParam* aCommandParam)
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneState::SetLittleBubbleVisibilityL() " );
+    // If user has opened dtmfeditor(dtmfdialer) then do not make any changes 
+    // to SetLittleBubbleVisible value. SetLittleBubbleVisible value is true by default.
+    if( !IsDTMFEditorVisibleL() )
+        {
+        TPhoneCmdParamIncallIndicatorData* incallIndicatorParam =
+                   static_cast<TPhoneCmdParamIncallIndicatorData*>( aCommandParam );
+        TInt activeCallId = GetActiveCallIdL();
+        switch( incallIndicatorParam->CallState() )
+           {
+           case EPSCTsyCallStateRinging:
+           case EPSCTsyCallStateDialling:
+               {
+               // If we have single ringing or dialling call then it is ok
+               // to set visibility to false.
+               if ( activeCallId < KErrNone )
+                   {
+                   incallIndicatorParam->SetLittleBubbleVisible( EFalse );
+                   }
+               }
+               break;
+           default:
+               incallIndicatorParam->SetLittleBubbleVisible( ETrue );
+               break;
+           }
+        } 
     }
 
 //  End of File

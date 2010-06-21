@@ -350,8 +350,13 @@ void CBubbleManager::SizeChanged()
                 BubbleLayout6::call6_windows_pane(variety));
 
             iMainPaneControl->SetRect( windowsPane.Rect() );
-            
-            DoLayoutCall4Bubbles( windowsPane.Rect() );    
+                
+            TAknLayoutRect bubblePane;        
+            bubblePane.LayoutRect( 
+                Rect(), 
+                BubbleLayout4::call4_windows_pane(variety));
+
+            DoLayoutCall4Bubbles( bubblePane.Rect() );    
             }
         else
             {

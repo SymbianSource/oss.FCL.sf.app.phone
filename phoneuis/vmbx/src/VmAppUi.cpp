@@ -154,26 +154,16 @@ void CVmAppUi::ConstructL()
 
     iTextExit = iEikonEnv->AllocReadResourceL( R_MENU_EXIT );
 
-    if ( !iAppContainer->IsVideoSupported() )
+    if ( !IsIpVoiceMailboxServices() && 
+        ( ( !iAppContainer->Number().Length() &&
+        !iAppContainer->VideoNumber().Length() ) || 
+        ( !iAppContainer->Number().Length() && 
+        !iAppContainer->IsVideoSupported() ) ) )
         {
         // If the vmbx number is not defined, query it as soon as
         // the app has been fully constructed.
-        if ( !iAppContainer->Number().Length() &&
-             !IsIpVoiceMailboxServices() )
-            {
-            // Query cs vmbx number since ip vmbx address cannot be asked
-            iAppContainer->QueryNumberL( EVmbxNotDefinedQuery );
-            }
-        }
-    else
-        {
-        if ( !iAppContainer->Number().Length() &&
-             !iAppContainer->VideoNumber().Length() &&
-             !IsIpVoiceMailboxServices() )
-            {
-            iQueryLauncher = CVmQueryLauncher::NewL( *iAppContainer, *this );
-            iAppUiState = ELauncherQueryingNumber;
-            }
+        iQueryLauncher = CVmQueryLauncher::NewL( *iAppContainer, *this );
+        iAppUiState = ELauncherQueryingNumber;
         }
 
     DrawCbaButtonsL();

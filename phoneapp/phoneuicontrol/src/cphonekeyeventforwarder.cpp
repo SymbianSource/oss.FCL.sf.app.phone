@@ -35,6 +35,7 @@
 #include "mphoneviewcommandhandle.h"
 #include "cphoneqwertyhandler.h"
 #include "tphonecmdparampointer.h"
+#include "tphonecmdparamboolean.h"
 #include "mphoneqwertymodeobserver.h"
 #include "cdialer.h"
 
@@ -241,6 +242,12 @@ void CPhoneKeyEventForwarder::ConstructL( const TRect& aRect )
         User::LeaveIfError( iPeninputServer.Connect() );
         iPeninputServer.AddPenUiActivationHandler( this, EPluginInputModeAll );
         iVirtualKeyBoardOpen = iPeninputServer.IsVisible();
+        }
+    
+    CEikonEnv* env = static_cast<CEikonEnv*>( ControlEnv() );
+    if ( env )
+        {
+        iMenu = env->AppUiFactory()->MenuBar();
         }
     }
 
@@ -547,27 +554,42 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyBeforeControlStackL(
         iMultitapIndex = 0;
         iPreviousScanCode = 0;
         }
-
+    
     // Special handling for QWERTY numeric mode key events
     if ( response == EKeyWasNotConsumed )
         {
-        // FEP treats numeric QWERTY mode of Phone editor as a special case where most
-        // key events flow through directly to the Phone app (but some don't).
-        // To ensure consistent handling of numeric mode keys and QWERTY modifiers, 
-        // handle those keys manually before FEP has a chance to mess things up.
+        // FEP does not handle numeric characters 0123456789+*#pw correctly
+        // when in QWERTY mode and number mode. If nothing is done about it, 
+        // these problems result in non-hybrid mode qwerty:
+        //      +, # and * cannot be typed without pressing Fn-key
+        //      Fn + <p/0> produces 0 although p is expected.
+        //      Fn + <w/2> produces 2 although w is expected.
+        // To avoid this problems we do the following.
+    
+        // Take numeric keyevent, pass it to number entry and consume it.
         TBool numericMode = iViewCommandHandle->HandleCommandL(
               EPhoneViewIsNumberEntryNumericMode ) == EPhoneViewResponseSuccess;
+        
+        TPhoneCmdParamBoolean blockingDialog;
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewGetBlockingDialogStatus, 
+            &blockingDialog );
 
-        if ( iQwertyHandler->IsQwertyInput() && numericMode )
+        // Handle and consume keyevent only if in qwerty mode, editor is 
+        // in numeric mode, menu is not shown and there is no blocking dialog.
+        if ( iQwertyHandler->IsQwertyInput() && numericMode && 
+             ( !iMenu || !iMenu->IsDisplayed() ) && !blockingDialog.Boolean() )
             {
             iQwertyHandler->ConvertToNumeric( keyEvent );
-            // Send key to editor unless this is a repeat event for dtmf character
-            if ( aKeyEvent.iRepeats == 0 ||
-                 !CPhoneKeys::IsDtmfTone( keyEvent, EEventKey ) )
+            
+            // Send key to editor only if a) it is not a repeating keyevent and 
+            // it is a valid number entry character (0123456789+*#pw).
+            if ( aKeyEvent.iRepeats == 0 &&
+                 ( CPhoneKeys::IsDtmfTone( keyEvent, EEventKey ) ||
+                   CPhoneKeys::IsExtraChar( keyEvent.iCode ) ) )
                 {
                 iStateMachine->State()->HandleKeyEventL( keyEvent, EEventKey );
+                response = EKeyWasConsumed;
                 }
-            response = EKeyWasConsumed;
             }
         }
     

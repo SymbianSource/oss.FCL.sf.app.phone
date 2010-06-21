@@ -81,6 +81,7 @@ LIBRARY         connmon.lib // RConnectionMonitor
 LIBRARY         avkon.lib // AknTextUtils
 LIBRARY         ProfileEngine.lib
 LIBRARY         hal.lib
+LIBRARY         eikcoctl.lib 
 
 // RemCon
 LIBRARY         remconcoreapi.lib

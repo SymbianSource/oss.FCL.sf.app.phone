@@ -21,6 +21,24 @@
 
 // ======== LOCAL FUNCTIONS ========
 
+/**
+ * Draws rounded rect. Used for drawing frame to caller image bitmap.
+ */
+void DrawRoundRect(CWindowGc& aGC, TPoint aTopLeft, TSize aSize )
+    {   
+    const TRgb white( 255, 255, 255);
+    aGC.SetPenColor( white );
+    aGC.SetPenSize( TSize( 5, 5 ) );
+    
+    TPoint bottomRight = aTopLeft + aSize;
+    TRect decoratorRect( aTopLeft, bottomRight );
+    // Make rect litle larger so that it will be outside of the caller image, 
+    // so that bitmap's corners are hidden.
+    decoratorRect.Grow( 2, 2 ); 
+    const TSize ellipsesSize( 10, 10 );
+    aGC.DrawRoundRect( decoratorRect, ellipsesSize );
+    }
+
 // ---------------------------------------------------------------------------
 // Constructor
 // ---------------------------------------------------------------------------
@@ -219,24 +237,27 @@ EXPORT_C void CTelBubbleCallImage::SizeChanged()
 //
 EXPORT_C void CTelBubbleCallImage::Draw( const TRect& /*aRect*/ ) const
     {
-    CWindowGc& gc = SystemGc();
-    
-    TPoint topLeft = IsFullScreenImage() ? Rect().iTl : iImagePlacingArea.iTl;
-    
-    
-    if ( iImage && iMask )
+    if ( iImage ) 
         {
-        gc.BitBltMasked( topLeft + iOffset,
-                         iImage, 
-                         iSourceRect, 
-                         iMask, 
-                         EFalse );
-        }
-    else if ( iImage )
-        {
-        gc.BitBlt( topLeft + iOffset, 
-                   iImage,
-                   iSourceRect );    
+        CWindowGc& gc = SystemGc();
+        const TPoint topLeft = IsFullScreenImage() ? Rect().iTl : iImagePlacingArea.iTl;
+        const TPoint bitmapTopLeft = topLeft + iOffset;
+       
+        if( iMask ) 
+            {
+            gc.BitBltMasked( bitmapTopLeft,
+                             iImage, 
+                             iSourceRect, 
+                             iMask, 
+                             EFalse );
+            }
+        else            
+            {
+            gc.BitBlt( bitmapTopLeft,
+                       iImage,
+                       iSourceRect );    
+            }
+        DrawRoundRect( gc, bitmapTopLeft, iSourceRect.Size() );
         }
     }
 

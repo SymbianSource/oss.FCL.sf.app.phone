@@ -434,6 +434,12 @@ class CPhoneState :
         * @param aCallid call id
         */
         IMPORT_C void DisplayHeaderForOutgoingCallL( TInt aCallId );
+        
+        /**
+        * Display initializing call header (phone number isn't initially
+        * displayed)
+        */
+        IMPORT_C void DisplayHeaderForInitializingCallL( TInt aCallId );
 
         /**
         * Update Single Active Call
@@ -517,8 +523,8 @@ class CPhoneState :
         IMPORT_C TBool NeedToReturnToForegroundAppL() const;
 
         /**
-        * Check if the top application is currently displayed in the foreground
-        * @return boolean value indicating that top app is displayed
+        * Check if the top application is idle or phone app.
+        * @return boolean value indicating that top app is idle/phone application.
         */
         IMPORT_C TBool TopAppIsDisplayedL() const;
 
@@ -831,6 +837,11 @@ class CPhoneState :
          */
          IMPORT_C void SetToolbarButtonLoudspeakerEnabled();
 
+         /**
+         * Sets toolbar handset button enabled.
+         */
+         IMPORT_C void SetToolbarButtonHandsetEnabled();
+
     protected:
 
        /**
@@ -1094,6 +1105,11 @@ class CPhoneState :
         * @param aCommandId - command id to be handled
         */
         void HandleEasyDialingCommandsL( TInt aCommandId );
+        
+        /**
+        * Sets little bubble value if dialler is open.
+        */
+        void SetLittleBubbleVisibilityL(TPhoneCommandParam* aCommandParam);
 
     private: // NumberEntry functions.
 

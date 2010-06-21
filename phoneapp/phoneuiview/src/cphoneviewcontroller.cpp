@@ -34,6 +34,7 @@
 #include "tphonecommandparam.h"
 #include "cphonebubblewrapper.h"
 #include "tphonecmdparamcallstatedata.h"
+#include "tphonecmdparamKeycapture.h"
 #include "tphonecmdparaminteger.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparamstring.h"
@@ -2187,11 +2188,16 @@ EXPORT_C void CPhoneViewController::HandleSecurityModeChanged( TBool aIsEnabled 
     iToolbarController->DimToolbar( aIsEnabled );			
 	iPhoneView->SetSecurityMode( aIsEnabled );
 	iMenuController->SetSecurityMode( aIsEnabled );
+	
+	TBool securityModeChanged = ( iSecurityMode != aIsEnabled );
+	
+	iSecurityMode = aIsEnabled;
+	
 	if ( iDialer )
 		{
         iDialerController->SetRestrictedDialer( aIsEnabled );
 	
-        if ( iDialerActive && iSecurityMode != aIsEnabled )
+        if ( iDialerActive && securityModeChanged )
             {
             CDialingExtensionInterface* easyDialing = iDialer->GetEasyDialingInterface();
             if ( easyDialing )
@@ -2231,14 +2237,26 @@ EXPORT_C void CPhoneViewController::HandleSecurityModeChanged( TBool aIsEnabled 
                         ResolveResourceID( EPhoneNumberAcqCBA ) );
                 }
             TRAP_IGNORE( ExecuteCommandL( EPhoneViewUpdateCba, &integerParam ) );
+            
+            if ( !aIsEnabled )
+                {
+                TRAP_IGNORE( SwitchLayoutToFlatStatusPaneL( ETrue ) );
+                }
             }
 		}
-    if ( iSecurityMode != aIsEnabled )
+    if ( securityModeChanged )
         {
         // Update status pane dimming
         iStatusPane->StatusPane().SetDimmed( aIsEnabled );
+
+        // Uncapture the App key for sure
+        TPhoneCmdParamKeyCapture appKeyCaptureParam;
+        appKeyCaptureParam.SetKey( EStdKeyApplication0 );
+        appKeyCaptureParam.SetKeyCode( EKeyApplication0 );
+        appKeyCaptureParam.SetCaptureType( EPhoneKeyAllEvents );
+
+        iKeyCaptureController->StopCapturingKey( &appKeyCaptureParam );
         }
-	iSecurityMode = aIsEnabled;
 	}
 
 // ---------------------------------------------------------------------------
@@ -3690,7 +3708,7 @@ void CPhoneViewController::SwitchLayoutToFlatStatusPaneL( TBool aSwitch )
 
     if ( aSwitch )
         {
-        SwapEmptyIndicatorPaneInSecureStateL( ETrue );
+        SwapEmptyIndicatorPaneL( ETrue );
         if ( !Layout_Meta_Data::IsLandscapeOrientation() )
             {
             iStatusPane->StatusPane().SwitchLayoutL
@@ -3704,7 +3722,7 @@ void CPhoneViewController::SwitchLayoutToFlatStatusPaneL( TBool aSwitch )
         }
     else
         {
-        SwapEmptyIndicatorPaneInSecureStateL( EFalse );
+        SwapEmptyIndicatorPaneL( EFalse );
         if ( !Layout_Meta_Data::IsLandscapeOrientation() )
             {
             iStatusPane->StatusPane().SwitchLayoutL
@@ -3723,14 +3741,14 @@ void CPhoneViewController::SwitchLayoutToFlatStatusPaneL( TBool aSwitch )
     }
 
 // ---------------------------------------------------------------------------
-// CPhoneViewController::SwapEmptyIndicatorPaneInSecureStateL
+// CPhoneViewController::SwapEmptyIndicatorPaneL
 // ---------------------------------------------------------------------------
 //
-void CPhoneViewController::SwapEmptyIndicatorPaneInSecureStateL(
+void CPhoneViewController::SwapEmptyIndicatorPaneL(
                                     const TBool aSwapEmpty )
     {
     __LOGMETHODSTARTEND(EPhoneUIView,
-        "CPhoneViewController::SwapEmptyIndicatorPaneInSecureStateL()" );
+        "CPhoneViewController::SwapEmptyIndicatorPaneL()" );
     if ( iSecurityMode )
         {
         if ( aSwapEmpty )
@@ -3751,6 +3769,17 @@ void CPhoneViewController::SwapEmptyIndicatorPaneInSecureStateL(
             iStatusPane->StatusPane().SwapControlL(
             TUid::Uid( EEikStatusPaneUidIndic ), iPreviousIndicatorControl );
             }
+        }
+    else if ( iPreviousIndicatorControl 
+              && iIndiContainer
+              && ( iIndiContainer ==
+                      iStatusPane->StatusPane().ControlL(
+                              TUid::Uid( EEikStatusPaneUidIndic ) ) ) )
+        {
+        //Restore previous indicator control if security mode is not on anymore 
+        // and empty indicator pane is still in status pane.
+        iStatusPane->StatusPane().SwapControlL(
+        TUid::Uid( EEikStatusPaneUidIndic ), iPreviousIndicatorControl );
         }
     }
 

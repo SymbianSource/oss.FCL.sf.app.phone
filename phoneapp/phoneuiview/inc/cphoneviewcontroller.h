@@ -579,9 +579,9 @@ class CPhoneViewController :
         void SwitchLayoutToFlatStatusPaneL( TBool aSwitch );
 
         /**
-        * Swap empty indicator pane when secure state.
+        * Swap empty indicator pane.
         */
-        void SwapEmptyIndicatorPaneInSecureStateL ( const TBool aSwapEmpty );
+        void SwapEmptyIndicatorPaneL( const TBool aSwapEmpty );
 
         /**
         * Handles transition effect.

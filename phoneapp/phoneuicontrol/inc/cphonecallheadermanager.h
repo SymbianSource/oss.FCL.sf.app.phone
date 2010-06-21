@@ -86,6 +86,12 @@ NONSHARABLE_CLASS( CPhoneCallHeaderManager ) :  public CBase,
         */
         void DisplayHeaderForOutgoingCallL(
                 const TInt aCallId );
+        
+        /**
+        * Display initializing call header (phone number isn't initially
+        * displayed)
+        */
+        void DisplayHeaderForInitializingCallL( TInt aCallId );
        
         /**
         * Sets the call header type used in the call bubble.
