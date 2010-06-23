@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -68,6 +68,42 @@ CpSettingFormEntryItemData::CpSettingFormEntryItemData(
 
 
 // -----------------------------------------------------------------------------
+// CpSettingFormEntryItemData::CpSettingFormEntryItemData
+// -----------------------------------------------------------------------------
+//
+CpSettingFormEntryItemData::CpSettingFormEntryItemData( 
+        EntryItemType type,
+        CpItemDataHelper & itemDataHelper,
+        const QString & text,
+        const QString & description,
+        const QString & iconName,
+        const HbDataFormModelItem * parent )
+    //:
+    //CpSettingFormItemData( /*type, itemDataHelper, text, description, iconName, parent*/ )
+    {
+    
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpSettingFormEntryItemData::CpSettingFormEntryItemData
+// -----------------------------------------------------------------------------
+//
+CpSettingFormEntryItemData::CpSettingFormEntryItemData( 
+        EntryItemType type,
+        HbDataForm * dataForm,
+        const QString & text,
+        const QString & description,
+        const QString & iconName,
+        const HbDataFormModelItem * parent )
+    //:
+    //CpSettingFormItemData( /*type, dataForm, text, description, iconName, parent*/ )
+    {
+    
+    }
+
+
+// -----------------------------------------------------------------------------
 // CpSettingFormEntryItemData::~CpSettingFormEntryItemData
 // -----------------------------------------------------------------------------
 //
@@ -120,12 +156,33 @@ void CpSettingFormEntryItemData::setDescription(
 
 
 // -----------------------------------------------------------------------------
+// CpSettingFormEntryItemData::iconName
+// -----------------------------------------------------------------------------
+//
+QString CpSettingFormEntryItemData::iconName(  ) const
+    {
+    SMC_MOCK_METHOD0( QString )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpSettingFormEntryItemData::setIconName
+// -----------------------------------------------------------------------------
+//
+void CpSettingFormEntryItemData::setIconName( 
+        const QString & icon )
+    {
+    SMC_MOCK_METHOD1( void, const QString &, icon )
+    }
+
+
+// -----------------------------------------------------------------------------
 // CpSettingFormEntryItemData::entryItemIcon
 // -----------------------------------------------------------------------------
 //
 HbIcon CpSettingFormEntryItemData::entryItemIcon(  ) const
     {
-//    SMC_MOCK_METHOD0( HbIcon )
+    SMC_MOCK_METHOD0( HbIcon )
     }
 
 
@@ -136,7 +193,17 @@ HbIcon CpSettingFormEntryItemData::entryItemIcon(  ) const
 void CpSettingFormEntryItemData::setEntryItemIcon( 
         const HbIcon & icon )
     {
-//    SMC_MOCK_METHOD1( void, const HbIcon &, icon )
+    SMC_MOCK_METHOD1( void, const HbIcon &, icon )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpSettingFormEntryItemData::onLaunchView
+// -----------------------------------------------------------------------------
+//
+void CpSettingFormEntryItemData::onLaunchView(  )
+    {
+    SMC_MOCK_METHOD0( void )
     }
 
 

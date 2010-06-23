@@ -84,19 +84,23 @@ class CPhoneErrorMessagesHandler : public CBase,
         * Show global InfoNote
         * @param aResourceId resource id to be resolved
         */
-        IMPORT_C void SendGlobalInfoNoteL( TInt aResourceId );
+        IMPORT_C void SendGlobalInfoNoteL( TInt aResourceId, 
+                                           TBool aNotificationDialog = EFalse );
  
         /**
         * Show global ErrorNote
         * @param aResourceId resource id to be resolved
         */
-        IMPORT_C void SendGlobalErrorNoteL( TInt aResourceId );
+        IMPORT_C void SendGlobalErrorNoteL( TInt aResourceId,
+                                            TBool aNotificationDialog = EFalse );
 
         /**
         * Show global WarningNote
         * @param aResourceId resource id to be resolved
         */        
-        IMPORT_C void SendGlobalWarningNoteL( TInt aResourceId );
+        IMPORT_C void SendGlobalWarningNoteL( 
+                TInt aResourceId,
+                TBool aNotificationDialog = EFalse );
         
 
     private:        

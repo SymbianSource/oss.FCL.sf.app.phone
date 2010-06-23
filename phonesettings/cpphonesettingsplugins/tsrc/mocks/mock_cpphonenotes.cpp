@@ -90,19 +90,6 @@ void CpPhoneNotes::showGlobalErrorNote(
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::showBasicServiceList
-// -----------------------------------------------------------------------------
-//
-void CpPhoneNotes::showBasicServiceList( 
-        const QString & title,
-        const QList<unsigned char> & basicServiceGroupIds )
-    {
-    SMC_MOCK_METHOD2( void, const QString &, title, 
-        const QList<unsigned char> &, basicServiceGroupIds )
-    }
-
-
-// -----------------------------------------------------------------------------
 // CpPhoneNotes::showCallDivertDetails
 // -----------------------------------------------------------------------------
 //
@@ -154,11 +141,20 @@ bool CpPhoneNotes::noteShowing(  )
 // -----------------------------------------------------------------------------
 //
 void CpPhoneNotes::finishedPasswordQueryDialog( 
-        HbAction * action )
+        HbAction * /*action*/ )
     {
     //SMC_MOCK_METHOD1( void, HbAction *, action )
     }
 
+// -----------------------------------------------------------------------------
+// CpPhoneNotes::showNotificationDialog
+// -----------------------------------------------------------------------------
+//
+void CpPhoneNotes::showNotificationDialog( 
+        const QString & text )
+    {
+    SMC_MOCK_METHOD1( void, const QString &, text )
+    }
 
 // -----------------------------------------------------------------------------
 // CpPhoneNotes::activeNoteAboutToClose

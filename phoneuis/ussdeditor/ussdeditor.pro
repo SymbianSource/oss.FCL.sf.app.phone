@@ -17,8 +17,6 @@
 #
 
 TEMPLATE = app
-#the application will be "invisible"
-CONFIG += no_icon
 
 TARGET = ussdeditor
 DEPENDPATH += .
@@ -29,8 +27,10 @@ CONFIG += hb
 
 symbian: {
 
-TARGET.CAPABILITY = CAP_GENERAL_DLL
+TARGET.CAPABILITY = CAP_APPLICATION NetworkControl
 TARGET.UID3 = 0x10005955
+
+RSS_RULES = "hidden = KAppIsHidden;"
 
 INCLUDEPATH += . 
 INCLUDEPATH += $$MW_LAYER_SYSTEMINCLUDE 
@@ -52,6 +52,5 @@ BLD_INF_RULES.prj_exports += "$${LITERAL_HASH}include <platform_paths.hrh>" \
                              "rom/ussdeditorresources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(ussdeditorresources.iby)" \
                              "rom/ussdeditor_stub.sis /epoc32/data/z/system/install/ussdeditor_stub.sis"
 
-#The next line will be opened when the official translations already
-#TRANSLATIONS = phcltsrvussd.ts
+TRANSLATIONS = ussd.ts
 }

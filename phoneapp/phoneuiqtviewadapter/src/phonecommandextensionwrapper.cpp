@@ -64,6 +64,15 @@ void PhoneCommandExtensionWrapper::modifyPushButtonCommandList(
     }
 }
 
+void PhoneCommandExtensionWrapper::modifyToolBarCommandList(
+        const QList<XQTelUiCommandExtension::CallInfo> &callInfo,
+        QList<XQTelUiCommandExtension::ToolBarCommand> &toolBarCmdList)
+{
+    if (m_plugin) {
+        m_plugin->modifyToolBarCommandList(callInfo, toolBarCmdList);
+    }
+}
+
 void PhoneCommandExtensionWrapper::addMenuActions(
         const QList<XQTelUiCommandExtension::CallInfo> &callInfo,
         QList<HbAction*> &menuActions)

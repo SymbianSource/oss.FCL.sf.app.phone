@@ -26,7 +26,7 @@ HEADERS += ./inc/phoneuicommandcontroller.h
 HEADERS += ./inc/phonecommandextensionwrapper.h
 HEADERS += ./inc/phonemessagecontroller.h
 HEADERS += ./inc/phoneindicatorcontroller.h
-
+HEADERS += ./inc/phonevisibilityhandler.h
 
 SOURCES += ./src/phoneuiqtviewadapter.cpp
 SOURCES += ./src/phoneuiqtbuttonscontroller.cpp
@@ -38,3 +38,5 @@ SOURCES += ./src/phoneuicommandcontroller.cpp
 SOURCES += ./src/phonecommandextensionwrapper.cpp
 SOURCES += ./src/phonemessagecontroller.cpp
 SOURCES += ./src/phoneindicatorcontroller.cpp
+SOURCES += ./src/phonevisibilityhandler.cpp
+

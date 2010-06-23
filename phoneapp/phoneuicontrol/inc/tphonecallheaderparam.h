@@ -107,10 +107,11 @@ class TPhoneCallHeaderParam
         
         /**
         * Return remote info data
+        * @return True if secondary CLI is used
         * @param aCallid call id
         * @param aData the returned remote info data
         */
-        void GetRemoteInfoDataL( 
+        TBool GetRemoteInfoDataL( 
                 const TInt aCallId,
                 TDes& aData ) const;           
     
@@ -216,24 +217,6 @@ class TPhoneCallHeaderParam
         void SetCliParamatersL(
                 const TInt aCallId, 
                 TPhoneCmdParamCallHeaderData* aCallHeaderData );  
-        
-        /**
-        * Check if call is private or payphone number. If call is 
-        * Private/PayPhone call then IsCallPrivateOrPayPhone will 
-        * set SetIdentitySpecificCallHeaderData parameters.
-        * 
-        * @param aCallId Call id.
-        * @return ETrue if call is private or payphone number.
-        */
-        TBool IsCallPrivateOrPayPhone( const TInt aCallId, TDes& aData ) const;
-        
-        /**
-        * Sets identity specific call header text.
-        * 
-        * @param aCallId Call id.
-        * @param aData Identity  specific call header text data.
-        */
-        void SetIdentitySpecificCallHeaderData( const TInt aCallId, TDes& aData ) const;
         
         /**
         * Concludes does the engine have information of the

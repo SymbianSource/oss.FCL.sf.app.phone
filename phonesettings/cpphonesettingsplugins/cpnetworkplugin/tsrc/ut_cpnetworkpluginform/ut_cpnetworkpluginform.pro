@@ -66,18 +66,6 @@ SOURCES += ../../../tsrc/mocks/mock_cpnetworkplugin.cpp \
            ../../../tsrc/mocks/mock_cpplugincommon.cpp \
            ../../../tsrc/mocks/mock_cpphonenotes.cpp \
            ../../../tsrc/mocks/mock_cpphonelocalisation.cpp \
-           ../../../tsrc/mocks/mock_hbdataform.cpp \
-           ../../../tsrc/mocks/mock_hbabstractitemview.cpp \
-           ../../../tsrc/mocks/mock_hbscrollarea.cpp \
            ../../../tsrc/mocks/mock_hbdialog.cpp \
-           ../../../tsrc/mocks/mock_hbpopup.cpp \
-           ../../../tsrc/mocks/mock_hbwidget.cpp \
-           ../../../tsrc/mocks/mock_hblabel.cpp \
-           ../../../tsrc/mocks/mock_hblistwidget.cpp \
-           ../../../tsrc/mocks/mock_hblistview.cpp \
-           ../../../tsrc/mocks/mock_hbaction.cpp \
-           ../../../tsrc/mocks/mock_qaction.cpp \
-           ../../../tsrc/mocks/mock_qobject.cpp \
-           ../../../tsrc/mocks/mock_hblistwidgetitem.cpp \
            ../../../tsrc/mocks/mock_cellulardatasettings.cpp
            

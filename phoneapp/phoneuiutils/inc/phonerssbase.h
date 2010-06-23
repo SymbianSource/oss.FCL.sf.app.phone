@@ -59,7 +59,6 @@ enum TPhoneRssBase
     EPhoneInformationConfirmationNote,
     EPhoneSecurityInformationNote,
     EPhoneRequestingNote,
-    EPhonePhoneImeiString,
     EPhonePhoneBtDevAddress,
     EPhoneInformationRemoteCreateConferenceNote,
     EPhoneInformationRemotePutOnHoldNote,
@@ -125,7 +124,6 @@ enum TPhoneRssBase
     EPhoneCLIWithheld,
     EPhoneWaitingText,
     EPhoneIdleTimeFormat,
-    EPhoneLifeTimeFormat,
     EPhoneInCallDisconnected,
     EPhoneCallInProgress,
     EPhoneEmergencyCallsOnly,
@@ -141,10 +139,8 @@ enum TPhoneRssBase
 
     // "Muted"
     EPhoneInCallMutedText,
-    // "Call"
-    EPhoneCall,
-    // " Call %N"
-    EPhoneInCallNumberText,
+    // "Unknown call"
+    EPhoneCallCLIUnknown,
     /** "Transferring" -information note. */
     EPhoneInCallWaitTransfer,
     EPhoneInCallTransferred,
@@ -168,9 +164,6 @@ enum TPhoneRssBase
     EPhoneDtmfWaitCharacterConfirmationQueryText,
 
     EPhoneDtmfFetchTitle,
-    EPhoneDtmfSpeedDialNumberQuery,
-    EPhoneDtmfSpeedDialNotAssigned,
-    EPhoneDtmfInvalidSpeedDial,
 
     // ALS
     EPhoneAlsLineChangeConfirmationQuery,
@@ -304,7 +297,6 @@ enum TPhoneRssBase
 
     // the user has typed something into the edit-box (with content)
     EPhoneSendDtmfNormalEditBoxCBA,
-    EPhoneDtmfSpeedDialNormalEditBoxCBA,
 
     EPhoneCallHandlingCallWaitingCBA,
     EPhoneCallHandlingNewCallFindCBA,

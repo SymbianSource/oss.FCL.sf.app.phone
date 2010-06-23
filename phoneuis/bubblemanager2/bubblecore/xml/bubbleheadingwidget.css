@@ -17,36 +17,46 @@ BubbleHeadingWidget[layoutOption="one_line"]
 
 BubbleHeadingWidget:text_line_1
 {
-    preferred-height: var(hb-param-text-height-primary);
+    text-height: var(hb-param-text-height-primary);
     left: -var(hb-param-margin-gene-middle-horizontal);
     color: var(qtc_list_item_title_normal);
+    text-line-count-min:1;
+    text-line-count-max:1;    
 }
 
 BubbleHeadingWidget:text_line_2[layoutOption!="one_line"]
 {
-    preferred-height: var(hb-param-text-height-primary);
-    preferred-width: -1;
+    text-height: var(hb-param-text-height-primary);
+    pref-width: -1;
     left: -var(hb-param-margin-gene-middle-horizontal);
     top: -var(hb-param-margin-gene-middle-vertical);
     text-align: left;
     color: var(qtc_list_item_title_normal);
+    text-line-count-min:1;
+    text-line-count-max:1;
+    size-policy-horizontal: expanding;
 }
 
 BubbleHeadingWidget:text_line_2[layoutOption="one_line"]
 {
-    preferred-height: var(hb-param-text-height-primary);
-    preferred-width: 30un;
+    text-height: var(hb-param-text-height-primary);
+    pref-width: 35un; /* not in spec yet, fixed value needed for localisation */
     left: -var(hb-param-margin-gene-middle-horizontal);
     text-align: right;
     color: var(qtc_list_item_title_normal);
+    text-line-count-min:1;
+    text-line-count-max:1;
+    size-policy-horizontal: fixed;    
 }
 
 BubbleHeadingWidget:text_line_3
 {
-    preferred-height: var(hb-param-text-height-primary);
+    text-height: var(hb-param-text-height-primary);
     left: -var(hb-param-margin-gene-middle-horizontal);
     top: -var(hb-param-margin-gene-middle-vertical);
     color: var(qtc_list_item_title_normal);
+    text-line-count-min:1;
+    text-line-count-max:1;
 }
 
 BubbleHeadingWidget:status_icon

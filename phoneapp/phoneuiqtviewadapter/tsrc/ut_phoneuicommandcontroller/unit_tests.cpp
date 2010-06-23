@@ -20,16 +20,20 @@
 #include <QList>
 #include <hbapplication.h>
 #include <phoneappcommands.hrh>
+#include <xqphoneappcommands.h>
 #include "phoneuiqtviewif.h"
 #include "pevirtualengine.h"
 #include "bubblemanagerif.h"
 #include "phonebubblewrapper.h"
 #include "phoneuicommandcontroller.h"
+#include "phoneresourceids.h"
 
 extern bool m_setActions;
 extern bool m_setInvalidCommand;
 extern QList<HbAction*> m_menuActions;
 extern bool m_setInvalidButtonCommands;
+extern bool m_setInvalidToolBarCommands;
+extern bool m_setCustomToolBarCommands;
 
 #define PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
@@ -83,6 +87,7 @@ public:
     return m_isDialpadVisible; }
     QString dialpadText() {return m_dialpadText;};
     void clearAndHideDialpad() { m_clearAndHideDialpadCalled = true;};
+    void clearDialpad() {};
     void bringToForeground() {;};
     void setMenuActions(const QList<PhoneAction*>& actions) { m_setMenuActionsCalled = true;};
     void shutdownPhoneApp() {;};
@@ -161,6 +166,7 @@ private slots:
     void testSetCallMenuActions();
     void testSetDialpadMenuActions();
     void testPushButtonActionsForCall();
+    void testToolBarActionsForCall();
 
 
 private:
@@ -675,6 +681,126 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
     
 }
 
+void TestPhoneUiCommandController::testToolBarActionsForCall()
+{
+    int callState = EPEStateConnected;
+    QMap<int,int> callStates;
+    QMap<int,int> serviceIds;
+    int serviceId(2);
+    int callId(1);
+    callStates[callId] = EPEStateConnected;
+    serviceIds[callId] = serviceId;
+    m_setInvalidToolBarCommands = false;
+    m_setCustomToolBarCommands = false;
+    
+    QList<PhoneAction *> actions = 
+        m_commandController->toolBarActions(
+            R_PHONEUI_DIALER_CBA,
+            callStates,
+            serviceIds,
+            serviceId,
+            callId);
+    
+    QVERIFY(4==actions.count());
+    QVERIFY(EPhoneInCallCmdActivateIhf == actions.at(0)->command());
+    QVERIFY(EPhoneInCallCmdHold == actions.at(1)->command());
+    QVERIFY(EPhoneInCallCmdContacts == actions.at(2)->command());
+    QVERIFY(EPhoneInCallCmdDialer == actions.at(3)->command());
+    
+    qDeleteAll(actions);
+    actions.clear();
+    
+    // Invalid resource id
+    actions = m_commandController->toolBarActions(
+            -1,
+            callStates,
+            serviceIds,
+            serviceId,
+            callId);
+    
+    QVERIFY(0==actions.count());
+    
+    qDeleteAll(actions);
+    actions.clear();
+    
+    // Service not found
+    actions = m_commandController->toolBarActions(
+            R_PHONEUI_DIALER_CBA,
+            callStates,
+            serviceIds,
+            -1,
+            -1);
+    
+    QVERIFY(4==actions.count());
+    
+    qDeleteAll(actions);
+    actions.clear();
+    
+    // Invalid toolbar command by extension
+    m_setInvalidToolBarCommands = true;
+    
+    actions = m_commandController->toolBarActions(
+            R_PHONEUI_DIALER_CBA,
+            callStates,
+            serviceIds,
+            serviceId,
+            callId);
+    
+    QVERIFY(3==actions.count());
+    
+    qDeleteAll(actions);
+    actions.clear();
+    
+    
+    // Command list modified by extension
+    m_setInvalidToolBarCommands = false;
+    m_setCustomToolBarCommands = true;
+
+    actions = m_commandController->toolBarActions(
+            R_PHONEUI_DIALER_CBA,
+            callStates,
+            serviceIds,
+            serviceId,
+            callId);
+    
+    QVERIFY(4==actions.count());
+    QVERIFY(EPhoneInCallCmdJoin == actions.at(0)->command());
+    QVERIFY(EPhoneInCallCmdUnhold == actions.at(1)->command());
+    QVERIFY(EPhoneInCallCmdEndThisOutgoingCall == actions.at(2)->command());
+    QVERIFY(EPhoneCallComingCmdSilent == actions.at(3)->command());
+    
+    qDeleteAll(actions);
+    actions.clear();
+    
+    m_setCustomToolBarCommands =false;
+    
+    // Multi call
+    callStates[2] = EPEStateHeld;
+    serviceIds[2] = 2;
+    
+    actions = m_commandController->toolBarActions(
+            R_PHONEUI_INCALL_DIALER_CBA,
+            callStates,
+            serviceIds,
+            serviceId,
+            callId);
+    
+    QVERIFY(4==actions.count());
+    
+    // No extension
+    serviceIds[1] = 1;
+    serviceIds[2] = 1;
+    serviceId = 1;
+    
+    actions = m_commandController->toolBarActions(
+            R_PHONEUI_INCALL_DIALER_CBA,
+            callStates,
+            serviceIds,
+            serviceId,
+            callId);
+    
+    QVERIFY(4==actions.count());
+}
 
 PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestPhoneUiCommandController)
 #include "unit_tests.moc"

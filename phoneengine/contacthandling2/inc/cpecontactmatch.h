@@ -96,15 +96,6 @@ class CPEContactMatch
         */
         CFbsBitmap* ContactThumbnail();
 
-        /**
-        * Fetch number from speed dial location
-        * @param aLocationIndex Index to look for
-        * @param aNumber Filled with speed dial location phone number
-        */
-        void GetSpeedDialLocationL( 
-            TInt aLocationIndex, 
-            TPEPhoneNumber& aNumber );
-
     private:
 
         /**

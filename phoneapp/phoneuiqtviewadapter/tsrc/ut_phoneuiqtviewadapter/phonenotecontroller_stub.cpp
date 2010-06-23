@@ -85,6 +85,10 @@ void PhoneNoteController::destroyDialog()
 {
 }
 
+void PhoneNoteController::destroyNotification()
+{
+}
+
 void PhoneNoteController::removeMappings()
 {
 }

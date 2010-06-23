@@ -61,7 +61,7 @@ HEADERS += ../../inc/phoneuiqtview.h \
 SOURCES += ../../src/phoneuiqtview.cpp \
            ../../src/phoneaction.cpp \
            unit_tests.cpp \
-           hbtoolbar.cpp \
-           hbvolumesliderpopup.cpp \
-           qsysteminfo.cpp 
+           hbtoolbar_stub.cpp \
+           hbvolumesliderpopup_stub.cpp \
+           qsysteminfo_stub.cpp 
            

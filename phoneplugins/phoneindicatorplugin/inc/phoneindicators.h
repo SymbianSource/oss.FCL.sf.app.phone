@@ -30,13 +30,15 @@ enum Interaction
     InteractionNone,
     OpenMissedCallView,
     SwitchBackToCall,
+    OpenDiverSettingsView,
     Deactivate
 };
 
 enum PhoneIndicatorTypes
 {
     PhoneMissedCallIndicator = 0,
-    PhoneActiveCallIndicator
+    PhoneActiveCallIndicator,
+    PhoneDivertIndidicator
 };
 
 inline QString indicatorName(int indicatorType) {
@@ -53,10 +55,11 @@ struct PhoneIndicatorInfo
 
 Q_DECLARE_METATYPE(PhoneIndicatorInfo)
 
-static const int PhoneIndicatorCount = 2;
+static const int PhoneIndicatorCount = 3;
 static const PhoneIndicatorInfo IndicatorInfos[PhoneIndicatorCount] = {
     {"qtg_mono_info.svg",   "Missed call", "Name/Number", OpenMissedCallView },
-    {"qtg_mono_info.svg",   "Active call", " ", SwitchBackToCall }
+    {"qtg_mono_info.svg",   "Active call", " ", SwitchBackToCall },
+    {"qtg_mono_info.svg",    "Active diverts", " ", OpenDiverSettingsView }
 };
 
 #endif // PHONEINDICATORS_H

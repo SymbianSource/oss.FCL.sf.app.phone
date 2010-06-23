@@ -28,7 +28,6 @@
 #include <featmgr.h>
 #include <settingsinternalcrkeys.h>
 #include <mpeengineinfo.h>
-#include <activeidle2domainpskeys.h>
 #include <mpeclientinformation.h>
 #include <bldvariant.hrh>
 
@@ -39,7 +38,6 @@
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparamglobalnote.h"
 #include "tphonecmdparamstring.h"
-#include "tphonecmdparamspeeddial.h"
 #include "tphonecmdparamboolean.h"
 #include "mphonestatemachine.h"
 #include "phonestatedefinitions.h"
@@ -279,22 +277,6 @@ EXPORT_C void CPhoneStateIdle::HandleKeyMessageL(
                 }
             break;
             
-        // number key
-        case KPhoneDtmf1Character:
-        case KPhoneDtmf2Character:
-        case KPhoneDtmf3Character:
-        case KPhoneDtmf4Character:
-        case KPhoneDtmf5Character:
-        case KPhoneDtmf6Character:
-        case KPhoneDtmf7Character:
-        case KPhoneDtmf8Character:
-        case KPhoneDtmf9Character:
-            if ( aMessage == EPhoneKeyLongPress && IsSimOk() )
-                {
-                HandleNumberLongKeyPressL();
-                }
-            break;
-
 #ifdef RD_INTELLIGENT_TEXT_INPUT   
         case EKeyEnter:
             if ( IsNumberEntryVisibleL() )
@@ -440,8 +422,6 @@ EXPORT_C void CPhoneStateIdle::HandleDialingL( TInt aCallId )
 
     BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC();
-    
-    SetNumberEntryVisibilityL(EFalse);
 
     // Display call setup 
     DisplayCallSetupL( aCallId );  
@@ -536,7 +516,7 @@ EXPORT_C TBool CPhoneStateIdle::HandleCommandL( TInt aCommand )
             }
         
         case EPhoneNumberAcqCmdCall:
-            HandleVoiceCallCommandL( EFalse );
+            HandleVoiceCallCommandL();
             break;
         case EPhoneNumberAcqCmdSendCommand:
             HandleSendCommandL();
@@ -688,17 +668,9 @@ void CPhoneStateIdle::DialVideoCallL()
         else
 #endif // _DEBUG
             {
-            if ( IsSpeedDialNumber( (*phoneNumber) ) )
-                {
-                // Handle speed dial
-                SpeedDialL( (*phoneNumber)[0], EDialMethodMenuSelection );
-                }
-            else
-                {
-                // call the number
-                iStateMachine->PhoneEngineInfo()->SetPhoneNumber( *phoneNumber );
-                DialMultimediaCallL();
-                }
+            // call the number
+            iStateMachine->PhoneEngineInfo()->SetPhoneNumber( *phoneNumber );
+            DialMultimediaCallL();
 
             CleanupStack::PopAndDestroy( phoneNumber );
             }
@@ -858,116 +830,6 @@ void CPhoneStateIdle::HandleIdleL( TInt /*aCallId*/ )
     // Remove all notes and dialogs
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );    
     }
- 
-// -----------------------------------------------------------
-// CPhoneStateIdle::SpeedDialL
-// -----------------------------------------------------------
-//   
-EXPORT_C void CPhoneStateIdle::SpeedDialL( const TUint& aDigit, 
-        TDialInitiationMethod aDialMethod )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::SpeedDialL( ) ");
-    
-    iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF );
-    
-    TPhoneCmdParamSpeedDial speedDialParam;
-    HBufC* phoneNumber = NumberForSpeedDialLocationL( aDigit, speedDialParam );
-
-    // Store serviceId received from vmbx handler
-    iStateMachine->PhoneEngineInfo()->SetServiceIdCommand( speedDialParam.ServiceId() );
-    CleanupStack::PushL( phoneNumber );
-    
-    if ( NULL != phoneNumber && KNullDesC() != *phoneNumber )
-        {
-
-
-        DialL( *phoneNumber, speedDialParam.NumberType(), aDialMethod );
-        
-        if ( IsNumberEntryUsedL()  ) 
-            {
-            BeginTransEffectLC( ENumberEntryClose ); 
-            
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-            
-            // Set Idle background, if still idle
-            if ( iStateMachine->State() == this )
-                {
-                SetupIdleScreenInBackgroundL();
-                }
-            
-            EndTransEffect();
-            }
-        }
-    else
-        {
-        // User cancelled dialog or didn't give a valid number
-        SpeedDialCanceledL( aDigit );
-        }
-    
-    CleanupStack::PopAndDestroy( phoneNumber );
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateIdle:SpeedDialCanceledL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneStateIdle::SpeedDialCanceledL( const TUint& aDigit )
-
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::SpeedDialCanceledL( ) ");
-    if ( IsNumberEntryUsedL() )
-        {
-        if ( aDigit == KPhoneDtmf1Character || 
-                  ( aDigit == KPhoneDtmf2Character && 
-                    iViewCommandHandle->HandleCommandL( 
-                     EPhoneViewIsStraightCallToVideoMailBox ) == EPhoneViewResponseSuccess ) ) 
-            {
-            // Remove number entry and set idle background on non-touch products
-            if ( !FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
-                {
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-                
-                // Set Idle background, if still idle ( f.e not incoming call arrived )
-                if ( iStateMachine->State() == this )
-                    {
-                    // idle screen in the background
-                    SetupIdleScreenInBackgroundL();
-                    }
-                }
-            }
-        }        
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateIdle::HandleNumberLongKeyPressL()
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneStateIdle::HandleNumberLongKeyPressL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, 
-        "CPhoneStateIdle::HandleNumberLongKeyPressL( ) ");
-    
-    HBufC* phoneNumber = PhoneNumberFromEntryLC();
-    
-    if ( phoneNumber && IsSpeedDialNumber ( *phoneNumber ) )
-        {
-        SpeedDialL( (*phoneNumber)[0], EDialMethodOneKeyDialing );
-        }
-    
-    CleanupStack::PopAndDestroy( phoneNumber );
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateIdle::IsSpeedDialNumber()
-// -----------------------------------------------------------
-//
-EXPORT_C TBool CPhoneStateIdle::IsSpeedDialNumber( 
-        const TDesC& aNumber ) const
-    {
-    return ( aNumber.Length() == KPhoneDtmfSpeedDialPrefixLength 
-            && aNumber[0] >= KPhoneDtmf1Character 
-            && aNumber[0] <= KPhoneDtmf9Character );
-    }
 
 // -----------------------------------------------------------
 // CPhoneStateIdle::HandleSendCommandL()
@@ -978,7 +840,7 @@ EXPORT_C void CPhoneStateIdle::HandleSendCommandL()
     __LOGMETHODSTARTEND(
         EPhoneControl, "CPhoneStateIdle::HandleSendCommandL()" );
     
-    HandleVoiceCallCommandL( ETrue );
+    HandleVoiceCallCommandL();
     }
 
 // -----------------------------------------------------------
@@ -1318,35 +1180,10 @@ TBool CPhoneStateIdle::CheckAppLaunchingL( const TKeyCode aCode )
     }
 
 // -----------------------------------------------------------
-// CPhoneStateIdle::NumberForSpeedDialLocationL
-// -----------------------------------------------------------
-// 
-HBufC* CPhoneStateIdle::NumberForSpeedDialLocationL( 
-        const TUint& aDigit,
-        TPhoneCmdParamSpeedDial& aSpeedDialParam ) const
-    {
-    // Set the speed dial location from the digit in buffer. Character
-    // '1' means location 1, and so on.
-    const TInt location = aDigit - KPhoneDtmf1Character + 1;
-    aSpeedDialParam.SetLocation( location );
-    
-    // Get the number and type from the speed dial location.
-    HBufC* phoneNumber = HBufC::NewLC( KPhoneNumberEntryBufferSize );
-    
-    TPtr ptr( phoneNumber->Des() );
-    aSpeedDialParam.SetPhoneNumber( &ptr );
-    iViewCommandHandle->HandleCommandL( 
-        EPhoneViewGetNumberFromSpeedDialLocation, &aSpeedDialParam );
-
-    CleanupStack::Pop( phoneNumber );
-    return phoneNumber;
-    }
-
-// -----------------------------------------------------------
 // CPhoneStateIdle::HandleVoiceCallCommandL()
 // -----------------------------------------------------------
 //
-void CPhoneStateIdle::HandleVoiceCallCommandL( TBool aSendKey )
+void CPhoneStateIdle::HandleVoiceCallCommandL()
     {
     __LOGMETHODSTARTEND(
         EPhoneControl, "CPhoneStateIdle::HandleVoiceCallCommandL()" );
@@ -1374,18 +1211,9 @@ void CPhoneStateIdle::HandleVoiceCallCommandL( TBool aSendKey )
         else
 #endif // _DEBUG
             {
-            if ( IsSpeedDialNumber( *phoneNumber ) )
-                {
-                // Handle speed dial
-                SpeedDialL( (*phoneNumber)[0], aSendKey ? EDialMethodSendCommand : EDialMethodMenuSelection );
-                }
-            else
-                {
-                // call the number
-                iStateMachine->PhoneEngineInfo()->SetPhoneNumber( *phoneNumber );
-                DialVoiceCallL();
-                }
-            
+            // call the number
+            iStateMachine->PhoneEngineInfo()->SetPhoneNumber( *phoneNumber );
+            DialVoiceCallL();
             CleanupStack::PopAndDestroy( phoneNumber );
             }
         }    

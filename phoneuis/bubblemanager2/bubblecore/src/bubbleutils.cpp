@@ -266,16 +266,7 @@ void BubbleUtils::setNumberTypeIcon(
     if ( (( callState == BubbleManagerIF::Incoming ) ||
           ( callState == BubbleManagerIF::Waiting )) &&
          (callFlags & BubbleManagerIF::Diverted) ) {
-        icon.setIcon( HbIcon(":/qtg_mono_call_diverted.svg") );
-
-        // temporary, diverted icon is not yet in theme and
-        // because of that css coloring doesn't work
-        QColor color;
-        color = HbColorScheme::color("qtc_list_item_title_normal");
-        if (color.isValid()) {
-            icon.setColor(Qt::white);
-        }
-
+        icon.setIcon( HbIcon("qtg_mono_call_diverted") );
         icon.show();
     } else {
         icon.setIcon( HbIcon() );

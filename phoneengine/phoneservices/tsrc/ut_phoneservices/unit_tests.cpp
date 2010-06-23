@@ -21,15 +21,11 @@
 #include "phoneservices.h"
 #include "dialservice.h"
 #include "dtmfservice.h"
-#include "keysequencerecognitionservice.h"
-#include "mpekeysequencerecognitionif.h"
 
 bool m_dialServiceConstructed;
 bool m_dtmfServiceConstructed;
-bool g_keySequenceServiceConstructed;
 MPECallControlIF* m_dialServiceCallPointer;
 MPECallSettersIF* m_dialServiceParameterPointer;
-MPEKeySequenceRecognitionIF* g_keySequenceRecognizerParameterPointer;
 MPECallControlIF* m_dtmfServiceCallPointer;
 MPECallSettersIF* m_dtmfServiceParameterPointer;
 
@@ -37,17 +33,13 @@ class TestPhoneServices
     : 
     public QObject,
     public MPECallControlIF,
-    public MPECallSettersIF,
-    public MPEKeySequenceRecognitionIF
+    public MPECallSettersIF
 {
     Q_OBJECT
 public:
     TestPhoneServices();
     virtual ~TestPhoneServices();    
 
-public:
-    TBool ExecuteKeySequenceL(const TDesC16& aSequence);
-    
 public slots:
     void initTestCase ();
     void cleanupTestCase ();
@@ -165,29 +157,6 @@ void DTMFService::stopDTMFPlay()
 {
 }
 
-KeySequenceRecognitionService::KeySequenceRecognitionService(
-    MPEKeySequenceRecognitionIF &keySequenceRecognizer,
-    QObject* parent) 
-    : 
-    XQServiceProvider(
-        QLatin1String("com.nokia.symbian.IDtmfPlay"), parent),
-        m_keySequenceRecognizer(keySequenceRecognizer)
-{
-    g_keySequenceServiceConstructed = true;
-    g_keySequenceRecognizerParameterPointer = &keySequenceRecognizer;
-}
-
-bool KeySequenceRecognitionService::executeKeySequence(
-    const QString &keySequence)
-{
-    Q_UNUSED(keySequence);
-    return true;
-}
-
-KeySequenceRecognitionService::~KeySequenceRecognitionService()
-{
-}
-
 TestPhoneServices::TestPhoneServices ()
 {
 }
@@ -218,9 +187,8 @@ void TestPhoneServices::init ()
     keyValue = -1;
     m_dialServiceConstructed = false;
     m_dtmfServiceConstructed = false;
-    g_keySequenceServiceConstructed = false;
     
-    m_phoneServices = new PhoneServices (*this, *this, *this, this);
+    m_phoneServices = new PhoneServices(*this, *this, this);
 
     QVERIFY(m_dialServiceConstructed == true);
     QVERIFY(m_dialServiceCallPointer == this);
@@ -229,20 +197,11 @@ void TestPhoneServices::init ()
     QVERIFY(m_dtmfServiceConstructed == true);
     QVERIFY(m_dtmfServiceCallPointer == this);
     QVERIFY(m_dtmfServiceParameterPointer == this);
-    
-    QVERIFY(g_keySequenceServiceConstructed == true);
-    QVERIFY(g_keySequenceRecognizerParameterPointer == this);
 }
 
 void TestPhoneServices::cleanup ()
 {
     delete m_phoneServices;
-}
-
-TBool TestPhoneServices::ExecuteKeySequenceL(const TDesC16& aSequence)
-{
-    Q_UNUSED(aSequence)
-    return ETrue;
 }
 
 void TestPhoneServices::SetKeyCode( const TChar& aKeyCode )

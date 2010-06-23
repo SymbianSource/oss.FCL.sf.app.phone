@@ -57,10 +57,6 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iBasicInfo.iErrorInfo.iCallId = KPECallIdNotUsed;
     iBasicInfo.iProfileId = ECCPErrorNotFound;
     iBasicInfo.iProfileName = KNullDesC;
-    iBasicInfo.iPhoneIdentityParameters.iManufacturer = KNullDesC;
-    iBasicInfo.iPhoneIdentityParameters.iModel = KNullDesC;
-    iBasicInfo.iPhoneIdentityParameters.iRevision = KNullDesC;
-    iBasicInfo.iPhoneIdentityParameters.iSerialNumber = KNullDesC;
     iBasicInfo.iLastCallDuration = KPENumberInitValue;
     iBasicInfo.iVMBXNumbers.iVMBXL1 = KNullDesC;
     iBasicInfo.iVMBXNumbers.iVMBXL2 = KNullDesC;
@@ -68,8 +64,6 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iBasicInfo.iTextToSpeech = EFalse;
     iBasicInfo.iPhoneNumberIsServiceCode = EFalse;
     iBasicInfo.iTwoDigitSupportStatus = EFalse;
-    iBasicInfo.iLifeTimeData.iHours = 0;
-    iBasicInfo.iLifeTimeData.iMinutes = 0;
 
     iBasicInfo.iNetworkRegistrationStatus = ENWStatusRegistrationUnknown;
 
@@ -568,17 +562,6 @@ const TInt& CPEEngineInfoImpl::KeypadVolume() const
     }
 
 // -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::LifeTimerData
-// Gets lifetimerdata from the TPEBasicInfo structure.
-// (other items were commented in a header).
-// -----------------------------------------------------------------------------
-//
-const TPELifeTimeData& CPEEngineInfoImpl::LifeTimerData() const
-    {
-    return iBasicInfo.iLifeTimeData;
-    }
-
-// -----------------------------------------------------------------------------
 // CPEEngineInfoImpl::LoggingIndicator
 // Get logging indicator from TPECallInfo.
 // (other items were commented in a header).
@@ -626,16 +609,6 @@ const TNWNetworkRegistrationStatus& CPEEngineInfoImpl::NetworkRegistrationStatus
 const TBool& CPEEngineInfoImpl::PersonalToneStatus() const
     {
     return iBasicInfo.iPersonalToneStatus;
-    }
-
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::PhoneIdentityParameters
-// Gets the phone identity parameters from the TPEBasicInfo structure
-// -----------------------------------------------------------------------------
-//
-const TPEPhoneIdentityParameters& CPEEngineInfoImpl::PhoneIdentityParameters() const
-    {
-    return iBasicInfo.iPhoneIdentityParameters;
     }
 
 // -----------------------------------------------------------------------------
@@ -1340,18 +1313,6 @@ void CPEEngineInfoImpl::SetKeypadVolume(
     }
 
 // -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::SetLifeTimerData
-// Sets lifetimer data of the phone to TPELifeTimeData-structure
-// -----------------------------------------------------------------------------
-//
-void CPEEngineInfoImpl::SetLifeTimerData( 
-        TCCPLifeTimeDataPckg& aPckg )
-    {
-    iBasicInfo.iLifeTimeData.iHours = aPckg().iHours;
-    iBasicInfo.iLifeTimeData.iMinutes = aPckg().iMinutes;
-    }
-
-// -----------------------------------------------------------------------------
 // CPEEngineInfoImpl::SetNetworkRegistrationStatus
 // Sets network registration status to TPEBasicInfo-structure
 // -----------------------------------------------------------------------------
@@ -1376,17 +1337,6 @@ void CPEEngineInfoImpl::SetPersonalToneStatus(
         const TInt& aPersonalToneStatus ) 
     {
     iBasicInfo.iPersonalToneStatus = aPersonalToneStatus; 
-    }
-
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::SetPhoneIdentityParameters
-// Sets phone number to TPECallCommandInfo-structure
-// -----------------------------------------------------------------------------
-//
-void CPEEngineInfoImpl::SetPhoneIdentityParameters(
-        const TPEPhoneIdentityParameters& aPhoneIdentityParameters ) 
-    { 
-    iBasicInfo.iPhoneIdentityParameters = aPhoneIdentityParameters; 
     }
 
 // -----------------------------------------------------------------------------
@@ -2550,7 +2500,7 @@ void CPEEngineInfoImpl::SetRemoteCompanyName(
 // -----------------------------------------------------------------------------
 //
 void CPEEngineInfoImpl::SetRemoteColpNumber(
-    TPEPhoneNumber& aColpNumber, 
+    const TPEPhoneNumber& aColpNumber, 
     const TInt aCallId )
     {
     return ( *iRemoteInfo )[ aCallId ]->SetColpNumber( aColpNumber );
@@ -2639,6 +2589,16 @@ TInt CPEEngineInfoImpl::ContactId2 () const
     {
     TEFLOGSTRING2( KTAINT, "ContactId: %d", iContactId );
     return iContactId;      
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::SetProtocolError
+// Sets the protocol spesific error code to TPEErrorInfo
+// -----------------------------------------------------------------------------
+//
+void CPEEngineInfoImpl::SetProtocolError( TInt aError )
+    {
+    iBasicInfo.iErrorInfo.iProtocolSpesificErrorCode = aError;
     }
 
 // End of File

@@ -24,13 +24,17 @@
     </widget>
 
 <section name="portrait">
+    <widget name="eb:callImage" type="BubbleImageWidget">
+         <bool name="keepSquareShape" value="FALSE"/>
+    </widget>
+
     <layout type="anchor" widget="content">
         <anchoritem src="expandedBubble" srcEdge="LEFT" dst="" dstEdge="LEFT"/>
         <anchoritem src="expandedBubble" srcEdge="RIGHT" dst="" dstEdge="RIGHT"/>
         <anchoritem src="expandedBubble" srcEdge="TOP" dst="" dstEdge="TOP"/>
         <anchoritem src="expandedBubble" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM"/>
     </layout>
-    
+
     <layout type="anchor" widget="expandedBubble">
         <anchoritem src="eb:bubbleHeading" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-2.0un"/>
         <anchoritem src="eb:bubbleHeading" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="2.0un"/>
@@ -54,6 +58,11 @@
 </section>
 
 <section name="landscape">
+
+    <widget name="eb:callImage" type="BubbleImageWidget">
+        <bool name="keepSquareShape" value="TRUE"/>
+    </widget>
+
     <layout type="anchor" widget="content">
         <anchoritem src="expandedBubble" srcEdge="LEFT" dst="" dstEdge="LEFT"/>
         <anchoritem src="expandedBubble" srcEdge="RIGHT" dst="" dstEdge="RIGHT"/>
@@ -61,24 +70,24 @@
         <anchoritem src="expandedBubble" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM"/>
     </layout>
 
-    <layout type="anchor" widget="expandedBubble">        
-        <anchoritem src="eb:bubbleHeading" srcEdge="LEFT" dst="eb:leftButton" dstEdge="LEFT"/>
+    <layout type="anchor" widget="expandedBubble">                        
+        <anchoritem src="eb:callImage" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-2.0un"/>
+        <anchoritem src="eb:callImage" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-2.0un"/>
+        <anchoritem src="eb:callImage" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
+        
+        <anchoritem src="eb:bubbleHeading" srcEdge="LEFT" dst="eb:callImage" dstEdge="RIGHT" spacing="-2.0un"/>
         <anchoritem src="eb:bubbleHeading" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="2.0un"/>
         <anchoritem src="eb:bubbleHeading" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-2.0un"/>
         
         <anchoritem src="eb:centerButton" srcEdge="CENTERH" dst="eb:bubbleHeading" dstEdge="CENTERH"/>
         <anchoritem src="eb:centerButton" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
         
-        <anchoritem src="eb:leftButton" srcEdge="LEFT" dst="eb:callImage" dstEdge="RIGHT" spacing="-2.0un"/>
+        <anchoritem src="eb:leftButton" srcEdge="LEFT" dst="eb:bubbleHeading" dstEdge="LEFT"/>
         <anchoritem src="eb:leftButton" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
         
         <anchoritem src="eb:rightButton" srcEdge="LEFT" dst="eb:leftButton" dstEdge="RIGHT" spacing="-2.0un"/>
         <anchoritem src="eb:rightButton" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="2.0un"/>
         <anchoritem src="eb:rightButton" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>        
-        
-        <anchoritem src="eb:callImage" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-2.0un"/>
-        <anchoritem src="eb:callImage" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-2.0un"/>
-        <anchoritem src="eb:callImage" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
     </layout>
 </section>
 

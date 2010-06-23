@@ -80,18 +80,6 @@ class CPEContactHandlingProxy
             const TInt aCallId,
             const TPEFindContactKey aFindKey );
 
-        /**
-        * Fetch number from speed dial location
-        * @param aLocationIndex Index to look for
-        * @param aNumber Filled with speed dial location phone number
-        * @param aContactItemId Contact item id. KErrNotFound if given location
-        *                                        was not set.
-        * @return possible Symbian OS error code
-        */
-        IMPORT_C TInt GetSpeedDialLocation( 
-            TInt aLocationIndex, 
-            TPEPhoneNumber& aNumber );
-
     protected:
         /**
         * C++ default constructor.

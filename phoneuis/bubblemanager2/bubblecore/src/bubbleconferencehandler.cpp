@@ -63,6 +63,11 @@ BubbleConferenceHandler::BubbleConferenceHandler(
     Q_ASSERT(mList);
     mModel = new BubbleParticipantListModel();
     mList->setModel(mModel);
+    
+    HbAbstractItemView::ItemAnimations noCreationAndRemovalAnimations = HbAbstractItemView::All;
+    noCreationAndRemovalAnimations ^= HbAbstractItemView::Appear;
+    noCreationAndRemovalAnimations ^= HbAbstractItemView::Disappear;
+    mList->setEnabledAnimations(noCreationAndRemovalAnimations);
 
     mPrototype =
         qobject_cast<BubbleParticipantListItem*>(
@@ -148,6 +153,8 @@ void BubbleConferenceHandler::setButtons(const QList<HbAction*>& actions)
         BubbleUtils::setButtonStyleForAction(*mButtonCenter,*action);
         connect(mButtonCenter, SIGNAL( clicked() ),
                 action, SLOT( trigger() ) );
+        connect(mButtonCenter, SIGNAL( longPress(QPointF)),
+                action, SLOT( trigger() ) );
         mButtonCenter->show();
     } else  if (actions.count()==2 && mButtonLeft && mButtonRight ) {
         // Left button
@@ -156,6 +163,8 @@ void BubbleConferenceHandler::setButtons(const QList<HbAction*>& actions)
         BubbleUtils::setButtonStyleForAction(*mButtonLeft,*action1);
         connect( mButtonLeft, SIGNAL( clicked() ),
                  action1, SLOT( trigger() ) );
+        connect(mButtonLeft, SIGNAL( longPress(QPointF)),
+                action1, SLOT( trigger() ) );
         mButtonLeft->show();
         // Right button
         HbAction* action2 = actions.at(1);
@@ -163,6 +172,8 @@ void BubbleConferenceHandler::setButtons(const QList<HbAction*>& actions)
         BubbleUtils::setButtonStyleForAction(*mButtonRight,*action2);
         connect( mButtonRight, SIGNAL( clicked() ),
                  action2, SLOT( trigger() ) );
+        connect(mButtonRight, SIGNAL( longPress(QPointF)),
+                action2, SLOT( trigger() ) );
         mButtonRight->show();
     }
 }

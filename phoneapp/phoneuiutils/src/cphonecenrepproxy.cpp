@@ -28,7 +28,6 @@
 #include    <UiklafInternalCRKeys.h>
 #include    <ProfileEngineDomainCRKeys.h>
 #include    <DRMHelperServerInternalCRKeys.h>
-#include    <AknFepInternalCRKeys.h>
 #include    <AvkonInternalCRKeys.h>
 #include    <btengdomaincrkeys.h> 
 #include    <utf.h>

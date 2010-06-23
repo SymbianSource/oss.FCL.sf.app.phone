@@ -256,8 +256,6 @@ EXPORT_C void CPhoneAlerting::HandleConnectedL( TInt aCallId )
         
     EndUiUpdate();
     
-    HandleColpNoteL( aCallId );
-    
     // Go to single state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );    
     iStateMachine->ChangeState( EPhoneStateSingle );

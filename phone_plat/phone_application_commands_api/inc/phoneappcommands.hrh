@@ -73,7 +73,6 @@ enum
     EPhoneNumberAcqCmdAddToName,
     EPhoneNumberAcqCmdCall,
     EPhoneNumberAcqCmdVideoCall,
-    EPhoneNumberAcqCmdSpeedDial,
     EPhoneNumberAcqCmdSendCommand,
     EPhoneNumberAcqCmdSendMessage,
     EPhoneNumberAcqCmdHashCheck,  // NOT IN MENU.
@@ -183,7 +182,6 @@ enum
     // DTMF specific
     EPhoneCmdDtmfSearch,
     EPhoneCmdDtmfOk,
-    EPhoneCmdDtmfSpeedDialOk,
     EPhoneInCallCmdDtmfListViewSearch,    
     // other commands
     EPhoneCmdWaitNoteOk,
@@ -209,7 +207,6 @@ enum
     EPhoneDialerCmdClear,  
     EPhoneDialerCallHandling,
     EPhoneDialerCmdTouchInput,
-    EPhoneDialerCmdSpeedDial,
     EPhoneDialerCmdEditText,
     EPhoneDialerCallSettings,   
     EPhoneDtmfDialerCancel, 

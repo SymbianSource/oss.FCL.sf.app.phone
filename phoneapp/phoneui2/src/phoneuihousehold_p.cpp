@@ -29,7 +29,6 @@
 #include "phoneconstants.h"
 #include "cphonelogger.h"
 #include "cphonepubsubproxy.h"
-#include "cphoneqwertyhandler.h"
 #include "cphoneuicontroller.h"
 #include "phoneuihousehold_p.h"
 #include "phoneuiqtviewadapter.h"
@@ -43,7 +42,7 @@
 
 PhoneUiHouseHoldPrivate::PhoneUiHouseHoldPrivate(HbMainWindow &window) :
     iAppsReady (0), iStartupSignalRecoveryId (0), iLightIdleReached (EFalse),
-    iOnScreenDialer (EFalse), iQwertyHandler (0), iPhoneUIController (0),
+    iOnScreenDialer (EFalse), iPhoneUIController (0),
     m_window (window)
 {
     PHONE_DEBUG("phoneui - Start phoneapp");
@@ -219,7 +218,6 @@ void PhoneUiHouseHoldPrivate::ConstructL()
     m_window.addView (view);
     m_window.setCurrentView (view);
     m_window.scene ()->setFocusItem (view);
-    iQwertyHandler = CPhoneQwertyHandler::NewL();
     iKeyEventAdapter = new PhoneUIKeyEventAdapter (*iPhoneUIController);
     iCommandAdapter = new PhoneUiCommandAdapter (*iPhoneUIController);
     QObject::connect(view, SIGNAL(dialpadIsAboutToClose()), iViewAdapter, SLOT(dialpadClosed()));

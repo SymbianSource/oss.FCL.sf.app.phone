@@ -90,11 +90,14 @@ class MCSPCallObserver
         
         /**
         * Notify that remote party info has changed.
-        * @param aRemoteParty new remote party information
+        * @param aRemotePartyName new remote party name
+        * @param aRemotePartyNumber new remote party number
         * 
         */
         virtual void NotifyRemotePartyInfoChanged( 
-            const TDesC& aRemoteParty) = 0;
+            const TDesC& aRemotePartyName,
+            const TDesC& aRemotePartyNumber
+        ) = 0;
 
         
     };

@@ -68,12 +68,25 @@ public:
     /*!
         \fn void pushButtonActionsForCall ()
         
-        Returns push button actions actions for call.
+        Returns push button actions for call.
 
     */
     QMap<PhoneAction::ActionType, PhoneAction *> pushButtonActionsForCall( 
             int callState,
             bool emergencyCall,
+            QMap<int,int> callStates,
+            QMap<int,int> serviceIds,
+            int serviceId,
+            int callId);
+    
+    /*!
+        \fn void toolBarActions ()
+        
+        Returns tool bar actions for call.
+
+    */
+    QList<PhoneAction *> toolBarActions( 
+            int resourceId,
             QMap<int,int> callStates,
             QMap<int,int> serviceIds,
             int serviceId,
@@ -88,7 +101,7 @@ private:
 
     */
     QList<int> menuCommands(
-            QMap<int,int> callStates, QMap<int,int> serviceIds );
+            QMap<int,int> callStates, QMap<int,int> serviceIds) const;
     
     /*!
         \fn void addMenuItems()
@@ -103,7 +116,7 @@ private:
         Maps ui command extension commands to
         phone app commands.
     */
-    int mapCommand(int command);
+    int mapCommand(int command) const;
     
     /*!
         \fn void commandExtension()
@@ -119,7 +132,7 @@ private:
         Returns service's plugin uid by service id.
     */
     TUid ResolveImplementationUidL( 
-            TUint32 aServiceId, TServicePropertyName aPropertyName );
+            TUint32 aServiceId, TServicePropertyName aPropertyName ) const;
     
     /*!
         \fn void MenuExtensionL()
@@ -142,7 +155,64 @@ private:
         Checks are all calls made by same service (id).
         Returns true when same service used.
     */
-    bool areServicesSame(QMap<int,int> callStates, QMap<int,int> serviceIds);
+    bool areServicesSame(QMap<int,int> callStates, QMap<int,int> serviceIds) const;
+
+    /*!
+        \fn void setJoinFlag()
+        
+        Sets conference join button flag.
+    */
+    void setJoinFlag(QMap<int,int> callStates, QMap<int,int> serviceIds) const;
+ 
+    /*!
+        \fn void setHoldFlag()
+        
+        Sets hold button flag.
+    */
+    void setHoldFlag(int callState) const;
+ 
+    /*!
+        \fn void setOutgoingFlag()
+        
+        Sets outgoing call button flag.
+    */
+    void setOutgoingFlag(QList<int> callStates) const;
+    
+    /*!
+        \fn void setConferenceFlag()
+        
+        Sets conference call button flag. (Flag will be true when call 
+        state list contains held/active conference).
+    */
+    void setConferenceFlag(QList<int> callStates) const;
+    
+    /*!
+        \fn void setMulticallFlag()
+        
+        Sets multi call button flag. (Flag will be set as true when active
+        and held calls exists).
+    */
+    void setMultiCallFlag(QList<int> callStates) const;
+    
+    /*!
+        \fn void mapToExtensionToolBarItems()
+        
+        Maps phone action tool bar item list to ui command extension
+        tool bar item list.
+    */
+    void mapToExtensionToolBarItems(
+            const QList<PhoneAction::ToolBarItem> &sourceList, 
+            QList<XQTelUiCommandExtension::ToolBarCommand> &toolBarCmdList) const;
+ 
+    /*!
+        \fn void mapToPhoneActionToolBarItems()
+        
+        Maps ui command extension tool bar item list to phone action
+        tool bar item list.
+    */
+    void mapToPhoneActionToolBarItems( 
+            const QList<XQTelUiCommandExtension::ToolBarCommand> &sourceList,
+            QList<PhoneAction::ToolBarItem> &commandList) const;        
     
     /*!
         \fn void buttonCommandList()
@@ -150,16 +220,16 @@ private:
         Returns push button command list.
     */    
     QList<int> buttonCommandList(int callState,
-            bool emergencyCall,
-            bool sameServices,
-            QList<int> callStates);
+                                 bool emergencyCall,
+                                 QList<int> callStates) const;
     
     /*!
         \fn void buttonCommandList()
         
         Maps push button command to phone action.
     */
-    PhoneAction *mapCommandToAction(int callState);
+    PhoneAction *mapCommandToAction(int command,
+                                    bool disabled=false) const;
     
     
     

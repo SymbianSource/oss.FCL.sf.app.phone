@@ -138,9 +138,9 @@ void CpBarringPluginGroup::changeBarringStateRequested(int checkState)
 // CpBarringPluginGroup::changeBarringPasswordRequested
 // -----------------------------------------------------------------------------
 //
-void CpBarringPluginGroup::changeBarringPasswordRequested(bool checked)
+void CpBarringPluginGroup::changeBarringPasswordRequested()
 {
-    SMC_MOCK_METHOD1( void, bool, checked)
+    SMC_MOCK_METHOD0( void ) 
 }
 
 

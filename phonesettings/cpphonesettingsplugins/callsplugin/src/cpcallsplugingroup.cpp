@@ -96,6 +96,11 @@ CpCallsPluginGroup::CpCallsPluginGroup(CpItemDataHelper &helper)
         SIGNAL(cancelNote(int)),
         phoneNotes, 
         SLOT(cancelNote(int)));
+    QObject::connect(
+        this, 
+        SIGNAL(showNotificationDialog(const QString&)),
+        phoneNotes, 
+        SLOT(showNotificationDialog(const QString&)));
     
     // Create combobox string <-> setting mappings 
     insertMappedListItems(); 
@@ -105,12 +110,14 @@ CpCallsPluginGroup::CpCallsPluginGroup(CpItemDataHelper &helper)
     createCallWaitingtem();
     createSoftRejectItem();
     createShowCallDurationItem();
+    createOwnVideoInReceivedCall();
     
     // Connect setting item signals
     connectCLIItem();
     connectCallWaitingItem();
     connectSoftRejectItem();
     connectShowCallDurationItem();
+    connectOwnVideoInReceivedCall();
     
     m_callWaitingDistinguishEnabled = 
        m_cpSettingsWrapper->isFeatureCallWaitingDistiquishNotProvisionedEnabled();
@@ -224,6 +231,41 @@ void CpCallsPluginGroup::createCLIItem()
 }
 
 /*!
+  CpCallsPluginGroup::createOwnVideoInReceivedCall.
+ */
+void CpCallsPluginGroup::createOwnVideoInReceivedCall()
+{
+    DPRINT << ": IN";
+    
+    // Read Own video in received call value from Cenrep 
+    int ownVideoInReceivedCallStatus = 
+            m_cpSettingsWrapper->readVtVideoSending();
+    DPRINT << "ownVideoInReceivedCallStatus:" << ownVideoInReceivedCallStatus;
+    
+    m_OwnVideoInReceivedCall =
+        new CpSettingFormItemData(
+            HbDataFormModelItem::ComboBoxItem,
+            hbTrId("txt_phone_setlabel_own_video_in_received_call"),
+            this);
+
+    QStringList ownVideoSelections;
+    ownVideoSelections
+        <<hbTrId("txt_phone_setlabel_own_video_in_val_show_automatic")
+        <<hbTrId("txt_phone_setlabel_own_video_in_val_ask_first")
+        <<hbTrId("txt_phone_setlabel_own_video_in_val_dont_show");
+
+    m_OwnVideoInReceivedCall->setContentWidgetData(
+        "items", QVariant(ownVideoSelections));
+    
+    QVariant indexValue(ownVideoInReceivedCallStatus);
+    m_OwnVideoInReceivedCall->setContentWidgetData(
+        QString("currentIndex"), indexValue);
+    
+    appendChild( m_OwnVideoInReceivedCall ); 
+    DPRINT << ": OUT";    
+}
+
+/*!
   CpCallsPluginGroup::createCallWaitingtem.
  */
 void CpCallsPluginGroup::createCallWaitingtem()
@@ -253,7 +295,7 @@ void CpCallsPluginGroup::connectShowCallDurationItem()
     DPRINT << ": IN";
     
     m_helper.addConnection(
-        m_DataItemShowCallDuration, SIGNAL(clicked()),
+        m_DataItemShowCallDuration, SIGNAL(valueChanged(QPersistentModelIndex, QVariant)),
         this, SLOT(showCallDurationStateChanged()));
 
     DPRINT << ": OUT";
@@ -298,6 +340,19 @@ void CpCallsPluginGroup::connectCLIItem()
 }
 
 /*!
+  CpCallsPluginGroup::connectOwnVideoInReceivedCall.
+ */
+void CpCallsPluginGroup::connectOwnVideoInReceivedCall()
+{
+    DPRINT << ": IN";
+        
+    m_helper.addConnection(
+        m_OwnVideoInReceivedCall, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(ownVideoInReceivedCallStateChanged(int)));
+
+    DPRINT << ": OUT";
+}
+/*!
   CpCallsPluginGroup::connectCallWaitingItem.
  */
 void CpCallsPluginGroup::connectCallWaitingItem()
@@ -305,7 +360,7 @@ void CpCallsPluginGroup::connectCallWaitingItem()
     DPRINT << ": IN";
 
     m_helper.addConnection(
-        m_DataItemCallWaiting, SIGNAL(clicked()),
+        m_DataItemCallWaiting, SIGNAL(valueChanged(QPersistentModelIndex, QVariant)),
         this, SLOT(callWaitingCurrentIndexChanged()));
 
     DPRINT << ": OUT";
@@ -321,12 +376,34 @@ void CpCallsPluginGroup::showCallDurationStateChanged()
     QVariant text = m_DataItemShowCallDuration->contentWidgetData("text");
     QString showCallDurationText = text.toString();
 
-    if (showCallDurationText == hbTrId("txt_phone_setlabel_val_yes")) {
-        m_cpSettingsWrapper->setShowCallDuration(true);
-    } else if (showCallDurationText == hbTrId("txt_phone_setlabel_val_no")){
-        m_cpSettingsWrapper->setShowCallDuration(false);
+    if(m_cpSettingsWrapper->isOngoingCall()) {
+        // ongoing call, operation not allowed, refresh ui.
+        bool showCallDurationStatus = m_cpSettingsWrapper->showCallDuration();
+        DPRINT << ": ongoing call case, status: " << showCallDurationStatus;
+
+        if (showCallDurationStatus) {
+            m_DataItemShowCallDuration->setContentWidgetData(
+                "text", QVariant(hbTrId("txt_phone_setlabel_val_yes")));
+            m_DataItemShowCallDuration->setContentWidgetData(
+                "additionalText", QVariant(hbTrId("txt_phone_setlabel_val_no")));
+        } else {
+            m_DataItemShowCallDuration->setContentWidgetData(
+                "text", QVariant(hbTrId("txt_phone_setlabel_val_no")));
+            m_DataItemShowCallDuration->setContentWidgetData(
+                "additionalText", QVariant(hbTrId("txt_phone_setlabel_val_yes")));
+        }
+        emit showGlobalNote(
+            m_activeNoteId, 
+            emit hbTrId("txt_phone_info_not_allowed"), 
+            HbMessageBox::MessageTypeInformation);
     } else {
-        DPRINT << "nothing done";
+        if (showCallDurationText == hbTrId("txt_phone_setlabel_val_yes")) {
+            m_cpSettingsWrapper->setShowCallDuration(true);
+        } else if (showCallDurationText == hbTrId("txt_phone_setlabel_val_no")){
+            m_cpSettingsWrapper->setShowCallDuration(false);
+        } else {
+            DPRINT << "nothing done";
+        }
     }
 
     DPRINT << ": OUT";
@@ -341,7 +418,7 @@ void CpCallsPluginGroup::softRejectTextChanged()
     
     QVariant text = m_DataItemSoftRejectTextEditor->contentWidgetData("text");
     QString softRejectText = text.toString();  
-    if (!softRejectText.isEmpty()) {
+    if (!softRejectText.isNull()) {
         DPRINT << "softRejectText:" << softRejectText;
         m_cpSettingsWrapper->writeSoftRejectText(softRejectText, true);
     }
@@ -404,7 +481,26 @@ void CpCallsPluginGroup::cliCurrentIndexChanged(int index)
 
     DPRINT << ": OUT";
 }
+
+/*!
+  CpCallsPluginGroup::ownVideoInReceivedCallStateChanged.
+ */
+void CpCallsPluginGroup::ownVideoInReceivedCallStateChanged(int index)
+{
+    DPRINT << ": IN : index: " << index;
     
+    if (index >= 0) {
+        //store to Cenrep
+        int ret = m_cpSettingsWrapper->writeVtVideoSending(index);
+        DPRINT << 
+            "m_cpSettingsWrapper->writeVtVideoSending(index) ret: " << ret;
+    }else{
+        DPRINT << "Error: negative index!";
+    }
+           
+    DPRINT << ": OUT";
+}
+
 /*!
   CpCallsPluginGroup::insertMappedListItems.
  */
@@ -441,9 +537,7 @@ void CpCallsPluginGroup::handleCallWaitingGetStatus(
     if (m_callWaitingDistinguishEnabled &&
             PSetCallWaitingWrapper::StatusNotProvisioned == status) {
         DPRINT << ": not provisioned";
-        emit showGlobalNote(m_activeNoteId,
-            hbTrId("txt_phone_info_request_not_completed"), 
-            HbMessageBox::MessageTypeInformation);
+        emit showNotificationDialog(hbTrId("txt_phone_info_request_not_completed"));
     } else if (PSetCallWaitingWrapper::StatusActive == status && !alsCaseOnly) {
         DPRINT << ": status active";
         m_DataItemCallWaiting->setContentWidgetData(
@@ -472,25 +566,17 @@ void CpCallsPluginGroup::handleCallWaitingChanged(
     DPRINT << ": IN";
     emit cancelNote(m_activeNoteId);
     if (result) {
-        emit showGlobalNote(m_activeNoteId,
-            hbTrId("txt_phone_info_request_not_confirmed"), 
-            HbMessageBox::MessageTypeWarning);
+        emit showNotificationDialog(hbTrId("txt_phone_info_request_not_confirmed"));
     } else {
         switch (command){
             case PSetCallWaitingWrapper::ActivateCallWaiting:
-                emit showGlobalNote(m_activeNoteId,
-                    hbTrId("txt_phone_info_call_waiting_activated"), 
-                    HbMessageBox::MessageTypeInformation);
+                emit showNotificationDialog(hbTrId("txt_phone_info_call_waiting_activated"));
                 break;
             case PSetCallWaitingWrapper::DeactivateCallWaiting:
-                emit showGlobalNote(m_activeNoteId,
-                    hbTrId("txt_phone_info_call_waiting_deactivated"), 
-                    HbMessageBox::MessageTypeInformation);
+                emit showNotificationDialog(hbTrId("txt_phone_info_call_waiting_deactivated"));
                 break;
             default: 
-                emit showGlobalNote(m_activeNoteId,
-                    hbTrId("txt_phone_info_result_unknown"), 
-                    HbMessageBox::MessageTypeInformation);
+                emit showNotificationDialog(hbTrId("txt_phone_info_result_unknown"));
                 break;
         }
     }
@@ -507,7 +593,7 @@ void CpCallsPluginGroup::handleCallWaitingRequesting(bool ongoing, bool interrup
     Q_ASSERT(!(ongoing && interrupted));
     
     if (ongoing) {
-        emit showGlobalProgressNote(m_activeNoteId, hbTrId("txt_phone_info_requesting"));
+        emit showGlobalProgressNote(m_activeNoteId, hbTrId("txt_common_info_requesting"));
     }
     
     if (interrupted) {

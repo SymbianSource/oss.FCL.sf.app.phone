@@ -182,6 +182,10 @@ void CPhoneEmergency::HandlePhoneEngineMessageL(
                     }
                  }
             break;
+            
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            //Don't show COLP note during emergency call.
+            break; 
 
         default:
             CPhoneGsmInCall::HandlePhoneEngineMessageL(
@@ -709,7 +713,7 @@ void CPhoneEmergency::HandleErrorL( const TPEErrorInfo& aErrorInfo )
         case ECCPErrorCCNoChannelAvailable:
         case ECCPErrorNetworkBusy:
         case ECCPEmergencyFailed:
-            SendGlobalErrorNoteL( EPhoneNoteNoNetworkCallEmergency );
+            SendGlobalErrorNoteL( EPhoneNoteNoNetworkCallEmergency, ETrue );
             break;
 
        default:

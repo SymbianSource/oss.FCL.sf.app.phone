@@ -30,7 +30,7 @@ HbAbstractItemContainer* temp2(NULL);
 HbDataForm::HbDataForm( 
         HbDataFormPrivate & /*dd*/,
         HbAbstractItemContainer * /*container*/,
-        QGraphicsItem * parent ) : HbAbstractItemView( *temp, temp2, parent)
+        QGraphicsItem * parent ) : HbAbstractItemView( *temp, temp2, 0, parent)
     {
     
     }
@@ -80,39 +80,6 @@ void HbDataForm::scrollTo(
   //  SMC_MOCK_METHOD2( void, const QModelIndex &, index, 
     //    ScrollHint, hint )
     }
-
-
-// -----------------------------------------------------------------------------
-// HbDataForm::indexCount
-// -----------------------------------------------------------------------------
-//
-int HbDataForm::indexCount(  ) const
-    {
-    SMC_MOCK_METHOD0( int )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDataForm::nextIndex
-// -----------------------------------------------------------------------------
-//
-QModelIndex HbDataForm::nextIndex( 
-        const QModelIndex & index ) const
-    {
-//    SMC_MOCK_METHOD1( QModelIndex, const QModelIndex &, index )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDataForm::previousIndex
-// -----------------------------------------------------------------------------
-//
-QModelIndex HbDataForm::previousIndex( 
-        const QModelIndex & index ) const
-    {
-//    SMC_MOCK_METHOD1( QModelIndex, const QModelIndex &, index )
-    }
-
 
 // -----------------------------------------------------------------------------
 // HbDataForm::setExpanded
@@ -192,17 +159,6 @@ QGraphicsItem * HbDataForm::primitive(
 
 
 // -----------------------------------------------------------------------------
-// HbDataForm::dataFormViewItem
-// -----------------------------------------------------------------------------
-//
-HbDataFormViewItem * HbDataForm::dataFormViewItem( 
-        const QModelIndex & index ) const
-    {
-  //  SMC_MOCK_METHOD1( HbDataFormViewItem *, const QModelIndex &, index )
-    }
-
-
-// -----------------------------------------------------------------------------
 // HbDataForm::setModel
 // -----------------------------------------------------------------------------
 //
@@ -267,26 +223,6 @@ void HbDataForm::removeAllConnection(
         HbDataFormModelItem * item )
     {
 //    SMC_MOCK_METHOD1( void, HbDataFormModelItem *, item )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDataForm::loadSettings
-// -----------------------------------------------------------------------------
-//
-void HbDataForm::loadSettings(  )
-    {
-    SMC_MOCK_METHOD0( void )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDataForm::storeSettings
-// -----------------------------------------------------------------------------
-//
-void HbDataForm::storeSettings(  )
-    {
-    SMC_MOCK_METHOD0( void )
     }
 
 

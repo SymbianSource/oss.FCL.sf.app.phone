@@ -27,12 +27,11 @@ symbian {
     TARGET.UID3 = 0x100058FF
     
     defFiles = \
-        "$${LITERAL_HASH}ifdef WINS" \
-            "DEFFILE bwins/bubblecore.def" \
-        "$${LITERAL_HASH}else" \
-            "DEFFILE eabi/bubblecore.def" \
-        "$${LITERAL_HASH}endif"
-    
+    "$${LITERAL_HASH}ifdef WINS" \
+        "DEFFILE bwins/bubblemanager2.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE eabi/bubblemanager2.def" \
+    "$${LITERAL_HASH}endif"
     MMP_RULES += defFiles
 
     LIBS += -lthumbnailmanagerqt

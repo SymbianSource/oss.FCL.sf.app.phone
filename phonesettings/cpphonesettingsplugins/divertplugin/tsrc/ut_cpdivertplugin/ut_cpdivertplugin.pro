@@ -42,7 +42,6 @@ SOURCES += ut_cpdivertplugin.cpp
 HEADERS += ../../src/cpdivertplugin.h \
            ../../src/cpdivertplugingroup.h \
            ../../src/cpdivertitemdata.h \
-           ../../src/cpdivertselectionitem.h \
            ../../../cptelephonyutils/inc/cpphonenotes.h \
            ../../../cptelephonyutils/inc/cpplugincommon.h \
            /epoc32/include/platform/mw/psetwrapper.h \
@@ -57,8 +56,7 @@ SOURCES += ../../src/cpdivertplugin.cpp \
            ../../src/cpdivertitemdata.cpp
 
 # mocks needed for testing
-SOURCES += ../../../tsrc/mocks/mock_cpdivertselectionitem.cpp \
-           ../../../tsrc/mocks/mock_psetcalldivertingwrapper.cpp \
+SOURCES += ../../../tsrc/mocks/mock_psetcalldivertingwrapper.cpp \
            ../../../tsrc/mocks/mock_sssettingswrapper.cpp \
            ../../../tsrc/mocks/mock_cpplugincommon.cpp \
            ../../../tsrc/mocks/mock_cpphonenotes.cpp \

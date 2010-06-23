@@ -59,7 +59,7 @@ private:
     
     HbMainWindow * MainWindow();
     
-    void InitaliseCpNetworkPluginView();
+    bool InitaliseCpNetworkPluginView();
     
 private:
     

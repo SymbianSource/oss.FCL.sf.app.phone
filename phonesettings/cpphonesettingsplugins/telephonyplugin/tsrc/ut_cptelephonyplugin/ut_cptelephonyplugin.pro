@@ -32,7 +32,8 @@ symbian: {
   
   LIBS += -lmocklib \
         -lsymbianmock \
-        -lcpframework
+        -lcpframework \
+        -lcptelephonyutils
 }
 
 # test code

@@ -92,4 +92,6 @@ EXPORTS
 	_ZN13PhoneUIQtView18networkNameChangedEN10QtMobility18QSystemNetworkInfo11NetworkModeERK7QString @ 91 NONAME
 	_ZN13PhoneUIQtView15windowActivatedEv @ 92 NONAME
 	_ZN13PhoneUIQtView17windowDeactivatedEv @ 93 NONAME
+	_ZN13PhoneUIQtView12clearDialpadEv @ 94 NONAME
+	_ZThn28_N13PhoneUIQtView12clearDialpadEv @ 95 NONAME
 

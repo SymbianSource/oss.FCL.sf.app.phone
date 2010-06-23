@@ -15,7 +15,7 @@
 *
 */
 #include <hbinstance.h>
-#include <QSignalMapper>
+#include <qsignalmapper>
 #include <hbaction.h>
 #include <hbtoolbar.h>
 #include <hbvolumesliderpopup.h>
@@ -27,6 +27,7 @@
 #include <xqserviceutil.h>
 #include <xqkeycapture.h>
 #include <dialpad.h>
+#include <dialpadkeyhandler.h>
 
 #include "phoneuiqtview.h"
 #include "phoneaction.h"
@@ -44,7 +45,10 @@ PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
 {
     // Set network name
     m_networkInfo = new QSystemNetworkInfo(this);
-    QString networkName = m_networkInfo->networkName(QSystemNetworkInfo::GsmMode);
+    QString networkName = m_networkInfo->networkName(QSystemNetworkInfo::WcdmaMode);
+    if(networkName.isEmpty()) {
+        networkName = m_networkInfo->networkName(QSystemNetworkInfo::GsmMode);
+    }
     connect(m_networkInfo, SIGNAL (networkNameChanged(QSystemNetworkInfo::NetworkMode,QString)), this, SLOT(networkNameChanged(QSystemNetworkInfo::NetworkMode, QString)));
     setTitle(networkName);
 
@@ -61,7 +65,9 @@ PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
             SLOT(onEditorContentChanged()));
     connect(m_dialpad,SIGNAL(aboutToClose()),this,
                 SLOT(dialpadClosed()));
-                
+    // enable key sequence handling during a call
+    new DialpadKeyHandler(m_dialpad, DialpadKeyHandler::KeySequence, this);
+    
     // Call handling widget
     m_bubbleManager = new BubbleManager (this);
     setWidget(m_bubbleManager);
@@ -89,10 +95,7 @@ PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
 
 PhoneUIQtView::~PhoneUIQtView ()
 {
-
-    foreach (HbAction *action, m_toolbarActions ) {
-        delete action;
-    }
+    qDeleteAll(m_toolbarActions);
     m_window.removeEventFilter(this);
     delete m_volumeSlider;
     delete m_dialpad;
@@ -165,9 +168,8 @@ void PhoneUIQtView::clearParticipantListActions()
 
         foreach (HbAction *action, m_participantListActions ) {
             m_participantListSignalMapper->removeMappings(action);
-            delete action;
         }
-
+		qDeleteAll(m_participantListActions);
         m_participantListActions.clear();
         delete m_participantListSignalMapper;
         m_participantListSignalMapper = 0;
@@ -365,13 +367,17 @@ QString PhoneUIQtView::dialpadText()
 void PhoneUIQtView::clearAndHideDialpad()
 {
     m_dialpad->editor().setText(QString(""));
-    hideDialpad();
+    m_dialpad->closeDialpad();
+}
+
+void PhoneUIQtView::clearDialpad()
+{
+    m_dialpad->editor().setText(QString(""));
 }
 
 void PhoneUIQtView::bringToForeground()
 {
     m_window.show();
-    m_window.raise();
 }
 
 void PhoneUIQtView::setMenuActions(const QList<PhoneAction*>& actions)
@@ -426,8 +432,9 @@ void PhoneUIQtView::dialpadClosed()
     emit dialpadIsAboutToClose();
 }
 
-bool PhoneUIQtView::eventFilter(QObject * /*watched*/, QEvent * event)
+bool PhoneUIQtView::eventFilter(QObject *watched, QEvent * event)
 {
+    Q_UNUSED(watched);
     PHONE_DEBUG2("PhoneUIQtView::eventFilter event type:", event->type());
     if(event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
@@ -459,10 +466,7 @@ bool PhoneUIQtView::eventFilter(QObject * /*watched*/, QEvent * event)
 
 void PhoneUIQtView::setDialpadPosition()
 {
-    // workaround to tsw error JMKN-83NAPU (fix coming in MCL wk14)
-    // QRectF screenRect(m_window.layoutRect());
-    QRectF screenRect = (m_window.orientation() == Qt::Horizontal) ?
-                        QRectF(0,0,640,360) : QRectF(0,0,360,640);
+    QRectF screenRect(m_window.layoutRect());
                         	
     if (m_window.orientation() == Qt::Horizontal) {
             // dialpad takes half of the screen
@@ -506,17 +510,13 @@ void PhoneUIQtView::shutdownPhoneApp()
 
 void PhoneUIQtView::setBackButtonVisible(bool visible)
 {
-    if (visible) {
-        setNavigationAction(m_backAction);
-        }
-    else {
-        setNavigationAction(0);
-    }
+    m_backAction->setEnabled(visible);
 }
 
 void PhoneUIQtView::networkNameChanged(QSystemNetworkInfo::NetworkMode mode, const QString &netName)
 {
-    if(mode == QSystemNetworkInfo::GsmMode) {
+    if((mode == QSystemNetworkInfo::GsmMode) || 
+       (mode == QSystemNetworkInfo::WcdmaMode)) {
         setTitle(netName);
     }	
 }

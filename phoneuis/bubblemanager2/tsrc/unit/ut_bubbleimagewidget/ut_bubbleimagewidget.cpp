@@ -41,6 +41,8 @@ private slots:
     void testWidePixmap();
     void testDefaultAvatar();
 
+    void testSetKeepSquareShape();
+
 private:
     QString fileNameWithPath(const QString& fileName);    
 
@@ -100,6 +102,18 @@ void ut_BubbleImageWidget::testDefaultAvatar()
     mImage->show();
     QTest::qWait(500);
     // there is now way to verify using public API
+}
+
+void ut_BubbleImageWidget::testSetKeepSquareShape()
+{
+    mImage->setKeepSquareShape(true);
+    QVERIFY(mImage->keepSquareShape()==true);
+    QVERIFY(mImage->sizePolicy().verticalPolicy()==QSizePolicy::Expanding);
+    QVERIFY(mImage->sizePolicy().horizontalPolicy()==QSizePolicy::Fixed);
+    mImage->setKeepSquareShape(false);
+    QVERIFY(mImage->keepSquareShape()==false);
+    QVERIFY(mImage->sizePolicy().verticalPolicy()==QSizePolicy::Expanding);
+    QVERIFY(mImage->sizePolicy().horizontalPolicy()==QSizePolicy::Expanding);
 }
 
 BUBBLE_TEST_MAIN(ut_BubbleImageWidget)

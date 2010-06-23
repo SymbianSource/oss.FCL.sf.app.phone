@@ -77,9 +77,9 @@ EXPORTS
 	_ZN25CPhoneResourceResolverGSMD0Ev @ 76 NONAME
 	_ZN25CPhoneResourceResolverGSMD1Ev @ 77 NONAME
 	_ZN25CPhoneResourceResolverGSMD2Ev @ 78 NONAME
-	_ZN26CPhoneErrorMessagesHandler19SendGlobalInfoNoteLEi @ 79 NONAME
-	_ZN26CPhoneErrorMessagesHandler20SendGlobalErrorNoteLEi @ 80 NONAME
-	_ZN26CPhoneErrorMessagesHandler22SendGlobalWarningNoteLEi @ 81 NONAME
+	_ZN26CPhoneErrorMessagesHandler19SendGlobalInfoNoteLEii @ 79 NONAME
+	_ZN26CPhoneErrorMessagesHandler20SendGlobalErrorNoteLEii @ 80 NONAME
+	_ZN26CPhoneErrorMessagesHandler22SendGlobalWarningNoteLEii @ 81 NONAME
 	_ZN26CPhoneErrorMessagesHandler22ShowErrorSpecificNoteLERK12TPEErrorInfo @ 82 NONAME
 	_ZN26CPhoneErrorMessagesHandlerC1EP23MPhoneViewCommandHandleP18MPhoneStateMachine @ 83 NONAME
 	_ZN26CPhoneErrorMessagesHandlerC2EP23MPhoneViewCommandHandleP18MPhoneStateMachine @ 84 NONAME

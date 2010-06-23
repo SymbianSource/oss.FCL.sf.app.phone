@@ -23,7 +23,6 @@
 #include <smcmockclassincludes.h>
 #include <hbdataform.h>
 #include <hbdataformmodel.h>
-#include <hbsettingformitem.h>
 #include "cptelephonypluginview.h"
 
 
@@ -66,13 +65,15 @@ void UT_CpTelephonyPluginView::init()
 {
     initialize();
     CpPluginInterface *nullPlugin=0;
-    expect("CpPluginLoader::loadCpPlugin").with(QString("cpcallsplugin")).returns(nullPlugin);
+    expect("CpPluginLoader::loadCpPluginInterface").
+            with(QString("cpcallsplugin")).returns(nullPlugin);
     DummyPlugin *ret = new DummyPlugin;
     
     //ret = new DummyPlugin;
     QList<CpSettingFormItemData*> list;
     list.append(new CpSettingFormItemData);
-    expect("CpPluginLoader::loadCpPlugin").with(QString("cpdivertplugin")).returns(ret); // cpnetworkplugin
+    expect("CpPluginLoader::loadCpPluginInterface").
+            with(QString("cpdivertplugin")).returns(ret); // cpnetworkplugin
     expect("DummyPlugin::createSettingFormItemData").returns(list);
     
     m_callspluginview = new CpTelephonyPluginView;
@@ -98,11 +99,13 @@ void UT_CpTelephonyPluginView::t_memleak()
     QList<CpSettingFormItemData*> list;
     list.append(new CpSettingFormItemData);
     DummyPlugin *ret = new DummyPlugin;
-    expect("CpPluginLoader::loadCpPlugin").with(QString("cpcallsplugin")).returns(ret);
+    expect("CpPluginLoader::loadCpPluginInterface").
+            with(QString("cpcallsplugin")).returns(ret);
     expect("DummyPlugin::createSettingFormItemData").returns(list);
     
     ret = new DummyPlugin;
-    expect("CpPluginLoader::loadCpPlugin").with(QString("cpdivertplugin")).returns(ret);
+    expect("CpPluginLoader::loadCpPluginInterface").
+            with(QString("cpdivertplugin")).returns(ret);
     expect("DummyPlugin::createSettingFormItemData").returns(list);
     
     

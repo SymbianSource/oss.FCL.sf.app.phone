@@ -16,22 +16,26 @@
 
 echo OFF
 
-del \epoc32\winscw\c\private\e37686c5\ut_phoneuiqtbuttonscontroller.log
-\epoc32\release\winscw\udeb\ut_phoneuiqtbuttonscontroller.exe -o ut_phoneuiqtbuttonscontroller.log
-type \epoc32\winscw\c\private\e37686c5\ut_phoneuiqtbuttonscontroller.log
+del \epoc32\winscw\c\data\ut_phoneuiqtbuttonscontroller.log
+\epoc32\release\winscw\udeb\ut_phoneuiqtbuttonscontroller.exe -o c:\data\ut_phoneuiqtbuttonscontroller.log
+type \epoc32\winscw\c\data\ut_phoneuiqtbuttonscontroller.log
 
-del \epoc32\winscw\c\private\eff8fea2\ut_phoneuiqtviewadapter.log
-\epoc32\release\winscw\udeb\ut_phoneuiqtviewadapter.exe -o ut_phoneuiqtviewadapter.log
-type \epoc32\winscw\c\private\eff8fea2\ut_phoneuiqtviewadapter.log
+del \epoc32\winscw\c\data\ut_phoneuiqtviewadapter.log
+\epoc32\release\winscw\udeb\ut_phoneuiqtviewadapter.exe -o c:\data\ut_phoneuiqtviewadapter.log
+type \epoc32\winscw\c\data\ut_phoneuiqtviewadapter.log
 
-del \epoc32\winscw\c\private\eacf41fe\ut_phonebubblewrapper.log
-\epoc32\release\winscw\udeb\ut_phonebubblewrapper.exe -o ut_phonebubblewrapper.log
-type \epoc32\winscw\c\private\eacf41fe\ut_phonebubblewrapper.log
+del \epoc32\winscw\c\data\ut_phonebubblewrapper.log
+\epoc32\release\winscw\udeb\ut_phonebubblewrapper.exe -o c:\data\ut_phonebubblewrapper.log
+type \epoc32\winscw\c\data\ut_phonebubblewrapper.log
 
-del \epoc32\winscw\c\private\eda69235\ut_phoneresourceadapter.log
-\epoc32\release\winscw\udeb\ut_phoneresourceadapter.exe -o ut_phoneresourceadapter.log
-type \epoc32\winscw\c\private\eda69235\ut_phoneresourceadapter.log
+del \epoc32\winscw\c\data\ut_phoneresourceadapter.log
+\epoc32\release\winscw\udeb\ut_phoneresourceadapter.exe -o c:\data\ut_phoneresourceadapter.log
+type \epoc32\winscw\c\data\ut_phoneresourceadapter.log
 
-del \epoc32\winscw\c\private\e37686c5\ut_telephonyservice.log
-\epoc32\release\winscw\udeb\ut_telephonyservice.exe -o ut_telephonyservice.log
-type \epoc32\winscw\c\private\e37686c5\ut_telephonyservice.log
+del \epoc32\winscw\c\data\ut_telephonyservice.log
+\epoc32\release\winscw\udeb\ut_telephonyservice.exe -o c:\data\ut_telephonyservice.log
+type \epoc32\winscw\c\data\ut_telephonyservice.log
+
+del \epoc32\winscw\c\data\ut_phonevisibilityhandler.log
+\epoc32\release\winscw\udeb\ut_phonevisibilityhandler.exe -o c:\data\ut_phonevisibilityhandler.log
+type \epoc32\winscw\c\data\ut_phonevisibilityhandler.log

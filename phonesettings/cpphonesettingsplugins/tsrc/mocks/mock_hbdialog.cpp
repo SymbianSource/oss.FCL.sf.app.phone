@@ -17,7 +17,7 @@
 #include <QDebug>
 #include <smcmockclassincludes.h>
 #include <hbdialog.h>
-#include <HbAction.h>
+#include <hbaction.h>
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -127,28 +127,6 @@ void HbDialog::setSecondaryAction(
   //  SMC_MOCK_METHOD1( void, HbAction *, action )
     }
 
-
-// -----------------------------------------------------------------------------
-// HbDialog::type
-// -----------------------------------------------------------------------------
-//
-/*
-int HbDialog::type(  ) const
-    {
-    SMC_MOCK_METHOD0( int )
-    }
-*/
-
-// -----------------------------------------------------------------------------
-// HbDialog::exec
-// -----------------------------------------------------------------------------
-//
-HbAction * HbDialog::exec(  )
-    {
-  //  SMC_MOCK_METHOD0( HbAction * )
-    }
-
-
 // -----------------------------------------------------------------------------
 // HbDialog::HbDialog
 // -----------------------------------------------------------------------------
@@ -206,4 +184,12 @@ bool HbDialog::event(
   //  SMC_MOCK_METHOD1( bool, QEvent *, event )
     }
 
+// -----------------------------------------------------------------------------
+// HbDialog::open
+// -----------------------------------------------------------------------------
+//
+void HbDialog::open( QObject* receiver, const char* member )
+    {
+        SMC_MOCK_METHOD2( void, QObject *, receiver, const char*, member )
+    }
 

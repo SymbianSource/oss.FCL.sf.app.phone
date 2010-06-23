@@ -17,7 +17,6 @@
 PHONEENGINE_API_HEADERS = ./inc/pevirtualengine.h \
                           ./inc/mpecallcontrolif.h \
                           ./inc/mpecallsettersif.h \
-                          ./inc/mpekeysequencerecognitionif.h \
                           ./inc/telinternalcrkeys.h \
                           ./inc/telinternalpskeys.h \
                           ./inc/telinternalpstypes.h \

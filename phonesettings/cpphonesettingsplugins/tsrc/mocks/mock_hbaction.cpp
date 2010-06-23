@@ -52,7 +52,7 @@ HbAction::HbAction(
 // -----------------------------------------------------------------------------
 //
 HbAction::HbAction( 
-        Hb::SoftKeyAction action,
+        Hb::NavigationAction action,
         QObject * parent )
     : QAction( parent ), d_ptr(NULL)
     {

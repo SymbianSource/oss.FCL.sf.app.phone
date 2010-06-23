@@ -30,7 +30,7 @@
 // -----------------------------------------------------------------------------
 //
 CpItemDataHelper::CpItemDataHelper( 
-        HbDataForm * form )
+        HbDataForm * /*form*/ )
     //:
     //QObject( /*form*/ )
     {

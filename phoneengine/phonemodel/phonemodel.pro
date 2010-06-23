@@ -32,9 +32,8 @@ symbian {
                    $$OS_LAYER_GLIB_SYSTEMINCLUDE
     INCLUDEPATH += ../../inc \
                    ../inc \
-                   ../phoneservices/inc \
-                   ../parserrecognizer/inc \
-                   
+                   ../phoneservices/inc
+    
     engineDefFiles = \
         "$${LITERAL_HASH}ifdef WINSCW" \
         "DEFFILE bwins/phoneengine.def" \
@@ -74,7 +73,6 @@ symbian {
             -lpeservicehandling \
             -lphoneservices \
             -lengineinfo \
-            -lparserrecognizer \
             -lmediatorclient \
             -lestor \
 	    -lxqservice \
@@ -95,7 +93,6 @@ HEADERS += ./inc/cpeclientemergencycallmonitor.h
 HEADERS += ./inc/cpeclientservices.h
 HEADERS += ./inc/cpedevicemodehandler.h
 HEADERS += ./inc/cpeexternaldatahandler.h
-HEADERS += ./inc/cpeidlestatusmonitor.h
 HEADERS += ./inc/cpemanualcallcontrolhandler.h
 HEADERS += ./inc/cpemessagehandler.h
 HEADERS += ./inc/cpemessagehandler.inl
@@ -150,7 +147,6 @@ SOURCES += ./src/cpepubsubmonitor.cpp
 SOURCES += ./src/cpetimer.cpp
 SOURCES += ./src/pepanic.cpp
 SOURCES += ./src/cpemanualcallcontrolhandler.cpp
-SOURCES += ./src/cpeidlestatusmonitor.cpp
 SOURCES += ./src/cpeparsermanufacturerhandler.cpp
 SOURCES += ./src/cpeparsermischandler.cpp
 SOURCES += ./src/cpeparserphonenumberhandler.cpp
@@ -181,9 +177,17 @@ BLD_INF_RULES.prj_exports += \
  "./rom/phonengengine.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(phonengengine.iby)"
 BLD_INF_RULES.prj_exports += "./conf/s60telephony.confml APP_LAYER_CONFML(s60telephony.confml)"
 BLD_INF_RULES.prj_exports += "./conf/s60telephony_japan.confml CONFML_EXPORT_PATH(s60telephony_japan.confml,japan)"
-BLD_INF_RULES.prj_exports += "./conf/s60telephony_101F87E3.crml APP_LAYER_CRML(s60telephony_101F87E3.crml)"
-BLD_INF_RULES.prj_exports += "./conf/s60telephony_102828B1.crml APP_LAYER_CRML(s60telephony_102828B1.crml)"
-BLD_INF_RULES.prj_exports += "./conf/s60telephony_102828B2.crml APP_LAYER_CRML(s60telephony_102828B2.crml)"
-BLD_INF_RULES.prj_exports += "./conf/s60telephony_102828B8.crml APP_LAYER_CRML(s60telephony_102828B8.crml)"
-BLD_INF_RULES.prj_exports += "./conf/s60telephony_102828F8.crml APP_LAYER_CRML(s60telephony_102828F8.crml)"
-BLD_INF_RULES.prj_exports += "./conf/s60telephony_102830B6.crml APP_LAYER_CRML(s60telephony_102830B6.crml)"
+BLD_INF_RULES.prj_exports += "./conf/s60telephony_101f87e3.crml APP_LAYER_CRML(s60telephony_101f87e3.crml)"
+BLD_INF_RULES.prj_exports += "./conf/s60telephony_102828b1.crml APP_LAYER_CRML(s60telephony_102828b1.crml)"
+BLD_INF_RULES.prj_exports += "./conf/s60telephony_102828b2.crml APP_LAYER_CRML(s60telephony_102828b2.crml)"
+BLD_INF_RULES.prj_exports += "./conf/s60telephony_102828b8.crml APP_LAYER_CRML(s60telephony_102828b8.crml)"
+BLD_INF_RULES.prj_exports += "./conf/s60telephony_102828f8.crml APP_LAYER_CRML(s60telephony_102828f8.crml)"
+BLD_INF_RULES.prj_exports += "./conf/s60telephony_102830b6.crml APP_LAYER_CRML(s60telephony_102830b6.crml)"
+
+#Backup registration files
+BLD_INF_RULES.prj_exports += "./data/backup_registration.xml /epoc32/data/z/private/1000a86c/backup_registration.xml"
+BLD_INF_RULES.prj_exports += "./data/backup_registration.xml /epoc32/release/winscw/udeb/z/private/1000a86c/backup_registration.xml"
+BLD_INF_RULES.prj_exports += "./data/backup_registration.xml /epoc32/release/winscw/urel/z/private/1000a86c/backup_registration.xml"
+
+#Stub sis
+BLD_INF_RULES.prj_exports += "./data/phonemodel_stub.sis   \epoc32\data\z\system\install\phonemodel_stub.sis"

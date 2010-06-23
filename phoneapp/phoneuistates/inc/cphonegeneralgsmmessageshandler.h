@@ -90,8 +90,10 @@ class CPhoneGeneralGsmMessagesHandler : public CBase
         /**
         * Show global InfoNote
         * @param aResourceId resource id to be resolved
+        * @param aNotificationDialog ETrue if notification dialog should be used
         */
-        void SendGlobalInfoNoteL( TInt aResourceId );
+        void SendGlobalInfoNoteL( TInt aResourceId, 
+                TBool aNotificationDialog = EFalse );
         
         /**
         * Shows divert indication or sets internal divert flag
@@ -101,15 +103,12 @@ class CPhoneGeneralGsmMessagesHandler : public CBase
         void HandleIncomingCallForwardedL();
 
         /**
-        * Shows software version note
-        */
-        void HandleShowVersionL();
-        
-        /**
         * Show global ErrorNote
         * @param aResourceId resource id to be resolved
+        * @param aNotificationDialog ETrue if notification dialog should be used
         */
-        void SendGlobalErrorNoteL( TInt aResourceId );
+        void SendGlobalErrorNoteL( TInt aResourceId,
+                TBool aNotificationDialog = EFalse );
 
 
     private:

@@ -353,23 +353,3 @@ void CPhoneCallHeaderManager::LoadCallHeaderTexts(
         }
     }
 
-// -----------------------------------------------------------
-// CPhoneCallHeaderManager::GetInCallNumberTextL
-// -----------------------------------------------------------
-//
-void CPhoneCallHeaderManager::GetInCallNumberTextL( 
-        TInt aCallId, 
-        TDes& aData ) const
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneCallHeaderManager::GetInCallNumberTextL( ) ");    
-    // Display "Call n", n = callId-8 for video and callId+1 for voice call
-    HBufC* tmp = StringLoader::LoadL( 
-        CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( EPhoneInCallNumberText ), 
-        aCallId + ( IsVideoCall( aCallId ) ? -8 : 1 ), 
-        CCoeEnv::Static() );
-    
-    aData = *tmp;
-    delete tmp;
-    }
-

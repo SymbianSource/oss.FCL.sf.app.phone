@@ -25,7 +25,6 @@ class HbAction;
 class HbMainWindow;
 class QSignalMapper;
 class HbToolBar;
-class BubbleTester;
 class BubbleManager;
 
 class BubbleTestView : public HbView
@@ -60,9 +59,6 @@ private slots:
     void switchOrientation();
     void handleOrientationChange(Qt::Orientation orientation);
 
-    void connectToTester();
-    void handleTesterDataChanged();
-
 private:
     void keyPressEvent(QKeyEvent *event);
     
@@ -89,7 +85,7 @@ private:
     BubbleManager    *mBubbleManager;
     QList<HbAction*>  mBubbleActions;
     
-    // settings
+    // Settings
     HbAction          *mCallDivert;
     HbAction          *mCipheringOff;
     HbAction          *mCallTimer;
@@ -140,10 +136,7 @@ private:
     bool mMuted;
 
     HbAction         *mConnectTester;
-    BubbleTester     *mBubbleTester;
     QMap<QString, int> mTestBubbleIds;
-    QMap<QString, BubbleManagerIF::PhoneCallState> mStateMap;
-    QMap<QString, QString> mLabelMap;
     QString mPhoneNumber;
     int mConfBubbleId;
     bool mProvideJoin;

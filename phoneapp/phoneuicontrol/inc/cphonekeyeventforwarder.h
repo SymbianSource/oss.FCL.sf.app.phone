@@ -182,11 +182,6 @@ class CPhoneKeyEventForwarder
          */
         TBool IsAlphaNumericKey( const TKeyEvent& aKeyEvent );
                 
-        /**
-         * Checks is the given key special character (*, 0, # ) from half-qwerty
-         * keyboard and conver key code if needed.
-         */
-        TBool ConvertHalfQwertySpecialChar( TUint& aCode, const TKeyEvent& aKeyEvent );
         
         /**
          * Checks if key should be blocked from phone.

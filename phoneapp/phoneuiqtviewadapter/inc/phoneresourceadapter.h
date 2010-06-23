@@ -112,6 +112,16 @@ public:
         Returns HbAction list.
     */ 
     QList<HbAction*> convertToHbActions(int symbianResourceId) const;
+
+    /*!
+        \fn QString PhoneResourceAdapter::convertToToolBarCommandList()
+        
+        Converts given Symbian command id to tool bar command list.
+        
+        Returns command list.
+    */
+    QList<PhoneAction::ToolBarItem> convertToToolBarCommandList(
+            int symbianResourceId ) const;
     
 protected:    
 

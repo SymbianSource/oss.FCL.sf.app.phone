@@ -41,6 +41,7 @@ symbian {
 }
 
 # Input
+HEADERS += xqservicerequest.h
 HEADERS += ../../inc/phonemessagecontroller.h
 SOURCES += ../../src/phonemessagecontroller.cpp
 SOURCES += unit_tests.cpp

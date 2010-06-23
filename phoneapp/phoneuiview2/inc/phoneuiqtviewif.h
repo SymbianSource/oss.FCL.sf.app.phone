@@ -170,6 +170,13 @@ public:
     virtual void clearAndHideDialpad() = 0;
     
     /*!
+        \fn void PhoneUIQtView::clearDialpad()
+        
+        Clears text from dialpad.
+    */
+    virtual void clearDialpad() = 0;
+    
+    /*!
         \fn void PhoneUIQtView::bringToForeground()
         
         Brings to foreground.

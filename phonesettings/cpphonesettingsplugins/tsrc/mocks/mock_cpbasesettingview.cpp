@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -45,23 +45,33 @@ CpBaseSettingView::~CpBaseSettingView(  )
 
 
 // -----------------------------------------------------------------------------
-// CpBaseSettingView::setSettingForm
+// CpBaseSettingView::returnValueDelivered
 // -----------------------------------------------------------------------------
 //
-void CpBaseSettingView::setSettingForm( 
-        HbDataForm * settingForm )
+void CpBaseSettingView::returnValueDelivered( 
+        const QVariant & returnValue )
     {
-
+    //SMC_MOCK_METHOD1( void, const QVariant &, returnValue )
     }
 
 
 // -----------------------------------------------------------------------------
-// CpBaseSettingView::settingForm
+// CpBaseSettingView::aboutToClose
 // -----------------------------------------------------------------------------
 //
-HbDataForm * CpBaseSettingView::settingForm(  ) const
+void CpBaseSettingView::aboutToClose(  )
     {
-    SMC_MOCK_METHOD0( HbDataForm * )
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpBaseSettingView::close
+// -----------------------------------------------------------------------------
+//
+void CpBaseSettingView::close(  )
+    {
+    SMC_MOCK_METHOD0( void )
     }
 
 

@@ -276,14 +276,20 @@ class CPhoneState :
         /**
         * Show global InfoNote
         * @param aResourceId resource id to be resolved
+        * @param aNotificationDialog True if notification
+        *        dialog should be used.
         */
-        IMPORT_C void SendGlobalInfoNoteL( TInt aResourceId );
+        IMPORT_C void SendGlobalInfoNoteL( TInt aResourceId,
+                TBool aNotificationDialog = EFalse );
 
         /**
         * Show global ErrorNote
         * @param aResourceId resource id to be resolved
+        * @param aNotificationDialog True if notification
+        *        dialog should be used.
         */
-        IMPORT_C void SendGlobalErrorNoteL( TInt aResourceId );
+        IMPORT_C void SendGlobalErrorNoteL( TInt aResourceId,
+                TBool aNotificationDialog = EFalse );
 
         /**
          * Get blocked key list
@@ -578,8 +584,11 @@ class CPhoneState :
          /**
         * Show global WarningNote
         * @param aResourceId resource id to be resolved
+        * @param aNotificationDialog True if notification dialog
+        *                            should be used.
         */
-        IMPORT_C void SendGlobalWarningNoteL( TInt aResourceId );
+        IMPORT_C void SendGlobalWarningNoteL( TInt aResourceId,
+                TBool aNotificationDialog = EFalse );
 
         /**
         * Checks is the call id a video call.
@@ -959,19 +968,9 @@ class CPhoneState :
         void HandleInitiatedEmergencyWhileActiveVideoL();
 
         /**
-        * Shows IMEI note
-        */
-        void HandleShowImeiL();
-
-        /**
         * Handles network ciphering info changes
         */
         void HandleCallSecureStatusChangeL( TInt aCallId );
-
-        /**
-        * Shows Life time note
-        */
-        void HandleShowLifeTimerL();
 
         /**
         * Handles change als line command

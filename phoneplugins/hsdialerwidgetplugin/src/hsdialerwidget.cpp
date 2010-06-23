@@ -15,28 +15,39 @@
 *
 */
 
+#include <HbStyle>
+#include <HbStyleLoader>
+#include <HbFrameItem>
+#include <HbFrameDrawer>
+#include <HbIconItem>
+#include <HbTextItem>
+#include <HbTouchArea>
+#include "dialerwidgetengine.h"
 
-#include <QPainter>
-#include <hbframedrawer.h>
-#include <hbframeitem.h>
-#include <hbtextitem.h>
-#include <QLocale>
 #ifdef Q_OS_SYMBIAN
-#include <logsdomaincrkeys.h>
 #include "qtphonelog.h"
 #include <xqservicerequest.h>
 #include <xqcallinfo.h>
 #include <xqpublishandsubscribeutils.h>
-#include <ctsydomainpskeys.h>
 #include <logsservices.h>
+#include <xqrequestinfo.h>
+#else
+#define PHONE_TRACE
+#define PHONE_TRACE1(A)
+#define PHONE_TRACE2(A, B)
+#define PHONE_TRACE3(A, B, C)
+#define PHONE_TRACE4(A, B, C, D)
 #endif
 
 #include "hsdialerwidget.h"
+
 
 namespace
 {
     const char KDialerWidgetIcon[] = ":/icons/resource/qtg_graf_hs_dialer";
     const char KMissedCallShortcutBadge[] = ":/icons/resource/qtg_fr_shortcut_badge_bg";
+    const char KDialerWidgetWidgetml[] = ":/data/resource/dialerwidget.widgetml";
+    const char KDialerWidgetCss[] = ":/data/resource/dialerwidget.css";
 }
 
 /*!
@@ -51,40 +62,10 @@ namespace
     Constructs dialer widget with given \a parent and given window \a flags.
 */
 HsDialerWidget::HsDialerWidget(QGraphicsItem *parent, Qt::WindowFlags flags)
-  : HbWidget(parent, flags),
-    mXQCallInfo(0)
-{
-#ifdef Q_OS_SYMBIAN
-    m_setManager = new XQSettingsManager(this);
-
-    XQSettingsKey settingsKey( XQSettingsKey::TargetCentralRepository,
-            KCRUidLogs.iUid, KLogsNewMissedCalls );
-
-    bool ok = connect( m_setManager,
-            SIGNAL( valueChanged(const XQSettingsKey & ,const QVariant &)),
-                this, SLOT(updateMissedCallBadge(XQSettingsKey,
-                        QVariant)));
-    ASSERT( ok );
-    ok = false;
-    ok = m_setManager->startMonitoring( settingsKey );
-    ASSERT(ok);
-
-#endif
-
-    HbFrameDrawer *drawer = new HbFrameDrawer(
-            KDialerWidgetIcon, HbFrameDrawer::OnePiece);
-    m_backgroud = new HbFrameItem(drawer, this);
-    m_backgroud->setZValue(1);
-
-    drawer = new HbFrameDrawer(KMissedCallShortcutBadge,
-            HbFrameDrawer::ThreePiecesHorizontal );
-
-    m_shortcutBadge = new HbFrameItem(drawer, this);
-    m_shortcutBadge->setZValue(2);
-    m_shortcutBadge->setVisible(false);
-    m_missedCalls=0;
-    setItemPositions();
-    resize(preferredSize());
+  : HsWidget(parent, flags),
+    mXQCallInfo(0), m_background(0), m_badgeBackground(0), m_text(0), m_touchArea(0)
+{   
+    PHONE_TRACE 
 }
 
 /*!
@@ -92,47 +73,7 @@ HsDialerWidget::HsDialerWidget(QGraphicsItem *parent, Qt::WindowFlags flags)
 */
 HsDialerWidget::~HsDialerWidget()
 {
-}
-
-void HsDialerWidget::paint(
-        QPainter *painter,
-        const QStyleOptionGraphicsItem *option,
-        QWidget *widget)
-{
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
-    painter->setPen(QPen( Qt::transparent ) );
-
-    QRectF rect(m_backgroud->boundingRect());
-    painter->drawRect((int)m_backgroud->pos().x(),
-                      (int)m_backgroud->pos().y(),
-                      rect.toRect().width(),
-                      rect.toRect().height());
-
-    if ( m_shortcutBadge->isVisible())
-        {
-        rect = m_shortcutBadge->boundingRect();
-        HbTextItem *text = new HbTextItem( m_shortcutBadge->graphicsItem());
-        
-        QFont badgefont = font();
-#ifdef Q_OS_SYMBIAN
-        badgefont.setPointSize( 4 );
-#else
-        badgefont.setPointSize( 8 );
-#endif
-        text->setFont(badgefont);
-        text->setText(QLocale::system().toString(m_missedCalls));
-        text->setZValue(3);
-        text->setTextColor(Qt::white);
-       
-        text->setX( ( rect.toRect().width() / 2 ) - 2);
-        text->setY( ( rect.toRect().height() / 5 ) - 1);
-
-        painter->drawRect( (int)m_shortcutBadge->pos().x(),
-                           (int)m_shortcutBadge->pos().y(),
-                           rect.toRect().width(),
-                           rect.toRect().height() );
-    }
+    PHONE_TRACE
 }
 
 /*!
@@ -142,14 +83,14 @@ void HsDialerWidget::paint(
 */
 void HsDialerWidget::startDialer()
 {
+    PHONE_TRACE
 #ifdef Q_OS_SYMBIAN
     PHONE_DEBUG("HsDialerWidget::startDialer");
     
     if (!mXQCallInfo) {
         mXQCallInfo = XQCallInfo::create();
         mXQCallInfo->setParent(this);
-    }
-    
+    }    
     QList<CallInfo> calls;
     mXQCallInfo->getCalls(calls);
         
@@ -167,6 +108,9 @@ void HsDialerWidget::startDialer()
         PHONE_DEBUG("no calls, open Dialer");
         XQServiceRequest snd("com.nokia.services.logsservices.starter",
             "start(int,bool)", false);
+        XQRequestInfo info;
+        info.setForeground(true);
+        snd.setInfo(info);
         snd << (int)LogsServices::ViewAll;
         snd << true;
         int retValue;
@@ -175,22 +119,34 @@ void HsDialerWidget::startDialer()
         //LogsServices::start(LogsServices::ViewAll, true);
     }
 #endif
+
 }
 
-void HsDialerWidget::updateMissedCallBadge(
-        const XQSettingsKey &key, const QVariant &value)
+void HsDialerWidget::onInitialize()
 {
-#ifdef Q_OS_SYMBIAN
-    if ( key.key() == (quint32)KLogsNewMissedCalls ){
-        m_missedCalls = value.toInt();
-        m_shortcutBadge->setVisible(value.toBool());
-        setItemPositions();
-        m_backgroud->update();
+    PHONE_TRACE
+    QT_TRY{
+        // basic ui
+        createPrimitives();
+        Q_ASSERT(HbStyleLoader::registerFilePath(KDialerWidgetWidgetml));
+        Q_ASSERT(HbStyleLoader::registerFilePath(KDialerWidgetCss));
+        // Engine construction is 2 phased 
+        m_engine = new DialerWidgetEngine();
+        connect(m_engine, SIGNAL( exceptionOccured(const int&) )
+                ,this, SLOT( onEngineException(const int&) ) );
+        
+        if(!m_engine->initialize()){
+            //engine construction failed. Give up.
+            emit error();
+            return;
+            }
+        connect( m_engine, SIGNAL(missedCallsCountChanged(const int&)),
+                this, SLOT(onMissedCallsCountChange(const int&)));
+        
     }
-#else
-   Q_UNUSED(key);
-   Q_UNUSED(value);
-#endif
+    QT_CATCH(...){
+        emit error();
+    }
 }
 
 /*!
@@ -200,6 +156,8 @@ void HsDialerWidget::updateMissedCallBadge(
 */
 void HsDialerWidget::onShow()
 {
+    PHONE_TRACE
+    updatePrimitives();
 }
 
 /*!
@@ -209,6 +167,32 @@ void HsDialerWidget::onShow()
 */
 void HsDialerWidget::onHide()
 {
+    PHONE_TRACE
+}
+
+void HsDialerWidget::onUninitialize()
+{
+    PHONE_TRACE
+    HbStyleLoader::unregisterFilePath(KDialerWidgetWidgetml);
+    HbStyleLoader::unregisterFilePath(KDialerWidgetCss);
+}
+
+void HsDialerWidget::onEngineException(const int& exc)
+{
+    Q_UNUSED(exc);
+    emit error();
+}
+
+void HsDialerWidget::onMissedCallsCountChange(const int& count)
+{
+    m_text->setText( QLocale::system().toString(count));
+    if ( count ){
+        m_text->setVisible(true);
+        m_badgeBackground->setVisible(true);
+    } else {
+        m_text->setVisible(false);
+        m_badgeBackground->setVisible(false);
+    }
 }
 
 /*!
@@ -218,26 +202,73 @@ void HsDialerWidget::onHide()
     \sa startDialer()
 */
 void HsDialerWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{
+{   
     Q_UNUSED(event);
     startDialer();
 }
 
-void HsDialerWidget::setItemPositions()
+HsWidget::StartResult HsDialerWidget::onStart()
 {
-    HbIcon icon(KDialerWidgetIcon);
-    setPreferredWidth(icon.width());
-    int badgeSize = 20;
-    if ( m_shortcutBadge->isVisible()){
-        m_backgroud->setGeometry(QRectF(QPointF(0,badgeSize / 2 ), 
-                QSizeF(icon.width(),icon.height())));
-        m_shortcutBadge->setGeometry(QRectF(
-                QPointF(m_backgroud->boundingRect().width() - (badgeSize / 2),0 ),
-                QSizeF(badgeSize, badgeSize)));
-        setPreferredHeight(icon.height()+(badgeSize / 2));
-    } else {
-        m_backgroud->setGeometry(QRectF(QPointF(0,0), 
-                QSizeF(icon.width(),icon.height())));
-        setPreferredHeight(icon.height());
+    return StartResultRunning;
+}
+HsWidget::StopResult HsDialerWidget::onStop()
+{
+    return StopResultFinished;
+}
+HsWidget::SuspendResult HsDialerWidget::onSuspend()
+{
+    return SuspendResultSuspended;
+}
+HsWidget::ResumeResult HsDialerWidget::onResume()
+{
+    return ResumeResultRunning;
+}
+
+void HsDialerWidget::createPrimitives()
+{   
+    setPreferredSize(100,100);
+    // Background
+    if (!m_background) {
+        HbFrameDrawer *drawer = new HbFrameDrawer(
+                KDialerWidgetIcon, HbFrameDrawer::OnePiece);
+        m_background = new HbFrameItem(drawer, this);
+        style()->setItemName(m_background, /*QLatin1String(*/"background"/*)*/);
+        m_background->moveBy(0,10);
+        m_background->resize(81,81);
+    }
+    
+    // Badge background
+    if (!m_badgeBackground) {
+        HbFrameDrawer *badgedrawer = new HbFrameDrawer(
+                KMissedCallShortcutBadge, HbFrameDrawer::ThreePiecesHorizontal);
+        m_badgeBackground = new HbFrameItem(badgedrawer, this);
+        style()->setItemName(m_background, QLatin1String("badgeBackground"));
+        m_badgeBackground->resize(20,20);
+        m_badgeBackground->moveBy(70,0);
+        m_badgeBackground->setVisible(true);
+        m_badgeBackground->setVisible( false );
+    }
+
+    // Text
+    if (!m_text) {
+        m_text = new HbTextItem(this);
+        style()->setItemName(m_text, QLatin1String("text"));
+        m_text->resize(20,20);
+        m_text->moveBy(76,0);
+        m_text->setVisible(true);
+        HbFontSpec *textFont = new HbFontSpec(HbFontSpec::Primary);
+        textFont->setTextHeight(3*HbDeviceProfile::current().unitValue());
+        m_text->setFontSpec(*textFont);
+        m_text->setText("0");
+        m_text->setVisible( false);
+    }
+
+    // Touch Area
+    if (!m_touchArea) {
+        m_touchArea = new HbTouchArea(this);
+        m_touchArea->installEventFilter(this);
+        style()->setItemName(m_touchArea, QLatin1String("touch_area"));
+        m_touchArea->moveBy(0,10);
+        m_touchArea->resize(81,81);
     }
 }

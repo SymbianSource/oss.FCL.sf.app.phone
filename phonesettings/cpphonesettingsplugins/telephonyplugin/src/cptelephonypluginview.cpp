@@ -92,7 +92,7 @@ QList<CpSettingFormItemData*> CpTelephonyPluginView::groupItemFromPlugin( const 
     QList<CpSettingFormItemData*> items;
     CpPluginInterface *p(NULL);
     try {
-        p = CpPluginLoader::loadCpPlugin(plugin);
+        p = CpPluginLoader::loadCpPluginInterface(plugin);
         if (p && m_helper){
             items = p->createSettingFormItemData(*m_helper);
         }

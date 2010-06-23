@@ -48,6 +48,7 @@ HEADERS += ut_mockintegrity.h
 HEADERS += ../../callsplugin/src/cpcallsplugin.h                \
            ../../cptelephonyutils/inc/cpphonenotes.h            \
            ../../cptelephonyutils/inc/cpplugincommon.h          \
+           ../../cptelephonyutils/inc/cpphonelocalisation.h     \
            /epoc32/include/platform/mw/psetwrapper.h            \
            /epoc32/include/platform/mw/psetcliwrapper.h         \
            /epoc32/include/platform/mw/sssettingswrapper.h      \
@@ -55,9 +56,9 @@ HEADERS += ../../callsplugin/src/cpcallsplugin.h                \
            /epoc32/include/platform/mw/psetcalldivertingwrapper.h \
            /epoc32/include/platform/mw/psetnetworkwrapper.h     \
            /epoc32/include/platform/mw/psetcallbarringwrapper.h \
-           /epoc32/include/mw/xqsettingskey.h                   \
-           /epoc32/include/mw/xqsettingsmanager.h               \
-           /epoc32/include/mw/xqsysinfo.h
+           /epoc32/include/platform/mw/xqsettingskey.h          \
+           /epoc32/include/platform/mw/xqsettingsmanager.h      \
+           /epoc32/include/platform/mw/xqsysinfo.h
 
 SOURCES += *.cpp
 

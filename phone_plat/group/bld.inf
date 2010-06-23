@@ -25,8 +25,6 @@
 #include "../telephony_video_mailbox_settings_api/group/bld.inf"
 
 //#include "../telephony_configuration_api/group/bld.inf"
-//#include "../dialer_keypad_api/group/bld.inf"
-//#include "../telephony_bubble_extension_api/group/bld.inf"
 
 #include "../telephony_menu_extension_api/group/bld.inf"
 #include "../telephony_microphone_mute_status_api/group/bld.inf"

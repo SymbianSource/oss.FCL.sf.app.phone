@@ -73,6 +73,10 @@ for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$headers.pa
 BLD_INF_RULES.prj_exports += \
  "$${LITERAL_HASH}include <platform_paths.hrh>" \
  "./rom/phonecntfinder.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(phonecntfinder.iby)"
+ 
+BLD_INF_RULES.prj_exports += \
+ "./data/phonecntfinder_stub.sis   \epoc32\data\z\system\install\phonecntfinder_stub.sis"
+
 
 
     

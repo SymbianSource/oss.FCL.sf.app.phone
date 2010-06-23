@@ -54,6 +54,8 @@ private slots:
     
     void t_handleCallWaitingGetStatusDistinguishEnabled();
     
+    void t_ownVideoInReceivedCallStateChanged();
+    
     void cleanup();
     
     void t_memleak();

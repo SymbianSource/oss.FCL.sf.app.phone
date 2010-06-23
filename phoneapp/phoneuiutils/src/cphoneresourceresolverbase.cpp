@@ -551,10 +551,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             retVal = R_PHONEUI_SEND_DTMF_NORMAL_EDIT_BOX_CBA;
             break;
 
-        case EPhoneDtmfSpeedDialNormalEditBoxCBA:
-            retVal = R_PHONEUI_DTMF_SPEED_DIAL_NORMAL_EDIT_BOX_CBA;
-            break;
-
         case EPhoneNumberAcqCBA:
             if ( iVariationFlags & EOnscreenDialer )
                   {
@@ -1004,18 +1000,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             retVal = R_PHONEUI_TITLE_IN_DTMF_FETCH;
             break;
 
-        case EPhoneDtmfSpeedDialNumberQuery:
-            retVal = R_PHONEUI_DTMF_SPEED_DIAL_NUMBER_QUERY;
-            break;
-
-        case EPhoneDtmfSpeedDialNotAssigned:
-            retVal = R_ERROR_NOTE_SPEED_DIAL_NOT_ASSIGNED;
-            break;
-
-        case EPhoneDtmfInvalidSpeedDial:
-            retVal = R_ERROR_NOTE_INVALID_SPEED_DIAL;
-            break;
-
         case EPhoneAlsLineChangeConfirmationQuery:
             retVal = R_PHONEUI_ALS_CONFIRMATION_QUERY;
             break;
@@ -1072,10 +1056,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             retVal = R_PHONE_INCALL_MUTED_PANE;
             break;
 
-        case EPhoneInCallNumberText:
-            retVal = R_PHONEUI_INCALL_CALL_NUMBER;
-            break;
-
         case EPhoneInCallDisconnected:
             retVal = R_PHONEUI_INCALL_CALL_DISCONNECTED;
             break;
@@ -1110,10 +1090,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
 
         case EPhoneInformationConfirmationNote:
             retVal = R_PHONE_CONFIRMATION_NOTE;
-            break;
-
-        case EPhonePhoneImeiString:
-            retVal = R_PHONE_IMEI_STRING;
             break;
 
         case EPhoneSecurityInformationNote:
@@ -1191,6 +1167,10 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             retVal = R_PHONEUI_MTCAL_CLI_WITHHELD;
             break;
 
+        case EPhoneCallCLIUnknown:
+            retVal = R_PHONEUI_MTCAL_CLI_UNKNOWN;
+            break;
+
         case EPhoneNoteTextCallSummary:
             retVal = R_PHONEUI_NOTE_TEXT_POST_CALL_SUMMARY;
             break;
@@ -1201,10 +1181,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
 
         case EPhoneIdleTimeFormat:
             retVal = R_PHONEUI_IDLE_TIME_FORMAT;
-            break;
-
-        case EPhoneLifeTimeFormat:
-            retVal = R_PHONEUI_LIFE_TIMER_STRING;
             break;
 
         case EPhoneNoteTextPEFailedAtStartup:
@@ -1483,10 +1459,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
 
         case EPhoneDtmfDialerNumberEntryPromptText:
             retVal = R_PHONEUI_DIALER_NUMBERENTRY_PROMPT_TEXT;
-            break;
-
-        case EPhoneCall:
-            retVal = R_PHONEUI_MTCAL_CALL;
             break;
 
         case EPhoneVideoCallSetupFailedCreateVoiceCallToTheSameContactText:

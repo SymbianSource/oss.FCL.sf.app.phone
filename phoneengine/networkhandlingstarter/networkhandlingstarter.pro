@@ -18,14 +18,13 @@
 CONFIG += hb
 TEMPLATE = app
 TARGET = networkhandlingstarter
-TRANSLATIONS = telephone_cp.ts
 
 INCLUDEPATH += ./inc/
 DEFINES += BUILD_NETWORKHANDLINGSTARTER
 MOC_DIR = moc
 
 symbian: {
-    TARGET.CAPABILITY = ALL -TCB
+    TARGET.CAPABILITY = CAP_APPLICATION
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.UID3 = 0x2002E67A
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
@@ -37,6 +36,8 @@ symbian: {
     
     BLD_INF_RULES.prj_exports +=  \
      "./rom/networkhandlingstarter.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(networkhandlingstarter.iby)"
+     
+    RSS_RULES += "hidden = KAppIsHidden;"
 }
 
 HEADERS += ./inc/networkhandlingstarter.h

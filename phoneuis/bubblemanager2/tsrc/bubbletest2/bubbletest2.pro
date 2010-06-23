@@ -19,7 +19,6 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
 CONFIG += hb
-QT += network xml
 INCLUDEPATH += . \
     ../../inc
 win32:INCLUDEPATH += c:/hb/include/hbcore \
@@ -33,11 +32,9 @@ TARGET.CAPABILITY = CAP_APPLICATION
 }
 
 # Input
-HEADERS += bubbletestview.h \
-    bubbletester.h
+HEADERS += bubbletestview.h
 SOURCES += main.cpp \
-    bubbletestview.cpp \
-    bubbletester.cpp
+    bubbletestview.cpp
 RESOURCES += bubbletest2.qrc
 
 # Libraries

@@ -17,6 +17,8 @@
 
 #include <hbevent.h>
 #include <hbframeitem.h>
+#include <hbiconitem.h>
+#include <hbcolorscheme.h>
 
 #include "bubblebutton.h"
 
@@ -44,7 +46,7 @@ bool BubbleButton::sceneEvent(QEvent *event)
     bool result = HbPushButton::sceneEvent(event);
 
     if (event->type() == QEvent::UngrabMouse) {
-        if (isDown()) {
+        if (isVisible() && isDown()) {
             // this is needed in situation, where
             // longpress launches a dialog (vmbx)
             // and button release event goes to
@@ -70,22 +72,39 @@ void BubbleButton::updatePrimitives()
     }
 
     QString graphicsName;
+    QColor iconColor; // CSS doesn't work with changing icon color
 
     if (isDown()) {
         if (buttonType()==GreenButton) {
             graphicsName = "qtg_fr_btn_green_pressed";
+            iconColor = HbColorScheme::color("qtc_callhandling_answer_pressed");
         } else if (buttonType()==RedButton) {
             graphicsName = "qtg_fr_btn_red_pressed";
+            iconColor = HbColorScheme::color("qtc_callhandling_reject_pressed");
+        } else {
+            iconColor = HbColorScheme::color("qtc_button_pressed");
         }
     } else {
         if (buttonType()==GreenButton) {
             graphicsName = "qtg_fr_btn_green_normal";
+            iconColor = HbColorScheme::color("qtc_callhandling_answer_normal");
         } else if (buttonType()==RedButton) {
             graphicsName = "qtg_fr_btn_red_normal";
+            iconColor = HbColorScheme::color("qtc_callhandling_reject_normal");
+        } else {
+            iconColor = HbColorScheme::color("qtc_button_normal");
         }
     }
 
     if (graphicsName.length()) {
         frame->frameDrawer().setFrameGraphicsName(graphicsName);
+    }
+
+    // set icon color
+    HbIconItem* iconItem =
+        qgraphicsitem_cast<HbIconItem*>(HbWidget::primitive("icon"));
+
+    if (iconItem && iconColor.isValid()) {
+        iconItem->setColor(iconColor);
     }
 }

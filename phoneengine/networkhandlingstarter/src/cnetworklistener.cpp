@@ -14,8 +14,8 @@
  * Description:  
  *
  */
-#include <NetworkHandlingProxy.h>
-#include <CNWSession.h>
+#include <networkhandlingproxy.h>
+#include <cnwsession.h>
 #include <e32property.h>
 #include <centralrepository.h>
 #include <ProfileEngineSDKCRKeys.h>

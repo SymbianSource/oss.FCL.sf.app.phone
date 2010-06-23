@@ -35,18 +35,13 @@ void setNoteIdentifier(int &noteId, const QString& text)
 
 const QString KCurrentPassword = "1234";
 void setCurrentPasswordParams(
-    const QString &title, 
-    const QValidator &validator,
-    int maxPasswordLength,
-    QString &password, 
-    bool &ok)
+        const QString &title,
+        const QValidator &validator,
+        int maxPasswordLength)
 {
     Q_UNUSED(title)
     Q_UNUSED(validator)
     Q_UNUSED(maxPasswordLength)
-    
-    password = KCurrentPassword;
-    ok = true;
 }
 
 
@@ -54,32 +49,22 @@ const QString KNewAndVerifiedPassword = "4321";
 void setNewAndVerifiedPasswordParams(
     const QString &title, 
     const QValidator &validator,
-    int maxPasswordLength,
-    QString &password, 
-    bool &ok)
+    int maxPasswordLength)
 {
     Q_UNUSED(title)
     Q_UNUSED(validator)
     Q_UNUSED(maxPasswordLength)
-    
-    password = KNewAndVerifiedPassword;
-    ok = true;
 }
 
 
 void setPasswordParamsCancel(
     const QString &title, 
     const QValidator &validator,
-    int maxPasswordLength,
-    QString &password, 
-    bool &ok)
+    int maxPasswordLength)
 {
     Q_UNUSED(title)
     Q_UNUSED(validator)
     Q_UNUSED(maxPasswordLength)
-    Q_UNUSED(password)
-    
-    ok = false;
 }
 
 
@@ -101,8 +86,8 @@ UT_CpBarringPluginGroup::UT_CpBarringPluginGroup()
  */
 UT_CpBarringPluginGroup::~UT_CpBarringPluginGroup()
 {
-    delete m_barringpluginGroup;
     delete m_barringWrapperMock;
+    delete m_dataFormModel;
 }
 
 
@@ -122,7 +107,8 @@ void UT_CpBarringPluginGroup::init()
     m_barringpluginGroup = new CpBarringPluginGroup(itemDataHelper);
     
     m_dataFormModel = new HbDataFormModel();
-    m_barringpluginGroup->setModel(m_dataFormModel);
+    m_dataFormModel->appendDataFormItem(m_barringpluginGroup);
+    m_barringpluginGroup->m_model = m_dataFormModel;
     
     QVERIFY(verify());
     
@@ -143,12 +129,11 @@ void UT_CpBarringPluginGroup::cleanup()
         this, SIGNAL(simulateCheckStateChange(int)), 
         m_barringpluginGroup, SLOT(changeBarringStateRequested(int)));
     
-    delete m_barringpluginGroup;
-    m_barringpluginGroup = NULL;
-    delete m_barringWrapperMock;
-    m_barringWrapperMock = NULL;
     delete m_dataFormModel;
     m_dataFormModel = NULL;
+    delete m_barringWrapperMock;
+    m_barringWrapperMock = NULL;
+
 }
 
 
@@ -221,6 +206,8 @@ void UT_CpBarringPluginGroup::t_barringStatusRequestCompletedForUpdateInquiry()
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setCurrentPasswordParams));
     emit simulateCheckStateChange(Qt::Checked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
     
     // verify that already connected items are not enabled/connected again
     EXPECT(CpItemDataHelper::removeConnection).times(1);
@@ -229,6 +216,7 @@ void UT_CpBarringPluginGroup::t_barringStatusRequestCompletedForUpdateInquiry()
         errorCode,
         basicServiceGroupIds, 
         PSetCallBarringWrapper::BarringStatusActive);
+    
     QVERIFY(verify());
 }
 
@@ -339,9 +327,12 @@ void UT_CpBarringPluginGroup::t_enableBarringRequestCompleted()
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setCurrentPasswordParams));
     EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showGlobalNote);
+    EXPECT(CpPhoneNotes::showNotificationDialog);
     
     emit simulateCheckStateChange(Qt::Checked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
+
     m_barringpluginGroup->enableBarringRequestCompleted(
         0, 
         PSetCallBarringWrapper::BarringTypeAllBarrings,
@@ -363,6 +354,9 @@ void UT_CpBarringPluginGroup::t_enableBarringRequestCompleted()
     EXPECT(CpPhoneNotes::showGlobalErrorNote);
     
     emit simulateCheckStateChange(Qt::Checked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
+    
     m_barringpluginGroup->enableBarringRequestCompleted(
         -1, 
         PSetCallBarringWrapper::BarringTypeAllBarrings,
@@ -385,6 +379,9 @@ void UT_CpBarringPluginGroup::t_enableBarringRequestCompleted()
     EXPECT(CpPhoneNotes::showGlobalNote).times(0);
     
     emit simulateCheckStateChange(Qt::Checked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
+    
     m_barringpluginGroup->enableBarringRequestCompleted(
         0, 
         PSetCallBarringWrapper::BarringTypeAllBarrings,
@@ -405,19 +402,21 @@ void UT_CpBarringPluginGroup::t_enableBarringRequestCompletedUnknownBarring()
 {
     // something very weird has happened and enable request completes for unknown
     // barring type.
-    HbDataFormModel *formModel = qobject_cast<HbDataFormModel*>(
-        m_barringpluginGroup->model());
     HbDataFormModelItem *item = m_barringpluginGroup->childAt(5);
-    QModelIndex modelIndex = formModel->indexFromItem(item);
+    QModelIndex modelIndex = m_dataFormModel->indexFromItem(item);
     
-    EXPECT(CpItemDataHelper::widgetFromModelIndex).with(modelIndex).returns(this);
+    EXPECT(CpItemDataHelper::widgetFromModelIndex)
+        .with<const QModelIndex &>(modelIndex).returns(this);
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setCurrentPasswordParams));
     EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showGlobalNote);
+    EXPECT(CpPhoneNotes::showNotificationDialog);
     // completion of unknown barring type should not lead to updating
     EXPECT(PSetCallBarringWrapper::barringStatus).times(0);
     emit simulateCheckStateChange(Qt::Checked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
+    
     m_barringpluginGroup->enableBarringRequestCompleted(
         0, 
         PSetCallBarringWrapper::BarringTypeAllBarrings,
@@ -444,6 +443,9 @@ void UT_CpBarringPluginGroup::t_enableBAOCRequestCompletedStatusUpdate()
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setCurrentPasswordParams));
     emit simulateCheckStateChange(Qt::Checked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
+    
     EXPECT(PSetCallBarringWrapper::barringStatus).with(
         ServiceGroupVoice, PSetCallBarringWrapper::BarringTypeOutgoingInternational);
     EXPECT(PSetCallBarringWrapper::barringStatus).with(
@@ -470,14 +472,12 @@ void UT_CpBarringPluginGroup::t_enableBAOCRequestCompletedStatusUpdate()
 void UT_CpBarringPluginGroup::t_enableBOICRequestCompletedStatusUpdate()
 {
     QModelIndex modelIndex;
-    HbDataFormModel *formModel = qobject_cast<HbDataFormModel*>(
-        m_barringpluginGroup->model());
     int numOfChilds = m_barringpluginGroup->childCount();
     for (int childIndex = 0; childIndex < numOfChilds - 1; childIndex++) {
         HbDataFormModelItem *item = m_barringpluginGroup->childAt(childIndex);
         item->setContentWidgetData("checkState", QVariant(Qt::Checked));
         if (childIndex == 1) {
-            modelIndex = formModel->indexFromItem(item);
+            modelIndex = m_dataFormModel->indexFromItem(item);
         }
     }
     
@@ -486,6 +486,9 @@ void UT_CpBarringPluginGroup::t_enableBOICRequestCompletedStatusUpdate()
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setCurrentPasswordParams));
     emit simulateCheckStateChange(Qt::Checked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
+    
     EXPECT(PSetCallBarringWrapper::barringStatus).with(
         ServiceGroupVoice, 
         PSetCallBarringWrapper::BarringTypeAllOutgoing);
@@ -513,14 +516,12 @@ void UT_CpBarringPluginGroup::t_enableBOICRequestCompletedStatusUpdate()
 void UT_CpBarringPluginGroup::t_enableBOICexHCRequestCompletedStatusUpdate()
 {
     QModelIndex modelIndex;
-    HbDataFormModel *formModel = qobject_cast<HbDataFormModel*>(
-        m_barringpluginGroup->model());
     int numOfChilds = m_barringpluginGroup->childCount();
     for (int childIndex = 0; childIndex < numOfChilds - 1; childIndex++) {
         HbDataFormModelItem *item = m_barringpluginGroup->childAt(childIndex);
         item->setContentWidgetData("checkState", QVariant(Qt::Checked));
         if (childIndex == 2) {
-            modelIndex = formModel->indexFromItem(item);
+            modelIndex = m_dataFormModel->indexFromItem(item);
         }
     }
     
@@ -529,6 +530,9 @@ void UT_CpBarringPluginGroup::t_enableBOICexHCRequestCompletedStatusUpdate()
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setCurrentPasswordParams));
     emit simulateCheckStateChange(Qt::Checked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
+    
     EXPECT(PSetCallBarringWrapper::barringStatus).with(
         ServiceGroupVoice, 
         PSetCallBarringWrapper::BarringTypeAllOutgoing);
@@ -562,14 +566,12 @@ void UT_CpBarringPluginGroup::t_enableBOICexHCRequestCompletedStatusUpdate()
 void UT_CpBarringPluginGroup::t_enableBAICRequestCompletedStatusUpdate()
 {
     QModelIndex modelIndex;
-    HbDataFormModel *formModel = qobject_cast<HbDataFormModel*>(
-        m_barringpluginGroup->model());
     int numOfChilds = m_barringpluginGroup->childCount();
     for (int childIndex = 0; childIndex < numOfChilds - 1; childIndex++) {
         HbDataFormModelItem *item = m_barringpluginGroup->childAt(childIndex);
         item->setContentWidgetData("checkState", QVariant(Qt::Checked));
         if (childIndex == 3) {
-            modelIndex = formModel->indexFromItem(item);
+            modelIndex = m_dataFormModel->indexFromItem(item);
         }
     }
     
@@ -578,6 +580,9 @@ void UT_CpBarringPluginGroup::t_enableBAICRequestCompletedStatusUpdate()
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setCurrentPasswordParams));
     emit simulateCheckStateChange(Qt::Checked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
+    
     EXPECT(PSetCallBarringWrapper::barringStatus).with(
         ServiceGroupVoice, 
         PSetCallBarringWrapper::BarringTypeIncomingWhenRoaming);
@@ -599,14 +604,12 @@ void UT_CpBarringPluginGroup::t_enableBAICRequestCompletedStatusUpdate()
 void UT_CpBarringPluginGroup::t_enableBICRoamRequestCompletedStatusUpdate()
 {
     QModelIndex modelIndex;
-    HbDataFormModel *formModel = qobject_cast<HbDataFormModel*>(
-        m_barringpluginGroup->model());
     int numOfChilds = m_barringpluginGroup->childCount();
     for (int childIndex = 0; childIndex < numOfChilds - 1; childIndex++) {
         HbDataFormModelItem *item = m_barringpluginGroup->childAt(childIndex);
         item->setContentWidgetData("checkState", QVariant(Qt::Checked));
         if (childIndex == 4) {
-            modelIndex = formModel->indexFromItem(item);
+            modelIndex = m_dataFormModel->indexFromItem(item);
         }
     }
     
@@ -615,6 +618,9 @@ void UT_CpBarringPluginGroup::t_enableBICRoamRequestCompletedStatusUpdate()
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setCurrentPasswordParams));
     emit simulateCheckStateChange(Qt::Checked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
+    
     EXPECT(PSetCallBarringWrapper::barringStatus).with(
         ServiceGroupVoice, 
         PSetCallBarringWrapper::BarringTypeAllIncoming);
@@ -640,8 +646,10 @@ void UT_CpBarringPluginGroup::t_disableBarringRequestCompleted()
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setCurrentPasswordParams));
     EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showGlobalNote);
+    EXPECT(CpPhoneNotes::showNotificationDialog);
     emit simulateCheckStateChange(Qt::Unchecked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
     
     m_barringpluginGroup->disableBarringRequestCompleted(
         0, 
@@ -663,6 +671,9 @@ void UT_CpBarringPluginGroup::t_disableBarringRequestCompleted()
     EXPECT(CpPhoneNotes::showGlobalErrorNote);
     
     emit simulateCheckStateChange(Qt::Unchecked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
+    
     m_barringpluginGroup->disableBarringRequestCompleted(
         -1, 
         PSetCallBarringWrapper::BarringTypeAllBarrings,
@@ -680,7 +691,7 @@ void UT_CpBarringPluginGroup::t_barringPasswordChangeRequestCompleted()
 {
 // request completed with no error
     EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showGlobalNote);
+    EXPECT(CpPhoneNotes::showNotificationDialog);
     
     m_barringpluginGroup->barringPasswordChangeRequestCompleted(0);
     
@@ -710,7 +721,11 @@ void UT_CpBarringPluginGroup::t_changeBarringStateRequested()
             PSetCallBarringWrapper::BarringTypeAllOutgoing, KCurrentPassword);
     EXPECT(CpPhoneNotes::showGlobalProgressNote);
     
+    HbDataFormModelItem *item = m_barringpluginGroup->childAt(0);
+    item->setContentWidgetData("checkState", QVariant(Qt::Checked));
     emit simulateCheckStateChange(Qt::Checked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
     
     QVERIFY(verify());
     
@@ -723,7 +738,11 @@ void UT_CpBarringPluginGroup::t_changeBarringStateRequested()
             PSetCallBarringWrapper::BarringTypeAllOutgoing, KCurrentPassword);
     EXPECT(CpPhoneNotes::showGlobalProgressNote);
     
+    item = m_barringpluginGroup->childAt(0);
+    item->setContentWidgetData("checkState", QVariant(Qt::Unchecked));
     emit simulateCheckStateChange(Qt::Unchecked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+            KCurrentPassword, true);
     
     QVERIFY(verify());
 
@@ -736,7 +755,11 @@ void UT_CpBarringPluginGroup::t_changeBarringStateRequested()
     EXPECT(PSetCallBarringWrapper::disableBarring).times(0);
     EXPECT(CpPhoneNotes::showGlobalProgressNote).times(0);
     
+    item = m_barringpluginGroup->childAt(0);
+    item->setContentWidgetData("checkState", QVariant(Qt::Unchecked));
     emit simulateCheckStateChange(Qt::Unchecked);
+    m_barringpluginGroup->completeBarringStateChangeRequestHandling(
+                "", false);
     
     QVERIFY(verify());
     
@@ -757,12 +780,13 @@ void UT_CpBarringPluginGroup::t_changeBarringPasswordRequested()
 {
     connect(
         this, SIGNAL(simulateEditPasswordButtonClicked(bool)), 
-        m_barringpluginGroup, SLOT(changeBarringPasswordRequested(bool)));
+        m_barringpluginGroup, SLOT(changeBarringPasswordRequested()));
     
     // cancel from current password query
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setPasswordParamsCancel));
     emit simulateEditPasswordButtonClicked(false);
+    m_barringpluginGroup->changeBarringPasswordPhasesHandling("", false);
     QVERIFY(verify());
     
     // cancel from new password query
@@ -771,6 +795,10 @@ void UT_CpBarringPluginGroup::t_changeBarringPasswordRequested()
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setPasswordParamsCancel));
     emit simulateEditPasswordButtonClicked(false);
+    m_barringpluginGroup->changeBarringPasswordPhasesHandling(
+            KCurrentPassword, true);
+    m_barringpluginGroup->changeBarringPasswordPhasesHandling(
+            "", false);
     QVERIFY(verify());
     
     // cancel from verify new password query
@@ -781,6 +809,12 @@ void UT_CpBarringPluginGroup::t_changeBarringPasswordRequested()
     EXPECT(CpPhoneNotes::showPasswordQueryDialog)
         .willOnce(invoke(setPasswordParamsCancel));
     emit simulateEditPasswordButtonClicked(false);
+    m_barringpluginGroup->changeBarringPasswordPhasesHandling(
+            KCurrentPassword, true);
+    m_barringpluginGroup->changeBarringPasswordPhasesHandling(
+            KNewAndVerifiedPassword, true);
+    m_barringpluginGroup->changeBarringPasswordPhasesHandling(
+            "", false);
     QVERIFY(verify());
     
     // all data successfully queried
@@ -793,6 +827,12 @@ void UT_CpBarringPluginGroup::t_changeBarringPasswordRequested()
     EXPECT(PSetCallBarringWrapper::changeBarringPassword)
         .with(KCurrentPassword, KNewAndVerifiedPassword, KNewAndVerifiedPassword);
     emit simulateEditPasswordButtonClicked(false);
+    m_barringpluginGroup->changeBarringPasswordPhasesHandling(
+            KCurrentPassword, true);
+    m_barringpluginGroup->changeBarringPasswordPhasesHandling(
+            KNewAndVerifiedPassword, true);
+    m_barringpluginGroup->changeBarringPasswordPhasesHandling(
+            KNewAndVerifiedPassword, true);
     QVERIFY(verify());
 }
 

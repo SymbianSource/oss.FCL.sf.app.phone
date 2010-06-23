@@ -17,7 +17,8 @@
 
 TEMPLATE = lib
 TARGET = phoneuiqtviewadapter
-CONFIG += hb
+CONFIG += hb mobility
+MOBILITY = publishsubscribe
 
 symbian {
     TARGET.CAPABILITY = ALL -TCB
@@ -45,14 +46,27 @@ symbian {
         -lxqsettingsmanager \
         -llogsengine \
         -lxqplugins \
-        -lakncapserverclient
+        -lakncapserverclient \
+        -ltelephonyservice \
+        -lapgrfx \
+        -lavkon \
+        -lws32 \
+        -lcone
+        
     defFiles = "$${LITERAL_HASH}ifdef WINS" \
         "DEFFILE bwins/phoneuiqtviewadapter.def" \
         "$${LITERAL_HASH}else" \
             "DEFFILE eabi/phoneuiqtviewadapter.def" \
         "$${LITERAL_HASH}endif"
     
-    MMP_RULES += defFiles    
+    MMP_RULES += defFiles
+
+    #qcrml export
+    BLD_INF_RULES.prj_exports += "./conf/carmode.qcrml  c:/resource/qt/crml/carmode.qcrml "
+    crml.sources = ./conf/carmode.qcrml
+    crml.path = c:/resource/qt/crml
+    DEPLOYMENT += crml
+
 }
 
 # Input

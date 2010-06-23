@@ -17,6 +17,8 @@
 */
 
 #include <QPainter>
+#include <QGraphicsSceneResizeEvent>
+#include <QDebug>
 #include <hbstyle.h>
 #include <hbiconitem.h>
 #include <hbstyleloader.h>
@@ -28,7 +30,8 @@ BubbleImageWidget::BubbleImageWidget(
     QGraphicsItem* parent)
     : HbWidget(parent),
       mImageManager(imageManager),
-      mDefaultAvatar(0)
+      mDefaultAvatar(0),
+      mKeepSquareShape(0)
 {
     // create avatar
     mDefaultAvatar = new HbIconItem(this);
@@ -50,6 +53,7 @@ BubbleImageWidget::~BubbleImageWidget()
 void BubbleImageWidget::setImage(const QString& name)
 {
     mImageName = name;
+    mUpdateCount = 0;
 
     if (!mImageName.isEmpty()) {
         mDefaultAvatar->setVisible(false);
@@ -75,7 +79,7 @@ void BubbleImageWidget::paint(
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    
+
     if (mImageName.isEmpty())
         return;
 
@@ -105,3 +109,65 @@ void BubbleImageWidget::paint(
         
     }
 }
+
+QSizeF BubbleImageWidget::sizeHint(
+    Qt::SizeHint which,
+    const QSizeF & constraint) const
+{
+    Q_UNUSED(which);
+    Q_UNUSED(constraint);
+
+    if (mKeepSquareShape && which==Qt::PreferredSize ) {
+        QSizeF hint(size().height(), size().height());
+        if (hint.isNull()) {
+            hint = QSizeF(100,100);
+        }
+
+        // workaround, sometimes last resize event is missing
+        if ((size().width()!=size().height()) && (mUpdateCount<10)) {
+            BubbleImageWidget* mutableThis = const_cast<BubbleImageWidget*>(this);
+            mutableThis->updateGeometry();
+            mutableThis->mUpdateCount++; // prevent looping
+        }
+
+        // qDebug() << "size hint: " << hint;
+        return hint;
+    } else {
+        return HbWidget::sizeHint(which,constraint);
+    }
+}
+
+void BubbleImageWidget::resizeEvent(QGraphicsSceneResizeEvent * event)
+{
+    // qDebug() << "size:" << event->newSize();
+    if ( event->newSize().height()!= event->oldSize().height() &&
+         event->newSize().height() > 1 ) {
+        updateGeometry();
+    }
+
+    HbWidget::resizeEvent(event);
+}
+
+bool BubbleImageWidget::keepSquareShape() const
+{
+    return mKeepSquareShape;
+}
+
+void BubbleImageWidget::setKeepSquareShape(bool keepSquare)
+{
+    mKeepSquareShape = keepSquare;
+
+    if (mKeepSquareShape) {
+        setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    } else {
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    }
+
+    updateGeometry();
+}
+
+
+
+
+
+

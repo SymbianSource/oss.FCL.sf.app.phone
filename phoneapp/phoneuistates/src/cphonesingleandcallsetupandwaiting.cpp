@@ -211,8 +211,9 @@ void CPhoneSingleAndCallSetupAndWaiting::HandlePhoneEngineMessageL(
                     
         case MEngineMonitor::EPEMessageRemoteBusy:
             // If call setup failed then stop capturing keys.
-            // Flow through to default branch.
-            CaptureKeysDuringCallNotificationL( EFalse );     
+            CaptureKeysDuringCallNotificationL( EFalse );
+            CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
+            break;
         default:
             CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
             break;
@@ -449,8 +450,6 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
     
-    HandleColpNoteL( aCallId );
-
     if ( aCallId != iWaitingCallId )
         {
         // Alerting call is connected

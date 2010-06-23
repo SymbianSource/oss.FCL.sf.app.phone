@@ -28,7 +28,6 @@
 #include <QMap>
 #include <apgwgnam.h>
 #include "mphoneviewcommandhandle.h"
-#include "mphonepubsubobserver.h"
 #include "phoneaction.h"
 
 class PhoneUIQtViewIF;
@@ -42,11 +41,11 @@ class PhoneUiCommandController;
 class TelephonyService;
 class QKeyEvent;
 class PhoneIndicatorController;
+class PhoneVisibilityHandler;
 
 class PHONEUIQTVIEWADAPTER_EXPORT PhoneUIQtViewAdapter : 
     public QObject, 
-    public MPhoneViewCommandHandle,
-    public MPhonePubSubObserver
+    public MPhoneViewCommandHandle
 {
     Q_OBJECT
 
@@ -148,20 +147,7 @@ public: // From MPhoneViewCommandHandle
         Returns pointer to PhoneNoteController
     */
     PhoneNoteController* noteController() const;
-    
-public: // from MPhonePubSubObserver
 
-        /**
-        * This function is called when there is property value change.
-        * @param aCategory Category of the property
-        * @param aKey Property key that is changed
-        * @param aValue New property value
-        */
-        void HandlePropertyChangedL( 
-            const TUid& aCategory,
-            const TUint aKey,
-            const TInt aValue);
-    
 
 private slots:
 
@@ -425,6 +411,13 @@ private:
     void bringToForeground();
     
     /*!
+        \fn void PhoneUIQtViewAdapter::hideDeviceDialogs()
+        
+        This method brings application top of devicedialogs.
+    */
+    void hideDeviceDialogs(TPhoneCommandParam *commandParam);
+    
+    /*!
         \fn void PhoneUIQtViewAdapter::showGlobalNote()
         
         This method shows global note.
@@ -537,6 +530,12 @@ private:
         This method opens contacts application.
     */    
     void openContacts();
+ 
+    /*!
+        /fn void openLogs()
+        This method opens logs/dialer application.
+    */ 
+    void openLogs(TPhoneCommandParam *commandParam);
     
 private:
 
@@ -552,7 +551,8 @@ private:
     PhoneIndicatorController *m_indicatorController;
     bool m_dialpadAboutToClose;
     bool m_homeScreenToForeground;
-    bool m_carModeEnabled;
+	PhoneVisibilityHandler *m_visibilityHandler;
+	bool m_clearDialpadOnClose;
 };
 
 #endif // PHONEUIQTVIEWADAPTER_H

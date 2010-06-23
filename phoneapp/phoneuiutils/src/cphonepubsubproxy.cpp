@@ -305,7 +305,7 @@ void CPhonePubSubProxy::CancelAllObserverNotifies(
             // Remove this observers' subscriptions
             TInt pubSubCount = iPublishSubscriberArray->Count();
      
-            for ( TInt j = pubSubCount - 1; j >= 0; j++ )
+            for ( TInt j = 0; j < pubSubCount; j++ )
                 {
                 CPhonePublishSubscriberAO* publishSubscriber = 
                     iPublishSubscriberArray->At( j );

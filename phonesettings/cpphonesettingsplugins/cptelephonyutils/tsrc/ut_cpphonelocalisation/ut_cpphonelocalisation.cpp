@@ -92,6 +92,13 @@ void UT_cpphonelocalisation::t_installTranslator()
     m_phoneLocalisation->installTranslator(
             CpPhoneLocalisation::TranslationFileCommon);
     QVERIFY(m_phoneLocalisation->m_translators.count() == 1);
+    
+    // Test: Unknown enum value
+    QVERIFY(verify());
+    expect("QCoreApplication::installTranslator").times(0);
+    m_phoneLocalisation->installTranslator(
+            (CpPhoneLocalisation::TranslationFileId)2);
+    QVERIFY(m_phoneLocalisation->m_translators.count() == 1);
     QVERIFY(verify());
     
     // Test: telephone_cp translator load 

@@ -53,7 +53,7 @@
     
     <meshitem src="text_line_1" srcEdge="LEFT" dst="status_icon" dstEdge="RIGHT"/>
     <meshitem src="text_line_1" srcEdge="CENTERV" dst="" dstEdge="CENTERV"/>
-    <meshitem src="text_line_1" srcEdge="RIGHT" dst="text_line_2" dstEdge="LEFT"/>
+    <meshitem src="text_line_1" srcEdge="RIGHT" dst="text_line_2" dstEdge="LEFT" spacing="0.75un"/>
     
     <meshitem src="text_line_2" srcEdge="CENTERV" dst="" dstEdge="CENTERV"/>
     <meshitem src="text_line_2" srcEdge="RIGHT" dst="" dstEdge="RIGHT"/>

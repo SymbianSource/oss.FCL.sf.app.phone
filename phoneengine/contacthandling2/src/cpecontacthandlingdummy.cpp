@@ -73,19 +73,6 @@ EXPORT_C TInt CPEContactHandlingDummy::FindContactInfoSync(
     return KErrNone;
     }
 
-// -----------------------------------------------------------------------------
-// CPEContactHandlingDummy::GetSpeedDialLocation
-// Get's phone number and contact id from given location.
-// -----------------------------------------------------------------------------
-//
-EXPORT_C TInt CPEContactHandlingDummy::GetSpeedDialLocation( 
-    TInt /*aLocationIndex*/, 
-    TPEPhoneNumber& /*aNumber*/ )
-    {
-    TEFLOGSTRING( KTAOBJECT, "CNT CPEContactHandlingDummy::GetSpeedDialLocation()" );
-    return KErrNone;
-    }
-
 // ================= OTHER EXPORTED FUNCTIONS ===============================
 
 //  End of File 

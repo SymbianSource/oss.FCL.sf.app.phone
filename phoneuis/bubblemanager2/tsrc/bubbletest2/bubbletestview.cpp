@@ -22,9 +22,8 @@
 #include <bubblemanager2.h>
 #include <hbmenu.h>
 #include <hbmainwindow.h>
-
 #include "bubbletestview.h"
-#include "bubbletester.h"
+#include <hbeffect.h>
 
 BubbleTestView::BubbleTestView(HbMainWindow& window, QGraphicsItem *parent) :
     HbView (parent), mMainWindow(window), mMuted(0), mConfBubbleId(-1),
@@ -50,33 +49,13 @@ BubbleTestView::BubbleTestView(HbMainWindow& window, QGraphicsItem *parent) :
     // create actions for push buttons
     createBubbleActions();
 
-    // tester
-    mBubbleTester = new BubbleTester();
-    connect(mBubbleTester,SIGNAL(dataChanged()),this,SLOT(handleTesterDataChanged()));
-    mBubbleTester->connectToServer();
-
-    // create state map
-    mStateMap.insert("Idle", BubbleManagerIF::None );
-    mStateMap.insert("Incoming", BubbleManagerIF::Incoming );
-    mStateMap.insert("Active", BubbleManagerIF::Active );
-    mStateMap.insert("Disconnected", BubbleManagerIF::Disconnected );
-    mStateMap.insert("Outgoing", BubbleManagerIF::Outgoing );
-    mStateMap.insert("Waiting", BubbleManagerIF::Waiting );
-    mStateMap.insert("OnHold", BubbleManagerIF::OnHold );
-    // create label map
-    mLabelMap.insert("Idle", "" );
-    mLabelMap.insert("Incoming", "calling" );
-    mLabelMap.insert("Active", "" );
-    mLabelMap.insert("Disconnected", "disconnected" );
-    mLabelMap.insert("Outgoing", "Calling" );
-    mLabelMap.insert("Waiting", "waiting" );
-    mLabelMap.insert("OnHold", "on hold" );
+    // disable toolbar effects
+    HbEffect::disable(toolBar());
 }
 
 BubbleTestView::~BubbleTestView()
 {
     toolBar()->clearActions();
-    delete mBubbleTester;
 }
 
 void BubbleTestView::keyPressEvent(QKeyEvent *event)
@@ -1068,52 +1047,3 @@ void BubbleTestView::toggleConferenceHoldDelayed()
     }
 }
 
-void BubbleTestView::connectToTester()
-{
-    mBubbleTester->connectToServer();
-}
-
-void BubbleTestView::handleTesterDataChanged()
-{
-    bubbleManager().startChanges();
-
-    QString mute = mBubbleTester->dataField("mute");
-    bubbleManager().setPhoneMuted( mute == "On" );
-
-    QList<QString> testBubbles = mBubbleTester->bubbles();
-
-    foreach (QString bubbleId, testBubbles) {
-        QString state = mBubbleTester->dataField(bubbleId,"state");
-
-        // create or remove bubble
-        if ( mTestBubbleIds.contains(bubbleId) && state=="Idle" ) {
-            bubbleManager().removeCallHeader(mTestBubbleIds.value(bubbleId));
-            mTestBubbleIds.remove(bubbleId);
-        } else if (!mTestBubbleIds.contains(bubbleId) && state!="Idle" ) {
-            int id = bubbleManager().createCallHeader();
-            mTestBubbleIds.insert(bubbleId,id);
-        }
-
-        // set data
-        if (mTestBubbleIds.contains(bubbleId)) {
-            int id = mTestBubbleIds.value(bubbleId);
-
-            QString name = mBubbleTester->dataField(bubbleId,"name");
-            QString number = mBubbleTester->dataField(bubbleId,"number");
-            QString divert = mBubbleTester->dataField(bubbleId,"divert");
-
-            bubbleManager().setState(id, mStateMap.value(state));
-            bubbleManager().setCli(id, name, Qt::ElideRight);
-            bubbleManager().setSecondaryCli(id, number );
-            bubbleManager().setLabel(id, mLabelMap.value(state), Qt::ElideRight);
-
-            bubbleManager().setCallFlag(id, BubbleManager::Diverted, (divert == "On") );
-
-            setCallObject(id,":resources/contactpic.jpg");
-
-            setBubbleActions(id, mStateMap.value(state) );
-        }
-    }
-
-    bubbleManager().endChanges();
-}

@@ -18,13 +18,7 @@
 #ifndef HSDIALERWIDGET_H
 #define HSDIALERWIDGET_H
 
-#include <HbWidget>
-#ifdef Q_OS_SYMBIAN
-#include <xqsettingsmanager.h>
-#else
-class XQSettingsManager;
-class XQSettingsKey;
-#endif
+#include <hswidget.h>
 
 #ifndef HOMESCREEN_TEST
     #define HOMESCREEN_TEST_CLASS(aClassName)
@@ -37,39 +31,59 @@ class XQSettingsKey;
 HOMESCREEN_TEST_CLASS(TestDialerWidgetPlugin)
 
 class XQCallInfo;
-class HbFrameItem;
-class HsDialerWidget : public HbWidget
+class DialerWidgetEngine;
+class HbFrameItem;    
+class HbIconItem;
+class HbTextItem;
+class HbTouchArea;
+
+class HsDialerWidget : public HsWidget
 {
     Q_OBJECT
 
 public:
     HsDialerWidget(QGraphicsItem* parent = 0, Qt::WindowFlags flags = 0);
     ~HsDialerWidget();
-    
-    void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-
 private:
-    void setItemPositions();
+    
+    void createPrimitives();
     
 public slots:
     void startDialer();
-    void updateMissedCallBadge(const XQSettingsKey &key, const QVariant &value);
-
+   
+    // from HS fw
+    void onInitialize();
     void onShow();
     void onHide();
+    void onUninitialize();
+    
+    // from engine
+    void onEngineException(const int& exc);
+    
+    void onMissedCallsCountChange(const int& count);
+    
+signals:
+    void error();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) { Q_UNUSED(event) }
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    StartResult onStart();
+    StopResult onStop();
+    SuspendResult onSuspend();
+    ResumeResult onResume();
+
     
 
 
 private:
+    
     XQCallInfo *mXQCallInfo;
-    HbFrameItem *m_shortcutBadge;
-    HbFrameItem *m_backgroud;
-    XQSettingsManager * m_setManager;
-    int m_missedCalls;
+    DialerWidgetEngine *m_engine;
+    HbFrameItem     *m_background;
+    HbFrameItem     *m_badgeBackground;
+    HbTextItem      *m_text;
+    HbTouchArea     *m_touchArea;
     HOMESCREEN_TEST_FRIEND_CLASS(TestDialerWidgetPlugin)
 };
 

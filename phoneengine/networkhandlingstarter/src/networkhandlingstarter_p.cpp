@@ -16,11 +16,12 @@
  */
 
 #include <hbdevicemessagebox.h>
-#include <HbAction.h>
-#include <CpPluginLauncher.h>
+#include <hbaction.h>
+#include <cppluginlauncher.h>
 #include <hbinstance.h>
-#include <HbView.h>
+#include <hbview.h>
 #include <xqserviceutil.h>
+#include <cpbasesettingview.h>
 
 #include "networkhandlingstarter_p.h"
 #include "networkhandlingstarterlogging.h"
@@ -101,29 +102,27 @@ void NetworkHandlingStarterPrivate::RemoveNote()
 /*!
     NetworkHandlingStarterPrivate::InitaliseCpNetworkPluginView()
  */
-void NetworkHandlingStarterPrivate::InitaliseCpNetworkPluginView()
+bool NetworkHandlingStarterPrivate::InitaliseCpNetworkPluginView()
 {
     DPRINT << ": IN";
     
-    HbMainWindow *mainWnd = MainWindow();
-    if (mainWnd) {
-        if (CpPluginLauncher::launchCpPluginView(
-                "resource\\qt\\plugins\\controlpanel\\cpnetworkplugin.qtplugin")) {
-            foreach (HbView *view, mainWnd->views()) {
-                if (QString(view->metaObject()->className()) == 
-                    QString("CpNetworkPluginView")) {
-                    QObject::connect(
-                        view, SIGNAL(aboutToClose()), 
-                        this, SLOT(ViewDone()));
-                    QObject::connect(
-                        this, SIGNAL(SearchAvailableNetworks()), 
-                        view, SLOT(SearchAvailableNetworks()));
-                }
-            }
+    bool ok(false);
+    CpBaseSettingView* view = CpPluginLauncher::launchSettingView("cpnetworkplugin");
+    if (view) {
+        if (QString(view->metaObject()->className()) == 
+            QString("CpNetworkPluginView")) {
+            QObject::connect(
+                view, SIGNAL(aboutToClose()), 
+                this, SLOT(ViewDone()));
+            QObject::connect(
+                this, SIGNAL(SearchAvailableNetworks()), 
+                view, SLOT(SearchAvailableNetworks()));
+            ok = true;
         }
     }
     
     DPRINT << ": OUT";
+    return ok;
 }
 
 /*!
@@ -133,13 +132,15 @@ void NetworkHandlingStarterPrivate::LaunchCpNetworkPluginView()
 {
     DPRINT << ": IN";
     
-    InitaliseCpNetworkPluginView();
-    HbMainWindow *mainWnd = MainWindow();
-    if (mainWnd) {
-        mainWnd->show();
-        XQServiceUtil::toBackground(false);
+    if (InitaliseCpNetworkPluginView()) {
+        DPRINT << ": Show network settings view";
+        HbMainWindow *mainWnd = MainWindow();
+        if (mainWnd) {
+            mainWnd->show();
+            XQServiceUtil::toBackground(false);
+        }
+        emit SearchAvailableNetworks();
     }
-    emit SearchAvailableNetworks();
     
     DPRINT << ": OUT";
 }

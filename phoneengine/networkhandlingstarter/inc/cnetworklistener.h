@@ -21,7 +21,7 @@
 
 // System includes
 #include <e32base.h>
-#include <NWHandlingEngine.h>
+#include <nwhandlingengine.h>
 
 // User includes
 

@@ -17,9 +17,9 @@
 #include <ut_cnetworklistener.h>
 #include <qtestmains60.h>
 #include <cnetworklistener.h>
-#include <NetworkHandlingProxy.h>
-#include <CNWSession.h>
-#include <NWHandlingEngine.h>
+#include <networkhandlingproxy.h>
+#include <cnwsession.h>
+#include <nwhandlingengine.h>
 
 TNWInfo* PoiterNWInfo;
 

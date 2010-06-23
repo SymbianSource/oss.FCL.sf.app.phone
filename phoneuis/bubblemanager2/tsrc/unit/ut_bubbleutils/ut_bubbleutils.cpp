@@ -699,12 +699,12 @@ void ut_BubbleUtils::test_numberTypeIcon()
 
     BubbleUtils::setNumberTypeIcon(
         BubbleManagerIF::Incoming, BubbleManagerIF::Diverted, icon);
-    QVERIFY(icon.iconName()==":/qtg_mono_call_diverted.svg");
+    QVERIFY(icon.iconName()=="qtg_mono_call_diverted");
     QVERIFY(icon.isVisible()==true);
 
     BubbleUtils::setNumberTypeIcon(
         BubbleManagerIF::Waiting, BubbleManagerIF::Diverted, icon);
-    QVERIFY(icon.iconName()==":/qtg_mono_call_diverted.svg");
+    QVERIFY(icon.iconName()=="qtg_mono_call_diverted");
     QVERIFY(icon.isVisible()==true);
 
     BubbleUtils::setNumberTypeIcon(

@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -30,6 +30,19 @@ bool CpPluginLauncher::launchCpPluginView(
     {
     SMC_MOCK_METHOD2( bool, const QString &, pluginFile, 
         int, index )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpPluginLauncher::launchSettingView
+// -----------------------------------------------------------------------------
+//
+CpBaseSettingView * CpPluginLauncher::launchSettingView( 
+        const QString & pluginFile,
+        const QVariant & hint )
+    {
+    SMC_MOCK_METHOD2( CpBaseSettingView *, const QString &, pluginFile, 
+        const QVariant &, hint )
     }
 
 

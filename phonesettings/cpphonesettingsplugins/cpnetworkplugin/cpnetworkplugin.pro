@@ -16,7 +16,9 @@
 
 TEMPLATE = lib
 TARGET = cpnetworkplugin
-CONFIG += hb plugin
+CONFIG += hb plugin mobility
+MOBILITY += systeminfo
+
 INCLUDEPATH += ../cptelephonyutils/inc 
 
 MOC_DIR = moc

@@ -81,7 +81,7 @@ void ut_BubbleImageManager::testLoadImage()
     mImageManager->loadImage(imageFile1);
 
     // wait loading to finish
-    QTest::qWait(2*WAIT_TIME);
+    QTest::qWait(4*WAIT_TIME);
 
     QVERIFY(spy.count()==1);
     QList<QVariant> arguments = spy.takeFirst();
@@ -170,7 +170,7 @@ void ut_BubbleImageManager::testUnloadImageOutstandingRequest()
     QString imageFile1 = fileNameWithPath("testpic1.png");
     qDebug() << imageFile1;
     mImageManager->loadImage(imageFile1);
-    QTest::qWait(50);
+    QTest::qWait(5);
     mImageManager->unloadImage(imageFile1);
     mImageManager->unloadImage("foobar.png");
 
@@ -186,7 +186,7 @@ void ut_BubbleImageManager::testUnloadImageOutstandingRequest()
     qDebug() << imageFile2;
     mImageManager->loadImage(imageFile2);
 
-    QTest::qWait(50);
+    QTest::qWait(5);
     mImageManager->unloadImage(imageFile2);
 
     // wait loading to finish

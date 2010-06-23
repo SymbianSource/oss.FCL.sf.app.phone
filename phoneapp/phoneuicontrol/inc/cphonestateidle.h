@@ -22,7 +22,6 @@
 
 // INCLUDES
 #include "cphonestate.h"
-#include "tphonecmdparamspeeddial.h"
 
 // FORWARD DECLARATIONS
 
@@ -47,6 +46,22 @@ class CPhoneStateIdle : public CPhoneState
         /** Dial is initiated by one key dialing. */
         EDialMethodOneKeyDialing    = 3
 
+        };
+    
+    /**
+    * Phone number types
+    *
+    * EPhoneNumberTypeNotFound - phone number's type was not found
+    * EPhoneNumberTypeCS - CS call can be made to the phone number
+    * EPhoneNumberTypeVideo - video call can be made to the phone number
+    * EPhoneNumberTypeVoip - VoIP call can be made to the address.
+    */
+    enum TPhoneNumberType
+        {
+        EPhoneNumberTypeNotFound = -1,
+        EPhoneNumberTypeCS = 0,
+        EPhoneNumberTypeVideo,
+        EPhoneNumberTypeVoip
         };
     
         /**
@@ -172,33 +187,6 @@ class CPhoneStateIdle : public CPhoneState
         IMPORT_C virtual void HandleDialingL( TInt aCallId );
 
         /**
-        * This is called when Speed Dial dialog is cancelled or user didn't give
-        * a valid number.
-        * @param aDigit: entered digit
-        */
-        IMPORT_C void SpeedDialCanceledL( const TUint& aDigit );
-        
-        /**
-        * Handle long key press of a number.
-        */
-        IMPORT_C void HandleNumberLongKeyPressL();
-        
-        /**
-        * Tests whether given number is speed dial number.
-        * @param    aNumber    A number to test.
-        * @return   ETrue if given number is speed dial number.
-        */
-        IMPORT_C TBool IsSpeedDialNumber( const TDesC& aNumber ) const;
-        
-        /**
-        * Handles speed dialing.
-        * @param aDigit             Entered digit.
-        * @param aDialMethod        Dial initiation method.
-        */
-        IMPORT_C void SpeedDialL( const TUint& aDigit, 
-            TDialInitiationMethod aDialMethod );
-
-        /**
         * Handles send command.
         */
         IMPORT_C virtual void HandleSendCommandL();
@@ -271,16 +259,7 @@ class CPhoneStateIdle : public CPhoneState
          */        
          TBool CheckAppLaunchingL( const TKeyCode aCode );
 
-         /**
-          * Returns phone number for specified speed dial location.
-          * @param  aDigit Speed dial digit.
-          * @param  aDigit On return contains speed dial parameters.
-          * @return Phone number
-          */   
-         HBufC* NumberForSpeedDialLocationL( const TUint& aDigit,
-             TPhoneCmdParamSpeedDial& aSpeedDialParam ) const;
-
-         void HandleVoiceCallCommandL( TBool aSendKey );
+         void HandleVoiceCallCommandL();
          
     private:
     

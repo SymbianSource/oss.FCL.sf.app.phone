@@ -31,6 +31,15 @@ class PHONEACTION_EXPORT PhoneAction
     
 public:    
 
+    class ToolBarItem {
+    public:
+        ToolBarItem(int commandId, bool enabled) : 
+            mCommandId(commandId),mEnabled(enabled) {}
+        
+        int mCommandId;
+        bool mEnabled;
+    };
+    
     enum ActionType {
         LeftButton = 1,
         RightButton,

@@ -157,7 +157,7 @@ goto end
 :RUNTESTS
 echo Running tests
 for /f %%a in ('dir /b ut_*') do (
-    call %PATH_TO_DLL%\%%a.exe
+    call %PATH_TO_DLL%\%%a.exe -dtextshell --
     move \epoc32\winscw\c\data\%%a.log %PATH_TO_RESULT%\%%a.log
 )
 goto end
@@ -169,7 +169,7 @@ goto end
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :CALCULATECOVERAGE
 echo Calculating coverage
-ctcpost %PATH_TO_COVERAGE_DATA%\*.sym | ctcmerge -i - -o profile.txt
+ctcpost %PATH_TO_COVERAGE_DATA%\*.sym -p - | ctcmerge -i - -o profile.txt
 call ctc2html -t 70 -i profile.txt -o \coverage_result -nsb
 goto end
 

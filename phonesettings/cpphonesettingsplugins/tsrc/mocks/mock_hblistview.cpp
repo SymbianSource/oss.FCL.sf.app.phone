@@ -18,7 +18,6 @@
 #include <smcmockclassincludes.h>
 #include <hblistview.h>
 #include <hbabstractitemview.h>
-#include <hbabstractitemcontainer.h>
 
 HbAbstractItemViewPrivate *pointerHbAbstractItemViewPrivate(NULL);
 HbAbstractItemContainer *pointerHbAbstractItemContainer(NULL);
@@ -33,13 +32,13 @@ HbListView::HbListView(
         HbListViewPrivate & dd,
         HbAbstractItemContainer * container,
         QGraphicsItem * parent )
-    : HbAbstractItemView( *pointerHbAbstractItemViewPrivate, pointerHbAbstractItemContainer, parent )
+    : HbAbstractItemView( *pointerHbAbstractItemViewPrivate, pointerHbAbstractItemContainer, 0, parent )
     {
     
     }
 
 HbListView::HbListView(QGraphicsItem *parent)
-    : HbAbstractItemView( *pointerHbAbstractItemViewPrivate, pointerHbAbstractItemContainer, parent )
+    : HbAbstractItemView( *pointerHbAbstractItemViewPrivate, pointerHbAbstractItemContainer, 0, parent )
 		{
 		
 		}
@@ -188,38 +187,6 @@ void HbListView::orientationChanged(
   //   SMC_MOCK_METHOD1( void, Qt::Orientation, newOrientation )
     }
 
-
-// -----------------------------------------------------------------------------
-// HbListView::mousePressEvent
-// -----------------------------------------------------------------------------
-//
-void HbListView::mousePressEvent( 
-        QGraphicsSceneMouseEvent * event )
-    {
-  //   SMC_MOCK_METHOD1( void, QGraphicsSceneMouseEvent *, event )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbListView::mouseReleaseEvent
-// -----------------------------------------------------------------------------
-//
-void HbListView::mouseReleaseEvent( 
-        QGraphicsSceneMouseEvent * event )
-    {
-  //   SMC_MOCK_METHOD1( void, QGraphicsSceneMouseEvent *, event )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbListView::mouseMoveEvent
-// -----------------------------------------------------------------------------
-//
-void HbListView::mouseMoveEvent( 
-        QGraphicsSceneMouseEvent * event )
-    {
-  //   SMC_MOCK_METHOD1( void, QGraphicsSceneMouseEvent *, event )
-    }
 
 
 // -----------------------------------------------------------------------------

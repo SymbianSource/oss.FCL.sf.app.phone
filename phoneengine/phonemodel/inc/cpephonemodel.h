@@ -37,7 +37,6 @@ class CPEGsmAudioData;
 class CPEExternalDataHandler;
 class CPEMessageHandler;
 class CPESimStateMonitor;
-class CPEIdleStatusMonitor;
 class MEngineMonitor;
 class MPEContactHandling;
 class MPECallHandling;
@@ -47,7 +46,6 @@ class CPEAudioFactory;
 class MPEServiceHandling;
 class CPERemotePartyInfoMediator;
 class PhoneServices;
-class ParserRecognizer;
 
 // CLASS DECLARATION
 
@@ -79,7 +77,6 @@ NONSHARABLE_CLASS( CPEPhoneModel )
             EPEContactHandlingPhaseTwo,
             EPEMediatorCommandHandler,
             EPEPhoneServices,
-            EPEParserRecognizer,
             EPENetworkHandling
             };
 
@@ -274,6 +271,11 @@ NONSHARABLE_CLASS( CPEPhoneModel )
         TBool DelayMessageSending( const MEngineMonitor::TPEMessagesFromPhoneEngine aMessage, 
                                    const TInt aCallId ); 
         
+       /**
+         * Gets call error from callinfo
+         */ 
+        void SetCallError( TInt aCallId );
+
 
     private:    //Data
 
@@ -302,8 +304,6 @@ NONSHARABLE_CLASS( CPEPhoneModel )
         CPESimStateMonitor* iSimChangedMonitor;
         // SIM state monitor
         CPESimStateMonitor* iSimStatusMonitor;
-        // Idle status monitor
-        CPEIdleStatusMonitor* iIdleStatusMonitor;
         // DosServer connect error code.
         TInt iErrorCode;
         // Stepper counter
@@ -329,8 +329,9 @@ NONSHARABLE_CLASS( CPEPhoneModel )
         
         // Phone Services offered via Qt Highway
         PhoneServices* iPhoneServices;
-        ParserRecognizer* iParserRecognizer;
-
+        
+        // Mobile call info.
+        RMobileCall::TMobileCallInfoV3* iCallInfo;
     };
 
 #endif // CPEPHONEMODEL_H  

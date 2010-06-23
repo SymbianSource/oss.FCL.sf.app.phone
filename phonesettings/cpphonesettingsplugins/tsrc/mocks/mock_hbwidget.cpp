@@ -125,6 +125,7 @@ int HbWidget::pluginBaseId(  ) const
 HbMainWindow * HbWidget::mainWindow(  ) const
     {
    // SMC_MOCK_METHOD0( HbMainWindow * )
+    return 0;
     }
 
 
@@ -133,9 +134,10 @@ HbMainWindow * HbWidget::mainWindow(  ) const
 // -----------------------------------------------------------------------------
 //
 QGraphicsItem * HbWidget::primitive( 
-        HbStyle::Primitive primitive ) const
+        HbStyle::Primitive  ) const
     {
   //  SMC_MOCK_METHOD1( QGraphicsItem *, HbStyle::Primitive, primitive )
+    return 0;
     }
 
 
@@ -144,8 +146,8 @@ QGraphicsItem * HbWidget::primitive(
 // -----------------------------------------------------------------------------
 //
 void HbWidget::setFocusOrientation( 
-        Qt::Orientations previous,
-        Qt::Orientations next )
+        Qt::Orientations ,
+        Qt::Orientations  )
     {
    // SMC_MOCK_METHOD2( void, Qt::Orientations, previous, 
      //   Qt::Orientations, next )
@@ -159,6 +161,7 @@ void HbWidget::setFocusOrientation(
 QKeySequence HbWidget::keyForFocusNextChild(  ) const
     {
    // SMC_MOCK_METHOD0( QKeySequence )
+    return QKeySequence();
     }
 
 
@@ -169,6 +172,7 @@ QKeySequence HbWidget::keyForFocusNextChild(  ) const
 QKeySequence HbWidget::keyForFocusPreviousChild(  ) const
     {
   //  SMC_MOCK_METHOD0( QKeySequence )
+    return QKeySequence();
     }
 
 
@@ -177,7 +181,7 @@ QKeySequence HbWidget::keyForFocusPreviousChild(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbWidget::setKeyFocusMode( 
-        const QKeySequence & key )
+        const QKeySequence &  )
     {
 //    SMC_MOCK_METHOD1( void, const QKeySequence &, key )
     }
@@ -190,6 +194,7 @@ void HbWidget::setKeyFocusMode(
 QKeySequence HbWidget::keyFocusMode(  ) const
     {
 //    SMC_MOCK_METHOD0( QKeySequence )
+    return QKeySequence();
     }
 
 
@@ -200,6 +205,7 @@ QKeySequence HbWidget::keyFocusMode(  ) const
 QGraphicsItem * HbWidget::lastFocusedChild(  ) const
     {
  //   SMC_MOCK_METHOD0( QGraphicsItem * )
+    return 0;
     }
 
 
@@ -208,8 +214,8 @@ QGraphicsItem * HbWidget::lastFocusedChild(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbWidget::setFocusOrder( 
-        QGraphicsItem * first,
-        QGraphicsItem * second )
+        QGraphicsItem * ,
+        QGraphicsItem *  )
     {
    // SMC_MOCK_METHOD2( void, QGraphicsItem *, first, 
      //   QGraphicsItem *, second )
@@ -221,7 +227,7 @@ void HbWidget::setFocusOrder(
 // -----------------------------------------------------------------------------
 //
 void HbWidget::setFocusDelegation( 
-        HbWidget::FocusDelegation focusDelegation )
+        HbWidget::FocusDelegation  )
     {
  //   SMC_MOCK_METHOD1( void, HbWidget::FocusDelegation, focusDelegation )
     }
@@ -284,8 +290,8 @@ HbWidget::FocusMode HbWidget::focusMode(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbWidget::setFocusHighlight( 
-        HbStyle::Primitive type,
-        HbWidget::FocusHighlight focusHighlight )
+        HbStyle::Primitive ,
+        HbWidget::FocusHighlight  )
     {
   //  SMC_MOCK_METHOD2( void, HbStyle::Primitive, type, 
     //    HbWidget::FocusHighlight, focusHighlight )
@@ -297,7 +303,7 @@ void HbWidget::setFocusHighlight(
 // -----------------------------------------------------------------------------
 //
 HbStyle::Primitive HbWidget::focusHighlight( 
-        HbWidget::FocusHighlight focusHighlight )
+        HbWidget::FocusHighlight  )
     {
  //   SMC_MOCK_METHOD1( HbStyle::Primitive, HbWidget::FocusHighlight, focusHighlight )
     }
@@ -308,8 +314,8 @@ HbStyle::Primitive HbWidget::focusHighlight(
 // -----------------------------------------------------------------------------
 //
 void HbWidget::setBackgroundItem( 
-        HbStyle::Primitive type,
-        int zValue )
+        HbStyle::Primitive ,
+        int  )
     {
   //  SMC_MOCK_METHOD2( void, HbStyle::Primitive, type, 
     //    int, zValue )
@@ -321,8 +327,8 @@ void HbWidget::setBackgroundItem(
 // -----------------------------------------------------------------------------
 //
 void HbWidget::setBackgroundItem( 
-        QGraphicsItem * item,
-        int zValue )
+        QGraphicsItem * ,
+        int  )
     {
    // SMC_MOCK_METHOD2( void, QGraphicsItem *, item, 
      //   int, zValue )
@@ -336,30 +342,6 @@ void HbWidget::setBackgroundItem(
 QGraphicsItem * HbWidget::backgroundItem(  ) const
     {
    // SMC_MOCK_METHOD0( QGraphicsItem * )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbWidget::overrideFeedback
-// -----------------------------------------------------------------------------
-//
-HbFeedback::InstantEffect HbWidget::overrideFeedback( 
-        Hb::InstantInteraction interaction ) const
-    {
-  //  SMC_MOCK_METHOD1( HbFeedback::InstantEffect, Hb::InstantInteraction, interaction )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbWidget::overrideContinuousFeedback
-// -----------------------------------------------------------------------------
-//
-HbFeedback::ContinuousEffect HbWidget::overrideContinuousFeedback( 
-        Hb::ContinuousInteraction interaction,
-        int * intensity ) const
-    {
-  //  SMC_MOCK_METHOD2( HbFeedback::ContinuousEffect, Hb::ContinuousInteraction, interaction, 
-    //    int *, intensity )
     }
 
 
@@ -483,15 +465,6 @@ void HbWidget::setPluginBaseId(
     }
 
 
-// -----------------------------------------------------------------------------
-// HbWidget::gestureEvent
-// -----------------------------------------------------------------------------
-//
-void HbWidget::gestureEvent( 
-        QGestureEvent * event )
-    {
-  //  SMC_MOCK_METHOD1( void, QGestureEvent *, event )
-    }
 
 
 // -----------------------------------------------------------------------------
@@ -499,9 +472,9 @@ void HbWidget::gestureEvent(
 // -----------------------------------------------------------------------------
 //
 HbWidget::HbWidget( 
-        HbWidgetPrivate & dd,
-        QGraphicsItem * parent,
-        Qt::WindowFlags wFlags )
+        HbWidgetPrivate & /*dd*/,
+        QGraphicsItem * /*parent*/,
+        Qt::WindowFlags /*wFlags*/ )
     //:
     //HbWidgetBase( /*dd, parent, wFlags*/ )
     {

@@ -37,7 +37,8 @@ EXPORT_C TPhoneCmdParamGlobalNote::TPhoneCmdParamGlobalNote():
     iTone( EAvkonSIDErrorTone ),
     iWaitforReady ( EFalse ),
     iSoftkeys( 0 ),
-    iTimeout( 0 )
+    iTimeout( 0 ),
+    iNotificationDialog( EFalse )
     {
     iParamId = EPhoneParamIdGlobalNote;
     }
@@ -124,6 +125,18 @@ EXPORT_C void TPhoneCmdParamGlobalNote::SetTimeout( TInt aTimeout )
 }
 
 // ---------------------------------------------------------
+// TPhoneCmdParamGlobalNote::SetNotificationDialog
+// Sets the notification dialog flag.
+// (other items were commented in a header).
+// ---------------------------------------------------------
+//
+EXPORT_C void TPhoneCmdParamGlobalNote::SetNotificationDialog( 
+        TBool aNotificationDialog )
+{
+    iNotificationDialog = aNotificationDialog;
+}
+
+// ---------------------------------------------------------
 // TPhoneCmdParamGlobalNote::Type
 // Returns the global note type
 // (other items were commented in a header).
@@ -197,6 +210,16 @@ EXPORT_C TInt TPhoneCmdParamGlobalNote::Softkeys() const
 EXPORT_C TInt TPhoneCmdParamGlobalNote::Timeout() const
     {
     return iTimeout;
+    }
+
+// ---------------------------------------------------------
+// TPhoneCmdParamGlobalNote::NotificationDialog
+// Returns the notification dialog flag.
+// ---------------------------------------------------------
+//
+EXPORT_C TBool TPhoneCmdParamGlobalNote::NotificationDialog() const
+    {
+    return iNotificationDialog;
     }
 
 //  End of File  

@@ -452,16 +452,4 @@ void CPEContactMatch::CopyContactFieldsDataL(
     TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL: complete" );  
     }
 
-// -----------------------------------------------------------------------------
-// CPEContactMatch::GetSpeedDialLocationL
-// Get's phone number from given location.
-// -----------------------------------------------------------------------------
-//
-void CPEContactMatch::GetSpeedDialLocationL( 
-    TInt /*aLocationIndex*/, 
-    TPEPhoneNumber& /*aNumber*/ )
-    {
-
-    }
-
 //  End of File  

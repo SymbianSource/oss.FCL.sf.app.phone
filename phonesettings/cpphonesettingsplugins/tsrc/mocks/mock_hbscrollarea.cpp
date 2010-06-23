@@ -374,15 +374,6 @@ void HbScrollArea::mousePressEvent(
     }
 
 
-// -----------------------------------------------------------------------------
-// HbScrollArea::mouseReleaseEvent
-// -----------------------------------------------------------------------------
-//
-void HbScrollArea::mouseReleaseEvent( 
-        QGraphicsSceneMouseEvent * event )
-    {
-
-    }
 
 
 // -----------------------------------------------------------------------------
@@ -496,15 +487,7 @@ void HbScrollArea::scrollDirectionsChanged(
     }
 
 
-// -----------------------------------------------------------------------------
-// HbScrollArea::gestureSceneFilterChanged
-// -----------------------------------------------------------------------------
-//
-void HbScrollArea::gestureSceneFilterChanged( 
-        HbGestureSceneFilter * newFilter )
-    {
-   
-    }
+
 
 
 // -----------------------------------------------------------------------------

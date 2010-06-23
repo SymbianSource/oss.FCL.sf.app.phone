@@ -62,6 +62,27 @@ int CpSettingsWrapper::setShowCallDuration( bool value )
 
 
 // -----------------------------------------------------------------------------
+// CpSettingsWrapper::readVtVideoSending
+// -----------------------------------------------------------------------------
+//
+int CpSettingsWrapper::readVtVideoSending(  )
+    {
+    SMC_MOCK_METHOD0( int )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpSettingsWrapper::writeVtVideoSending
+// -----------------------------------------------------------------------------
+//
+int CpSettingsWrapper::writeVtVideoSending( 
+        int value )
+    {
+    SMC_MOCK_METHOD1( int, int, value )
+    }
+
+
+// -----------------------------------------------------------------------------
 // CpSettingsWrapper::readSoftRejectText
 // -----------------------------------------------------------------------------
 //
@@ -118,6 +139,14 @@ bool CpSettingsWrapper::isPhoneOffline() const
     SMC_MOCK_METHOD0( bool )
 }
 
+// -----------------------------------------------------------------------------
+// CpSettingsWrapper::isOngoingCall
+// -----------------------------------------------------------------------------
+//
+bool CpSettingsWrapper::isOngoingCall() const
+{
+    SMC_MOCK_METHOD0( bool )
+}
 
 // -----------------------------------------------------------------------------
 // Tools::voipSupported

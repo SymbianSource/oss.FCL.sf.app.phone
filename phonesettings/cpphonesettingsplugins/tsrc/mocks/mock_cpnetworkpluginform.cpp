@@ -59,6 +59,46 @@ void CpNetworkPluginForm::searchAvailableNetworks(  )
     SMC_MOCK_METHOD0( void )
     }
 
+
+// -----------------------------------------------------------------------------
+// CpNetworkPluginForm::showGlobalProgressNote
+// -----------------------------------------------------------------------------
+//
+void CpNetworkPluginForm::showGlobalProgressNote( 
+        int & noteId,
+        const QString & text )
+    {
+    SMC_MOCK_METHOD2( void, int &, noteId, 
+        const QString &, text )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpNetworkPluginForm::showGlobalNote
+// -----------------------------------------------------------------------------
+//
+void CpNetworkPluginForm::showGlobalNote( 
+        int & ,
+        const QString & ,
+        HbMessageBox::MessageBoxType  )
+    {
+   // SMC_MOCK_METHOD3( void, int &, noteId, 
+   //     const QString &, text, 
+   //     HbMessageBox::MessageBoxType, msgBoxType )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpNetworkPluginForm::cancelNote
+// -----------------------------------------------------------------------------
+//
+void CpNetworkPluginForm::cancelNote( 
+        int noteId )
+    {
+    SMC_MOCK_METHOD1( void, int, noteId )
+    }
+
+
 // -----------------------------------------------------------------------------
 // CpNetworkPluginForm::cellularDataUseHomeStateChanged
 // -----------------------------------------------------------------------------
@@ -96,10 +136,9 @@ void CpNetworkPluginForm::networkModeStateChanged(
 // CpNetworkPluginForm::operatorSelectionStateChanged
 // -----------------------------------------------------------------------------
 //
-void CpNetworkPluginForm::operatorSelectionStateChanged( 
-        bool index )
+void CpNetworkPluginForm::operatorSelectionStateChanged(  )
     {
-    SMC_MOCK_METHOD1( void, bool, index )
+    SMC_MOCK_METHOD0( void )
     }
 
 
@@ -180,6 +219,16 @@ void CpNetworkPluginForm::handleNetworkChanged(
     {
 //    SMC_MOCK_METHOD2( void, PSetNetworkWrapper::NetworkInfo &, currentInfo, 
 //        PSetNetworkWrapper::RegistrationStatus &, status )
+    }
+
+// -----------------------------------------------------------------------------
+// CpNetworkPluginForm::finishedManualSelectiondialog
+// -----------------------------------------------------------------------------
+//
+void CpNetworkPluginForm::finishedManualSelectiondialog( 
+        HbAction* /*action*/  )
+    {
+   // SMC_MOCK_METHOD1( void, HbAction *, action )
     }
 
 

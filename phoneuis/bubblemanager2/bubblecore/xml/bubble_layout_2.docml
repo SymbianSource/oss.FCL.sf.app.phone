@@ -1,24 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hbdocument version="0.1">
     <widget name="content" type="HbWidget">
-<section name="portrait">
         <widget name="collapsedBubble" type="BubbleContainerWidget">
-            <sizehint height="11.0un" type="FIXED"/>
             <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
-                <integer name="lines" value="2"/>
             </widget>
-        </widget>
-</section>
-<section name="landscape">        
-        <widget name="collapsedBubble" type="BubbleContainerWidget">
-            <sizehint height="9.0un" type="FIXED"/>
-            <real name="z" value="-1.0"/>
-            <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
-                <integer name="lines" value="1"/>
-            </widget>
-        </widget>
-</section>            
-        
+        </widget>        
         <widget name="expandedBubble" type="BubbleContainerWidget">
             <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
                 <sizehint height="14.0un" type="PREFERRED"/>
@@ -43,6 +29,18 @@
     </widget>
 
 <section name="portrait">
+
+    <widget name="eb:callImage" type="BubbleImageWidget">
+        <bool name="keepSquareShape" value="FALSE"/>
+    </widget>
+		
+    <widget name="collapsedBubble" type="BubbleContainerWidget">
+        <sizehint height="11.0un" type="FIXED"/>
+    </widget>		
+    
+    <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
+        <integer name="lines" value="2"/>
+    </widget>    
 
     <layout type="anchor" widget="content">
         <anchoritem src="collapsedBubble" srcEdge="TOP" dst="" dstEdge="TOP"/>        
@@ -83,6 +81,20 @@
 </section>
 
 <section name="landscape">
+		
+    <widget name="eb:callImage" type="BubbleImageWidget">
+        <bool name="keepSquareShape" value="TRUE"/>
+     </widget>
+		
+    <widget name="collapsedBubble" type="BubbleContainerWidget">
+        <sizehint height="9.0un" type="FIXED"/>
+        <real name="z" value="-1.0"/>
+    </widget>		
+        
+    <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
+        <integer name="lines" value="1"/>
+    </widget>
+
     <layout type="anchor" widget="content">
         <anchoritem src="collapsedBubble" srcEdge="TOP" dst="" dstEdge="TOP"/>        
         <anchoritem src="collapsedBubble" srcEdge="LEFT" dst="" dstEdge="LEFT"/>
@@ -101,23 +113,23 @@
     </layout>
     
     <layout type="anchor" widget="expandedBubble">
+        <anchoritem src="eb:callImage" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-2.0un"/>
+        <anchoritem src="eb:callImage" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-2.0un"/>
+        <anchoritem src="eb:callImage" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
+        
         <anchoritem src="eb:bubbleHeading" srcEdge="LEFT" dst="eb:callImage" dstEdge="RIGHT" spacing="-2.0un"/>
         <anchoritem src="eb:bubbleHeading" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="2.0un"/>
         <anchoritem src="eb:bubbleHeading" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-2.0un"/>
-
+        
         <anchoritem src="eb:centerButton" srcEdge="CENTERH" dst="eb:bubbleHeading" dstEdge="CENTERH"/>
         <anchoritem src="eb:centerButton" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
-
-        <anchoritem src="eb:leftButton" srcEdge="LEFT" dst="eb:callImage" dstEdge="RIGHT" spacing="-10.5un"/>
+        
+        <anchoritem src="eb:leftButton" srcEdge="LEFT" dst="eb:bubbleHeading" dstEdge="LEFT" spacing="-8.5un"/>
         <anchoritem src="eb:leftButton" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
         
         <anchoritem src="eb:rightButton" srcEdge="LEFT" dst="eb:leftButton" dstEdge="RIGHT" spacing="-2.0un"/>
         <anchoritem src="eb:rightButton" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="2.0un"/>
         <anchoritem src="eb:rightButton" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
-
-        <anchoritem src="eb:callImage" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-2.0un"/>
-        <anchoritem src="eb:callImage" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-2.0un"/>
-        <anchoritem src="eb:callImage" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
     </layout>    
     
 </section>

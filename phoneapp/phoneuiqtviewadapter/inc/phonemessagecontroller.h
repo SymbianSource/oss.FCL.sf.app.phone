@@ -24,6 +24,7 @@
 
 // FORWARD DECLARATION
 class TPhoneCommandParam;
+class XQServiceRequest;
 
 class PhoneMessageController : public QObject
 {
@@ -59,6 +60,8 @@ private:
     */
     void openEditor(QString toField, QString name, QString messageBody = QString());
     
+private:
+    XQServiceRequest *mService;
 };
 
 #endif // PHONEMESSAGECONTROLLER_H

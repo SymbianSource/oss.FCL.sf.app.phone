@@ -37,7 +37,7 @@ enum PhoneMenuCommands
     };
 
 //  PUSH BUTTON COMMANDS
-enum PhonePushButtonCommands
+enum PhoneButtonCommands
     {
     // Push button commands for incall
     PhoneInCallCmdJoinToConference = PhoneMenuCmdLast,
@@ -50,8 +50,16 @@ enum PhonePushButtonCommands
     PhoneInCallCmdEndOutgoingCall,
     PhoneInCallCmdReplace,
     PhoneInCallCmdSwap,
+    PhoneCallComingCmdSoftReject,
+    PhoneCallComingCmdSilent,
+    PhoneInCallCmdOpenDialer,
+    PhoneInCallCmdMute,
+    PhoneInCallCmdUnmute,
+    PhoneInCallCmdActivateIhf,
+    PhoneInCallCmdDeactivateIhf,
+    PhoneInCallCmdOpenContacts,
     
-    PhonePushButtonCmdLast
+    PhoneButtonCmdLast
     };
     
 #endif

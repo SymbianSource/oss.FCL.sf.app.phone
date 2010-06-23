@@ -321,8 +321,6 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectedL( TInt aCallId )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
-        
-    HandleColpNoteL( aCallId );
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );    
     SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );

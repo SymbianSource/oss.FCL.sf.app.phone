@@ -210,46 +210,6 @@ TBool CPhoneKeyEventForwarder::IsAlphaNumericKey( const TKeyEvent& aKeyEvent )
     return alphaNumeric;
     }
 
-// -----------------------------------------------------------------------------
-// CPhoneKeyEventForwarder::ConvertHalfQwertySpecialChar
-// -----------------------------------------------------------------------------
-//
-TBool CPhoneKeyEventForwarder::ConvertHalfQwertySpecialChar( TUint& aCode,
-        const TKeyEvent& aKeyEvent )
-    {
-    __LOGMETHODSTARTEND( EPhoneControl,
-        "CPhoneKeyEventForwarder::ConvertHalfQwertySpecialChar");
-
-    TBool ret( EFalse );
-    TInt keyboard(KErrNotFound);
-    
-    if( keyboard == EPtiKeyboardHalfQwerty )
-        {
-        switch ( aKeyEvent.iScanCode )
-           {
-           case EStdKeyLeftShift:
-               ret = ETrue;
-               aCode = KPhoneDtmfHashCharacter;
-               break;
-           case EStdKeyLeftFunc:
-               ret = ETrue;
-               aCode = KPhoneDtmfStarCharacter;
-               break;
-           case EStdKeySpace:
-               ret = ETrue;
-               aCode = KPhoneDtmf0Character;
-               break;
-           default:
-               break;
-           }
-        }
-
-    __PHONELOG1( EBasic, EPhoneControl,
-        "CPhoneKeyEventForwarder::ConvertHalfQwertySpecialChar =%d ",
-        ret );
-
-    return ret;
-    }
 
 // -----------------------------------------------------------------------------
 // CPhoneKeyEventForwarder::OfferKeyEventBeforeControlStackL
@@ -503,8 +463,6 @@ void CPhoneKeyEventForwarder::ConvertKeyCode( TUint& aCode,
         "CPhoneKeyEventHandler::ConvertKeyCode scan code (%d)",
         aKeyEvent.iScanCode );
 
-    if( !ConvertHalfQwertySpecialChar( aCode, aKeyEvent ) )
-        {
         switch ( aKeyEvent.iScanCode )
             {
             case EStdKeyEnter:
@@ -532,8 +490,7 @@ void CPhoneKeyEventForwarder::ConvertKeyCode( TUint& aCode,
             default:
                 aCode = aKeyEvent.iScanCode; // Use default code
                 break;
-            }
-        }
+        	} //switch
 
     __PHONELOG1( EBasic, EPhoneControl,
         "CPhoneKeyEventHandler::ConvertKeyCode aCode (%d)", aCode );

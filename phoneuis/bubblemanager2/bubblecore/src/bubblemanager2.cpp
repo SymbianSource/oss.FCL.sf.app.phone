@@ -24,6 +24,7 @@
 #include <hbaction.h>
 #include <hbstackedlayout.h>
 #include <hbmainwindow.h>
+#include <hbstyleloader.h>
 
 #include "bubblemanager2.h"
 #include "bubbleheader.h"

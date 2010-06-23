@@ -17,7 +17,7 @@
 */
 
 #include <exception> // must be before e32base.h so uncaught_exception gets defined
-#include <QKeyEvent>
+#include <qkeyevent>
 #include "phoneuikeyeventadapter.h"
 #include "phoneconstants.h"
 

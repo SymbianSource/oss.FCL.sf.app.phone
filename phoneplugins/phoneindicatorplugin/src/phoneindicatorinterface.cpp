@@ -15,7 +15,7 @@
  *
  */
 
-#include "Phoneindicatorinterface.h"
+#include "phoneindicatorinterface.h"
 #include "phoneindicators.h"
 
 #include <QTime>
@@ -23,8 +23,11 @@
 #ifdef Q_OS_SYMBIAN
 #include <logsservices.h>
 #include <xqservicerequest.h>
-#include <eikenv.h>
+#include <xqrequestinfo.h>
 #include <apgtask.h>
+#include <xqaiwrequest.h>
+#include <cppluginlauncher.h>
+
 
 #endif
 
@@ -51,8 +54,7 @@ PhoneIndicatorInterface::~PhoneIndicatorInterface()
 bool PhoneIndicatorInterface::handleInteraction(InteractionType type)
 {
     if (type == InteractionActivated) {
-        switch (m_interaction) {
-            
+        switch (m_interaction) {            
         case OpenMissedCallView: {
 #ifdef Q_OS_SYMBIAN
             XQServiceRequest snd("com.nokia.services.logsservices.starter",
@@ -61,19 +63,25 @@ bool PhoneIndicatorInterface::handleInteraction(InteractionType type)
             snd << false;
             int retValue;
             snd.send(retValue);
-
-//            LogsServices::start( LogsServices::ViewMissed, false );
 #endif
             }
             break;
         case SwitchBackToCall: {
 #ifdef Q_OS_SYMBIAN
-            RWsSession& wsSession = CEikonEnv::Static()->WsSession();
-            TApaTaskList taskList( wsSession );
-            const TUid KUidPhoneApp = { 0x100058B3 };   // Phone application
-            TApaTask task = taskList.FindApp(KUidPhoneApp);
-            task.BringToForeground();
+            int dialer(1);
+            XQServiceRequest snd("com.nokia.services.telephony.uistarter", 
+                    "start(int)", false);
+            XQRequestInfo info;
+            info.setForeground(true);
+            snd.setInfo(info);
+            snd << dialer;
+            QVariant retValue;
+            snd.send(retValue);
 #endif
+            }
+            break;
+        case OpenDiverSettingsView: {
+            launchDivertSettingsView();
             }
             break;
         case Deactivate:
@@ -106,8 +114,7 @@ QVariant PhoneIndicatorInterface::indicatorData(int role) const
 bool PhoneIndicatorInterface::handleClientRequest(RequestType type, const QVariant &parameter)
 {
     bool handled(false);
-    switch (type) {
-        
+    switch (type) {        
     case RequestActivate:
         if (m_parameter != parameter) {
             m_parameter = parameter;
@@ -120,4 +127,45 @@ bool PhoneIndicatorInterface::handleClientRequest(RequestType type, const QVaria
     }
 
     return handled;
+}
+
+void PhoneIndicatorInterface::launchDivertSettingsView()
+{
+
+    XQAiwRequest *request = m_appMgr.create(
+            "com.nokia.symbian.ICpPluginLauncher", 
+            "launchSettingView(QString,QVariant)", 
+            false);  // 
+    
+    if (!request) {
+        return;
+    }
+    else {
+        connect(request, SIGNAL(requestOk(QVariant)), SLOT(handleReturnValue(QVariant)));
+        connect(request, SIGNAL(requestError(int,QString)), SLOT(handleError(int,QString)));
+    }
+    // Set arguments for request 
+    QList<QVariant> args;
+    args << (QString)"cptelephonyplugin.dll";
+    args << (QVariant)"";            
+
+    request->setArguments(args);
+    request->setSynchronous(true);
+    // Make the request
+    if (!request->send()) {
+        //report error     
+    }
+    delete request;
+
+}
+
+void PhoneIndicatorInterface::handleReturnValue(const QVariant &returnValue)
+{      
+    Q_UNUSED(returnValue);
+}
+
+void PhoneIndicatorInterface::handleError(int errorCode,const QString &errorMessage)
+{
+    Q_UNUSED(errorCode);
+    Q_UNUSED(errorMessage);
 }

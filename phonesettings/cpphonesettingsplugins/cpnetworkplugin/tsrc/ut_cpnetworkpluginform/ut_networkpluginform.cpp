@@ -87,6 +87,8 @@ void UT_CpNetworkPluginForm::t_networkModeStateChanged()
     
     expect("CpSettingsWrapper::isPhoneOffline").returns(true);
     m_networkPluginForm->networkModeStateChanged(0);
+    
+    QVERIFY(verify());
 }
 
 /*!
@@ -97,15 +99,17 @@ void UT_CpNetworkPluginForm::t_operatorSelectionStateChanged()
     expect("CpSettingsWrapper::isPhoneOffline").returns(false);
     m_NetworkSelectionMode = PSetNetworkWrapper::SelectionModeAutomatic;
     expect("PSetNetworkWrapper::getNetworkSelectionMode").willOnce(invoke(this, &updateNetworkSelectionMode));
-    m_networkPluginForm->operatorSelectionStateChanged(true);
+    m_networkPluginForm->operatorSelectionStateChanged();
 
     expect("CpSettingsWrapper::isPhoneOffline").returns(false);
     m_NetworkSelectionMode = PSetNetworkWrapper::SelectionModeManual;
     expect("PSetNetworkWrapper::getNetworkSelectionMode").willOnce(invoke(this, &updateNetworkSelectionMode));
-    m_networkPluginForm->operatorSelectionStateChanged(true);
+    m_networkPluginForm->operatorSelectionStateChanged();
     
     expect("CpSettingsWrapper::isPhoneOffline").returns(true);
-    m_networkPluginForm->operatorSelectionStateChanged(true);
+    m_networkPluginForm->operatorSelectionStateChanged();
+    
+    QVERIFY(verify());
 }
 
 /*!
@@ -113,16 +117,15 @@ void UT_CpNetworkPluginForm::t_operatorSelectionStateChanged()
  */
 void UT_CpNetworkPluginForm::t_networkAccessModeGot()
 {
-    expect("CpSettingFormItemData::setContentWidgetData");
     m_networkPluginForm->networkAccessModeGot(0);
-    
-    expect("CpSettingFormItemData::setContentWidgetData");
+
     m_networkPluginForm->networkAccessModeGot(1);
-    
-    expect("CpSettingFormItemData::setContentWidgetData");
+
     m_networkPluginForm->networkAccessModeGot(2);
     
     m_networkPluginForm->networkAccessModeGot(3);
+    
+    QVERIFY(verify());
 }
 
 /*!
@@ -134,8 +137,10 @@ void UT_CpNetworkPluginForm::t_availableNetworksGot()
     QList<PSetNetworkWrapper::NetworkInfo*> networkInfoList;
     networkInfoList.append(&temp);
     
-    expect("HbDialog::exec");
+    expect("HbDialog::open");
     m_networkPluginForm->availableNetworksGot(networkInfoList);
+    
+    QVERIFY(verify());
 }
 
 /*!
@@ -149,15 +154,13 @@ void UT_CpNetworkPluginForm::t_networkReqestFailed()
     m_networkPluginForm->networkReqestFailed(error, type);
     
     error = PSetNetworkWrapper::ErrNoNetworkService;
-    type = PSetNetworkWrapper::RequestSetNetwork;
+    type = PSetNetworkWrapper::RequestSetNetworkMode;
     expect("PSetNetworkWrapper::getNetworkAccessMode");
-    expect("CpSettingFormItemData::setContentWidgetData");
     m_networkPluginForm->networkReqestFailed(error, type);
     
     error = PSetNetworkWrapper::ErrOfflineOpNotAllowed;
-    type = PSetNetworkWrapper::RequestSetNetwork;
+    type = PSetNetworkWrapper::RequestSetNetworkMode;
     expect("PSetNetworkWrapper::getNetworkAccessMode");
-    expect("CpSettingFormItemData::setContentWidgetData");
     m_networkPluginForm->networkReqestFailed(error, type);
     
     PSetNetworkWrapper::NetworkInfo temp;
@@ -166,8 +169,10 @@ void UT_CpNetworkPluginForm::t_networkReqestFailed()
     m_networkPluginForm->availableNetworksGot(networkInfoList);
     error = PSetNetworkWrapper::ErrNoNetworkAccess;
     type = PSetNetworkWrapper::RequestSetNetwork;
-    expect("HbDialog::exec");
+    expect("HbDialog::open");
     m_networkPluginForm->networkReqestFailed(error, type);
+    
+    QVERIFY(verify());
 }
 
 /*!
@@ -182,6 +187,8 @@ void UT_CpNetworkPluginForm::t_userCancel()
     m_NetworkSelectionMode = PSetNetworkWrapper::SelectionModeAutomatic;
     expect("PSetNetworkWrapper::getNetworkSelectionMode").willOnce(invoke(this, &updateNetworkSelectionMode));
     m_networkPluginForm->userCancel();
+    
+    QVERIFY(verify());
 }
 
 /*!
@@ -194,6 +201,8 @@ void UT_CpNetworkPluginForm::t_handleSearchingNetworks()
     
     type = PSetNetworkWrapper::RequestEnumerateNetworks;
     m_networkPluginForm->handleSearchingNetworks(type);
+    
+    QVERIFY(verify());
 }
 
 /*!
@@ -229,11 +238,10 @@ void UT_CpNetworkPluginForm::t_handleNetworkChanged()
 void UT_CpNetworkPluginForm::cleanup()
 {
     reset();
-    
-    delete m_networkWrapper;
-    m_networkWrapper = NULL;
     delete m_networkPluginForm;
     m_networkPluginForm = NULL;
+    delete m_networkWrapper;
+    m_networkWrapper = NULL;
 }
 
 /*!

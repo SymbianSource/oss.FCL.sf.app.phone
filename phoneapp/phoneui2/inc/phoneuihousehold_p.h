@@ -25,7 +25,6 @@
 
 class MPEPhoneModel;
 class CPhoneUIController;
-class CPhoneQwertyHandler;
 class HbMainWindow;
 class PhoneUIKeyEventAdapter;
 class PhoneUiCommandAdapter;
@@ -102,8 +101,6 @@ private:
         
     //Indicates whether onscreen dialer is defined
     TBool iOnScreenDialer;
-    
-    CPhoneQwertyHandler* iQwertyHandler;
 
     CPhoneUIController* iPhoneUIController;
     

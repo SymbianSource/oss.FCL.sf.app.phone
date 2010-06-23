@@ -122,7 +122,7 @@ MPhCntMatch::TCliType CPhCntMatch2::Cli( HBufC*& /*aCliText*/ ) const
 //
 TPtrC CPhCntMatch2::FirstName() const
 {
-    return FieldValue(QContactName::DefinitionName, QContactName::FieldFirst); 
+    return FieldValue(QContactName::DefinitionName, QContactName::FieldFirstName); 
 
 }
 // -----------------------------------------------------------------------------
@@ -131,7 +131,7 @@ TPtrC CPhCntMatch2::FirstName() const
 //
 TPtrC CPhCntMatch2::LastName() const
 {
-    return FieldValue(QContactName::DefinitionName, QContactName::FieldLast);
+    return FieldValue(QContactName::DefinitionName, QContactName::FieldLastName);
    
 }
 // -----------------------------------------------------------------------------
@@ -209,8 +209,8 @@ TPtrC CPhCntMatch2::CallImage() const
     QList<QContactAvatar> details = iContact.details<QContactAvatar>();
 
     for (int i=0;i<details.count();++i) {
-        if (details.at(i).subType() == QContactAvatar::SubTypeImage) {
-            returnValue = details.at(i).avatar();
+        if (!details.at(i).imageUrl().isEmpty()) {
+            returnValue = details.at(i).imageUrl().toEncoded();
             break;
         }
     }

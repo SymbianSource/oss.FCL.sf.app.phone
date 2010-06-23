@@ -17,8 +17,7 @@
 #include <QDebug>
 #include <smcmockclassincludes.h>
 #include <hbabstractitemview.h>
-
-HbScrollAreaPrivate* pointerHbScrollAreaPrivate(NULL);
+#include <hbscrollarea.h>
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -27,10 +26,11 @@ HbScrollAreaPrivate* pointerHbScrollAreaPrivate(NULL);
 // -----------------------------------------------------------------------------
 //
 HbAbstractItemView::HbAbstractItemView( 
-        HbAbstractItemViewPrivate & dd,
-        HbAbstractItemContainer * container,
+        HbAbstractItemViewPrivate & /*dd*/,
+        HbAbstractItemContainer * /*container*/,
+        HbModelIterator *,
         QGraphicsItem * parent )
-    : HbScrollArea( *pointerHbScrollAreaPrivate, parent )
+    : HbScrollArea(parent)
     {
     
     }
@@ -47,23 +47,12 @@ HbAbstractItemView::~HbAbstractItemView(  )
 
 
 // -----------------------------------------------------------------------------
-// HbAbstractItemView::type
-// -----------------------------------------------------------------------------
-//
-/*
-int HbAbstractItemView::type(  ) const
-    {
-    SMC_MOCK_METHOD0( int )
-    }
-*/
-
-// -----------------------------------------------------------------------------
 // HbAbstractItemView::setModel
 // -----------------------------------------------------------------------------
 //
 void HbAbstractItemView::setModel( 
-        QAbstractItemModel * model,
-        HbAbstractViewItem * prototype )
+        QAbstractItemModel * ,
+        HbAbstractViewItem *  )
     {
 
     }
@@ -84,7 +73,7 @@ QAbstractItemModel * HbAbstractItemView::model(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbAbstractItemView::setItemPrototype( 
-        HbAbstractViewItem * prototype )
+        HbAbstractViewItem *  )
     {
 
     }
@@ -95,7 +84,7 @@ void HbAbstractItemView::setItemPrototype(
 // -----------------------------------------------------------------------------
 //
 void HbAbstractItemView::setItemPrototypes( 
-        const QList<HbAbstractViewItem *> & prototypes )
+        const QList<HbAbstractViewItem *> &  )
     {
   
     }
@@ -107,7 +96,7 @@ void HbAbstractItemView::setItemPrototypes(
 //
 QList <HbAbstractViewItem * > HbAbstractItemView::itemPrototypes(  ) const
     {
-    
+    return QList <HbAbstractViewItem * >();
     }
 
 
@@ -116,7 +105,7 @@ QList <HbAbstractViewItem * > HbAbstractItemView::itemPrototypes(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbAbstractItemView::setSelectionModel( 
-        QItemSelectionModel * selectionModel )
+        QItemSelectionModel *  )
     {
   
     }
@@ -128,7 +117,7 @@ void HbAbstractItemView::setSelectionModel(
 //
 QItemSelectionModel * HbAbstractItemView::selectionModel(  ) const
     {
-  
+    return 0;
     }
 
 
@@ -138,7 +127,7 @@ QItemSelectionModel * HbAbstractItemView::selectionModel(  ) const
 //
 QModelIndex HbAbstractItemView::currentIndex(  ) const
     {
-   
+    return QModelIndex();
     }
 
 
@@ -148,7 +137,7 @@ QModelIndex HbAbstractItemView::currentIndex(  ) const
 //
 QModelIndex HbAbstractItemView::rootIndex(  ) const
     {
-    
+    return QModelIndex();
     }
 
 
@@ -157,8 +146,7 @@ QModelIndex HbAbstractItemView::rootIndex(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbAbstractItemView::setSelectionMode( 
-        SelectionMode newMode,
-        bool resetSelection )
+        SelectionMode )
     {
 
     }
@@ -170,7 +158,7 @@ void HbAbstractItemView::setSelectionMode(
 //
 HbAbstractItemView::SelectionMode HbAbstractItemView::selectionMode(  ) const
     {
-
+    return NoSelection;
     }
 
 
@@ -210,12 +198,12 @@ bool HbAbstractItemView::isVisible(
 // HbAbstractItemView::isVisible
 // -----------------------------------------------------------------------------
 //
-bool HbAbstractItemView::isVisible( 
-        HbAbstractViewItem * item ) const
+/*bool HbAbstractItemView::isVisible( 
+        const QModelIndex & ) const
     {
-
+    return false;
     }
-
+*/
 
 // -----------------------------------------------------------------------------
 // HbAbstractItemView::currentViewItem
@@ -258,61 +246,6 @@ QList <HbAbstractViewItem * > HbAbstractItemView::visibleItems(  ) const
     {
  
     }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::itemAtPosition
-// -----------------------------------------------------------------------------
-//
-HbAbstractViewItem * HbAbstractItemView::itemAtPosition( 
-        const QPointF & position ) const
-    {
-    
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::indexCount
-// -----------------------------------------------------------------------------
-//
-int HbAbstractItemView::indexCount(  ) const
-    {
-    SMC_MOCK_METHOD0( int )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::indexPosition
-// -----------------------------------------------------------------------------
-//
-int HbAbstractItemView::indexPosition( 
-        const QModelIndex & index ) const
-    {
-   
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::nextIndex
-// -----------------------------------------------------------------------------
-//
-QModelIndex HbAbstractItemView::nextIndex( 
-        const QModelIndex & index ) const
-    {
-
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::previousIndex
-// -----------------------------------------------------------------------------
-//
-QModelIndex HbAbstractItemView::previousIndex( 
-        const QModelIndex & index ) const
-    {
-
-    }
-
 
 // -----------------------------------------------------------------------------
 // HbAbstractItemView::layoutName
@@ -476,92 +409,6 @@ bool HbAbstractItemView::event(
     
     }
 
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::mousePressEvent
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::mousePressEvent( 
-        QGraphicsSceneMouseEvent * event )
-    {
-    
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::mouseReleaseEvent
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::mouseReleaseEvent( 
-        QGraphicsSceneMouseEvent * event )
-    {
-    
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::mouseMoveEvent
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::mouseMoveEvent( 
-        QGraphicsSceneMouseEvent * event )
-    {
-    
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::focusOutEvent
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::focusOutEvent( 
-        QFocusEvent * event )
-    {
-    
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::upGesture
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::upGesture( 
-        int value )
-    {
-    SMC_MOCK_METHOD1( void, int, value )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::downGesture
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::downGesture( 
-        int value )
-    {
-    SMC_MOCK_METHOD1( void, int, value )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::leftGesture
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::leftGesture( 
-        int value )
-    {
-    SMC_MOCK_METHOD1( void, int, value )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::rightGesture
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::rightGesture( 
-        int value )
-    {
-    SMC_MOCK_METHOD1( void, int, value )
-    }
 
 
 // -----------------------------------------------------------------------------
@@ -606,17 +453,6 @@ bool HbAbstractItemView::scrollByAmount(
     {
    
     }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::container
-// -----------------------------------------------------------------------------
-//
-HbAbstractItemContainer * HbAbstractItemView::container(  ) const
-    {
-    
-    }
-
 
 // -----------------------------------------------------------------------------
 // HbAbstractItemView::itemChange
@@ -790,26 +626,5 @@ void HbAbstractItemView::columnsRemoved(
     
     }
 
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::panGesture
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::panGesture( 
-        const QPointF & point )
-    {
-    
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbAbstractItemView::longPressGesture
-// -----------------------------------------------------------------------------
-//
-void HbAbstractItemView::longPressGesture( 
-        const QPointF & point )
-    {
-    
-    }
 
 

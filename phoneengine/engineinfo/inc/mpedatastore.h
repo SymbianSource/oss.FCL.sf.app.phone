@@ -373,12 +373,6 @@ NONSHARABLE_CLASS( MPEDataStore )
         virtual void SetKeypadVolume( const TInt aKeypadVolume ) = 0;
         
         /**
-        * Sets lifetimer data of the phone to TPEBasicInfo-structure
-        * @param aLifeTimerData lifetime data (TDesc8&).
-        */
-        virtual void SetLifeTimerData( TCCPLifeTimeDataPckg& aPckg ) = 0;   
-        
-        /**
         * Sets a logging indicator to TPECallInfo-tructure
         * @param aLoggingIndicator, Continuous logging indicator.
         * @param aCallId, the call identification number.
@@ -422,13 +416,6 @@ NONSHARABLE_CLASS( MPEDataStore )
         */
         virtual void SetPhoneNumberIsServiceCode( const TBool& aServiceCode ) = 0;
  
-        /**
-        * Sets phone number to TPECallCommandInfo-structure
-        * @param aPhoneIdentityParameters is the phone identity parameters
-        */
-        virtual void SetPhoneIdentityParameters( 
-            const TPEPhoneIdentityParameters& aPhoneIdentityParameters ) = 0;
-
         /**
         * Sets call origin for the next call attempt
         * @param aOrigin indicates if the call is phone, client or SAT originated
@@ -735,7 +722,7 @@ NONSHARABLE_CLASS( MPEDataStore )
          * @param aCallId, is the call identification number.
          */
          virtual void SetRemoteColpNumber(
-             TPEPhoneNumber& aColpNumber, 
+             const TPEPhoneNumber& aColpNumber, 
              const TInt aCallId ) = 0;
 
          /**

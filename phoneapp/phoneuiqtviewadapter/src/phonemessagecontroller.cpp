@@ -26,14 +26,16 @@
 
 
 PhoneMessageController::PhoneMessageController(QObject *parent) : 
-    QObject(parent)
+    QObject(parent),
+    mService(0)
 {
 
 }
 
 PhoneMessageController::~PhoneMessageController()
 {
-
+    delete mService;
+    mService = 0;
 }
 
 void PhoneMessageController::openSoftRejectMessageEditor(
@@ -87,13 +89,21 @@ void PhoneMessageController::openSoftRejectMessageEditor(
 }
 
 void PhoneMessageController::openEditor(
-        QString /*toField*/, QString /*name*/, QString /*messageBody*/)
+        QString toField, QString name, QString messageBody)
 {
-    //TODO
-    /*XQServiceRequest snd(QLatin1String("com.nokia.services.hbserviceprovider.imessage.send"), QLatin1String("send(QVariant)"));
-    QVariant data;
-    snd << data;
-    snd.send();*/
+    delete mService;
+    mService = 0;
+    mService = new XQServiceRequest("com.nokia.services.hbserviceprovider.conversationview",
+                                    "send(QString,QString,QString)", false);
+    
+    QList<QVariant> arguments;
+    arguments.append(QVariant(toField));
+    arguments.append(QVariant(name));
+    arguments.append(QVariant(messageBody));
+    mService->setArguments(arguments);
+    
+    QVariant retValue;
+    mService->send(retValue);
 }
 
 

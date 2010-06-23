@@ -185,6 +185,7 @@ TPtrC CPEParserPhoneNumberHandler::FilterPostfixL( TPtrC aPostfix )
                 stripStart = i;
                 }
             }
+        input.Inc();
         }
     if ( stripStart != KErrNotFound )
         {

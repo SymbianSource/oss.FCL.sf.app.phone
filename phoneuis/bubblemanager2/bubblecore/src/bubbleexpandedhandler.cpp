@@ -100,6 +100,8 @@ void BubbleExpandedHandler::setButtons(const QList<HbAction*>& actions)
         mButtonCenter->setIcon( action->icon() );
         connect(mButtonCenter, SIGNAL( clicked() ),
                 action, SLOT( trigger() ) );
+        connect(mButtonCenter, SIGNAL( longPress(QPointF)),
+                action, SLOT( trigger() ) );
         BubbleUtils::setButtonStyleForAction(*mButtonCenter,*action);
         mButtonCenter->show();
     } else  if (actions.count()==2 && mButtonLeft && mButtonRight ) {
@@ -108,12 +110,16 @@ void BubbleExpandedHandler::setButtons(const QList<HbAction*>& actions)
         mButtonLeft->setIcon(action1->icon());
         connect( mButtonLeft, SIGNAL( clicked() ),
                  action1, SLOT( trigger() ) );
+        connect( mButtonLeft, SIGNAL( longPress(QPointF)),
+                 action1, SLOT( trigger() ) );
         BubbleUtils::setButtonStyleForAction(*mButtonLeft,*action1);
         mButtonLeft->show();
         // Right button
         HbAction* action2 = actions.at(1);
         mButtonRight->setIcon( action2->icon() );
         connect( mButtonRight, SIGNAL( clicked() ),
+                 action2, SLOT( trigger() ) );
+        connect( mButtonRight, SIGNAL( longPress(QPointF)),
                  action2, SLOT( trigger() ) );
         BubbleUtils::setButtonStyleForAction(*mButtonRight,*action2);
         mButtonRight->show();

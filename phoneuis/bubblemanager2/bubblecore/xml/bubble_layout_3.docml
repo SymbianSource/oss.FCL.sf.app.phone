@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hbdocument version="0.1">
     <widget name="content" type="HbWidget">
-<section name="portrait">
         <widget name="collapsedBubble2" type="BubbleContainerWidget">
-            <sizehint height="11.0un" type="FIXED"/>
             <widget name="cb2:bubbleHeading" type="BubbleHeadingWidget">
-                <integer name="lines" value="2"/>
             </widget>
         </widget>
 
         <widget name="collapsedBubble" type="BubbleContainerWidget">
-            <sizehint height="11.0un" type="FIXED"/>
             <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
-                <integer name="lines" value="2"/>
             </widget>
         </widget>
 
         <widget name="expandedBubble" type="BubbleContainerWidget">
             <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
-                <sizehint height="13.0un" type="PREFERRED"/>
-                <integer name="lines" value="3"/>
             </widget>
             <widget name="eb:callImage" type="BubbleImageWidget">
             </widget>
@@ -36,51 +29,39 @@
                 <sizehint width="20.0un" type="PREFERRED"/>                
             </widget>
         </widget>
-
-</section>
-
-<section name="landscape">        
-        <widget name="collapsedBubble2" type="BubbleContainerWidget">
-            <sizehint height="9.0un" type="FIXED"/>
-            <real name="z" value="-1.0"/>           
-            <widget name="cb2:bubbleHeading" type="BubbleHeadingWidget">
-                <integer name="lines" value="1"/>
-            </widget>
-        </widget>
-
-        <widget name="collapsedBubble" type="BubbleContainerWidget">
-            <sizehint height="9.0un" type="FIXED"/>
-            <real name="z" value="-1.0"/>
-            <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
-                <integer name="lines" value="1"/>
-            </widget>
-        </widget>
-
-        <widget name="expandedBubble" type="BubbleContainerWidget">
-            <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
-                <sizehint height="13.0un" type="PREFERRED"/>
-                <integer name="lines" value="2"/>
-            </widget>
-            <widget name="eb:callImage" type="BubbleImageWidget">
-            </widget>
-            <widget name="eb:centerButton" type="BubbleButton">
-                <sizehint height="9.0un" type="FIXED"/>
-                <sizehint width="20.0un" type="PREFERRED"/>                
-            </widget>
-            <widget name="eb:leftButton" type="BubbleButton">
-                <sizehint height="9.0un" type="FIXED"/>
-                <sizehint width="20.0un" type="PREFERRED"/>
-            </widget>
-            <widget name="eb:rightButton" type="BubbleButton">
-                <sizehint height="9.0un" type="FIXED"/>
-                <sizehint width="20.0un" type="PREFERRED"/>
-            </widget>
-        </widget>
-</section>
-
     </widget>
 
 <section name="portrait">
+
+    <widget name="eb:callImage" type="BubbleImageWidget">
+        <bool name="keepSquareShape" value="FALSE"/>
+    </widget>
+
+    <widget name="collapsedBubble2" type="BubbleContainerWidget">
+        <sizehint height="11.0un" type="FIXED"/>
+    </widget>
+    
+    <widget name="cb2:bubbleHeading" type="BubbleHeadingWidget">
+        <integer name="lines" value="2"/>
+    </widget>
+    
+    <widget name="collapsedBubble" type="BubbleContainerWidget">
+        <sizehint height="11.0un" type="FIXED"/>
+    </widget>
+    
+    <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
+        <integer name="lines" value="2"/>
+    </widget>    
+
+    <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
+        <sizehint height="13.0un" type="PREFERRED"/>
+        <integer name="lines" value="3"/>
+    </widget>
+    
+    <widget name="eb:centerButton" type="BubbleButton">
+        <sizehint height="9.0un" type="FIXED"/>
+        <sizehint width="20.0un" type="PREFERRED"/>
+    </widget>    
 
     <layout type="anchor" widget="content">
         <anchoritem src="collapsedBubble2" srcEdge="TOP" dst="" dstEdge="TOP"/>        
@@ -131,6 +112,38 @@
 </section>
 
 <section name="landscape">
+
+    <widget name="eb:callImage" type="BubbleImageWidget">
+        <bool name="keepSquareShape" value="TRUE"/>
+     </widget>
+        
+    <widget name="collapsedBubble2" type="BubbleContainerWidget">
+        <sizehint height="9.0un" type="FIXED"/>
+    </widget>
+    
+    <widget name="cb2:bubbleHeading" type="BubbleHeadingWidget">
+        <integer name="lines" value="1"/>
+    </widget>
+    
+
+    <widget name="collapsedBubble" type="BubbleContainerWidget">
+        <sizehint height="9.0un" type="FIXED"/>
+    </widget>
+    
+    <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
+        <integer name="lines" value="1"/>
+    </widget>        
+
+    <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
+        <sizehint height="13.0un" type="PREFERRED"/>
+        <integer name="lines" value="3"/>
+    </widget>
+
+    <widget name="eb:centerButton" type="BubbleButton">
+        <sizehint height="9.0un" type="FIXED"/>
+        <sizehint width="20.0un" type="FIXED"/>
+    </widget>    
+    
     <layout type="anchor" widget="content">
         <anchoritem src="collapsedBubble2" srcEdge="TOP" dst="" dstEdge="TOP"/>        
         <anchoritem src="collapsedBubble2" srcEdge="LEFT" dst="" dstEdge="LEFT"/>
@@ -161,6 +174,10 @@
     </layout>    
 
     <layout type="anchor" widget="expandedBubble">
+        <anchoritem src="eb:callImage" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-2.0un"/>
+        <anchoritem src="eb:callImage" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-2.0un"/>
+        <anchoritem src="eb:callImage" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
+    
         <anchoritem src="eb:bubbleHeading" srcEdge="LEFT" dst="eb:callImage" dstEdge="RIGHT" spacing="-2.0un"/>
         <anchoritem src="eb:bubbleHeading" srcEdge="RIGHT" dst="eb:centerButton" dstEdge="LEFT" spacing="2.0un"/>
         <anchoritem src="eb:bubbleHeading" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-2.0un"/>
@@ -172,13 +189,9 @@
         <anchoritem src="eb:leftButton" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
         
         <anchoritem src="eb:rightButton" srcEdge="CENTERH" dst="eb:centerButton" dstEdge="CENTERH" spacing="2.0un"/>
-        <anchoritem src="eb:rightButton" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
-        
-        <anchoritem src="eb:callImage" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-2.0un"/>
-        <anchoritem src="eb:callImage" srcEdge="RIGHT" dst="" dstEdge="LEFT" spacing="-20.0un"/>
-        <anchoritem src="eb:callImage" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-2.0un"/>
-        <anchoritem src="eb:callImage" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
+        <anchoritem src="eb:rightButton" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>        
     </layout>    
     
 </section>
+
 </hbdocument>

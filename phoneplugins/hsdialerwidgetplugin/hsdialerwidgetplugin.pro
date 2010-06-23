@@ -22,6 +22,7 @@ INCLUDEPATH += ./inc \
     ../../inc
 symbian: { 
     LIBS += -lxqservice \
+        -lxqserviceutil \
         -lxqtelephonyservice \
         -lxqsettingsmanager \
         -llogsengine

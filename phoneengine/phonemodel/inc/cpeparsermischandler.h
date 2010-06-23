@@ -65,11 +65,6 @@ NONSHARABLE_CLASS( CPEParserMiscHandler )
     public: // Functions from base classes
 
         /**
-        * Process IMEI display
-        */
-        void ProcessShowIMEIL();
-
-        /**
         * Process USSD request
         * @param aString, USSD string to be sent
         */

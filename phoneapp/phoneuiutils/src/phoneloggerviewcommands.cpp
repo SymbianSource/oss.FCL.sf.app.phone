@@ -90,9 +90,6 @@ _STLIT8(K62, "EPhoneViewUpdateIncallIndicator");
 _STLIT8(K63, "EPhoneViewStartCapturingKey");
 _STLIT8(K64, "EPhoneViewStopCapturingKey");
 _STLIT8(K65, "EPhoneViewSetGlobalNotifiersDisabled");
-_STLIT8(K66, "EPhoneViewSetSpeedDialLocation");
-_STLIT8(K67, "EPhoneViewGetNumberFromSpeedDialLocation");
-_STLIT8(K68, "EPhoneViewAssignSpeedDialLocation");
 _STLIT8(K69, "EPhoneViewGetHoldFlag");
 _STLIT8(K70, "EPhoneViewSetHoldFlag");
 _STLIT8(K71, "EPhoneViewSetSoftRejectFlag");
@@ -287,9 +284,6 @@ const void * const KStringPointers[] =
     (const void*)&K63,
     (const void*)&K64,
     (const void*)&K65,
-    (const void*)&K66,
-    (const void*)&K67,
-    (const void*)&K68,
     (const void*)&K69,
     (const void*)&K70,
     (const void*)&K71,

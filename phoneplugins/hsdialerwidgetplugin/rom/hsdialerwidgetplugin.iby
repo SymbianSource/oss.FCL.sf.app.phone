@@ -18,10 +18,13 @@
 #ifndef __HSDIALERWIDETPLUGIN_IBY__
 #define __HSDIALERWIDETPLUGIN_IBY__
 
-file=ABI_DIR\BUILD_DIR\hsdialerwidgetplugin.dll                                        SHARED_LIB_DIR\hsdialerwidgetplugin.dll
-data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.qtplugin    private\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.qtplugin
-data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.manifest    private\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.manifest
-data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\qtg_graf_hs_dialer.svg           private\20022f35\import\widgetregistry\20022F44\qtg_graf_hs_dialer.svg
-data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.xml         private\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.xml
+file=ABI_DIR\BUILD_DIR\hsdialerwidgetplugin.dll                                        	SHARED_LIB_DIR\hsdialerwidgetplugin.dll
+data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.qtplugin    	private\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.qtplugin
+data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.manifest    	private\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.manifest
+data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\qtg_graf_hs_dialer.svg		   	private\20022f35\import\widgetregistry\20022F44\qtg_graf_hs_dialer.svg	
+data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_r.png    private\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_r.png
+data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_l.png	private\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_l.png
+data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_c.png    private\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_c.png       
+data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.xml          private\20022f35\import\widgetregistry\20022F44\hsdialerwidgetplugin.xml
 
 #endif //__HSDIALERWIDETPLUGIN_IBY__

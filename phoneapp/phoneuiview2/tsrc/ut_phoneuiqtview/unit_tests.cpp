@@ -363,6 +363,7 @@ void TestPhoneUIQtView::testShowDialpad()
 void TestPhoneUIQtView::testDialpadText()
 {
     m_view->showDialpad();
+    m_view->clearDialpad();
     QVERIFY(QString("") == m_view->dialpadText());
     m_view->clearAndHideDialpad();
 }
@@ -405,13 +406,17 @@ void TestPhoneUIQtView::testLongEndKeyPressEventOutsideTelephony()
 
 void TestPhoneUIQtView::testNetworkNameChanged()
 {
-    // Title is changed only for GmsMode
+    // Title is changed for GmsMode
     m_view->networkNameChanged(QSystemNetworkInfo::GsmMode, QString("test"));
     QCOMPARE(m_networkName, QString("test"));
 
+    // Title is changed for WcdmaMode
+    m_view->networkNameChanged(QSystemNetworkInfo::WcdmaMode, QString("test2"));
+    QCOMPARE(m_networkName, QString("test2"));
+
     // Other modes shouldn't affect the title
     m_view->networkNameChanged(QSystemNetworkInfo::CdmaMode, QString("another operator"));
-    QCOMPARE(m_networkName, QString("test"));
+    QCOMPARE(m_networkName, QString("test2"));
 }
 
 void HbView::setTitle (const QString &title)

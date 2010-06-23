@@ -41,6 +41,11 @@ QResource::registerResource("../hbcore.rcc"); \
 mainWindow = new HbMainWindow;\
 mainWindow->show(); \
 int ret = QTest::qExec(&tc, 3, new_argv); \
+/* Core dump if HbIconLoader instance is not destroyed before the application instance. */ \
+/* HbIconLoader uses QCoreApplication::aboutToQuit() signal to destroy itself. */ \
+/* app.exec() where the signal is normally emitted is not called here. */ \
+/* So, invoking the signal explicitly. */ \
+QMetaObject::invokeMethod(app, "aboutToQuit", Qt::DirectConnection); \
 delete mainWindow; \
 delete app; \
 return ret; \

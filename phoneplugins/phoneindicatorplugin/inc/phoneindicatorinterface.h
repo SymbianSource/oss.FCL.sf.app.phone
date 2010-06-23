@@ -24,6 +24,8 @@
 #include <hbindicatorinterface.h>
 #include "phoneindicators.h"
 
+#include <xqappmgr.h>
+
 class PhoneIndicatorInterface : public HbIndicatorInterface
 {
 public:
@@ -35,10 +37,17 @@ public:
 
     bool handleInteraction(InteractionType type);
     QVariant indicatorData(int role) const;
+    
+private slots:
+    void handleReturnValue(const QVariant &returnValue);
+    void handleError(int errorCode,const QString &errorMessage);
 
 protected:
 
     bool handleClientRequest(RequestType type, const QVariant &parameter);
+    
+private:
+    void launchDivertSettingsView();
 
 private:
 
@@ -49,6 +58,7 @@ private:
     QString m_icon;
     QString m_icon2;
     QVariant m_parameter;
+    XQApplicationManager m_appMgr;
 };
 
 #endif // PHONEINDICATORINTERFACE_H

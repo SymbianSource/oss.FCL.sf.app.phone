@@ -39,6 +39,8 @@ private slots:
 
     void t_createSettingFormItemData();
     
+    void t_createSettingView();
+    
     void cleanup();
     
 private:

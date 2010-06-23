@@ -997,11 +997,11 @@ TInt CPhoneAudioPlayer::ConvertVolume( TInt aVolume )
 
     TInt result( 0 );    
     
-    if ( iFormat == EFormatTone )
+    if ( iFormat == EFormatTone && iTonePlayer)
         {
         result = iTonePlayer->MaxVolume() * aVolume / KMaxVolumeLevel;
         }
-    else if ( iFormat == EFormatTts )
+    else if ( iFormat == EFormatTts && iTtsPlayer )
         {
         result = iTtsPlayer->MaxVolume() * aVolume / KMaxVolumeLevel;    
         }

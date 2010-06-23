@@ -57,7 +57,7 @@ public slots:
     void cellularDataUseHomeStateChanged(int index);
     void cellularDataUseRoamStateChanged(int index);
     void networkModeStateChanged(int index);
-    void operatorSelectionStateChanged(bool index);
+    void operatorSelectionStateChanged();
     void networkAccessModeGot(int mode);
     void availableNetworksGot(
         QList<PSetNetworkWrapper::NetworkInfo*> &m_networkInfoList);
@@ -90,14 +90,12 @@ private:
         HbListWidget* w, const QString& item, const int& data) const;
     
     void showManualSelectiondialog();
-    void restoreUiSelection();
+    void restoreOperatorSelectionUi();
     QString networkName(PSetNetworkWrapper::NetworkInfo &info);
 
     void connectToNetworkWrapper(PSetNetworkWrapper &wrapper);
     
     void connectToPhoneNotes(CpPhoneNotes &notes);
-    
-    bool isPhoneOnLine();
     
 private:
     

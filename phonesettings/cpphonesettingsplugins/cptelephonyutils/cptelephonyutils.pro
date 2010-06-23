@@ -55,6 +55,14 @@ symbian: {
     TARGET.CAPABILITY = CAP_GENERAL_DLL
     TARGET.UID3 = 0X20029F1F
 
+    defFiles = \
+    "$${LITERAL_HASH}ifdef WINS" \
+        "DEFFILE bwins/cptelephonyutils.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE eabi/cptelephonyutils.def" \
+    "$${LITERAL_HASH}endif"
+    MMP_RULES += defFiles
+
     # For sis file
     dllfile.sources = $${TARGET}.dll
     dllfile.path = $$SHARED_LIB_DIR

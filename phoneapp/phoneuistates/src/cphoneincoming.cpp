@@ -119,17 +119,16 @@ EXPORT_C void CPhoneIncoming::HandlePhoneEngineMessageL(
             break;
             
         case MEngineMonitor::EPEMessageRemoteHeld:
-                SendGlobalInfoNoteL( EPhoneInformationRemotePutOnHoldNote );
+                SendGlobalInfoNoteL( EPhoneInformationRemotePutOnHoldNote, ETrue );
             break;
         
         case MEngineMonitor::EPEMessageRemoteResumed:
-                SendGlobalInfoNoteL( EPhoneInformationConnectedNote );
+                SendGlobalInfoNoteL( EPhoneInformationConnectedNote, ETrue );
             break;
 
         // fall through.
         case MEngineMonitor::EPEMessageIssuingSSRequest:
         case MEngineMonitor::EPEMessageCallBarred:
-        case MEngineMonitor::EPEMessageShowVersion:
         case MEngineMonitor::EPEMessageIssuedSSRequest:
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
         case MEngineMonitor::EPEMessageIncCallIsForw:

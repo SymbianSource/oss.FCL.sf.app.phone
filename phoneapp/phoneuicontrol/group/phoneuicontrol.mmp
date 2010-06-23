@@ -89,6 +89,7 @@ LIBRARY         phonestringloader.lib
 LIBRARY         featmgr.lib // FeatureManager
 LIBRARY         connmon.lib // RConnectionMonitor
 LIBRARY         avkon.lib // AknTextUtils
+LIBRARY         hal.lib
 
 // RemCon
 LIBRARY         remconcoreapi.lib

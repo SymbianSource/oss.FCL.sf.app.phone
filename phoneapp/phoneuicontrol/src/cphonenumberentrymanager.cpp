@@ -214,7 +214,7 @@ void CPhoneNumberEntryManager::SetNumberEntryVisibilityL( TPhoneCmdParamBoolean 
 // - activeidle is not the top most application
 // - any query is not visible
 // - dialog is not visible ("new call")
-// - information note is not visible ("IMEI code", "life timer")
+// - information note is not visible ("life timer")
 // - options menu bar is not visible
 // - "switch to ..." -operation  is not ongoing
 // -----------------------------------------------------------

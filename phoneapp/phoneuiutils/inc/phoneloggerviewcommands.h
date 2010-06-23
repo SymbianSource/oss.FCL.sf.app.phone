@@ -161,12 +161,6 @@ public:
         EPhoneViewStopCapturingKey,
         /** EPhoneViewSetGlobalNotifiersDisabled */
         EPhoneViewSetGlobalNotifiersDisabled,
-        /** EPhoneViewSetSpeedDialLocation */
-        EPhoneViewSetSpeedDialLocation,
-        /** EPhoneViewGetNumberFromSpeedDialLocation */
-        EPhoneViewGetNumberFromSpeedDialLocation,
-        /** EPhoneViewAssignSpeedDialLocation */
-        EPhoneViewAssignSpeedDialLocation,
         /** EPhoneViewGetHoldFlag */
         EPhoneViewGetHoldFlag,
         /** EPhoneViewSetHoldFlag */

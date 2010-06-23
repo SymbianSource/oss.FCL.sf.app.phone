@@ -89,10 +89,12 @@ EXPORTS
 	?convertDuration@PhoneUIQtViewAdapter@@AAE?AVQString@@H@Z @ 88 NONAME ; class QString PhoneUIQtViewAdapter::convertDuration(int)
 	?setBubbleSelectionFlag@PhoneUIQtViewAdapter@@AAEXXZ @ 89 NONAME ; void PhoneUIQtViewAdapter::setBubbleSelectionFlag(void)
 	?handleCipheringInfoChange@PhoneUIQtViewAdapter@@AAEXHPAVTPhoneCommandParam@@@Z @ 90 NONAME ; void PhoneUIQtViewAdapter::handleCipheringInfoChange(int, class TPhoneCommandParam *)
-	?HandlePropertyChangedL@PhoneUIQtViewAdapter@@UAEXABVTUid@@IH@Z @ 91 NONAME ; void PhoneUIQtViewAdapter::HandlePropertyChangedL(class TUid const &, unsigned int, int)
+	?openContacts@PhoneUIQtViewAdapter@@AAEXXZ @ 91 NONAME ; void PhoneUIQtViewAdapter::openContacts(void)
 	?setHidden@PhoneUIQtViewAdapter@@AAEX_N@Z @ 92 NONAME ; void PhoneUIQtViewAdapter::setHidden(bool)
-	?SetHiddenL@PhoneUIQtViewAdapter@@AAEX_N@Z @ 93 NONAME ; void PhoneUIQtViewAdapter::SetHiddenL(bool)
-	?openContacts@PhoneUIQtViewAdapter@@AAEXXZ @ 94 NONAME ; void PhoneUIQtViewAdapter::openContacts(void)
-	?handleWindowDeactivated@PhoneUIQtViewAdapter@@AAEXXZ @ 95 NONAME ; void PhoneUIQtViewAdapter::handleWindowDeactivated(void)
-	?handleWindowActivated@PhoneUIQtViewAdapter@@AAEXXZ @ 96 NONAME ; void PhoneUIQtViewAdapter::handleWindowActivated(void)
+	?handleWindowDeactivated@PhoneUIQtViewAdapter@@AAEXXZ @ 93 NONAME ; void PhoneUIQtViewAdapter::handleWindowDeactivated(void)
+	?SetHiddenL@PhoneUIQtViewAdapter@@AAEX_N@Z @ 94 NONAME ; void PhoneUIQtViewAdapter::SetHiddenL(bool)
+	?handleWindowActivated@PhoneUIQtViewAdapter@@AAEXXZ @ 95 NONAME ; void PhoneUIQtViewAdapter::handleWindowActivated(void)
+	?hideDeviceDialogs@PhoneUIQtViewAdapter@@AAEXPAVTPhoneCommandParam@@@Z @ 96 NONAME ; void PhoneUIQtViewAdapter::hideDeviceDialogs(class TPhoneCommandParam *)
+	?convertToToolBarCommandList@PhoneResourceAdapter@@QBE?AV?$QList@VToolBarItem@PhoneAction@@@@H@Z @ 97 NONAME ; class QList<class PhoneAction::ToolBarItem> PhoneResourceAdapter::convertToToolBarCommandList(int) const
+	?openLogs@PhoneUIQtViewAdapter@@AAEXPAVTPhoneCommandParam@@@Z @ 98 NONAME ; void PhoneUIQtViewAdapter::openLogs(class TPhoneCommandParam *)
 

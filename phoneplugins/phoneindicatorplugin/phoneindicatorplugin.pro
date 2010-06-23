@@ -21,31 +21,35 @@ CONFIG += plugin hb
 DEPENDPATH += ./inc \
               ./src
 
-INCLUDEPATH += ./inc \
+INCLUDEPATH += ./inc
 
 symbian {
-	load(data_caging_paths)
-	include(./inc/api_headers.pri)
+    load(data_caging_paths)
+    include(./inc/api_headers.pri)
+
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 
     headers.sources = $$PHONEINDICATORPLUGIN_API_HEADERS
     headers.path = |../../inc
     for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$headers.path/$$basename(header)"
-    
+
     BLD_INF_RULES.prj_exports += \
     "$${LITERAL_HASH}include <platform_paths.hrh>" \
     "./rom/phoneindicatorplugin.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(phoneindicatorplugin.iby)"
-    
-    LIBS += -lxqservice 
-    
+
+    LIBS += -lxqservice \
+            -lxqserviceutil \
+            -lcpframework
+
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.CAPABILITY = ALL -TCB
     TARGET.UID3 = 0x2002E6B1
-    
+
     pluginstub.sources = phoneindicatorplugin.dll
     pluginstub.path = /resource/plugins/indicators
     DEPLOYMENT += pluginstub
 
-}else:win32 {
+} else:win32 {
 
     # Put it to Hb/lib because it is in path
     DESTDIR = c:/hb/lib

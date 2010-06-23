@@ -338,10 +338,6 @@ EXPORT_C TBool CPhoneUIController::HandleCommandL( TInt aCommand )
     {
     __ASSERT_DEBUG( iStateMachine->State(), Panic( EPhoneCtrlInvariant ) );
 
-    // Send key up message to engine so that we wouldn't accidentally play
-    // any DTMF tone.
-    iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF );
-
     return iStateMachine->State()->HandleCommandL( aCommand );
     }
 

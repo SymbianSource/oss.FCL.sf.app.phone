@@ -20,6 +20,7 @@
 #include <hbapplication.h>
 #include <hbmainwindow.h> 
 #include <hbview.h>
+#include <QTranslator>
 
 #include "ussdeditorquery.h"
 #include "ussdcomms.h"
@@ -38,29 +39,33 @@ int main(int argc, char *argv[])
     // Create application instance
     HbApplication application(argc, argv);
     TFLOGSTRING("USSDEDITOR: main app")
-    
+
+    QTranslator translator;
+    QString path = "Z:/resource/qt/translations/";
+    QString lang = QLocale::system().name();
+    bool ok = translator.load("ussd_"+lang, path);
+    TFLOGSTRING2("USSDEDITOR: main, translation %d (1=OK, 0=fail)", ok )
+    application.installTranslator(&translator);
+
     // Create main widow
     HbMainWindow window;
     window.show();
     TFLOGSTRING("USSDEDITOR: main window")
-   
+
     // Add a virtual view and hidden it
     HbView *view = new HbView();
-    // TODO: Still show
-    view->setViewFlags(HbView::ViewStatusBarHidden);
-    view->setViewFlags(HbView::ViewTitleBarHidden);
     window.addView(view);
     TFLOGSTRING("USSDEDITOR: main addView")
 
     // Create CUssdComms - ussd client
     CUssdComms *ussdComms = new CUssdComms(view);
     TFLOGSTRING("USSDEDITOR: main ussdComms")
-    
+
     // Create HbInputDialog
     UssdEditorQuery *query = new UssdEditorQuery(*ussdComms);
     query->show();
     TFLOGSTRING("USSDEDITOR: main query")
-   
+
     // Execute application loop
     int result = application.exec();
     TFLOGSTRING2("USSDEDITOR: main application OUT %d", result)

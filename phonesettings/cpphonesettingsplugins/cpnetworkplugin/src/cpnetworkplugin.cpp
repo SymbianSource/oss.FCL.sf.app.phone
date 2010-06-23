@@ -33,6 +33,8 @@ CpNetworkPlugin::CpNetworkPlugin() :
     // Set scoped pointer 
     m_localisation.reset(new CpPhoneLocalisation); 
     
+    m_networkStatus.reset(new CpNetworkStatus); 
+    
     // Install required translations
     m_localisation->installTranslator(
             CpPhoneLocalisation::
@@ -57,16 +59,42 @@ CpNetworkPlugin::~CpNetworkPlugin()
  */
 QList<CpSettingFormItemData*> CpNetworkPlugin::createSettingFormItemData(
         CpItemDataHelper &itemDataHelper) const
-{
-    DPRINT;
-
+{   
+    DPRINT << ": IN";
+    
     QList<CpSettingFormItemData*> ret;
+    
     ret.append(new CpSettingFormEntryItemDataImpl<CpNetworkPluginView>(
             itemDataHelper,
             hbTrId("txt_cp_dblist_mobile_network"),
-            hbTrId("")));
+            m_networkStatus->statusText(),
+            m_networkStatus->statusIcon()));
+    
+    m_networkStatus->setSettingFormItemData(ret.first());
+        
+    DPRINT << ": OUT";
     return ret;
 }
 
-
+/*!
+  CpNetworkPlugin::createSettingView
+ */
+CpBaseSettingView *CpNetworkPlugin::createSettingView(const QVariant &hint) const 
+    {
+    Q_UNUSED(hint)
+    DPRINT << ": IN";
+    
+    CpItemDataHelper *itemDataHelper(NULL);
+    QScopedPointer<CpSettingFormEntryItemDataImpl<CpNetworkPluginView> > 
+        data( new CpSettingFormEntryItemDataImpl<CpNetworkPluginView>(
+                    *itemDataHelper,
+                    hbTrId("txt_cp_dblist_mobile_network"),
+                    m_networkStatus->statusText()));
+    CpBaseSettingView *view = data->createSettingView();
+    
+    DPRINT << ": OUT";
+    return view;
+    }
+    
 Q_EXPORT_PLUGIN2(CpNetworkPlugin, CpNetworkPlugin);
+

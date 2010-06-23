@@ -67,7 +67,13 @@ public:
       */
     bool showCallDuration();
     int setShowCallDuration(bool value);
-
+    
+    /*!
+      Own video in received call setting
+     */
+    int readVtVideoSending();
+    int writeVtVideoSending(int value);
+    
     /*!
       Soft reject text setting
       */
@@ -91,11 +97,23 @@ public:
      */
     bool isPhoneOffline() const;
 
+    /*!
+     Checks if ongoing call exists.
+     Return true if ongoing call exists.
+     Return false if ongoing call does not exist.
+     */
+    bool isOngoingCall() const;
+
 private:
     /*!
       Read cenrep value. 
       */
     QVariant readCenrepValue( const long int uid, const unsigned long int key) const;
+
+    /*!
+      Read pubsub value. 
+      */
+    QVariant readPubSubValue( const long int uid, const unsigned long int key) const;
     
     /*!
       Read cenrep string. 

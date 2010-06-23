@@ -19,9 +19,18 @@
 #include <QtGui>
 #include <hbapplication.h>
 #include <QSignalSpy>
-//#include <hbglobal_p.h>
+#include "phoneconstants.h"
+#include "cphonecenrepproxy.h"
+#include "cphonepubsubproxy.h"
+#include <settingsinternalcrkeys.h>
 #include "phonemessagecontroller.h"
 #include "tphonecmdparamsfidata.h"
+
+QString mService;
+QString mMessage;
+bool mSend;
+QList<QVariant> mList;
+
 
 #define PHONE_QT_MESSAGE_CONTROLLER_TEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
@@ -55,6 +64,8 @@ private slots:
     void testOpenSoftRejectEditor();
 
 
+private:
+    QString softRejectText();
     
 private:
     PhoneMessageController *m_messageController; // class under test
@@ -88,11 +99,52 @@ void TestPhoneMessageController::cleanup()
 
 void TestPhoneMessageController::testOpenSoftRejectEditor()
 {
+    QString text = softRejectText();
     TPhoneCmdParamSfiData sfiParam;
     sfiParam.SetNumber(_L("1234567"));
     sfiParam.SetName(_L("Tester"));
     
     m_messageController->openSoftRejectMessageEditor(&sfiParam);
+    
+    QVERIFY( mService == "com.nokia.services.hbserviceprovider.conversationview" );
+    QVERIFY( mMessage == "send(QString,QString,QString)" );
+    QVERIFY( mList.contains("1234567") );
+    QVERIFY( mList.contains("Tester") );
+    QVERIFY( mList.contains(text) );
+    QVERIFY( mSend );
+}
+
+QString TestPhoneMessageController::softRejectText()
+{
+    QString messageBody;
+    // Get message body
+    TInt softRejectDefaultInUseValue = 0;
+    const TInt err = CPhoneCenRepProxy::Instance()->GetInt(
+        KCRUidTelephonySettings,
+        KSettingsSoftRejectDefaultInUse,
+        softRejectDefaultInUseValue );
+    
+    if (softRejectDefaultInUseValue) {
+        HBufC* softRejectTxt = NULL;
+        TRAP_IGNORE( softRejectTxt = HBufC::NewL( KPhoneSMSLength ) );
+        
+        if (softRejectTxt) {
+            TPtr string( softRejectTxt->Des() );
+        
+            // Default txt used or not
+            CPhoneCenRepProxy::Instance()->GetString(
+                KCRUidTelephonySettings,
+                KSettingsSoftRejectText,
+                string );
+            
+            messageBody = QString::fromUtf16(string.Ptr(), string.Length());
+            delete softRejectTxt;
+        }
+    } else {
+        messageBody = hbTrId("txt_phone_setlabel_soft_reject_val_default_text");
+    }
+    
+    return messageBody;
 }
 
 PHONE_QT_MESSAGE_CONTROLLER_TEST_MAIN(TestPhoneMessageController)

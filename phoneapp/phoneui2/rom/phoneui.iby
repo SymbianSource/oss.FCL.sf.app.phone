@@ -44,6 +44,8 @@ file=ABI_DIR\BUILD_DIR\phonestringloader.dll            SHARED_LIB_DIR\phonestri
 file=ABI_DIR\BUILD_DIR\phonemediatorcenter.dll          SHARED_LIB_DIR\phonemediatorcenter.dll
 file=ABI_DIR\BUILD_DIR\phoneuivoipextension.dll         SHARED_LIB_DIR\phoneuivoipextension.dll
 
+data=\epoc32\data\c\resource\qt\crml\carmode.qcrml   resource\qt\crml\carmode.qcrml
+
 data=ZSYSTEM\install\phoneuivoipextension_stub.sis  System\Install\phoneuivoipextension_stub.sis
 //data=ZSYSTEM\install\phoneui_stub.sis               System\Install\phoneui_stub.sis
 data=ZSYSTEM\install\phoneuicontrol_stub.sis        System\Install\phoneuicontrol_stub.sis

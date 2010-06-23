@@ -255,12 +255,6 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
         virtual const TInt& KeypadVolume() const = 0;
 
         /**
-        * Gets lifetimer data
-        * @return lifetime data (TDes8&)
-        */
-        virtual const TPELifeTimeData& LifeTimerData() const = 0;
-
-        /**
         * Gets a logging indicator
         * @param aCallId, call identification number     
         * @return continuous logging indicator
@@ -295,12 +289,6 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
         * @return personal tone status
         */
         virtual const TBool& PersonalToneStatus() const = 0;
-
-        /**
-        * Gets phone identity parameters
-        * @return phone identity parameters. 
-        */
-        virtual const TPEPhoneIdentityParameters& PhoneIdentityParameters() const = 0;
 
         /**
         * Gets phone number
@@ -703,7 +691,13 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
          * Returns Phonebook contact identifier.
          */
         virtual TInt ContactId2 () const = 0;
-
+        
+        /**
+        * Sets the protocol spesific error code
+        * @param aError is the error code from protocol.
+        * @return None.
+        */
+        virtual void SetProtocolError( TInt aError ) = 0; 
     }; // MPEEngineInfo
     
 #endif      //MPEENGINEINFO_H

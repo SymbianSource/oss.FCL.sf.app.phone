@@ -453,12 +453,6 @@ TInt CPEMessageHandler::HandleSendDtmf()
         
         dtmfString = KNullDesC;
         }    
-    else if ( dtmfString[ 0 ] == KPEDtmfPlusChar ) // speed-dial substitution
-        {
-        TEFLOGSTRING( KTAMESINT, "PE CPEMessageHandler::HandleSendDtmf(), Processing +" );
-        HandlePlusSignInDtmf( dtmfString );
-        dtmfString = KNullDesC;
-        }
     else if ( dtmfString[ 0 ] == KPEDtmfPauseCharLowercase || 
               dtmfString[ 0 ] == KPEDtmfPauseCharUppercase ) // soft pause
         {
@@ -533,147 +527,6 @@ TInt CPEMessageHandler::CallBackHandleSendDtmf( TAny* aAny )
     delete self->iAsyncCallBack;
     self->iAsyncCallBack = NULL;
     return self->HandleSendDtmf();  
-    }
-
-// -----------------------------------------------------------------------------
-// CPEMessageHandler::HandlePlusSignInDtmf
-// Handles plus (+) sign in a DTMF string.
-// -----------------------------------------------------------------------------
-//
-void CPEMessageHandler::HandlePlusSignInDtmf(const TPEDtmfString& aDtmfString )
-    {
-    TEFLOGSTRING2( KTAMESINT, "PE CPEMessageHandler::HandlePlusSignInDtmf(), aDtmfString: %S", &aDtmfString ); 
-          
-    // Find the SD index after the plus sign
-    TPtrC validManualDTMFChars( KPEValidSpeedDialChars );
-    TInt index = ECCPErrorNotFound;
-    for ( index = 1 ; index < aDtmfString.Length() ; index++ )
-        {
-        if ( validManualDTMFChars.Locate( aDtmfString[index] ) == ECCPErrorNotFound )
-            {
-            TEFLOGSTRING( KTAMESINT, "PE CPEMessageHandler::HandlePlusSignInDtmf(), Not Found" ); 
-            break; 
-            }
-        }
-    TPESpeedDialSubstituionStatus sdStatus = EPEDtmfSpeedDialOk;
-    
-    // Empty string after the plus sign
-    if ( index == 1 )
-        {
-        if ( aDtmfString.Length() > 1 )
-            {
-            // pw+ after the plus sign.
-            sdStatus = EPEDtmfSpeedDialInvalidSpeedDial;
-            }
-        else
-            {
-            // string ended with the plus sign.
-            sdStatus = EPEDtmfSpeedDialPromptUser;
-            }
-        // Clear DTMF string.
-        iDataStore.SetDtmfString( KNullDesC() );
-        }
-    // Else if the SD location ends the DTMF string, move the index to the
-    // last character instead of one over.
-    else if ( index == aDtmfString.Length() )
-        {
-        index--;
-        }
-    
-    // Check that the index is valid
-    TInt sdIndex = ECCPErrorNotFound; 
-    if ( sdStatus == EPEDtmfSpeedDialOk )
-        {
-        TLex lexer( aDtmfString.Mid( 1, index ) );
-        // convert it to a number
-        if ( lexer.Val(sdIndex) == ECCPErrorNone )
-            {
-            // Is it out of range
-            if ( sdIndex < KPESpeedDialIndexMin  ||
-                sdIndex > KPESpeedDialIndexMax )
-                {
-                sdStatus = EPEDtmfSpeedDialInvalidSpeedDial;
-                }
-            }
-        else
-            {
-            sdStatus = EPEDtmfSpeedDialInvalidSpeedDial;
-            }
-        }
-    
-    // Fetch the SD location
-    TPEPhoneNumber speedDialLocationString;
-    if ( sdStatus == EPEDtmfSpeedDialOk )
-        {
-        TEFLOGSTRING2( KTAMESINT, "PE CPEMessageHandler::HandlePlusSignInDtmf(), SD location %i", sdIndex ); 
-        if ( iContactHandling.GetSpeedDialLocation( 
-            sdIndex, speedDialLocationString ) == ECCPErrorNone )
-            {
-            // Is content found
-            if ( speedDialLocationString.Length() == 0)
-                {
-                sdStatus = EPEDtmfSpeedDialNotAssigned;
-                }
-            else if ( speedDialLocationString[0] == KPEDtmfPlusChar)  
-                {
-                // plus char must be removed from dtmf string before sending
-                RemovePlusPrefix( speedDialLocationString );
-                }
-            }
-        else
-            {
-            sdStatus = EPEDtmfSpeedDialInvalidSpeedDial;
-            }
-        }
-    
-    // Now interpret the sdStatus to the next action
-    switch ( sdStatus )
-        {
-        case EPEDtmfSpeedDialOk:
-            {
-            TEFLOGSTRING2( KTAMESINT, "PE CPEMessageHandler::HandlePlusSignInDtmf(), SD result: %S", &speedDialLocationString ); 
-            // Take the SD location string and use that as new DTMF string
-            iDataStore.SetDtmfStringCommand( speedDialLocationString );
-            
-            // Do recursion asyncronously                        
-            TCallBack callBack( CallBackHandleSendDtmf, this );
-            delete iAsyncCallBack;
-            iAsyncCallBack = NULL;
-            // Function does not allow to leave.
-            iAsyncCallBack = new CAsyncCallBack( callBack, CActive::EPriorityStandard );
-            if ( iAsyncCallBack )
-                {
-                iAsyncCallBack->CallBack();
-                }
-            else
-                {
-                iModel.SendMessage( MEngineMonitor::EPEMessageDTMFSendingAborted );
-                }
-            }
-            break;
-        case EPEDtmfSpeedDialPromptUser:
-            // Speed dial location not given.
-            iDataStore.SetDtmfString( KNullDesC() );
-            iModel.SendMessage( MEngineMonitor::EPEMessagePromptSpeedDial );
-            break;
-        case EPEDtmfSpeedDialNotAssigned:
-            // Speed dial location valid but not assigned
-            iDataStore.SetDtmfString( KNullDesC() );
-            iDataStore.SetDtmfStringCommand( KNullDesC() );
-            iModel.SendMessage( MEngineMonitor::EPEMessageDTMFSendingAborted);
-            iModel.SendMessage( MEngineMonitor::EPEMessageSpeedDialNotAssigned );
-            break;
-        case EPEDtmfSpeedDialInvalidSpeedDial:
-            // Speed dial location invalid
-            iDataStore.SetDtmfString( KNullDesC() );
-            iDataStore.SetDtmfStringCommand( KNullDesC() );
-            iModel.SendMessage( MEngineMonitor::EPEMessageDTMFSendingAborted);
-            iModel.SendMessage( MEngineMonitor::EPEMessageInvalidSpeedDial );
-            break;
-        default:
-            Panic( EPEPanicInvalidState );
-            break;
-        } // end switch
     }
 
 // -----------------------------------------------------------------------------
@@ -1082,34 +935,6 @@ TBool CPEMessageHandler::RemoveInvalidChars(
     return returnValue;
     }
 
-
-// -----------------------------------------------------------------------------
-// CPEMessageHandler::HandleGetLifeTimerData
-// Reads lifetimerdata from custom api and stores it to engine info
-// -----------------------------------------------------------------------------
-//
-TInt CPEMessageHandler::HandleGetLifeTimerData() const
-    {
-    TCCPLifeTimeData lifeTimeData; 
-    TCCPLifeTimeDataPckg pckg( lifeTimeData );
-
-    if ( iCallHandling.GetLifeTime( pckg ) )
-        {
-        TEFLOGSTRING2( 
-            KTAGENERAL, 
-            "PE: CPEMessageHandler::HandleGetLifeTimerData, iHours = %d", 
-            lifeTimeData.iHours);
-        TEFLOGSTRING2( 
-            KTAGENERAL, 
-            "PE: CPEMessageHandler::HandleGetLifeTimerData, iMinutes = %d", 
-            lifeTimeData.iMinutes);
-            
-        iDataStore.SetLifeTimerData( pckg );
-        }
-    
-    return ECCPErrorNone;
-    }
-    
 // -----------------------------------------------------------------------------
 // CPEMessageHandler::CallbackSendMessageStoppedDTMF
 // -----------------------------------------------------------------------------
@@ -1512,16 +1337,7 @@ void CPEMessageHandler::SetPhoneNumberForCallLogging(
             RemovePreAndPostFix( number );
   
             iDataStore.SetRemotePhoneNumber( number, aCallId );
-            }
-        
-        // The Colp number is stored to remoteparty in connected state.
-        TPEPhoneNumber colpNumber = iCallInfo->iRemoteParty.iRemoteNumber.iTelNumber;
-        RemovePreAndPostFix( colpNumber );
-        iDataStore.SetRemoteColpNumber( colpNumber, aCallId ); 
-        TEFLOGSTRING3( 
-            KTAMESINT, 
-            "PE CPEMessageHandler::SetPhoneNumberForCallLogging, colp number: '%S', call id: %d", 
-            &colpNumber, aCallId );
+            }            
         }
     else if ( iDataStore.CallDirection( aCallId ) == RMobileCall::EMobileTerminated )
         {
@@ -1747,9 +1563,6 @@ TInt CPEMessageHandler::HandleConnectedState(
     // logging works OK (see CPEMessageHandler::SetPhoneNumberForCallLogging).  
     iDataStore.SetPhoneNumber( KNullDesC() );
     
-    // COLP number is updated in connected state 
-    UpdateRemotePartyInfo();
-   
     return ECCPErrorNone;
     }
 
@@ -1863,6 +1676,7 @@ TInt CPEMessageHandler::HandleDialCallL(
     else 
         {
         iDataStore.SetCallOriginCommand(EPECallOriginPhone);
+		ResetClientCallData();
         }
         
     //Get number of calls
@@ -1916,6 +1730,23 @@ TInt CPEMessageHandler::HandleDialCallL(
     TEFLOGSTRING2( KTAINT, "PE CPEMessageHandler::HandleDialCallL: errorCode = %d", errorCode );
         
     return errorCode;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEMessageHandler::ResetClientCallData
+// Reset CCCECallParameters to prevent of use a previous call´s parameters
+// -----------------------------------------------------------------------------
+//
+void CPEMessageHandler::ResetClientCallData()
+    {
+    TEFLOGSTRING( KTAINT, "PE CPEMessageHandler::ResetClientCallData()" );
+
+    CCCECallParameters& params = iDataStore.CallParameters();
+    params.SetLineType( CCCECallParameters::ECCELineTypePrimary );
+    params.SetUUSId( KNullDesC() );
+    params.SetBearer( KNullDesC8() );
+    params.SetSubAddress( KNullDesC() );
+    params.SetOrigin( CCCECallParameters::ECCECallOriginPhone );
     }
 
 // -----------------------------------------------------------------------------
@@ -2894,9 +2725,10 @@ TInt CPEMessageHandler::HandleServiceEnabled()
 // CPEMessageHandler::HandleRemotePartyInfoChanged
 // -----------------------------------------------------------------------------
 //
-void CPEMessageHandler::HandleRemotePartyInfoChanged()
-    {
-    UpdateRemotePartyInfo();      
+void CPEMessageHandler::HandleRemotePartyInfoChanged( const TInt /*aCallId*/ )
+    {        
+    UpdateRemotePartyInfo(); 
+        
     }
 
 
@@ -3003,31 +2835,5 @@ TInt CPEMessageHandler::HandleDialServiceCall(
     iModel.HandleInternalMessage( MPEPhoneModel::EPEMessageDialServiceCall );
     return errorCode;
     }
-
-
-// -----------------------------------------------------------------------------
-// CPEMessageHandler::ExecuteKeySequenceL
-// Only sequences which are not issued with send-key are handled here. SS 
-// commands etc. are processed in HandleDialCallL().
-// -----------------------------------------------------------------------------
-//
-TBool CPEMessageHandler::ExecuteKeySequenceL( const TDesC16 &aSequence )
-{
-    TBool keySequenceProcessed( EFalse );
-    
-    iOptions->SetOptionStatus( KPhoneOptionInCall, 
-        ( iCallHandling.GetNumberOfCalls() > 0 ) );
-    iOptions->SetOptionStatus( KPhoneOptionSend, EFalse );
-    iOptions->SetOptionStatus( KPhoneOptionVoipCall, EFalse );
-    
-    if ( iParser->ParseL( aSequence, *iResult, *iOptions ) )
-        {
-        keySequenceProcessed = ETrue;
-        iGsmParserErrorCode = ECCPErrorNone;
-        iParserHandlerContainer->ProcessL( *iResult );
-        }
-    
-    return keySequenceProcessed;
-}
 
 //  End of File

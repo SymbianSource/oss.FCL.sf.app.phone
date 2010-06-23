@@ -93,7 +93,8 @@ CPhoneErrorMessagesHandler* CPhoneErrorMessagesHandler::NewL(
 // CPhoneErrorMessagesHandler::SendGlobalInfoNoteL
 // ---------------------------------------------------------
 //
-EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL( TInt aResourceId )
+EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL( 
+        TInt aResourceId, TBool aNotificationDialog )
     {
     __LOGMETHODSTARTEND( EPhoneControl, 
         "CPhoneErrorMessagesHandler::SendGlobalInfoNoteL()" );
@@ -105,7 +106,9 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL( TInt aResourceId 
         // Re-enable global notes
         TPhoneCmdParamBoolean globalNotifierParam;
         globalNotifierParam.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,    &globalNotifierParam );
+        iViewCommandHandle->ExecuteCommandL( 
+                EPhoneViewSetGlobalNotifiersDisabled,    
+                &globalNotifierParam );
             
         TPhoneCmdParamGlobalNote globalNoteParam;
       
@@ -114,6 +117,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL( TInt aResourceId 
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
         globalNoteParam.SetTone( EAvkonSIDInformationTone );
+        globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
         iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam );    
@@ -125,7 +129,8 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL( TInt aResourceId 
 //  CPhoneErrorMessagesHandler::SendGlobalErrorNoteL
 // ---------------------------------------------------------
 //
-EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL( TInt aResourceId )
+EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL( 
+        TInt aResourceId, TBool aNotificationDialog )
     {
     __LOGMETHODSTARTEND( EPhoneControl, 
         "CPhoneErrorMessagesHandler::SendGlobalErrorNoteL()" );
@@ -147,7 +152,8 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL( TInt aResourceId
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
         globalNoteParam.SetTone( CAknNoteDialog::EErrorTone );
-
+        globalNoteParam.SetNotificationDialog( aNotificationDialog );
+        
         iViewCommandHandle->ExecuteCommandL(  
             EPhoneViewShowGlobalNote, &globalNoteParam );
         }
@@ -158,7 +164,8 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL( TInt aResourceId
 //  CPhoneErrorMessagesHandler::SendGlobalWarningNoteL
 // ---------------------------------------------------------
 //
-EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL( TInt aResourceId )
+EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL( 
+        TInt aResourceId, TBool aNotificationDialog )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneErrorMessagesHandler::SendGlobalWarningNoteL( ) ");
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
@@ -180,6 +187,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL( TInt aResource
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
         globalNoteParam.SetTone( EAvkonSIDWarningTone );
+        globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
         iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam );
@@ -214,21 +222,21 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
         {
         case ECCPErrorRejected:
         case ECCPRequestFailure:
-            SendGlobalErrorNoteL( EPhoneNoteTextRequestRejected );    
+            SendGlobalErrorNoteL( EPhoneNoteTextRequestRejected, ETrue );    
             break;
             
         case ECCPErrorInvalidPhoneNumber:
-            SendGlobalErrorNoteL( EPhoneInvalidPhoneNumber );
+            SendGlobalErrorNoteL( EPhoneInvalidPhoneNumber, ETrue );
             break;
 
         case ECCPErrorInvalidURI:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneInvalidPhoneNumber );
+                SendGlobalInfoNoteL( EPhoneInvalidPhoneNumber, ETrue );
                 }
             else
                 {
-                SendGlobalErrorNoteL( EPhoneInvalidPhoneNumber );
+                SendGlobalErrorNoteL( EPhoneInvalidPhoneNumber, ETrue );
                 }
             break;
 
@@ -239,13 +247,13 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 }
             else
                 {
-                SendGlobalInfoNoteL( EPhoneNoteTextCheckNetworkservices );
+                SendGlobalInfoNoteL( EPhoneNoteTextCheckNetworkservices, ETrue );
                 }
             break;
 
         case ECCPErrorNotAllowedInOfflineMode:
         case ECCPErrorAuthenticationFailed:
-            SendGlobalWarningNoteL( EPhoneEmergencyCallsOnly );
+            SendGlobalWarningNoteL( EPhoneEmergencyCallsOnly, ETrue );
             break;
 
         case ECCPErrorNotReady:     
@@ -254,25 +262,25 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
         case ECCPErrorNotFound:
         case ECCPErrorTimedOut:
         case ECCPErrorAccessDenied:        
-            SendGlobalWarningNoteL( EPhoneNoteTextNotAllowed );                    
+            SendGlobalWarningNoteL( EPhoneNoteTextNotAllowed, ETrue );                    
             break;
             
         case ECCPErrorAlreadyInUse:
-            SendGlobalErrorNoteL( EPhoneNoteTextCallNotAllowed );                    
+            SendGlobalErrorNoteL( EPhoneNoteTextCallNotAllowed, ETrue );                    
             break;
 
         case ECCPErrorInvalidFDN:
-            SendGlobalWarningNoteL( EPhoneNoteTextCallNotAllowedFDN );                    
+            SendGlobalWarningNoteL( EPhoneNoteTextCallNotAllowedFDN, ETrue );                    
             break;
             
         case ECCPErrorNotReached:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNumberNotInUse );
+                SendGlobalInfoNoteL( EPhoneNumberNotInUse, ETrue );
                 }
             else
                 {
-                SendGlobalWarningNoteL( EPhoneNumberNotInUse );    
+                SendGlobalWarningNoteL( EPhoneNumberNotInUse, ETrue );    
                 }
                 
             break;
@@ -292,31 +300,31 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 }
             else
                 {
-                SendGlobalWarningNoteL( EPhoneErrorInConnection );
+                SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
                 }
             break;
             
         case ECCPErrorCCResourceNotAvailable:
-            SendGlobalWarningNoteL( EPhoneErrorInConnection );
+            SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
             break;
                         
         case ECCPErrorNumberBarred:
-            SendGlobalWarningNoteL( EPhoneNumberBarred );
+            SendGlobalWarningNoteL( EPhoneNumberBarred, ETrue );
             break;
             
         case ECCPErrorCCUserAlertingNoAnswer:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNoAnswer );
+                SendGlobalInfoNoteL( EPhoneNoAnswer, ETrue );
                 }
             else
                 {
-                SendGlobalWarningNoteL( EPhoneNoAnswer );   
+                SendGlobalWarningNoteL( EPhoneNoAnswer, ETrue );   
                 }           
             break;
             
         case KErrPhoneEngineNoWcdmaNetwork:  // Videotel special case. Refactoring PE/CSPlugin needed
-        case ECCPErrorVideoCallNotSupportedByNetwork:
+        case ECCPErrorVideoCallNotSupportedByNetwork: ////
             SendGlobalInfoNoteL( EPhoneInformationNoNetworkSupportForVideoCallNote );
             break;
                 
@@ -331,25 +339,25 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
             break;
 
         case ECCPErrorNetworkBusy:
-            SendGlobalWarningNoteL( EPhoneNetworkBusy );
+            SendGlobalWarningNoteL( EPhoneNetworkBusy, ETrue );
             break;
             
         case ECCPErrorNoService:
-            SendGlobalWarningNoteL( EPhoneNoteNoService );   
+            SendGlobalWarningNoteL( EPhoneNoteNoService, ETrue );   
             break;
             
         case ECCPErrorBusy:
-            SendGlobalWarningNoteL( EPhoneNumberBusy );   
+            SendGlobalWarningNoteL( EPhoneNumberBusy, ETrue );   
             break;
             
         case ECCPErrorUserNotInCug:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNumberNotInCUG );
+                SendGlobalInfoNoteL( EPhoneNumberNotInCUG, ETrue );
                 }
              else
                 {
-                SendGlobalWarningNoteL( EPhoneNumberNotInCUG );   
+                SendGlobalWarningNoteL( EPhoneNumberNotInCUG, ETrue );   
                 }
             break;
             
@@ -374,14 +382,14 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 }
             else
                 {
-                SendGlobalWarningNoteL( EPhoneNoAnswer );
+                SendGlobalWarningNoteL( EPhoneNoAnswer, ETrue );
                 }
             break;
             
         case ECCPErrorCCCallRejected:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNoteCalledNumberHasBarredIncomingCalls );
+                SendGlobalInfoNoteL( EPhoneNoteCalledNumberHasBarredIncomingCalls, ETrue );
                 }
             break;
             
@@ -399,7 +407,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 }
             else
                 {
-                SendGlobalWarningNoteL( EPhoneNoAnswer );
+                SendGlobalWarningNoteL( EPhoneNoAnswer, ETrue );
                 }
             break;
             
@@ -410,7 +418,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 }
             else
                 {
-                SendGlobalWarningNoteL( EPhoneNetworkBusy );
+                SendGlobalWarningNoteL( EPhoneNetworkBusy, ETrue );
                 }
             break;
             
@@ -428,7 +436,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 }
             else
                 {
-                SendGlobalWarningNoteL( EPhoneNoteTextNotAllowed );
+                SendGlobalWarningNoteL( EPhoneNoteTextNotAllowed, ETrue );
                 }
             break;
 
@@ -461,7 +469,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 }
             else
                 {
-                SendGlobalWarningNoteL( EPhoneErrorInConnection );
+                SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
                 } 
             break;
             
@@ -484,7 +492,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 }
             else
                 {
-                SendGlobalWarningNoteL( EPhoneErrorInConnection );
+                SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
                 }     
             break;
 
@@ -502,12 +510,12 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 }
             else
                 {
-                SendGlobalErrorNoteL( EPhoneNoteTextRequestRejected );
+                SendGlobalErrorNoteL( EPhoneNoteTextRequestRejected, ETrue );
                 }
             break;
             
         case ECCPTransferFailed:
-            SendGlobalErrorNoteL( EPhoneNoteTextRequestRejected );
+            SendGlobalErrorNoteL( EPhoneNoteTextRequestRejected, ETrue );
             break;
  
         case ECCPErrorCCServiceNotAvailable:
@@ -521,27 +529,27 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
             break;
             
         case ECCPErrorCUGOutgoingCallsBarred:
-            SendGlobalInfoNoteL( EPhoneOutgoingCallsBarredWithinCUG );
+            SendGlobalInfoNoteL( EPhoneOutgoingCallsBarredWithinCUG, ETrue );
             break;
         
         case ECCPErrorCUGNotSelected:
-            SendGlobalInfoNoteL( EPhoneNoCUGSelected );
+            SendGlobalInfoNoteL( EPhoneNoCUGSelected, ETrue );
             break;
         
         case ECCPErrorCUGIndexUnknown:
-            SendGlobalInfoNoteL( EPhoneUnknownCUGIndex );
+            SendGlobalInfoNoteL( EPhoneUnknownCUGIndex, ETrue );
             break;
         
         case ECCPErrorCUGIndexIncompatible:
-            SendGlobalInfoNoteL( EPhoneCUGIndexIncompatible );
+            SendGlobalInfoNoteL( EPhoneCUGIndexIncompatible, ETrue );
             break;
         
         case ECCPErrorCUGCallsFailure:
-            SendGlobalInfoNoteL( EPhoneCUGCallsFailure );
+            SendGlobalInfoNoteL( EPhoneCUGCallsFailure, ETrue );
             break;
         
         case ECCPErrorCLIRNotSubscribed:
-            SendGlobalInfoNoteL( EPhoneCLIRNotSubscribed );
+            SendGlobalInfoNoteL( EPhoneCLIRNotSubscribed, ETrue );
             break;
             
         case ECCPErrorCCBSPossible:

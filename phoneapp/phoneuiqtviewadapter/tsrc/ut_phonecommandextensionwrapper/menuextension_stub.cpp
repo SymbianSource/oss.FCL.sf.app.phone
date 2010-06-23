@@ -26,6 +26,7 @@ bool m_modifyPushButtonCommandListCalled;
 bool m_addMenuActionsCalled;
 bool m_releaseMenuCalled;
 bool m_releaseCalled;
+bool m_modifyToolBarCommandListCalled;
 
 SvtMenu::SvtMenu() 
 :
@@ -47,6 +48,11 @@ void SvtMenu::modifyMenuCommandList(const QList<CallInfo> &callInfo,QList<int> &
 void SvtMenu::modifyPushButtonCommandList(const QList<CallInfo> &callInfo,QList<int> &buttonCmdList)
 {
     m_modifyPushButtonCommandListCalled = true;
+}
+
+void SvtMenu::modifyToolBarCommandList(const QList<CallInfo> &callInfo,QList<XQTelUiCommandExtension::ToolBarCommand> &toolBarCmdList)
+{
+    m_modifyToolBarCommandListCalled = true;
 }
 
 void SvtMenu::addMenuActions(const QList<CallInfo> &callInfo,QList<HbAction*> &menuActions)

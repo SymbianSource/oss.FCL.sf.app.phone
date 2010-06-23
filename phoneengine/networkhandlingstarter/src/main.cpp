@@ -17,28 +17,29 @@
 #include <QLocale>
 #include <hbtranslator.h>
 #include <hbapplication.h>
+#include <hbview.h>
 #include <hbmainwindow.h>
 #include <networkhandlingstarter.h>
+#include <xqserviceutil.h>
 
 /*!
     main.
  */
 int main(int argc, char **argv)
 {
-    HbApplication app(argc, argv);
+    HbApplication app(argc, argv, Hb::NoSplash);
     
     // Load translators
-    HbTranslator *commonTranslator = new HbTranslator("common");
-    HbTranslator *control_panelTranslator = new HbTranslator("control_panel");
-    HbTranslator *telephone_cpTranslator = new HbTranslator("telephone_cp"); 
+    HbTranslator commonTranslator("common");
+    HbTranslator control_panelTranslator("control_panel");
+    HbTranslator telephone_cpTranslator("telephone_cp"); 
     
+    HbView view;
     HbMainWindow mainWindow;
+    mainWindow.addView(&view);
     NetworkHandlingStarter service;
+    XQServiceUtil::toBackground( true );
     int err = app.exec();
-    
-    delete commonTranslator;
-    delete control_panelTranslator;
-    delete telephone_cpTranslator;
     
     return err;
 }

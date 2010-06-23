@@ -327,7 +327,7 @@ void CPhoneConferenceAndSingle::HandleConnectedConferenceL()
         EPhoneViewUpdateBubble, KConferenceCallId, &callHeaderParam );
     
     SetTouchPaneButtons( EPhoneConferenceAndHeldSingleButtons );
-    
+    UpdateInCallCbaL();
     EndUiUpdate();          
     }
 
@@ -374,15 +374,13 @@ void CPhoneConferenceAndSingle::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleConnectedL");
     
-    UpdateInCallCbaL();
-    
-    
     // Display connected bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
     callHeaderParam.SetCallState( EPEStateConnected );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
 
+    UpdateInCallCbaL();
     SetTouchPaneButtons( EPhoneConferenceButtons );
     }
 

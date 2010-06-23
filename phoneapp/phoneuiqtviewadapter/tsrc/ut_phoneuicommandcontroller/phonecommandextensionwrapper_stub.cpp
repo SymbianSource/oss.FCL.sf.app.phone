@@ -18,10 +18,13 @@
 #include <QtDebug>
 #include <pevirtualengine.h>
 #include <hbaction.h>
+#include <xqphoneappcommands.h>
 
 bool m_setActions;
 bool m_setInvalidCommand;
 bool m_setInvalidButtonCommands;
+bool m_setInvalidToolBarCommands;
+bool m_setCustomToolBarCommands;
 QList<HbAction*> m_menuActions;
 
   
@@ -58,6 +61,33 @@ void PhoneCommandExtensionWrapper::modifyPushButtonCommandList(
         buttonCmdList.clear();
         buttonCmdList.append(-1);
         buttonCmdList.append(-2);
+    }
+}
+
+void PhoneCommandExtensionWrapper::modifyToolBarCommandList(
+        const QList<XQTelUiCommandExtension::CallInfo> &callInfo,
+        QList<XQTelUiCommandExtension::ToolBarCommand> &toolBarCmdList)
+{
+    if (m_setInvalidToolBarCommands) {
+        XQTelUiCommandExtension::ToolBarCommand invalidCommand;
+        invalidCommand.mCommandId = -1;
+        invalidCommand.mIsEnabled = true;
+        toolBarCmdList.replace(0,invalidCommand);
+    } else if (m_setCustomToolBarCommands) {
+        toolBarCmdList.clear();
+        XQTelUiCommandExtension::ToolBarCommand command;
+        command.mCommandId = PhoneInCallCmdJoinToConference;
+        command.mIsEnabled = true;
+        toolBarCmdList.append(command);
+        command.mCommandId = PhoneInCallCmdUnhold;
+        command.mIsEnabled = true;
+        toolBarCmdList.append(command);
+        command.mCommandId = PhoneInCallCmdEndOutgoingCall;
+        command.mIsEnabled = true;
+        toolBarCmdList.append(command);
+        command.mCommandId = PhoneCallComingCmdSilent;
+        command.mIsEnabled = true;
+        toolBarCmdList.append(command);
     }
 }
 
