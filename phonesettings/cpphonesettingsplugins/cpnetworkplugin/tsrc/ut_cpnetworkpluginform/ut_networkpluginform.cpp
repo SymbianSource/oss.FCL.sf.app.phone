@@ -17,9 +17,11 @@
 
 #include "ut_networkpluginform.h"
 #include "qtestmains60ui.h"
+#include "cpitemdatahelper.h"
+#include "psetwrapper.h"
 #define private public
 #include "cpnetworkpluginform.h"
-#include "cpitemdatahelper.h"
+
 
 class CPsetContainer
 {
@@ -27,6 +29,13 @@ public:
     CPsetContainer(){};
     ~CPsetContainer(){};
 };
+
+const QString KIconGsmForbidden("qtg_small_network_off"); 
+const QString KIconGsmNotForbidden("qtg_small_network");
+const QString KIconWcdmaForbidden("qtg_small_wcdma_off"); 
+const QString KIconWcdmaNotForbidden("qtg_small_wcdma");
+const QString KIconGsmAndWcdmaForbidden("qtg_small_pd_wcdma_off"); 
+const QString KIconGsmAndWcdmaNotForbidden("qtg_small_pd_wcdma");
 
 /*!
   UT_CpNetworkPluginForm::UT_CpNetworkPluginForm
@@ -56,6 +65,7 @@ void UT_CpNetworkPluginForm::init()
     CPsetContainer tmpPsetContainer;
     m_networkWrapper = new PSetNetworkWrapper(tmpPsetContainer);
     expect("PSetWrapper::networkWrapper").returns(m_networkWrapper);
+    expect("PSetNetworkWrapper::isManualNetworkSelectionSupported").returns(true);
     if(i) {
         m_NetworkSelectionMode = PSetNetworkWrapper::SelectionModeAutomatic;
     } else {
@@ -233,6 +243,66 @@ void UT_CpNetworkPluginForm::t_handleNetworkChanged()
 }
     
 /*!
+  UT_CpNetworkPluginForm::t_primaryIconForNetwork
+ */
+void UT_CpNetworkPluginForm::t_primaryIconForNetwork()
+{
+    QScopedPointer<PSetWrapper> wrapper(new PSetWrapper()); 
+    expect("PSetWrapper::networkWrapper").returns(wrapper.data()); 
+    
+    QScopedPointer<CpNetworkPluginFormAdapter> 
+        formClassAdapter(new CpNetworkPluginFormAdapter());
+    PSetNetworkWrapper::NetworkInfo currentInfo;
+    
+    // Test: forbidden icon flag ON, mode: GSM, status: forbidden 
+    currentInfo.m_access = PSetNetworkWrapper::AccessTypeGsm; 
+    currentInfo.m_status = PSetNetworkWrapper::StatusForbidden; 
+    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    QString iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
+    QCOMPARE(iconName, KIconGsmForbidden); 
+    
+    // Test: forbidden icon flag ON, mode: GSM, status: available
+    currentInfo.m_access = PSetNetworkWrapper::AccessTypeGsm; 
+    currentInfo.m_status = PSetNetworkWrapper::StatusAvailable; 
+    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
+    QCOMPARE(iconName, KIconGsmNotForbidden); 
+    
+    // Test: forbidden icon flag ON, mode: WCDMA, status: forbidden 
+    currentInfo.m_access = PSetNetworkWrapper::AccessTypeWcdma; 
+    currentInfo.m_status = PSetNetworkWrapper::StatusForbidden; 
+    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
+    QCOMPARE(iconName, KIconWcdmaForbidden); 
+     
+    // Test: forbidden icon flag ON, mode: WCDMA, status: available
+    currentInfo.m_access = PSetNetworkWrapper::AccessTypeWcdma; 
+    currentInfo.m_status = PSetNetworkWrapper::StatusAvailable; 
+    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
+    QCOMPARE(iconName, KIconWcdmaNotForbidden); 
+
+    // Test: forbidden icon flag ON, mode: GSM and WCDMA, status: forbidden 
+    currentInfo.m_access = PSetNetworkWrapper::AccessTypeGsmAndWcdma; 
+    currentInfo.m_status = PSetNetworkWrapper::StatusForbidden; 
+    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
+    QCOMPARE(iconName, KIconGsmAndWcdmaForbidden); 
+     
+    // Test: forbidden icon flag ON, mode: GSM and WCDMA, status: available
+    currentInfo.m_access = PSetNetworkWrapper::AccessTypeGsmAndWcdma; 
+    currentInfo.m_status = PSetNetworkWrapper::StatusAvailable; 
+    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
+    QCOMPARE(iconName, KIconGsmAndWcdmaNotForbidden); 
+    
+    // Test: forbidden icon flag OFF
+    expect("CpSettingsWrapper::forbiddenIconSupported").returns(false);
+    iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
+    QCOMPARE(iconName, QString("")); 
+}
+
+/*!
   UT_CpNetworkPluginForm::cleanup
  */
 void UT_CpNetworkPluginForm::cleanup()
@@ -260,5 +330,6 @@ void UT_CpNetworkPluginForm::updateNetworkSelectionMode(
 {
     mode = m_NetworkSelectionMode;
 }
+
 
 QTEST_MAIN_S60UI(UT_CpNetworkPluginForm)

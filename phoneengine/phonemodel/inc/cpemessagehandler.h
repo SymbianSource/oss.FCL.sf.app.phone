@@ -571,10 +571,24 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         void HandleDisableService();
 
         /**
+        * Adds SIM rejected MO CS call to logs. 
+        * @param aCallId is the identification number of the call.   
+        * @return KErrNone if succesfull
+        */
+        TInt AddSIMRejectedMoCsCallToLog( const TInt aCallId );
+
+        /**
         * Handle dial service call
         */ 
         TInt HandleDialServiceCall(
             const TBool aClientCall );
+        
+        /**
+        * Returns a boolean to indicate whether network connection 
+        * is allowed or not.  
+        * @return Return a True or False. 
+        */
+        TBool IsNetworkConnectionAllowed() const;
     
     private: // New functions
         
@@ -619,12 +633,6 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         * @return TBool.
         */
         TBool AutomaticAnswer( const TInt aCallId ) const;
-
-        /**
-        * Returns a boolean to indicate whether emergency call is allowed or not.  
-        * @return Return a True or False. 
-        */
-        TBool IsEmergencyAllowed() const;
 
         /**
         * Handle Client Call Data.

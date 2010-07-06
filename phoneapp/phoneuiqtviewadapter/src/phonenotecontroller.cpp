@@ -28,7 +28,8 @@
 #include <hbprogressdialog.h>
 #include <hbaction.h>
 #include <phoneappcommands.hrh>
-  
+#include <hbstringutil.h>
+
 PhoneNoteController::PhoneNoteController(QObject *parent) : 
     QObject(parent), m_timer(0), m_progressDialog(0), m_dtmfNote(0), 
     m_queryNote(0), m_queryCanceledCommand(-1), m_timeoutCommand(-1)
@@ -217,14 +218,20 @@ QString PhoneNoteController::globalNoteText(
     if ( globalNoteParam->TextResourceId() && 
          KErrNone != globalNoteParam->Text().Compare( KNullDesC() ) ) {
          // resource and text exists
-         ret = PhoneResourceAdapter::Instance()->convertToString(
+         ret = PhoneResourceAdapter::Instance()->convertToStringWithParam(
                      globalNoteParam->TextResourceId(),
                      QString::fromUtf16(globalNoteParam->Text().Ptr(), 
                                      globalNoteParam->Text().Length()) );         
     } else if ( globalNoteParam->TextResourceId() ) {
         // resource exists
+        QString causeCode;
+        if (-1 != globalNoteParam->CauseCode()) {
+            causeCode.setNum(globalNoteParam->CauseCode());
+            causeCode = HbStringUtil::convertDigits(causeCode);
+        }
+        
         ret = PhoneResourceAdapter::Instance()->convertToString(
-                    globalNoteParam->TextResourceId());
+                    globalNoteParam->TextResourceId(), causeCode);
 
     } else if ( KErrNone != globalNoteParam->Text().Compare( KNullDesC() ) ) {
         // text exists
@@ -420,7 +427,7 @@ void PhoneNoteController::showDeviceNotificationDialog(
             // Do not show same note/text several times, e.g when user hits
             // the end button several times we should show only one "not allowed"
             // note.
-            if (noteString == m_notificationList.at(i)->text()) {
+            if (noteString == m_notificationList.at(i)->title()) {
                 showNote = false;
                 break;
             }

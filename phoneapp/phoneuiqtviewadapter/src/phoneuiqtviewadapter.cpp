@@ -26,6 +26,7 @@
 #include "tphonecmdparamcallheaderdata.h"
 #include "tphonecmdparamemergencycallheaderdata.h"
 #include "tphonecmdparamstring.h"
+#include "tphonecmdparamkeycapture.h"
 #include "cphonepubsubproxy.h"
 #include "pevirtualengine.h"
 #include "cphoneringingtonecontroller.h"
@@ -41,12 +42,13 @@
 #include "phoneindicatorcontroller.h"
 #include "qtphonelog.h"
 #include "phonevisibilityhandler.h"
+#include "phoneapplauncher.h"
+#include "cphonecenrepproxy.h"
 
 #include <UikonInternalPSKeys.h>
 #include <bubblemanagerif.h>
 #include <hbaction.h>
 #include <pevirtualengine.h>
-#include <xqservicerequest.h>
 #include <QtGlobal>
 #include <xqserviceutil.h>
 #include <hbinstance.h>
@@ -61,8 +63,13 @@
 #include <logsservices.h>
 
 
+
 //CONSTANTS
 static const int PHONE_CALL_NOT_FOUND = -1;
+
+const TUid KCRUidTelTouchButtons = {0x2001B2E6};
+const TUint32 KTelIncallTouchButtons   = 0x00000001;
+
 
 PhoneUIQtViewAdapter::PhoneUIQtViewAdapter (PhoneUIQtViewIF &view, QObject *parent) :
     QObject (parent),
@@ -79,12 +86,13 @@ PhoneUIQtViewAdapter::PhoneUIQtViewAdapter (PhoneUIQtViewIF &view, QObject *pare
     m_dialpadAboutToClose(false),
     m_homeScreenToForeground(false),
     m_visibilityHandler(0),
-    m_clearDialpadOnClose(true)
+    m_appLauncher(0),
+    m_clearDialpadOnClose(true),
+    m_speakerAsDefaultButton(false)
 {
     m_bubbleWrapper = new PhoneBubbleWrapper(m_view.bubbleManager (), this);
     m_noteController = new PhoneNoteController(this);
     m_uiCommandController = new PhoneUiCommandController(view, this);
-    m_messageController = new PhoneMessageController(this);
 
     TRAPD( error, m_ringingtonecontroller = CPhoneRingingToneController::NewL () );
     qt_symbian_throwIfError(error);
@@ -98,6 +106,19 @@ PhoneUIQtViewAdapter::PhoneUIQtViewAdapter (PhoneUIQtViewIF &view, QObject *pare
     m_telephonyService = new TelephonyService (this, this);
 	m_indicatorController = new PhoneIndicatorController(this);
     m_visibilityHandler = new PhoneVisibilityHandler(view, this);
+    m_appLauncher = new PhoneAppLauncher(this);
+    m_messageController = new PhoneMessageController(*m_appLauncher, this);
+    
+    int touchButton(-1);
+    if ( KErrNone == CPhoneCenRepProxy::Instance()->GetInt(
+            KCRUidTelTouchButtons,
+            KTelIncallTouchButtons,
+            touchButton ) ) {
+        if ( touchButton == 2 ) {
+            m_speakerAsDefaultButton = true;
+        }    
+    }
+
 }
 
 PhoneUIQtViewAdapter::~PhoneUIQtViewAdapter ()
@@ -198,7 +219,10 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TInt aCa
         m_view.removeExpandAction(bubble);
         m_bubbleWrapper->removeCallHeader (aCallId);
         m_bubbleWrapper->bubbleManager().endChanges();
-        m_indicatorController->clearActiveCallData();
+        
+        if (!m_bubbleWrapper->bubbles().count()) {
+            m_indicatorController->clearActiveCallData();
+        }
         }
         break;
     case EPhoneViewRemoveFromConference:
@@ -275,8 +299,8 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TPhoneCo
         m_noteController->showQuery(aCommandParam);
         break;
     case EPhoneViewOpenSoftRejectEditor:
-        m_messageController->openSoftRejectMessageEditor(aCommandParam);
         m_visibilityHandler->hideDeviceDialogs(false);
+        m_messageController->openSoftRejectMessageEditor(aCommandParam);
         break;
     case EPhoneViewSetGlobalNotifiersDisabled:
         hideDeviceDialogs(aCommandParam);
@@ -468,6 +492,42 @@ void PhoneUIQtViewAdapter::ExecuteCommand (TPhoneViewCommandId aCmdId, TPhoneCom
                                param->Boolean());
         }
         break;
+    case EPhoneViewSetBlueToothFlag: {
+        TPhoneCmdParamBoolean *param = static_cast<TPhoneCmdParamBoolean *>(aCommandParam);
+
+        PhoneResourceAdapter::Instance()->buttonsController()->
+                setButtonFlags(PhoneUIQtButtonsController::Btaa, 
+                               param->Boolean());
+        }
+        break;
+    case EPhoneViewSetBluetoothAvailableFlag: {
+        TPhoneCmdParamBoolean *param = static_cast<TPhoneCmdParamBoolean *>(aCommandParam);
+    
+        PhoneResourceAdapter::Instance()->buttonsController()->
+                setButtonFlags(PhoneUIQtButtonsController::BluetoothAvailable, 
+                               param->Boolean());
+        }
+        break;
+    case EPhoneViewStartCapturingKey: {
+        TPhoneCmdParamKeyCapture *captureParam = 
+                static_cast<TPhoneCmdParamKeyCapture *>(aCommandParam);        
+        Qt::Key qtKey;
+        
+        if (convertKey(captureParam->KeyCode(), qtKey)) {
+            m_view.captureKey(qtKey, true);
+        }
+    }
+    break;
+    case EPhoneViewStopCapturingKey: {
+        TPhoneCmdParamKeyCapture *captureParam = 
+                static_cast<TPhoneCmdParamKeyCapture *>(aCommandParam);        
+        Qt::Key qtKey;
+        
+        if (convertKey(captureParam->KeyCode(), qtKey)) {
+            m_view.captureKey(qtKey, false);
+        }
+    }
+    break;
     default:
         break;
     }
@@ -693,7 +753,6 @@ void PhoneUIQtViewAdapter::setTouchButtons (TPhoneCommandParam *commandParam)
     bool emergencyCall = param.Boolean();
 
     m_bubbleWrapper->bubbleManager ().startChanges ();
-    m_view.clearParticipantListActions();
 
     QList<int> bubbles = m_bubbleWrapper->bubbles().keys();
 
@@ -701,9 +760,7 @@ void PhoneUIQtViewAdapter::setTouchButtons (TPhoneCommandParam *commandParam)
             PhoneUIQtButtonsController::DisableJoin,
             (5 <= m_bubbleWrapper->conferenceCallList().count()));
     
-    m_resourceAdapter->buttonsController()->setButtonFlags(
-            PhoneUIQtButtonsController::FullConference,
-            (5 <= m_bubbleWrapper->conferenceCallList().count()));
+    setCommonButtonFlags();
 
     for (int j = 0; j < bubbles.size(); ++j){
         int callId = bubbles.at(j);
@@ -729,7 +786,6 @@ void PhoneUIQtViewAdapter::setTouchButtons (TPhoneCommandParam *commandParam)
         }
     }
 
-    setParticipantListActions();
     setExpandedConferenceCallHeader();
     setBubbleSelectionFlag();
     setMenu();
@@ -744,10 +800,8 @@ void PhoneUIQtViewAdapter::setToolbarButtons (TPhoneCommandParam *commandParam)
     TPhoneCmdParamInteger &intParam =
         static_cast<TPhoneCmdParamInteger &>(*commandParam);
 
-    m_resourceAdapter->buttonsController()->setButtonFlags(
-            PhoneUIQtButtonsController::FullConference,
-            (5 <= m_bubbleWrapper->conferenceCallList().count()));
-
+    setCommonButtonFlags();
+    
     int callId(-1);
     int serviceId(-1);
     if ( 0<m_bubbleWrapper->callStates().keys().size() ) {
@@ -880,6 +934,8 @@ void PhoneUIQtViewAdapter::createConferenceBubble(int callId, TPhoneCommandParam
 
     m_bubbleWrapper->setServiceId(callId,data.ServiceId());
     m_bubbleWrapper->setCiphering(bubble, data.CipheringIndicatorAllowed(), data.Ciphering());
+    
+    setParticipantListActions();
 }
 
 void PhoneUIQtViewAdapter::conferenceCallId(int callId, TPhoneCommandParam *commandParam)
@@ -898,9 +954,13 @@ void PhoneUIQtViewAdapter::removeConferenceBubble()
 {
     m_bubbleWrapper->bubbleManager().startChanges();
     m_view.removeExpandAction(m_bubbleWrapper->bubbleId(KConferenceCallId));
+    m_view.clearParticipantListActions();
     m_bubbleWrapper->removeConferenceBubble();
     m_bubbleWrapper->bubbleManager().endChanges();
-    m_indicatorController->clearActiveCallData();
+    if (!m_bubbleWrapper->bubbles().count()) {
+        m_indicatorController->clearActiveCallData();
+    }
+
 }
 
 void PhoneUIQtViewAdapter::isConference(TPhoneCommandParam *commandParam)
@@ -1056,7 +1116,7 @@ void PhoneUIQtViewAdapter::setDialpadVisibility(
         static_cast<TPhoneCmdParamBoolean*>(commandParam);
 
     if (booleanParam->Boolean()) {
-        m_dialpadAboutToClose = true;
+        m_dialpadAboutToClose = false;
         m_view.showDialpad();
     } else {
         m_clearDialpadOnClose = false;
@@ -1083,7 +1143,10 @@ void PhoneUIQtViewAdapter::removeAllCallHeaders()
             m_bubbleWrapper->bubbleManager().endChanges();
         }
     }
-    m_indicatorController->clearActiveCallData();
+    if (!m_bubbleWrapper->bubbles().count()) {
+        m_indicatorController->clearActiveCallData();
+    }
+
 }
 
 void PhoneUIQtViewAdapter::getNumberFromDialpad(
@@ -1199,15 +1262,9 @@ void PhoneUIQtViewAdapter::SetHiddenL(bool hidden)
         CAknSgcClient::AknSrv()->UpdateTaskList();
     }
 }
-
 void PhoneUIQtViewAdapter::openContacts()
 {
-    XQServiceRequest snd("com.nokia.services.phonebookappservices.Launch","launch()", false);
-    XQRequestInfo info;
-    info.setForeground(true);
-    snd.setInfo(info);
-    int retValue;
-    snd.send(retValue);
+    m_appLauncher->launchContacts();
 }
 
 void PhoneUIQtViewAdapter::openLogs(TPhoneCommandParam *commandParam)
@@ -1215,29 +1272,49 @@ void PhoneUIQtViewAdapter::openLogs(TPhoneCommandParam *commandParam)
     TPhoneCmdParamString* entryContent =
             static_cast<TPhoneCmdParamString*>(commandParam);
     
-    int ordinalPosition = m_visibilityHandler->ordinalPosition();
+    bool phoneVisible = m_visibilityHandler->phoneVisible();
     
     m_homeScreenToForeground = false;
     m_visibilityHandler->sendToBackground(m_homeScreenToForeground);
     
-    if (0 == ordinalPosition) { 
+    if (phoneVisible) { 
         // Activate logs dialer only if telephone is on the top.
-        XQServiceRequest snd("com.nokia.services.logsservices.starter",
-                "startWithNum(int,bool,QString)", false);
-        
-        snd << (int)LogsServices::ViewAll;
-        snd << true;
-        snd << QString::fromUtf16(entryContent->String()->Ptr(),
-                                  entryContent->String()->Length());
-        
-        XQRequestInfo info;
-        info.setForeground(true);
-        snd.setInfo(info);
-        
-        int retValue = -1;
-        snd.send(retValue);
+        m_appLauncher->launchLogs(
+                LogsServices::ViewAll,
+                true,
+                QString::fromUtf16(
+                    entryContent->String()->Ptr(),
+                    entryContent->String()->Length()));
     } 
 }
 
+void PhoneUIQtViewAdapter::setCommonButtonFlags()
+{
+    m_resourceAdapter->buttonsController()->setButtonFlags(
+            PhoneUIQtButtonsController::FullConference,
+            (5 <= m_bubbleWrapper->conferenceCallList().count()));
+
+    m_resourceAdapter->buttonsController()->setButtonFlags(
+            PhoneUIQtButtonsController::IhfAsPushButton,
+            m_speakerAsDefaultButton);
+}
+
+bool PhoneUIQtViewAdapter::convertKey(
+        TKeyCode symbianKey, Qt::Key &qtKey)
+{
+    bool ret = false;
+    
+    switch(symbianKey) {
+    case EKeyNo: {
+        qtKey = Qt::Key_No;
+        ret = true; 
+    }
+    break;
+    default:
+    break;
+    }
+    
+    return ret;
+}
 
 

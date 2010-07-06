@@ -83,10 +83,10 @@ void PhoneVisibilityHandler::hideDeviceDialogs(bool hide)
 /*!
     PhoneVisibilityHandler::ordinalPosition.
  */
-int PhoneVisibilityHandler::ordinalPosition()
+bool PhoneVisibilityHandler::phoneVisible()
 {
     m_ordinalPositionCalled = true;
-    return -1;
+    return false;
 }
 
 /*!
@@ -107,3 +107,12 @@ void PhoneVisibilityHandler::adjustVisibility(AdjustAction action)
 {
     Q_UNUSED(action)
 }
+
+/*!
+    PhoneVisibilityHandler::carModeChanged.
+ */
+void PhoneVisibilityHandler::carModeChanged()
+{
+
+}
+

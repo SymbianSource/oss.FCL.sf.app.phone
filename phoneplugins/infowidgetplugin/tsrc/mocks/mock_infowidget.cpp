@@ -327,9 +327,9 @@ void InfoWidget::settingsValidationFailed(  )
 // -----------------------------------------------------------------------------
 //
 void InfoWidget::settingsDialogClosed( 
-        HbAction * action )
+        HbAction *sss )
     {
-    //SMC_MOCK_METHOD1( void, HbAction *, action )
+    SMC_MOCK_METHOD1( void, HbAction *, sss )
     }
 
 
@@ -337,10 +337,9 @@ void InfoWidget::settingsDialogClosed(
 // InfoWidget::startMarquees
 // -----------------------------------------------------------------------------
 //
-bool InfoWidget::startMarquees( 
-        AnimationStartDelay delay )
+bool InfoWidget::startMarquees()
     {
-    SMC_MOCK_METHOD1( bool, AnimationStartDelay, delay )
+    SMC_MOCK_METHOD0( bool )
     }
 
 

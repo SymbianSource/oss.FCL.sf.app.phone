@@ -2,7 +2,6 @@
 <hbdocument version="1.1">
     <widget name="id:content" type="HbWidget">
         <widget name="id:container" type="HbWidget">
-            <widget name="id:settingsContainer" type="HbWidget">
                 <widget name="id:spnIcon" type="HbLabel">
                     <enums name="alignment" value="AlignVCenter|AlignHCenter"/>
                     <icon iconName="qtg_large_network" name="icon"/>
@@ -55,10 +54,9 @@
                     <griditem column="0" itemname="id:mcnIcon" row="1"/>
                     <griditem column="1" itemname="id:spnMarqueeItem" row="0"/>
                 </layout>
-            </widget>
         </widget>
         <sizepolicy horizontalPolicy="Preferred" horizontalStretch="0" verticalPolicy="Preferred" verticalStretch="0"/>
-        <sizehint height="6un" type="MINIMUM" width="32un"/>
+        <sizehint height="5.75un" type="MINIMUM" width="32un"/>
         <sizehint height="25un" type="MAXIMUM" width="32un"/>
         <layout type="anchor">
             <anchoritem dst="id:container" dstEdge="LEFT" spacing="0un" src="" srcEdge="LEFT"/>

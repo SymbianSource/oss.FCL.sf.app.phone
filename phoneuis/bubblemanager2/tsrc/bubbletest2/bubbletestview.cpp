@@ -317,7 +317,7 @@ void BubbleTestView::keyPressEvent(QKeyEvent *event)
             if (mCallTimer->isChecked()) {
                 bubbleManager().setCallTime( mConfBubbleId, "0:00" );
             }
-            bubbleManager().addAction(mConfBubbleId, mHold);
+            bubbleManager().addAction(mConfBubbleId, mMute);
             bubbleManager().addAction(mConfBubbleId, mEndConference);
             bubbleManager().clearParticipantListActions();
             bubbleManager().addParticipantListAction(mPrivate);
@@ -455,10 +455,8 @@ void BubbleTestView::setBubbleData(int bubble, BubbleManagerIF::PhoneCallState s
         if ( mContactName->isChecked() ) {
             bubbleManager().setCli(bubble, "Gloria Andersson", Qt::ElideRight);
             bubbleManager().setSecondaryCli( bubble, "+35850123456789" );
-            mPhoneNumber.clear();
         } else {
-            mPhoneNumber.append("+35850123456789");
-            bubbleManager().setCli(bubble, mPhoneNumber, Qt::ElideRight);
+            bubbleManager().setCli(bubble, "+35850123456789", Qt::ElideRight);
         }
 
         setCallObject(bubble, ":resources/contactpic.jpg");
@@ -479,14 +477,13 @@ void BubbleTestView::setBubbleData(int bubble, BubbleManagerIF::PhoneCallState s
                 bubbleManager().setCli(bubble, "John Doe", Qt::ElideRight);
                 bubbleManager().setSecondaryCli(bubble, "+35840987654321");
             }
-            mPhoneNumber.clear();
         } else {
             if (callCount()==2) {
-                mPhoneNumber.append("+35850232323232");
+                bubbleManager().setCli(bubble, "+35850232323232", Qt::ElideRight);
             } else {
-                mPhoneNumber.append("+35840987654321");
+                bubbleManager().setCli(bubble, "+35840987654321", Qt::ElideRight);
             }
-            bubbleManager().setCli(bubble, mPhoneNumber, Qt::ElideRight);
+
         }
         setCallObject(bubble, ":resources/contactpic3.png");
         bubbleManager().setNumberType(bubble, BubbleManager::Mobile);
@@ -507,10 +504,8 @@ void BubbleTestView::setBubbleData(int bubble, BubbleManagerIF::PhoneCallState s
             if ( mContactName->isChecked() ) {
                 bubbleManager().setCli( bubble, "Bart Simpson", Qt::ElideRight );
                 bubbleManager().setSecondaryCli( bubble, "+35890987654321" );
-                mPhoneNumber.clear();
             } else {
-                mPhoneNumber.append("+35890987654321");
-                bubbleManager().setCli( bubble, mPhoneNumber, Qt::ElideRight );
+                bubbleManager().setCli( bubble, "+35890987654321", Qt::ElideRight );
             }
             setCallObject(bubble, ":resources/contactpic2.jpg");
             bubbleManager().setLabel( bubble, "Calling", Qt::ElideRight );
@@ -520,16 +515,6 @@ void BubbleTestView::setBubbleData(int bubble, BubbleManagerIF::PhoneCallState s
 
     case BubbleManager::Alerting:
         {
-        if ( mPhoneNumber.length() ) {
-            QString cli("Call %1");
-            QString index;
-            index.setNum(bubble+1);
-            cli = cli.arg(index);
-            bubbleManager().setCli( bubble, cli, Qt::ElideRight );
-            bubbleManager().setSecondaryCli( bubble, mPhoneNumber );
-            mPhoneNumber.clear();
-        }
-
         if ( mEmergencyCall->isChecked() ) {
             bubbleManager().setCli( bubble, "Emergency call", Qt::ElideRight );
         }
@@ -538,16 +523,6 @@ void BubbleTestView::setBubbleData(int bubble, BubbleManagerIF::PhoneCallState s
 
     case BubbleManager::Active:
         {
-        if ( mPhoneNumber.length() && bubble!=mConfBubbleId ) {
-            QString cli("Call %1");
-            QString index;
-            index.setNum(bubble+1);
-            cli = cli.arg(index);
-            bubbleManager().setCli( bubble, cli, Qt::ElideRight );
-            bubbleManager().setSecondaryCli( bubble, mPhoneNumber );
-            mPhoneNumber.clear();
-        }
-
         if ( mCallTimer->isChecked() ) {
             bubbleManager().setCallTime( bubble, "0:00" );
         }
@@ -585,27 +560,8 @@ void BubbleTestView::setCallObject(int bubble, const QString& filename)
 void BubbleTestView::setBubbleActions(int bubble, BubbleManagerIF::PhoneCallState state )
 {
     if (bubble==mConfBubbleId) {
-        // check, if all call are in conference
-        bool swapButton = false;
-        QListIterator<TestCall> calls(mCalls);
-        while(calls.hasNext()) {
-            TestCall call = calls.next();
-            if (!call.isConf && !call.isInConf) {
-                swapButton = true;
-            }
-        }
-
         bubbleManager().clearActions(bubble);
-
-        if (swapButton) {
-            bubbleManager().addAction(bubble, mSwap);
-        } else {
-            if (state == BubbleManager::OnHold)
-                bubbleManager().addAction(bubble, mUnhold);
-            else
-                bubbleManager().addAction(bubble, mHold);
-        }
-
+        bubbleManager().addAction(bubble, mMute);
         bubbleManager().addAction(bubble, mEndConference);
         return;
     }
@@ -627,31 +583,27 @@ void BubbleTestView::setBubbleActions(int bubble, BubbleManagerIF::PhoneCallStat
     case BubbleManager::Outgoing:
     case BubbleManager::Alerting: // flow through
         {
+        bubbleManager().addAction( bubble, mMute );
         bubbleManager().addAction( bubble, mEndCall );
         break;
         }
     case BubbleManager::OnHold:
         {
-        bubbleManager().addAction( bubble, mUnhold );
+        if (mMuted) {
+            bubbleManager().addAction( bubble, mUnmute );
+        } else {
+            bubbleManager().addAction( bubble, mMute );
+        }
         bubbleManager().addAction( bubble, mEndCall );
         }
         break;
     default: // Active call
         {
-        HbAction* action;
-
-        if (!mEmergencyCall->isChecked()) {
-            int i;
-            if ( (mCalls.count()>1 && !callIndexByState(BubbleManagerIF::Waiting,i))
-                  || (mCalls.count()> 1 && mProvideJoin) ) {
-                action = mJoin;
-            } else {
-                action = mHold;
-            }
-
-            bubbleManager().addAction( bubble, action );
+        if (mMuted) {
+            bubbleManager().addAction( bubble, mUnmute );
+        } else {
+            bubbleManager().addAction( bubble, mMute );
         }
-                    
         bubbleManager().addAction( bubble, mEndCall );
         break;
         }
@@ -744,7 +696,17 @@ void BubbleTestView::createOutgoingCall()
 void BubbleTestView::setMuted()
 {
     mMuted = !mMuted;
-    updateToolBarActions();
+    int bubble = bubbleManager().expandedBubble();
+    QListIterator<TestCall> calls(mCalls);
+    while (calls.hasNext()) {
+        TestCall call = calls.next();
+        if (call.bubbleId==bubble) {
+            bubbleManager().startChanges();
+            setBubbleActions(bubble, (BubbleManagerIF::PhoneCallState)call.callState);
+            bubbleManager().endChanges();
+        }
+    }
+
     bubbleManager().setPhoneMuted( mMuted );
     setFocus(); // hack because toolbar steals the focus
 }
@@ -776,13 +738,17 @@ void BubbleTestView::handlePrivate()
         mCalls.removeAt(i);
         mConfBubbleId = -1;
         callIndexByBubbleId(selection,i);
-        int held = (i==0) ? 1 : 0;
+        int held = (i==0) ? 1 : 0; // ??
         setBubbleActions(selection,BubbleManagerIF::Active);
         setBubbleData(selection,BubbleManagerIF::Active);
         setBubbleActions(held,BubbleManagerIF::OnHold);
         setBubbleData(held,BubbleManagerIF::OnHold);
-        mCalls[0].isInConf = false;
-        mCalls[1].isInConf = false;
+        mCalls[i].isInConf = false;
+        mCalls[i].callState = BubbleManagerIF::Active;
+        int callId;
+        callIndexByBubbleId(held, callId);
+        mCalls[callId].callState = BubbleManagerIF::OnHold;
+        mCalls[callId].isInConf = false;
         setExpandActions();
     }
     bubbleManager().endChanges();
@@ -849,6 +815,7 @@ void BubbleTestView::createToolBarActions()
 
     // not connected to anywhere
     mActivateLoudspeaker = new HbAction(HbIcon("qtg_mono_speaker"), "", this);
+    connect( mActivateLoudspeaker, SIGNAL(triggered()), this, SLOT(createIncomingCall()), Qt::QueuedConnection );
     mActivateHandset = new HbAction(HbIcon("qtg_mono_mobile"), "", this);
     mSendMessage = new HbAction(HbIcon("qtg_mono_send"), "", this);
     mSilence = new HbAction(HbIcon("qtg_mono_speaker_off"), "", this);
@@ -898,54 +865,61 @@ void BubbleTestView::updateToolBarActions()
         toolBar()->addAction(mSendMessage);
         toolBar()->addAction(mSilence);
     } else {
-        toolBar()->addAction(mOpenDialer);
-        if (!mMuted) {
-            toolBar()->addAction(mMute);
-        } else if (mMuted) {
-            toolBar()->addAction(mUnmute);
-        }
         toolBar()->addAction(mActivateLoudspeaker);
-        toolBar()->addAction(mOpenContacts);
+
+        if (callCount()==1) {
+            toolBar()->addAction(mHold);
+        } else {
+            toolBar()->addAction(mSwap);            
+        }
+
+        if (callCount()==1) {
+            toolBar()->addAction(mOpenContacts);
+        } else {
+            toolBar()->addAction(mJoin);
+        }
+
+        toolBar()->addAction(mOpenDialer);
     }
 }
 
 void BubbleTestView::createBubbleActions()
 {
-    mAnswer = new HbAction( HbIcon("qtg_mono_call"),"Answer", this);
+    mAnswer = new HbAction( HbIcon("qtg_mono_call"),QString(), this);
     mAnswer->setSoftKeyRole(QAction::PositiveSoftKey);
     connect( mAnswer, SIGNAL( triggered() ), this, SLOT( answerCall() ) );
 
-    mReject= new HbAction( HbIcon("qtg_mono_reject_call"),"Reject", this);
+    mReject= new HbAction( HbIcon("qtg_mono_reject_call"),QString(), this);
     mReject->setSoftKeyRole(QAction::NegativeSoftKey);
     connect( mReject, SIGNAL( triggered() ), this, SLOT( rejectCall() ) );
 
-    mHold = new HbAction( HbIcon("qtg_mono_hold_call"),"Hold", this);
+    mHold = new HbAction( HbIcon("qtg_mono_hold_call"),QString(), this);
     connect( mHold, SIGNAL( triggered() ), this, SLOT( toggleHold() ) );
 
-    mUnhold = new HbAction( HbIcon("qtg_mono_call"),"Activate", this);
+    mUnhold = new HbAction( HbIcon("qtg_mono_call"),QString(), this);
     connect( mUnhold, SIGNAL( triggered() ), this, SLOT( toggleHold() ) );
 
-    mSwap = new HbAction( HbIcon("qtg_mono_hold_call"),"Swap", this);
+    mSwap = new HbAction( HbIcon("qtg_mono_hold_call"),QString(), this);
     connect( mSwap, SIGNAL( triggered() ), this, SLOT( toggleHold() ) );
 
-    mEndCall = new HbAction(HbIcon("qtg_mono_end_call"),"End call", this);
+    mEndCall = new HbAction(HbIcon("qtg_mono_end_call"),QString(), this);
     mEndCall->setSoftKeyRole(QAction::NegativeSoftKey);
     connect( mEndCall, SIGNAL( triggered() ), this, SLOT( endCall() ) );
 
-    mEndConference = new HbAction(HbIcon("qtg_mono_end_all_call"),"End conference", this);
+    mEndConference = new HbAction(HbIcon("qtg_mono_end_call"),QString(), this);
     mEndConference->setSoftKeyRole(QAction::NegativeSoftKey);
     connect( mEndConference, SIGNAL( triggered() ), this, SLOT( endConferenceCall() ) );
 
-    mJoin = new HbAction(HbIcon("qtg_mono_join_call"),"Join", this);
+    mJoin = new HbAction(HbIcon("qtg_mono_join_call"),QString(), this);
     connect( mJoin, SIGNAL( triggered() ), this, SLOT(joinToConference()) );
 
-    mPrivate = new HbAction(HbIcon("qtg_mono_private_call"),"Private", this);
+    mPrivate = new HbAction(HbIcon("qtg_mono_private_call"),QString(), this);
     connect( mPrivate, SIGNAL( triggered() ), this, SLOT(handlePrivate()) );
 
-    mDrop = new HbAction(HbIcon("qtg_mono_drop_call"),"Drop", this);
+    mDrop = new HbAction(HbIcon("qtg_mono_drop_call"),QString(), this);
     connect( mDrop, SIGNAL( triggered() ), this, SLOT(handleDrop()) );
 
-    mReplace = new HbAction(HbIcon("qtg_mono_replace_call"),"Replace", this);
+    mReplace = new HbAction(HbIcon("qtg_mono_replace_call"),QString(), this);
     connect( mReplace, SIGNAL( triggered() ), this, SLOT(replaceActiveCall()) );
 
     mUpdateUiControls = new HbAction(QString(), this);
@@ -1026,13 +1000,13 @@ void BubbleTestView::toggleConferenceHoldDelayed()
     callIndexByBubbleId(mConfBubbleId, i);
     BubbleManagerIF::PhoneCallState confState =
         (BubbleManagerIF::PhoneCallState)mCalls[i].callState;
-    qDebug() << "toggleConferenceHoldDelayed state:" << confState;
+    // qDebug() << "toggleConferenceHoldDelayed state:" << confState;
 
     QListIterator<TestCall> calls(mCalls);
     int j=0;
     while(calls.hasNext()) {
         TestCall call = calls.next();
-        qDebug() << "toggleConferenceHoldDelayed callState:" << call.callState;
+        // qDebug() << "toggleConferenceHoldDelayed callState:" << call.callState;
         if (call.isInConf && call.callState!=confState) {
             bubbleManager().startChanges();
             setBubbleData(call.bubbleId, confState);

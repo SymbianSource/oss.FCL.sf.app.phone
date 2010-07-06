@@ -41,9 +41,9 @@ SOURCES += ./src/ut_infowidgetsathandlerprivate.cpp
 
 # code to be tested
 HEADERS += ../../infowidget/inc/infowidgetsathandler.h
-HEADERS += ../../infowidget/inc/infowidgetsathandlerprivate.h 
+HEADERS += ../../infowidget/inc/infowidgetsathandler_p.h 
 
-SOURCES += ../../infowidget/src/infowidgetsathandlerprivate.cpp
+SOURCES += ../../infowidget/src/infowidgetsathandler_p.cpp
 
 # mocks needed for testing
 SOURCES += ../mocks/mock_rsatservice.cpp  \

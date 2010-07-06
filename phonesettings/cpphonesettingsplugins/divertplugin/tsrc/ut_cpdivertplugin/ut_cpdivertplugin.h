@@ -51,7 +51,7 @@ private slots:
     void t_handleDivertingError();
 
     void t_memleak();
-//    void t_popUpTimerQuery();
+    void t_popUpTimerQuery();
     
 private:
     

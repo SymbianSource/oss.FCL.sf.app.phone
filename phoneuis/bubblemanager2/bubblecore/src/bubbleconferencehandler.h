@@ -24,7 +24,7 @@
 class BubbleHeader;
 class HbAction;
 class BubbleButton;
-class HbLabel;
+class BubbleHeadingWidget;
 class BubbleConferenceHeader;
 class HbListWidgetItem;
 class BubbleParticipantListItem;
@@ -67,7 +67,7 @@ protected slots:
 
 protected: //data
     const BubbleConferenceHeader* mHeader;
-    HbLabel* mTimerLabel;
+    BubbleHeadingWidget* mHeading;
     BubbleButton* mButtonCenter;
     BubbleButton* mButtonLeft;
     BubbleButton* mButtonRight;

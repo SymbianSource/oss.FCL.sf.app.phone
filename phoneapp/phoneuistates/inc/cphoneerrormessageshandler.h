@@ -113,7 +113,18 @@ class CPhoneErrorMessagesHandler : public CBase,
         * Return ETrue if video call.
         */
         TBool IsVideoCall( const TInt aCallId ) const;
- 
+        
+        /**
+        * Return ETrue if voice call.
+        */
+        TBool IsVoiceCall( const TInt aCallId ) const;
+
+        /**
+        * Gets cause code and resource id.
+        */
+        TBool GetCauseCode( TInt &aCauseCode, 
+                TInt &aResourceId, TBool &aNotification ) const; 
+				
     protected:
         
         /**
@@ -122,6 +133,10 @@ class CPhoneErrorMessagesHandler : public CBase,
         MPhoneViewCommandHandle* iViewCommandHandle;
         
         MPhoneStateMachine* iStateMachine;
+        
+        TBool iCauseCodeVariation;
+        
+        TInt iCallId;
               
     };
 

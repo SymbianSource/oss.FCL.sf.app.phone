@@ -30,6 +30,7 @@ class PhoneUIKeyEventAdapter;
 class PhoneUiCommandAdapter;
 class QtCall;
 class PhoneUIQtViewAdapter;
+class HbTranslator;
 
 class PhoneUiHouseHoldPrivate : 
     private MPhonePubSubObserver
@@ -113,7 +114,7 @@ private:
     PhoneUIQtViewAdapter* iViewAdapter;
     
     //List for translators
-    QList<QTranslator*> m_translators;
+    QList<HbTranslator*> m_translators;
     
 };
 

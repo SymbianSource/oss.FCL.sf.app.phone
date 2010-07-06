@@ -15,7 +15,8 @@
 *
 */
 
-#include <QtGui>
+#include <QGraphicsSceneMouseEvent>
+#include <QPainter>
 #include <hbstyle.h>
 #include <hbframeitem.h>
 #include <hbframedrawer.h>
@@ -24,9 +25,10 @@
 BubbleContainerWidget::BubbleContainerWidget(QGraphicsItem* item)
     : HbWidget(item), mBackground(0)
 {
+    setFlag(QGraphicsItem::ItemHasNoContents, false);
+
     createPrimitives();
     updatePrimitives();
-    Q_ASSERT(mBackground);
 }
 
 BubbleContainerWidget::~BubbleContainerWidget()
@@ -37,7 +39,7 @@ void BubbleContainerWidget::createPrimitives()
 {
     delete mBackground;
     mBackground = new HbFrameItem(this);
-    style()->setItemName(mBackground, "background");
+    style()->setItemName(mBackground, QLatin1String("background"));
     mBackground->setZValue(-1.0);
     mBackground->setVisible(false); // background in drawn in paint()
 }
@@ -45,29 +47,23 @@ void BubbleContainerWidget::createPrimitives()
 void BubbleContainerWidget::updatePrimitives()
 {
     mBackground->frameDrawer().setFrameType(HbFrameDrawer::NinePieces);
-    mBackground->frameDrawer().setFrameGraphicsName("qtg_fr_list_normal");
+    mBackground->frameDrawer().setFrameGraphicsName(
+        QLatin1String("qtg_fr_list_normal"));
 }
 
 void BubbleContainerWidget::mousePressEvent(
     QGraphicsSceneMouseEvent * event)
 {
     if (event->button() != Qt::LeftButton) {
-        event->ignore();
         return;
     }
 
     mPressed = true;
-    event->accept();
 }
 
 void BubbleContainerWidget::mouseMoveEvent(
     QGraphicsSceneMouseEvent *event)
 {
-    if (!(event->buttons() & Qt::LeftButton)) {
-        event->ignore();
-        return;
-    }
-
     if ( !rect().contains(event->pos()) && mPressed ) {
         ungrabMouse();
         mPressed = false;
@@ -77,15 +73,11 @@ void BubbleContainerWidget::mouseMoveEvent(
 void BubbleContainerWidget::mouseReleaseEvent(
     QGraphicsSceneMouseEvent *event)
 {
-    if (event->button() != Qt::LeftButton) {
-        event->ignore();
-        return;
-    }
+    Q_UNUSED(event)    
 
     if (mPressed) {
         emit clicked();
         mPressed = false;
-        event->accept();
     }
 }
 

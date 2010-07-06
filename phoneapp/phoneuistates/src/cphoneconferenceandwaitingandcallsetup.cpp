@@ -185,7 +185,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleKeyMessageL(
                 // We can't answer to call in this state so display
                 // Not allowed -note.
                 SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed );                                             
+                    EPhoneNoteTextNotAllowed, ETrue );                                             
                  }
             break;
             

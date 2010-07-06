@@ -34,6 +34,12 @@
 #include "tphonecmdparamglobalnote.h"
 #include "tphonecmdparamnote.h"
 #include "cphonemainresourceresolver.h"
+#include "cphonecenrepproxy.h"
+
+// CONSTANTS
+const TUid KCRUidTelConfiguration = {0x102828B8};
+
+const TUint32 KTelShowCauseCode   = 0x00000002;
 
 
 // ================= MEMBER FUNCTIONS =======================
@@ -45,9 +51,17 @@ EXPORT_C CPhoneErrorMessagesHandler::CPhoneErrorMessagesHandler(
     MPhoneViewCommandHandle* aViewCommandHandle,
     MPhoneStateMachine* aStateMachine ) :
     iViewCommandHandle( aViewCommandHandle),
-    iStateMachine (aStateMachine )
+    iStateMachine( aStateMachine ),
+    iCauseCodeVariation( EFalse )
     {
-    }
+    if ( KErrNone != CPhoneCenRepProxy::Instance()->GetInt(
+            KCRUidTelConfiguration,
+            KTelShowCauseCode,
+            iCauseCodeVariation ) )
+        {
+        iCauseCodeVariation = EFalse;
+        }
+    } 
 
 // -----------------------------------------------------------
 // CPhoneErrorMessagesHandler::~CPhoneErrorMessagesHandler()
@@ -113,12 +127,28 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL(
         TPhoneCmdParamGlobalNote globalNoteParam;
       
         globalNoteParam.SetType( EAknGlobalInformationNote );
-        globalNoteParam.SetTextResourceId( 
-            CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( aResourceId ) );
+
         globalNoteParam.SetTone( EAvkonSIDInformationTone );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
+        TInt resourceID( KErrNotFound );
+        TInt causeCode( KErrNotFound );
+        TBool notification( ETrue );
+        if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification ) )
+            {
+            globalNoteParam.SetNotificationDialog( notification );
+            globalNoteParam.SetCauseCode(causeCode);
+            globalNoteParam.SetTextResourceId( 
+                CPhoneMainResourceResolver::Instance()->
+                ResolveResourceID( resourceID ) );
+            }
+        else
+            {
+            globalNoteParam.SetTextResourceId( 
+                CPhoneMainResourceResolver::Instance()->
+                ResolveResourceID( aResourceId ) );
+            }
+        
         iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam );    
         }
@@ -148,11 +178,27 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL(
             
         TPhoneCmdParamGlobalNote globalNoteParam;
         globalNoteParam.SetType( EAknGlobalErrorNote );
-        globalNoteParam.SetTextResourceId( 
-            CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( aResourceId ) );
+
         globalNoteParam.SetTone( CAknNoteDialog::EErrorTone );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
+        
+        TInt resourceID( KErrNotFound );
+        TInt causeCode( KErrNotFound );
+        TBool notification( ETrue );
+        if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification ) )
+            {
+            globalNoteParam.SetNotificationDialog( notification );
+            globalNoteParam.SetCauseCode(causeCode);
+            globalNoteParam.SetTextResourceId( 
+                CPhoneMainResourceResolver::Instance()->
+                ResolveResourceID( resourceID ) );
+            }
+        else
+            {
+            globalNoteParam.SetTextResourceId( 
+                CPhoneMainResourceResolver::Instance()->
+                ResolveResourceID( aResourceId ) );
+            }
         
         iViewCommandHandle->ExecuteCommandL(  
             EPhoneViewShowGlobalNote, &globalNoteParam );
@@ -183,12 +229,28 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL(
             
         TPhoneCmdParamGlobalNote globalNoteParam;
         globalNoteParam.SetType( EAknGlobalWarningNote );
-        globalNoteParam.SetTextResourceId( 
-            CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( aResourceId ) );
+
         globalNoteParam.SetTone( EAvkonSIDWarningTone );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
+        TInt resourceID( KErrNotFound );
+        TInt causeCode( KErrNotFound );
+        TBool notification( ETrue );
+        if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification) )
+            {
+            globalNoteParam.SetNotificationDialog( notification );
+            globalNoteParam.SetCauseCode(causeCode);
+            globalNoteParam.SetTextResourceId( 
+                CPhoneMainResourceResolver::Instance()->
+                ResolveResourceID( resourceID ) );
+            }
+        else
+            {
+            globalNoteParam.SetTextResourceId( 
+                CPhoneMainResourceResolver::Instance()->
+                ResolveResourceID( aResourceId ) );
+            }
+        
         iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam );
         }
@@ -217,7 +279,8 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
     __PHONELOG1( EBasic, EPhoneControl,
             "PhoneUIControl: CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL - aErrorInfo.iErrorCode =%d ",
             aErrorInfo.iErrorCode);
-
+    iCallId = aErrorInfo.iCallId;
+    
     switch( aErrorInfo.iErrorCode )
         {
         case ECCPErrorRejected:
@@ -286,15 +349,12 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
             break;
 
         case ECCPErrorUnacceptableChannel:
-        case ECCPErrorCCDestinationOutOfOrder:
-        case ECCPErrorAccessInformationDiscarded:
-        case ECCPErrorQualityOfServiceNotAvailable:        
+        case ECCPErrorCCDestinationOutOfOrder:                
         case ECCPErrorInvalidCallReferenceValue:
         case ECCPErrorCCInvalidTransitNetworkSelection:        
         case ECCPErrorConnectionError:        
         case ECCPErrorCCIncompatibleMessageInCallState:        
-            if( IsVideoCall( aErrorInfo.iCallId ) &&
-                iStateMachine->PhoneEngineInfo()->ProfileId() != EProfileOffLineId )
+            if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
                 SendGlobalInfoNoteL( EPhoneNoteVideoCallNotPossible );
                 }
@@ -303,7 +363,9 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
                 }
             break;
-            
+           
+        case ECCPErrorQualityOfServiceNotAvailable:
+        case ECCPErrorAccessInformationDiscarded:
         case ECCPErrorCCResourceNotAvailable:
             SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
             break;
@@ -355,17 +417,21 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 {
                 SendGlobalInfoNoteL( EPhoneNumberNotInCUG, ETrue );
                 }
-             else
+            else
                 {
                 SendGlobalWarningNoteL( EPhoneNumberNotInCUG, ETrue );   
                 }
             break;
             
         case ECCPErrorCCNoRouteToDestination:
-            if( IsVideoCall( aErrorInfo.iCallId ) )
-                {
-                SendGlobalInfoNoteL( EPhoneNotePhoneOutOf3GCoverage );
-                }
+             if( IsVideoCall( aErrorInfo.iCallId ) )
+                 {
+                 SendGlobalInfoNoteL( EPhoneErrorInConnection );
+                 }
+             else
+                 {
+                 SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
+                 }
              break;
             
         case ECCPErrorCCNormalCallClearing:
@@ -378,7 +444,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
         case ECCPErrorCCUserNotResponding:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue18 ); 
+                SendGlobalInfoNoteL( EPhoneNoAnswer ); 
                 }
             else
                 {
@@ -387,16 +453,27 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
             break;
             
         case ECCPErrorCCCallRejected:
-            if( IsVideoCall( aErrorInfo.iCallId ) )
+            if ( !iStateMachine->PhoneEngineInfo()->IsOutgoingCallBarringActivated() )
                 {
-                SendGlobalInfoNoteL( EPhoneNoteCalledNumberHasBarredIncomingCalls, ETrue );
+                if( IsVideoCall( aErrorInfo.iCallId ) )
+                    {
+                    SendGlobalInfoNoteL( EPhoneNoteCalledNumberHasBarredIncomingCalls, ETrue );
+                    }
+                else if ( IsVoiceCall( aErrorInfo.iCallId ))
+                    {
+                    SendGlobalWarningNoteL( EPhoneNoteCallInfoCauseValue21 );
+                    }
                 }
             break;
             
         case ECCPErrorMovedPermanently:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue22 );
+                SendGlobalInfoNoteL( EPhoneNumberNotInUse );
+                }
+            else
+                {
+                SendGlobalWarningNoteL( EPhoneNumberNotInUse, ETrue );
                 }
             break;
             
@@ -414,7 +491,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
         case ECCPErrorCCNoChannelAvailable:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue34 ); 
+                SendGlobalInfoNoteL( EPhoneNetworkBusy ); 
                 }
             else
                 {
@@ -425,7 +502,11 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
         case ECCPErrorNetworkOutOfOrder:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue38 );
+                SendGlobalInfoNoteL( EPhoneErrorInConnection );
+                }
+            else
+                {
+                SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
                 }
             break;
             
@@ -443,7 +524,11 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
         case ECCPErrorCCIncomingCallsBarredInCug:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue55 );
+                SendGlobalInfoNoteL( EPhoneNumberBarred );
+                }
+            else
+                {
+                SendGlobalWarningNoteL( EPhoneNumberBarred, ETrue );
                 }
             break;
             
@@ -453,12 +538,22 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 {
                 SendGlobalInfoNoteL( EPhoneNoteUnableToMakeVideoCallNotSupportedByOtherPhone );
                 }
+            else
+                {
+                SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
+                }
             break;
         
         case ECCPErrorCCBearerCapabilityNotCurrentlyAvailable:
+        case ECCPErrorCCInvalidMandatoryInformation:
+        case ECCPErrorCCUnspecifiedInterworkingError:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue58 );
+                SendGlobalInfoNoteL( EPhoneNoteVideoCallNotPossible );
+                }
+            else
+                {
+                SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
                 }
             break;
             
@@ -473,19 +568,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 } 
             break;
             
-        case ECCPErrorCCUnspecifiedInterworkingError:
-            if( IsVideoCall( aErrorInfo.iCallId ) )
-                {
-                SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue127 );
-                }
-            break;
-            
-        case ECCPErrorCCPreemption:        
-        case ECCPErrorCCResponseToStatusEnquiry:        
-        case ECCPErrorCCInvalidMandatoryInformation:        
-        case ECCPErrorCCNonExistentMessageType:        
-        case ECCPErrorCCIncompatibleMessageInProtocolState:        
-        case ECCPErrorCCNonExistentInformationElement:
+        case ECCPErrorCCPreemption:                                              
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
                 SendGlobalInfoNoteL( EPhoneNoteCallInfoNotSupported );
@@ -495,18 +578,21 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
                 }     
             break;
-
-        case ECCPErrorCCRecoveryOnTimerExpiry:        
+        case ECCPErrorCCResponseToStatusEnquiry: 
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNoteCallInfoNotSupported );                
+                SendGlobalInfoNoteL( EPhoneErrorInConnection );
                 }
+            else
+                {
+                SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
+                }              
             break;
             
         case ECCPErrorCCFacilityRejected:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
-                SendGlobalInfoNoteL( EPhoneNoteCallInfoNotSupported );
+                SendGlobalInfoNoteL( EPhoneNoteTextRequestRejected );
                 }
             else
                 {
@@ -518,13 +604,37 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
             SendGlobalErrorNoteL( EPhoneNoteTextRequestRejected, ETrue );
             break;
  
-        case ECCPErrorCCServiceNotAvailable:
         case ECCPErrorCCBearerServiceNotImplemented:
         case ECCPErrorCCOnlyRestrictedDigitalInformationBCAvailable:
+        case ECCPErrorCCNonExistentMessageType:
+        case ECCPErrorCCIncompatibleMessageInProtocolState:
+        case ECCPErrorCCNonExistentInformationElement:
+        case ECCPErrorCCRecoveryOnTimerExpiry:
+            if ( IsVideoCall( aErrorInfo.iCallId ) ) 
+                {
+                SendGlobalInfoNoteL( EPhoneNoteVideoCallNotPossible ); //Video call didn't succeed to called end.
+                }
+            else
+                {
+                SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
+                }
+            break;
+            
         case ECCPErrorCCServiceNotImplemented:
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
                 SendGlobalInfoNoteL( EPhoneNoteCallInfoServiceNotAvailable );
+                }
+            break;
+
+        case ECCPErrorCCServiceNotAvailable:
+            if( IsVideoCall( aErrorInfo.iCallId ) )
+                {
+                SendGlobalInfoNoteL( EPhoneErrorInConnection );
+                }
+            else
+                {
+                SendGlobalWarningNoteL( EPhoneErrorInConnection, ETrue );
                 }
             break;
             
@@ -565,6 +675,8 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 aErrorInfo.iErrorCode);
             break;
         } 
+    
+    iCallId = KErrNotFound;
     }    
 
 // -----------------------------------------------------------
@@ -585,5 +697,483 @@ TBool CPhoneErrorMessagesHandler::IsVideoCall( const TInt aCallId ) const
     return ( iStateMachine->PhoneEngineInfo()
         ->CallType( aCallId )== EPECallTypeVideo );
     }
+
+// -----------------------------------------------------------
+// CPhoneErrorMessagesHandler::IsVoiceCall
+// -----------------------------------------------------------
+//
+TBool CPhoneErrorMessagesHandler::IsVoiceCall( const TInt aCallId ) const
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneErrorMessagesHandler::IsVoiceCall() ");
+
+    if( aCallId == KErrNotFound )
+        {
+       // Illegal call id, check call type command
+        return ( iStateMachine->PhoneEngineInfo()->CallTypeCommand()
+            == EPECallTypeCSVoice );  
+        }
+     
+    return ( iStateMachine->PhoneEngineInfo()
+            ->CallType( aCallId )== EPECallTypeCSVoice );
+	}
     
+// -----------------------------------------------------------
+// CPhoneErrorMessagesHandler::GetCauseCode
+// -----------------------------------------------------------
+//
+TBool CPhoneErrorMessagesHandler::GetCauseCode( 
+        TInt &aCauseCode, TInt &aResourceId, TBool &aNotification ) const
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneErrorMessagesHandler::CauseCode() ");
+
+    aCauseCode = KErrNotFound;
+    aNotification = ETrue;
+    TInt callId = (KErrNotFound == iCallId) ? 
+        iStateMachine->PhoneEngineInfo()->CallId() :
+        iCallId;
+    
+    
+    //get exit code error from call data
+    TInt callError = iStateMachine->PhoneEngineInfo()->ProtocolError( 
+            callId );
+
+    switch( callError )
+        {
+        case KErrGsmCCUnassignedNumber:
+            aResourceId = EPhoneNumberNotInUse;
+            aCauseCode = 1;                
+            break;
+            
+        case KErrGsmCCNoRouteToDestination:
+            aResourceId = EPhoneErrorInConnection;
+            aCauseCode = 3;                
+            break;
+
+        case KErrGsmCCChannelUnacceptable:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 6;                
+            break;
+            
+        case KErrGsmCCOperatorDeterminedBarring:
+            aResourceId = EPhoneNumberBarred;
+            aCauseCode = 8;            
+            break;
+            
+        case KErrGsmCCUserBusy:
+            aResourceId = EPhoneNumberBusy;
+            aCauseCode = 17;                
+            break;
+            
+        case KErrGsmCCUserNotResponding:
+            aResourceId = EPhoneNoAnswer;
+            aCauseCode = 18;                
+            break;
+            
+        case KErrGsmCCUserAlertingNoAnswer:
+            aResourceId = EPhoneNoAnswer;
+            aCauseCode = 19;                
+            break;
+            
+        case KErrGsmCCCallRejected:
+            if ( !iStateMachine->PhoneEngineInfo()->IsOutgoingCallBarringActivated() )
+                {
+                aResourceId = EPhoneNoteCalledNumberHasBarredIncomingCalls;
+                aCauseCode = 21;
+                }
+            break;
+            
+        case KErrGsmCCNumberChanged:
+            aResourceId = EPhoneNumberNotInUse;
+            aCauseCode = 22;
+            break;
+        
+        case KErrGsmCCNonSelectedUserClearing:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNotePhoneOutOf3GCoverage; 
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneNoAnswer;
+                }
+            aCauseCode = 26;                
+            break;
+            
+        case KErrGsmCCDestinationOutOfOrder:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 27;
+            break;
+
+        case KErrGsmCCInvalidNumberFormat:
+            aResourceId = EPhoneInvalidPhoneNumber;
+            aCauseCode = 28;                
+            break;
+            
+        case KErrGsmCCFacilityRejected:
+            aResourceId = EPhoneNoteTextRequestRejected;
+            aCauseCode = 29;                
+            break;
+     
+        case KErrGsmCCResponseToStatusEnquiry:
+            aResourceId = EPhoneErrorInConnection;
+            aCauseCode = 30;                
+            break;
+            
+        case KErrGsmCCNormalUnspecified:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNotePhoneOutOf3GCoverage; 
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneNoAnswer;
+                }
+            aCauseCode = 31;                
+            break;
+            
+        case KErrGsmCCNoChannelAvailable:
+            aResourceId = EPhoneNetworkBusy;
+            aCauseCode = 34;                
+            break;
+            
+        case KErrGsmCCNetworkOutOfOrder:
+            aResourceId = EPhoneErrorInConnection;
+            aCauseCode = 38;                
+            break;
+            
+        case KErrGsmCCTemporaryFailure:
+            aResourceId = EPhoneNetworkBusy;
+            aCauseCode = 41;                
+            break;
+            
+        case KErrGsmCCSwitchingEquipmentCongestion:
+            aResourceId = EPhoneNetworkBusy;
+            aCauseCode = 42;                
+            break;
+            
+        case KErrGsmCCAccessInformationDiscarded:
+            aResourceId = EPhoneErrorInConnection;
+            aCauseCode = 43;                
+            break;
+            
+        case KErrGsmCCRequestedChannelNotAvailable:
+            aResourceId = EPhoneNetworkBusy;
+            aCauseCode = 44;                
+            break;
+            
+        case KErrGsmCCResourceNotAvailable:
+            aResourceId = EPhoneErrorInConnection;
+            aCauseCode = 47;                
+            break;
+            
+        case KErrGsmCCQualityOfServiceNotAvailable:
+            aResourceId = EPhoneErrorInConnection;
+            aCauseCode = 49;                
+            break;
+            
+        case KErrGsmCCRequestedFacilityNotSubscribed:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallOnlyPossibleUnder3GCoverage; 
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneNoteTextNotAllowed;
+                }
+            aCauseCode = 50;                
+            break;
+            
+        case KErrGsmCCIncomingCallsBarredInCug:
+            aResourceId = EPhoneNumberBarred;
+            aCauseCode = 55;                
+            break;
+            
+        case KErrGsmCCBearerCapabilityNotAuthorised:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteUnableToMakeVideoCallNotSupportedByOtherPhone; 
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 57;                
+            break;
+   
+        case KErrGsmCCBearerCapabilityNotCurrentlyAvailable:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 58;                
+            break;
+            
+        case KErrGsmCCServiceNotAvailable:
+            aResourceId = EPhoneErrorInConnection;
+            aCauseCode = 63;                
+            break;
+            
+        case KErrGsmCCBearerServiceNotImplemented:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 65;                
+            break;
+ 
+        case KErrGsmCCAcmGreaterThanAcmMax:
+            aResourceId = EPhoneErrorInConnection;
+            aCauseCode = 68;                
+            break;
+            
+        case KErrGsmCCRequestedFacilityNotImplemented:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNotePhoneOutOf3GCoverage;
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneNoteTextCheckNetworkservices;
+                }
+            aCauseCode = 69;                
+            break;
+            
+        case KErrGsmCCOnlyRestrictedDigitalInformationBCAvailable:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible;
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneNoteTextCheckNetworkservices;
+                }
+            aCauseCode = 70;                
+            break;
+            
+        case KErrGsmCCServiceNotImplemented:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible;
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 79;                
+            break;
+            
+        case KErrGsmCCInvalidCallReferenceValue:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible;
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 81;                
+            break;
+            
+        case KErrGsmCCUserNotInCug:
+            // Todo correct string missing
+            aResourceId = EPhoneNumberNotInCUG;
+            aCauseCode = 87;                
+            break;
+            
+        case KErrGsmCCIncompatibleDestination:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteUnableToMakeVideoCallNotSupportedByOtherPhone;
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 88;                
+            break;
+       
+        case KErrGsmCCInvalidTransitNetworkSelection:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 91;                
+            break;
+            
+        case KErrGsmCCSemanticallyIncorrectMessage:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 95;                
+            break;
+            
+        case KErrGsmCCInvalidMandatoryInformation:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 96;                
+            break;
+            
+        case KErrGsmCCNonExistentMessageType:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 97;                
+            break;
+            
+        case KErrGsmCCIncompatibleMessageInProtocolState:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 98;                
+            break;
+            
+        case KErrGsmCCNonExistentInformationElement:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 99;                
+            break;
+            
+        case KErrGsmCCConditionalIEError:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 100;                
+            break;
+            
+        case KErrGsmCCIncompatibleMessageInCallState:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 101;                
+            break;
+            
+        case KErrGsmCCRecoveryOnTimerExpiry:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 102;                
+            break;
+            
+        case KErrGsmCCUnspecifiedProtocolError:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 111;                
+            break;
+            
+        case KErrGsmCCUnspecifiedInterworkingError:
+            if ( IsVideoCall( callId ) ) 
+                {
+                aResourceId = EPhoneNoteVideoCallNotPossible; //Video call didn't succeed to called end.
+                aNotification = EFalse;
+                }
+            else
+                {
+                aResourceId = EPhoneErrorInConnection;
+                }
+            aCauseCode = 127;
+            break;
+        default:
+            break;
+        }  
+
+    return (aCauseCode != KErrNotFound);
+    }
+
 // End of File

@@ -1,0 +1,44 @@
+DialerWidget {
+	layout: default
+}
+
+DialerWidget::background {
+	top: -6un;
+	right: 6un;
+	left: -6un;
+	preferred-width: 24un;
+	preferred-height: 24un;
+	zvalue: 0;
+}
+
+DialerWidget::badgeBackground {
+	left: -1.5un;
+  right: 1.5un;
+  top: -1.5un;
+  bottom: 1.5un;
+  preferred-width: 3.0un;
+  preferred-height: 3.0un;
+  zvalue: 1;
+}
+
+DialerWidget::text {
+  left: -1.5un;
+  right: 1.5un;
+  top: -1.5un;
+  bottom: 1.5un;
+  fixed-width: 3.0un;
+  text-align: center center;
+	text-height: var(hb-param-text-height-tiny);
+	text-line-count-max: 1;
+	color: var(qtc_list_item_title_normal);
+	zvalue: 2;
+}
+
+DialerWidget::touch_area {
+	left: -6.0un;
+	top: -6.0un;
+	preferred-width: 12un;
+	preferred-height: 12un;
+	zvalue: 3;
+}
+

@@ -88,6 +88,7 @@ NONSHARABLE_STRUCT( TPEBasicInfo )                         // Contains informati
     TBool iSecureSpecified;                 // Secure specified status
     TName iDataPortName;                    // the name of data port currently on-loan
     TBool iSwitchToOngoing;                 // Switch to operation status
+    TBool iOutgoingBarringActivated;        // Outgoing barring activated 
     };
 
 NONSHARABLE_STRUCT( TPEConferenceCallInfo ) // Contains conference call related variables 
@@ -1520,6 +1521,32 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * Returns Phonebook contact identifier.
          */
         TInt ContactId2() const;
+        
+        /**
+        * Sets the protocol spesific error code
+        * @param aError is the error code from protocol.
+        * @return None.
+        */
+        void SetProtocolError( TInt aError, TInt aCallId ); 
+ 
+        /**
+        * Returns the protocol spesific error code
+        * @return Error code.
+        */
+        TInt ProtocolError( TInt aCallId ); 
+        
+        /**
+        * Returns flag if the outgoing barring is activated.
+        * @return ETrue if barring activated.
+        */
+        TBool IsOutgoingCallBarringActivated();
+        
+        /**
+        * Sets the flag if the outgoing barring is activated.
+        * @return ETrue if barring activated.
+        */
+        void SetOutgoingCallBarringActivated( 
+                TBool aActivated );
           
     private:
           /**

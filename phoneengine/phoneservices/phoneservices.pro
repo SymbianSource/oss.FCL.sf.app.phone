@@ -17,6 +17,7 @@
 
 TEMPLATE = lib
 TARGET = phoneservices
+CONFIG += hb
 
 symbian {
     TARGET.UID3 = 0x20029F88
@@ -38,7 +39,9 @@ symbian {
     MMP_RULES += servicesDefFiles
 
     LIBS += -lxqservice \
-            -lxqserviceutil
+            -lxqserviceutil \
+            -lfeatmgr \
+            -lxqsettingsmanager
 }
 
 # Input

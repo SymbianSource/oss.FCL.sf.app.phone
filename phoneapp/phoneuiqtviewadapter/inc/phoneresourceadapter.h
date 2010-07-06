@@ -76,7 +76,8 @@ public:
         
         Returns QString.
     */
-    QString convertToString(int symbianResourceId) const;
+    QString convertToString(int symbianResourceId, 
+            const QString &causeCode = QString("")) const;
 
     /*!
         \fn QString PhoneResourceAdapter::convert (int symbianResourceId, QString text )
@@ -86,7 +87,7 @@ public:
         
         Returns QString.
     */   
-    QString convertToString(int symbianResourceId, const QString &text) const;
+    QString convertToStringWithParam(int symbianResourceId, const QString &text) const;
     
     /*!
         \fn int PhoneResourceAdapter::defaultToolbarResourceId ()

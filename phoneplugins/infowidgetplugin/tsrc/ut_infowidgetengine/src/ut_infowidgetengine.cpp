@@ -61,8 +61,6 @@ void UT_InfoWidgetEngine::init()
     SmcDefaultValue<QString>::SetL("");
     SmcDefaultValue<const QString & >::SetL("");
     
-    EXPECT(InfoWidgetNetworkHandler::sessionExists)
-        .returns(true);    
     EXPECT(InfoWidgetNetworkHandler::isOnline)
         .returns(true);    
     
@@ -116,8 +114,6 @@ void UT_InfoWidgetEngine::t_modelData()
 void UT_InfoWidgetEngine::t_updateNetworkDataToModel()
 {
     // Test: network status is online
-    EXPECT(InfoWidgetNetworkHandler::sessionExists)
-        .returns(true);    
     EXPECT(InfoWidgetNetworkHandler::isOnline)
         .returns(true);    
     
@@ -146,8 +142,6 @@ void UT_InfoWidgetEngine::t_updateNetworkDataToModel()
     QVERIFY(verify());
     
     // Test: network status is offline
-    EXPECT(InfoWidgetNetworkHandler::sessionExists)
-        .returns(true);    
     EXPECT(InfoWidgetNetworkHandler::isOnline)
           .returns(false);    
     EXPECT(InfoWidgetNetworkHandler::serviceProviderName).times(0);

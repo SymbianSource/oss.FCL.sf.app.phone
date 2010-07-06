@@ -210,6 +210,20 @@ public:
        Returns HbMenu reference.
     */
     virtual HbMenu &menuReference() = 0;
+    
+    /*!
+        \fn void PhoneUIQtViewIF::captureKey()
+        
+        Captures key.
+    */
+    virtual void captureKey(Qt::Key key, bool capture) = 0;
+    
+    /*
+        \fn void setRestrictedMode()
+        
+        Sets Ui to restricted mode. Decides which keyevent are allowed.
+     */
+    virtual void setRestrictedMode(bool restrictedMode) = 0;
 };
 
 #endif // PHONEUIQTVIEWIF_H

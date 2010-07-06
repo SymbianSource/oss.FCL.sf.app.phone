@@ -90,7 +90,6 @@ void BubbleUtils::setCallHeaderTexts3Lines(
     }
 
     case BubbleManager::OnHold:
-    case BubbleManager::Disconnected:
     {
         if ( header.secondaryCli().length() ) {
             setText(textLine1, header.cli(), header.cliClipDirection());
@@ -105,6 +104,31 @@ void BubbleUtils::setCallHeaderTexts3Lines(
         }
         break;
     }
+
+    case BubbleManager::Disconnected:
+    {
+        if ( header.timerCost().length() ) {
+            setText(textLine1, header.cli(), header.cliClipDirection());
+            setText(textLine2, header.text(), header.textClipDirection());
+            setText(textLine3, header.timerCost(), Qt::ElideRight);
+            cliLineNumber = 1;
+            timerLineNumber = 3;
+        } else {
+            if ( header.secondaryCli().length() ) {
+                setText(textLine1, header.cli(), header.cliClipDirection());
+                setText(textLine2, header.secondaryCli(),
+                        header.secondaryCliClipDirection());
+                setText(textLine3, header.text(), header.textClipDirection());
+                cliLineNumber = 1;
+            } else {
+                setText(textLine1, header.cli(), header.cliClipDirection());
+                setText(textLine2, header.text(), header.textClipDirection());
+                cliLineNumber = 1;
+            }
+        }
+        break;
+    }
+
 
     default:
         // do nothing
@@ -198,95 +222,37 @@ void BubbleUtils::setButtonStyleForAction(
     button.updatePrimitives();
 }
 
-void BubbleUtils::setCallStatusIcon(
+void BubbleUtils::setIndicators(
     int callState,
     int callFlags,
-    HbIconItem& icon)
+    HbIconItem& indicator1,
+    HbIconItem& indicator2 )
 {
-    bool showIcon = true;
+    bool divertIndicator = (( callState == BubbleManagerIF::Incoming ) ||
+                            ( callState == BubbleManagerIF::Waiting )) &&
+                           (callFlags & BubbleManagerIF::Diverted);
 
-    switch(callState) {
-    case BubbleManagerIF::Incoming:
-    case BubbleManagerIF::Alerting:
-    case BubbleManagerIF::Waiting:
-        // from bubble_icon_anim.axml
-        if ( callFlags & BubbleManagerIF::VoIPCall ) {
-            icon.setIconName("voip_call_waiting_anim");
-        } else if ( callFlags & BubbleManagerIF::Video ) {
-            icon.setIconName("video_call_waiting_anim");
-        } else {
-            icon.setIconName("voice_call_waiting_anim");
-        }
-        break;
-    case BubbleManagerIF::Outgoing:
-    case BubbleManagerIF::Active:
-        if ( callFlags & BubbleManagerIF::VoIPCall ) {
-            icon.setIconName("qtg_large_voip_call_active");
-        } else if ( callFlags & BubbleManagerIF::Video ) {
-            icon.setIconName("qtg_large_video_call_active");
-        } else {
-            icon.setIconName("qtg_large_active_call");
-        }
-        break;
-    case BubbleManagerIF::OnHold:
-        if ( callFlags & BubbleManagerIF::VoIPCall ) {
-            icon.setIconName("qtg_large_voip_call_waiting");
-        } else if ( callFlags & BubbleManagerIF::Video ) {
-            icon.setIconName("qtg_large_video_call_waiting");
-        } else {
-            icon.setIconName("qtg_large_waiting_call");
-        }
-        break;
-    case BubbleManagerIF::Disconnected:
-    case BubbleManagerIF::AlertToDisconnected:
-        if ( callFlags & BubbleManagerIF::VoIPCall ) {
-            icon.setIconName("qtg_large_end_call");
-        } else if ( callFlags & BubbleManagerIF::Video ) {
-            icon.setIconName("qtg_large_end_call");
-        } else {
-            icon.setIconName("qtg_large_end_call");
-        }
-        break;
-    default:
-        icon.setIcon(HbIcon());
-        showIcon = false;
-        break;
-    }
+    bool cipheringIndicator = (callFlags & BubbleManagerIF::NoCiphering);
 
-    if (showIcon) {
-        icon.show();
-    }
-}
-
-void BubbleUtils::setNumberTypeIcon(
-    int callState,
-    int callFlags,
-    HbIconItem& icon)
-{
-    if ( (( callState == BubbleManagerIF::Incoming ) ||
-          ( callState == BubbleManagerIF::Waiting )) &&
-         (callFlags & BubbleManagerIF::Diverted) ) {
-        icon.setIcon( HbIcon("qtg_mono_call_diverted") );
-        icon.show();
+    if (divertIndicator && cipheringIndicator) {
+        indicator1.setIcon(HbIcon(QLatin1String("qtg_mono_ciphering_off")));
+        indicator1.show();
+        indicator2.setIcon(HbIcon(QLatin1String("qtg_mono_call_diverted")));
+        indicator2.show();
+    } else if (cipheringIndicator) {
+        indicator1.setIcon(HbIcon(QLatin1String("qtg_mono_ciphering_off")));
+        indicator1.show();
+        indicator2.setIcon(HbIcon());
+        indicator2.hide();
+    } else if (divertIndicator) {
+        indicator1.setIcon(HbIcon(QLatin1String("qtg_mono_call_diverted")));
+        indicator1.show();
+        indicator2.setIcon(HbIcon());
+        indicator2.hide();
     } else {
-        icon.setIcon( HbIcon() );
-        icon.hide();
+        indicator1.setIcon(HbIcon());
+        indicator1.hide();
+        indicator2.setIcon(HbIcon());
+        indicator2.hide();
     }
 }
-
-void BubbleUtils::setCipheringIcon(
-    int callState,
-    int callFlags,
-    HbIconItem& icon)
-{
-    Q_UNUSED(callState)
-
-    if (callFlags & BubbleManagerIF::NoCiphering) {
-        icon.setIcon( HbIcon("qtg_mono_ciphering_off") );
-        icon.show();
-    } else {
-        icon.setIcon( HbIcon() );
-        icon.hide();
-    }
-}
-

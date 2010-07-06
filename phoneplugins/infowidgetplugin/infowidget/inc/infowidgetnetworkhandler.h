@@ -32,7 +32,6 @@ public:
     ~InfoWidgetNetworkHandler();    
 
     bool createSession(); 
-    bool sessionExists();
     
     QString serviceProviderName() const;
     bool serviceProviderNameDisplayRequired() const; 
@@ -50,7 +49,6 @@ public: // From MNWMessageObserver
 public slots: 
     void suspend(); 
     void resume();
-    
     void enableMcn(); 
     void disableMcn(); 
     

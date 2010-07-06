@@ -53,20 +53,19 @@ InfoWidgetSatHandler::~InfoWidgetSatHandler()
  */
 void InfoWidgetSatHandler::connect(bool connect)
 {
-    DPRINT << ": IN : connected = " << m_connected 
-            << " : connect = " << connect;
-    
+    DPRINT; 
     if (connect && !m_connected) {
         DPRINT << "connect and startObserving() ";
         m_connected = m_satHandlerPrivate->connect();
-        if(m_connected){
+        if (m_connected) {
             m_satHandlerPrivate->startObserving();
         }
-    }else if (!connect && m_connected){
+    } else if (!connect && m_connected) {
         DPRINT << "disconnect and stopObserving() ";
-        m_connected = m_satHandlerPrivate->disconnect();
+        m_satHandlerPrivate->disconnect();
+        m_connected = false; 
     }
-    DPRINT << ": OUT : connected = " << m_connected;
+    DPRINT << ": connected = " << m_connected;
 }
 
 /*!
@@ -81,7 +80,8 @@ const QString& InfoWidgetSatHandler::satDisplayText() const
 /*!
    InfoWidgetSatHandler::setSatDisplayText
  */
-void InfoWidgetSatHandler::setSatDisplayText(const QString& displayText)
+void InfoWidgetSatHandler::setSatDisplayText(
+        const QString& displayText)
 {
     DPRINT << ": display text: " << displayText;
     m_displayText = displayText;
@@ -93,25 +93,25 @@ void InfoWidgetSatHandler::setSatDisplayText(const QString& displayText)
 void InfoWidgetSatHandler::handleIdleModeTxtMessage(int idleResult)
 {
     DPRINT << ": handleIdleModeTxtMessage: " << idleResult;
-    if(m_connected){
+    if (m_connected) {
         m_satService.SetIdleModeTextResponse(
-                (RSatService::TSATIdleResult)idleResult);
-    }
-    else{
+                static_cast<RSatService::TSATIdleResult>(idleResult));
+    } else {
         m_satService.SetIdleModeTextResponse( 
                 RSatService::ESATIdleCmdBeyondMeCapabilities );
     }
  
-    //Pass the result
+    // Emit the result
     emit handleMessage(idleResult);
 }
 
 /*!
    InfoWidgetSatHandler::handleSatError
  */
-void InfoWidgetSatHandler::handleSatError(int operation, int errorCode)
+void InfoWidgetSatHandler::handleSatError(
+        int operation, int errorCode)
 {
-    DPRINT << ": satError : operation: " << 
+    DWARNING << ": satError : operation: " << 
             operation << ": errorCode: "<<errorCode;
     m_satService.SetIdleModeTextResponse( 
             RSatService::ESATIdleMeUnableToProcessCmd);

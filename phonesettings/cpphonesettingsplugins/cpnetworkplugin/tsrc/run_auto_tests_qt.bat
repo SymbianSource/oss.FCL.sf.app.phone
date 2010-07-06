@@ -157,7 +157,7 @@ goto end
 :RUNTESTS
 echo Running tests
 for /f %%a in ('dir /b ut_*') do (
-    call %PATH_TO_DLL%\%%a.exe -dtextshell --
+    call %PATH_TO_DLL%\%%a.exe
     move \epoc32\winscw\c\data\%%a.log %PATH_TO_RESULT%\%%a.log
 )
 goto end

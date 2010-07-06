@@ -65,7 +65,8 @@ void BubbleButton::updatePrimitives()
     HbPushButton::updatePrimitives();
 
     HbFrameItem* frame =
-        qgraphicsitem_cast<HbFrameItem*>(HbWidget::primitive("background"));
+        qgraphicsitem_cast<HbFrameItem*>(HbWidget::primitive(
+            QLatin1String("background")));
 
     if (!frame) {
         return;
@@ -76,23 +77,30 @@ void BubbleButton::updatePrimitives()
 
     if (isDown()) {
         if (buttonType()==GreenButton) {
-            graphicsName = "qtg_fr_btn_green_pressed";
-            iconColor = HbColorScheme::color("qtc_callhandling_answer_pressed");
+            graphicsName = QLatin1String("qtg_fr_btn_green_pressed");
+            iconColor = HbColorScheme::color(
+                QLatin1String("qtc_callhandling_answer_pressed"));
         } else if (buttonType()==RedButton) {
-            graphicsName = "qtg_fr_btn_red_pressed";
-            iconColor = HbColorScheme::color("qtc_callhandling_reject_pressed");
+            graphicsName = QLatin1String("qtg_fr_btn_red_pressed");
+            iconColor = HbColorScheme::color(
+                QLatin1String("qtc_callhandling_reject_pressed"));
         } else {
-            iconColor = HbColorScheme::color("qtc_button_pressed");
+            iconColor = HbColorScheme::color(
+                QLatin1String("qtc_button_pressed"));
         }
     } else {
         if (buttonType()==GreenButton) {
-            graphicsName = "qtg_fr_btn_green_normal";
-            iconColor = HbColorScheme::color("qtc_callhandling_answer_normal");
+            graphicsName =
+                QLatin1String("qtg_fr_btn_green_normal");
+            iconColor = HbColorScheme::color(
+                QLatin1String("qtc_callhandling_answer_normal"));
         } else if (buttonType()==RedButton) {
-            graphicsName = "qtg_fr_btn_red_normal";
-            iconColor = HbColorScheme::color("qtc_callhandling_reject_normal");
+            graphicsName = QLatin1String("qtg_fr_btn_red_normal");
+            iconColor = HbColorScheme::color(
+                QLatin1String("qtc_callhandling_reject_normal"));
         } else {
-            iconColor = HbColorScheme::color("qtc_button_normal");
+            iconColor = HbColorScheme::color(
+                QLatin1String("qtc_button_normal"));
         }
     }
 

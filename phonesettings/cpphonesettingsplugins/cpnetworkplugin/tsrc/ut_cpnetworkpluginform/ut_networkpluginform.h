@@ -21,8 +21,25 @@
 #include <QtTest/QtTest>
 #include <mockservice.h>
 #include <psetnetworkwrapper.h>
+#include "cpnetworkpluginform.h"
+#include <QObject>
+   
+class CpNetworkPluginFormAdapter : public CpNetworkPluginForm  
+{
+    Q_OBJECT
+    
+public: 
+    explicit CpNetworkPluginFormAdapter(QGraphicsItem *parent = 0)
+        :CpNetworkPluginForm(parent){}
+    virtual ~CpNetworkPluginFormAdapter(){}
+    
+    QString primaryIconForNetwork(
+            const PSetNetworkWrapper::NetworkInfo &info) {
+        return CpNetworkPluginForm::primaryIconForNetwork(info); 
+    }
+    void hideFocusHighlight(){} 
+}; 
 
-class CpNetworkPluginForm;
 
 class UT_CpNetworkPluginForm : public QObject, MockService
 {
@@ -49,10 +66,12 @@ private slots:
     void t_handleSearchingNetworks();
     void t_handleRequestingSelectedNetwork();
     void t_handleNetworkChanged();
-
+    void t_primaryIconForNetwork();
+    
     void cleanup();
     
     void t_memleak();
+
 private:
     CpNetworkPluginForm *m_networkPluginForm;
     PSetNetworkWrapper *m_networkWrapper;

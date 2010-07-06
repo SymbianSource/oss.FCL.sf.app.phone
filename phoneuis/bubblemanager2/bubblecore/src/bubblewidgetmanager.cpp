@@ -50,29 +50,33 @@ BubbleWidgetManager::BubbleWidgetManager(
       mOrientation(Qt::Vertical)
 {
     // .docml mappings
-    mFileNames.insert(SingleCallView,":/xml/bubble_layout_1.docml");
-    mFileNames.insert(TwoCallsView,  ":/xml/bubble_layout_2.docml");
-    mFileNames.insert(ThreeCallsView,":/xml/bubble_layout_3.docml");
-    mFileNames.insert(ConferenceView,":/xml/bubble_layout_4.docml");
-    mFileNames.insert(MutedOverlay,  ":/xml/bubble_layout_5.docml");
+    mFileNames.insert(SingleCallView,
+                      QLatin1String(":/xml/bubble_layout_1.docml"));
+    mFileNames.insert(TwoCallsView,
+                      QLatin1String(":/xml/bubble_layout_2.docml"));
+    mFileNames.insert(ThreeCallsView,
+                      QLatin1String(":/xml/bubble_layout_3.docml"));
+    mFileNames.insert(ConferenceView,
+                      QLatin1String(":/xml/bubble_layout_4.docml"));
+    mFileNames.insert(MutedOverlay,
+                      QLatin1String(":/xml/bubble_layout_5.docml"));
 
-    mOrientationName.insert(Qt::Vertical,   "portrait");
-    mOrientationName.insert(Qt::Horizontal, "landscape");
+    mOrientationName.insert(Qt::Vertical, QLatin1String("portrait"));
+    mOrientationName.insert(Qt::Horizontal, QLatin1String("landscape"));
 
-    mWidgetPrefix.insert(ExpandedBubble, "eb:");
-    mWidgetPrefix.insert(CollapsedBubble,    "cb:");
-    mWidgetPrefix.insert(CollapsedBubble2,    "cb2:");
-    mContainerName.insert(ExpandedBubble, "expandedBubble");
-    mContainerName.insert(CollapsedBubble,   "collapsedBubble");
-    mContainerName.insert(CollapsedBubble2,   "collapsedBubble2");
-    mWidgetName.insert(Heading,        "bubbleHeading");
-    mWidgetName.insert(Image,          "callImage");
-    mWidgetName.insert(LeftButton,     "leftButton");
-    mWidgetName.insert(CenterButton,   "centerButton");
-    mWidgetName.insert(RightButton,    "rightButton");
-    mWidgetName.insert(ConferenceTimer,"callTimer");
-    mWidgetName.insert(ParticipantList,"participantList");
-    mWidgetName.insert(MutedIcon,      "mutedIcon");
+    mWidgetPrefix.insert(ExpandedBubble, QLatin1String("eb:"));
+    mWidgetPrefix.insert(CollapsedBubble, QLatin1String("cb:"));
+    mWidgetPrefix.insert(CollapsedBubble2, QLatin1String("cb2:"));
+    mContainerName.insert(ExpandedBubble, QLatin1String("expandedBubble"));
+    mContainerName.insert(CollapsedBubble, QLatin1String("collapsedBubble"));
+    mContainerName.insert(CollapsedBubble2, QLatin1String("collapsedBubble2"));
+    mWidgetName.insert(Heading, QLatin1String("bubbleHeading"));
+    mWidgetName.insert(Image, QLatin1String("callImage"));
+    mWidgetName.insert(LeftButton, QLatin1String("leftButton"));
+    mWidgetName.insert(CenterButton, QLatin1String("centerButton"));
+    mWidgetName.insert(RightButton, QLatin1String("rightButton"));
+    mWidgetName.insert(ParticipantList, QLatin1String("participantList"));
+    mWidgetName.insert(MutedIcon, QLatin1String("mutedIcon"));
 }
 
 BubbleWidgetManager::~BubbleWidgetManager()
@@ -99,9 +103,39 @@ QGraphicsWidget* BubbleWidgetManager::view(View view)
     }
 }
 
+bool BubbleWidgetManager::isLoaded(View view)
+{
+    if (mDocumentContent.contains(view)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void BubbleWidgetManager::releaseView(View view)
 {
     Q_UNUSED(view)
+
+    // release loaders
+    BubbleDocumentLoader* loader = mDocumentLoaders.value(view,0);
+    delete loader;
+    mDocumentLoaders.remove(view);
+
+    // release handler
+    QList<BubbleHandler*>* handlers = mDocumentHandlers.value(view,0);
+    if (handlers) {
+        qDeleteAll(*handlers);
+        delete handlers;
+        mDocumentHandlers.remove(view);
+    }
+
+    // release document objects
+    QObjectList objectList = mDocumentObjects.value(view);
+    foreach(QObject* object, objectList) {
+        QMetaObject::invokeMethod(object, "deleteLater", Qt::QueuedConnection);
+    }
+    mDocumentObjects.remove(view);
+    mDocumentContent.remove(view);
 }
 
 QGraphicsWidget* BubbleWidgetManager::loadDocument(
@@ -112,12 +146,13 @@ QGraphicsWidget* BubbleWidgetManager::loadDocument(
         new BubbleDocumentLoader(mImageManager);
     bool ok;
 
-    loader->load(mFileNames[view],&ok);
+    QObjectList objectList = loader->load(mFileNames[view],&ok);
     Q_ASSERT(ok);
     loader->load(mFileNames[view],mOrientationName[orientation],&ok);
     Q_ASSERT(ok);
 
     mDocumentLoaders.insert(view,loader);
+    mDocumentObjects.insert(view,objectList);
 
     QGraphicsWidget* widget =
         mDocumentLoaders[view]->findWidget(BUBBLE_DOCUMENT_CONTENT);
@@ -146,7 +181,8 @@ void BubbleWidgetManager::setBackground(QGraphicsWidget* widget)
     w = qobject_cast<HbWidget*>(widget);
     if (w) {
         HbFrameItem* item =
-            new HbFrameItem("qtg_fr_popup_trans",HbFrameDrawer::NinePieces);
+            new HbFrameItem(QLatin1String("qtg_fr_popup_trans"),
+                            HbFrameDrawer::NinePieces);
         w->setBackgroundItem(item); // takes ownership
     }
 }

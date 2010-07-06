@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -58,46 +58,6 @@ void CpNetworkPluginForm::searchAvailableNetworks(  )
     {
     SMC_MOCK_METHOD0( void )
     }
-
-
-// -----------------------------------------------------------------------------
-// CpNetworkPluginForm::showGlobalProgressNote
-// -----------------------------------------------------------------------------
-//
-void CpNetworkPluginForm::showGlobalProgressNote( 
-        int & noteId,
-        const QString & text )
-    {
-    SMC_MOCK_METHOD2( void, int &, noteId, 
-        const QString &, text )
-    }
-
-
-// -----------------------------------------------------------------------------
-// CpNetworkPluginForm::showGlobalNote
-// -----------------------------------------------------------------------------
-//
-void CpNetworkPluginForm::showGlobalNote( 
-        int & ,
-        const QString & ,
-        HbMessageBox::MessageBoxType  )
-    {
-   // SMC_MOCK_METHOD3( void, int &, noteId, 
-   //     const QString &, text, 
-   //     HbMessageBox::MessageBoxType, msgBoxType )
-    }
-
-
-// -----------------------------------------------------------------------------
-// CpNetworkPluginForm::cancelNote
-// -----------------------------------------------------------------------------
-//
-void CpNetworkPluginForm::cancelNote( 
-        int noteId )
-    {
-    SMC_MOCK_METHOD1( void, int, noteId )
-    }
-
 
 // -----------------------------------------------------------------------------
 // CpNetworkPluginForm::cellularDataUseHomeStateChanged

@@ -15,12 +15,12 @@
 *
 */
 
-#include <QtGui>
+#include <QTimer>
+
 #include <hbaction.h>
 #include <hbtextitem.h>
 #include <hblabel.h>
 #include <hblistview.h>
-#include <hbcolorscheme.h>
 
 #include "bubblemanager2.h"
 #include "bubbleconferencehandler.h"
@@ -29,6 +29,7 @@
 #include "bubbleparticipantlistitem.h"
 #include "bubbleparticipantlistmodel.h"
 #include "bubblebutton.h"
+#include "bubbleheadingwidget.h"
 
 static const int BUBBLE_SELECTION_TIMEOUT = 3000;
 
@@ -39,14 +40,9 @@ BubbleConferenceHandler::BubbleConferenceHandler(
     QObject* parent )
     : BubbleHandler(widgetManager,view,container,parent)
 {
-    mTimerLabel =
-        qobject_cast<HbLabel*>(widget(BubbleWidgetManager::ConferenceTimer));
-    Q_ASSERT(mTimerLabel);
-    HbDeviceProfile profile;
-    HbFontSpec spec(HbFontSpec::Secondary);
-    spec.setTextHeight(4*HbDeviceProfile::current().unitValue());
-    mTimerLabel->setFontSpec(spec);
-    mTimerLabel->setAlignment(Qt::AlignLeft);
+    mHeading =
+        qobject_cast<BubbleHeadingWidget*>(widget(BubbleWidgetManager::Heading));
+    Q_ASSERT(mHeading);
 
     mButtonCenter =
         qobject_cast<BubbleButton*>(widget(BubbleWidgetManager::CenterButton));
@@ -96,7 +92,7 @@ void BubbleConferenceHandler::reset()
 
     mSelectionTimer->stop();
     mPrototype->clearActions();
-    mTimerLabel->hide();
+    mHeading->reset();
     mButtonCenter->hide();
     mButtonCenter->setDown(false);
     mButtonCenter->disconnect();
@@ -130,15 +126,7 @@ void BubbleConferenceHandler::readBubbleHeader( const BubbleHeader& header )
             !(mHeader->callFlags()&BubbleManagerIF::NoCiphering));
     }
 
-    if (header.timerCost().length()) {
-        QColor color;
-        color = HbColorScheme::color("list_item_title_normal");
-        if (color.isValid()) {
-            mTimerLabel->setTextColor(color);
-        }
-        mTimerLabel->setPlainText(header.timerCost());
-        mTimerLabel->show();
-    }
+    mHeading->readBubbleHeader(header);
 
     setButtons(mHeader->actions());
 
@@ -194,10 +182,7 @@ QGraphicsWidget* BubbleConferenceHandler::graphicsWidgetForAction(
 
 void BubbleConferenceHandler::updateTimerDisplayNow()
 {
-    Q_ASSERT(mHeader);
-
-    mTimerLabel->setPlainText(mHeader->timerCost());
-    mTimerLabel->update();
+    mHeading->updateTimerDisplayNow();
 }
 
 void BubbleConferenceHandler::handleItemSelected(

@@ -53,11 +53,6 @@ NONSHARABLE_CLASS( CPhoneAccessoryBTHandler ) : public CBase
 
 
         /**
-         * Sets BT debug mode on.
-         */
-        void SetBTDebugModeL();
-
-        /**
         * Set the BT handsfree mode
         * @param aHandsfreeMode ETrue to activate BT, EFalse to deactivate
         * @return ETrue if allowed

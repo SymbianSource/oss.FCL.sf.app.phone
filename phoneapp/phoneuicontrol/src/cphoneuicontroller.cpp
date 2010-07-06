@@ -31,7 +31,6 @@
 #include "phonelogger.h"
 #include "phoneconstants.h"
 #include "phoneui.pan"
-#include "cphonekeyeventforwarder.h"
 #include "cphonecenrepproxy.h"
 #include "cphonemediatorfactory.h"
 #include "tphonecmdparamnumberentryobserver.h"
@@ -153,7 +152,6 @@ EXPORT_C CPhoneUIController::~CPhoneUIController()
     delete iRemoteControlHandler;
     delete iSystemEventHandler;
     delete iEngineHandler;
-    delete iKeyEventForwarder;
     delete iStateHandle;
     }
 

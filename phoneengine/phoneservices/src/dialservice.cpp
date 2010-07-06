@@ -18,14 +18,23 @@
 #include <xqserviceutil.h>
 #include <e32base.h>
 #include <qregexp.h>
+#include <featmgr.h>
+#include <settingsinternalcrkeys.h>
+#include <xqsettingsmanager.h>
 #include "dialservice.h"
 #include "qtphonelog.h"
 
+// CONSTANTS
+const int MaxPrefixStringLength = 10;
+const XQSettingsKey dialPrefixMode(XQSettingsKey::TargetCentralRepository, KCRUidNetworkSettings.iUid, KSettingsDialPrefixChangeMode);
+const XQSettingsKey dialPrefixString(XQSettingsKey::TargetCentralRepository, KCRUidNetworkSettings.iUid, KSettingsDialPrefixText);
 
 DialService::DialService(MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent) : 
-    XQServiceProvider(QLatin1String("com.nokia.symbian.ICallDial"), parent), m_call (call), m_parameters (parameters)
+    XQServiceProvider(QLatin1String("com.nokia.symbian.ICallDial"), parent), m_call (call), m_parameters (parameters), m_settingsManager(0)
 {
     publishAll();
+    m_settingsManager = new XQSettingsManager(this);
+    Q_ASSERT(m_settingsManager != 0);
 }
 
 DialService::~DialService()
@@ -35,8 +44,8 @@ DialService::~DialService()
 int DialService::dial(const QString& number)
 {
     PHONE_DEBUG2("DialService::dial number:", number);
-    QString simplifiedNumber = simplified(number);
-    TPtrC16 numberPtr(reinterpret_cast<const TUint16*>(simplifiedNumber.utf16()));
+    QString phoneNumber = modifyPhoneNumber(number);
+    TPtrC16 numberPtr(reinterpret_cast<const TUint16*>(phoneNumber.utf16()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeCSVoice);
     return m_call.HandleDialServiceCall ();
@@ -45,8 +54,8 @@ int DialService::dial(const QString& number)
 int DialService::dial(const QString& number, int contactId)
 {
     PHONE_DEBUG4("DialService::dial number:", number, "contactId:", contactId);
-    QString simplifiedNumber = simplified(number);
-    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(simplifiedNumber.utf16()));
+    QString phoneNumber = modifyPhoneNumber(number);
+    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(phoneNumber.utf16()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeCSVoice);
     m_parameters.SetContactId2 (contactId);
@@ -56,8 +65,8 @@ int DialService::dial(const QString& number, int contactId)
 void DialService::dialVideo(const QString& number)
 {
     PHONE_DEBUG2("DialService::dialVideo number:", number);
-    QString simplifiedNumber = simplified(number);
-    TPtrC16 numberPtr(reinterpret_cast<const TUint16*>(simplifiedNumber.utf16()));
+    QString phoneNumber = modifyPhoneNumber(number);
+    TPtrC16 numberPtr(reinterpret_cast<const TUint16*>(phoneNumber.utf16()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeVideo);
     m_call.HandleDialServiceCall ();
@@ -66,8 +75,8 @@ void DialService::dialVideo(const QString& number)
 void DialService::dialVideo(const QString& number, int contactId)
 {
     PHONE_DEBUG4("DialService::dialVideo number:", number, "contactId:", contactId);
-    QString simplifiedNumber = simplified(number);
-    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(simplifiedNumber.utf16()));
+    QString phoneNumber = modifyPhoneNumber(number);
+    TPtrC16 numberPtr (reinterpret_cast<const TUint16*>(phoneNumber.utf16()));
     m_parameters.SetPhoneNumber (numberPtr);
     m_parameters.SetCallTypeCommand (EPECallTypeVideo);
     m_parameters.SetContactId2 (contactId);
@@ -117,10 +126,43 @@ void DialService::dialVoipService(
     m_call.HandleDialServiceCall();    
 }
 
+QString DialService::modifyPhoneNumber(const QString &number)
+{
+    QString modifiedNumber = simplified(number);
+    modifiedNumber = japanPrefixModifications(modifiedNumber);
+
+    return modifiedNumber;
+}
+
 QString DialService::simplified(const QString &number)
 {
     QString simplifiedNumber = number;
     QRegExp rx(QString("[\\s,.\\[\\]\\(\\)\\-]"));
     simplifiedNumber.remove(rx);
     return simplifiedNumber;
+}
+
+QString DialService::japanPrefixModifications(const QString &number)
+{    
+    bool checkPrefix = FeatureManager::FeatureSupported(KFeatureIdJapanPrefixChange);
+    if(checkPrefix == false) {
+    	  // prefix change setting is off so don't play with the number
+        return number;
+    }
+    
+    QString modifiedNumber = number;
+    
+    int prefixMode = m_settingsManager->readItemValue(dialPrefixMode, XQSettingsManager::TypeInt).toInt();
+    if((m_settingsManager->error() == XQSettingsManager::NoError) && (prefixMode > 0)) {
+        // No error fetching value and setting is on
+        QString prefixString = m_settingsManager->readItemValue(dialPrefixString, XQSettingsManager::TypeString).toString();
+
+        if(m_settingsManager->error() == XQSettingsManager::NoError) {
+            if(modifiedNumber.startsWith("+")) {
+                modifiedNumber = modifiedNumber.replace(0, prefixString.length(), prefixString);
+            }        	
+        }
+    }
+                	
+    return modifiedNumber;
 }

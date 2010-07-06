@@ -206,7 +206,7 @@ TBool CPEParserPhoneNumberHandler::IsPhoneOffline()
     TBool isPhoneOffline( EFalse );
 
     if( FeatureManager::FeatureSupported( KFeatureIdOfflineMode )
-        && ( iDataStore.ProfileId() == EProfileOffLineId ) )
+        && ( EFalse == iOwner.IsNetworkConnectionAllowed() ) )
         {
         isPhoneOffline = ETrue;
         }

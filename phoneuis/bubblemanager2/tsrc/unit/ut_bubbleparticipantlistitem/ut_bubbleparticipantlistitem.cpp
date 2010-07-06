@@ -75,7 +75,6 @@ void ut_BubbleParticipantListItem::testUpdateChildItems()
     mItem->addAction(&act1);
     mItem->addAction(&act2);
     mItem->updateChildItems();
-    mItem->setExpanded(true);
     mItem->updateChildItems();
 }
 

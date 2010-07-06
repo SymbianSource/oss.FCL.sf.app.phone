@@ -31,7 +31,7 @@ SUBDIRS += phoneapp/phoneuiqtviewadapter
 SUBDIRS += phoneapp/phonestringloader
 SUBDIRS += phoneapp/phoneui2
 SUBDIRS += phonesettings/cpphonesettingsplugins
-SUBDIRS += phoneplugins/hsdialerwidgetplugin
+SUBDIRS += phoneplugins/dialerwidgetplugin
 SUBDIRS += phoneplugins/infowidgetplugin
 }
           

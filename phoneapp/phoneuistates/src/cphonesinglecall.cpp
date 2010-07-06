@@ -238,7 +238,7 @@ EXPORT_C void CPhoneSingleCall::HandlePhoneEngineMessageL(
             break;
         
         case MEngineMonitor::EPEMessageInValidEmergencyNumber:
-            SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed );
+            SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed, ETrue );
             break;
             
         case MEngineMonitor::EPEMessageValidEmergencyNumber:
@@ -495,7 +495,7 @@ void CPhoneSingleCall::ToggleHoldL()
         }
     else
         {
-        SendGlobalInfoNoteL( EPhoneNoteTextNotAllowed );    
+        SendGlobalInfoNoteL( EPhoneNoteTextNotAllowed, ETrue );    
         }
     }
         
@@ -710,7 +710,7 @@ void CPhoneSingleCall::SetCallHoldL()
     else
         {
         // Show not allowed note
-        SendGlobalInfoNoteL( EPhoneNoteTextNotAllowed );    
+        SendGlobalInfoNoteL( EPhoneNoteTextNotAllowed, ETrue );    
         }
     }
     
@@ -737,7 +737,7 @@ void CPhoneSingleCall::SetCallResumeL()
     else
         {
         // Show not allowed note
-        SendGlobalInfoNoteL( EPhoneNoteTextNotAllowed );    
+        SendGlobalInfoNoteL( EPhoneNoteTextNotAllowed, ETrue );    
         }                
     }
 

@@ -146,7 +146,9 @@ void BubbleManager::endChanges()
     }
 
     if (!mActiveHeaders.count()) {
+        // all calls ended
         mBubbleImageManager->releasePixmaps();
+        releaseNonCachedViews();
     }
 
     // restore mute state
@@ -550,6 +552,7 @@ void BubbleManager::setPhoneMuted(
         } else if (!muted && mMuted) {
             mEffectHandler->startEffect(BubbleMutedDisappear);
         } else {
+            mEffectHandler->cancelAllEffects(mMutedIcon);
             mMutedIcon->setVisible(muted);
         }
     }
@@ -926,3 +929,26 @@ void BubbleManager::releaseImageIfNotUsed(
     }
 }
 
+void BubbleManager::releaseNonCachedViews()
+{
+    static const int viewCount = 3;
+    static const int views[viewCount] = {
+        BubbleWidgetManager::TwoCallsView,
+        BubbleWidgetManager::ThreeCallsView,
+        BubbleWidgetManager::ConferenceView
+    };
+
+    for (int i=0; i < viewCount; i++ ) {
+        BubbleWidgetManager::View viewid =
+            (BubbleWidgetManager::View)views[i];
+
+        if (mWidgetManager->isLoaded(viewid)) {
+            QGraphicsWidget* view = mWidgetManager->view(viewid);
+
+            if (view) {
+                removeFromLayout(view);
+                mWidgetManager->releaseView(viewid);
+            }
+        }
+    }
+}

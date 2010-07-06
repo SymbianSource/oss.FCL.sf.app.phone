@@ -55,7 +55,6 @@ public:
         LeftButton,
         CenterButton,
         RightButton,
-        ConferenceTimer,
         ParticipantList,
         ParticipantListItem,
         ParticipantListButton,
@@ -69,6 +68,8 @@ public:
     virtual ~BubbleWidgetManager();
 
     QGraphicsWidget* view(View view);
+
+    bool isLoaded(View view);
 
     void releaseView(View view);
 
@@ -97,6 +98,7 @@ private:
     BubbleImageManager& mImageManager;
     Qt::Orientation mOrientation;
     QMap<int,BubbleDocumentLoader*>  mDocumentLoaders;
+    QMap<int,QObjectList>            mDocumentObjects;
     QMap<int,QList<BubbleHandler*>*> mDocumentHandlers;
     QMap<int,QGraphicsWidget*>       mDocumentContent;
 

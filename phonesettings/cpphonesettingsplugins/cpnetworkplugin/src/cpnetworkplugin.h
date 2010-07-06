@@ -36,9 +36,7 @@ class CpNetworkPlugin
     Q_INTERFACES(CpLauncherInterface)
 
 public:
-    
     CpNetworkPlugin();
-    
     ~CpNetworkPlugin();
     
     /**
@@ -55,9 +53,7 @@ public:
     CpBaseSettingView *createSettingView(const QVariant &hint) const;
 
 private:
-    
     QScopedPointer<CpPhoneLocalisation> m_localisation;
-    
     QScopedPointer<CpNetworkStatus> m_networkStatus; 
 };
 

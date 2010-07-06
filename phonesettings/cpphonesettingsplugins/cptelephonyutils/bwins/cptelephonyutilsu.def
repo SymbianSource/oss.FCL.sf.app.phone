@@ -80,4 +80,5 @@ EXPORTS
 	?showPasswordQueryDialog@CpPhoneNotes@@QAEXABVQString@@ABVQValidator@@H@Z @ 79 NONAME ; void CpPhoneNotes::showPasswordQueryDialog(class QString const &, class QValidator const &, int)
 	?trUtf8@Tools@@SA?AVQString@@PBD0@Z @ 80 NONAME ; class QString Tools::trUtf8(char const *, char const *)
 	??0CpSettingsWrapper@@QAE@PAVQObject@@@Z @ 81 NONAME ; CpSettingsWrapper::CpSettingsWrapper(class QObject *)
+	?forbiddenIconSupported@CpSettingsWrapper@@QBE_NXZ @ 82 NONAME ; bool CpSettingsWrapper::forbiddenIconSupported(void) const
 

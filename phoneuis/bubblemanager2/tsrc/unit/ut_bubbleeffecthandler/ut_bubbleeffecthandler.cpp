@@ -64,6 +64,7 @@ private slots:
 
     void testMuteAppearEffect();
     void testMuteDisappearEffect();
+    void testCancelAllEffects();
 
 private:
     HbMainWindow* mWindow;
@@ -116,6 +117,23 @@ void ut_BubbleEffectHandler::testMuteDisappearEffect()
     QVERIFY(mContainer->mLabel->isVisible()==false);
 
     mEffectHandler->removeEffect(mContainer->mLabel,BubbleMutedDisappear);
+}
+
+void ut_BubbleEffectHandler::testCancelAllEffects()
+{
+    QVERIFY(mContainer->mLabel->isVisible()==false);
+    QTest::qWait(500);
+
+    mContainer->mLabel->setPlainText("Appearing");
+
+    mEffectHandler->addEffect(mContainer->mLabel,BubbleMutedAppear);
+    mEffectHandler->startEffect(BubbleMutedAppear);
+    QTest::qWait(100);
+    QVERIFY(HbEffect::effectRunning(mContainer->mLabel));
+    mEffectHandler->cancelAllEffects(mContainer->mLabel);
+    QVERIFY(!HbEffect::effectRunning(mContainer->mLabel));
+
+    mEffectHandler->removeEffect(mContainer->mLabel,BubbleMutedAppear);
 }
 
 BUBBLE_TEST_MAIN(ut_BubbleEffectHandler)

@@ -71,6 +71,22 @@ QList<CpSettingFormItemData*> CpTelephonyPlugin::createSettingFormItemData(
     return ret;
 }
 
+/*!
+    CpTelephonyPlugin::createSettingView() const
+*/
+CpBaseSettingView *CpTelephonyPlugin::createSettingView(const QVariant &hint) const
+{
+    QVariantHash hash = hint.value<QVariantHash>();
+    
+    if( hash.value("view").toString().compare("divert_view",Qt::CaseInsensitive) == 0){
+        QVariantList params;
+        params << QVariant("cpdivertplugin");
+        return new CpTelephonyPluginView(params);
+    }
+    return 0;
+}
+
+
 Q_EXPORT_PLUGIN2(cptelephonyplugin, CpTelephonyPlugin);
 
 

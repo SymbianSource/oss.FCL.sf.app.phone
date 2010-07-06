@@ -103,6 +103,11 @@ public:
      Return false if ongoing call does not exist.
      */
     bool isOngoingCall() const;
+	
+	/*!
+     Forbidden Icon support
+     */
+    bool forbiddenIconSupported() const;
 
 private:
     /*!

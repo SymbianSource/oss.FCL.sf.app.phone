@@ -599,7 +599,9 @@ TPtrC CPEPhoneModel::NameByMessageFromPhoneEngine(
             return MESSAGE("EPEMessageTempClirSuppressUnsuccessful");
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
             return MESSAGE("EPEMessageTempClirActivationUnsuccessful");
-
+        case MEngineMonitor::EPEMessageOutgoingCallBarred:
+            return MESSAGE("EPEMessageOutgoingCallBarred");
+            
         // Contact messages                       11400 - 11599
 
         // Error messages                         11600 - 11799
@@ -914,6 +916,12 @@ void CPEPhoneModel::SendMessage(
             }
         }
 
+    if ( message == MEngineMonitor::EPEMessageOutgoingCallBarred )
+        {
+        iEngineInfo->SetOutgoingCallBarringActivated( ETrue );
+        message = KPEDontSendMessage;
+        }
+    
     if ( ( message == MEngineMonitor::EPEMessageIncoming ) )
         {
         if ( FeatureManager::FeatureSupported( KFeatureIdDriveMode ) )
@@ -968,7 +976,14 @@ void CPEPhoneModel::SendMessage(
 	    TPEErrorInfo errorInfo = iEngineInfo->ErrorInfo();
     	errorInfo.iCallId = aCallId;
     	errorInfo.iErrorType = EPECcp;
-        iEngineMonitor.HandleError( errorInfo );
+
+        if ( ECCPErrorCCCallRejected == errorInfo.iErrorCode )
+            {
+            // Call direction is not set if the call was rejected before Dialing-state
+            iEngineInfo->SetCallDirection( RMobileCall::EMobileOriginated, aCallId );
+            iMessageHandler->AddSIMRejectedMoCsCallToLog( aCallId );
+            }
+    	iEngineMonitor.HandleError( errorInfo );
         }
     else if ( message == MEngineMonitor::EPEMessageServiceHandlingError )
         {
@@ -1091,6 +1106,8 @@ TInt CPEPhoneModel::ProcessMessage(
                 {
                 errorCode = iMessageHandler->ContinueSwitchToCall( aCallId );
                 }
+            
+            iEngineInfo->SetOutgoingCallBarringActivated( EFalse );
             break;
 
         case MEngineMonitor::EPEMessageRemoteBusy:
@@ -1510,7 +1527,7 @@ void CPEPhoneModel::SetCallError( TInt aCallId )
             {
             callError = ( iCallInfo->iExitCode >> KTimesToSplitValue ); 
             //Set protocol spesific error code to TPEErrorInfo
-            EngineInfo()->SetProtocolError( callError );
+            EngineInfo()->SetProtocolError( callError, aCallId );
             }
         }
     }

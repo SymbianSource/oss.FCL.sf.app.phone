@@ -42,6 +42,7 @@ public:
     void removeEffect(QGraphicsItem* item, BubbleEffect effect);
 
     void startEffect(BubbleEffect effect);
+    void cancelAllEffects(QGraphicsItem* item);
 
 protected slots:
     void handleEffectFinished(const HbEffect::EffectStatus &status);

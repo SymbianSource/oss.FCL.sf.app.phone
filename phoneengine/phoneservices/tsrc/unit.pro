@@ -19,3 +19,6 @@ TEMPLATE = subdirs
 SUBDIRS += ut_phoneservices
 SUBDIRS += ut_dialservice
 SUBDIRS += ut_dtmfservice
+SUBDIRS += ut_ctiurischemeparser
+SUBDIRS += ut_telurischemeparser
+SUBDIRS += ut_urischemehandlerservice

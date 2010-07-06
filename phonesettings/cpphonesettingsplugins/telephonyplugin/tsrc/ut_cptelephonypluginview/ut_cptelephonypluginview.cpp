@@ -64,20 +64,21 @@ UT_CpTelephonyPluginView::~UT_CpTelephonyPluginView()
 void UT_CpTelephonyPluginView::init()
 {
     initialize();
+
     CpPluginInterface *nullPlugin=0;
-    expect("CpPluginLoader::loadCpPluginInterface").
-            with(QString("cpcallsplugin")).returns(nullPlugin);
     DummyPlugin *ret = new DummyPlugin;
-    
-    //ret = new DummyPlugin;
+
     QList<CpSettingFormItemData*> list;
     list.append(new CpSettingFormItemData);
     expect("CpPluginLoader::loadCpPluginInterface").
-            with(QString("cpdivertplugin")).returns(ret); // cpnetworkplugin
+            with(QString("cpcallsplugin")).returns(ret);
     expect("DummyPlugin::createSettingFormItemData").returns(list);
+    expect("CpPluginLoader::loadCpPluginInterface").
+            with(QString("cpdivertplugin")).returns(nullPlugin);
     
     m_callspluginview = new CpTelephonyPluginView;
     QVERIFY( verify() );
+
 }
 
 /*!

@@ -66,7 +66,10 @@ public:
     void sendToBackground(bool homeScreenForeground);
     void hideDeviceDialogs(bool hide);
     
-    int ordinalPosition();
+    /**
+     * Return true if phone is visible application
+     */
+    bool phoneVisible();
     
 public: // from MPhonePubSubObserver
 
@@ -82,7 +85,18 @@ public: // from MPhonePubSubObserver
         const TInt aValue);
         
 private:
+    /**
+     * Handle keyguard according phone visiblity
+     * and keyguard previous state
+     */
+    bool disableKeyGuard();
+    void enableKeyGuard();
 
+    /**
+     * Number of currently ongoing call's
+     */
+    int ongoingCalls();
+    
     /**
      * Adjusts visibility based on current call and device security statuses.
      */
@@ -117,6 +131,8 @@ private:
     /** Car Mode publisher */
     QValueSpacePublisher* m_carModePublisher;
     
+    /** Key guard status before phone came top */
+    bool m_keyguardOnBeforeForeground;
 };
 
 #endif // PHONEVISIBILITYHANDLER_H

@@ -465,6 +465,19 @@ public:
      */
     TPECallOrigin CallOrigin() const;
     
+    /**
+    * Sets the protocol spesific error code
+    * @param aError is the error code from protocol.
+    * @return None.
+    */
+    void SetProtocolError( TInt aError ); 
+    
+    /**
+    * Returns the protocol spesific error code
+    * @return Error code.
+    */
+    TInt ProtocolError() const; 
+    
 private:
     
     /**
@@ -634,6 +647,11 @@ private:
      * Origin of the call. 
      */
     TPECallOrigin iCallOrigin;
+    
+    /**
+     * Protocol error code.
+     */
+    TInt iProtocolError;
     };
 
 #endif // C_CPECALLINFO_H

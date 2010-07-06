@@ -26,9 +26,11 @@
 //
 PSetCallDivertingWrapper::PSetCallDivertingWrapper( 
         CPsetContainer & psetContainer,
-        QObject * parent ) : QObject( parent )
+        QObject * parent )
+    //:
+    //QObject( /*psetContainer, parent*/ )
     {
-    Q_UNUSED(psetContainer);
+    
     }
 
 
@@ -106,22 +108,29 @@ void PSetCallDivertingWrapper::setNewDefaultNumber(
     SMC_MOCK_METHOD1( void, QString, aNumber )
     }
 
+
 // -----------------------------------------------------------------------------
 // PSetCallDivertingWrapper::getVoiceMailBoxNumber
 // -----------------------------------------------------------------------------
 //
-int PSetCallDivertingWrapper::getVoiceMailBoxNumber(
-        QString &aNumber, PsService aService)
+int PSetCallDivertingWrapper::getVoiceMailBoxNumber( 
+        QString & aNumber,
+        PsService aService )
     {
-    SMC_MOCK_METHOD2( int, QString & , aNumber, PsService, aService )
+    SMC_MOCK_METHOD2( int, QString &, aNumber, 
+        PsService, aService )
     }
+
 
 // -----------------------------------------------------------------------------
 // PSetCallDivertingWrapper::queryVoiceMailBoxNumber
 // -----------------------------------------------------------------------------
 //
-int PSetCallDivertingWrapper::queryVoiceMailBoxNumber(
-        QString &aNumber, PsService aService)
+int PSetCallDivertingWrapper::queryVoiceMailBoxNumber( 
+        QString & aNumber,
+        PsService aService )
     {
-    SMC_MOCK_METHOD2( int, QString & , aNumber, PsService, aService )
+    SMC_MOCK_METHOD2( int, QString &, aNumber, 
+        PsService, aService )
     }
+

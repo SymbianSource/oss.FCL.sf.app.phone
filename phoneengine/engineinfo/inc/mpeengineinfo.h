@@ -697,7 +697,27 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
         * @param aError is the error code from protocol.
         * @return None.
         */
-        virtual void SetProtocolError( TInt aError ) = 0; 
+        virtual void SetProtocolError( TInt aError, TInt aCallId ) = 0; 
+ 
+        /**
+        * Returns the protocol spesific error code
+        * @return Error code.
+        */
+        virtual TInt ProtocolError( TInt aCallId ) = 0; 
+        
+        /**
+        * Returns flag if the outgoing barring is activated.
+        * @return ETrue if barring activated.
+        */
+        virtual TBool IsOutgoingCallBarringActivated() = 0;
+        
+        /**
+        * Sets the flag if the outgoing barring is activated.
+        * @return ETrue if barring activated.
+        */
+        virtual void SetOutgoingCallBarringActivated( 
+                TBool aActivated ) = 0;
+        
     }; // MPEEngineInfo
     
 #endif      //MPEENGINEINFO_H

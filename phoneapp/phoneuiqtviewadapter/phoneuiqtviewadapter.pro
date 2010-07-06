@@ -47,6 +47,7 @@ symbian {
         -llogsengine \
         -lxqplugins \
         -lakncapserverclient \
+        -llockclient \
         -ltelephonyservice \
         -lapgrfx \
         -lavkon \

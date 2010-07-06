@@ -88,13 +88,11 @@ const InfoWidgetEngine::ModelData& InfoWidgetEngine::modelData() const
  */
 void InfoWidgetEngine::updateNetworkDataToModel()
 {
-    DPRINT << ": IN"; 
-    
-    if (m_networkHandler->sessionExists() && 
-        m_networkHandler->isOnline()) {
-    
+    if (m_networkHandler->isOnline()) {
+        DPRINT << ": online, update data";
         m_modelData.setServiceProviderName(
                 m_networkHandler->serviceProviderName());
+
         m_modelData.setServiceProviderNameDisplayRequired(
                 m_networkHandler->serviceProviderNameDisplayRequired());
     
@@ -107,10 +105,10 @@ void InfoWidgetEngine::updateNetworkDataToModel()
         m_modelData.setHomeZoneTextTag(
                 m_networkHandler->homeZoneTextTag());
     } else {
-        // Not registered to network, clear data
-        m_modelData.setServiceProviderName(QString(""));
-        m_modelData.setMcnName(QString(""));
-        m_modelData.setHomeZoneTextTag(QString("")); 
+        DPRINT << ": offline, clear data";
+        m_modelData.setServiceProviderName("");
+        m_modelData.setMcnName("");
+        m_modelData.setHomeZoneTextTag(""); 
     }
         
     emit modelChanged();

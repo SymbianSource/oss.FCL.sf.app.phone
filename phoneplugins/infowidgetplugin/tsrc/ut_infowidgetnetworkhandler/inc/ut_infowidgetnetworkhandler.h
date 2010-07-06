@@ -25,6 +25,8 @@ class MNWMessageObserver;
 class InfoWidgetNetworkHandler;
 class TNWInfo;
 
+
+
 class UT_InfoWidgetNetworkHandler : public QObject, public MockService
 {
     Q_OBJECT
@@ -66,9 +68,7 @@ private:
         TNWInfo& aTNWInfo);
     
 private:
-    
     InfoWidgetNetworkHandler *m_networkHandler;
-
 };
 
 #endif // UT_INFOWIDGETNETWORKHANDLER_H

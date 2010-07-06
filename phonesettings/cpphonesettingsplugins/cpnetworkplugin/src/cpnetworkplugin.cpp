@@ -24,15 +24,15 @@
   CpNetworkPlugin::CpNetworkPlugin
  */
 CpNetworkPlugin::CpNetworkPlugin() : 
-    QObject(0),
-    m_localisation(0)
+    QObject(NULL),
+    m_localisation(NULL),
+    m_networkStatus(NULL)
 {
     INSTALL_TRACE_MSG_HANDLER;
     DPRINT << ": IN";
     
-    // Set scoped pointer 
+    // Create guarded objects
     m_localisation.reset(new CpPhoneLocalisation); 
-    
     m_networkStatus.reset(new CpNetworkStatus); 
     
     // Install required translations
@@ -61,9 +61,7 @@ QList<CpSettingFormItemData*> CpNetworkPlugin::createSettingFormItemData(
         CpItemDataHelper &itemDataHelper) const
 {   
     DPRINT << ": IN";
-    
     QList<CpSettingFormItemData*> ret;
-    
     ret.append(new CpSettingFormEntryItemDataImpl<CpNetworkPluginView>(
             itemDataHelper,
             hbTrId("txt_cp_dblist_mobile_network"),

@@ -35,6 +35,7 @@
 BubbleImageManagerPrivate::BubbleImageManagerPrivate(
     BubbleImageManager* parent)
     : q_ptr(parent),
+      mThumbnailManager(0),
       mInitialized(false)
 {
 }

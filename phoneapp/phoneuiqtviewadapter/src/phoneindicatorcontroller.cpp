@@ -155,7 +155,7 @@ void PhoneIndicatorController::updateDivertIndicator(
     PHONE_TRACE
     if ( compareKeys( key, PhoneIndicatorControllerKeys::currentCFKey ) ){
         PHONE_DEBUG("currentCfKey");
-        int cfStatus = value.toInt();
+        int cfStatus = value.toByteArray().toInt();
         updateDiverIndicator( cfStatus & KCFVoiceForwarded);
     } else if (compareKeys(key, PhoneIndicatorControllerKeys::unconditionalCFKey )){        
         QByteArray bytes = value.toByteArray();
@@ -241,11 +241,7 @@ void PhoneIndicatorController::updateDiverIndicator(bool activeDiverts)
         parameters.insert(
                 QVariant( HbIndicatorInterface::DecorationNameRole ).toString(),
                 iconName );
-                
-        // TODO: remove this when ready
-        parameters.insert( 
-                QVariant( HbIndicatorInterface::SecondaryTextRole ).toString(), 
-                "Feature not ready" );
+        
         m_indicator.activate( indicatorType, parameters );
     }else{
         m_indicator.deactivate( indicatorType );

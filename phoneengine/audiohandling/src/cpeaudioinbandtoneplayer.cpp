@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2004 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -26,7 +26,8 @@
 #include    <barsc.h> 
 #include    <barsread.h>
 #include    <data_caging_path_literals.hrh> 
-#include    <defaultbeep.rsg>           
+#include    <defaultbeep.rsg> 
+#include    <featdiscovery.h>
 #include    <pepanic.pan>
 #include    <talogger.h>    
 
@@ -147,7 +148,20 @@ void CPEAudioInbandTonePlayer::ConstructL(
     HBufC8* resourceSpecial = resourceFile.AllocReadL( R_NET_SPECIAL_INFORMATION );
     HBufC8* resourceRadioPath = resourceFile.AllocReadL( R_NET_RADIO_NOT_AVAILABLE );
     HBufC8* resourceRingGoing = resourceFile.AllocReadL( R_NET_RING_GOING );
-    HBufC8* resourceCallWaiting = resourceFile.AllocReadL( R_NET_CALL_WAITING );
+    
+    
+    HBufC8* resourceCallWaiting;
+
+    if ( CFeatureDiscovery::IsFeatureSupportedL( KFeatureIdFfAlternativeCallWaitingTone ) )
+        {
+        resourceCallWaiting = resourceFile.AllocReadL( R_NET_CALL_WAITING_ALTERNATIVE_TONE );
+        }
+    else
+        {
+        resourceCallWaiting = resourceFile.AllocReadL( R_NET_CALL_WAITING );
+        }  
+    
+    
     HBufC8* dataCallTone = resourceFile.AllocReadL( R_DATA_CALL_TONE );
     HBufC8* noSoundSequence = resourceFile.AllocReadL( R_NO_SOUND_SEQUENCE );
     HBufC8* beepSequence = resourceFile.AllocReadL( R_BEEP_SEQUENCE );

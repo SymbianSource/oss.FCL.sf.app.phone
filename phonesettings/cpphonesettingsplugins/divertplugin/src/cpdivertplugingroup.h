@@ -231,7 +231,7 @@ private:
      */
     void updateDependentDivertOptions(bool fetchFromNetwork = false);
     void activateDependentDivertOption(CpDivertItemData* item, bool fetchFromNetwork);
-    void deActivateDependentDivertOption(CpDivertItemData* item) const;
+    void deactivateDependentDivertOption(CpDivertItemData* item) const;
     
     /**
      Synchronizes content and status of not available divert option based on
@@ -242,7 +242,7 @@ private:
     void nextPhaseForActivateDivert(bool ok);
     
     bool isDivertSettingsItem(HbDataFormModelItem* modelItem);
-    
+     
 private:   // data
 
     // Setting wrappers 
@@ -268,9 +268,6 @@ private:   // data
     int m_activeNoteId;
     int m_activeProgressNoteId;
 
-    // To prevent adding vmbx number to defaultlist
-    bool m_divertToVoiceMailBox;
-
     /**
      Divert request queue
      */
@@ -282,6 +279,7 @@ private:   // data
     PSCallDivertingCommand m_divertCommand;
     int m_timerId;
     HbDialog *m_dialog;
+
 };
 
 #endif // CPDIVERTPLUGINGROUP_H

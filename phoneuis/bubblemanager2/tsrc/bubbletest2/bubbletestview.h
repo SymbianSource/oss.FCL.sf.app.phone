@@ -137,7 +137,6 @@ private:
 
     HbAction         *mConnectTester;
     QMap<QString, int> mTestBubbleIds;
-    QString mPhoneNumber;
     int mConfBubbleId;
     bool mProvideJoin;
 };

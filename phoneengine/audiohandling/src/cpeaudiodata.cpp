@@ -29,6 +29,7 @@
 #include <tms.h>
 #include <tmseffectobsrvr.h>
 #include <tmsglobalvoleffect.h>
+#include <telinformationpskeys.h>
 #include "pepanic.pan"
 #include "cpeaudiodtmftoneplayer.h"
 #include "cpeaudioroutingmonitor.h"
@@ -545,6 +546,16 @@ CTelephonyAudioRouting::TAudioOutput CPEAudioData::RoutePreference()
         {
         output = CTelephonyAudioRouting::ELoudspeaker;
         }
+    else
+        {
+        TInt value; 
+        const TInt err = RProperty::Get( KPSUidTelCarMode, KTelCarMode, value );
+        if ( !err && value == EPSCarModeOn )
+            {
+            output = CTelephonyAudioRouting::ELoudspeaker;
+            }
+        }
+        
     TEFLOGSTRING2( KTAMESINT, "AUD CPEAudioData::RoutePreference() output %d", output );
     return output;
     }

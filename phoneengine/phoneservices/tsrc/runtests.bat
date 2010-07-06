@@ -27,3 +27,15 @@ type \epoc32\winscw\c\private\E31F4ECE\ut_dialservice.log
 del \epoc32\winscw\c\private\EEE39B2F\ut_dtmfservice.log
 \epoc32\release\winscw\udeb\ut_dtmfservice.exe -o ut_dtmfservice.log
 type \epoc32\winscw\c\private\EEE39B2F\ut_dtmfservice.log
+
+del \epoc32\winscw\c\private\E31F4ECF\ut_ctiurischemeparser.log
+\epoc32\release\winscw\udeb\ut_ctiurischemeparser.exe -o ut_ctiurischemeparser.log
+type \epoc32\winscw\c\private\E31F4ECF\ut_ctiurischemeparser.log
+
+del \epoc32\winscw\c\private\E31F4EAF\ut_telurischemeparser.log
+\epoc32\release\winscw\udeb\ut_telurischemeparser.exe -o ut_telurischemeparser.log
+type \epoc32\winscw\c\private\E31F4EAF\ut_telurischemeparser.log
+
+del \epoc32\winscw\c\private\E31F4EDA\ut_urischemehandlerservice.log
+\epoc32\release\winscw\udeb\ut_urischemehandlerservice.exe -o ut_urischemehandlerservice.log
+type \epoc32\winscw\c\private\E31F4EDA\ut_urischemehandlerservice.log

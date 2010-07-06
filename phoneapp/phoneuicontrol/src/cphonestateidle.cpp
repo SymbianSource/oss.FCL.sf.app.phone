@@ -37,6 +37,7 @@
 #include "tphonecmdparaminteger.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparamglobalnote.h"
+#include "tphonecmdparamkeycapture.h"
 #include "tphonecmdparamstring.h"
 #include "tphonecmdparamboolean.h"
 #include "mphonestatemachine.h"
@@ -343,7 +344,7 @@ EXPORT_C void CPhoneStateIdle::HandlePhoneEngineMessageL(
             break;
             
         case MEngineMonitor::EPEMessageInValidEmergencyNumber:                
-            SendGlobalWarningNoteL( EPhoneEmergencyCallsOnly );                           
+            SendGlobalWarningNoteL( EPhoneEmergencyCallsOnly, ETrue );                           
             break;
             
         case MEngineMonitor::EPEMessageValidEmergencyNumber:
@@ -692,6 +693,10 @@ EXPORT_C void CPhoneStateIdle::DisplayIncomingCallL( TInt aCallId )
     // Remove any phone dialogs if they are displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
 
+    TPhoneCmdParamKeyCapture captureParam;
+    captureParam.SetKeyCode( EKeyNo );
+    iViewCommandHandle->ExecuteCommand( EPhoneViewStartCapturingKey, &captureParam );
+    
     // Capture keys when there is an incoming call
     CaptureKeysDuringCallNotificationL( ETrue );
 
@@ -736,6 +741,10 @@ EXPORT_C void CPhoneStateIdle::DisplayCallSetupL( TInt aCallId )
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
+    TPhoneCmdParamKeyCapture captureParam;
+    captureParam.SetKeyCode( EKeyNo );
+    iViewCommandHandle->ExecuteCommand( EPhoneViewStartCapturingKey, &captureParam );
+    
     // Capture keys when the phone is dialling
     CaptureKeysDuringCallNotificationL( ETrue );
 
@@ -1019,46 +1028,7 @@ EXPORT_C void CPhoneStateIdle::OnlyHashInNumberEntryL()
 //
 void CPhoneStateIdle::ChangeMannerModeL()
     {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneStateIdle::ChangeMannerModeL( ) ");
-
-    // Get the profile information
-    const TInt profileId = 
-        iStateMachine->PhoneEngineInfo()->ProfileId();
-    TInt newProfile;
-    
-    if ( profileId == EProfileSilentId )
-        {
-        newProfile = EProfileGeneralId;
-        }
-    else
-        {
-        newProfile = EProfileSilentId;    
-        }
-        
-    if ( !iEngine )
-        {
-        iEngine = CreateProfileEngineL();
-        }
-
-    iEngine->SetActiveProfileL( newProfile );
-    
-    // Stop playing DTMF tone
-    iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF ); 
-    
-    if ( !iOnScreenDialer )
-        {
-        // Remove the number entry
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );        
-        }
-    else
-        {
-        NumberEntryClearL();
-        }
-    
-    iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
- 
-     // Bring Idle app to the top app
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetIdleTopApplication );            
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneStateIdle::ChangeMannerModeL( ) ");         
     }
 
 // -----------------------------------------------------------

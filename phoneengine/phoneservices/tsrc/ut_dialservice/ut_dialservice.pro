@@ -35,7 +35,9 @@ symbian {
 
     LIBS += -lxqservice \
             -lxqserviceutil \
-            -lphoneuicontrol
+            -lphoneuicontrol \
+            -lfeatmgr \
+            -lxqsettingsmanager
 
     TARGET.CAPABILITY = ALL -TCB
 }

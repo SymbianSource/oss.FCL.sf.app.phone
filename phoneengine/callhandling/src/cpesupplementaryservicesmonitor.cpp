@@ -90,6 +90,11 @@ EXPORT_C void CPESupplementaryServicesMonitor::BarringEventOccurred(
         case ECCESsAnonymousCallBarred: /** Anonymous call barring. */
         case ECCESsOutgoingCallBarred:  /** Outgoing call barring */
             iOwner.SendMessage( MEngineMonitor::EPEMessageCallBarred, KPECallIdNotUsed );
+            if ( aBarringEvent == ECCESsOutgoingCallBarred )
+                {
+                iOwner.SendMessage( MEngineMonitor::EPEMessageOutgoingCallBarred, 
+                                    KPECallIdNotUsed );
+                }
             break;
             
         default:

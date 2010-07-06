@@ -16,7 +16,7 @@
 */
 #include <QDebug>
 #include <smcmockclassincludes.h>
-#include "psetnetworkwrapper.h"
+#include <psetnetworkwrapper.h>
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -38,7 +38,7 @@ PSetNetworkWrapper::PSetNetworkWrapper(
 //
 PSetNetworkWrapper::~PSetNetworkWrapper(  )
     {
-
+    
     }
 
 
@@ -103,5 +103,16 @@ void PSetNetworkWrapper::setNetworkAccessMode(
     {
     SMC_MOCK_METHOD1( void, PSetNetworkWrapper::NetworkAccessMode, mode )
     }
+
+
+// -----------------------------------------------------------------------------
+// PSetNetworkWrapper::isManualNetworkSelectionSupported
+// -----------------------------------------------------------------------------
+//
+bool PSetNetworkWrapper::isManualNetworkSelectionSupported(  ) const
+    {
+    SMC_MOCK_METHOD0( bool )
+    }
+
 
 

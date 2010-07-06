@@ -128,7 +128,7 @@ void CPhoneConferenceAndSingle::HandlePhoneEngineMessageL(
             break;
             
         case MEngineMonitor::EPEMessageInValidEmergencyNumber:              
-            SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed );                       
+            SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed, ETrue );                       
             break;
             
         case MEngineMonitor::EPEMessageValidEmergencyNumber:

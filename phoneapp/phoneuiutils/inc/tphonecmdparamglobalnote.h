@@ -96,6 +96,12 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         IMPORT_C void SetNotificationDialog( TBool aNotificationDialog );
         
         /**
+        * Sets cause code.
+        * @param aCauseCode Cause code.
+        */
+        IMPORT_C void SetCauseCode( TInt aCauseCode );
+        
+        /**
         * Returns the global note type
         * @return Returns the type
         */
@@ -142,6 +148,12 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
          * @return Notification dialog flag.
          */
         IMPORT_C TBool NotificationDialog() const;
+        
+        /**
+        * Returns cause code.
+        * @return Cause code.
+        */
+        IMPORT_C TInt CauseCode() const;
     
     private:    
         
@@ -185,6 +197,10 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         */
         TBool iNotificationDialog;
         
+        /**
+        * Cause code. 
+        */
+        TInt iCauseCode; 
     };
 
 #endif // __TPHONECMDPARAMGLOBALNOTE_H

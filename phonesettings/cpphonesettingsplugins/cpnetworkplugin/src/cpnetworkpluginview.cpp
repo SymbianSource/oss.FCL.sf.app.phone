@@ -20,41 +20,34 @@
 #include "cppluginlogging.h"
 
 /*!
-  CpNetworkPluginView::CpNetworkPluginView
+  Constructor. 
  */
 CpNetworkPluginView::CpNetworkPluginView(QGraphicsItem *parent) :
-    CpBaseSettingView(0, parent),
-    m_networkSettingsForm(0)
+    CpBaseSettingView(NULL, parent),
+    m_networkSettingsForm(NULL)
 {
-    DPRINT << ": IN";
-    
+    DPRINT;
     m_networkSettingsForm = new CpNetworkPluginForm();
-    // base class takes ownership of the form
+    // Base class takes ownership of the form
     this->setWidget(m_networkSettingsForm);
-    
-    DPRINT << ": OUT";
     }
 
 /*!
-  CpNetworkPluginView::~CpNetworkPluginView
+  Destructor. 
  */
 CpNetworkPluginView::~CpNetworkPluginView()
 {
-    DPRINT << ": IN";
-    
-    DPRINT << ": OUT";
+    DPRINT;
 }
 
 /*!
-  CpNetworkPluginView::SearchAvailableNetworks
+  Slot called by QtHighway service when network 
+  is lost.    
  */
 void CpNetworkPluginView::SearchAvailableNetworks()
 {
-    DPRINT << ": IN";
-    
+    DPRINT;
     m_networkSettingsForm->searchAvailableNetworks();
-    
-    DPRINT << ": OUT";
 }
     
 // End of File. 

@@ -17,10 +17,49 @@
 
 #include "ut_infowidgetsathandlerprivate.h"
 #define private public
-#include "infowidgetsathandlerprivate.h"
+#include "infowidgetsathandler_p.h"
 #include "infowidgetsathandler.h"
 #include "infowidgetlogging.h"
 #include "qtestmains60.h"
+
+static struct ActiveObjectControl {
+    enum TOperation {
+        EUndefined = 0, 
+        ECallRunL, 
+        ECallDoCancel,
+        EExitSequence
+    } operation;
+    int iStatus; 
+    CActive* object; 
+} m_activeObjectControl; 
+
+ 
+void CActive::SetActive(){
+    if (m_activeObjectControl.object) 
+    {
+    switch (m_activeObjectControl.operation) {
+        case ActiveObjectControl::ECallRunL: 
+            m_activeObjectControl.operation = ActiveObjectControl::EExitSequence;
+            m_activeObjectControl.object->iStatus = 
+                    m_activeObjectControl.iStatus;
+            m_activeObjectControl.object->RunL(); 
+            break;
+        case ActiveObjectControl::ECallDoCancel: 
+            m_activeObjectControl.operation = ActiveObjectControl::EExitSequence;
+            m_activeObjectControl.object->iStatus = 
+                    m_activeObjectControl.iStatus;
+            m_activeObjectControl.object->DoCancel(); 
+            break;
+            
+        default: 
+            break; 
+        }
+    
+    // Reset, causes infinite loop otherwise 
+    m_activeObjectControl.operation = ActiveObjectControl::EUndefined; 
+    m_activeObjectControl.object = NULL; 
+    }
+} 
 
 void SimulateLeaveL()
 {
@@ -61,11 +100,11 @@ void FillDataSelfExplIcon( HBufC * aText,
 /*!
   UT_InfoWidgetSatHandlerPrivate ::UT_InfoWidgetSatHandlerPrivate 
  */
-UT_InfoWidgetSatHandlerPrivate::UT_InfoWidgetSatHandlerPrivate () //:
+UT_InfoWidgetSatHandlerPrivate::UT_InfoWidgetSatHandlerPrivate () 
 {
     DPRINT << "IN";
     
-    m_satHandler = 0;
+    m_satHandlerPrivate = 0;
     m_iwSatHandler = 0;
     
     DPRINT << "OUT";
@@ -78,7 +117,7 @@ UT_InfoWidgetSatHandlerPrivate::~UT_InfoWidgetSatHandlerPrivate ()
 {
     DPRINT << "IN";
     
-    delete m_satHandler;
+    delete m_satHandlerPrivate;
     delete m_iwSatHandler;
     
     DPRINT << "OUT";
@@ -93,7 +132,7 @@ void UT_InfoWidgetSatHandlerPrivate::init()
     
     initialize();
     m_iwSatHandler = new InfoWidgetSatHandler;
-    m_satHandler =  new InfoWidgetSatHandlerPrivate( m_iwSatHandler, m_satService);
+    m_satHandlerPrivate =  new InfoWidgetSatHandlerPrivate( m_iwSatHandler, m_satService);
     
     QVERIFY(verify());
 
@@ -108,7 +147,7 @@ void UT_InfoWidgetSatHandlerPrivate::cleanup()
     DPRINT << "IN";
     
     reset();
-    delete m_satHandler;
+    delete m_satHandlerPrivate;
     delete m_iwSatHandler;
 
     DPRINT << "OUT";
@@ -123,15 +162,15 @@ void UT_InfoWidgetSatHandlerPrivate::t_connect()
     
     expect("RSatSession::ConnectL");
     expect("RSatService::OpenL");
-    m_satHandler->connect();
+    m_satHandlerPrivate->connect();
      
     expect("RSatSession::ConnectL")
         .willOnce(invokeWithoutArguments(SimulateLeaveL));
-    m_satHandler->connect();
+    m_satHandlerPrivate->connect();
     
     expect("RSatService::OpenL")
         .willOnce(invokeWithoutArguments(SimulateLeaveL));
-    m_satHandler->connect();
+    m_satHandlerPrivate->connect();
 
     QVERIFY(verify());
 
@@ -145,7 +184,7 @@ void UT_InfoWidgetSatHandlerPrivate::t_disconnect()
 {
     DPRINT << "IN";
     
-    m_satHandler->disconnect();
+    m_satHandlerPrivate->disconnect();
     QVERIFY(verify());
 
     DPRINT << "OUT";
@@ -162,21 +201,21 @@ void UT_InfoWidgetSatHandlerPrivate::t_startObserving()
     expect("RSatService::NotifySetupIdleModeTextChange").returns(i);
     expect("RSatService::GetSetupIdleModeTextL")
         .willOnce(invoke(FillData));
-    m_satHandler->startObserving();
+    m_satHandlerPrivate->startObserving();
     
     expect("RSatService::NotifySetupIdleModeTextChange").returns(i);
     expect("RSatService::GetSetupIdleModeTextL")
         .willOnce(invoke(FillDataNoIcon));
-    m_satHandler->startObserving();
+    m_satHandlerPrivate->startObserving();
     
     expect("RSatService::NotifySetupIdleModeTextChange").returns(i);
     expect("RSatService::GetSetupIdleModeTextL")
         .willOnce(invoke(FillDataSelfExplIcon));
-    m_satHandler->startObserving();
+    m_satHandlerPrivate->startObserving();
     
     expect("RSatService::GetSetupIdleModeTextL")
         .willOnce(invokeWithoutArguments(SimulateLeaveL));
-    m_satHandler->startObserving();
+    m_satHandlerPrivate->startObserving();
     
     QVERIFY(verify());
 
@@ -188,21 +227,26 @@ void UT_InfoWidgetSatHandlerPrivate::t_startObserving()
  */
 void UT_InfoWidgetSatHandlerPrivate::t_runL()
 {
-    DPRINT << "IN";
-    
-    int i = 1;
+    DPRINT;
     expect("RSatService::GetSetupIdleModeTextL")
           .willOnce(invoke(FillData));
-    expect("RSatService::NotifySetupIdleModeTextChange").returns(i);
-    m_satHandler->RunL();
+    expect("RSatService::NotifySetupIdleModeTextChange").returns(KErrNone);
     
-    m_satHandler->iStatus = KErrGeneral;
-    expect("RSatService::NotifySetupIdleModeTextChange").returns(i);
-    m_satHandler->RunL();
-        
+    TRequestStatus& status(m_satHandlerPrivate->iStatus);
+    expect("RSatService::NotifySetupIdleModeTextChange").with(status);
+    
+    // Test RunL sequence with iStatus == KErrNone  
+    m_activeObjectControl.operation = ActiveObjectControl::ECallRunL; 
+    m_activeObjectControl.iStatus = KErrNone; 
+    m_activeObjectControl.object = m_satHandlerPrivate; 
+    m_satHandlerPrivate->startObserving();
+    
+    // Test RunL sequence with iStatus == KErrGeneral
+    m_activeObjectControl.operation = ActiveObjectControl::ECallRunL; 
+    m_activeObjectControl.iStatus = KErrGeneral; 
+    m_activeObjectControl.object = m_satHandlerPrivate; 
+    m_satHandlerPrivate->startObserving();
     QVERIFY(verify());
-
-    DPRINT << "OUT";
 }
 
 /*!
@@ -212,7 +256,11 @@ void UT_InfoWidgetSatHandlerPrivate::t_doCancel()
 {    
     DPRINT << "IN";
 
-    m_satHandler->DoCancel();
+    m_activeObjectControl.operation = ActiveObjectControl::ECallDoCancel; 
+    m_activeObjectControl.iStatus = KErrNone; 
+    m_activeObjectControl.object = m_satHandlerPrivate; 
+    m_satHandlerPrivate->startObserving();
+    
     QVERIFY(verify());
 
     DPRINT << "OUT";

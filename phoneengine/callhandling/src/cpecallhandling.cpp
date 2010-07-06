@@ -1908,7 +1908,10 @@ EXPORT_C void CPECallHandling::DialEmergencyCall( const TPEPhoneNumber& aEmergen
     SendMessage( MEngineMonitor::EPEMessageInitiatedEmergencyCall );
     TEFLOGSTRING( KTAINT, "CALL CPECallHandling::DialEmergencyCall start emergency dialing" );
     CPESingleCall* callData = iCallArrayOwner->GetCallObject( KPEEmergencyCallId );
-    callData->DialEmergency( aEmergencyNumber );   
+    if ( callData )
+        {
+        callData->DialEmergency( aEmergencyNumber );   
+        }
     }
 
 // -----------------------------------------------------------------------------

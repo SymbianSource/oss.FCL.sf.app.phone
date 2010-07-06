@@ -24,6 +24,8 @@
 #include <hbmainwindow.h>
 #include <hbinstance.h>
 #include <hbstyle.h>
+#include <hbtextitem.h>
+#include <hbiconitem.h>
 
 #include "bubbletest.h"
 #include "bubbleheadingwidget.h"
@@ -46,7 +48,14 @@ private slots:
 private:
     BubbleHeadingWidget* mHeading;
     HbMainWindow* mMainWindow;
-    int mStyleBaseId;
+
+    HbTextItem* mText1;
+    HbTextItem* mText2;
+    HbTextItem* mText3;
+
+    HbIconItem* mIndi1;
+    HbIconItem* mIndi2;
+
 };
 
 void ut_BubbleHeadingWidget::initTestCase()
@@ -55,6 +64,23 @@ void ut_BubbleHeadingWidget::initTestCase()
     mHeading = new BubbleHeadingWidget();
     mMainWindow->addView(mHeading);
     mMainWindow->show();
+
+    mText1 = qgraphicsitem_cast<HbTextItem*>(
+                 static_cast<HbWidget*>(mHeading)->primitive("text_line_1"));
+    QVERIFY(mText1);
+    mText2 = qgraphicsitem_cast<HbTextItem*>(
+                 static_cast<HbWidget*>(mHeading)->primitive("text_line_2"));
+    QVERIFY(mText2);
+    mText3 = qgraphicsitem_cast<HbTextItem*>(
+                 static_cast<HbWidget*>(mHeading)->primitive("text_line_3"));
+    QVERIFY(mText3);
+
+    mIndi1 = qgraphicsitem_cast<HbIconItem*>(
+                static_cast<HbWidget*>(mHeading)->primitive("indicator_icon_1"));
+    QVERIFY(mIndi1);
+    mIndi2 = qgraphicsitem_cast<HbIconItem*>(
+                static_cast<HbWidget*>(mHeading)->primitive("indicator_icon_2"));
+    QVERIFY(mIndi2);
 }
 
 void ut_BubbleHeadingWidget::cleanupTestCase()
@@ -70,6 +96,8 @@ void ut_BubbleHeadingWidget::cleanupTest()
 
 void ut_BubbleHeadingWidget::testThreeLinedHeading()
 {
+    mHeading->setLineCount(3);
+
     BubbleHeader header;
     header.setCli("John Doe",Qt::ElideRight);
     header.setSecondaryCli("12345",Qt::ElideLeft);
@@ -77,34 +105,40 @@ void ut_BubbleHeadingWidget::testThreeLinedHeading()
     header.setTimerCost("0:00");
     header.setCallState(BubbleManagerIF::Active);
     header.setCallFlag(BubbleManagerIF::NoCiphering);
-    mHeading->setLineCount(3);
-    Q_ASSERT(mHeading->lineCount()==3);
+    QVERIFY(mHeading->lineCount()==3);
     mHeading->readBubbleHeader(header);
     mHeading->show();
-    QTest::qWait(1000);
+    QTest::qWait(200);
+    QVERIFY(mHeading->layout()=="three_lines_1");
+
+    QVERIFY(mText1->text()=="John Doe");
+    QVERIFY(mText2->text()=="12345");
+    QVERIFY(mText2->alignment()&Qt::AlignLeft);
+    QVERIFY(mText3->text()=="0:00");
+
+    header.setTimerCost("0:01");
     mHeading->updateTimerDisplayNow();
+    QVERIFY(mText3->text()=="0:01");
+
+    header.setCallState(BubbleManagerIF::Incoming);
+    header.setCallFlag(BubbleManagerIF::NoCiphering);
+    header.setCallFlag(BubbleManagerIF::Diverted);
+    mHeading->readBubbleHeader(header);
+    mHeading->show();
+    QTest::qWait(200);
+    QVERIFY(mHeading->layout()=="three_lines_2");
+
+    header.setCallFlags(BubbleManagerIF::Normal);
+    mHeading->readBubbleHeader(header);
+    mHeading->show();
+    QTest::qWait(200);
+    QVERIFY(mHeading->layout()=="three_lines");
 }
 
 void ut_BubbleHeadingWidget::testTwoLinedHeading()
 {
-    BubbleHeader header;
-    header.setCli("John Doe",Qt::ElideRight);
-    header.setSecondaryCli("12345",Qt::ElideLeft);
-    header.setText("",Qt::ElideRight);
-    header.setTimerCost("0:00");
-    header.setCallState(BubbleManagerIF::Outgoing);
-    header.setCallFlag(BubbleManagerIF::NoCiphering);
-
     mHeading->setLineCount(2);
-    Q_ASSERT(mHeading->lineCount()==2);
-    mHeading->readBubbleHeader(header);
-    mHeading->show();
-    QTest::qWait(100);
-    mHeading->updateTimerDisplayNow();
-}
 
-void ut_BubbleHeadingWidget::testOneLinedHeading()
-{
     BubbleHeader header;
     header.setCli("John Doe",Qt::ElideRight);
     header.setSecondaryCli("12345",Qt::ElideLeft);
@@ -112,14 +146,79 @@ void ut_BubbleHeadingWidget::testOneLinedHeading()
     header.setTimerCost("0:00");
     header.setCallState(BubbleManagerIF::Active);
     header.setCallFlag(BubbleManagerIF::NoCiphering);
-
-    mHeading->setLineCount(1);
-    Q_ASSERT(mHeading->lineCount()==1);
-    header.setCallState(BubbleManagerIF::OnHold);
+    QVERIFY(mHeading->lineCount()==2);
     mHeading->readBubbleHeader(header);
     mHeading->show();
-    QTest::qWait(100);
+    QTest::qWait(200);
+    QVERIFY(mHeading->layout()=="two_lines_1");
+
+    QVERIFY(mText1->text()=="John Doe");
+    QVERIFY(mText2->text()=="0:00");
+    QVERIFY(mText2->alignment()&Qt::AlignLeft);
+    QVERIFY(!mText3->isVisible());
+
+    header.setTimerCost("0:01");
     mHeading->updateTimerDisplayNow();
+    QVERIFY(mText2->text()=="0:01");
+
+    header.setCallState(BubbleManagerIF::Incoming);
+    header.setCallFlag(BubbleManagerIF::NoCiphering);
+    header.setCallFlag(BubbleManagerIF::Diverted);
+    mHeading->readBubbleHeader(header);
+    mHeading->show();
+    QTest::qWait(200);
+    QVERIFY(mHeading->layout()=="two_lines_2");
+
+    header.setCallFlags(BubbleManagerIF::Normal);
+    mHeading->readBubbleHeader(header);
+    mHeading->show();
+    QTest::qWait(200);
+    QVERIFY(mHeading->layout()=="two_lines");
+
+}
+
+void ut_BubbleHeadingWidget::testOneLinedHeading()
+{
+    mHeading->setLineCount(1);
+
+    BubbleHeader header;
+    header.setCli("John Doe",Qt::ElideRight);
+    header.setSecondaryCli("12345",Qt::ElideLeft);
+    header.setText("",Qt::ElideRight);
+    header.setTimerCost("0:00");
+    header.setCallState(BubbleManagerIF::Active);
+    header.setCallFlag(BubbleManagerIF::NoCiphering);
+    QVERIFY(mHeading->lineCount()==1);
+    mHeading->readBubbleHeader(header);
+    mHeading->show();
+    QTest::qWait(200);
+    QVERIFY(mHeading->layout()=="one_line_1");
+    QVERIFY(mText1->text()=="John Doe");
+    QVERIFY(mText2->text()=="0:00");
+    QVERIFY(mText2->alignment()&Qt::AlignRight);
+    QVERIFY(!mText3->isVisible());
+
+    header.setTimerCost("0:01");
+    mHeading->updateTimerDisplayNow();
+    QVERIFY(mText2->text()=="0:01");
+
+    header.setCallState(BubbleManagerIF::Incoming);
+    header.setCallFlag(BubbleManagerIF::NoCiphering);
+    header.setCallFlag(BubbleManagerIF::Diverted);
+    mHeading->hide();
+    mHeading->readBubbleHeader(header);
+    mHeading->show();
+    QTest::qWait(200);
+    QVERIFY(mHeading->layout()=="one_line_2");
+    QVERIFY(mText2->alignment()&Qt::AlignRight);
+
+    header.setCallFlags(BubbleManagerIF::Normal);
+    mHeading->hide();
+    mHeading->readBubbleHeader(header);
+    mHeading->show();
+    QTest::qWait(200);
+    QVERIFY(mHeading->layout()=="one_line");
+    QVERIFY(mText2->alignment()&Qt::AlignRight);
 }
 
 BUBBLE_TEST_MAIN(ut_BubbleHeadingWidget)

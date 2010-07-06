@@ -130,7 +130,7 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleKeyMessageL(
                 // We can't answer to waiting call in this state
                 // so display Not allowed -note.                        
                 CPhoneState::SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed );
+                    EPhoneNoteTextNotAllowed, ETrue );
                 }
             break;
             

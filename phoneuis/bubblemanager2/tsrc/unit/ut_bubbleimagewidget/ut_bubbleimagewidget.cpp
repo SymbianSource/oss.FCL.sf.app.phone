@@ -24,6 +24,7 @@
 #include <hbmainwindow.h>
 #include <hbinstance.h>
 #include <hbstyle.h>
+#include <hbiconitem.h>
 
 #include "bubbletest.h"
 #include "bubbleimagewidget.h"
@@ -37,11 +38,11 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
 
-    void testPixmap();
-    void testWidePixmap();
-    void testDefaultAvatar();
+    void testSetImage();
 
     void testSetKeepSquareShape();
+
+    void testSizeHint();
 
 private:
     QString fileNameWithPath(const QString& fileName);    
@@ -50,16 +51,8 @@ private:
     BubbleImageWidget* mImage;
     HbMainWindow* mMainWindow;
     BubbleImageManager* mImageManager;
+    HbIconItem* mAvatar;
 };
-
-QString ut_BubbleImageWidget::fileNameWithPath(const QString& fileName)
-{
-#ifdef __WINS__
-    return "c:/data/images/" + fileName;
-#else
-    return ":/data/" + fileName;
-#endif
-}
 
 void ut_BubbleImageWidget::initTestCase()
 {
@@ -68,6 +61,12 @@ void ut_BubbleImageWidget::initTestCase()
     mImage = new BubbleImageWidget(*mImageManager);
     mMainWindow->addView(mImage);
     mMainWindow->show();
+
+    mAvatar = qgraphicsitem_cast<HbIconItem*>(
+            static_cast<HbWidget*>(mImage)->primitive("default_avatar"));
+    QVERIFY(mAvatar);
+    QVERIFY(mAvatar->alignment()==Qt::AlignCenter);
+    QVERIFY(mAvatar->aspectRatioMode()==Qt::KeepAspectRatioByExpanding);
 }
 
 void ut_BubbleImageWidget::cleanupTestCase()
@@ -76,32 +75,22 @@ void ut_BubbleImageWidget::cleanupTestCase()
     delete mImageManager;
 }
 
-void ut_BubbleImageWidget::testPixmap()
-{    
-    mImage->hide();
-    mImage->setImage(fileNameWithPath("pixmap.png"));
-    mImage->show();
-    // set same image again
-    QTest::qWait(500);
-    // there is now way to verify using public API
-}
-
-void ut_BubbleImageWidget::testWidePixmap()
+void ut_BubbleImageWidget::testSetImage()
 {
-    mImage->hide();
-    mImage->setImage(fileNameWithPath("pixmap_wide.png"));
-    mImage->show();
-    QTest::qWait(500);
-    // there is now way to verify using public API
-}
-
-void ut_BubbleImageWidget::testDefaultAvatar()
-{
-    mImage->hide();
     mImage->setImage("");
+    QVERIFY(mAvatar->iconName()=="qtg_large_avatar");
+    QVERIFY(mAvatar->isVisible());
+
+    QSignalSpy spy( mImageManager, SIGNAL(pixmapReady(QString)));
+    mImage->setImage(":/data/pixmap.png");
+    QVERIFY(mAvatar->isNull());
+    QVERIFY(!mAvatar->isVisible());
+    QVERIFY(spy.count()==1);
+    QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).toString()==":/data/pixmap.png");
+
     mImage->show();
-    QTest::qWait(500);
-    // there is now way to verify using public API
+    QTest::qWait(100);
 }
 
 void ut_BubbleImageWidget::testSetKeepSquareShape()
@@ -114,6 +103,13 @@ void ut_BubbleImageWidget::testSetKeepSquareShape()
     QVERIFY(mImage->keepSquareShape()==false);
     QVERIFY(mImage->sizePolicy().verticalPolicy()==QSizePolicy::Expanding);
     QVERIFY(mImage->sizePolicy().horizontalPolicy()==QSizePolicy::Expanding);
+}
+
+void ut_BubbleImageWidget::testSizeHint()
+{
+    mImage->setKeepSquareShape(true);
+    QSizeF hint = mImage->preferredSize();
+    // ..
 }
 
 BUBBLE_TEST_MAIN(ut_BubbleImageWidget)

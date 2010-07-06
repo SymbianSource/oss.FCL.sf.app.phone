@@ -55,37 +55,40 @@ public: // PhoneUIQtViewIF
     
         BubbleManagerIF& bubbleManager (){};
         void addBubbleCommand ( 
-                int bubbleId,
-                const PhoneAction& action ){};
-        void clearBubbleCommands (int bubbleId){};
+                int ,
+                const PhoneAction&  ){};
+        void clearBubbleCommands (int ){};
         void addParticipantListAction(
-                int commandId,  
-                const QString &text, 
-                const HbIcon &icon){};
+                int ,  
+                const QString &, 
+                const HbIcon &){};
         void clearParticipantListActions(){};
         void hideToolbar () {};
         void showToolbar () {};
-        void setToolbarActions (const QList<PhoneAction*>& actions){};
-        int volumeSliderValue () {};
+        void setToolbarActions (const QList<PhoneAction*>& ){};
+        int volumeSliderValue () { return 0; };
         void removeVolumeSlider () {};
         void setVolumeSliderValue (
-                int value, 
-                int commandId, 
-                int maxVolumeValue, 
-                int minVolumeValue ) { };
+                int , 
+                int , 
+                int , 
+                int  ) { };
 
-        void setExpandAction(int bubbleId, int commandId) {};
-        void removeExpandAction(int bubbleId) {};
+        void setExpandAction(int , int ) {};
+        void removeExpandAction(int ) {};
         void showDialpad() {};
         void hideDialpad() {};
-        bool isDialpadVisible() {};
+        bool isDialpadVisible() { return false; };
         QString dialpadText() {return QString("1234567");};
         void clearAndHideDialpad(){};
-        void bringToForeground() {;};
-        void setMenuActions(const QList<PhoneAction*>& actions){;};
-        void shutdownPhoneApp() {;};
-        void setBackButtonVisible(bool visible) {;};        
+        void clearDialpad() {};
+        void bringToForeground() {};
+        void setMenuActions(const QList<PhoneAction*>& ){};
+        void shutdownPhoneApp() {};
+        void setBackButtonVisible(bool ) {};        
         HbMenu &menuReference() { return mMenu; };
+        void captureKey(Qt::Key , bool ) {};
+        void setRestrictedMode(bool ) {};
         
 public slots:
     void initTestCase ();

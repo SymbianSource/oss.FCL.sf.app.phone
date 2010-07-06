@@ -26,4 +26,5 @@ SUBDIRS += ut_bubbleimagemanager
 SUBDIRS += ut_bubbleimagewidget
 SUBDIRS += ut_bubbleparticipantlistitem
 SUBDIRS += ut_bubbleeffecthandler
+SUBDIRS += ut_bubblebutton
 SUBDIRS += mt_bubblemanager2

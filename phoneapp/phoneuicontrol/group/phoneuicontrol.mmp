@@ -50,7 +50,6 @@ SOURCE          cphonestatemachine.cpp
 SOURCE          cphonestatestartup.cpp
 SOURCE          cphonesystemeventhandler.cpp
 SOURCE          cphoneuicontroller.cpp
-SOURCE          cphonekeyeventforwarder.cpp
 SOURCE          cphoneaccessorybthandler.cpp
 SOURCE          tphonecallheaderparam.cpp
 SOURCE          cphonecallheadermanager.cpp 

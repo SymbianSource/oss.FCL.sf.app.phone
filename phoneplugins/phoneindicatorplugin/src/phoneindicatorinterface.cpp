@@ -11,25 +11,17 @@
  *
  * Contributors:
  *
- * Description:  
+ * Description:
  *
  */
 
 #include "phoneindicatorinterface.h"
+#include "phoneindicatorservicesendertask.h"
 #include "phoneindicators.h"
 
 #include <QTime>
-#include <QStringList> 
-#ifdef Q_OS_SYMBIAN
-#include <logsservices.h>
-#include <xqservicerequest.h>
-#include <xqrequestinfo.h>
-#include <apgtask.h>
-#include <xqaiwrequest.h>
-#include <cppluginlauncher.h>
-
-
-#endif
+#include <QStringList>
+#include <QThreadPool>
 
 PhoneIndicatorInterface::PhoneIndicatorInterface(
                 const QString &indicatorType,
@@ -42,47 +34,17 @@ PhoneIndicatorInterface::PhoneIndicatorInterface(
         m_primaryText(IndicatorInfos[typeIndex].primaryText),
         m_secondaryText(IndicatorInfos[typeIndex].secondaryText),
         m_icon(IndicatorInfos[typeIndex].icon)
-
 {
-}
-
-PhoneIndicatorInterface::~PhoneIndicatorInterface()
-{
-
 }
 
 bool PhoneIndicatorInterface::handleInteraction(InteractionType type)
 {
     if (type == InteractionActivated) {
-        switch (m_interaction) {            
-        case OpenMissedCallView: {
-#ifdef Q_OS_SYMBIAN
-            XQServiceRequest snd("com.nokia.services.logsservices.starter",
-                                 "start(int,bool)", false);
-            snd << (int)LogsServices::ViewMissed;
-            snd << false;
-            int retValue;
-            snd.send(retValue);
-#endif
-            }
-            break;
-        case SwitchBackToCall: {
-#ifdef Q_OS_SYMBIAN
-            int dialer(1);
-            XQServiceRequest snd("com.nokia.services.telephony.uistarter", 
-                    "start(int)", false);
-            XQRequestInfo info;
-            info.setForeground(true);
-            snd.setInfo(info);
-            snd << dialer;
-            QVariant retValue;
-            snd.send(retValue);
-#endif
-            }
-            break;
-        case OpenDiverSettingsView: {
-            launchDivertSettingsView();
-            }
+        switch (m_interaction) {
+        case OpenMissedCallView:    //fallthrough
+        case OpenCallUi:      //fallthrough
+        case OpenDiverSettingsView:
+            QThreadPool::globalInstance()->start(new PhoneIndicatorServiceSenderTask(m_interaction));
             break;
         case Deactivate:
             emit deactivate();
@@ -98,7 +60,7 @@ bool PhoneIndicatorInterface::handleInteraction(InteractionType type)
 QVariant PhoneIndicatorInterface::indicatorData(int role) const
 {
     QVariantMap map = m_parameter.value<QVariantMap>();
-    
+
     if (role == PrimaryTextRole) {
         return map.value( (QVariant(PrimaryTextRole)).toString()).toString();
     } else if (role == SecondaryTextRole ) {
@@ -114,7 +76,7 @@ QVariant PhoneIndicatorInterface::indicatorData(int role) const
 bool PhoneIndicatorInterface::handleClientRequest(RequestType type, const QVariant &parameter)
 {
     bool handled(false);
-    switch (type) {        
+    switch (type) {
     case RequestActivate:
         if (m_parameter != parameter) {
             m_parameter = parameter;
@@ -125,47 +87,6 @@ bool PhoneIndicatorInterface::handleClientRequest(RequestType type, const QVaria
     default:
         m_parameter.clear();
     }
-
     return handled;
 }
 
-void PhoneIndicatorInterface::launchDivertSettingsView()
-{
-
-    XQAiwRequest *request = m_appMgr.create(
-            "com.nokia.symbian.ICpPluginLauncher", 
-            "launchSettingView(QString,QVariant)", 
-            false);  // 
-    
-    if (!request) {
-        return;
-    }
-    else {
-        connect(request, SIGNAL(requestOk(QVariant)), SLOT(handleReturnValue(QVariant)));
-        connect(request, SIGNAL(requestError(int,QString)), SLOT(handleError(int,QString)));
-    }
-    // Set arguments for request 
-    QList<QVariant> args;
-    args << (QString)"cptelephonyplugin.dll";
-    args << (QVariant)"";            
-
-    request->setArguments(args);
-    request->setSynchronous(true);
-    // Make the request
-    if (!request->send()) {
-        //report error     
-    }
-    delete request;
-
-}
-
-void PhoneIndicatorInterface::handleReturnValue(const QVariant &returnValue)
-{      
-    Q_UNUSED(returnValue);
-}
-
-void PhoneIndicatorInterface::handleError(int errorCode,const QString &errorMessage)
-{
-    Q_UNUSED(errorCode);
-    Q_UNUSED(errorMessage);
-}

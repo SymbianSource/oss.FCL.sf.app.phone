@@ -32,7 +32,7 @@ symbian {
                    $$OS_LAYER_GLIB_SYSTEMINCLUDE
     INCLUDEPATH += ../../inc \
                    ../inc \
-                   ../phoneservices/inc
+                   ../phoneservices/inc 
     
     engineDefFiles = \
         "$${LITERAL_HASH}ifdef WINSCW" \
@@ -75,8 +75,10 @@ symbian {
             -lengineinfo \
             -lmediatorclient \
             -lestor \
-	    -lxqservice \
-            -llibglib
+            -lxqservice \
+            -llibglib \
+            -lpsetwrapper \
+            -lpsuinotes
             
     TARGET.EPOCALLOWDLLDATA =1
     
@@ -183,6 +185,7 @@ BLD_INF_RULES.prj_exports += "./conf/s60telephony_102828b2.crml APP_LAYER_CRML(s
 BLD_INF_RULES.prj_exports += "./conf/s60telephony_102828b8.crml APP_LAYER_CRML(s60telephony_102828b8.crml)"
 BLD_INF_RULES.prj_exports += "./conf/s60telephony_102828f8.crml APP_LAYER_CRML(s60telephony_102828f8.crml)"
 BLD_INF_RULES.prj_exports += "./conf/s60telephony_102830b6.crml APP_LAYER_CRML(s60telephony_102830b6.crml)"
+BLD_INF_RULES.prj_exports += "./conf/s60telephony_2001b2e6.crml APP_LAYER_CRML(s60telephony_2001b2e6.crml)"
 
 #Backup registration files
 BLD_INF_RULES.prj_exports += "./data/backup_registration.xml /epoc32/data/z/private/1000a86c/backup_registration.xml"

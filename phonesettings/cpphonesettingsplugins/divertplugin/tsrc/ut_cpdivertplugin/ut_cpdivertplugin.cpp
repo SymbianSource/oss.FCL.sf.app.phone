@@ -153,6 +153,7 @@ void UT_CpDivertPlugin::t_createSettingFormItemData()
 void UT_CpDivertPlugin::t_changeDivertingStateRequested()
 {
     //except user cancels
+    /*
     appendAction("txt_phone_setlabel_all_calls", selectAction, "Cancel");
     expect("PSetCallDivertingWrapper::getDefaultNumbers");
     m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData("text", "");
@@ -231,7 +232,7 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     //expect("CpPhoneNotes::cancelNote");
     m_divertpluginGroup->divertRequestProcessed();
     QVERIFY(verify());
-    
+    */
     //except user selects other number, inserts number and cancels
     /* BUG in framework (Crash in QGestureManager::getState due to QWeakPointer) */
     /*
@@ -309,23 +310,15 @@ void UT_CpDivertPlugin::t_itemShown()
 /*!
   UT_CpDivertPlugin::t_popUpTimerQuery
  */
-/*void UT_CpDivertPlugin::t_popUpTimerQuery()
+void UT_CpDivertPlugin::t_popUpTimerQuery()
 {
-    appendAction("txt_phone_setlabel_if_not_answered", selectItem, "0401234567");
-    appendAction("txt_phone_title_delay", selectAction, "Cancel");
-    expect("PSetCallDivertingWrapper::getDefaultNumbers");
-    m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->setContentWidgetData("text", "");
-    m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->setContentWidgetData(
-        "checkState", Qt::Checked);
-    m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->thisItemClicked();
-    waitForQueueEmpty();
-    QVERIFY(verify());
-    
+    const QString delayLnString("txt_phone_list_ln_seconds");
+        
     appendAction("txt_phone_setlabel_if_not_answered", selectItem, "txt_phone_list_enter_number_manually");
     appendAction("txt_phone_info_number", insertText, "12345");
     appendAction("txt_phone_info_number", selectAction, "OK");
-    appendAction("txt_phone_title_delay", selectItem, "txt_phone_list_15_seconds");
-    //except user chooses other number and inserts number and timeout
+    appendAction("txt_phone_title_delay", selectItem, delayLnString);
+    // expect user chooses other number and inserts number and timeout
     expect("PSetCallDivertingWrapper::getDefaultNumbers");    
     expect("SsSettingsWrapper::get");
     expect("PSetCallDivertingWrapper::setCallDiverting");
@@ -340,9 +333,9 @@ void UT_CpDivertPlugin::t_itemShown()
     command.iCondition = qvariant_cast<PsCallDivertingCondition>(
             m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->property("condition"));
     command.iServiceGroup = ServiceGroupVoice;
-    expect("CpPhoneNotes::showGlobalNote");
+    expect("CpPhoneNotes::showNotificationDialog");
     m_divertpluginGroup->handleDivertingChanged(command, false);
-//    expect("CpPhoneNotes::cancelNote");
+    expect("CpPhoneNotes::cancelNote");
     m_divertpluginGroup->divertRequestProcessed();
     QVERIFY(verify());
     
@@ -358,14 +351,14 @@ void UT_CpDivertPlugin::t_itemShown()
     command.iCondition = qvariant_cast<PsCallDivertingCondition>(
             m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->property("condition"));
     command.iServiceGroup = ServiceGroupVoice;
-    expect("CpPhoneNotes::showGlobalNote");
+    expect("CpPhoneNotes::showNotificationDialog");
     m_divertpluginGroup->handleDivertingChanged(command, false);
-    //expect("CpPhoneNotes::cancelNote");
+    expect("CpPhoneNotes::cancelNote");
     m_divertpluginGroup->divertRequestProcessed();
     QVERIFY(verify());
 
 }
-*/
+
 /*!
   UT_CpDivertPlugin::t_handleDivertingChanged
  */
@@ -375,6 +368,7 @@ void UT_CpDivertPlugin::t_handleDivertingChanged()
     
     c.iStatus = DivertingStatusActive;
     c.iServiceGroup = ServiceGroupAllTeleservices;
+    c.iNumber = QString("0401234567890");
     expect("PSetCallDivertingWrapper::setNewDefaultNumber");
     m_divertpluginGroup->handleDivertingChanged(c, true);
     
@@ -382,6 +376,7 @@ void UT_CpDivertPlugin::t_handleDivertingChanged()
     
     c.iServiceGroup = ServiceGroupAllTeleservices;
     c.iCondition = DivertConditionUnconditional;
+    c.iNumber = QString("0401234567890");
     expect("PSetCallDivertingWrapper::setNewDefaultNumber");
     m_divertpluginGroup->handleDivertingChanged(c, false);
     

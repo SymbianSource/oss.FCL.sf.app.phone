@@ -33,7 +33,7 @@ public:
 signals:
     void clicked();
 
-private:
+protected:
     void createPrimitives();
     void updatePrimitives();
 

@@ -56,13 +56,7 @@ private slots:
 
     void test_setButtonStyleForAction();
 
-    void test_voiceCallStatusIcon();
-    void test_videoCallStatusIcon();
-    void test_voipCallStatusIcon();
-
-    void test_numberTypeIcon();
-
-    void test_cipheringIcon();
+    void test_setIndicators();
 
 private:
 };
@@ -214,12 +208,36 @@ void ut_BubbleUtils::test_setCallHeaderTexts3Lines_disconnected()
     QVERIFY( text1.elideMode() == Qt::ElideRight );
     QVERIFY( text2.text() == "discon" );
     QVERIFY( text2.elideMode() == Qt::ElideRight );
-    QVERIFY( text3.text() == "" );
+    QVERIFY( text3.text() == "00:00" );
+    QVERIFY( text2.elideMode() == Qt::ElideRight );
     
     // add secondary cli
     header.setSecondaryCli( "12345", Qt::ElideLeft );
     BubbleUtils::setCallHeaderTexts3Lines(header, text1, text2, text3, cliLine, timerLine);
         
+    QVERIFY( text1.text() == "john" );
+    QVERIFY( text1.elideMode() == Qt::ElideRight );
+    QVERIFY( text2.text() == "discon" );
+    QVERIFY( text2.elideMode() == Qt::ElideRight );
+    QVERIFY( text3.text() == "00:00" );
+    QVERIFY( text3.elideMode() == Qt::ElideRight );
+
+    // without call timer
+    text3.setText(QString());
+    header.setTimerCost(QString());
+    header.setSecondaryCli(QString(), Qt::ElideNone);
+
+    BubbleUtils::setCallHeaderTexts3Lines(header, text1, text2, text3, cliLine, timerLine);
+    QVERIFY( text1.text() == "john" );
+    QVERIFY( text1.elideMode() == Qt::ElideRight );
+    QVERIFY( text2.text() == "discon" );
+    QVERIFY( text2.elideMode() == Qt::ElideRight );
+    QVERIFY( text3.text() == "" );
+
+    // add secondary cli
+    header.setSecondaryCli( "12345", Qt::ElideLeft );
+    BubbleUtils::setCallHeaderTexts3Lines(header, text1, text2, text3, cliLine, timerLine);
+
     QVERIFY( text1.text() == "john" );
     QVERIFY( text1.elideMode() == Qt::ElideRight );
     QVERIFY( text2.text() == "12345" );
@@ -551,182 +569,51 @@ void ut_BubbleUtils::test_setButtonStyleForAction()
     QVERIFY(button.buttonType()==BubbleButton::RedButton);
 }
 
-void ut_BubbleUtils::test_voiceCallStatusIcon()
+void ut_BubbleUtils::test_setIndicators()
 {
-    HbIconItem icon;
-    icon.hide();
+    HbIconItem icon1;
+    icon1.hide();
+    HbIconItem icon2;
+    icon2.hide();
 
-    // test different voice call states
+    BubbleUtils::setIndicators(
+        BubbleManagerIF::Incoming, BubbleManagerIF::NoCiphering, icon1, icon2);
+    QVERIFY(icon1.iconName()=="qtg_mono_ciphering_off");
+    QVERIFY(icon1.isVisible()==true);
+    QVERIFY(icon2.iconName()=="");
+    QVERIFY(icon2.isVisible()==false);
 
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Incoming, BubbleManagerIF::Normal, icon);
-    QVERIFY(icon.iconName()=="voice_call_waiting_anim");
-    QVERIFY(icon.isVisible()==true);
+    BubbleUtils::setIndicators(
+        BubbleManagerIF::Incoming, BubbleManagerIF::Diverted, icon1, icon2);
+    QVERIFY(icon1.iconName()=="qtg_mono_call_diverted");
+    QVERIFY(icon1.isVisible()==true);
+    QVERIFY(icon2.iconName()=="");
+    QVERIFY(icon2.isVisible()==false);
 
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Waiting, BubbleManagerIF::Normal, icon);
-    QVERIFY(icon.iconName()=="voice_call_waiting_anim");
+    BubbleUtils::setIndicators(
+        BubbleManagerIF::Active, BubbleManagerIF::Diverted, icon1, icon2);
+    QVERIFY(icon1.iconName()=="");
+    QVERIFY(icon1.isVisible()==false);
+    QVERIFY(icon2.iconName()=="");
+    QVERIFY(icon2.isVisible()==false);
 
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Alerting, BubbleManagerIF::Normal, icon);
-    QVERIFY(icon.iconName()=="voice_call_waiting_anim");
+    int flags = 0;
+    flags |= BubbleManagerIF::NoCiphering;
+    flags |= BubbleManagerIF::Diverted;
+    BubbleUtils::setIndicators(
+        BubbleManagerIF::Incoming, flags, icon1, icon2);
+    QVERIFY(icon1.iconName()=="qtg_mono_ciphering_off");
+    QVERIFY(icon1.isVisible()==true);
+    QVERIFY(icon2.iconName()=="qtg_mono_call_diverted");
+    QVERIFY(icon2.isVisible()==true);
 
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Active, BubbleManagerIF::Normal, icon);
-    QVERIFY(icon.iconName()=="qtg_large_active_call");
 
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Outgoing, BubbleManagerIF::Normal, icon);
-    QVERIFY(icon.iconName()=="qtg_large_active_call");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::OnHold, BubbleManagerIF::Normal, icon);
-    QVERIFY(icon.iconName()=="qtg_large_waiting_call");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Disconnected, BubbleManagerIF::Normal, icon);
-    QVERIFY(icon.iconName()=="qtg_large_end_call");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::AlertToDisconnected, BubbleManagerIF::Normal, icon);
-    QVERIFY(icon.iconName()=="qtg_large_end_call");
-
-    icon.hide();
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::None, BubbleManagerIF::Normal, icon);
-    QVERIFY(icon.iconName()=="");
-    QVERIFY(icon.isVisible()==false);
-}
-
-void ut_BubbleUtils::test_videoCallStatusIcon()
-{
-    HbIconItem icon;
-    icon.hide();
-
-    // test different voice call states
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Incoming, BubbleManagerIF::Video, icon);
-    QVERIFY(icon.iconName()=="video_call_waiting_anim");
-    QVERIFY(icon.isVisible()==true);
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Waiting, BubbleManagerIF::Video, icon);
-    QVERIFY(icon.iconName()=="video_call_waiting_anim");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Alerting, BubbleManagerIF::Video, icon);
-    QVERIFY(icon.iconName()=="video_call_waiting_anim");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Active, BubbleManagerIF::Video, icon);
-    QVERIFY(icon.iconName()=="qtg_large_video_call_active");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Outgoing, BubbleManagerIF::Video, icon);
-    QVERIFY(icon.iconName()=="qtg_large_video_call_active");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::OnHold, BubbleManagerIF::Video, icon);
-    QVERIFY(icon.iconName()=="qtg_large_video_call_waiting");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Disconnected, BubbleManagerIF::Video, icon);
-    QVERIFY(icon.iconName()=="qtg_large_end_call");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::AlertToDisconnected, BubbleManagerIF::Video, icon);
-    QVERIFY(icon.iconName()=="qtg_large_end_call");
-
-    icon.hide();
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::None, BubbleManagerIF::Video, icon);
-    QVERIFY(icon.iconName()=="");
-    QVERIFY(icon.isVisible()==false);
-}
-
-void ut_BubbleUtils::test_voipCallStatusIcon()
-{
-    HbIconItem icon;
-    icon.hide();
-
-    // test different voice call states
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Incoming, BubbleManagerIF::VoIPCall, icon);
-    QVERIFY(icon.iconName()=="voip_call_waiting_anim");
-    QVERIFY(icon.isVisible()==true);
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Waiting, BubbleManagerIF::VoIPCall, icon);
-    QVERIFY(icon.iconName()=="voip_call_waiting_anim");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Alerting, BubbleManagerIF::VoIPCall, icon);
-    QVERIFY(icon.iconName()=="voip_call_waiting_anim");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Active, BubbleManagerIF::VoIPCall, icon);
-    QVERIFY(icon.iconName()=="qtg_large_voip_call_active");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Outgoing, BubbleManagerIF::VoIPCall, icon);
-    QVERIFY(icon.iconName()=="qtg_large_voip_call_active");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::OnHold, BubbleManagerIF::VoIPCall, icon);
-    QVERIFY(icon.iconName()=="qtg_large_voip_call_waiting");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::Disconnected, BubbleManagerIF::VoIPCall, icon);
-    QVERIFY(icon.iconName()=="qtg_large_end_call");
-
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::AlertToDisconnected, BubbleManagerIF::VoIPCall, icon);
-    QVERIFY(icon.iconName()=="qtg_large_end_call");
-
-    icon.hide();
-    BubbleUtils::setCallStatusIcon(
-        BubbleManagerIF::None, BubbleManagerIF::VoIPCall, icon);
-    QVERIFY(icon.iconName()=="");
-    QVERIFY(icon.isVisible()==false);
-}
-
-void ut_BubbleUtils::test_numberTypeIcon()
-{
-    HbIconItem icon;
-    icon.hide();
-
-    BubbleUtils::setNumberTypeIcon(
-        BubbleManagerIF::Incoming, BubbleManagerIF::Diverted, icon);
-    QVERIFY(icon.iconName()=="qtg_mono_call_diverted");
-    QVERIFY(icon.isVisible()==true);
-
-    BubbleUtils::setNumberTypeIcon(
-        BubbleManagerIF::Waiting, BubbleManagerIF::Diverted, icon);
-    QVERIFY(icon.iconName()=="qtg_mono_call_diverted");
-    QVERIFY(icon.isVisible()==true);
-
-    BubbleUtils::setNumberTypeIcon(
-        BubbleManagerIF::Incoming, BubbleManagerIF::Normal, icon);
-    QVERIFY(icon.iconName()=="");
-    QVERIFY(icon.isVisible()==false);
-}
-
-void ut_BubbleUtils::test_cipheringIcon()
-{
-    HbIconItem icon;
-    icon.hide();
-
-    BubbleUtils::setCipheringIcon(
-        BubbleManagerIF::Incoming, BubbleManagerIF::NoCiphering, icon);
-    QVERIFY(icon.iconName()=="qtg_mono_ciphering_off");
-    QVERIFY(icon.isVisible()==true);
-
-    BubbleUtils::setCipheringIcon(
-        BubbleManagerIF::Incoming, BubbleManagerIF::Normal, icon);
-    QVERIFY(icon.iconName()=="");
-    QVERIFY(icon.isVisible()==false);
+    BubbleUtils::setIndicators(
+        BubbleManagerIF::Incoming, BubbleManagerIF::Normal, icon1, icon2);
+    QVERIFY(icon1.iconName()=="");
+    QVERIFY(icon1.isVisible()==false);
+    QVERIFY(icon2.iconName()=="");
+    QVERIFY(icon2.isVisible()==false);
 }
 
 BUBBLE_TEST_MAIN(ut_BubbleUtils)

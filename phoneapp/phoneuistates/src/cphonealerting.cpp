@@ -116,7 +116,7 @@ EXPORT_C void CPhoneAlerting::HandleKeyMessageL(
                 {
                 // Show not allowed note
                 SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed );
+                    EPhoneNoteTextNotAllowed, ETrue );
                 }
             break;
 

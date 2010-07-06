@@ -49,7 +49,7 @@ private slots:
     
 private:
     
-    InfoWidgetSatHandlerPrivate *m_satHandler;
+    InfoWidgetSatHandlerPrivate *m_satHandlerPrivate;
     InfoWidgetSatHandler* m_iwSatHandler;
     RSatService m_satService;
 

@@ -23,13 +23,11 @@
 #include "cphonecenrepproxy.h"
 #include "cphonepubsubproxy.h"
 #include <settingsinternalcrkeys.h>
+#include "phoneapplauncher.h"
 #include "phonemessagecontroller.h"
 #include "tphonecmdparamsfidata.h"
 
-QString mService;
-QString mMessage;
-bool mSend;
-QList<QVariant> mList;
+extern QList<QVariant> gList;
 
 
 #define PHONE_QT_MESSAGE_CONTROLLER_TEST_MAIN(TestObject) \
@@ -68,6 +66,7 @@ private:
     QString softRejectText();
     
 private:
+    PhoneAppLauncher *m_launcher;
     PhoneMessageController *m_messageController; // class under test
 };
 
@@ -81,12 +80,14 @@ TestPhoneMessageController::~TestPhoneMessageController()
 
 void TestPhoneMessageController::initTestCase()
 {
-    m_messageController = new PhoneMessageController();
+    m_launcher = new PhoneAppLauncher(this);
+    m_messageController = new PhoneMessageController(*m_launcher, this);
 }
 
 void TestPhoneMessageController::cleanupTestCase()
 {
     delete m_messageController;
+    delete m_launcher;
 }
 
 void TestPhoneMessageController::init()
@@ -106,12 +107,9 @@ void TestPhoneMessageController::testOpenSoftRejectEditor()
     
     m_messageController->openSoftRejectMessageEditor(&sfiParam);
     
-    QVERIFY( mService == "com.nokia.services.hbserviceprovider.conversationview" );
-    QVERIFY( mMessage == "send(QString,QString,QString)" );
-    QVERIFY( mList.contains("1234567") );
-    QVERIFY( mList.contains("Tester") );
-    QVERIFY( mList.contains(text) );
-    QVERIFY( mSend );
+    QVERIFY( gList.contains("1234567") );
+    QVERIFY( gList.contains("Tester") );
+    QVERIFY( gList.contains(text) );
 }
 
 QString TestPhoneMessageController::softRejectText()

@@ -42,6 +42,7 @@ class TelephonyService;
 class QKeyEvent;
 class PhoneIndicatorController;
 class PhoneVisibilityHandler;
+class PhoneAppLauncher;
 
 class PHONEUIQTVIEWADAPTER_EXPORT PhoneUIQtViewAdapter : 
     public QObject, 
@@ -536,6 +537,18 @@ private:
         This method opens logs/dialer application.
     */ 
     void openLogs(TPhoneCommandParam *commandParam);
+
+    /*!
+        /fn void setCommonButtonFlags()
+        This method sets common button flags.
+    */
+    void setCommonButtonFlags();
+    
+    /*!
+        /fn void convertKey()
+        This method converts key.
+    */
+    bool convertKey(TKeyCode symbianKey, Qt::Key &qtKey);
     
 private:
 
@@ -552,7 +565,9 @@ private:
     bool m_dialpadAboutToClose;
     bool m_homeScreenToForeground;
 	PhoneVisibilityHandler *m_visibilityHandler;
+	PhoneAppLauncher *m_appLauncher;
 	bool m_clearDialpadOnClose;
+	bool m_speakerAsDefaultButton;
 };
 
 #endif // PHONEUIQTVIEWADAPTER_H

@@ -406,7 +406,7 @@ EXPORT_C void CPhoneStateCallSetup::HandleKeyMessageL(
             else // aMessage == EPhoneKeyLongPress
                 {
                 // Display call in progress information note
-                CPhoneState::SendGlobalInfoNoteL( EPhoneCallInProgress );
+                CPhoneState::SendGlobalInfoNoteL( EPhoneCallInProgress, ETrue );
                 }
             break;
 
@@ -684,6 +684,7 @@ void CPhoneStateCallSetup::HandleAudioOutputChangedL()
     CPhoneState::HandleAudioOutputChangedL();
     // Update the call setup CBA
     UpdateInCallCbaL();
+    SetTouchPaneButtons(0);
     }
  
 // -----------------------------------------------------------

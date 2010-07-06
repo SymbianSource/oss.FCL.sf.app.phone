@@ -94,7 +94,7 @@ void CPEExternalDataHandler::ConstructL(
     iAccessorySettingsRepository = CRepository::NewL( KCRUidAccessorySettings );*/
     //iTelephonySettingsRepository = CRepository::NewL( KCRUidTelephonySettings );
     iTelephonyVariationRepository = CRepository::NewL( KCRUidTelVariation );
-    //iCoreApplicationRepository = CRepository::NewL( KCRUidCoreApplicationUIs ); 
+    iCoreApplicationRepository = CRepository::NewL( KCRUidCoreApplicationUIs ); 
    
     TEFLOGSTRING( KTAOBJECT, "PE CPEExternalDataHandler::BaseConstructL 2" );
     }
@@ -128,12 +128,19 @@ TInt CPEExternalDataHandler::Get(
         errorCode = iCallDurationDisplay->Get( aValue );
         TEFLOGSTRING2( KTAINT, "CPEExternalDataHandler::Get EPECallDurationDisplaySetting, error code: %d", errorCode );
         }
+    else if ( EPENetworkConnectionAllowedSetting == aSetting )
+        {
+        // Fetches setting that indicates if network connection is allowed,
+        // i.e. is the phone in off-line mode. 
+        errorCode = iCoreApplicationRepository
+                ->Get( KCoreAppUIsNetworkConnectionAllowed, aValue );
+        }
     else
         {
         errorCode = KErrNone;
         aValue = 0;        
         }
-    
+
     // Process Common id
     return errorCode;
     }

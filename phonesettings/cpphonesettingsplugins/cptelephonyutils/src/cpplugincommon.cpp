@@ -30,6 +30,8 @@
 #include <NumberGroupingCRKeys.h>
 #include <hbglobal.h>
 #include <CoreApplicationUIsSDKCRKeys.h>
+#include <telephonyvariant.hrh>
+#include <telinternalcrkeys.h>
 #include <ctsydomainpskeys.h>
 #include "cptelephonyutilsdefs.h"
 #include "cpplugincommon.h"
@@ -212,6 +214,12 @@ int CpSettingsWrapper::writeSoftRejectText(const QString &text, bool userDefined
  bool CpSettingsWrapper::numberGroupingSupported() const
  {
      return readCenrepValue(KCRUidNumberGrouping.iUid, KNumberGrouping).toBool();
+ }
+ 
+ bool CpSettingsWrapper::forbiddenIconSupported() const
+ {
+     int keyValue = readCenrepValue(KCRUidTelVariation.iUid, KTelVariationFlags).toInt();
+     return (KTelephonyLVFlagForbiddenIcon & keyValue);
  }
 
 QVariant CpSettingsWrapper::readCenrepValue(

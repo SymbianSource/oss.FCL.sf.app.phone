@@ -39,7 +39,6 @@ class HbCheckBox;
 class InfoWidgetDocumentLoader : public HbDocumentLoader
 {
 public:
-    InfoWidgetDocumentLoader();
     virtual QObject *createObject(const QString& type,
                                   const QString &name);
 };
@@ -123,8 +122,8 @@ public:
     int layoutRows() const; 
     void setLayoutRows(int rows);
     
-    qreal layoutRowHeight() const;
-    bool textFitsToRect(QString text, QFont font, QRectF rect); 
+    qreal layoutRowHeight();
+    bool textFitsToRect(QString text, QFont font, QRectF rect) const;  
     
 private:
     QMap<LayoutItemRole, QGraphicsWidget *> m_widgets;
@@ -135,6 +134,7 @@ private:
     InfoWidgetDocumentLoader *m_documentLoader;
     DisplayRole m_displayRole; 
     int m_layoutRows;
+    qreal m_cachedLayoutRowHeight; 
     
 };
 

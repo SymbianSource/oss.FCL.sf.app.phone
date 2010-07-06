@@ -78,4 +78,5 @@ EXPORTS
 	_ZTV17CpSettingsWrapper @ 77 NONAME
 	_ZTV19CpPhoneLocalisation @ 78 NONAME
 	_ZTV5Tools @ 79 NONAME
+	_ZNK17CpSettingsWrapper22forbiddenIconSupportedEv @ 80 NONAME
 

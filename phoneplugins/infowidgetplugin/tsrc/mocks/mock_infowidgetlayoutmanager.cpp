@@ -243,7 +243,7 @@ void InfoWidgetLayoutManager::setLayoutRows(
 // InfoWidgetLayoutManager::layoutRowHeight
 // -----------------------------------------------------------------------------
 //
-qreal InfoWidgetLayoutManager::layoutRowHeight(  ) const
+qreal InfoWidgetLayoutManager::layoutRowHeight(  )
     {
     SMC_MOCK_METHOD0( qreal )
     }
@@ -256,23 +256,11 @@ qreal InfoWidgetLayoutManager::layoutRowHeight(  ) const
 bool InfoWidgetLayoutManager::textFitsToRect( 
         QString text,
         QFont font,
-        QRectF rect )
+        QRectF rect ) const
     {
     SMC_MOCK_METHOD3( bool, QString, text, 
         QFont, font, 
         QRectF, rect )
-    }
-
-
-// -----------------------------------------------------------------------------
-// InfoWidgetDocumentLoader::InfoWidgetDocumentLoader
-// -----------------------------------------------------------------------------
-//
-InfoWidgetDocumentLoader::InfoWidgetDocumentLoader(  )
-    //:
-    //HbDocumentLoader( /**/ )
-    {
-    
     }
 
 

@@ -155,7 +155,9 @@ void CpCallsPluginGroup::createShowCallDurationItem()
             HbDataFormModelItem::ToggleValueItem,
             hbTrId("txt_phone_formlabel_show_call_duration"),
             this);
-
+    m_DataItemShowCallDuration->setObjectName(
+            "showCallDurationDataItem"); 
+    
     if (showCallDurationStatus) {
         m_DataItemShowCallDuration->setContentWidgetData(
             "text", QVariant(hbTrId("txt_phone_setlabel_val_yes")));
@@ -192,6 +194,9 @@ void CpCallsPluginGroup::createSoftRejectItem()
             HbDataFormModelItem::TextItem,
             hbTrId("txt_phone_setlabel_soft_reject"),
             this);
+    m_DataItemSoftRejectTextEditor->setObjectName(
+            "softRejectTextEditorDataItem");
+    
     m_DataItemSoftRejectTextEditor->setContentWidgetData(
         "text", QVariant(softRejectText));
     m_DataItemSoftRejectTextEditor->setContentWidgetData(
@@ -217,6 +222,8 @@ void CpCallsPluginGroup::createCLIItem()
             HbDataFormModelItem::ComboBoxItem,
             hbTrId("txt_phone_setlabel_send_my_caller_id"),
             this);
+    m_DataItemCLI->setObjectName("cliDataItem");
+    
     // CLI combo box items string list 
     QStringList list;
     QMapIterator<int, QString> cliSettingMapIterator(m_cliSettingMap);
@@ -247,7 +254,9 @@ void CpCallsPluginGroup::createOwnVideoInReceivedCall()
             HbDataFormModelItem::ComboBoxItem,
             hbTrId("txt_phone_setlabel_own_video_in_received_call"),
             this);
-
+    m_OwnVideoInReceivedCall->setObjectName(
+            "ownVideoInReceivedCallDataItem");
+    
     QStringList ownVideoSelections;
     ownVideoSelections
         <<hbTrId("txt_phone_setlabel_own_video_in_val_show_automatic")
@@ -277,7 +286,7 @@ void CpCallsPluginGroup::createCallWaitingtem()
             HbDataFormModelItem::ToggleValueItem,
             hbTrId("txt_phone_setlabel_call_waiting"),
             this);
-
+    m_DataItemCallWaiting->setObjectName("callWaitingDataItem"); 
     m_DataItemCallWaiting->setContentWidgetData(
         "text", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_check_status")));
     m_DataItemCallWaiting->setContentWidgetData(
@@ -292,13 +301,10 @@ void CpCallsPluginGroup::createCallWaitingtem()
  */
 void CpCallsPluginGroup::connectShowCallDurationItem()
 {
-    DPRINT << ": IN";
-    
+    DPRINT;
     m_helper.addConnection(
         m_DataItemShowCallDuration, SIGNAL(valueChanged(QPersistentModelIndex, QVariant)),
         this, SLOT(showCallDurationStateChanged()));
-
-    DPRINT << ": OUT";
 }
  
 /*!
@@ -306,13 +312,10 @@ void CpCallsPluginGroup::connectShowCallDurationItem()
  */
 void CpCallsPluginGroup::connectSoftRejectItem()
 {
-    DPRINT << ": IN";
-
+    DPRINT;
     m_helper.addConnection(
         m_DataItemSoftRejectTextEditor, SIGNAL(editingFinished()),
         this, SLOT(softRejectTextChanged()));
-
-    DPRINT << ": OUT";
 }
 
 /*!
@@ -320,8 +323,7 @@ void CpCallsPluginGroup::connectSoftRejectItem()
  */
 void CpCallsPluginGroup::connectCLIItem()
 {
-    DPRINT << ": IN";
-    
+    DPRINT;
     m_helper.addConnection(
         m_DataItemCLI, SIGNAL(currentIndexChanged(int)),
         this, SLOT(cliCurrentIndexChanged(int)));
@@ -335,8 +337,6 @@ void CpCallsPluginGroup::connectCLIItem()
     } else {
         DPRINT << "Error: " << err;
     }
-    
-    DPRINT << ": OUT";
 }
 
 /*!
@@ -344,26 +344,21 @@ void CpCallsPluginGroup::connectCLIItem()
  */
 void CpCallsPluginGroup::connectOwnVideoInReceivedCall()
 {
-    DPRINT << ": IN";
-        
+    DPRINT;
     m_helper.addConnection(
         m_OwnVideoInReceivedCall, SIGNAL(currentIndexChanged(int)),
             this, SLOT(ownVideoInReceivedCallStateChanged(int)));
-
-    DPRINT << ": OUT";
 }
+
 /*!
   CpCallsPluginGroup::connectCallWaitingItem.
  */
 void CpCallsPluginGroup::connectCallWaitingItem()
 {
-    DPRINT << ": IN";
-
+    DPRINT;
     m_helper.addConnection(
         m_DataItemCallWaiting, SIGNAL(valueChanged(QPersistentModelIndex, QVariant)),
         this, SLOT(callWaitingCurrentIndexChanged()));
-
-    DPRINT << ": OUT";
 }
 
 /*!
@@ -440,24 +435,20 @@ void CpCallsPluginGroup::callWaitingCurrentIndexChanged()
         // Clicked first time, user want to check feature status
         DPRINT << "checking status";
         m_callWaitingWrapper->getCallWaitingStatus();
-    }
-
-    else if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_on")) {
+    } else if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_on")) {
         DPRINT << "activate";
         // User want to activate call waiting feature
         m_callWaitingWrapper->setCallWaiting(
             PSetCallWaitingWrapper::ActivateCallWaiting,
             AllTeleAndBearer);
-    }
-    else if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_off")) {
+    } else if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_off")) {
         DPRINT << "deactivate";
         // User want to deactivate call waiting feature
         m_callWaitingWrapper->setCallWaiting(
             PSetCallWaitingWrapper::DeactivateCallWaiting,
             AllTeleAndBearer);
-    }
-    else {
-        DPRINT << "nothing done";
+    } else {
+        DWARNING << ": Error, unhandled index!";
     }
 
     DPRINT << ": OUT";
@@ -507,11 +498,9 @@ void CpCallsPluginGroup::ownVideoInReceivedCallStateChanged(int index)
 void CpCallsPluginGroup::insertMappedListItems()
 {
     DPRINT << ": IN";
-
     m_cliSettingMap.insert(ClirNetworkDefault, hbTrId("txt_phone_setlabel_val_default"));
     m_cliSettingMap.insert(ClirExplicitSuppress, hbTrId("txt_phone_setlabel_val_yes"));
     m_cliSettingMap.insert(ClirExplicitInvoke, hbTrId("txt_phone_setlabel_val_no"));
-
     DPRINT << ": OUT";
 }
 
@@ -524,7 +513,6 @@ void CpCallsPluginGroup::handleCallWaitingGetStatus(
 {
     DPRINT << ": IN status: " << status;
     // This happens only in the very first time when clicked.
-
     emit cancelNote(m_activeNoteId);
     
     bool alsCaseOnly = false;
@@ -610,9 +598,8 @@ void CpCallsPluginGroup::handleCallWaitingError(int errorCode)
 {
     DPRINT << ": IN";
     DPRINT << "errorCode:" << errorCode;
-    
+
     emit cancelNote(m_activeNoteId);
-    
     emit showGlobalErrorNote(m_activeNoteId, errorCode);
     
     DPRINT << ": OUT";

@@ -19,12 +19,20 @@
 #include "infowidgetlogging.h"
 
 /*!
+  Stubbed class implementation for testing  
+  Widget on windows/other environment.  
+*/
+
+
+/*!
    InfoWidgetEngine::InfoWidgetEngine
  */
 InfoWidgetEngine::InfoWidgetEngine(QObject *parent): 
-    QObject(parent)
+    QObject(parent),
+    m_networkHandler(NULL),
+    m_satHandler(NULL)
 {
-    DPRINT;
+    DPRINT << ": STUBBED";
 }
 
 /*!
@@ -32,53 +40,24 @@ InfoWidgetEngine::InfoWidgetEngine(QObject *parent):
  */
 InfoWidgetEngine::~InfoWidgetEngine()
 {
-    DPRINT;
+    DPRINT << ": STUBBED";
 }    
 
 /*!
-   InfoWidgetEngine::logModelData
-   
-   Utility function for logging model data
- */
-void InfoWidgetEngine::logModelData()
-{
-    DPRINT << ": mcn name: " << m_modelData.mcnName(); 
-    DPRINT << ": service provider name: " << m_modelData.serviceProviderName();
-    DPRINT << ": homezone text tag: " << m_modelData.homeZoneTextTag();
-    
-    DPRINT << ": mcn type: " << m_modelData.mcnIndicatorType(); 
-    DPRINT << ": active line: " << m_modelData.activeLine(); 
-    DPRINT << ": homezone indicator type: " << m_modelData.homeZoneIndicatorType(); 
-} 
-
-/*!
    InfoWidgetEngine::modelData
-   
-   Getter for model data. 
  */
 const InfoWidgetEngine::ModelData& InfoWidgetEngine::modelData() const
 {
-    DPRINT;
+    DPRINT << ": STUBBED";
     return m_modelData; 
 }
 
 /*!
-   InfoWidgetEngine::setModelData
-   
-   Enables setting model initial data to engine.   
- */
-void InfoWidgetEngine::setModelData(const InfoWidgetEngine::ModelData &data)
-{
-    DPRINT; 
-    m_modelData = data;
-}
-
-/*!
-   InfoWidgetEngine::updateNetworkDataToModel
+   InfoWidgetEngine::updateNetworkDataToModel() 
  */
 void InfoWidgetEngine::updateNetworkDataToModel()
 {
-    DPRINT;
+    DPRINT << ": STUBBED"; 
 }
 
 /*!
@@ -86,7 +65,7 @@ void InfoWidgetEngine::updateNetworkDataToModel()
  */
 void InfoWidgetEngine::updateSatDataToModel()
 {
-    DPRINT;
+    DPRINT << ": STUBBED";
 }
 
 /*!
@@ -94,32 +73,61 @@ void InfoWidgetEngine::updateSatDataToModel()
  */
 void InfoWidgetEngine::updateLineDataToModel()
 {
-    DPRINT;
+    DPRINT << ": STUBBED";
 }
 
 /*!
    InfoWidgetEngine::handleNetworkError
  */
-void InfoWidgetEngine::handleNetworkError(int operation, int errorCode)
+void InfoWidgetEngine::handleNetworkError(
+        int operation, int errorCode)
 {
-    DPRINT << ": operation: " << operation << " error code: " << errorCode; 
+    DPRINT << ": STUBBED"; 
 }
 
 /*!
    InfoWidgetEngine::handleSatError
  */
-void InfoWidgetEngine::handleSatError(int operation, int errorCode)
+void InfoWidgetEngine::handleSatError(
+        int operation, int errorCode)
 {
-    DPRINT << ": operation: " << operation << " error code: " << errorCode; 
+    DPRINT << ": STUBBED"; 
 }
 
 /*!
    InfoWidgetEngine::handleLineError
  */
-void InfoWidgetEngine::handleLineError(int operation, int errorCode)
+void InfoWidgetEngine::handleLineError(
+        int operation, int errorCode)
 {
-    DPRINT << ": operation: " << operation << " error code: " << errorCode; 
+    DPRINT << ": STUBBED"; 
 }
+
+/*!
+   InfoWidgetEngine::handlePreferencesChanged
+ */
+void InfoWidgetEngine::handlePreferencesChanged(
+        InfoWidgetPreferences::Options options)
+{
+    DPRINT << ": STUBBED";
+}
+
+/*!
+   InfoWidgetEngine::suspend
+ */
+void InfoWidgetEngine::suspend() 
+{
+    DPRINT << ": STUBBED";
+}
+
+/*!
+   InfoWidgetEngine::preferenceChanged
+ */
+void InfoWidgetEngine::resume()
+{
+    DPRINT << ": STUBBED"; 
+}
+
 
 // End of File. 
 

@@ -38,7 +38,9 @@ public:
         Mute            = 0x80,  // Mute
         MultiCall       = 0x100, // Multi call
         FullConference  = 0x200, // Max member count in conference
-        Outgoing        = 0x400  // Outgoing call
+        Outgoing        = 0x400, // Outgoing call
+        IhfAsPushButton  = 0x800,  // Speaker as push button in bubble
+        BluetoothAvailable   = 0x1000  // Bluetooth available
     };
     Q_DECLARE_FLAGS(PhoneButtonFlags, PhoneButtonFlag)
 

@@ -94,4 +94,8 @@ EXPORTS
 	_ZN13PhoneUIQtView17windowDeactivatedEv @ 93 NONAME
 	_ZN13PhoneUIQtView12clearDialpadEv @ 94 NONAME
 	_ZThn28_N13PhoneUIQtView12clearDialpadEv @ 95 NONAME
+	_ZN13PhoneUIQtView10captureKeyEN2Qt3KeyEb @ 96 NONAME
+	_ZThn28_N13PhoneUIQtView10captureKeyEN2Qt3KeyEb @ 97 NONAME
+	_ZN13PhoneUIQtView17setRestrictedModeEb @ 98 NONAME
+	_ZThn28_N13PhoneUIQtView17setRestrictedModeEb @ 99 NONAME
 

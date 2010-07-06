@@ -231,8 +231,6 @@ NONSHARABLE_STRUCT( TPEErrorInfo )
     TInt iCallId;
     // Error type( Cch or Ccp )
     TPEErrorType iErrorType;
-	//Protocol spesific error code
-	TInt iProtocolSpesificErrorCode;
     };
     
 enum TPECallType
@@ -434,7 +432,6 @@ NONSHARABLE_CLASS( MEngineMonitor )
         EPEMessageShowBTLoopback,
         EPEMessageShowWlanMacAddress,
         EPEMessageSSRequestFailed,
-        EPEMessageBTDebugMode,
 
         // Security messages                  7000 - 7999
         EPEMessageBadBarringPasswordChange  = 7000,
@@ -491,6 +488,7 @@ NONSHARABLE_CLASS( MEngineMonitor )
         EPEMessageTempClirActivationUnsuccessful,
         EPEMessageShowIncCallGroupIndex,
         EPEMessageDataPortLoaned,
+        EPEMessageOutgoingCallBarred,
         // Contact messages                       11400 - 11599
 
         // Error messages                         11600 - 11799

@@ -69,3 +69,6 @@ SOURCES   += ./src/main.cpp \
              ./src/phoneuihousehold.cpp \
              ./src/phoneuihousehold_p.cpp
 
+CONFIG += service
+SERVICE.FILE = service_conf.xml
+

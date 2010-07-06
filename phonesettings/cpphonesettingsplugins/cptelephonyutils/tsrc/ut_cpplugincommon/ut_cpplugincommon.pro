@@ -42,7 +42,9 @@ SOURCES += ut_cpplugincommon.cpp
 HEADERS += ../../inc/cpplugincommon.h \
            /epoc32/include/platform/mw/xqsettingskey.h \
            /epoc32/include/platform/mw/xqsettingsmanager.h \
-           /epoc32/include/platform/mw/xqsysinfo.h
+           /epoc32/include/platform/mw/xqsysinfo.h \
+           ../../../../../inc/telephonyvariant.hrh \
+           ../../../../../inc/telinternalcrkeys.h
            
 SOURCES += ../../src/cpplugincommon.cpp
 

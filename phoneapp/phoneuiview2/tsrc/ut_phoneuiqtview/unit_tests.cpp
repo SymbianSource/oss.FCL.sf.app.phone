@@ -28,12 +28,15 @@
 #include <hbmainwindow.h>
 #include <bubblemanagerif.h>
 #define protected public
+#define private public
 #include "phoneuiqtview.h"
 #undef public
 #include "phoneaction.h"
 #include <hbtoolbar.h>
 #include <hbvolumesliderpopup.h>
 #include <hbaction.h>
+#include <dialpad.h>
+#include <hblineedit.h>
 #include "xqserviceutil.h"
 #include "phoneaction.h"
 
@@ -94,6 +97,8 @@ private slots:
     void testSetMenuActions();
     void testLongEndKeyPressEventOutsideTelephony();
     void testNetworkNameChanged();
+    void testCaptureKey();
+    void testRestrictedMode();
 
 private:
     int createCallHeader();
@@ -419,10 +424,62 @@ void TestPhoneUIQtView::testNetworkNameChanged()
     QCOMPARE(m_networkName, QString("test2"));
 }
 
+void TestPhoneUIQtView::testCaptureKey()
+{
+    m_view->captureKey( Qt::Key_No, true );
+    m_view->captureKey( Qt::Key_No, true );	
+    m_view->captureKey( Qt::Key_Yes, false );
+    m_view->captureKey( Qt::Key_No, false );
+    m_view->captureKey( Qt::Key_No, false );		
+}
+
+void TestPhoneUIQtView::testRestrictedMode()
+{
+    qRegisterMetaType<QKeyEvent*>("QKeyEvent*");
+    QKeyEvent yesDown(QEvent::KeyPress, Qt::Key_Yes, Qt::NoModifier);
+    QKeyEvent yesUp(QEvent::KeyRelease, Qt::Key_Yes, Qt::NoModifier);
+    QKeyEvent oneDown(QEvent::KeyPress, Qt::Key_1, Qt::NoModifier);
+    QKeyEvent oneUp(QEvent::KeyRelease, Qt::Key_1, Qt::NoModifier);
+    QSignalSpy downSpy(m_view, SIGNAL(keyPressed(QKeyEvent*)));
+    QSignalSpy upSpy(m_view, SIGNAL(keyReleased(QKeyEvent*)));
+
+    m_view->setRestrictedMode(true);
+    m_view->m_dialpad->editor().setText("1"); // emits signal
+    QCOMPARE(m_view->m_dialpad->isCallButtonEnabled(), false);
+    m_view->eventFilter(0, &oneDown);
+    m_view->eventFilter(0, &oneUp);
+    m_view->eventFilter(0, &yesDown);
+    m_view->eventFilter(0, &yesUp);
+    QCOMPARE(downSpy.count(), 1); // Only Key_1 is passed
+    QCOMPARE(upSpy.count(), 1); // Only Key_1 is passed
+    QCOMPARE(m_view->m_dialpad->isCallButtonEnabled(), false);
+    QCOMPARE(m_view->m_backAction->isEnabled(), false);
+    
+    // Test backbutton
+    m_view->setBackButtonVisible(true);
+    QCOMPARE(m_view->m_backAction->isEnabled(), false);
+
+    // Test return to normal mode
+    downSpy.clear();
+    upSpy.clear();
+    m_view->setRestrictedMode(false);
+    m_view->m_dialpad->editor().setText("1"); // emits signal
+    QCOMPARE(m_view->m_dialpad->isCallButtonEnabled(), true);
+    m_view->eventFilter(0, &oneDown);
+    m_view->eventFilter(0, &oneUp);
+    m_view->eventFilter(0, &yesDown);
+    m_view->eventFilter(0, &yesUp);
+    QCOMPARE(downSpy.count(), 2);
+    QCOMPARE(upSpy.count(), 2);
+    QCOMPARE(m_view->m_dialpad->isCallButtonEnabled(), true);
+    QCOMPARE(m_view->m_backAction->isEnabled(), true);
+}
+
 void HbView::setTitle (const QString &title)
 {
     m_networkName = title;
 }
+
 
 PHONE_QT_VIEW_TEST_MAIN(TestPhoneUIQtView)
 Q_DECLARE_METATYPE(QKeyEvent *)

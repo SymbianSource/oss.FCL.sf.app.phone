@@ -21,6 +21,7 @@
 #include <apgtask.h>
 #include <ccallinformation.h>
 #include <ccallinfoiter.h>
+#include <keyguardaccessapi.h>
 #include "phonevisibilityhandler.h"
 #include "cphonepubsubproxy.h"
 #include "phoneconstants.h"
@@ -51,21 +52,6 @@ PhoneVisibilityHandler::PhoneVisibilityHandler(PhoneUIQtViewIF &view, QObject *p
     connect(m_carModeSubscriber, SIGNAL(contentsChanged()), this, SLOT(carModeChanged()));
     m_carModeEnabled = m_carModeSubscriber->value().toBool();
 
-/*    
-    // Define car mode pub sub key
-    int err = RProperty::Define(
-        KPSUidTelCarMode,
-        KTelCarMode,
-        RProperty::EInt,
-        KPhoneReadPolicy,
-        KPhoneWritePolicy);
-    
-    // Start listening to car mode changes
-    if(err == KErrNone) {
-        QT_TRAP_THROWING(CPhonePubSubProxy::Instance()->NotifyChangeL(
-                KPSUidTelCarMode, KTelCarMode, this));
-    }
-*/    
     int autlockValue = CPhonePubSubProxy::Instance()->Value(
                 KPSUidCoreApplicationUIs, KCoreAppUIsAutolockStatus);
     m_deviceLockEnabled = (EAutolockOff < autlockValue);
@@ -74,6 +60,10 @@ PhoneVisibilityHandler::PhoneVisibilityHandler(PhoneUIQtViewIF &view, QObject *p
     // Start listening to device lock changes
     QT_TRAP_THROWING(CPhonePubSubProxy::Instance()->NotifyChangeL(
             KPSUidCoreApplicationUIs, KCoreAppUIsAutolockStatus, this));
+    
+    QT_TRAP_THROWING(CPhonePubSubProxy::Instance()->NotifyChangeL(
+        KPSUidCoreApplicationUIs, KCoreAppUIsAutolockStatus, this));
+
 }
 
 
@@ -92,8 +82,9 @@ PhoneVisibilityHandler::~PhoneVisibilityHandler()
 void PhoneVisibilityHandler::bringToForeground()
 {
     PHONE_TRACE2("m_carModeEnabled=", m_carModeEnabled);
-
-    if(!m_carModeEnabled) {
+    
+    if (!m_carModeEnabled) {
+        disableKeyGuard();
         m_view.bringToForeground();
         adjustVisibility(BringForwards);
     }
@@ -112,11 +103,12 @@ void PhoneVisibilityHandler::hideDeviceDialogs(bool hide)
 }
 
 /*!
-    PhoneVisibilityHandler::ordinalPosition.
+    PhoneVisibilityHandler::phoneVisible.
  */
-int PhoneVisibilityHandler::ordinalPosition()
+bool PhoneVisibilityHandler::phoneVisible()
 {
-    return m_eikonEnv->RootWin().OrdinalPosition();
+    // Should we check if there is phone's devicedialogs visible?
+    return (m_eikonEnv->RootWin().OrdinalPosition() == 0);
 }
 
 /*!
@@ -125,7 +117,9 @@ int PhoneVisibilityHandler::ordinalPosition()
 void PhoneVisibilityHandler::sendToBackground(bool homeScreenForeground)
 {
     PHONE_TRACE2(": homeScreenForeground =", homeScreenForeground);
-
+    
+    enableKeyGuard();
+    
     // Send phone back on WSERV stack
     adjustVisibility(SendToBack);
     
@@ -149,9 +143,63 @@ void PhoneVisibilityHandler::HandlePropertyChangedL(const TUid& aCategory,
         // Adjust visibility according mode
         m_deviceLockEnabled = (EAutolockOff < aValue);
         PHONE_TRACE2(": m_deviceLockEnabled=", m_deviceLockEnabled);
+        m_view.setRestrictedMode(m_deviceLockEnabled);
         adjustVisibility(KeepCurrentPos);
 
     }
+}
+
+/*!
+ *  PhoneVisibilityHandler::disableKeyGuard().
+ */
+bool PhoneVisibilityHandler::disableKeyGuard()
+{
+    TRAP_IGNORE(
+        CKeyguardAccessApi* keyguardAccess = CKeyguardAccessApi::NewL( );
+        if (!m_keyguardOnBeforeForeground) {
+            // Check if keyguard previous status only when it is not set
+            // Keyguard status will be restored when phone is ordered to background
+            m_keyguardOnBeforeForeground = keyguardAccess->IsKeyguardEnabled();
+        }
+        keyguardAccess->DisableKeyguard( EFalse );
+        delete keyguardAccess;
+        );
+    
+    return m_keyguardOnBeforeForeground;
+}
+
+/*!
+ *  PhoneVisibilityHandler::enableKeyGuard().
+ */
+void PhoneVisibilityHandler::enableKeyGuard()
+{
+    if (phoneVisible() && m_keyguardOnBeforeForeground) {
+        // If phone is visible return to previous keyguard status
+        TRAP_IGNORE(
+            CKeyguardAccessApi* keyguardAccess = CKeyguardAccessApi::NewL( );
+            keyguardAccess->EnableKeyguard( EFalse );
+            delete keyguardAccess;
+            );
+    }
+    
+    m_keyguardOnBeforeForeground = false;
+}
+
+/*!
+ *  PhoneVisibilityHandler::ongoingCalls().
+ */
+int PhoneVisibilityHandler::ongoingCalls()
+{
+    int amountOfCalls=0;
+    TRAP_IGNORE(
+        CCallInformation* callInfos = CCallInformation::NewL();
+        CleanupStack::PushL(callInfos);
+        Q_ASSERT(callInfos != 0);
+        amountOfCalls = callInfos->GetCallsL().Count();
+        CleanupStack::PopAndDestroy(callInfos);
+        );
+    
+    return amountOfCalls;
 }
 
 /*!
@@ -159,6 +207,12 @@ void PhoneVisibilityHandler::HandlePropertyChangedL(const TUid& aCategory,
 	 -1 Ordinal position is lowest ( not visible )
 	  0 Ordinal position is highest ( visible )
 	  1 - ... Ordinal postition under one or more window group
+	  
+	It is agreed with devicedialog that:
+     - Incomincall, ECoeWinPriorityAlwaysAtFront + 100
+     - Ongoing call + security, ECoeWinPriorityAlwaysAtFront
+     - Ongoing call + Securire query, ECoeWinPriorityAlwaysAtFront - 1
+     - Ongoing call, ECoeWinPriorityNormal
  */
 void PhoneVisibilityHandler::adjustVisibility(AdjustAction action)
 {
@@ -179,7 +233,7 @@ void PhoneVisibilityHandler::adjustVisibility(AdjustAction action)
         
     } else if (m_hideDeviceDialogs) {
         PHONE_TRACE1(": Hide dialogs");
-        m_eikonEnv->RootWin().SetOrdinalPosition(0, ECoeWinPriorityAlwaysAtFront + 1);
+        m_eikonEnv->RootWin().SetOrdinalPosition(0, ECoeWinPriorityAlwaysAtFront + 100);
     
     } else if (m_deviceLockEnabled) {
         // critical notes are allowed to show on top of Phone application
@@ -204,18 +258,11 @@ void PhoneVisibilityHandler::adjustVisibility(AdjustAction action)
 void PhoneVisibilityHandler::carModeChanged()
 {
     PHONE_TRACE;
-    
     m_carModeEnabled = m_carModeSubscriber->value().toBool();
-
-    CCallInformation* callInfos = CCallInformation::NewL();
-    Q_ASSERT(callInfos != 0);
-    int amountOfCalls = callInfos->GetCallsL().Count();
-
-    if(!m_carModeEnabled && (amountOfCalls > 0)) {
+    
+    if(!m_carModeEnabled && (ongoingCalls() > 0)) {
         bringToForeground();
     }
-    
-    delete callInfos;
 
     // Adjust visibility according mode (TODO!)
     PHONE_TRACE2(": m_carModeEnabled=", m_carModeEnabled);

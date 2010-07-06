@@ -80,5 +80,7 @@ SOURCES += cphoneringingtonecontroller_stub.cpp
 SOURCES += cphonemediatorfactory_stub.cpp
 SOURCES += cphonemediatorsender_stub.cpp
 SOURCES += phonenotecontroller_stub.cpp
+HEADERS += ../../inc/phoneapplauncher.h
+SOURCES += phoneapplauncher_stub.cpp
 SOURCES += unit_tests.cpp
 

@@ -33,7 +33,8 @@ symbian: {
   INCLUDEPATH += $$MW_LAYER_SYSTEMINCLUDE
   LIBS += -lmocklib 		\
           -lsymbianmock 	\
-          -lcpframework
+          -lcpframework 
+          
 }
     
 # test code
@@ -46,6 +47,7 @@ SOURCES += ../../infowidget/src/infowidgetnetworkhandler.cpp
 
 # mocks needed for testing
 SOURCES += ../mocks/mock_networkhandlingproxy.cpp
+SOURCES += ../mocks/mock_cnwsession.cpp
 
 HEADERS += /epoc32/include/platform/mw/xqsettingskey.h \
            /epoc32/include/platform/mw/xqsettingsmanager.h

@@ -24,7 +24,7 @@
 
 // FORWARD DECLARATION
 class TPhoneCommandParam;
-class XQServiceRequest;
+class PhoneAppLauncher;
 
 class PhoneMessageController : public QObject
 {
@@ -35,7 +35,7 @@ public:
     /*!
         \fn PhoneMessageController (QObject *parent)
     */
-    PhoneMessageController(QObject *parent = 0);
+    PhoneMessageController(PhoneAppLauncher &appLauncher, QObject *parent = 0);
         
     /*!
         Destructor
@@ -49,19 +49,9 @@ public:
 
     */
     void openSoftRejectMessageEditor(TPhoneCommandParam *commandParam);
- 
-private:
-    
-    /*!
-        \fn void showNote ()
-        
-        This method opens message editor.
-
-    */
-    void openEditor(QString toField, QString name, QString messageBody = QString());
     
 private:
-    XQServiceRequest *mService;
+    PhoneAppLauncher &m_appLauncher;
 };
 
 #endif // PHONEMESSAGECONTROLLER_H

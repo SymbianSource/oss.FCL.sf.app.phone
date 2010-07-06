@@ -19,23 +19,21 @@
 #include "phoneconstants.h"
 #include "cphonecenrepproxy.h"
 #include "cphonepubsubproxy.h"
+#include "phoneapplauncher.h"
 #include <settingsinternalcrkeys.h>
 #include <coreapplicationuisdomainpskeys.h>
 #include <hbglobal.h>
-#include <xqservicerequest.h>
 
 
-PhoneMessageController::PhoneMessageController(QObject *parent) : 
+PhoneMessageController::PhoneMessageController(PhoneAppLauncher &appLauncher, QObject *parent) : 
     QObject(parent),
-    mService(0)
+    m_appLauncher(appLauncher)
 {
 
 }
 
 PhoneMessageController::~PhoneMessageController()
 {
-    delete mService;
-    mService = 0;
 }
 
 void PhoneMessageController::openSoftRejectMessageEditor(
@@ -85,26 +83,5 @@ void PhoneMessageController::openSoftRejectMessageEditor(
 
     
     // open message editor
-    openEditor(toField, alias, messageBody );
+    m_appLauncher.launchMessaging(toField, alias, messageBody);
 }
-
-void PhoneMessageController::openEditor(
-        QString toField, QString name, QString messageBody)
-{
-    delete mService;
-    mService = 0;
-    mService = new XQServiceRequest("com.nokia.services.hbserviceprovider.conversationview",
-                                    "send(QString,QString,QString)", false);
-    
-    QList<QVariant> arguments;
-    arguments.append(QVariant(toField));
-    arguments.append(QVariant(name));
-    arguments.append(QVariant(messageBody));
-    mService->setArguments(arguments);
-    
-    QVariant retValue;
-    mService->send(retValue);
-}
-
-
-

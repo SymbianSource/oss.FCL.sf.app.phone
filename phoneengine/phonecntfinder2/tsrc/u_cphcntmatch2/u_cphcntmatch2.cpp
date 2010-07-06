@@ -18,9 +18,14 @@
 #include <QtGui>
 #include <QtTest/QtTest>
 #include <QDebug>
+#include <QMap>
+#include "qcontactdetailfielddefinition.h"
 #include <e32cmn.h> //KNullDesC
 #include "qcontact.h"
 #include "qcontactdetail.h"
+#include "qcontactmanager.h"
+#include "qcontactringtone.h"
+#include "qcontactavatar.h"
 #include "qcontactname.h"
 #include "qcontactphonenumber.h"
 #include "cphcntmatch2.h"
@@ -49,6 +54,7 @@ private slots:
     //void testSeveralFirstNames();
     //void testEmptyList();
     void testPhoneNumberOverride();
+    void testPhoneNumberNotSet();
     void testRelease();
     void testCli();
     void testContactId();
@@ -66,7 +72,7 @@ private:
     
     CPhCntMatch2* mMatch; // SUT 
     MPhCntMatch* mMatchIf;
-    QContact mContact;
+    QContactManager* cm;
     QContactDetail mDetail;
   
 };
@@ -84,109 +90,168 @@ U_CPhCntMatch2::~U_CPhCntMatch2()
 
 void U_CPhCntMatch2::initTestCase()
     {
-    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(mContact) );
-    mMatchIf = mMatch;
     
+    cm = new QContactManager();
+    QContact contact;
+    QList<QContactLocalId> contactIds = cm->contactIds();
+    if (!contactIds.isEmpty()) {
+        // removes all contact 
+       /*     for (int i = 0; i < contactIds.count(); i++) 
+                {
+                QContact a = cm->contact(contactIds.at(i));
+                cm->removeContact(a.localId());
+                }*/
+        
+        contact = cm->contact(contactIds.first());
+        qDebug() << "This manager contains" << contact.displayLabel();
+    } else {
+        qDebug() << "This manager contains no contacts";
+    }
+
+    QList<QContactDetail> allDetails = contact.details();
+    for (int i = 0; i < allDetails.size(); i++) {
+        QContactDetail detail = allDetails.at(i);
+        QContactDetailDefinition currentDefinition = cm->detailDefinition(detail.definitionName());
+        QMap<QString, QContactDetailFieldDefinition> fields = currentDefinition.fields();
+
+        qDebug("\tDetail #%d (%s):", i, detail.definitionName().toAscii().constData());
+        foreach (const QString& fieldKey, fields.keys()) {
+            qDebug() << "\t\t" << fieldKey << "(" << fields.value(fieldKey).dataType() << ") =" << detail.value(fieldKey);
+        }
+        qDebug();
+    }
+       
     }
 
 void U_CPhCntMatch2::cleanupTestCase()
     {
     delete mMatch;
+    delete cm;
     }
 
 void U_CPhCntMatch2::testFirstNameEmpty()
     {
-    QVariant name(""); 
-    mDetail.setValue(QContactName::FieldFirst,name);
-    bool err = mContact.saveDetail(&mDetail);
+    QContact contact;
+    QContactName name;
+    name.setFirstName("");
+    bool err = contact.saveDetail(&name); 
+    err = cm->saveContact(&contact);
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
+    mMatchIf = mMatch;
     Q_ASSERT(mMatchIf->FirstName().Length() == 0);
-    // reset mDetail
-    mDetail.removeValue(QContactName::FieldFirst);
+
+    err = contact.removeDetail(&name);
+    err = cm->removeContact(contact.localId());
+
+    qDebug() << "U_CPhCntMatch2 : The first phone number of" << contact.displayLabel()
+                     << "is" << contact.detail(QContactPhoneNumber::DefinitionName).value(QContactPhoneNumber::FieldNumber);
+    
+    qDebug()<<"U_CPhCntMatch2 : contact.details().count() " << contact.details().count();
+    
     }
 
 void U_CPhCntMatch2::testFirstNameNotEmpty()
     {
-     _LIT(KFirstName, "firstname");
-     QString name((QChar*)KFirstName().Ptr(),KFirstName().Length());
-     mDetail.setValue(QContactName::FieldFirst,name);
-     bool err = mContact.saveDetail(&mDetail);
-     delete mMatch;
-     TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(mContact) );
-     mMatchIf = mMatch;
-     qDebug()<<"U_CPhCntMatch2 : mContact.details().count() " << mContact.details().count();
-     qDebug()<<"U_CPhCntMatch2 : mContact.details().at(0).value() " << mContact.details().at(0).value("");
-     HBufC* buf = NULL;
-     buf = mMatchIf->FirstName().AllocL();
-     QString qBuf((QChar*)buf->Ptr(),buf->Length());
-     qDebug()<<"mMatchIf->FirstName() returned...: " << qBuf;
-     Q_ASSERT( *buf == KFirstName()); 
-     delete buf;
-     // reset mDetail
-     mDetail.removeValue(QContactName::FieldFirst);
+    QContact contact;
+    _LIT(KFirstName, "firstname");
+    QContactName name;
+    name.setFirstName("firstname");
+    bool err = contact.saveDetail(&name); 
+    err = cm->saveContact(&contact);    
+
+    qDebug()<<"U_CPhCntMatch2 : contact.details().count() " << contact.details().count();
+    
+    delete mMatch;
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
+    mMatchIf = mMatch;
+    qDebug()<<"U_CPhCntMatch2 : contact.details().count() " << contact.details().count();
+    qDebug()<<"U_CPhCntMatch2 : contact.details().at(0).value() " << contact.details().at(0).value(QContactName::FieldFirstName);
+    HBufC* buf = NULL;
+    buf = mMatchIf->FirstName().AllocL();
+    QString qBuf((QChar*)buf->Ptr(),buf->Length());
+    qDebug()<<"mMatchIf->FirstName() returned...: " << qBuf;
+    Q_ASSERT( *buf == KFirstName()); 
+    delete buf;
+    
+    err = contact.removeDetail(&name);
+    err = cm->removeContact(contact.localId());
     }
 
 void U_CPhCntMatch2::testLastNameEmpty()
     {
-     QVariant name(""); 
-     mDetail.setValue(QContactName::FieldLast,name);
-     bool err = mContact.saveDetail(&mDetail);
-     delete mMatch;
-     TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(mContact) );
-     mMatchIf = mMatch;
-     Q_ASSERT(mMatchIf->LastName().Length() == 0);
-     // reset mDetail
-     mDetail.removeValue(QContactName::FieldLast);
+    QContact contact;
+    QContactName lastname;
+    lastname.setLastName("");
+    bool err = contact.saveDetail(&lastname); 
+    err = cm->saveContact(&contact);
+    delete mMatch;
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
+    mMatchIf = mMatch;
+    Q_ASSERT(mMatchIf->LastName().Length() == 0);
+
+    err = contact.removeDetail(&lastname);
+    err = cm->removeContact(contact.localId());
     }
 
 
 void U_CPhCntMatch2::testLastNameNotEmpty()
     {
+    QContact contact;
     _LIT(KLastName, "lastname");
-    QString name((QChar*)KLastName().Ptr(),KLastName().Length());
-    mDetail.setValue(QContactName::FieldLast,name);
-    bool err = mContact.saveDetail(&mDetail);
+    QContactName lastname;
+    lastname.setLastName("lastname");
+    bool err = contact.saveDetail(&lastname); 
+    err = cm->saveContact(&contact);
     delete mMatch;
-    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(mContact) );
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
     mMatchIf = mMatch;
     HBufC* buf = NULL;
     buf = mMatchIf->LastName().AllocL();
     QString qBuf((QChar*)buf->Ptr(),buf->Length());
+    qDebug()<<"mMatchIf->LastName() returned...: " << qBuf;
     Q_ASSERT(*buf == KLastName());
     delete buf;
-    qDebug()<<"testLastNameNotEmpty() -- exit ";
-    // reset mDetail
-    mDetail.removeValue(QContactName::FieldLast);
+
+    err = contact.removeDetail(&lastname);
+    err = cm->removeContact(contact.localId());
     }
 
 void U_CPhCntMatch2::testNumberEmpty()
     {
-    QVariant number(""); 
-    mDetail.setValue(QContactPhoneNumber::FieldNumber,number);
-    bool err = mContact.saveDetail(&mDetail);
+    QContact contact;
+    QContactPhoneNumber number;
+    number.setNumber("");
+    bool err = contact.saveDetail(&number); 
+    err = cm->saveContact(&contact);
     delete mMatch;
-    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(mContact) );
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
     mMatchIf = mMatch;
     Q_ASSERT(mMatchIf->Number().Length() == 0);
-    // reset mDetail
-    mDetail.removeValue(QContactPhoneNumber::FieldNumber);
+
+    err = contact.removeDetail(&number);
+    err = cm->removeContact(contact.localId());
     }
     
 void U_CPhCntMatch2::testNumberNotEmpty()
     {
-    _LIT(KNumber, "05012345678");
-    QString number((QChar*)KNumber().Ptr(),KNumber().Length());
-    mDetail.setValue(QContactPhoneNumber::FieldNumber,number);
-    bool err = mContact.saveDetail(&mDetail);
+    QContact contact;
+    _LIT(KNumber, "0501234567");
+    QContactPhoneNumber number;
+    number.setNumber("0501234567");
+    bool err = contact.saveDetail(&number); 
+    err = cm->saveContact(&contact);
+   
     delete mMatch;
-    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(mContact) );
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
     mMatchIf = mMatch;
     HBufC* buf = NULL;
     buf = mMatchIf->Number().AllocL();
     QString qBuf((QChar*)buf->Ptr(),buf->Length());
     Q_ASSERT(*buf == KNumber());
     delete buf;
-    // reset mDetail
-    mDetail.removeValue(QContactPhoneNumber::FieldNumber);
+
+    err = contact.removeDetail(&number);
+    err = cm->removeContact(contact.localId());
     }
 /*
 void U_CPhCntMatch2::testSeveralFirstNames() //in case pb returns bad variants
@@ -215,13 +280,17 @@ void U_CPhCntMatch2::testEmptyList()
 */
 void U_CPhCntMatch2::testPhoneNumberOverride()
     {
-    _LIT(KNumber, "05012345678");
+    QContact contact;
+    _LIT(KNumber, "0501234567");
     _LIT(KNumberOverride, "888888888");
-    QString number((QChar*)KNumber().Ptr(),KNumber().Length());
-    mDetail.setValue(QContactPhoneNumber::FieldNumber,number);
-    bool err = mContact.saveDetail(&mDetail);
+    
+    QContactPhoneNumber number;
+    number.setNumber("0501234567");
+    bool err = contact.saveDetail(&number); 
+    err = cm->saveContact(&contact);
+
     delete mMatch;
-    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(mContact) );
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
     mMatch->SetNumberL(KNumberOverride());
     mMatchIf = mMatch;
     HBufC* buf = NULL;
@@ -229,23 +298,54 @@ void U_CPhCntMatch2::testPhoneNumberOverride()
     QString qBuf((QChar*)buf->Ptr(),buf->Length());
     Q_ASSERT(*buf == KNumberOverride());
     delete buf;
-    // reset mDetail
-    mDetail.removeValue(QContactPhoneNumber::FieldNumber);
+
+    err = contact.removeDetail(&number);
+    err = cm->removeContact(contact.localId());
+    }
+
+
+void U_CPhCntMatch2::testPhoneNumberNotSet()
+    {
+    QContact contact;
+    _LIT(KNumber, "0501234567");
+    
+    QContactPhoneNumber number;
+    number.setNumber("0501234567");
+    bool err = contact.saveDetail(&number); 
+    err = cm->saveContact(&contact);
+
+    delete mMatch;
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
+    mMatchIf = mMatch;
+    HBufC* buf = NULL;
+    buf = mMatchIf->Number().AllocL();
+    QString qBuf((QChar*)buf->Ptr(),buf->Length());
+    Q_ASSERT(*buf == KNumber());
+    delete buf;
+
+    err = contact.removeDetail(&number);
+    err = cm->removeContact(contact.localId());
     }
 
 void U_CPhCntMatch2::testRelease()
     {
+    QContact contact;
     _LIT(KNumber, "1234");
-    QVariant number("1234"); 
-    mDetail.setValue(QContactPhoneNumber::FieldNumber,number);
-    bool err = mContact.saveDetail(&mDetail);
+    
+    QContactPhoneNumber number;
+    number.setNumber("1234");
+    bool err = contact.saveDetail(&number); 
+    err = cm->saveContact(&contact);
+    
     delete mMatch;
-    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(mContact) );
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
     mMatchIf = mMatch;
     mMatchIf->Release();
     Q_ASSERT(mMatchIf->Number() == KNumber());
-    // reset mDetail
-    mDetail.removeValue(QContactPhoneNumber::FieldNumber);
+
+    
+    err = contact.removeDetail(&number);
+    err = cm->removeContact(contact.localId());
     }
 
 void U_CPhCntMatch2::testCli()
@@ -256,14 +356,28 @@ void U_CPhCntMatch2::testCli()
 
 void U_CPhCntMatch2::testContactId()
     {
+    QContact contact;
+    QContactPhoneNumber number;
+    number.setNumber("1234");
+    bool err = contact.saveDetail(&number); 
+    err = cm->saveContact(&contact);   
+    
+    delete mMatch;
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
+    mMatchIf = mMatch;
+    
     CPhCntContactId* id = NULL;
     id = mMatchIf->ContactId();
-    Q_ASSERT(id->ContactId()== mContact.localId());
+    Q_ASSERT(id->ContactId()== contact.localId());
+    
+    err = contact.removeDetail(&number);
+    err = cm->removeContact(contact.localId());
+    
     }
 
 void U_CPhCntMatch2::testNumberType()
     {
-    Q_ASSERT(mMatchIf->NumberType() == MPhCntMatch::EMobileNumber);
+    Q_ASSERT(mMatchIf->NumberType() == MPhCntMatch::ENone);
     }
 
 void U_CPhCntMatch2::testCompanyName()
@@ -273,7 +387,28 @@ void U_CPhCntMatch2::testCompanyName()
 
 void U_CPhCntMatch2::testPersonalRingingTone()
     {
-    Q_ASSERT(mMatchIf->PersonalRingingTone().Length() == 0);
+    _LIT(KRingtone, "Z:\\Data\\Sounds\\Digital\\Incoming.aac");
+    QContact contact;
+    QUrl name("Z:\\Data\\Sounds\\Digital\\Incoming.aac");
+    QContactRingtone ringtone;
+    ringtone.setAudioRingtoneUrl(name);
+    bool err = contact.saveDetail( &ringtone );
+    err = cm->saveContact(&contact);  
+    
+    delete mMatch;
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
+    mMatchIf = mMatch;
+    
+    HBufC* buf = NULL;
+    buf = mMatchIf->PersonalRingingTone().AllocL();
+    QString qBuf((QChar*)buf->Ptr(),buf->Length());
+    
+   
+    Q_ASSERT(mMatchIf->PersonalRingingTone() == KRingtone());
+    
+    err = contact.removeDetail(&ringtone);
+    err = cm->removeContact(contact.localId());
+      
     }
 
 void U_CPhCntMatch2::testBelongsToGroups()
@@ -294,7 +429,26 @@ void U_CPhCntMatch2::testCallText()
 
 void U_CPhCntMatch2::testCallImage()
     {
-    Q_ASSERT(mMatchIf->CallImage().Length() == 0);
+    _LIT(KCallImage, "Z:\\Data\\Images\\Avatar.jpg");
+    QContact contact;
+    QUrl image("Z:\\Data\\Images\\Avatar.jpg");
+    QContactAvatar avatar;
+    avatar.setImageUrl(image);
+    bool err = contact.saveDetail( &avatar );
+    err = cm->saveContact(&contact);  
+    
+    delete mMatch;
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
+    mMatchIf = mMatch;
+    
+    HBufC* buf = NULL;
+    buf = mMatchIf->PersonalRingingTone().AllocL();
+    QString qBuf((QChar*)buf->Ptr(),buf->Length());
+    
+    Q_ASSERT(mMatchIf->CallImage() == KCallImage());
+    
+    err = contact.removeDetail(&avatar);
+    err = cm->removeContact(contact.localId());
     }
 
 void U_CPhCntMatch2::testHasThumbnailImage()

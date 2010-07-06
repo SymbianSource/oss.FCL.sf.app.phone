@@ -34,6 +34,7 @@
 #include "tphonecmdparamnote.h"
 #include "tphonecmdparamquery.h"
 #include "tphonecmdparamcallstatedata.h"
+#include "tphonecmdparamkeycapture.h"
 #include "tphonecmdparamsfidata.h"
 #include "mphonestatemachine.h"
 #include "phonestatedefinitions.h"
@@ -219,7 +220,7 @@ EXPORT_C void CPhoneStateInCall::HandlePhoneEngineMessageL(
             break; 
             
         case MEngineMonitor::EPEMessageInValidEmergencyNumber:
-            SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed );
+            SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed, ETrue );
             break;
             
         case MEngineMonitor::EPEMessageValidEmergencyNumber:
@@ -330,6 +331,10 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
     // Display call termination note, if necessary
     DisplayCallTerminationNoteL();
 
+    TPhoneCmdParamKeyCapture captureParam;
+    captureParam.SetKeyCode( EKeyNo );
+    iViewCommandHandle->ExecuteCommand( EPhoneViewStopCapturingKey, &captureParam );
+    
     CleanupStack::PopAndDestroy( phoneNumber );
     // Go to idle state
     iStateMachine->ChangeState( EPhoneStateIdle );
@@ -403,6 +408,8 @@ void CPhoneStateInCall::HandleAudioOutputChangedL()
         // Go to current state implementation
         UpdateInCallCbaL();
         }
+    
+    SetTouchPaneButtons(0);
     }
 
 // -----------------------------------------------------------
@@ -1223,7 +1230,7 @@ void CPhoneStateInCall::LockKeypadL()
             state );
         if ( state == EPSHWRMGripOpen )
             {
-            SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed );
+            SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed, ETrue );
             }
         else
             {
@@ -1479,7 +1486,7 @@ void CPhoneStateInCall::HandleVoiceKeyPressL( TPhoneKeyEventMessages aMessage )
     else // aMessage == EPhoneKeyLongPress
         {
         // Display call in progress information note
-        SendGlobalInfoNoteL( EPhoneCallInProgress );
+        SendGlobalInfoNoteL( EPhoneCallInProgress, ETrue );
         }        
     }
 

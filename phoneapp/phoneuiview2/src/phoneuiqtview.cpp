@@ -15,7 +15,7 @@
 *
 */
 #include <hbinstance.h>
-#include <qsignalmapper>
+#include <QSignalMapper>
 #include <hbaction.h>
 #include <hbtoolbar.h>
 #include <hbvolumesliderpopup.h>
@@ -36,12 +36,19 @@
 PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
     HbView (parent),
     m_window(window),
+    m_bubbleManager(0),
+    m_signalMapper(0),
     m_volumeSlider (0),
     m_expandSignalMapper(0),
     m_participantListSignalMapper(0),
     m_volumeCommandId(0),
+    m_backAction(0),
+    m_dialpad(0),
+    m_menuSignalMapper(0),
     m_keyCapture(0),
-    m_networkInfo(0)
+    m_networkInfo(0),
+    m_dialpadKeyHandler(0),
+    m_restrictedMode(false)
 {
     // Set network name
     m_networkInfo = new QSystemNetworkInfo(this);
@@ -49,24 +56,19 @@ PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
     if(networkName.isEmpty()) {
         networkName = m_networkInfo->networkName(QSystemNetworkInfo::GsmMode);
     }
-    connect(m_networkInfo, SIGNAL (networkNameChanged(QSystemNetworkInfo::NetworkMode,QString)), this, SLOT(networkNameChanged(QSystemNetworkInfo::NetworkMode, QString)));
+    connect(m_networkInfo, SIGNAL (networkNameChanged(QSystemNetworkInfo::NetworkMode,QString)),
+            this, SLOT(networkNameChanged(QSystemNetworkInfo::NetworkMode, QString)));
     setTitle(networkName);
 
     // Capturing long press of end key
     m_keyCapture = new XqKeyCapture();
-    m_keyCapture->captureLongKey(Qt::Key_No);
-    m_keyCapture->captureKey(Qt::Key_No);
     
     // Dialpad
     m_dialpad = new Dialpad(m_window);
     m_dialpad->setCallButtonEnabled(false);
     m_dialpad->setTapOutsideDismiss(true);
-    connect(&m_dialpad->editor(),SIGNAL(contentsChanged()),
-            SLOT(onEditorContentChanged()));
     connect(m_dialpad,SIGNAL(aboutToClose()),this,
                 SLOT(dialpadClosed()));
-    // enable key sequence handling during a call
-    new DialpadKeyHandler(m_dialpad, DialpadKeyHandler::KeySequence, this);
     
     // Call handling widget
     m_bubbleManager = new BubbleManager (this);
@@ -91,6 +93,9 @@ PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
     setNavigationAction(m_backAction);
 
     createToolBarActions();
+
+    // Set restricted mode off, normal state
+    setRestrictedMode(false);
 }
 
 PhoneUIQtView::~PhoneUIQtView ()
@@ -405,6 +410,23 @@ HbMenu &PhoneUIQtView::menuReference()
     return *menu();
 }
 
+void PhoneUIQtView::captureKey(Qt::Key key, bool capture)
+{
+    if (capture) {
+        if (!m_keyCaptures.contains(key)) {
+            m_keyCapture->captureLongKey(key);
+            m_keyCapture->captureKey(key);
+            m_keyCaptures.append(key);
+        }
+    } else {
+        if (m_keyCaptures.contains(key)) {
+            m_keyCapture->cancelCaptureKey(key);
+            m_keyCapture->cancelCaptureLongKey(key);
+            m_keyCaptures.removeOne(key);
+        }
+    }
+}
+
 void PhoneUIQtView::handleOrientationChange(Qt::Orientation orientation)
 {
     if (orientation==Qt::Horizontal) {
@@ -436,20 +458,30 @@ bool PhoneUIQtView::eventFilter(QObject *watched, QEvent * event)
 {
     Q_UNUSED(watched);
     PHONE_DEBUG2("PhoneUIQtView::eventFilter event type:", event->type());
+    
+    // Allow send key only when there is callbutton enabled or no text in input field
+    bool sendKeyAllowed = m_dialpad->isCallButtonEnabled() || 
+            (m_dialpad->editor().text().length() == 0);
+    
     if(event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
         PHONE_DEBUG2("PhoneUIQtView::eventFilter pressed key:", keyEvent->key());
         PHONE_DEBUG2("PhoneUIQtView::eventFilter isAutoRepeat:", keyEvent->isAutoRepeat());
-        emit keyPressed(keyEvent);        
-        keyEvent->accept();
+        if ( (keyEvent->key() != Qt::Key_Yes && keyEvent->key() != Qt::Key_Enter) ||
+                sendKeyAllowed) {
+            emit keyPressed(keyEvent);        
+            keyEvent->accept();
+        }
         
         return false;
     } else if(event->type() == QEvent::KeyRelease) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
         PHONE_DEBUG2("PhoneUIQtView::eventFilter released key:", keyEvent->key());
-        emit keyReleased(keyEvent);
-        keyEvent->accept();
-        
+        if ( (keyEvent->key() != Qt::Key_Yes && keyEvent->key() != Qt::Key_Enter) ||
+                sendKeyAllowed) {
+            emit keyReleased(keyEvent);
+            keyEvent->accept();
+        }
         return false;
     } else if (event->type() == QEvent::WindowActivate){
         PHONE_DEBUG("PhoneUIQtView::eventFilter WindowActivate");
@@ -510,7 +542,34 @@ void PhoneUIQtView::shutdownPhoneApp()
 
 void PhoneUIQtView::setBackButtonVisible(bool visible)
 {
-    m_backAction->setEnabled(visible);
+    if (!m_restrictedMode) {
+        m_backAction->setEnabled(visible);
+    }
+}
+
+void PhoneUIQtView::setRestrictedMode(bool restrictedMode)
+{
+    m_restrictedMode = restrictedMode;
+    m_backAction->setEnabled(!restrictedMode);
+    m_dialpad->setCallButtonEnabled(false);
+    m_dialpad->editor().setText(""); // Clead dialpad
+    if (m_restrictedMode) {
+        delete m_dialpadKeyHandler;
+        m_dialpadKeyHandler = 0;
+        m_dialpadKeyHandler = new DialpadKeyHandler(
+                m_dialpad, DialpadKeyHandler::EmergencyCall, this);
+        disconnect(&m_dialpad->editor(),SIGNAL(contentsChanged()),
+                this, SLOT(onEditorContentChanged())); // Let emergency handler do updating 
+    } else {
+        delete m_dialpadKeyHandler;
+        m_dialpadKeyHandler = 0;
+        // enable key sequence handling during a call
+        m_dialpadKeyHandler = new DialpadKeyHandler(
+                m_dialpad, DialpadKeyHandler::KeySequence, this);
+        connect(&m_dialpad->editor(),SIGNAL(contentsChanged()),
+                SLOT(onEditorContentChanged())); // Update our self
+    }
+    
 }
 
 void PhoneUIQtView::networkNameChanged(QSystemNetworkInfo::NetworkMode mode, const QString &netName)
@@ -520,3 +579,4 @@ void PhoneUIQtView::networkNameChanged(QSystemNetworkInfo::NetworkMode mode, con
         setTitle(netName);
     }	
 }
+

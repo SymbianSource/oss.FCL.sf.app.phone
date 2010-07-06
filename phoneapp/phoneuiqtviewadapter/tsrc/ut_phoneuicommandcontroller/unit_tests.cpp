@@ -27,6 +27,8 @@
 #include "phonebubblewrapper.h"
 #include "phoneuicommandcontroller.h"
 #include "phoneresourceids.h"
+#include "phoneresourceadapter.h"
+#include "phoneuiqtbuttonscontroller.h"
 
 extern bool m_setActions;
 extern bool m_setInvalidCommand;
@@ -34,6 +36,7 @@ extern QList<HbAction*> m_menuActions;
 extern bool m_setInvalidButtonCommands;
 extern bool m_setInvalidToolBarCommands;
 extern bool m_setCustomToolBarCommands;
+extern int m_phoneButtonFlags;
 
 #define PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
@@ -73,13 +76,13 @@ public:
     int volumeSliderValue () { m_volumeSliderValueCalled = true; return 5; };
     void removeVolumeSlider () { m_removeVolumeSliderCalled = true; };
     void setVolumeSliderValue (
-            int value, 
-            int commandId, 
-            int maxVolumeValue, 
-            int minVolumeValue ) { m_setVolumeSliderValueCalled = true; m_volumeSliderValue = value; };
+            int , 
+            int , 
+            int , 
+            int  ) { m_setVolumeSliderValueCalled = true; m_volumeSliderValue = value; };
 
     void setExpandAction(int bubbleId, int commandId) {m_expandAction[bubbleId]=commandId;};
-    void removeExpandAction(int bubbleId) {};
+    void removeExpandAction(int ) {};
     void showDialpad() {m_showDialpadCalled = true;};  
     void hideDialpad() {m_hideDialpadCalled = true;};  
     bool isDialpadVisible() 
@@ -88,48 +91,49 @@ public:
     QString dialpadText() {return m_dialpadText;};
     void clearAndHideDialpad() { m_clearAndHideDialpadCalled = true;};
     void clearDialpad() {};
-    void bringToForeground() {;};
-    void setMenuActions(const QList<PhoneAction*>& actions) { m_setMenuActionsCalled = true;};
-    void shutdownPhoneApp() {;};
-    void setBackButtonVisible(bool visible) {;};
+    void bringToForeground() {};
+    void setMenuActions(const QList<PhoneAction*>& ) { m_setMenuActionsCalled = true;};
+    void shutdownPhoneApp() {};
+    void setBackButtonVisible(bool ) {};
     HbMenu &menuReference(){return m_menu;};
+    void captureKey(Qt::Key , bool ) {};
     
     // From BubbleManagerIF
     void startChanges () { m_startChangesCalled=true; };
     void endChanges () { m_endChangesCalled=true; };
     int createCallHeader () { return 0; };
-    void removeCallHeader (int bubbleId) {};
-    void setState (int bubbleId, PhoneCallState state) {};
+    void removeCallHeader (int ) {};
+    void setState (int , PhoneCallState ) {};
     void setLabel ( 
-        int bubbleId, 
-        const QString& text, 
-        Qt::TextElideMode clipDirection) {};
-    void setCli (int bubbleId, 
-                 const QString& cliText, 
-                 Qt::TextElideMode clipDirection) {};
+        int , 
+        const QString& , 
+        Qt::TextElideMode ) {};
+    void setCli (int , 
+                 const QString& , 
+                 Qt::TextElideMode ) {};
     void updateCLI ( 
-        int bubbleId, 
-        const QString& cliText, 
-        Qt::TextElideMode clipDirection) {};
+        int , 
+        const QString& , 
+        Qt::TextElideMode ) {};
     void setSecondaryCli ( 
-        int bubbleId, 
-        const QString& cliText, 
+        int , 
+        const QString& , 
         Qt::TextElideMode clipDirection = Qt::ElideLeft) {};
-    void setCallTime (int bubbleId, const QString& callTime) {};
+    void setCallTime (int , const QString& ) {};
     void updateCallTime (int bubbleId, const QString& callTime) { m_updateCallTimeCalled=true; m_int=bubbleId; m_string=callTime; };
-    void setCallObjectImage (int bubbleId, const QString &fileName) {};
-    void setCallObjectFromTheme (int bubbleId) {};
-    void setCallObjectText (int bubbleId, const QString &text) {};
-    void setCallFlags (int bubbleId, int flags) {};
-    void setCallFlag (int bubbleId, PhoneCallFlags flag, bool set) {};
-    void setNumberType (int bubbleId, PhoneNumberType type) {};
+    void setCallObjectImage (int , const QString &) {};
+    void setCallObjectFromTheme (int ) {};
+    void setCallObjectText (int , const QString &) {};
+    void setCallFlags (int , int ) {};
+    void setCallFlag (int , PhoneCallFlags , bool ) {};
+    void setNumberType (int , PhoneNumberType ) {};
     void updateCallHeaderText( 
-        int bubbleId, 
-        const QString &longText, 
-        const QString &shortText, 
-        Qt::TextElideMode clipDirection) {};
+        int , 
+        const QString &, 
+        const QString &, 
+        Qt::TextElideMode ) {};
     void setPhoneMuted (bool muted) { m_setPhoneMutedCalled = muted; };
-    int createConference (int bubble1, int bubble2) { return 1; };
+    int createConference (int , int ) { return 1; };
     void removeConference () {};
     void addRowToConference (int bubbleId) {};
     void removeRowFromConference (int bubbleId) {};
@@ -140,17 +144,18 @@ public:
     int selectionIdInConference () const { return 0; };
     void moveHighlightOneUpInConference () {};
     void moveHighlightOneDownInConference () {};
-    void setExpandedConferenceCallHeader (bool expanded) { m_ExpandConferenceCalled = true; };
+    void setExpandedConferenceCallHeader (bool ) { m_ExpandConferenceCalled = true; };
     bool isConferenceExpanded () const { return false; };
     int shownHeaderCount () const { return 1; };
-    void setParticipantListCli (int aBubbleId, ParticipantListCli aParticipantCli) {};
-    void addAction (int bubble, HbAction *action) {};
-    void clearActions (int bubble) {};
-    QGraphicsWidget* graphicsWidgetForAction (HbAction *action) const { return 0;};
-    void addParticipantListAction (HbAction *action) {};
+    void setParticipantListCli (int , ParticipantListCli ) {};
+    void addAction (int , HbAction *) {};
+    void clearActions (int ) {};
+    QGraphicsWidget* graphicsWidgetForAction (HbAction *) const { return 0;};
+    void addParticipantListAction (HbAction *) {};
     int expandedBubble() const { return 1; };
-    void setExpandAction(int bubbleId, HbAction* action) {};
-    void setBubbleSelectionDisabled(bool b) {};
+    void setExpandAction(int , HbAction* ) {};
+    void setBubbleSelectionDisabled(bool ) {};
+    void setRestrictedMode(bool ) {};
     
 signals:
     void dialpadAboutToClose();
@@ -376,6 +381,9 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
     qDeleteAll(actions.values());
     actions.clear();
     
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::Ihf, true);
+    
     callStates[callId] = EPEStateHeld;
     callState = EPEStateHeld;
     actions = m_commandController->pushButtonActionsForCall(
@@ -520,6 +528,9 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
     //2 calls
     //////////////////////////////////////////////////////////////////////////
     
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::BluetoothAvailable, true);
+    
     callStates[2] = EPEStateHeldConference;
     actions = m_commandController->pushButtonActionsForCall(
             callState,
@@ -634,6 +645,9 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
     qDeleteAll(actions.values());
     actions.clear();
     
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::Btaa, true);
+    
     callStates[callId] = EPEStateConnected;
     callStates[2] = EPEStateHeldConference;
     callState = EPEStateHeldConference;
@@ -683,6 +697,7 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
 
 void TestPhoneUiCommandController::testToolBarActionsForCall()
 {
+    m_phoneButtonFlags = 0;
     int callState = EPEStateConnected;
     QMap<int,int> callStates;
     QMap<int,int> serviceIds;
@@ -692,6 +707,15 @@ void TestPhoneUiCommandController::testToolBarActionsForCall()
     serviceIds[callId] = serviceId;
     m_setInvalidToolBarCommands = false;
     m_setCustomToolBarCommands = false;
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::Btaa, false);
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::BluetoothAvailable, false);
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::IhfAsPushButton, false);
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::Ihf, false);
+    
     
     QList<PhoneAction *> actions = 
         m_commandController->toolBarActions(

@@ -142,7 +142,7 @@ void CPhoneSingleAndCallSetup::HandleKeyMessageL(
                 {
                 // Show not allowed note
                 CPhoneState::SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed );
+                    EPhoneNoteTextNotAllowed, ETrue );
                 }
             break;
 

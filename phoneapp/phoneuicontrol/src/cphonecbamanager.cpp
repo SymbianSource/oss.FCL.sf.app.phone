@@ -37,6 +37,7 @@
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparaminteger.h"
 #include "tphonecmdparamcallstatedata.h"
+#include "tphonecmdparamboolean.h"
 
 
 // ======== MEMBER FUNCTIONS ========
@@ -112,7 +113,16 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
 
     TBool btAvailable = iStateMachine.PhoneEngineInfo()->AudioOutputAvailable(
         EPEBTAudioAccessory );
+    
+    TPhoneCmdParamBoolean btParam;
+    btParam.SetBoolean( audioOutput == EPEBTAudioAccessory );        
+    iViewCommandHandle.ExecuteCommand(EPhoneViewSetBlueToothFlag,&btParam);
 
+    TPhoneCmdParamBoolean btAvailableParam;
+    btAvailableParam.SetBoolean( btAvailable );        
+    iViewCommandHandle.ExecuteCommand(
+            EPhoneViewSetBluetoothAvailableFlag,&btAvailableParam);
+    
     // Call setup cases
     if ( EPhoneCallHandlingCallSetupCBA == aResource )
         {

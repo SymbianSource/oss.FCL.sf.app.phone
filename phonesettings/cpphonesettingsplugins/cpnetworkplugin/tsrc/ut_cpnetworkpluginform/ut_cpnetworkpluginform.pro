@@ -32,9 +32,7 @@ QT += testlib
 
 symbian: { 
     #CONFIG += no_icon
-    INCLUDEPATH += /epoc32/include/mw/QtTest \
-        /epoc32/include/platform/mw \
-        /epoc32/include/mw/qt
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     LIBS += -lmocklib \
         -lsymbianmock \
         -lcpframework 
@@ -57,8 +55,6 @@ HEADERS += ../../src/cpnetworkplugin.h \
            /epoc32/include/platform/mw/psetcalldivertingwrapper.h \
            /epoc32/include/platform/mw/psetnetworkwrapper.h
 
-SOURCES += ../../src/cpnetworkpluginform.cpp 
-
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cpnetworkplugin.cpp \
            ../../../tsrc/mocks/mock_psetwrapper.cpp \
@@ -67,5 +63,8 @@ SOURCES += ../../../tsrc/mocks/mock_cpnetworkplugin.cpp \
            ../../../tsrc/mocks/mock_cpphonenotes.cpp \
            ../../../tsrc/mocks/mock_cpphonelocalisation.cpp \
            ../../../tsrc/mocks/mock_hbdialog.cpp \
+           ../../../tsrc/mocks/mock_hbwidget.cpp \
            ../../../tsrc/mocks/mock_cellulardatasettings.cpp
+           
+SOURCES += ../../src/cpnetworkpluginform.cpp 
            

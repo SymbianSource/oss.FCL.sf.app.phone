@@ -25,7 +25,7 @@ SOURCEPATH += src
 # Input
 HEADERS += inc/cpplugincommon.h \
            inc/cpphonenotes.h \
-           inc/cpphonelocalisation.h
+           inc/cpphonelocalisation.h 
            
 SOURCES += src/cpphonenotes.cpp \
            src/cpphonelocalisation.cpp 
@@ -43,8 +43,9 @@ DEFINES += BUILD_CPTELEPHONYUTILS
 
 symbian: {
     load(data_caging_paths)
-    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
-    
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
+    INCLUDEPATH +=  ../../../inc
+
     LIBS += -lsssettings    \
             -lphonesettings \
             -lxqsysinfo \

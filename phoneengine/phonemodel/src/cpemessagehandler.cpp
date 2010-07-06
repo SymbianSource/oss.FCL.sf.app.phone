@@ -2404,7 +2404,7 @@ void CPEMessageHandler::HandleATDialingStarted( const TBool aSucceed ) const
 // Checks if emergency call is allowed. 
 // -----------------------------------------------------------------------------
 //
-TBool CPEMessageHandler::IsEmergencyAllowed() const
+TBool CPEMessageHandler::IsNetworkConnectionAllowed() const
     {
     TBool networkConnectionAllowed( EFalse );
     //It is safe to ignore error code here: a default value of EFalse is used if the get fails
@@ -2818,6 +2818,44 @@ void CPEMessageHandler::UpdateRemotePartyInfo( )
         {
         mediatorUpdater->UpdateRemotePartyInfo();
         }
+    }
+
+// -----------------------------------------------------------------------------
+// CPEMessageHandler::AddSIMRejectedMoCsCallToLog
+// -----------------------------------------------------------------------------
+//	
+TInt CPEMessageHandler::AddSIMRejectedMoCsCallToLog( const TInt aCallId )
+    {
+    TInt errorCode( ECCPErrorGeneral );
+    
+    errorCode = iCallHandling.GetCallInfo( *iCallInfo, aCallId );
+    
+    if ( errorCode == ECCPErrorNone )
+        {
+        TPEState callState;
+        callState = iCallHandling.GetCallState( aCallId );
+        TPECallType callType;
+		callType = iDataStore.CallType( aCallId );
+
+	    errorCode = ECCPErrorNotFound;
+	            
+        if ( EPEStateIdle == callState 
+             && EPECallTypeCSVoice == callType )
+            {
+            SetPhoneNumberForCallLogging( aCallId );
+            
+            errorCode = UpdateClientInfo( aCallId );       
+            
+            // Calls have to log also without a contact (ECCPErrorNotFound).
+            if ( errorCode == ECCPErrorNone || errorCode == ECCPErrorNotFound )
+                {
+                // Save the rest of information to EngineInfo.
+                SetLoggingInfo( aCallId, callState );
+                errorCode = iLogHandling.SaveCallEntry( aCallId );
+                }
+            }
+        }
+    return errorCode;
     }
 
 // -----------------------------------------------------------------------------

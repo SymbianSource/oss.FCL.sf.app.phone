@@ -54,12 +54,6 @@ public:
         AnimationOngoing
     } m_animationState; 
     
-    // Delay for animation start
-    enum AnimationStartDelay {
-        StartNoDelay, 
-        StartDelayed
-    }; 
-    
 public:    
     InfoWidget(QGraphicsItem *parent = 0, Qt::WindowFlags flags = 0);
     ~InfoWidget();
@@ -129,7 +123,7 @@ public slots:
     void settingsValidationFailed(); 
     void settingsDialogClosed(HbAction* action); 
     
-    bool startMarquees(AnimationStartDelay delay = StartNoDelay);
+    bool startMarquees();
     void stopMarquees(); 
     void marqueeNext(); 
     

@@ -14,5 +14,7 @@
         <file alias="bubbleparticipantlistitem.widgetml">xml/bubbleparticipantlistitem.widgetml</file>
         <file alias="bubbleheadingwidget.css">xml/bubbleheadingwidget.css</file>
         <file alias="bubble_icon_anim.axml">resources/bubble_icon_anim.axml</file>
+        <file alias="bubbleparticipantlistbuttons.widgetml">xml/bubbleparticipantlistbuttons.widgetml</file>
+        <file alias="bubbleparticipantlistbuttons.css">xml/bubbleparticipantlistbuttons.css</file>
     </qresource>
 </RCC>

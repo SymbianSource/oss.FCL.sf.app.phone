@@ -21,7 +21,7 @@
 #include <QObject>
 #include <QScopedPointer>
 #include <rsatservice.h>
-#include "infowidgetsathandlerprivate.h"
+#include "infowidgetsathandler_p.h"
 
 // Class declaration
 class InfoWidgetSatHandler: public QObject

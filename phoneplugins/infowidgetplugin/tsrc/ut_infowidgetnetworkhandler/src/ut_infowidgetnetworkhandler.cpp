@@ -16,12 +16,21 @@
 */
 #include <networkhandlingproxy.h>
 #include <nwhandlingengine.h>
+#include <cnwsession.h>
 #include "qtestmains60.h"
 #include <xqsettingskey.h>
 #include <xqsettingsmanager.h>
 #include "ut_infowidgetnetworkhandler.h"
 #define private public
 #include "infowidgetnetworkhandler.h"
+
+class CMyNWSession : public CNWSession 
+{
+public: 
+    CMyNWSession(){};
+    ~CMyNWSession(){};
+}; 
+
 
 #define EXPECT_NO_EXCEPTION(statements)    \
 {                                       \
@@ -42,15 +51,15 @@ const QString KMcnName("McnNameMcnNameMcnNam");     // max length 20
 const TNWMCNIndicatorType 
     KMcnIndicatorType = ENWMCNIndicatorTypeActive;
 
+const QString KSpnName("SpnNameSpnName..");     // max length 16 
 
 /*!
   UT_InfoWidgetNetworkHandler::UT_InfoWidgetNetworkHandler
  */
 UT_InfoWidgetNetworkHandler::UT_InfoWidgetNetworkHandler() 
     : 
-    m_networkHandler(0)
-{
-    
+    m_networkHandler(NULL)
+{   
 }
 
 
@@ -87,8 +96,17 @@ void UT_InfoWidgetNetworkHandler::init()
     
     SmcDefaultValue<QString>::SetL("");
     SmcDefaultValue<const QString & >::SetL("");
-    EXPECT(CreateL).willOnce(invoke(this, &initializeNetworkInfo));
+
+    // Ownership is transferred to InfoWidgetNetworkHandler
+    CMyNWSession *session= new (ELeave)CMyNWSession(); 
+    EXPECT(CreateL).returns(session);;
     m_networkHandler =  new InfoWidgetNetworkHandler();
+
+    m_networkHandler->m_nwInfo.iViagTextTag.Copy(KHomeZoneTextTag.utf16());
+    m_networkHandler->m_nwInfo.iViagIndicatorType = KHomeZoneIndicatorType;
+    m_networkHandler->m_nwInfo.iMCNName.Copy(KMcnName.utf16());
+    m_networkHandler->m_nwInfo.iMCNIndicatorType = KMcnIndicatorType;
+    m_networkHandler->m_nwInfo.iSPName.Copy(KSpnName.utf16()); 
     
     QVERIFY(verify());
 }
@@ -349,8 +367,7 @@ void UT_InfoWidgetNetworkHandler::t_resume()
  */
 void UT_InfoWidgetNetworkHandler::t_serviceProviderName()
 {
-    QString s = "";
-    QCOMPARE(m_networkHandler->serviceProviderName(), s);
+    QCOMPARE(m_networkHandler->serviceProviderName(), KSpnName);
 }
 
 /*!

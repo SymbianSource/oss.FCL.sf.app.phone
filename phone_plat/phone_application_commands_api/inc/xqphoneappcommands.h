@@ -58,6 +58,8 @@ enum PhoneButtonCommands
     PhoneInCallCmdActivateIhf,
     PhoneInCallCmdDeactivateIhf,
     PhoneInCallCmdOpenContacts,
+    PhoneInCallCmdBtHandsfree,
+    PhoneInCallCmdHandset,
     
     PhoneButtonCmdLast
     };

@@ -37,12 +37,10 @@ const int KMcnValueOn = 1;
     InfoWidgetNetworkHandler::InfoWidgetNetworkHandler()
 */
 InfoWidgetNetworkHandler::InfoWidgetNetworkHandler(QObject *parent) 
-    : 
-    QObject(parent), 
+    :QObject(parent), 
     m_nwSession(NULL) 
 {
     DPRINT;
-    
     if (!createSession()) {
         DCRITICAL << ": session creation failed!"; 
     } 
@@ -54,7 +52,6 @@ InfoWidgetNetworkHandler::InfoWidgetNetworkHandler(QObject *parent)
 InfoWidgetNetworkHandler::~InfoWidgetNetworkHandler()
 {
     DPRINT;
-
     // Disable MCN setting, 
     // display client is being deleted 
     disableMcn(); 
@@ -84,14 +81,6 @@ bool InfoWidgetNetworkHandler::createSession()
     }
     
     return success; 
-}
-
-/*!
-    InfoWidgetNetworkHandler::sessionExists()
-*/
-bool InfoWidgetNetworkHandler::sessionExists()
-{
-    return !m_nwSession.isNull(); 
 }
 
 /*!
@@ -220,17 +209,18 @@ int InfoWidgetNetworkHandler::networkRegistrationStatus() const
 bool InfoWidgetNetworkHandler::isOnline() const
 {
     bool online(false); 
-    
-    switch (networkRegistrationStatus()) {
-        case ENWRegisteredBusy: // Fall through
-        case ENWRegisteredOnHomeNetwork: // Fall through
-        case ENWRegisteredRoaming: 
-            online = true;
-            break; 
-        default: 
-            break; 
+
+    if (!m_nwSession.isNull()) {
+        switch (networkRegistrationStatus()) {
+            case ENWRegisteredBusy: // Fall through
+            case ENWRegisteredOnHomeNetwork: // Fall through
+            case ENWRegisteredRoaming: 
+                online = true;
+                break; 
+            default: 
+                break; 
+        }
     }
-    
     DPRINT << ": online: " << online;
     return online; 
 }

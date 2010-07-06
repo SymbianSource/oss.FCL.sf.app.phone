@@ -46,4 +46,4 @@ SOURCES += ../../infowidget/src/infowidgetsathandler.cpp
 # mocks needed for testing
 SOURCES += ../mocks/mock_rsatservice.cpp  \
            ../mocks/mock_RSatSession.cpp  \
-           ../mocks/mock_infowidgetsathandlerprivate.cpp
+           ../mocks/mock_infowidgetsathandler_p.cpp

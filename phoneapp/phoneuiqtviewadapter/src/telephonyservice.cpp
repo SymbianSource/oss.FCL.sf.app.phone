@@ -22,7 +22,7 @@
 #include "qtphonelog.h"
 
 TelephonyService::TelephonyService( PhoneUIQtViewAdapter *viewAdapter, QObject* parent) :
-    XQServiceProvider(QLatin1String("com.nokia.services.telephony.uistarter"), parent),
+    XQServiceProvider(QLatin1String("phoneui.com.nokia.symbian.IStart"), parent),
     m_viewAdapter (viewAdapter)
 {
     PHONE_DEBUG("TelephonyService::TelephonyService");
@@ -47,7 +47,6 @@ void TelephonyService::start(const int serviceId)
         case 1: {
             m_viewAdapter->ExecuteCommandL( EPhoneViewOpenDialer );
 
-            /*TODO: remove this as soon as QT Highway brings in call dialer to foreground*/
             TPhoneCmdParamInteger uidParam;
             uidParam.SetInteger( KUidPhoneApplication.iUid );
             m_viewAdapter->ExecuteCommandL(EPhoneViewBringAppToForeground, &uidParam);

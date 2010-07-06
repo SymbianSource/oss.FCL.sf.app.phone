@@ -38,7 +38,8 @@ EXPORT_C TPhoneCmdParamGlobalNote::TPhoneCmdParamGlobalNote():
     iWaitforReady ( EFalse ),
     iSoftkeys( 0 ),
     iTimeout( 0 ),
-    iNotificationDialog( EFalse )
+    iNotificationDialog( EFalse ),
+    iCauseCode( KErrNotFound ) 
     {
     iParamId = EPhoneParamIdGlobalNote;
     }
@@ -137,6 +138,18 @@ EXPORT_C void TPhoneCmdParamGlobalNote::SetNotificationDialog(
 }
 
 // ---------------------------------------------------------
+// TPhoneCmdParamGlobalNote::SetCauseCode
+// Sets the cause code.
+// (other items were commented in a header).
+// ---------------------------------------------------------
+//
+EXPORT_C void TPhoneCmdParamGlobalNote::SetCauseCode( 
+        TInt aCauseCode )
+{
+    iCauseCode = aCauseCode;
+}
+
+// ---------------------------------------------------------
 // TPhoneCmdParamGlobalNote::Type
 // Returns the global note type
 // (other items were commented in a header).
@@ -220,6 +233,16 @@ EXPORT_C TInt TPhoneCmdParamGlobalNote::Timeout() const
 EXPORT_C TBool TPhoneCmdParamGlobalNote::NotificationDialog() const
     {
     return iNotificationDialog;
+    }
+
+// ---------------------------------------------------------
+// TPhoneCmdParamGlobalNote::CauseCode
+// Returns the cause code.
+// ---------------------------------------------------------
+//
+EXPORT_C TInt TPhoneCmdParamGlobalNote::CauseCode() const
+    {
+    return iCauseCode;
     }
 
 //  End of File  

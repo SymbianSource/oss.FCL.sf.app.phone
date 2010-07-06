@@ -101,11 +101,6 @@ void CPEParserManufacturerHandler::ProcessCommandL(
             iModel.SendMessage( MEngineMonitor::EPEMessageShowWlanMacAddress );
             break;
             }
-        case EBTDebugMode: // *#2873#
-            {
-            iModel.SendMessage( MEngineMonitor::EPEMessageBTDebugMode );
-            break;
-            }
         default:
             {
             TEFLOGSTRING( KTAERROR, "PE CPEGSMPARSERMANUFACTURERHANDLER::PROCESSCOMMANDL: UNEXPECTED COMMAND" );

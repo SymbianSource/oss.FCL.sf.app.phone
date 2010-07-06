@@ -206,56 +206,57 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     return translatedActions;
 }
 
-QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
+QString PhoneResourceAdapter::convertToString(
+        int symbianResourceId, const QString &causeCode) const
 {
     QString ret;
     
     switch (symbianResourceId) {
         case R_PHONE_ERROR_CALL_NOT_ALLOWED:
             {
-            ret = hbTrId("txt_phone_dpopinfo_not_allowed");      
+            ret = hbTrId("txt_phone_dpopinfo_not_allowed").arg(causeCode);      
             }
             break;
             
         case R_ERROR_NOTE_NOT_ALLOWED:
             {
-            ret =  hbTrId("txt_phone_dpopinfo_not_allowed");  
+            ret =  hbTrId("txt_phone_dpopinfo_not_allowed").arg(causeCode);  
             }
             break;
             
         case R_NOTETEXT_INVALID_PHONENUMBER:
             {
-            ret = hbTrId("txt_phone_info_invalid_phone_number"); 
+            ret = hbTrId("txt_phone_info_invalid_phone_number").arg(causeCode); 
             }
             break;
             
         case R_NOTETEXT_NO_ANSWER:
             {
-            ret = hbTrId("txt_phone_info_no_answer"); 
+            ret = hbTrId("txt_phone_info_no_answer").arg(causeCode); 
             }
             break;
         
         case R_PHONE_ERROR_NUMBER_BUSY:
             {
-            ret = hbTrId("txt_phone_info_number_busy"); 
+            ret = hbTrId("txt_phone_info_number_busy").arg(causeCode);
             }
             break;
             
-        case R_PHONE_SS_NOTIFICATION_MOCAL_WAITING_TEXT:
+        case R_PHONE_ERROR_REQUEST_REJECTED:
             {
-            ret = hbTrId("txt_phone_other_waiting");
+            ret = hbTrId("txt_phone_info_request_rejected").arg(causeCode); 
             }
             break;
-            
+                
         case R_PHONE_SS_NOTIFICATION_INCAL_INFO_HOLD_TEXT:
             {
-            ret = hbTrId("txt_phone_other_on_hold");
+            ret = hbTrId("txt_phone_dpopinfo_on_hold");
             }
             break;
             
         case R_INCAL_INFO_HOLD_TEXT:
             {
-            ret = hbTrId("txt_phone_other_on_hold");
+            ret = hbTrId("txt_phone_dpopinfo_on_hold");
             }
             break;
             
@@ -265,39 +266,34 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
             }
             break;
             
-        case R_INCAL_INFO_CONF_HOLD_TEXT:
-            {
-            ret = hbTrId("Conference on hold");
-            }
-            break;
         case R_PHONE_INCALL_INFO_NO_NETWORK_SUPPORT:
             {
-            ret = hbTrId("txt_phone_info_no_network_support_for_video_call");
+            ret = hbTrId("txt_phone_info_no_network_support_for_video_call").arg(causeCode);
             }
             break;
         case R_PHONE_ERROR_EMERGENCY_CALLS_ONLY:
             {
-            ret = hbTrId("txt_phone_info_emergency_calls_only");         
+            ret = hbTrId("txt_phone_info_emergency_calls_only").arg(causeCode);         
             }
             break;
         case R_NOTETEXT_NUMBER_NOT_IN_USE:
             {
-            ret = hbTrId("txt_phone_info_number_not_in_use");         
+            ret = hbTrId("txt_phone_info_number_not_in_use").arg(causeCode);         
             }
             break;
         case R_NOTETEXT_NETWORK_BUSY:
             {
-            ret = hbTrId("txt_phone_info_network_busy");         
+            ret = hbTrId("txt_phone_info_network_busy").arg(causeCode);         
             }
             break;
         case R_NOTETEXT_ERROR_IN_CONNECTION:
             {
-            ret = hbTrId("txt_phone_info_error_in_connection");         
+            ret = hbTrId("txt_phone_info_error_in_connection").arg(causeCode);         
             }
             break;
         case R_PHONEUI_ERROR_EMERGENCY_ATTEMPT_FAILED:
             {
-            ret = hbTrId("txt_phone_info_emergency_call_failed");         
+            ret = hbTrId("txt_phone_info_emergency_call_failed").arg(causeCode);         
             }
             break;
         case R_PHONE_SS_NOTIFICATION_INCAL_TRANSFERRED_TEXT:
@@ -307,22 +303,17 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
             break;
         case R_PHONE_ERROR_NO_SERVICE:
             {
-            ret = hbTrId("txt_phone_dpopinfo_no_network_coverage");         
+            ret = hbTrId("txt_phone_dpopinfo_no_network_coverage").arg(causeCode);         
             }
             break;
         case R_NOTETEXT_NUMBER_BARRED:
             {
-            ret = hbTrId("txt_phone_info_number_barred");
-            }
-            break;
-        case R_PHONEUI_NO_VIDEO_NETWORK:
-            {
-            ret = hbTrId("txt_phone_info_video_call_setup_failed");
+            ret = hbTrId("txt_phone_info_number_barred").arg(causeCode);
             }
             break;
         case R_PHONEUI_VIDEO_CALL_NOT_POSSIBLE:
             {
-            ret = hbTrId("txt_phone_info_video_call_didnt_succeed_to_called");
+            ret = hbTrId("txt_phone_info_video_call_didnt_succeed_to_called").arg(causeCode);
             }
             break;
         case R_CALL_INFO_CAUSE_VALUE127:
@@ -333,22 +324,22 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
         case R_CALL_INFO_CAUSE_VALUE58:
         case R_NOTE_UNABLE_TO_MAKE_VIDEO_CALL_NOT_SUPPORTED_BY_OTHER_PHONE:
             {
-            ret = hbTrId("txt_phone_info_unable_to_make_video_call_not_supp");
+            ret = hbTrId("txt_phone_info_unable_to_make_video_call_not_supp").arg(causeCode);
             }
             break;
         case R_NOTE_PHONE_OUT_OF_3G_COVERAGE:
             {
-            ret = hbTrId("txt_phone_info_phone_switched_off_or_out_of_3g");
+            ret = hbTrId("txt_phone_info_phone_switched_off_or_out_of_3g").arg(causeCode);
             }
             break;
         case R_NOTE_VIDEO_CALL_ONLY_POSSIBLE_UNDER_3G_COVERAGE:
             {
-            ret = hbTrId("txt_phone_info_videocall_only_possible_under_3g");
+            ret = hbTrId("txt_phone_info_videocall_only_possible_under_3g").arg(causeCode);
             }
             break;
         case R_NOTE_CALLED_NUMBER_HAS_BARRED_INCOMING_CALLS:
             {
-            ret = hbTrId("txt_phone_info_called_number_has_barred_incoming");
+            ret = hbTrId("txt_phone_info_called_number_has_barred_incoming").arg(causeCode);
             }
             break;
         case R_INCAL_REMOTE_CREATE_CONFERENCE_TEXT:
@@ -363,32 +354,32 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
             break;
         case R_CALL_INFO_CAUSE_VALUE16:
             {
-            ret = hbTrId("txt_phone_info_call_ended");
+            ret = hbTrId("txt_phone_info_no_answer").arg(causeCode);
             }
             break;
         case R_CALL_INFO_CAUSE_VALUE18:
             {
-            ret = hbTrId("txt_phone_info_no_answer");
+            ret = hbTrId("txt_phone_info_no_answer").arg(causeCode);
             }
             break;
         case R_CALL_INFO_CAUSE_VALUE21:
             {
-            ret = hbTrId("txt_phone_info_call_rejected");
+            ret = hbTrId("txt_phone_info_request_rejected");
             }
             break;
         case R_CALL_INFO_CAUSE_VALUE22:
             {
-            ret = hbTrId("txt_phone_info_number_not_in_use");
+            ret = hbTrId("txt_phone_info_number_not_in_use").arg(causeCode);
             }
             break;
         case R_CALL_INFO_CAUSE_VALUE34:
             {
-            ret = hbTrId("txt_phone_info_network_busy");
+            ret = hbTrId("txt_phone_info_network_busy").arg(causeCode);
             }
             break;
         case R_PHONE_ERROR_CALL_NOT_ALLOWED_FDN:
             {
-            ret = hbTrId("txt_phone_info_call_not_allowed_fixed_dialling");
+            ret = hbTrId("txt_phone_info_call_not_allowed_fixed_dialling").arg(causeCode);
             }
             break;
         case R_NOTETEXT_DIVERTING_INCOMING_CALL:
@@ -404,27 +395,27 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
             break;
         case R_PHONE_ERROR_CHECK_CLIR:
             {
-            ret = hbTrId("txt_phone_info_check_own_number_sending");
+            ret = hbTrId("txt_phone_info_check_own_number_sending").arg(causeCode);
             }
             break;
         case R_PHONE_SS_NOTIFICATION_CLIR_SUPPR_REJECT_TEXT:
             {
-            ret = hbTrId("txt_phone_info_could_not_send_own_number");
+            ret = hbTrId("txt_phone_info_could_not_send_own_number").arg(causeCode);
             }
             break;
         case R_NOTE_TEXT_CLIR_CHANGE:
             {
-            ret = hbTrId("txt_phone_info_activate_own_number_sending");
+            ret = hbTrId("txt_phone_info_activate_own_number_sending").arg(causeCode);
             }
             break;
         case R_PHONE_ERROR_CHECK_NETWORK_SERVICES:
             {
-            ret = hbTrId("txt_phone_info_check_network_services");
+            ret = hbTrId("txt_phone_info_check_network_services").arg(causeCode);
             }
             break;
         case R_PHONE_INCALL_INFO_VIDEO_CALL_NOT_ALLOWED_DURING_RESTORE:
             {
-            ret = hbTrId("txt_phone_info_video_call_not_allowed_during_resto");
+            ret = hbTrId("txt_phone_info_video_call_not_allowed_during_resto").arg(causeCode);
             }
             break;
         default:
@@ -434,7 +425,7 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
     return ret;
 }
 
-QString PhoneResourceAdapter::convertToString(
+QString PhoneResourceAdapter::convertToStringWithParam(
         int symbianResourceId, const QString &text) const
 {
     QString ret;
@@ -556,37 +547,73 @@ QList<PhoneAction::ToolBarItem> PhoneResourceAdapter::convertToToolBarCommandLis
         case R_PHONEUI_CALLHANDLING_INCALL_UNMUTE_CBA:
         case R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA:
         case R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA:
+        case R_PHONEUI_CALLHANDLING_INCALL_BTAA_CBA:
             {
-            if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
-                {
-                ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdActivateIhf,true));
-                }
-            else
-                {
-                ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdDeactivateIhf,true));
-                }
-            
-            if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::MultiCall)) {
-                bool outgoing(m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Outgoing));
-                if (m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Hold))
-                    {
-                    ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdUnhold,!outgoing));
-                    }
-                else
-                    {
-                    ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdHold,!outgoing));
-                    }
-                         
-                ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdOpenContacts,true));
-            } else {
-                bool outgoing(m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Outgoing));
-                bool disableJoin(outgoing ? true : m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::DisableJoin));
-                
-                ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdSwap,!outgoing));
-                if (m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Conference)) {
-                    ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdJoinToConference,!disableJoin));
+            if (m_buttonsCtrl->getButtonFlags(
+                    PhoneUIQtButtonsController::IhfAsPushButton)) {
+                if (m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::Mute)) {
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdUnmute,true));
                 } else {
-                    ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdCreateConference,!disableJoin));
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdMute,true));
+                }
+            } else {
+                if (m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::BluetoothAvailable)) {
+                    if (m_buttonsCtrl->getButtonFlags(
+                            PhoneUIQtButtonsController::Btaa)) {
+                        ret.append(PhoneAction::ToolBarItem(
+                                PhoneInCallCmdHandset,true));
+                    } else {
+                        ret.append(PhoneAction::ToolBarItem(
+                                PhoneInCallCmdBtHandsfree,true));
+                    }               
+                } else {
+                    if (!m_buttonsCtrl->getButtonFlags(
+                            PhoneUIQtButtonsController::Ihf)) {
+                        ret.append(PhoneAction::ToolBarItem(
+                                PhoneInCallCmdActivateIhf,true));
+                    } else {
+                        ret.append(PhoneAction::ToolBarItem(
+                                PhoneInCallCmdDeactivateIhf,true));
+                    }
+                }
+            }
+            
+            if (!m_buttonsCtrl->getButtonFlags(
+                    PhoneUIQtButtonsController::MultiCall)) {
+                bool outgoing(m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::Outgoing));
+                if (m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::Hold)) {
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdUnhold,!outgoing));
+                } else {
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdHold,!outgoing));
+                }
+                         
+                ret.append(PhoneAction::ToolBarItem(
+                        PhoneInCallCmdOpenContacts,true));
+            } else {
+                bool outgoing(m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::Outgoing));
+                bool disableJoin(outgoing ? true : 
+                    m_buttonsCtrl->getButtonFlags(
+                            PhoneUIQtButtonsController::DisableJoin));
+                
+                ret.append(PhoneAction::ToolBarItem(
+                        PhoneInCallCmdSwap,!outgoing));
+                
+                if (m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::Conference)) {
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdJoinToConference,!disableJoin));
+                } else {
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdCreateConference,!disableJoin));
                 }
             }
             
@@ -599,11 +626,13 @@ QList<PhoneAction::ToolBarItem> PhoneResourceAdapter::convertToToolBarCommandLis
             
             if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
                 {
-                ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdActivateIhf,true));
+                ret.append(PhoneAction::ToolBarItem(
+                        PhoneInCallCmdActivateIhf,true));
                 }
             else
                 {
-                ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdDeactivateIhf,true));
+                ret.append(PhoneAction::ToolBarItem(
+                        PhoneInCallCmdDeactivateIhf,true));
                 }                 
             }
 			

@@ -64,6 +64,7 @@ private slots:
     void testConvertCommandToString();
     void testConvertToHbActions();
     void testConvertToToolBarCommandList();
+    void testBtToolBarCommandList();
 
 private:
     void testIncallToolbar (int id); // helper function
@@ -208,7 +209,7 @@ void TestPhoneResourceAdapter::testConvertToString ()
     QString testString5 = m_resourceAdapter->convertToString(R_PHONE_ERROR_NUMBER_BUSY); 
     QVERIFY( false == testString5.isEmpty() );
     
-    QString testString6 = m_resourceAdapter->convertToString(R_PHONE_SS_NOTIFICATION_MOCAL_WAITING_TEXT); 
+    QString testString6 = m_resourceAdapter->convertToString(R_PHONE_ERROR_REQUEST_REJECTED); 
     QVERIFY( false == testString6.isEmpty() );
     
     QString testString7 = m_resourceAdapter->convertToString(R_PHONE_SS_NOTIFICATION_INCAL_INFO_HOLD_TEXT); 
@@ -220,8 +221,8 @@ void TestPhoneResourceAdapter::testConvertToString ()
     QString testString9 = m_resourceAdapter->convertToString(R_INCAL_REMOTE_ACTIVE_TEXT); 
     QVERIFY( false == testString9.isEmpty() );
     
-    QString testString10 = m_resourceAdapter->convertToString(R_INCAL_INFO_CONF_HOLD_TEXT); 
-    QVERIFY( false == testString10.isEmpty() );
+    /*QString testString10 = m_resourceAdapter->convertToString(R_INCAL_INFO_CONF_HOLD_TEXT); 
+    QVERIFY( false == testString10.isEmpty() );*/
     
     QString testString11 = m_resourceAdapter->convertToString(R_PHONE_INCALL_INFO_NO_NETWORK_SUPPORT); 
     QVERIFY( false == testString11.isEmpty() );
@@ -250,8 +251,8 @@ void TestPhoneResourceAdapter::testConvertToString ()
     QString testString19 = m_resourceAdapter->convertToString(R_NOTETEXT_NUMBER_BARRED); 
     QVERIFY( false == testString19.isEmpty() ); 
     
-    QString testString20 = m_resourceAdapter->convertToString(R_PHONEUI_NO_VIDEO_NETWORK); 
-    QVERIFY( false == testString20.isEmpty() ); 
+    /*QString testString20 = m_resourceAdapter->convertToString(R_PHONEUI_NO_VIDEO_NETWORK); 
+    QVERIFY( false == testString20.isEmpty() );*/ 
     
     QString testString21 = m_resourceAdapter->convertToString(R_PHONEUI_VIDEO_CALL_NOT_POSSIBLE); 
     QVERIFY( false == testString21.isEmpty() ); 
@@ -342,12 +343,12 @@ void TestPhoneResourceAdapter::testConvertToString2 ()
 {
     m_resourceAdapter = PhoneResourceAdapter::Instance (this);
         
-    QString testString = m_resourceAdapter->convertToString(
+    QString testString = m_resourceAdapter->convertToStringWithParam(
             R_PHONE_TEXT_COLP_CONNECTED, QString("123456"));
     
     QVERIFY( false == testString.isEmpty() );
        
-    QString testString2 = m_resourceAdapter->convertToString(0, QString()); 
+    QString testString2 = m_resourceAdapter->convertToStringWithParam(0, QString()); 
     QCOMPARE( testString2, QString ("") );
 }
 
@@ -597,6 +598,30 @@ void TestPhoneResourceAdapter::testConvertToToolBarCommandList ()
     QVERIFY(false == testList.at(1).mEnabled);
     QVERIFY(false == testList.at(2).mEnabled);
     QVERIFY(true == testList.at(3).mEnabled);
+    testList.clear(); 
+}
+
+void TestPhoneResourceAdapter::testBtToolBarCommandList ()
+{
+    m_resourceAdapter = PhoneResourceAdapter::Instance(this);
+    PhoneUIQtButtonsController* buttonsController = 
+        m_resourceAdapter->buttonsController();
+    
+    QList<PhoneAction::ToolBarItem> testList;
+    buttonsController->setButtonFlags(PhoneUIQtButtonsController::BluetoothAvailable,true);
+    buttonsController->setButtonFlags(PhoneUIQtButtonsController::IhfAsPushButton,false);
+    
+    testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCALL_BTAA_CBA);
+    QVERIFY(0 < testList.count());
+    QVERIFY(PhoneInCallCmdBtHandsfree == testList.at(0).mCommandId);
+    QVERIFY(true == testList.at(0).mEnabled);
+    testList.clear();
+    
+    buttonsController->setButtonFlags(PhoneUIQtButtonsController::Btaa,true);
+    testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCALL_BTAA_CBA);
+    QVERIFY(0 < testList.count());
+    QVERIFY(PhoneInCallCmdHandset == testList.at(0).mCommandId);
+    QVERIFY(true == testList.at(0).mEnabled);
     testList.clear(); 
 }
 

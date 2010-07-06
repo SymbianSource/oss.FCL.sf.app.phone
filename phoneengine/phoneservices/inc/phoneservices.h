@@ -24,6 +24,7 @@
 
 class DialService;
 class DTMFService;
+class UriSchemeHandlerService;
 
 // Depricated APIs
 class DialServiceDepricated;
@@ -48,7 +49,8 @@ public:
 private:
     QScopedPointer<DialService> dialService;
     QScopedPointer<DTMFService> dtmfService;
-
+    QScopedPointer<UriSchemeHandlerService> uriSchemeHandlerService;
+    
     // Depricated
     QScopedPointer<DialServiceDepricated> dialServiceDepricated;
     QScopedPointer<DTMFServiceDepricated> dtmfServiceDepricated;

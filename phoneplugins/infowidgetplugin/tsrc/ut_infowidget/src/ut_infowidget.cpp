@@ -670,26 +670,20 @@ void UT_InfoWidget::t_startMarquees()
     m_infoWidget->m_animatingItems.append(&satMarqueeItem); 
     
     // Test 1: 
-    m_infoWidget->m_animationState = InfoWidget::AnimationIdle; 
-    started = m_infoWidget->startMarquees(InfoWidget::StartNoDelay);
+    m_infoWidget->m_animationState = InfoWidget::AnimationIdle;
+    started = m_infoWidget->startMarquees();
     QVERIFY(started);
-    QVERIFY(m_infoWidget->m_animationState == InfoWidget::AnimationOngoing);
+    QVERIFY(m_infoWidget->m_animationState == InfoWidget::AnimationStarting);
     
     // Test 2:
-    m_infoWidget->m_animationState = InfoWidget::AnimationIdle; 
-    started = m_infoWidget->startMarquees(InfoWidget::StartDelayed);
-    QVERIFY(started);
-    QVERIFY(m_infoWidget->m_animationState == InfoWidget::AnimationStarting); 
-            
-    // Test 3:
     m_infoWidget->m_animationState = InfoWidget::AnimationStarting; 
-    started = m_infoWidget->startMarquees(InfoWidget::StartDelayed);
+    started = m_infoWidget->startMarquees();
     QVERIFY(!started);
     QVERIFY(m_infoWidget->m_animationState == InfoWidget::AnimationStarting); 
 
-    // Test 4:
+    // Test 3:
     m_infoWidget->m_animationState = InfoWidget::AnimationOngoing; 
-    started = m_infoWidget->startMarquees(InfoWidget::StartDelayed);
+    started = m_infoWidget->startMarquees();
     QVERIFY(!started);
     QVERIFY(m_infoWidget->m_animationState == InfoWidget::AnimationOngoing); 
 

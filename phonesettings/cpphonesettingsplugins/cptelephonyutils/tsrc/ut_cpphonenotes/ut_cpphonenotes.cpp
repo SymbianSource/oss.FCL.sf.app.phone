@@ -152,6 +152,7 @@ void UT_CpPhoneNotes::t_showNotificationDialog()
 void UT_CpPhoneNotes::t_showProgressNote()
 {
     CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid1, "testshowProgressNote1");
+    QTest::qWait(5000);
     CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid2, "testshowProgressNote2");
     QTest::qWait(5000);
 }
@@ -163,7 +164,7 @@ void UT_CpPhoneNotes::t_showGlobalProgressNote()
 {
     CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid1, "testshowGPN");
     QTest::qWait(5000);
-    CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid1,
+    CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid2,
             hbTrId("txt_common_info_requesting"));
     QTest::qWait(5000);
 }

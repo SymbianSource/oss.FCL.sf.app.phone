@@ -410,7 +410,7 @@ void mt_BubbleManager2::testConferenceCall()
     mouseClickWidgetAction("eb:leftButton",&action8);
     mouseClickWidgetAction("eb:rightButton",&action5);
 
-    // try to click conference list
+    // click conference list
     QTest::mouseClick(mainWindow->viewport(),Qt::LeftButton,0,QPoint(100,100));
     QTest::qWait( 2*WAIT_TIME );
 

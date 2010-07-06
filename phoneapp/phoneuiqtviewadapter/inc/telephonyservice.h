@@ -43,11 +43,20 @@ public slots:
                        then dialer launches on top of empty call handling.
         
         Usage example:
-        int inCallDialer(1);
-        XQServiceRequest snd("com.nokia.services.telephonyservices.starter", "start(int)", false);
-        snd << inCallDialer;
-        QVariant err;
-        snd.send(err);
+        QString service("phoneui");
+        QString interface(""com.nokia.symbian.IStart");
+        QString operation("start(int)");
+        XQApplicationManager appManager;
+        QScopedPointer<XQAiwRequest> request(appManager.create(service, interface, operation, false));
+        if (request == NULL) {
+            //Service not found 
+        }
+        QList<QVariant> args;
+        args << 1; // open dialpad
+        request->setArguments(args);
+        if (request->send()) {
+           //error
+        }
     */
     void start(const int serviceId);
     

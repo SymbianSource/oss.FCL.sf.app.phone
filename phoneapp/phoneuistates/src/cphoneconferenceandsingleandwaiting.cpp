@@ -409,7 +409,7 @@ void CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL(
                 {
                 // Not allowed to answer
                 SendGlobalWarningNoteL(
-                    EPhoneNoteTextCallNotAllowed );
+                    EPhoneNoteTextCallNotAllowed, ETrue );
                 }
             break;
 

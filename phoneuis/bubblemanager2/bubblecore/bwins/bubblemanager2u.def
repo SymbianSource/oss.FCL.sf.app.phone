@@ -62,4 +62,5 @@ EXPORTS
 	?addRowToConference@BubbleManager@@UAEXH@Z @ 61 NONAME ; void BubbleManager::addRowToConference(int)
 	?setLabel@BubbleManager@@UAEXHABVQString@@W4TextElideMode@Qt@@@Z @ 62 NONAME ; void BubbleManager::setLabel(int, class QString const &, enum Qt::TextElideMode)
 	?releaseImageIfNotUsed@BubbleManager@@AAEXABVQString@@@Z @ 63 NONAME ; void BubbleManager::releaseImageIfNotUsed(class QString const &)
+	?releaseNonCachedViews@BubbleManager@@AAEXXZ @ 64 NONAME ; void BubbleManager::releaseNonCachedViews(void)
 

@@ -55,12 +55,13 @@
 // Local constants 
 const int INFOWIDGET_DEFAULT_HEIGHT = 100;
 const int INFOWIDGET_DEFAULT_WIDTH = 200;
+const int INFOWIDGET_MARQUEE_START_DELAY = 5000; 
 const char *TS_FILE_OPERATOR_WIDGET = "operator_widget"; 
 const char *TS_FILE_COMMON = "common";
 const char *BACKGROUND_FRAME_NAME = "qtg_fr_hswidget_normal"; 
 
 /*!
-    InfoWidget::InfoWidget() 
+    Constructor.  
 */
 InfoWidget::InfoWidget(QGraphicsItem* parent, Qt::WindowFlags flags)
     : HbWidget(parent, flags),
@@ -76,8 +77,7 @@ InfoWidget::InfoWidget(QGraphicsItem* parent, Qt::WindowFlags flags)
     m_initialized(false)
 {
     INSTALL_TRACE_MSG_HANDLER; 
-    
-    DPRINT << ": IN";
+    DPRINT;
     
     // Localization file loading
     installTranslator(TS_FILE_OPERATOR_WIDGET);
@@ -120,41 +120,32 @@ InfoWidget::InfoWidget(QGraphicsItem* parent, Qt::WindowFlags flags)
             backgroundFrameDrawer.take(), this);  
     
     setBackgroundItem(m_backgroundFrameItem); 
-
-    DPRINT << ": OUT";
 }
 
 /*!
-    InfoWidget::~InfoWidget() 
+    Destructor.  
 */
 InfoWidget::~InfoWidget()
 {
-    DPRINT << ": IN";
-    
+    DPRINT;
     // Force layout manager to delete widgets 
     // before InfoWidget is destroyed   
     m_layoutManager->destroyWidgets(); 
     
     // Remove and delete language translators 
     removeTranslators(); 
-    
-    DPRINT << ": OUT"; 
     UNINSTALL_TRACE_MSG_HANDLER;
 }
 
 /*!
-    InfoWidget::onInitialize()
-    
     Called by HS framework, saved preference data
     is available when onInitialize() is called and 
-    meta-object data reading should be done here      
+    meta-object data reading should be done here.       
 */
 void InfoWidget::onInitialize()
 {
-    DPRINT << ": IN";
-    
+    DPRINT; 
     m_initialized = true; 
-    
     // Initialize preferences from meta-object data
     if (!readPersistentPreferences()) {
 
@@ -177,24 +168,23 @@ void InfoWidget::onInitialize()
     // Listen for model changes 
     QObject::connect(m_engine.data(), SIGNAL(modelChanged()), 
             this, SLOT(readModel()), Qt::UniqueConnection); 
-    
-    DPRINT << ": OUT";
 }
 
 /*!
-    InfoWidget::onUninitialize() 
+    This slot is called by HomeScreen framework 
+    when the widget is uninstalled.    
 */
 void InfoWidget::onUninitialize()
 {
-    DPRINT << ": IN";
+    DPRINT;
     stopMarquees();
     m_initialized = false; 
     m_engine->suspend();
-    DPRINT << ": OUT";
 }
 
 /*!
-    InfoWidget::onShow() 
+    This slot is called by HomeScreen framework 
+    when the widget visibility is gained.    
 */
 void InfoWidget::onShow()
 {
@@ -206,7 +196,8 @@ void InfoWidget::onShow()
 }
 
 /*!
-    InfoWidget::onHide() 
+    This slot is called by HomeScreen framework 
+    when the widget visibility is lost.    
 */
 void InfoWidget::onHide()
 {
@@ -218,7 +209,7 @@ void InfoWidget::onHide()
 }
 
 /*!
-    InfoWidget::timerEvent() 
+    Handles timer events.  
 */
 void InfoWidget::timerEvent(QTimerEvent *event)
 {
@@ -239,12 +230,11 @@ void InfoWidget::timerEvent(QTimerEvent *event)
 }
 
 /*!
-    InfoWidget::installTranslator() 
+    Install widget translator for given translation file.  
 */
 bool InfoWidget::installTranslator(QString translationFile)
 {
-    DPRINT << ": IN";
-
+    DPRINT;
     QString lang = QLocale::system().name();
     QString path = "z:/resource/qt/translations/";
     bool translatorLoaded(false);  
@@ -258,31 +248,23 @@ bool InfoWidget::installTranslator(QString translationFile)
         m_translators.append(widgetTranslator.take()); 
         DPRINT << ": translator installed: " << translationFile; 
     }
-    
-    DPRINT << ": OUT";
     return translatorLoaded;
 }
 
 /*!
-    InfoWidget::removeTranslators()
-    
-    Remove translators from qApp and delete objects 
+    Remove translators. No need to call 
+    QApplication::removeTranslator, 
+    QTranslator object removes itself before deletion.  
 */
 void InfoWidget::removeTranslators()
 {
-    DPRINT << ": IN";
-
-    foreach (QTranslator *translator, m_translators) {
-        qApp->removeTranslator(translator);
-    }    
+    DPRINT;
     qDeleteAll(m_translators);
     m_translators.clear();
-    
-    DPRINT << ": OUT";
 }
 
 /*!
-    InfoWidget::boundingRect() 
+    Returns bounding rect. 
 */
 QRectF InfoWidget::boundingRect() const
 {   
@@ -290,9 +272,7 @@ QRectF InfoWidget::boundingRect() const
 }
 
 /*!
-    InfoWidget::sizeHint() 
-    
-    Calculate size hint based on visible rows count 
+    Calculate widget size hint based on visible row count.  
 */
 QSizeF InfoWidget::sizeHint(Qt::SizeHint which, const QSizeF & constraint) const   
 {
@@ -325,7 +305,7 @@ QSizeF InfoWidget::sizeHint(Qt::SizeHint which, const QSizeF & constraint) const
 }
 
 /*!
-    InfoWidget::sizePolicy() 
+    Returns size polizy for the widget.   
 */
 QSizePolicy InfoWidget::sizePolicy () const 
 {
@@ -336,13 +316,12 @@ QSizePolicy InfoWidget::sizePolicy () const
 }
 
 /*!
-    InfoWidget::updateItemsVisibility() 
+    Update item visibility based on display preferences.   
 */
 void InfoWidget::updateItemsVisibility()
 {
-    DPRINT <<": IN"; 
+    DPRINT; 
     int layoutRows = 0; 
-    QList<QGraphicsWidget *> widgetsToHide; 
     
     // Update layout according to item visibility settings
     if (m_preferences->preference(InfoWidgetPreferences::DisplaySpn).compare(
@@ -369,19 +348,19 @@ void InfoWidget::updateItemsVisibility()
         m_layoutManager->removeWidget(InfoWidgetLayoutManager::RoleSatTextIcon); 
     }
     
-    DPRINT << ": visible layout rows count: " << layoutRows;
+    if (m_animatingItems.count() == 0) {
+        m_animatingItem = NULL; 
+    }
+    
     m_layoutManager->setLayoutRows(layoutRows);
 }
 
 /*!
-    InfoWidget::layoutInfoDisplay()
-    
-    Layout info display    
+    Layout info display.    
 */
 void InfoWidget::layoutInfoDisplay()
 {  
-    DPRINT << ": IN";
-    
+    DPRINT;
     QGraphicsLayout *infoDisplayLayout = 
         m_layoutManager->layoutInfoDisplay(); 
     
@@ -393,21 +372,16 @@ void InfoWidget::layoutInfoDisplay()
             m_layout->addItem(contentWidget);
         }
     }
-
     updateItemsVisibility(); 
-    
     endChanges();
-    DPRINT << ": OUT";
 }
 
 /*!
-    InfoWidget::layoutSettingsDialog()
-    
-    Layout and display settings dialog    
+    Layout and display settings dialog.    
 */
 void InfoWidget::layoutSettingsDialog()
 {  
-    DPRINT << ": IN";
+    DPRINT;
     startChanges();
     
     m_layoutManager->reloadWidgets(InfoWidgetLayoutManager::SettingsDialog); 
@@ -420,28 +394,22 @@ void InfoWidget::layoutSettingsDialog()
                 RoleSettingsDialog)); 
 
         if (settingsDialog) {
-            DPRINT << ": settingsDialog has been returned from layout manager";
             initializeSettingsDialogItems();
-            
             settingsDialog->setDismissPolicy(HbDialog::NoDismiss); 
             settingsDialog->setTimeout(HbDialog::NoTimeout);
             settingsDialog->open(this, 
                     SLOT(settingsDialogClosed(HbAction *))); 
             }
     }    
-    DPRINT << ": OUT";
 }
 
 /*!
-    InfoWidget::initializeSettingsDialogItems()
-    
     Set up initial check box states 
-    and connect signals to local slots  
+    and connect signals to local slots.  
 */
 void InfoWidget::initializeSettingsDialogItems()
 {  
-    DPRINT << ": IN";
-
+    DPRINT;
     // Connect display setting check boxes
     HbCheckBox *spnCheckBox = 
             qobject_cast<HbCheckBox *>(m_layoutManager->getWidget(
@@ -478,13 +446,9 @@ void InfoWidget::initializeSettingsDialogItems()
                 this, SLOT(satDisplaySettingChanged(int)), 
                 Qt::UniqueConnection); 
     }
-    
-    DPRINT << ": OUT";
 }
 
 /*!
-    InfoWidget::updateInfoDisplayItem() 
-    
     Fetch widget based on item role and update 
     item specific data. 
 */
@@ -501,8 +465,8 @@ void InfoWidget::updateInfoDisplayItem(
         marqueeItem->setTextColor( HbColorScheme::color(
                 "qtc_hs_list_item_title_normal"));
         
-        // Update widget effective size if not already set  
-        marqueeItem->adjustSize(); 
+        // Update widget effective size
+        marqueeItem->adjustSize();
         if (!m_layoutManager->textFitsToRect(
                 text,
                 marqueeItem->font(), 
@@ -514,88 +478,81 @@ void InfoWidget::updateInfoDisplayItem(
 }
 
 /*!
-    InfoWidget::updateInfoDisplay() 
-    
     Model or visibility data has changed, 
     update info display widgets accordingly. 
 */
 void InfoWidget::updateInfoDisplay()
 {
-    DPRINT << ": IN"; 
-    
+    DPRINT; 
     if (m_initialized) {
         stopMarquees();
         
         if (m_layoutManager->currentDisplayRole() == 
-                InfoWidgetLayoutManager::InfoDisplay )
-            {
-            QString text;
+                InfoWidgetLayoutManager::InfoDisplay) {
+            
             InfoWidgetEngine::ModelData modelData = m_engine->modelData(); 
         
             // Update service provider name item
-            text = modelData.serviceProviderName();
-            updateInfoDisplayItem(InfoWidgetLayoutManager::RoleSpnMarqueeItem, text); 
+            QString text = modelData.serviceProviderName();
+            updateInfoDisplayItem(
+                    InfoWidgetLayoutManager::RoleSpnMarqueeItem, text); 
 
             // Update MCN name item
             text = modelData.mcnName();
-            updateInfoDisplayItem(InfoWidgetLayoutManager::RoleMcnMarqueeItem, text); 
+            updateInfoDisplayItem(
+                    InfoWidgetLayoutManager::RoleMcnMarqueeItem, text); 
             
             // Update SAT display text item
             text = modelData.satDisplayText();
-            updateInfoDisplayItem(InfoWidgetLayoutManager::RoleSatMarqueeItem, text); 
+            updateInfoDisplayItem(
+                    InfoWidgetLayoutManager::RoleSatMarqueeItem, text); 
         }
         
         if (m_animatingItems.count() > 0) {
-            startMarquees(StartDelayed); 
+            startMarquees(); 
         }
     }
 }
 
 /*!
-    InfoWidget::readModel() 
-    
-    Read model data. Model's modelChanged - signal is connected to this slot.  
+    Read model data. 
+    Model's modelChanged - signal is connected to this slot.  
 */
 void InfoWidget::readModel()
 {
-    DPRINT << ": IN"; 
-
+    DPRINT; 
     if (m_layoutManager->currentDisplayRole() == 
             InfoWidgetLayoutManager::InfoDisplay) { 
         updateInfoDisplay(); 
     }
-    DPRINT << ": OUT";
 }
 
 /*!
-    InfoWidget::handleModelError() 
-    
-    Model error signal is connected to this slot 
+    Model error signal is connected to this slot. 
 */
 void InfoWidget::handleModelError(int operation,int errorCode)
 {
-    DWARNING << ": operation: " << operation << " error: " << errorCode; 
+    DWARNING << ": operation: " << operation << 
+                " error: " << errorCode; 
 }
 
 /*!
-    InfoWidget::mousePressEvent() 
+    Mouse press handler. 
 */
 void InfoWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
-    
     // Clear flag 
     m_dragEvent = false; 
 }
 
 /*!
-    InfoWidget::mouseReleaseEvent() 
+    Mouse release handler.  
 */
 void InfoWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
-
-    // If in info display and widget wasn't dragged 
+    // If widget wasn't dragged 
     // layout and open settings dialog
     if ((!m_dragEvent) && 
           m_layoutManager->currentDisplayRole() == 
@@ -606,23 +563,21 @@ void InfoWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     
     // Clear flag 
     m_dragEvent = false; 
-
 }
 
 /*!
-    InfoWidget::mouseMoveEvent() 
+    Mouse move handler.  
 */
 void InfoWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
-    
     // Mouse is moving 
     // after mouse press event
     m_dragEvent = true; 
 }
 
 /*!
-    InfoWidget::spnDisplaySettingChanged() 
+    Slot for handling Spn display setting change.  
 */
 void InfoWidget::spnDisplaySettingChanged(int state)
 {
@@ -637,7 +592,7 @@ void InfoWidget::spnDisplaySettingChanged(int state)
 }
 
 /*!
-    InfoWidget::mcnDisplaySettingChanged() 
+    Slot for handling Mcn display setting change. 
 */
 void InfoWidget::mcnDisplaySettingChanged(int state)
 {
@@ -652,7 +607,7 @@ void InfoWidget::mcnDisplaySettingChanged(int state)
 }
 
 /*!
-    InfoWidget::satDisplaySettingChanged() 
+    Slot for handling SAT display setting change. 
 */
 void InfoWidget::satDisplaySettingChanged(int state)
 {
@@ -667,8 +622,6 @@ void InfoWidget::satDisplaySettingChanged(int state)
 }
 
 /*!
-    InfoWidget::mcnDisplay() 
-    
     Getter function for Meta-object property "mcnDisplay"
 */
 QString InfoWidget::mcnDisplay()
@@ -679,8 +632,6 @@ QString InfoWidget::mcnDisplay()
 }
 
 /*!
-    InfoWidget::setMcnDisplay() 
-    
     Setter function for Meta-object property "mcnDisplay"
 */
 void InfoWidget::setMcnDisplay(QString value)
@@ -691,8 +642,6 @@ void InfoWidget::setMcnDisplay(QString value)
     }
 
 /*!
-    InfoWidget::homeZoneDisplay() 
-    
     Getter function for Meta-object property "homeZoneDisplay"
 */
 QString InfoWidget::homeZoneDisplay()
@@ -703,8 +652,6 @@ QString InfoWidget::homeZoneDisplay()
 }
 
 /*!
-    InfoWidget::setHomeZoneDisplay()
-    
     Setter function for Meta-object property "homeZoneDisplay" 
 */
 void InfoWidget::setHomeZoneDisplay(QString value)
@@ -715,8 +662,6 @@ void InfoWidget::setHomeZoneDisplay(QString value)
 }
 
 /*!
-    InfoWidget::activeLineDisplay() 
-    
     Getter function for Meta-object property "activeLineDisplay"
 */
 QString InfoWidget::activeLineDisplay()
@@ -727,8 +672,6 @@ QString InfoWidget::activeLineDisplay()
 }
 
 /*!
-    InfoWidget::setActiveLineDisplay() 
-    
     Setter function for Meta-object property "activeLineDisplay"
 */
 void InfoWidget::setActiveLineDisplay(QString value)
@@ -751,8 +694,6 @@ QString InfoWidget::satDisplay()
 }
 
 /*!
-    InfoWidget::setSatDisplay()
-    
     Setter function for Meta-object property "satDisplay" 
 */
 void InfoWidget::setSatDisplay(QString value)
@@ -763,8 +704,6 @@ void InfoWidget::setSatDisplay(QString value)
 }
 
 /*!
-    InfoWidget::spnDisplay()
-    
     Getter function for Meta-object property "spnDisplay" 
 */
 QString InfoWidget::spnDisplay()
@@ -775,8 +714,6 @@ QString InfoWidget::spnDisplay()
 }
 
 /*!
-    InfoWidget::setSpnDisplay()
-    
     Setter function for Meta-object property "spnDisplay" 
 */
 void InfoWidget::setSpnDisplay(QString value)
@@ -787,8 +724,6 @@ void InfoWidget::setSpnDisplay(QString value)
 }
 
 /*!
-    InfoWidget::readPersistentPreferences()
-    
     Read Meta-object properties and store to preference handler. 
     Restores preferences from previous session.   
 */
@@ -827,8 +762,6 @@ bool InfoWidget::readPersistentPreferences()
 }
 
 /*!
-    InfoWidget::initializeCheckBoxStates()
-    
     Read display settings from preference store 
     and set check box initial states accordingly. 
 */
@@ -838,7 +771,7 @@ void InfoWidget::initializeCheckBoxStates()
     HbCheckBox *spnCheckBox = qobject_cast<HbCheckBox *>(m_layoutManager->getWidget(
             InfoWidgetLayoutManager::RoleSpnCheckBox));
     if (spnCheckBox) {
-    spnCheckBox->setChecked(m_preferences->isPreferenceSet(
+        spnCheckBox->setChecked(m_preferences->isPreferenceSet(
                 InfoWidgetPreferences::DisplaySpn));
     }
     
@@ -858,18 +791,17 @@ void InfoWidget::initializeCheckBoxStates()
 }
 
 /*!
-    InfoWidget::settingsEditingFinished()
+    Handles settings validating and storing
+    when the settings dialog is closed with Ok action.   
 */
 void InfoWidget::settingsEditingFinished()
 {
-    DPRINT << ": IN";
-    
-    // Save settings data if validation succeeds 
+    DPRINT;
+     
     if (m_preferences->validate()) {
-        DPRINT << ": switching to info display";
-        
+
         // Signal HS framework to store Meta-object 
-        // preferences if changed 
+        // preferences if preferences have changed. 
         if (m_preferences->storePreferences()) {
             emit setPreferences(
                     m_preferences->preferenceNames());
@@ -884,20 +816,15 @@ void InfoWidget::settingsEditingFinished()
                 true);
         
     } else {
-        DPRINT << ": settings validation failed";
         // Cancel edit mode 
         settingsEditingCancelled();
         
         // Display warning note
         settingsValidationFailed();
     }
-    
-    DPRINT << ": OUT";
 }
 
 /*!
-    InfoWidget::settingsEditingCancelled()
-    
     Slot to be called when settings editing 
     shouldn't cause change set of visible items. 
     Restores previous state.  
@@ -915,50 +842,47 @@ void InfoWidget::settingsEditingCancelled()
 }
 
 /*!
-    InfoWidget::settingsDialogClosed()
-    
-    Slot to be called when settings dialog is about to close
+    Slot to be called when settings dialog is about to close. 
 */
 void InfoWidget::settingsDialogClosed(HbAction* action)
 {
-    DPRINT << ": IN";
+    DPRINT;
     if (action) {
         if (action->text() == hbTrId("txt_common_button_ok")) {
             settingsEditingFinished(); 
-        } else if (action->text() == hbTrId("txt_common_button_cancel") ) {
+        } else if (action->text() == hbTrId("txt_common_button_cancel")) {
             settingsEditingCancelled(); 
         }       
     } else {
-        DPRINT << ": null action";
         settingsEditingCancelled(); 
     }
      
     // Switch to info display 
     layoutInfoDisplay();
-    DPRINT << ": OUT";
 }
 
 /*!
-    InfoWidget::startChanges()
+    Handle start of changes, called when settings dialog
+    is shown and layout changes are expected.      
 */
 void InfoWidget::startChanges()
 {
     DPRINT;
     m_layoutChanging = true;
     if (m_animationState != AnimationIdle) {
-            stopMarquees(); 
+        stopMarquees(); 
     }
 }
 
 /*!
-    InfoWidget::endChanges()
+    Handle end of changes, called when settings dialog
+    is closed and layout changes are to be finished.      
 */
 void InfoWidget::endChanges()
 {
     DPRINT;
     updateGeometry();
     updateInfoDisplay();
-    
     m_layoutChanging = false;
 }
 
@@ -976,10 +900,7 @@ void InfoWidget::changeEvent(QEvent *event)
 }
 
 /*!
-   InfoWidget::settingsValidationFailed()
-   
    Slot to be called when preference validation has failed. 
-   Displays warning message box
 */
 void InfoWidget::settingsValidationFailed()
 {
@@ -991,13 +912,11 @@ void InfoWidget::settingsValidationFailed()
 }
 
 /*!
-   InfoWidget::startMarquees()
-   
    Start marquee animations. 
    First find existing marquee items and 
-   enable marquee sequence
+   enable marquee sequence. 
 */
-bool InfoWidget::startMarquees(AnimationStartDelay delay)
+bool InfoWidget::startMarquees()
 {  
     DPRINT;
     bool started(true); 
@@ -1009,68 +928,53 @@ bool InfoWidget::startMarquees(AnimationStartDelay delay)
       
     int animatingItemsCount = m_animatingItems.count();  
     if (animatingItemsCount > 0) {
-        HbMarqueeItem *marqueeItem(NULL);  
-        foreach (marqueeItem, m_animatingItems) {
-            if (animatingItemsCount > 1) {
-                // Multiple items, connect to marqueeNext() 
-                // sequence logic
-                QObject::connect(
-                        marqueeItem,SIGNAL(animationStopped()),
-                        this, SLOT(marqueeNext()), 
-                        Qt::UniqueConnection);
-                marqueeItem->setLoopCount(1); 
-            } else if (animatingItemsCount ==1 ){
-                // Single item, set continuous marquee mode 
-                marqueeItem->setLoopCount(-1); 
+        foreach (HbMarqueeItem *marqueeItem, m_animatingItems) {
+            if (marqueeItem) {
+                if (animatingItemsCount > 1) {
+                    // Multiple items, connect to marqueeNext() 
+                    // sequence logic
+                    QObject::connect(
+                            marqueeItem, SIGNAL(animationStopped()),
+                            this, SLOT(marqueeNext()), 
+                            Qt::QueuedConnection);
+                    marqueeItem->setLoopCount(1); 
+                } else if (animatingItemsCount == 1){
+                    // Single item, set continuous marquee mode 
+                    marqueeItem->setLoopCount(-1); 
+                }
             }
         }
         
         // Store marquee sequence start item 
         m_animatingItem = m_animatingItems.first();
-        
-        if (delay == StartNoDelay) {
-            m_animationState = AnimationOngoing; 
-            m_animatingItem->startAnimation();
-        } else if (delay == StartDelayed && !m_timerId) {
-            m_animationState = AnimationStarting;
-            m_timerId = startTimer(100);
-        } 
-        
+        m_animationState = AnimationStarting;
+        m_timerId = startTimer(INFOWIDGET_MARQUEE_START_DELAY);
     } else {
-        // No animating items, not started
-        DWARNING << ": not done, no animating items";
+        DPRINT << ": not started, no animating items";
         m_animatingItem = NULL; 
         started = false;
     }
-    
     return started; 
 }
 
 /*!
-   InfoWidget::stopMarquees()
-   
    Stop all marquee animations and reset 
-   animation state
+   animation state. 
 */
 void InfoWidget::stopMarquees()
 {  
     DPRINT;
     if (m_animationState != AnimationIdle && 
         m_animatingItems.count() > 0) {
-        HbMarqueeItem *marqueeItem(NULL);
-        
-        foreach (marqueeItem, m_animatingItems) {
-            
-            // Disconnect if more than one item, 
-            // single animator doesn't connect to animationStopped() 
-            if (m_animatingItems.count() > 1) {
+        foreach (HbMarqueeItem *marqueeItem, m_animatingItems) {
+            if (marqueeItem) {
                 QObject::disconnect(
                     marqueeItem, SIGNAL(animationStopped()),
                     this, SLOT(marqueeNext()));
-            }
-            
-            if (marqueeItem->isAnimating()) {
-                marqueeItem->stopAnimation();
+                
+                if (marqueeItem->isAnimating()) {
+                    marqueeItem->stopAnimation();
+                }
             }
         }
     }
@@ -1087,8 +991,6 @@ void InfoWidget::stopMarquees()
 }
 
 /*!
-   InfoWidget::marqueeNext()
-   
    Starts marquee animation for 
    next item in sequence.  
 */
@@ -1117,7 +1019,6 @@ void InfoWidget::marqueeNext()
             }
         }
     }
-    
 }
 
 // End of File. 

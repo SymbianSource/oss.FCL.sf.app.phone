@@ -13,6 +13,24 @@
 *
 * Description:  DTMF API to be used through Qt Highway.
 *
+*
+*
+*            Example usage:
+*            QString service("phoneui");
+*            QString interface(""com.nokia.symbian.ICallDial");
+*            QString operation("playDTMFTone(QString)"); // or stopDTMFPlay()
+*            XQApplicationManager appManager;
+*            QScopedPointer<XQAiwRequest> request(appManager.create(service, interface, operation, false));
+*            if (request == NULL) {
+*                //Service not found 
+*            }
+*            QList<QVariant> args;
+*            args << QChar('0');
+*            request->setArguments(args);
+*            if (request->send()) {
+*               //error
+*            }
+*
 */
 
 #ifndef DTMFSERVICE_H
@@ -41,10 +59,6 @@ public slots:
         This method plays DTMF tone matching given character.
         If character doesn't match any supported DTMF tone
         it is ignored.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.symbian.IDtmfPlay","playDTMFTone(QChar)");
-        snd << "5";
     */
     void playDTMFTone(const QChar& keyToPlay);
 

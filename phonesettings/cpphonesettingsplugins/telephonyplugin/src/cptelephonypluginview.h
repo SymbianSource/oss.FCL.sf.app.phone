@@ -19,34 +19,29 @@
 #define CPTELEPHONYPLUGINVIEW_H_
 
 #include <QObject>
+#include <QVariantList>
 #include <hbdataform.h>
 #include <cpbasesettingview.h>
 
 class HbDataFormModelItem;
 class CpSettingFormItemData;
 
-/*!
-    \class CpTelephonyPluginView
-    \brief The class CpTelephonyPluginView. 
- */
+// Class declaration 
 class CpTelephonyPluginView : public CpBaseSettingView
 {
     Q_OBJECT
 
 public:
     CpTelephonyPluginView();
+    CpTelephonyPluginView(const QVariantList &params);
     ~CpTelephonyPluginView();
 
 private: 
-    
     CpItemDataHelper* initializeItemDataHelper();
-
-private: 
- 
-    QList<CpSettingFormItemData*> groupItemFromPlugin(const QString& plugin);
+    QList<CpSettingFormItemData*> groupItemFromPlugin(
+            const QString& plugin);
     
-private:   // data
- 
+private: // Data
     CpItemDataHelper *m_helper;
 };
 

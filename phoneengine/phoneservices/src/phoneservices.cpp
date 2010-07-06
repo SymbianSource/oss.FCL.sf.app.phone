@@ -18,6 +18,7 @@
 #include "phoneservices.h"
 #include "dialservice.h"
 #include "dtmfservice.h"
+#include "urischemehandlerservice.h"
 #include "qtphonelog.h"
 
 // Depricated APIs
@@ -31,7 +32,8 @@ PhoneServices::PhoneServices(
     : 
     QObject(parent),
     dialService(0),
-    dtmfService(0)
+    dtmfService(0),
+    uriSchemeHandlerService(0)
     // Depricated
     , dialServiceDepricated(0)
     , dtmfServiceDepricated(0)
@@ -39,7 +41,9 @@ PhoneServices::PhoneServices(
     PHONE_DEBUG("PhoneServices::PhoneServices");
     dialService.reset(new DialService(call, parameters));
     dtmfService.reset(new DTMFService(call, parameters));
-
+    uriSchemeHandlerService.reset(
+        new UriSchemeHandlerService(call, parameters));
+    
     // Depricated
     dialServiceDepricated.reset(new DialServiceDepricated(call, parameters));
     dtmfServiceDepricated.reset(new DTMFServiceDepricated(call, parameters));

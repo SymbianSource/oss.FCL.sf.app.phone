@@ -94,7 +94,7 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iBasicInfo.iDataPortName = KNullDesC;
     iBasicInfo.iSwitchToOngoing = EFalse;
     iConferenceCallInfo.iConferenceCallState = EPEStateConferenceIdle;
-    
+    iBasicInfo.iOutgoingBarringActivated = EFalse;
     //TODO remove after profile information is available
     iBasicInfo.iRingingVolume = 10;
     }
@@ -2593,12 +2593,51 @@ TInt CPEEngineInfoImpl::ContactId2 () const
 
 // -----------------------------------------------------------------------------
 // CPEEngineInfoImpl::SetProtocolError
-// Sets the protocol spesific error code to TPEErrorInfo
+// Sets the protocol spesific error code
 // -----------------------------------------------------------------------------
 //
-void CPEEngineInfoImpl::SetProtocolError( TInt aError )
+void CPEEngineInfoImpl::SetProtocolError( TInt aError, TInt aCallId )
     {
-    iBasicInfo.iErrorInfo.iProtocolSpesificErrorCode = aError;
+    if ( 0<=aCallId && aCallId<iCurrentCalls.Count() )
+        {
+        iCurrentCalls[ aCallId ]->SetProtocolError( aError );
+        }
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::ProtocolError
+// Returns the protocol spesific error code
+// -----------------------------------------------------------------------------
+//
+TInt CPEEngineInfoImpl::ProtocolError( TInt aCallId )
+    {
+    TInt ret( KErrNotFound );
+    
+    if ( 0<=aCallId && aCallId<iCurrentCalls.Count() )
+        {
+        ret = iCurrentCalls[ aCallId ]->ProtocolError();
+        }
+    
+    return ret;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::IsOutgoingCallBarringActivated
+// -----------------------------------------------------------------------------
+//
+TBool CPEEngineInfoImpl::IsOutgoingCallBarringActivated()
+    {
+    return iBasicInfo.iOutgoingBarringActivated;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::SetOutgoingCallBarringActivated
+// -----------------------------------------------------------------------------
+//
+void CPEEngineInfoImpl::SetOutgoingCallBarringActivated( 
+        TBool aActivated )
+    {
+    iBasicInfo.iOutgoingBarringActivated = aActivated;
     }
 
 // End of File

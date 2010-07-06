@@ -22,8 +22,11 @@
 #include <hbstyle.h>
 #include <hbiconitem.h>
 #include <hbstyleloader.h>
+#include <hbdeviceprofile.h>
 #include "bubbleimagemanager.h"
 #include "bubbleimagewidget.h"
+
+static const qreal BubbbleImageRounding = 1.5; // units
 
 BubbleImageWidget::BubbleImageWidget(
     BubbleImageManager& imageManager,
@@ -33,6 +36,8 @@ BubbleImageWidget::BubbleImageWidget(
       mDefaultAvatar(0),
       mKeepSquareShape(0)
 {
+    setFlag(QGraphicsItem::ItemHasNoContents, false);
+
     // create avatar
     mDefaultAvatar = new HbIconItem(this);
     style()->setItemName( mDefaultAvatar, "default_avatar" );
@@ -42,8 +47,10 @@ BubbleImageWidget::BubbleImageWidget(
     connect(&mImageManager, SIGNAL(pixmapReady(QString)),
             this, SLOT(imageLoaded(QString)));
 
-    HbStyleLoader::registerFilePath(":/bubbleimagewidget.css");
-    HbStyleLoader::registerFilePath(":/bubbleimagewidget.widgetml");
+    HbStyleLoader::registerFilePath(
+        QLatin1String(":/bubbleimagewidget.css"));
+    HbStyleLoader::registerFilePath(
+        QLatin1String(":/bubbleimagewidget.widgetml"));
 }
 
 BubbleImageWidget::~BubbleImageWidget()
@@ -60,7 +67,7 @@ void BubbleImageWidget::setImage(const QString& name)
         mDefaultAvatar->setIcon(HbIcon());
         mImageManager.loadImage(mImageName);
     } else {
-        mDefaultAvatar->setIconName("qtg_large_avatar");
+        mDefaultAvatar->setIconName(QLatin1String("qtg_large_avatar"));
         mDefaultAvatar->setVisible(true);
     }
 }
@@ -87,6 +94,8 @@ void BubbleImageWidget::paint(
         mImageManager.pixmap(mImageName);
 
     if (pixmap) {
+        painter->save();
+
         // up or downscales images to fill image area
         QSize imageSize(pixmap->size());
         QSize sourceSize(rect().size().toSize());
@@ -99,6 +108,13 @@ void BubbleImageWidget::paint(
         // qDebug() << "imageSize:" << imageSize;
         // qDebug() << "sourceRect:" << sourceRect;
         painter->setRenderHint(QPainter::SmoothPixmapTransform);
+        painter->setRenderHint(QPainter::Antialiasing);
+
+        QPainterPath clip;
+        qreal rounding = BubbbleImageRounding *
+                         HbDeviceProfile::profile(this).unitValue();
+        clip.addRoundedRect(rect(), rounding, rounding);
+        painter->setClipPath(clip);
 
 #ifdef __WINS__
         // sourceRect crashes emulator, RC ou1cimx1#320113
@@ -106,7 +122,7 @@ void BubbleImageWidget::paint(
 #else        
         painter->drawPixmap(rect().toRect(),*pixmap,sourceRect);
 #endif        
-        
+        painter->restore();
     }
 }
 

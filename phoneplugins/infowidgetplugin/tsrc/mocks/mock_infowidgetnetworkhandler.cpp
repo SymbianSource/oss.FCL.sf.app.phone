@@ -57,16 +57,6 @@ bool InfoWidgetNetworkHandler::createSession(  )
 
 
 // -----------------------------------------------------------------------------
-// InfoWidgetNetworkHandler::sessionExists
-// -----------------------------------------------------------------------------
-//
-bool InfoWidgetNetworkHandler::sessionExists(  )
-    {
-    SMC_MOCK_METHOD0( bool )
-    }
-
-
-// -----------------------------------------------------------------------------
 // InfoWidgetNetworkHandler::serviceProviderName
 // -----------------------------------------------------------------------------
 //

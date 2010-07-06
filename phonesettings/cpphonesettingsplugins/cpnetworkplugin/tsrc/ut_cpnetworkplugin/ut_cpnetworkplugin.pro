@@ -15,15 +15,14 @@
 #
 #
 
-CONFIG += qtestlib hb mobility
+CONFIG += qtestlib hb
 TEMPLATE = app
 TARGET = 
 DEPENDPATH += . ../../src/
 INCLUDEPATH += .
 INCLUDEPATH +=../../../inc 
 INCLUDEPATH +=../../../cptelephonyutils/inc
-DEFINES += BUILD_NETWORKPLUGIN BUILD_CPTELEPHONYUTILS
-MOBILITY += systeminfo
+DEFINES += BUILD_CPTELEPHONYUTILS
 
 QT -= gui
 QT += testlib
@@ -58,3 +57,4 @@ SOURCES += ../../../tsrc/mocks/mock_cpsettingformentryitemdata.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpbasesettingview.cpp
 SOURCES += ../../../tsrc/mocks/mock_hbview.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpnetworkstatus.cpp
+

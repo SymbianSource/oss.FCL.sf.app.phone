@@ -482,3 +482,13 @@ HbWidget::HbWidget(
     }
 
 
+// -----------------------------------------------------------------------------
+// HbWidget::hideFocusHighlight
+// -----------------------------------------------------------------------------
+//
+void HbWidget::hideFocusHighlight()
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+ 

@@ -72,6 +72,7 @@ static void cpPhoneSettingsPluginsMsgOutput(QtMsgType type, const char *msg)
   */
 #define DPRINT qDebug() << __PRETTY_FUNCTION__
 #define DWARNING qWarning() << __PRETTY_FUNCTION__
+#define DCRITICAL qCritical() << __PRETTY_FUNCTION__
 
 #endif // CPPHONESETTINGSPLUGINSLOGGING_H
 

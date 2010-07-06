@@ -59,8 +59,10 @@ CpNetworkPluginForm::CpNetworkPluginForm(QGraphicsItem *parent) :
 
     // #1 Read Network mode value from Cenrep
     model->appendDataFormItem(createNetworkModeItem());
-    // #2 Use phone settings for operator selection
-    model->appendDataFormItem(createOperatorSelectionItem());
+    if(m_psetNetworkWrapper->isManualNetworkSelectionSupported()) {
+        // #2 Use phone settings for operator selection
+        model->appendDataFormItem(createOperatorSelectionItem());
+    }
     // Home network cellular data usage
     model->appendDataFormItem(createHomeDataUsageItem());
     // Cellular network data usage when roaming
@@ -78,12 +80,9 @@ CpNetworkPluginForm::CpNetworkPluginForm(QGraphicsItem *parent) :
  */
 CpNetworkPluginForm::~CpNetworkPluginForm()
 {
-    DPRINT << ": IN";
-    
+    DPRINT;
     delete m_pSetWrapper;
     delete m_cpSettingsWrapper;
-    
-    DPRINT << ": OUT";
 }
 
 
@@ -101,6 +100,7 @@ HbDataFormModelItem *CpNetworkPluginForm::createNetworkModeItem()
         NULL );
     QScopedPointer<CpSettingFormItemData> settingFormItemGuard(
         m_NetworkModeOptionsItemData);
+    m_NetworkModeOptionsItemData->setObjectName("networkModeItem"); 
     
     mNetworkModeOptions << hbTrId("txt_cp_setlabel_network_mode_val_dual_mode")
                         << hbTrId("txt_cp_setlabel_network_mode_val_umts")
@@ -147,6 +147,7 @@ HbDataFormModelItem *CpNetworkPluginForm::createOperatorSelectionItem()
         NULL);
     QScopedPointer<CpSettingFormItemData> settingFormItemGuard(
         m_NetworkOperatorSelectionItemData);
+    m_NetworkOperatorSelectionItemData->setObjectName("operatorSelectionItem");
     
     PSetNetworkWrapper::NetworkSelectionMode mode;
     PSetNetworkWrapper::ErrorCode err = 
@@ -188,7 +189,8 @@ HbDataFormModelItem *CpNetworkPluginForm::createHomeDataUsageItem()
         NULL);
     QScopedPointer<CpSettingFormItemData> settingFormItemGuard(
         mCellularUseHomeSelectionItemData);
-
+    mCellularUseHomeSelectionItemData->setObjectName("homeDataUsageItem"); 
+    
     // Populate the dropdown with selection items
     mCellularUseHomeOptions
         << hbTrId("txt_cp_setlabel_data_usage_in_val_automatic")
@@ -220,9 +222,7 @@ HbDataFormModelItem *CpNetworkPluginForm::createHomeDataUsageItem()
 void CpNetworkPluginForm::cellularDataUseHomeStateChanged(int index)
 {
     DPRINT << ": IN : index: " << index;
-
     mCellularSettings->setDataUseHome(index);
-    
     DPRINT << ": OUT";
 }
 
@@ -239,7 +239,8 @@ HbDataFormModelItem *CpNetworkPluginForm::createRoamDataUsageItem()
         NULL);
     QScopedPointer<CpSettingFormItemData> settingFormItemGuard(
         mCellularUseRoamSelectionItemData);
-
+    mCellularUseRoamSelectionItemData->setObjectName("roamDataUsageItem"); 
+    
     // Populate the dropdown with selection items
     mCellularUseRoamOptions
         << hbTrId("txt_cp_setlabel_data_usage_when_val_automatic")
@@ -358,7 +359,7 @@ void CpNetworkPluginForm::operatorSelectionStateChanged()
                 break;
             }
         } else {
-            DPRINT << ": err: " << err;
+            DWARNING << ": err: " << err;
         }
     }
 
@@ -512,7 +513,8 @@ HbDialog* CpNetworkPluginForm::createDialog(const QString& heading) const
   CpNetworkPluginForm::createDialog
   */
 void CpNetworkPluginForm::addItemToListWidget(HbListWidget* w,
-        const QString& item, const int& data) const
+                        const QString& item, const int& data, 
+                        const HbIcon& primaryIcon) const
 {
     DPRINT << ": IN";
     Q_ASSERT(w != 0);
@@ -520,6 +522,8 @@ void CpNetworkPluginForm::addItemToListWidget(HbListWidget* w,
     HbListWidgetItem* o = new HbListWidgetItem();
     o->setText(item);
     o->setData(data);
+    if(!primaryIcon.isNull())
+        o->setIcon(primaryIcon);
     w->addItem(o);
     
     DPRINT << ": OUT";
@@ -679,7 +683,7 @@ void CpNetworkPluginForm::showManualSelectiondialog()
     for (int i = 0; i < itemsCount; i++) {
         PSetNetworkWrapper::NetworkInfo *info = m_networkInfoList->at(i);
         QString text = networkName(*info);
-        addItemToListWidget(list, text, i);
+        addItemToListWidget(list, text, i, HbIcon(primaryIconForNetwork(*info)));
         DPRINT << ":  " << info;
     }
     // Connect list item activation signal to close the popup
@@ -699,6 +703,42 @@ void CpNetworkPluginForm::showManualSelectiondialog()
     m_dialog = dialog.take();
     
     DPRINT << ": OUT";
+}
+
+/*!
+  CpNetworkPluginForm::primaryIconForNetwork
+  */
+QString CpNetworkPluginForm::primaryIconForNetwork(const PSetNetworkWrapper::NetworkInfo &info)
+{
+    DPRINT << ": IN";
+    
+    QString iconName;
+    bool isForbiddenIconSupported = m_cpSettingsWrapper->forbiddenIconSupported();
+    if (isForbiddenIconSupported) {
+        if (info.m_access == PSetNetworkWrapper::AccessTypeGsm) {
+            if (info.m_status == PSetNetworkWrapper::StatusForbidden) {
+                iconName.append("qtg_small_network_off");
+            } else {
+                iconName.append("qtg_small_network");
+            }
+        } else if (info.m_access == PSetNetworkWrapper::AccessTypeWcdma) {
+            if (info.m_status == PSetNetworkWrapper::StatusForbidden) {
+                iconName.append("qtg_small_wcdma_off");
+            } else {
+                iconName.append("qtg_small_wcdma");
+            }
+        }
+        else if (info.m_access == PSetNetworkWrapper::AccessTypeGsmAndWcdma) {
+            if (info.m_status == PSetNetworkWrapper::StatusForbidden) {
+                iconName.append("qtg_small_pd_wcdma_off");
+            } else {
+                iconName.append("qtg_small_pd_wcdma");
+            }
+        }
+    }
+    
+    DPRINT << ": OUT : " << iconName;
+    return iconName;
 }
 
 
