@@ -27,7 +27,8 @@
 *            args << QString("0501234567"); // number or address
 *            // add contactId and serviceId when needed by operation
 *            request->setArguments(args);
-*            if (request->send()) {
+*            QVariant retValue;
+*            if (request->send(retValue)) {
 *               //error
 *            }
 *
@@ -81,7 +82,7 @@ public slots:
         Phone Application. It is intended to be used via Qt Highway.
 
     */
-    void dialVideo(const QString& number);
+    int dialVideo(const QString& number);
 
     /*!
         \fn dial(const QString& number)
@@ -91,7 +92,7 @@ public slots:
         Caller's name is shown according to the given Phonebook contact
         identifier.
     */
-    void dialVideo(const QString& number, int contactId);
+    int dialVideo(const QString& number, int contactId);
     
     /*!
         \fn dialVoip(const QString& address)
@@ -99,7 +100,7 @@ public slots:
         This method makes a voip call dial command to
         Phone Application. It is intended to be used via Qt Highway.
     */
-    void dialVoip(const QString& address);
+    int dialVoip(const QString& address);
     
     /*!
         \fn dialVoip(const QString& address, int contactId)
@@ -110,7 +111,7 @@ public slots:
         identifier.
 
     */
-    void dialVoip(const QString& address, int contactId);
+    int dialVoip(const QString& address, int contactId);
     
     /*!
         \fn dialVoipService(const QString& address, int contactId)
@@ -119,7 +120,7 @@ public slots:
         Phone Application. It is intended to be used via Qt Highway.
         Call is made by given service (id).
     */
-    void dialVoipService(const QString& address, int serviceId);
+    int dialVoipService(const QString& address, int serviceId);
     
     /*!
         \fn dialVoipService(const QString& address, int serviceId, int contactId)
@@ -130,7 +131,7 @@ public slots:
         Caller's name is shown according to the given Phonebook contact
         identifier.
     */
-    void dialVoipService(const QString& address, int serviceId, int contactId);
+    int dialVoipService(const QString& address, int serviceId, int contactId);
     
 private:
 	
@@ -154,6 +155,14 @@ private:
         Returns a string that has japan specific configuration modifications made 
     */
     QString japanPrefixModifications(const QString &number) Q_REQUIRED_RESULT;
+	
+	
+    /*!
+        \fn bool hasCapability()
+        
+        Checks if the client has the required capabilities
+    */
+    bool hasCapability();
 
 
 private:

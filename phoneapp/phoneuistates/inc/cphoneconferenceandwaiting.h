@@ -87,8 +87,6 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
         */
         virtual void ConstructL();
         
-        virtual void OpenMenuBarL();
-        
         virtual void UpdateInCallCbaL();
         
         

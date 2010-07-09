@@ -26,7 +26,7 @@ DTMFService::DTMFService(
     QObject* parent) 
     : 
     XQServiceProvider(
-        QLatin1String("com.nokia.symbian.IDtmfPlay"), parent), 
+        QLatin1String("phoneui.com.nokia.symbian.IDtmfPlay"), parent), 
     m_call(call), 
     m_parameters(parameters)
 {
@@ -37,15 +37,34 @@ DTMFService::~DTMFService()
 {
 }
 
-void DTMFService::playDTMFTone(const QChar& keyToPlay)
+int DTMFService::playDTMFTone(const QChar& keyToPlay)
 {
-    PHONE_DEBUG2("DTMFService::playDTMFTone keyToPlay:", keyToPlay);
+    PHONE_TRACE2("keyToPlay:", keyToPlay);
+    if (!hasCapability()) {
+        return;
+    }
     m_parameters.SetKeyCode(keyToPlay.unicode());
-    TRAP_IGNORE( m_call.HandlePlayDTMFL() );
+    TRAPD(ret, m_call.HandlePlayDTMFL() );
+    return ret;
 }
 
-void DTMFService::stopDTMFPlay()
+int DTMFService::stopDTMFPlay()
 {
-    PHONE_DEBUG("DTMFService::stopDTMFPlay");
-    m_call.HandleEndDTMF(); 
+    PHONE_TRACE;
+    if (!hasCapability()) {
+        return;
+    }
+    return m_call.HandleEndDTMF(); 
 }
+
+bool DTMFService::hasCapability()
+{
+    XQRequestInfo req = requestInfo();
+    QSet<int> caps = req.clientCapabilities();
+    if (!caps.contains(ECapabilityNetworkServices)) {
+        PHONE_TRACE1("NetworkServices capability missing");
+        return false;
+	}
+	return true;
+}
+

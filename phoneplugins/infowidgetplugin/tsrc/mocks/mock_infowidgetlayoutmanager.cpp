@@ -16,6 +16,8 @@
 */
 #include <QDebug>
 #include <QObject>
+#include <QGraphicsWidget>
+#include <QList>
 #include <smcmockclassincludes.h>
 #include "infowidgetlayoutmanager.h"
 
@@ -68,9 +70,9 @@ QList <InfoWidgetLayoutManager::LayoutItemRole >
 // InfoWidgetLayoutManager::layoutInfoDisplay
 // -----------------------------------------------------------------------------
 //
-QGraphicsLayout * InfoWidgetLayoutManager::layoutInfoDisplay(  )
+QGraphicsWidget * InfoWidgetLayoutManager::layoutInfoDisplay(  )
     {
-    SMC_MOCK_METHOD0( QGraphicsLayout * )
+    SMC_MOCK_METHOD0( QGraphicsWidget * )
     }
 
 
@@ -78,9 +80,9 @@ QGraphicsLayout * InfoWidgetLayoutManager::layoutInfoDisplay(  )
 // InfoWidgetLayoutManager::layoutSettingsDialog
 // -----------------------------------------------------------------------------
 //
-QGraphicsLayout * InfoWidgetLayoutManager::layoutSettingsDialog(  )
+QGraphicsWidget * InfoWidgetLayoutManager::layoutSettingsDialog(  )
     {
-    SMC_MOCK_METHOD0( QGraphicsLayout * )
+    SMC_MOCK_METHOD0( QGraphicsWidget * )
     }
 
 
@@ -101,22 +103,7 @@ const QList <InfoWidgetLayoutManager::LayoutItemRole >
 // InfoWidgetLayoutManager::loadWidgets
 // -----------------------------------------------------------------------------
 //
-bool InfoWidgetLayoutManager::loadWidgets(
-        const DisplayRole displayRole, 
-        const QList<LayoutItemRole> &displayWidgets,
-        QMap<LayoutItemRole, QGraphicsWidget *> &widgetMap)
-    {
-    typedef QMap <LayoutItemRole, QGraphicsWidget *> & TYPE3;
-    SMC_MOCK_METHOD3( bool, const DisplayRole, displayRole, 
-        const QList<LayoutItemRole> &, displayWidgets, 
-        TYPE3, widgetMap )
-    }
-
-// -----------------------------------------------------------------------------
-// InfoWidgetLayoutManager::reloadWidgets
-// -----------------------------------------------------------------------------
-//
-bool InfoWidgetLayoutManager::reloadWidgets( 
+bool InfoWidgetLayoutManager::loadWidgets( 
         const DisplayRole displayRole )
     {
     SMC_MOCK_METHOD1( bool, const DisplayRole, displayRole )
@@ -219,27 +206,6 @@ void InfoWidgetLayoutManager::destroyWidgets(  )
 
 
 // -----------------------------------------------------------------------------
-// InfoWidgetLayoutManager::layoutRows
-// -----------------------------------------------------------------------------
-//
-int InfoWidgetLayoutManager::layoutRows(  ) const
-    {
-    SMC_MOCK_METHOD0( int )
-    }
-
-
-// -----------------------------------------------------------------------------
-// InfoWidgetLayoutManager::setLayoutRows
-// -----------------------------------------------------------------------------
-//
-void InfoWidgetLayoutManager::setLayoutRows( 
-        int rows )
-    {
-    SMC_MOCK_METHOD1( void, int, rows )
-    }
-
-
-// -----------------------------------------------------------------------------
 // InfoWidgetLayoutManager::layoutRowHeight
 // -----------------------------------------------------------------------------
 //
@@ -261,6 +227,21 @@ bool InfoWidgetLayoutManager::textFitsToRect(
     SMC_MOCK_METHOD3( bool, QString, text, 
         QFont, font, 
         QRectF, rect )
+    }
+
+
+// -----------------------------------------------------------------------------
+// InfoWidgetLayoutManager::loadWidgets
+// -----------------------------------------------------------------------------
+//
+bool InfoWidgetLayoutManager::loadWidgets( 
+        const DisplayRole displayRole,
+        const QList<LayoutItemRole> & displayWidgets,
+        QMap <LayoutItemRole,QGraphicsWidget *> & widgetMap )
+    {
+    //SMC_MOCK_METHOD3( bool, const DisplayRole, displayRole, 
+    //    const QList<LayoutItemRole> &, displayWidgets, 
+    //    QMap<LayoutItemRole,QGraphicsWidget *> &, widgetMap )
     }
 
 

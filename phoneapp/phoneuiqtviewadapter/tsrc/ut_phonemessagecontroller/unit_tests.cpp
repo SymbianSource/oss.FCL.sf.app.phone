@@ -1,5 +1,5 @@
 /*!
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -11,46 +11,55 @@
 *
 * Contributors:
 *
-* Description:  Unit tests for PhoneNoteController.
+* Description:  Unit tests for PhoneMessageController.
 *
 */
 
 #include <QtTest/QtTest>
 #include <QtGui>
-#include <hbapplication.h>
-#include <QSignalSpy>
-#include "phoneconstants.h"
-#include "cphonecenrepproxy.h"
-#include "cphonepubsubproxy.h"
+#include <HbGlobal>
+#include <mockservice.h>
 #include <settingsinternalcrkeys.h>
 #include "phoneapplauncher.h"
 #include "phonemessagecontroller.h"
 #include "tphonecmdparamsfidata.h"
+#include "phoneconstants.h"
+#include "cphonecenrepproxy.h"
 
-extern QList<QVariant> gList;
+const QString KNumber = "1234567";
+const QString KName = "Tester";
+const QString KUserDefinedSoftRejectText = "user defined text";
 
-
-#define PHONE_QT_MESSAGE_CONTROLLER_TEST_MAIN(TestObject) \
-int main(int argc, char *argv[]) \
-{ \
-    HbApplication app(argc, argv); \
-    TestObject tc; \
-    QResource::registerResource("../hbcore.rcc"); \
-    int ret = QTest::qExec(&tc, argc, argv); \
-    /* Core dump if HbIconLoader instance is not destroyed before the application instance. */ \
-    /* HbIconLoader uses QCoreApplication::aboutToQuit() signal to destroy itself. */ \
-    /* app.exec() where the signal is normally emitted is not called here. */ \
-    /* So, invoking the signal explicitly. */ \
-    QMetaObject::invokeMethod(&app, "aboutToQuit", Qt::DirectConnection); \
-    return ret; \
+void enableUserDefinedSoftRejectText(
+    const TUid & aUid,
+    const TUint aId,
+    TInt & aValue)
+{
+    Q_UNUSED(aUid)
+    Q_UNUSED(aId)
+    
+    aValue = 1;
 }
 
-class TestPhoneMessageController : public QObject
+
+void setUserDefinedSoftRejectText(
+    const TUid & aUid,
+    const TUint aId,
+    TDes & aValue)
+{
+    Q_UNUSED(aUid)
+    Q_UNUSED(aId)
+    
+    aValue.Copy(KUserDefinedSoftRejectText.utf16());
+}
+
+
+class UT_PhoneMessageController : public QObject, public MockService
 {
     Q_OBJECT
 public:
-    TestPhoneMessageController();
-    virtual ~TestPhoneMessageController();
+    UT_PhoneMessageController();
+    virtual ~UT_PhoneMessageController();
 
 public slots:
     void initTestCase();
@@ -59,91 +68,100 @@ public slots:
     void cleanup(); 
     
 private slots:
-    void testOpenSoftRejectEditor();
+    void t_openSoftRejectEditorDefaultText();
+    void t_openSoftRejectEditorUserDefinedText();
 
-
-private:
-    QString softRejectText();
-    
 private:
     PhoneAppLauncher *m_launcher;
     PhoneMessageController *m_messageController; // class under test
 };
 
-TestPhoneMessageController::TestPhoneMessageController()
+
+UT_PhoneMessageController::UT_PhoneMessageController()
+    :
+    m_launcher(NULL),
+    m_messageController(NULL)
 {
 }
 
-TestPhoneMessageController::~TestPhoneMessageController()
-{
-}
 
-void TestPhoneMessageController::initTestCase()
-{
-    m_launcher = new PhoneAppLauncher(this);
-    m_messageController = new PhoneMessageController(*m_launcher, this);
-}
-
-void TestPhoneMessageController::cleanupTestCase()
+UT_PhoneMessageController::~UT_PhoneMessageController()
 {
     delete m_messageController;
     delete m_launcher;
 }
 
-void TestPhoneMessageController::init()
+
+void UT_PhoneMessageController::initTestCase()
 {
+    m_launcher = new PhoneAppLauncher(this);
+    m_messageController = new PhoneMessageController(*m_launcher, this);
 }
 
-void TestPhoneMessageController::cleanup()
+
+void UT_PhoneMessageController::cleanupTestCase()
 {
+    delete m_messageController;
+    m_messageController = NULL;
+    delete m_launcher;
+    m_launcher = NULL;
 }
 
-void TestPhoneMessageController::testOpenSoftRejectEditor()
+
+void UT_PhoneMessageController::init()
 {
-    QString text = softRejectText();
-    TPhoneCmdParamSfiData sfiParam;
-    sfiParam.SetNumber(_L("1234567"));
-    sfiParam.SetName(_L("Tester"));
+    initialize();
+}
+
+
+void UT_PhoneMessageController::cleanup()
+{
+    reset();
+}
+
+
+void UT_PhoneMessageController::t_openSoftRejectEditorDefaultText()
+{
+    const QString KDefaultSoftRejectText = 
+        hbTrId("txt_phone_setlabel_soft_reject_val_default_text");
+    EXPECT(PhoneAppLauncher::launchMessaging)
+        .with(KNumber, KName, KDefaultSoftRejectText);
     
+    TPhoneCmdParamSfiData sfiParam;
+    sfiParam.SetNumber(TBuf16<20>(KNumber.utf16()));
+    sfiParam.SetName(TBuf16<20>(KName.utf16()));
     m_messageController->openSoftRejectMessageEditor(&sfiParam);
     
-    QVERIFY( gList.contains("1234567") );
-    QVERIFY( gList.contains("Tester") );
-    QVERIFY( gList.contains(text) );
+    QVERIFY(verify());
 }
 
-QString TestPhoneMessageController::softRejectText()
+
+void UT_PhoneMessageController::t_openSoftRejectEditorUserDefinedText()
 {
-    QString messageBody;
-    // Get message body
-    TInt softRejectDefaultInUseValue = 0;
-    const TInt err = CPhoneCenRepProxy::Instance()->GetInt(
-        KCRUidTelephonySettings,
-        KSettingsSoftRejectDefaultInUse,
-        softRejectDefaultInUseValue );
+    EXPECT(PhoneAppLauncher::launchMessaging)
+        .with(KNumber, KName, KUserDefinedSoftRejectText);
+    EXPECT(CPhoneCenRepProxy::GetInt)
+        .with(KCRUidTelephonySettings, KSettingsSoftRejectDefaultInUse, 0)
+        .willOnce(invoke(enableUserDefinedSoftRejectText));
+    EXPECT(CPhoneCenRepProxy::GetString)
+        .with(KCRUidTelephonySettings, KSettingsSoftRejectText, KNullDesC())
+        .willOnce(invoke(setUserDefinedSoftRejectText));
     
-    if (softRejectDefaultInUseValue) {
-        HBufC* softRejectTxt = NULL;
-        TRAP_IGNORE( softRejectTxt = HBufC::NewL( KPhoneSMSLength ) );
-        
-        if (softRejectTxt) {
-            TPtr string( softRejectTxt->Des() );
-        
-            // Default txt used or not
-            CPhoneCenRepProxy::Instance()->GetString(
-                KCRUidTelephonySettings,
-                KSettingsSoftRejectText,
-                string );
-            
-            messageBody = QString::fromUtf16(string.Ptr(), string.Length());
-            delete softRejectTxt;
-        }
-    } else {
-        messageBody = hbTrId("txt_phone_setlabel_soft_reject_val_default_text");
-    }
+    TPhoneCmdParamSfiData sfiParam;
+    sfiParam.SetNumber(TBuf16<20>(KNumber.utf16()));
+    sfiParam.SetName(TBuf16<20>(KName.utf16()));
+    m_messageController->openSoftRejectMessageEditor(&sfiParam);
     
-    return messageBody;
+    QVERIFY(verify());
 }
 
-PHONE_QT_MESSAGE_CONTROLLER_TEST_MAIN(TestPhoneMessageController)
+
+int main(int argc, char *argv[])
+{
+    QCoreApplication(argc, argv);
+    UT_PhoneMessageController tc;
+    int ret = QTest::qExec(&tc, argc, argv); \
+    return ret;
+}
+
 #include "unit_tests.moc"

@@ -30,7 +30,7 @@ class PSetWrapper;
 class HbListWidget;
 class PSetNetworkWrapper;
 class CpSettingFormItemData;
-class CpPhoneNotes;
+class PsUiNotes;
 class CellularDataSettings;
 
 class CpNetworkPluginForm : public HbDataForm
@@ -90,7 +90,7 @@ protected:
     QString networkName(PSetNetworkWrapper::NetworkInfo &info);
 
     void connectToNetworkWrapper(PSetNetworkWrapper &wrapper);
-    void connectToPhoneNotes(CpPhoneNotes &notes);
+    void connectToPhoneNotes(PsUiNotes &notes);
 
     QString primaryIconForNetwork(const PSetNetworkWrapper::NetworkInfo &info);
     

@@ -71,11 +71,5 @@ void NetworkHandlingStarterPrivate::RemoveNote(  )
     {
     SMC_MOCK_METHOD0( void )
     }
-/*!
-    NetworkHandlingStarterPrivate::ViewDone()
- */
-void NetworkHandlingStarterPrivate::ViewDone()
-{
 
-}
 

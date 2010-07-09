@@ -6,4 +6,5 @@
     <icon></icon>
     <hidden>false</hidden>
     <servicexml>infowidgetplugin.xml</servicexml> 
+    <translationfile>operator_widget</translationfile>
 </hswidgetmanifest>

@@ -60,19 +60,29 @@ public slots:
         If character doesn't match any supported DTMF tone
         it is ignored.
     */
-    void playDTMFTone(const QChar& keyToPlay);
+    int playDTMFTone(const QChar& keyToPlay);
 
     /*!
         \fn stopDTMFPlay()
         
         This method stops playing DTMF tone if it is currently played.
     */
-    void stopDTMFPlay();
+    int stopDTMFPlay();
+
+    
+private:
+    
+    /*!
+        \fn bool hasCapability()
+
+        Checks if the client has the required capabilities
+    */
+    bool hasCapability();
     
     
 private:
     MPECallControlIF &m_call;
-    MPECallSettersIF &m_parameters;    
+    MPECallSettersIF &m_parameters;
 };
 
 #endif // DTMFSERVICE_H

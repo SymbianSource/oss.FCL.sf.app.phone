@@ -86,16 +86,6 @@ class CPhoneStateInCall : public CPhoneState
         IMPORT_C virtual void ConstructL();
 
         /**
-        * Open menu bar
-        */
-        IMPORT_C virtual void OpenMenuBarL();
-
-        /**
-        * Launch the New call phone number query
-        */
-        IMPORT_C void LaunchNewCallQueryL();
-
-        /**
         * Call number fetched from New call dialog
         * @param aFetchedNumber number fetched from the diaog
         */
@@ -144,19 +134,7 @@ class CPhoneStateInCall : public CPhoneState
         * Close all dtmf dialogs
         */
         IMPORT_C void CloseDtmfQueryL();
-    
-        /**
-        * Creates number entry.
-        */
-        IMPORT_C void CreateNumberEntryL();
-        
-        
-        /**
-          * Concludes does the engine have information of the
-          * phone number. This information is then send to the view.
-          * @param aCallId - Call Id.
-        */
-        IMPORT_C void PhoneNumberAvailableInPhoneEngineL( TInt aCallId );
+
     
     private: // New functions
 
@@ -195,46 +173,16 @@ class CPhoneStateInCall : public CPhoneState
         * Sends DTMF sequence to Phone Engine
         */
         void SendDtmfL();
-        
-        /**
-        * Sends command to view for launching manual DTMF entry
-        */
-        void LaunchDtmfManualQueryL();
 
         /**
         * Sends command to view for launching DTMF list query
         */
         void LaunchDtmfListQueryL();
-        
-        /**
-        * Launch DTMF Single Item fetch dialog
-        */
-        void LaunchDtmfSearchDialogL();
-        
-        /**
-        * Launch DTMF Single Item fetch for DTMF List query usage
-        */
-        void LaunchDtmfListViewSearchDialogL();
-
-        /**
-        * Launch New call fetch dialog
-        */
-        void LaunchNewCallSearchDialogL();
               
         /**
         * Sends command to view for 'Lock keypad'
         */
         void LockKeypadL();
-        
-        /**
-        * Handle successful single item fetch.
-        */
-        void HandleSuccessFetchedNumberL();
-        
-        /**
-        * Handle failed single item fetch.
-        */
-        void HandleFailedFetchedNumberL();
         
         /**
         * Update remote data and label to the call header.

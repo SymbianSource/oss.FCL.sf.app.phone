@@ -22,6 +22,7 @@
 #include <HbIconItem>
 #include <HbTextItem>
 #include <HbTouchArea>
+#include <HbInstantFeedback>
 #include "dialerwidgetengine.h"
 #include "dialerwidget.h"
 #include "qtphonelog.h"
@@ -38,8 +39,8 @@
 
 namespace
 {
-    const char KDialerWidgetIcon[] = ":/icons/resource/qtg_graf_hs_dialer";
-    const char KMissedCallShortcutBadge[] = ":/icons/resource/qtg_fr_shortcut_badge_bg";
+    const char KDialerWidgetIcon[] = "qtg_graf_hs_dialer_normal";
+    const char KMissedCallShortcutBadge[] = "qtg_fr_shortcut_badge_bg";
     const char KDialerWidgetWidgetml[] = ":/data/resource/dialerwidget.widgetml";
     const char KDialerWidgetCss[] = ":/data/resource/dialerwidget.css";
 }
@@ -194,6 +195,13 @@ void DialerWidget::onMissedCallsCountChange(const int& count)
     }
 }
 
+void DialerWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    PHONE_TRACE;
+    Q_UNUSED(event)
+    HbInstantFeedback::play(HbFeedback::Basic);
+}
+
 /*!
     \fn void DialerWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
@@ -201,7 +209,8 @@ void DialerWidget::onMissedCallsCountChange(const int& count)
     \sa startDialer()
 */
 void DialerWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{   
+{
+    PHONE_TRACE;
     Q_UNUSED(event);
     startDialer();
 }
@@ -229,7 +238,7 @@ void DialerWidget::createPrimitives()
     // Background
     if (!m_background) {
         HbFrameDrawer *drawer = new HbFrameDrawer(
-                KDialerWidgetIcon, HbFrameDrawer::OnePiece);
+            KDialerWidgetIcon, HbFrameDrawer::OnePiece);
         m_background = new HbFrameItem(drawer, this);
         style()->setItemName(m_background, /*QLatin1String(*/"background"/*)*/);
         m_background->moveBy(0,10);
@@ -239,7 +248,7 @@ void DialerWidget::createPrimitives()
     // Badge background
     if (!m_badgeBackground) {
         HbFrameDrawer *badgedrawer = new HbFrameDrawer(
-                KMissedCallShortcutBadge, HbFrameDrawer::ThreePiecesHorizontal);
+            KMissedCallShortcutBadge, HbFrameDrawer::ThreePiecesHorizontal);
         m_badgeBackground = new HbFrameItem(badgedrawer, this);
         style()->setItemName(m_background, QLatin1String("badgeBackground"));
         m_badgeBackground->resize(20,20);

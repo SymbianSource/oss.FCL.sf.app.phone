@@ -15,7 +15,8 @@
 #
 #
 
-CONFIG += hb
+CONFIG += hb mobility
+MOBILITY += systeminfo
 TEMPLATE = app
 TARGET = networkhandlingstarter
 
@@ -29,7 +30,6 @@ symbian: {
     TARGET.UID3 = 0x2002E67A
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     LIBS += -lnetworkhandling
-    LIBS += -lcentralrepository
     LIBS += -lxqservice
     LIBS += -lxqserviceutil
     LIBS += -lcpframework
@@ -52,4 +52,3 @@ SOURCES += ./src/cnetworklistener.cpp
 CONFIG += service
 SERVICE.FILE = service_conf.xml
 SERVICE.OPTIONS = embeddable
-

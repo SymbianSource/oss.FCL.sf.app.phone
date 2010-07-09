@@ -33,18 +33,14 @@ public:
     ~UT_InfoWidgetLayoutManager();
 
 private:     
-    void fillDisplayContainers();
     void fillCurrentWidgetsContainer();
-    void fillParams(const QString & fileName, bool * ok);
-    
+        
 private slots:
     void init();
     void cleanup();
 
     void t_currentDisplayRole();
     void t_currentWidgetRoles();
-    void t_layoutRows(); 
-    void t_setLayoutRows();
     void t_rowHeight();
     void t_layoutInfoDisplay();
     void t_layoutSettingsDialog();
@@ -54,7 +50,6 @@ private slots:
     void t_loadObject();
     void t_getWidget();
     void t_contentWidget();
-    void t_reloadWidgets();
     void t_removeWidget();
     void t_destroyWidgets();
     void t_textFitsToRect(); 
@@ -68,14 +63,6 @@ private:
     InfoWidgetDocumentLoader *m_documentLoader;
     
     QPointer<QGraphicsWidget> m_graphicsWidgetPtr;
-
-    bool loadResultInfoWidgetDocml;  
-    bool loadResultSettingsDialogDocml;
-    
-    QObjectList objectListInfoDisplayWidgets;
-    QObjectList objectListSettingsDialogWidgets;
-
-    
 };
 
 #endif // UT_INFOWIDGETLAYOUTMANAGER_H

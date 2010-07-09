@@ -19,11 +19,13 @@
 #define CPPLUGINCOMMON_H
 
 #include <qvariant.h>
+#include <qsysteminfo.h>
 #include "cptelephonyutilsdefs.h"
 
 class XQSettingsManager;
 
 using namespace CpTelephonyUtils;
+using namespace QtMobility;
 
 /*!
     \class Tools
@@ -133,7 +135,9 @@ private:
 
 private: // Data
     // Own
-    XQSettingsManager* m_Settings;
+    XQSettingsManager *m_settings;
+    
+    QSystemDeviceInfo *m_deviceInfo;
 };
 
 #endif // CPPLUGINCOMMON_H

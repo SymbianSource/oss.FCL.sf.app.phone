@@ -636,7 +636,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(
     
     case PhoneInCallCmdSwap: {
         action = new PhoneAction;
-        action->setIcon(HbIcon("qtg_mono_replace_call"));
+        action->setIcon(HbIcon("qtg_mono_swap_call"));
         action->setDisabled(disabled);
         action->setCommand(EPhoneInCallCmdSwap); 
     }

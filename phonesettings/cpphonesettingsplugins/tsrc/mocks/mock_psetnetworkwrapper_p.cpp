@@ -18,6 +18,7 @@
 #include <PsetContainer.h>
 #include <PsetNetwork.h>
 #include <smcmockclassincludes.h>
+#include <psetcsp.h>
 #include "psetnetworkwrapper_p.h"
 
 // ============================ MEMBER FUNCTIONS ===============================

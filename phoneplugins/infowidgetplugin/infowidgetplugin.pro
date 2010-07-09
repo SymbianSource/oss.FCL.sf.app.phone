@@ -26,8 +26,7 @@ MOC_DIR = moc
 RCC_DIR = rcc
 
 symbian: {
-LIBS += -lhswidgetmodel \
-    -lxqsettingsmanager \
+LIBS += -lxqsettingsmanager \
     -lnetworkhandling \
     -lsatclient
 }

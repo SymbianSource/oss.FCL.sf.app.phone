@@ -48,7 +48,7 @@ CpNetworkPluginView::~CpNetworkPluginView(  )
 // CpNetworkPluginView::SearchAvailableNetworks
 // -----------------------------------------------------------------------------
 //
-void CpNetworkPluginView::SearchAvailableNetworks(  )
+void CpNetworkPluginView::searchAvailableNetworks(  )
     {
     SMC_MOCK_METHOD0( void )
     }

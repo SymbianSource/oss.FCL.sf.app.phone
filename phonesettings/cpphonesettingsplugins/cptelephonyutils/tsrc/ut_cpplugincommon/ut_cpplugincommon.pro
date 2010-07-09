@@ -14,15 +14,17 @@
 # Description: 
 #
 
-CONFIG += qtestlib
-CONFIG += hb
+CONFIG += qtestlib hb mobility
+MOBILITY += systeminfo
 TEMPLATE = app
 TARGET = 
 DEPENDPATH += . ../../src/
 INCLUDEPATH += . ../../inc/
 DEFINES += BUILD_CPTELEPHONYUTILS \
     XQSETTINGSMANAGER_NO_LIBRARY \
-    XQSYSINFO_NO_LIBRARY
+    XQSYSINFO_NO_LIBRARY \
+    QT_BUILD_SYSINFO_LIB \
+    QT_MAKEDLL
 
 QT -= gui
 QT += testlib
@@ -43,6 +45,7 @@ HEADERS += ../../inc/cpplugincommon.h \
            /epoc32/include/platform/mw/xqsettingskey.h \
            /epoc32/include/platform/mw/xqsettingsmanager.h \
            /epoc32/include/platform/mw/xqsysinfo.h \
+           /epoc32/include/mw/qsysteminfo.h \
            ../../../../../inc/telephonyvariant.hrh \
            ../../../../../inc/telinternalcrkeys.h
            
@@ -51,4 +54,5 @@ SOURCES += ../../src/cpplugincommon.cpp
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_xqsettingskey.cpp \
            ../../../tsrc/mocks/mock_xqsettingsmanager.cpp \
-           ../../../tsrc/mocks/mock_xqsysinfo.cpp
+           ../../../tsrc/mocks/mock_xqsysinfo.cpp \
+           ../../../tsrc/mocks/mock_qsysteminfo.cpp

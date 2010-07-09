@@ -39,26 +39,6 @@ class MPhoneSystemEvents
         virtual ~MPhoneSystemEvents(){};
 
         /**
-        * From CAknAppUi, initialise a menupane (dynamic).
-        *
-        * @param aResourceId It is the resource id for the pane.
-        * @param aMenuPane It is the menu pane corresponding to the resource.
-        */
-        virtual void DynInitMenuPaneL( 
-            TInt aResourceId, 
-            CEikMenuPane* aMenuPane ) = 0;
-
-        /**
-        * From CAknAppUi, initialise a menubar (dynamic).
-        *
-        * @param aResourceId It is the resource id for the bar.
-        * @param aMenuBar It is the menu bar corresponding to the resource.
-        */
-        virtual void DynInitMenuBarL( 
-            TInt aResourceId, 
-            CEikMenuBar* aMenuBar ) = 0;
-
-        /**
         * From CEikAppUi. For Idle indicator
         */
         virtual void HandleSystemEventL( const TWsEvent& aEvent ) = 0;

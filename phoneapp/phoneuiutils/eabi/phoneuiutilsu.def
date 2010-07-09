@@ -400,4 +400,6 @@ EXPORTS
 	_ZThn4_N26CPhoneResourceResolverBaseD1Ev @ 399 NONAME
 	_ZThn4_NK13CPhoneStorage17GetBlockedKeyListEv @ 400 NONAME
 	_ZThn4_NK26CPhoneResourceResolverBase17ResolveResourceIDERKi @ 401 NONAME
+	_ZN28TPhoneCmdParamCallHeaderDataD1Ev @ 402 NONAME
+	_ZN28TPhoneCmdParamCallHeaderDataD2Ev @ 403 NONAME
 

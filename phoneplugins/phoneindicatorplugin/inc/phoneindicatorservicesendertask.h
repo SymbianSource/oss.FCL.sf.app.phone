@@ -22,15 +22,18 @@
 #include <QRunnable>
 #include "phoneindicators.h"
 
+class XQAiwRequest;
+
 class PhoneIndicatorServiceSenderTask : public QRunnable
 {
 public:
     PhoneIndicatorServiceSenderTask(Interaction interaction);
-    ~PhoneIndicatorServiceSenderTask(){}
+    ~PhoneIndicatorServiceSenderTask();
     
     void run();
 private:
     Interaction     m_interaction;
+    XQAiwRequest*   m_request;
 };
 
 #endif /* PHONEINDICATORSERVICESENDERTASK_H_ */

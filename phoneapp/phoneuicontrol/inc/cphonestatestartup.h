@@ -95,12 +95,6 @@ class CPhoneStateStartup : public CPhoneState
     private:
 
         /**
-        * Passes create number entry command forward if NE can be created.
-        */
-        IMPORT_C void HandleCreateNumberEntryL( const TKeyEvent& aKeyEvent,
-                TEventCode aEventCode );
-
-        /**
          * Plays DTMF tone for key event 
          * */
         IMPORT_C void HandleDtmfKeyToneL( const TKeyEvent& aKeyEvent,

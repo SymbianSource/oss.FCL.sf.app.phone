@@ -193,9 +193,6 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         booleanParam.SetBoolean( EFalse );
         iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-        
-        // Close menu bar, if it is displayed
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
         CPhoneState::BeginUiUpdateLC();
             
@@ -247,9 +244,6 @@ void CPhoneSingleAndAlerting::HandleIdleL( TInt aCallId )
     // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
 
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-
     if ( !TopAppIsDisplayedL() )
         {
         // Continue displaying current app but set up the 
@@ -280,33 +274,6 @@ void CPhoneSingleAndAlerting::HandleIdleL( TInt aCallId )
         }
 
     EndUiUpdate();
-    }
-
-// -----------------------------------------------------------
-// CPhoneSingleAndAlerting::OpenMenuBarL
-// -----------------------------------------------------------
-//
-void CPhoneSingleAndAlerting::OpenMenuBarL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneSingleAndAlerting::OpenMenuBarL()");
-    TInt resourceId;
-
-    if ( IsNumberEntryVisibleL() )
-        {
-        resourceId = EPhoneAlertingAndHeldCallMenuBarWithNumberEntry;
-        }
-    else
-        {
-        resourceId = EPhoneAlertingAndHeldCallMenuBar;
-        }
-
-    TPhoneCmdParamInteger integerParam;
-    integerParam.SetInteger( 
-        CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( resourceId ) );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
-        &integerParam );
     }
 
 // -----------------------------------------------------------

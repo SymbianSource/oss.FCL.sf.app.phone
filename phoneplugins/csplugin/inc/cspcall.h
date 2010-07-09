@@ -777,6 +777,12 @@ class CSPCall : public CBase,
            */
           HBufC* iUserToUserInformation;
           
+          /**
+           * Allocate CallInfo into heap since it could be
+           * too big fit to stack.
+           */
+          RMobileCall::TMobileCallInfoV3 iEtelCallInfo;
+          
           friend class UT_CSPCall;
           friend class MT_CConvergedCallProvider;
           

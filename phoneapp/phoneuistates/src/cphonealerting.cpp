@@ -131,11 +131,9 @@ EXPORT_C void CPhoneAlerting::HandleKeyMessageL(
 
                 if ( IsNumberEntryUsedL() )
                     {
-                    BeginTransEffectLC( ENumberEntryClose );
                     // Remove number entry from screen
                     iViewCommandHandle->ExecuteCommandL( 
                         EPhoneViewRemoveNumberEntry );
-                    EndTransEffect();    
                     // Do state-specific operation when number entry is cleared
                     HandleNumberEntryClearedL();
                     }
@@ -242,59 +240,18 @@ EXPORT_C void CPhoneAlerting::HandleConnectedL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
 
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-
     BeginUiUpdateLC();
         
     // Update the single call
     UpdateSingleActiveCallL( aCallId );
 
     SetTouchPaneButtons( EPhoneIncallButtons ); 
-
-    SetToolbarDimming( EFalse );
         
     EndUiUpdate();
     
     // Go to single state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );    
     iStateMachine->ChangeState( EPhoneStateSingle );
-    }
-
-// -----------------------------------------------------------
-// CPhoneAlerting::OpenMenuBarL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneAlerting::OpenMenuBarL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneAlerting::OpenMenuBarL()");
-    TInt resourceId;
-
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-        {
-        resourceId = EPhoneDtmfDialerMenubar;
-        }
-    else if ( IsNumberEntryVisibleL() )
-        {
-        resourceId = EPhoneAlertingCallMenubarWithNumberEntry;
-        }
-    // Use different resources for alerting data, video and cs call
-    else if( IsVideoCallAlertingL() )
-        {
-        resourceId = EPhoneAlertingVideoCallMenubar;
-        }
-    else
-        {
-        resourceId = EPhoneAlertingCallMenubar;
-        }            
- 
-    TPhoneCmdParamInteger integerParam;
-    integerParam.SetInteger( 
-        CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( resourceId ) );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
-        &integerParam );
     }
 
 // -----------------------------------------------------------
@@ -305,30 +262,7 @@ EXPORT_C TBool CPhoneAlerting::HandleCommandL( TInt aCommand )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,  
         "CPhoneAlerting::HandleCommandL()" );
-    TBool commandStatus = ETrue;
-
-    switch( aCommand )
-        {
-        case EPhoneInCallCmdHelp:
-            {
-            TPtrC contextName;
-            if ( IsVideoCallAlertingL() )
-                {
-                contextName.Set( KINCAL_HLP_VIDEOCALL() );    
-                }
-            else
-                {
-                contextName.Set( KINCAL_HLP_CALL_HANDLING() );
-                }
-            iViewCommandHandle->ExecuteCommandL(
-                EPhoneViewLaunchHelpApplication, 0, contextName );
-            }
-            break;
-        default:
-            commandStatus = CPhoneGsmInCall::HandleCommandL( aCommand );
-            break;
-        }
-    return commandStatus;
+    return CPhoneGsmInCall::HandleCommandL( aCommand );
     }
 
 // -----------------------------------------------------------

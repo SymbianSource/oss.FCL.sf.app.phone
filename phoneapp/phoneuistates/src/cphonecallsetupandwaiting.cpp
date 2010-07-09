@@ -120,37 +120,6 @@ void CPhoneCallSetupAndWaiting::HandlePhoneEngineMessageL(
     }
 
 // -----------------------------------------------------------
-// CPhoneCallSetupAndWaiting::OpenMenuBarL
-// -----------------------------------------------------------
-//
-void CPhoneCallSetupAndWaiting::OpenMenuBarL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates,
-        "CPhoneCallSetupAndWaiting::OpenMenuBarL()");
-    TInt resourceId;
-
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-        {
-        resourceId = EPhoneDtmfDialerMenubar;
-        }
-    else if ( IsNumberEntryVisibleL() )
-        {
-        resourceId = EPhoneAlertingAndWaitingCallMenuBarWithNumberEntry;
-        }
-    else
-        {
-        resourceId = EPhoneAlertingAndWaitingCallMenuBar;
-        }
-
-    TPhoneCmdParamInteger integerParam;
-    integerParam.SetInteger(
-        CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( resourceId ) );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen,
-        &integerParam );
-    }
-
-// -----------------------------------------------------------
 // CPhoneCallSetupAndWaiting::HandleIdleL
 // -----------------------------------------------------------
 //
@@ -164,9 +133,6 @@ void CPhoneCallSetupAndWaiting::HandleIdleL( TInt aCallId )
     // Remove call
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
 
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-
     // Find out do we have waiting or outgoing call left
     TPhoneCmdParamCallStateData callStateData;
     callStateData.SetCallState( EPEStateRinging );
@@ -175,12 +141,6 @@ void CPhoneCallSetupAndWaiting::HandleIdleL( TInt aCallId )
 
     if( callStateData.CallId() > KErrNotFound )
         {
-        // Idle message came for callSetup
-
-        if ( iOnScreenDialer && IsDTMFEditorVisibleL()  )
-            {
-            CloseDTMFEditorL();
-            }
 
         // Display ringing bubble
         TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -194,14 +154,12 @@ void CPhoneCallSetupAndWaiting::HandleIdleL( TInt aCallId )
 
         // Show incoming call buttons
         SetTouchPaneButtons( EPhoneIncomingCallButtons );
-        SetTouchPaneButtonEnabled( EPhoneCallComingCmdSilent );
 
         // Bring up callhandling view
         BringIncomingToForegroundL();
 
         // state changes to Incoming
         iCbaManager->UpdateIncomingCbaL( callStateData.CallId() );
-        UpdateSilenceButtonDimming();
         SetRingingTonePlaybackL( callStateData.CallId() );
         SetBackButtonActive(EFalse);
         iStateMachine->ChangeState( EPhoneStateIncoming );
@@ -239,9 +197,6 @@ void CPhoneCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneCallSetupAndWaiting::HandleConnectedL() ");
 
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-
     CPhoneState::BeginUiUpdateLC();
 
     // Update bubble
@@ -252,7 +207,6 @@ void CPhoneCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
 
     // Update Touch buttons
     CPhoneState::SetTouchPaneButtons( EPhoneWaitingCallButtons );
-    SetToolbarDimming( EFalse );
 
     CPhoneState::EndUiUpdate();
 

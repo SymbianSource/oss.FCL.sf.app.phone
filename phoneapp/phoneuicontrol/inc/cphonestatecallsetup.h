@@ -105,15 +105,6 @@ class CPhoneStateCallSetup : public CPhoneState
         */
         IMPORT_C virtual void UpdateCbaL( TInt aResource );    
         
-        /**
-        * Open menu bar
-        */
-        IMPORT_C virtual void OpenMenuBarL();
-        
-        
-        // Prevents to open number entry dialog during call setup phase
-        IMPORT_C virtual void HandleCreateNumberEntryL ( const TKeyEvent& aKeyEvent,
-                TEventCode aEventCode );
                 
     private:
 

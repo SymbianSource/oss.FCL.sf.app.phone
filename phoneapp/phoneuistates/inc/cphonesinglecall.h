@@ -82,11 +82,6 @@ class CPhoneSingleCall : public CPhoneGsmInCall
         IMPORT_C virtual void ConstructL();
 
         /**
-        * Open menu bar
-        */
-        IMPORT_C virtual void OpenMenuBarL();
-
-        /**
         * Returns call identifier of the call this state is associated with.
         * @return   Call identifier.
         */
@@ -106,16 +101,10 @@ class CPhoneSingleCall : public CPhoneGsmInCall
         void DisplayIncomingCallL( 
             TInt aCallId, 
             const TPhoneCmdParamBoolean aCommandParam );
-
-        void CallFromNewCallQueryL();
         
         void HandleDiallingL( TInt aCallId );
                 
         void DisplayCallSetupL( TInt aCallId );
-        
-        void SetCallResumeL();
-        
-        void SetCallHoldL();
         
         void SwitchToVideoL();
         

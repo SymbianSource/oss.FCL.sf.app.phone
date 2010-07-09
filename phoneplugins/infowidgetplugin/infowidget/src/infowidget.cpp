@@ -47,8 +47,6 @@
    Implements HomeScreen specific slots and 
    graphical representation of the 
    Operator Info widget. 
-
-   Derived from HbWidget.
     
 */
 
@@ -81,7 +79,6 @@ InfoWidget::InfoWidget(QGraphicsItem* parent, Qt::WindowFlags flags)
     
     // Localization file loading
     installTranslator(TS_FILE_OPERATOR_WIDGET);
-    installTranslator(TS_FILE_COMMON);
 
     // Create layout & child-widget manager 
     m_layoutManager.reset(new InfoWidgetLayoutManager);
@@ -214,7 +211,6 @@ void InfoWidget::onHide()
 void InfoWidget::timerEvent(QTimerEvent *event)
 {
     Q_UNUSED(event); 
-    
     if (m_animationState == AnimationStarting) {
         // Execute delayed start of marquee animation 
         if (m_animatingItem) {
@@ -299,8 +295,6 @@ QSizeF InfoWidget::sizeHint(Qt::SizeHint which, const QSizeF & constraint) const
             m_backgroundFrameItem->resize(requiredSize);
         }
     }
-    
-    DPRINT << ": returning size: " << requiredSize;
     return requiredSize; 
 }
 
@@ -321,38 +315,23 @@ QSizePolicy InfoWidget::sizePolicy () const
 void InfoWidget::updateItemsVisibility()
 {
     DPRINT; 
-    int layoutRows = 0; 
-    
-    // Update layout according to item visibility settings
     if (m_preferences->preference(InfoWidgetPreferences::DisplaySpn).compare(
-            DISPLAY_SETTING_ON) == 0) {
-        layoutRows++;
-    } else {
+            DISPLAY_SETTING_OFF) == 0) {
         m_layoutManager->removeWidget(InfoWidgetLayoutManager::RoleSpnMarqueeItem); 
         m_layoutManager->removeWidget(InfoWidgetLayoutManager::RoleSpnIcon); 
     }
-
+    
     if (m_preferences->preference(InfoWidgetPreferences::DisplayMcn).compare(
-            DISPLAY_SETTING_ON) == 0) {
-        layoutRows++;
-    } else {
+            DISPLAY_SETTING_OFF) == 0) {
         m_layoutManager->removeWidget(InfoWidgetLayoutManager::RoleMcnMarqueeItem); 
         m_layoutManager->removeWidget(InfoWidgetLayoutManager::RoleMcnIcon); 
     }
     
     if (m_preferences->preference(InfoWidgetPreferences::DisplaySatText).compare(
-            DISPLAY_SETTING_ON) == 0) {
-        layoutRows++;
-    } else {
+            DISPLAY_SETTING_OFF) == 0) {
         m_layoutManager->removeWidget(InfoWidgetLayoutManager::RoleSatMarqueeItem); 
         m_layoutManager->removeWidget(InfoWidgetLayoutManager::RoleSatTextIcon); 
     }
-    
-    if (m_animatingItems.count() == 0) {
-        m_animatingItem = NULL; 
-    }
-    
-    m_layoutManager->setLayoutRows(layoutRows);
 }
 
 /*!
@@ -361,17 +340,12 @@ void InfoWidget::updateItemsVisibility()
 void InfoWidget::layoutInfoDisplay()
 {  
     DPRINT;
-    QGraphicsLayout *infoDisplayLayout = 
+    QGraphicsWidget *infoDisplay = 
         m_layoutManager->layoutInfoDisplay(); 
-    
-    if (!m_layout->count()) {
-        QGraphicsWidget *contentWidget = 
-                m_layoutManager->contentWidget();
-        if (contentWidget) {
-            // Add content widget to main layout 
-            m_layout->addItem(contentWidget);
+    if ((!m_layout->count()) && infoDisplay) {
+            m_layout->addItem(infoDisplay);
         }
-    }
+
     updateItemsVisibility(); 
     endChanges();
 }
@@ -383,24 +357,17 @@ void InfoWidget::layoutSettingsDialog()
 {  
     DPRINT;
     startChanges();
-    
-    m_layoutManager->reloadWidgets(InfoWidgetLayoutManager::SettingsDialog); 
-    QGraphicsLayout *settingDialogLayout =
-            m_layoutManager->layoutSettingsDialog(); 
-    
-    if (settingDialogLayout) {
-        HbDialog *settingsDialog = qobject_cast<HbDialog *>(
-                m_layoutManager->getWidget(InfoWidgetLayoutManager::
-                RoleSettingsDialog)); 
+    HbDialog *settingsDialog =
+            qobject_cast<HbDialog *>(
+                    m_layoutManager->layoutSettingsDialog()); 
 
-        if (settingsDialog) {
-            initializeSettingsDialogItems();
-            settingsDialog->setDismissPolicy(HbDialog::NoDismiss); 
-            settingsDialog->setTimeout(HbDialog::NoTimeout);
-            settingsDialog->open(this, 
-                    SLOT(settingsDialogClosed(HbAction *))); 
-            }
-    }    
+    if (settingsDialog) {
+        initializeSettingsDialogItems();
+        settingsDialog->setDismissPolicy(HbDialog::NoDismiss); 
+        settingsDialog->setTimeout(HbDialog::NoTimeout);
+        settingsDialog->open(this, 
+                SLOT(settingsDialogClosed(HbAction *))); 
+        }
 }
 
 /*!
@@ -459,7 +426,6 @@ void InfoWidget::updateInfoDisplayItem(
     DPRINT; 
     HbMarqueeItem *marqueeItem = qobject_cast<HbMarqueeItem *>(
             m_layoutManager->getWidget(itemRole));
-    
     if (marqueeItem) {
         marqueeItem->setText(text);
         marqueeItem->setTextColor( HbColorScheme::color(
@@ -797,7 +763,6 @@ void InfoWidget::initializeCheckBoxStates()
 void InfoWidget::settingsEditingFinished()
 {
     DPRINT;
-     
     if (m_preferences->validate()) {
 
         // Signal HS framework to store Meta-object 
@@ -809,7 +774,7 @@ void InfoWidget::settingsEditingFinished()
         
         // Visible item configuration changed, reload 
         // widgets. Restores deleted items.  
-        m_layoutManager->reloadWidgets(
+        m_layoutManager->loadWidgets(
                 InfoWidgetLayoutManager::InfoDisplay);
         m_layoutManager->removeWidget(
                 InfoWidgetLayoutManager::RoleSettingsDialog,
@@ -834,7 +799,7 @@ void InfoWidget::settingsEditingCancelled()
     DPRINT;
     m_preferences->restorePreferences(); 
     
-    m_layoutManager->reloadWidgets(
+    m_layoutManager->loadWidgets(
             InfoWidgetLayoutManager::InfoDisplay);
     m_layoutManager->removeWidget(
             InfoWidgetLayoutManager::RoleSettingsDialog,

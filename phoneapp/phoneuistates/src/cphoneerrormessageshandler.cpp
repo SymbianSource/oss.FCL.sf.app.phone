@@ -457,11 +457,11 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 {
                 if( IsVideoCall( aErrorInfo.iCallId ) )
                     {
-                    SendGlobalInfoNoteL( EPhoneNoteCalledNumberHasBarredIncomingCalls, ETrue );
+                    SendGlobalInfoNoteL( EPhoneNoteCalledNumberHasBarredIncomingCalls );
                     }
                 else if ( IsVoiceCall( aErrorInfo.iCallId ))
                     {
-                    SendGlobalWarningNoteL( EPhoneNoteCallInfoCauseValue21 );
+                    SendGlobalWarningNoteL( EPhoneNoteCalledNumberHasBarredIncomingCalls, ETrue );
                     }
                 }
             break;
@@ -787,6 +787,7 @@ TBool CPhoneErrorMessagesHandler::GetCauseCode(
                 {
                 aResourceId = EPhoneNoteCalledNumberHasBarredIncomingCalls;
                 aCauseCode = 21;
+                aNotification = (EFalse == IsVideoCall( callId ));
                 }
             break;
             
@@ -1009,7 +1010,6 @@ TBool CPhoneErrorMessagesHandler::GetCauseCode(
             break;
             
         case KErrGsmCCUserNotInCug:
-            // Todo correct string missing
             aResourceId = EPhoneNumberNotInCUG;
             aCauseCode = 87;                
             break;

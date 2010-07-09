@@ -43,5 +43,6 @@ SOURCES += ../../infowidget/src/infowidgetlayoutmanager.cpp
 SOURCES += ../mocks/mock_hbdocumentloader.cpp
 SOURCES += ../mocks/mock_hbmarqueeitem.cpp
 SOURCES += ../mocks/mock_hbstyle.cpp
+SOURCES += ../mocks/mock_hbinstance.cpp
 #SOURCES += ../mocks/mock_qfontmetrics.cpp
 RESOURCES = ../../infowidgetplugin.qrc

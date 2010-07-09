@@ -81,8 +81,6 @@ class CPhoneConferenceAndSingleAndWaiting : public CPhoneConferenceAndSingle
         */
         virtual void ConstructL();
         
-        virtual void OpenMenuBarL();
-        
         virtual void HandleIdleL( TInt aCallId );
         
         virtual void HandleConferenceIdleL();

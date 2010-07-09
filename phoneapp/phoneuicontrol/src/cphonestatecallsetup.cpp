@@ -82,9 +82,7 @@ EXPORT_C void CPhoneStateCallSetup::ConstructL()
         Panic( EPhoneCtrlInvariant ) );
     
     CPhoneState::BaseConstructL();
-    
-    // Enable the volume display
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNaviPaneAudioVolume );   
+
     HandleAudioOutputChangedL();
     }
 
@@ -157,34 +155,16 @@ EXPORT_C TBool CPhoneStateCallSetup::HandleCommandL( TInt aCommand )
                 }
             iDtmfWaitCharTimer->ButtonPressedL();
             break;
-                
-        case EPhoneDialerCmdHelpDtmf:
-            {
-            if ( FeatureManager::FeatureSupported( KFeatureIdHelp ) )
-                {                
-                TPtrC contextName( KDATA_DIALER_HLP_SEND_DTMF );
-                iViewCommandHandle->ExecuteCommandL( 
-                    EPhoneViewLaunchHelpApplication,
-                    0,
-                    contextName );
-                }
-            }
-            break;
+
         
         case EPhoneCmdOptions:
-            OpenMenuBarL();
             break;
         
         case EPhoneInCallCmdDtmfManualQuery:
-             if ( iOnScreenDialer )
-                 {
-                 ShowDtmfDialerL();
-                 }
               break;    
             
         case EPhoneDtmfDialerExit:      // fall through
         case EPhoneDtmfDialerCancel:
-            CloseDTMFEditorL();
             break;
 
         case EPhoneInCallCmdMute: // fall through
@@ -203,30 +183,6 @@ EXPORT_C TBool CPhoneStateCallSetup::HandleCommandL( TInt aCommand )
     return commandStatus;
     }
 
-// -----------------------------------------------------------
-// CPhoneStateCallSetup::OpenMenuBarL   
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneStateCallSetup::OpenMenuBarL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl,  
-        "CPhoneStateCallSetup::OpenMenuBarL()" );
-
-    if ( iOnScreenDialer )
-        {
-        if ( IsDTMFEditorVisibleL() && IsNumberEntryVisibleL() )
-            {
-            TInt resourceId = EPhoneDtmfDialerMenubar;
-            
-            TPhoneCmdParamInteger integerParam;
-            integerParam.SetInteger( 
-                CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( resourceId ) );
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
-                &integerParam );
-            }
-        }
-    }
 
 // -----------------------------------------------------------
 // CPhoneStateCallSetup::HandleNumberEntryClearedL()
@@ -240,20 +196,6 @@ EXPORT_C void CPhoneStateCallSetup::HandleNumberEntryClearedL()
     // Update call setup CBA when number entry is cleared
     UpdateInCallCbaL();
     }
-
-// -----------------------------------------------------------
-// CPhoneStateCallSetup::HandleCreateNumberEntryL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneStateCallSetup::HandleCreateNumberEntryL( 
-        const TKeyEvent& /*aKeyEvent*/,
-        TEventCode /*aEventCode*/)
-    {
-    __LOGMETHODSTARTEND(EPhoneControl,  
-        "CPhoneStateCallSetup::HandleCreateNumberEntryL()" );
-    
-    }
-
 
 // -----------------------------------------------------------
 // CPhoneStateCallSetup::UpdateInCallCbaL
@@ -272,14 +214,7 @@ EXPORT_C void CPhoneStateCallSetup::UpdateInCallCbaL()
 EXPORT_C void CPhoneStateCallSetup::UpdateCbaL( TInt aResource )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::UpdateCbaL() ");
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-        {
-        iCbaManager->SetCbaL( EPhoneDtmfDialerCBA );        
-        }
-    else
-        {
-        iCbaManager->UpdateCbaL( aResource );   
-        }
+    iCbaManager->UpdateCbaL( aResource );   
     }
 
 // -----------------------------------------------------------
@@ -375,15 +310,8 @@ EXPORT_C void CPhoneStateCallSetup::HandleKeyMessageL(
                 // Remove number entry if long press
                 if ( IsNumberEntryUsedL() )
                     {
-                    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-                        {
-                        CloseDTMFEditorL();
-                        } 
-                    else
-                        {
-                        iViewCommandHandle->ExecuteCommandL( 
-                            EPhoneViewRemoveNumberEntry );
-                        }
+                    iViewCommandHandle->ExecuteCommandL( 
+                        EPhoneViewRemoveNumberEntry );
                     }
                 }
             else
@@ -578,25 +506,14 @@ void CPhoneStateCallSetup::HandleConnectedL( TInt aCallId )
     booleanParam.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-        
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     
     BeginUiUpdateLC();
-        
-    // Remove the number entry if it isn't DTMF dialer
-    /*if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-        }*/
-    
+ 
     // Update the single call
     CPhoneState::UpdateSingleActiveCallL( aCallId );
             
     // Update touch buttons
     SetTouchPaneButtons( EPhoneIncallButtons );        
-
-    SetToolbarDimming( EFalse );
 
     EndUiUpdate();
     
@@ -614,7 +531,6 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleIdleL()");
     
-    BeginTransEffectLC ( ENumberEntryOpen );
     BeginUiUpdateLC ();
     
     // Disable the volume display
@@ -646,7 +562,6 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
         }
         
     EndUiUpdate();
-    EndTransEffect(); 
     // Go to idle state
     // No need update cba
     iStateMachine->ChangeState( EPhoneStateIdle );
@@ -656,7 +571,7 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
 // CPhoneStateCallSetup::HandleRemoteTerminatedL
 // -----------------------------------------------------------------------------
 //
-void CPhoneStateCallSetup::HandleRemoteTerminatedL( TInt aCallId )
+void CPhoneStateCallSetup::HandleRemoteTerminatedL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleRemoteTerminatedL( ) ");
 
@@ -704,19 +619,12 @@ void CPhoneStateCallSetup::SendDtmfL()
     TPtr ptr( content->Des() );
     dtmfSequence.SetString( &ptr );
     
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
+    if ( iOnScreenDialer )
         {
         iViewCommandHandle->ExecuteCommand(
             EPhoneViewGetNumberFromEntry,
             &dtmfSequence );  
-                    
-        CloseDTMFEditorL();
-        }
-    else
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewGetTextQueryContent,
-                                             &dtmfSequence );
-        }        
+        }     
 
     // Send the DTMF
     if ( ptr.Length() )

@@ -14,13 +14,10 @@
  * Description:  
  *
  */
-#include <QLocale>
-#include <hbtranslator.h>
-#include <hbapplication.h>
-#include <hbview.h>
-#include <hbmainwindow.h>
+
 #include <networkhandlingstarter.h>
 #include <xqserviceutil.h>
+#include <hbapplication.h>
 
 /*!
     main.
@@ -28,19 +25,8 @@
 int main(int argc, char **argv)
 {
     HbApplication app(argc, argv, Hb::NoSplash);
-    
-    // Load translators
-    HbTranslator commonTranslator("common");
-    HbTranslator control_panelTranslator("control_panel");
-    HbTranslator telephone_cpTranslator("telephone_cp"); 
-    
-    HbView view;
-    HbMainWindow mainWindow;
-    mainWindow.addView(&view);
     NetworkHandlingStarter service;
-    XQServiceUtil::toBackground( true );
-    int err = app.exec();
-    
-    return err;
+    XQServiceUtil::toBackground(true);
+    return app.exec();
 }
 

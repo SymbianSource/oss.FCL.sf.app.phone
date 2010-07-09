@@ -30,7 +30,8 @@ TRANSLATIONS = telephone_cp.ts
 
 LIBS += -lcpframework \
         -lpsetwrapper \
-        -lcptelephonyutils
+        -lcptelephonyutils \
+        -lpsuinotes
 
 # Input
 HEADERS += inc/cpbarringplugin.h inc/cpbarringplugingroup.h

@@ -311,6 +311,11 @@ class CSPConferenceCall : public CBase,
       */
       TName iAddedCallName;
 
+      /**
+       * Allocate CallInfo into heap since it could be
+       * too big fit to stack.
+       */
+      RMobileCall::TMobileCallInfoV3 iEtelCallInfo;
     };
 
 #endif // CSPCONFERENCECALL_H

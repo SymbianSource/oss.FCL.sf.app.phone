@@ -95,11 +95,6 @@ class CPhoneEmergency : public CPhoneGsmInCall
         * Handle state-specific behaviour handleErrorL
         */ 
         void HandleErrorL( const TPEErrorInfo& aErrorInfo );
-
-        /**
-        * Open menu bar
-        */
-        void OpenMenuBarL();
         
         virtual void UpdateInCallCbaL();
         
@@ -146,13 +141,6 @@ class CPhoneEmergency : public CPhoneGsmInCall
         * Handle initializing cba's
         */
         void UpdateSetupCbaL();
-        
-        /**
-        * Passes create number entry command forward if not call setup
-        */
-        void HandleCreateNumberEntryL( 
-                const TKeyEvent& aKeyEvent,
-                TEventCode aEventCode );
        
         /**
         * Handles commands from the Remote Control framework.

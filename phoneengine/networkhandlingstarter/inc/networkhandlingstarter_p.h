@@ -22,7 +22,6 @@
 
 class CNetworkListener;
 class HbDeviceMessageBox;
-class HbMainWindow;
 
 /*!
     \class NetworkHandlingStarterPrivate
@@ -42,25 +41,13 @@ public:
 public slots:
 
     void LaunchCpNetworkPluginView();
-
-    void ViewDone();
-
-signals:
-    
-    void SearchAvailableNetworks();
     
 public: // From MNetworkListenerObserver
     
     void ShowNote();
     
     void RemoveNote();
-        
-private:
-    
-    HbMainWindow * MainWindow();
-    
-    bool InitaliseCpNetworkPluginView();
-    
+
 private:
     
     CNetworkListener* m_networkListener;

@@ -153,7 +153,6 @@ EXPORT_C void CPhoneStateIncoming::HandleNumberEntryClearedL()
         "CPhoneStateIncoming::HandleNumberEntryClearedL ()" );
     // Set incoming call CBA when number entry is cleared
     iCbaManager->UpdateIncomingCbaL( iRingingCallId );
-    UpdateSilenceButtonDimming();
     }
 
 // -----------------------------------------------------------
@@ -218,12 +217,6 @@ EXPORT_C void CPhoneStateIncoming::HandleKeyMessageL(
                 {
                 // Answer the call if long press of selection key
                 AnswerCallL();
-                }
-            else if ( CPhoneCenRepProxy::Instance()->IsTelephonyFeatureSupported(
-                        KTelephonyLVFlagCoverHideSendEndKey ))
-                {
-                // Open number entry OK menubar
-                OpenMenuBarL();
                 }
             break;
 
@@ -387,8 +380,6 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL(
             EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
         }
-    
-    BeginTransEffectLC( ENumberEntryOpen );
 
     if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
          && iStateMachine->PhoneStorage()->IsScreenLocked() )
@@ -405,11 +396,9 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
     UpdateSingleActiveCallL( aCallId );
 
     SetTouchPaneButtons( EPhoneIncallButtons );
-    SetToolbarDimming( EFalse );
     SetBackButtonActive(ETrue);
             
     EndUiUpdate();
-    EndTransEffect();
 
     // Go to single state
     iCbaManager->UpdateCbaL( EPhoneCallHandlingInCallCBA );
@@ -425,24 +414,9 @@ EXPORT_C void CPhoneStateIncoming::HandleAudioPlayStoppedL()
     {
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::HandleAudioPlayStoppedL ()" );
-    // Update the CBA
-    
     // Set the ringtone silenced status
     iCbaManager->SetRingtoneSilencedStatus( ETrue );
     TInt resourceId = EPhoneCallHandlingIncomingRejectCBA;
-    // Get the soft reject flag status
-    TPhoneCmdParamBoolean softRejectParam;
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSoftRejectFlag,
-        &softRejectParam );
-
-    if ( IsNumberEntryVisibleL() && !iOnScreenDialer )
-        {
-        resourceId = EPhoneNumberAcqCBA;
-        }
-    else if ( softRejectParam.Boolean() )
-        {
-        resourceId = EPhoneCallHandlingIncomingSoftRejectCBA;
-        }
     iCbaManager->SetCbaL( resourceId );
     }
 
@@ -454,8 +428,6 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::HandleIdleL ()" );
-
-    BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
 
     // Enable call UI
@@ -470,8 +442,6 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     
     // Remove call
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     // Stop tone playing, if necessary
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
     
@@ -489,8 +459,6 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
             // Return phone to the background if send to background is needed.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
 
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
-
             // Set Number Entry CBA
             iCbaManager->SetCbaL( EPhoneNumberAcqCBA );
             }
@@ -500,8 +468,7 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
             SetNumberEntryVisibilityL(ETrue);
             }
         }
-    else if ( NeedToSendToBackgroundL() ||
-        SoftRejectMessageEditorIsDisplayedL() )
+    else if ( NeedToSendToBackgroundL() )
         {
         // Continue displaying current app but set up the
         // idle screen in the background
@@ -517,7 +484,6 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     SetBackButtonActive(ETrue);
     
     EndUiUpdate();
-    EndTransEffect();
     // Go to idle state   
     iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
     iStateMachine->ChangeState( EPhoneStateIdle );
@@ -539,8 +505,6 @@ EXPORT_C TBool CPhoneStateIncoming::HandleCommandL( TInt aCommand )
             // Stop tone playing, if necessary.
             // And stop vibrating, if it is active.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
-            // Open the menu bar
-            OpenMenuBarL();
             break;
 
         case EPhoneCallComingCmdAnswer:
@@ -563,8 +527,6 @@ EXPORT_C TBool CPhoneStateIncoming::HandleCommandL( TInt aCommand )
         case EPhoneCallComingCmdSilent:
             // Silence the ringer. And stop vibrating, if it is active.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewMuteRingTone );
-            // Dim silence button
-            SetTouchPaneButtonDisabled( EPhoneCallComingCmdSilent );
             HandleAudioPlayStoppedL();
             iStateMachine->SendPhoneEngineMessage(
                 MPEPhoneModel::EPEMessageStopTonePlay );
@@ -577,22 +539,6 @@ EXPORT_C TBool CPhoneStateIncoming::HandleCommandL( TInt aCommand )
 
         case EPhoneNumberAcqCmdSendCommand:
             HandleSendL();
-            break;
-
-        case EPhoneInCallCmdHelp:
-            {
-            TPtrC contextName;
-            if( IsVideoCall( iRingingCallId ) )
-                {
-                contextName.Set( KINCAL_HLP_VIDEOCALL() );
-                }
-            else
-                {
-                contextName.Set( KINCAL_HLP_CALL_HANDLING() );
-                }
-            iViewCommandHandle->ExecuteCommandL(
-                EPhoneViewLaunchHelpApplication, 0, contextName );
-            }
             break;
 
         default:
@@ -675,14 +621,6 @@ void CPhoneStateIncoming::OpenSoftRejectMessageL()
     {
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::OpenSoftRejectMessageEditorL ()" );
-    // Clear the soft reject flag
-    TPhoneCmdParamBoolean softRejectParam;
-    softRejectParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetSoftRejectFlag,
-        &softRejectParam );
-
-    // Dim silence button
-    SetTouchPaneButtonDisabled( EPhoneCallComingCmdSilent );
     
     // Silence the vibrating
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
@@ -716,76 +654,6 @@ void CPhoneStateIncoming::OpenSoftRejectMessageL()
         EPhoneViewOpenSoftRejectEditor, &sfiDataParam );
     }
 
-// -----------------------------------------------------------
-// CPhoneStateIncoming::SoftRejectMessageEditorIsDisplayedL
-// -----------------------------------------------------------
-//
-TBool CPhoneStateIncoming::SoftRejectMessageEditorIsDisplayedL() const
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIncoming::SoftRejectMessageEditorIsDisplayedL () ");
-    // Get the foreground application window group id
-    TPhoneCmdParamInteger foregroundAppParam;
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetForegroundApplication,
-        &foregroundAppParam );
-
-    // Get the soft reject message editor window group id
-    TPhoneCmdParamInteger softRejectMessageEditorWgId;
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSoftRejectWindowGroupId,
-        &softRejectMessageEditorWgId );
-
-    __PHONELOG1(
-        EBasic,
-        EPhoneControl,
-        "CPhoneStateIncoming::SoftRejectMessageEditorIsDisplayedL() SoftRejectGroupId %d",
-        softRejectMessageEditorWgId.Integer() );
-    __PHONELOG1(
-        EBasic,
-        EPhoneControl,
-        "CPhoneStateIncoming::SoftRejectMessageEditorIsDisplayedL() ForegroundAppGroupId %d",
-        foregroundAppParam.Integer() );
-    // Return ETrue if soft reject message editor is displayed
-    return softRejectMessageEditorWgId.Integer() == foregroundAppParam.Integer();
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateIncoming::OpenMenuBarL
-// -----------------------------------------------------------
-//
-void CPhoneStateIncoming::OpenMenuBarL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl,
-        "CPhoneStateIncoming::OpenMenuBarL ()" );
-    TInt resourceId;
-
-    // Determine the correct menu bar to display
-    if ( CPhoneState::IsNumberEntryVisibleL() )
-        {
-        resourceId = GetNumberEntryVisibleMenuBar();
-        }
-    else
-        {
-        resourceId = GetNumberEntryNotVisibleMenuBar();
-        }
-
-    // Silence the ringer. And stop vibrating, if it is active.
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
-    iStateMachine->SendPhoneEngineMessage(
-        MPEPhoneModel::EPEMessageStopTonePlay );
-
-    //Set correct cba
-    HandleAudioPlayStoppedL();
-    
-    // Dim button
-    SetTouchPaneButtonDisabled( EPhoneCallComingCmdSilent );
-
-    // Open the menu bar
-    TPhoneCmdParamInteger integerParam;
-    integerParam.SetInteger(
-        CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( resourceId ) );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen,
-        &integerParam );
-    }
 
 // -----------------------------------------------------------
 // CPhoneStateIncoming::GetNumberEntryVisibleMenuBar
@@ -817,39 +685,6 @@ TInt CPhoneStateIncoming::GetNumberEntryNotVisibleMenuBar()
         {
         return EPhoneIncomingCallMenubar;
         }
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateIncoming::DynInitMenuPaneL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneStateIncoming::DynInitMenuPaneL(
-    TInt aResourceId,
-    CEikMenuPane* aMenuPane )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIncoming::DynInitMenuPaneL() ");
-    __ASSERT_DEBUG( aMenuPane && aResourceId,
-        Panic( EPhoneCtrlParameterNotInitialized ) );
-
-    // Save the number of digits in the number entry before processing
-    // the menu pane
-    if ( IsNumberEntryUsedL() )
-        {
-        TPhoneCmdParamBoolean serviceCodeParam;
-        serviceCodeParam.SetBoolean( ETrue );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetServiceCodeFlag,
-            &serviceCodeParam );
-        }
-
-    if ( iCustomization )
-        {
-        iCustomization->CustomizeMenuPaneL(aResourceId, aMenuPane);
-        }
-    // Process the menu pane
-    TPhoneCmdParamDynMenu dynMenuPane;
-    dynMenuPane.SetResourceId( aResourceId );
-    dynMenuPane.SetDynMenu( aMenuPane );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuPane, &dynMenuPane );
     }
 
 // -----------------------------------------------------------

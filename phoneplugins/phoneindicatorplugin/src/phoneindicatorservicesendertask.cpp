@@ -14,7 +14,6 @@
  * Description:  
  *
  */
-
 #include "phoneindicatorservicesendertask.h"
 
 #include <xqaiwrequest.h>
@@ -23,8 +22,13 @@
 
 
 PhoneIndicatorServiceSenderTask::PhoneIndicatorServiceSenderTask(Interaction interaction):
-        m_interaction(interaction)
+        m_interaction(interaction), m_request(0)
 {
+}
+
+PhoneIndicatorServiceSenderTask::~PhoneIndicatorServiceSenderTask()
+{
+    delete m_request;
 }
 
 void PhoneIndicatorServiceSenderTask::run()
@@ -64,12 +68,14 @@ void PhoneIndicatorServiceSenderTask::run()
         default:            
             break;
     }
-    QScopedPointer<XQAiwRequest> request( service.isEmpty() ? 
+    
+    delete m_request;
+    m_request = service.isEmpty() ? 
         appManager.create( interface, operation, false):
-        appManager.create(service, interface, operation, false));
-    if ( request == NULL ){
+        appManager.create(service, interface, operation, false);
+    if ( m_request == NULL ){
         return;       
     }   
-    request->setArguments(args);
-    request->send();
+    m_request->setArguments(args);
+    m_request->send();
 }

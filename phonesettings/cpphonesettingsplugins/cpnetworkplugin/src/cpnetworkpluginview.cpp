@@ -41,12 +41,12 @@ CpNetworkPluginView::~CpNetworkPluginView()
 }
 
 /*!
-  Slot called by QtHighway service when network 
-  is lost.    
+  searchAvailableNetworks.    
  */
-void CpNetworkPluginView::SearchAvailableNetworks()
+void CpNetworkPluginView::searchAvailableNetworks()
 {
     DPRINT;
+    
     m_networkSettingsForm->searchAvailableNetworks();
 }
     

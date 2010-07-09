@@ -94,11 +94,6 @@ class CPhoneTwoSinglesAndWaiting : public CPhoneTwoSingles
         * ConstructL()
         */
         virtual void ConstructL();
-            
-        /**
-        * Open menu bar
-        */
-        virtual void OpenMenuBarL();
         
         virtual void HandleConnectedConferenceL( TInt aCallId );
         

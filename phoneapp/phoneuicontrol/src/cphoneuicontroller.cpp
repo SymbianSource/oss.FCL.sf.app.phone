@@ -107,12 +107,6 @@ void CPhoneUIController::ConstructL(
 
     // Store the phone engine information in the state machine
     iStateMachine->SetPhoneEngine( iPhoneEngine );
-
-    // Set Number Entry observer
-    TPhoneCmdParamNumberEntryObserver cmdParamNumberEntryObserver;
-    cmdParamNumberEntryObserver.SetObserver( TCallBack( HandlePhoneNumberEditorCallBack, this ) );
-    aViewCommandHandle->ExecuteCommand( EPhoneViewSetNumberEntryObserver, 
-                                            &cmdParamNumberEntryObserver);
     
     // Go to the startup state
     iStateMachine->ChangeState( EPhoneStateStartup );
@@ -227,34 +221,8 @@ EXPORT_C TKeyResponse CPhoneUIController::HandleKeyEventL(
         {
         iStateMachine->State()->HandleDtmfKeyToneL( aKeyEvent, aEventCode );
         }
-    
-    
         
     return EKeyWasNotConsumed;
-    }
-
-// ---------------------------------------------------------
-// CPhoneUIController::DynInitMenuPaneL
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneUIController::DynInitMenuPaneL( 
-    TInt aResourceId, 
-    CEikMenuPane* aMenuPane )
-    {
-    __ASSERT_DEBUG( iSystemEventHandler, Panic( EPhoneCtrlInvariant ) );
-    iSystemEventHandler->DynInitMenuPaneL( aResourceId, aMenuPane );
-    }
-
-// ---------------------------------------------------------
-// CPhoneUIController::DynInitMenuBarL
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneUIController::DynInitMenuBarL( 
-    TInt aResourceId, 
-    CEikMenuBar* aMenuBar )
-    {
-    __ASSERT_DEBUG( iSystemEventHandler, Panic( EPhoneCtrlInvariant ) );
-    iSystemEventHandler->DynInitMenuBarL( aResourceId, aMenuBar );
     }
 
 // ---------------------------------------------------------
@@ -416,7 +384,6 @@ TInt CPhoneUIController::HandlePhoneNumberEditorCallBack( TAny* aAny )
 //
 void CPhoneUIController::DoHandlePhoneNumberEditorCallBack()
     {
-    iStateMachine->State()->HandleNumberEntryEdited();
     }
 
 //  End of File  

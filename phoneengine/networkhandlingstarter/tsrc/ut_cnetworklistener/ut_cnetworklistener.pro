@@ -15,14 +15,16 @@
 #
 #
 
-CONFIG += qtestlib hb
+CONFIG += qtestlib hb mobility
+MOBILITY += systeminfo
 TEMPLATE = app
 TARGET = 
 
 INCLUDEPATH += ./inc
 INCLUDEPATH += ../../inc
 INCLUDEPATH += ../common
-DEFINES += QT_NO_DEBUG_STREAM BUILD_NETWORKHANDLINGSTARTER
+DEFINES += QT_NO_DEBUG_STREAM 
+DEFINES += BUILD_NETWORKHANDLINGSTARTER QT_BUILD_SYSINFO_LIB QT_MAKEDLL
 
 QT -= gui
 QT += testlib
@@ -43,6 +45,7 @@ HEADERS += ../../inc/cnetworklistener.h
 SOURCES += ../../src/cnetworklistener.cpp
 
 # mocks needed for testing
+HEADERS += /epoc32/include/mw/qsysteminfo.h
 SOURCES += ../mocks/mock_cnwsession.cpp
 SOURCES += ../mocks/mock_centralrepository.cpp
-
+SOURCES += ../mocks/mock_qsysteminfo.cpp

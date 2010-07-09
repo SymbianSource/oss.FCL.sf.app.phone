@@ -97,7 +97,7 @@ void CSPForwardProvider::AddObserverL( const MCCPForwardObserver& aObserver )
     {
     if ( iObservers.Find( &aObserver ) == KErrNotFound )
         {
-        iObservers.Append( &aObserver );
+        iObservers.AppendL( &aObserver );
         }
     }
 

@@ -118,7 +118,6 @@ void CPhoneNewCallCmdHandler::HandleCommandL( TInt aCommand )
             break;
         
         case EPhoneCmdNewInternetCallOk:
-            DoNewCallL();     
             break;
         
         case EPhoneCmdNewInternetCallSearch:
@@ -152,70 +151,6 @@ void CPhoneNewCallCmdHandler::ShowNewCallQueryL()
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneNewCallCmdHandler::ShowNewCallQueryL" )
     
-    if ( !FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) )
-        {
-        CPhoneState* phoneState = 
-            static_cast<CPhoneState*>( iStateMachine.State() );
-        
-        HBufC *text = HBufC::NewLC( KPhoneNumberEntryBufferSize );
-        TPtr ptr( text->Des() );
-        // Pre-populate the query with the number entry contents, if it exists
-        if ( phoneState->IsNumberEntryUsedL() )
-            {
-            // get the number entry contents
-            TPhoneCmdParamString stringParam;
-            stringParam.SetString( &ptr );
-            iViewCommandHandle.ExecuteCommandL(
-                EPhoneViewGetLocalizedNumberFromEntry,
-                &stringParam );
-            }
-        
-        TPhoneCmdParamQuery queryDialogParam;
-        queryDialogParam.SetQueryType( EPhoneTextQueryDialog );
-        queryDialogParam.SetQueryResourceId( 
-            CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneVoIPNewCallQuery ) );
-        
-        queryDialogParam.SetDefaultCba( CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneVoIPNewCallQueryEmptySoftkeys ) );
-        
-        queryDialogParam.SetContentCba( CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneVoIPNewCallQueryNotEmptySoftkeys ) );
-        
-        queryDialogParam.SetDataText( &ptr );
-        queryDialogParam.SetSendKeyEnabled( ETrue );
-        
-        // Display dialog        
-        iViewCommandHandle.ExecuteCommandL( 
-            EPhoneViewShowQuery, &queryDialogParam );
-        
-        CleanupStack::PopAndDestroy( text );
-        }
-    }
-
-
-// ---------------------------------------------------------------------------
-// CPhoneNewCallCmdHandler::DoNewCallL
-// ---------------------------------------------------------------------------
-//
-void CPhoneNewCallCmdHandler::DoNewCallL()
-    {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-        "CPhoneNewCallCmdHandler::DoNewCallL" )
-    
-    // First get the string from dialog
-    TPhoneCmdParamString string;
-    HBufC* content = HBufC::NewLC( KPEPhoneNumberMaxLength );
-    TPtr ptr( content->Des() );
-    string.SetString( &ptr );   
-
-    iViewCommandHandle.ExecuteCommandL( 
-        EPhoneViewGetTextQueryContent, &string );
-
-    // Dial new voip call
-    StateUtils().SelectServiceAndDialL( ptr );
-    
-    CleanupStack::PopAndDestroy( content );
     }
 
 
@@ -231,10 +166,10 @@ void CPhoneNewCallCmdHandler::OpenSingleItemContactFetchL(
     
     TPhoneCmdParamInteger integerParam;
     integerParam.SetInteger( aFetchType );
-    
+    /*
     iViewCommandHandle.HandleCommandL( 
         EPhoneViewOpenSingleItemFetchDialog, 
-        &integerParam );
+        &integerParam );*/
     }
 
 

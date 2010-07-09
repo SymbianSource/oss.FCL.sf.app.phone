@@ -60,7 +60,6 @@ BubbleImageWidget::~BubbleImageWidget()
 void BubbleImageWidget::setImage(const QString& name)
 {
     mImageName = name;
-    mUpdateCount = 0;
 
     if (!mImageName.isEmpty()) {
         mDefaultAvatar->setVisible(false);
@@ -137,13 +136,6 @@ QSizeF BubbleImageWidget::sizeHint(
         QSizeF hint(size().height(), size().height());
         if (hint.isNull()) {
             hint = QSizeF(100,100);
-        }
-
-        // workaround, sometimes last resize event is missing
-        if ((size().width()!=size().height()) && (mUpdateCount<10)) {
-            BubbleImageWidget* mutableThis = const_cast<BubbleImageWidget*>(this);
-            mutableThis->updateGeometry();
-            mutableThis->mUpdateCount++; // prevent looping
         }
 
         // qDebug() << "size hint: " << hint;

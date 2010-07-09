@@ -90,25 +90,10 @@ InfoWidgetLayoutManager::InfoWidgetLayoutManager(QObject *parent)
 : QObject(parent), 
   m_documentLoader(NULL), 
   m_displayRole(InfoDisplay),
-  m_layoutRows(0),
   m_cachedLayoutRowHeight(0.0)
 {
     DPRINT; 
-    // Fill supported layout item roles for info display
-    QList<LayoutItemRole> displayWidgetRoles = widgetRoles(InfoDisplay);
-    
-    // Try to load all widgets in list by widget role 
-    bool loadResult = loadWidgets(InfoDisplay, 
-            displayWidgetRoles,
-            m_infoDisplayWidgets); 
-    
-    // Fill supported layout item roles for settings display
-    displayWidgetRoles = widgetRoles(SettingsDialog);
-
-    // Try to load all widgets in list by widget role 
-    loadResult = loadWidgets(SettingsDialog, 
-            displayWidgetRoles,
-            m_settingsDialogWidgets); 
+    m_documentLoader.reset(new InfoWidgetDocumentLoader);
 }
 
 /*!
@@ -117,9 +102,6 @@ InfoWidgetLayoutManager::InfoWidgetLayoutManager(QObject *parent)
 InfoWidgetLayoutManager::~InfoWidgetLayoutManager()
 {
     DPRINT;
-    if (m_documentLoader) { 
-        delete m_documentLoader;
-    }
 }
 
 /*!
@@ -154,24 +136,6 @@ QList<InfoWidgetLayoutManager::LayoutItemRole> InfoWidgetLayoutManager::currentW
 } 
 
 /*!
-   Returns count of layout rows. 
-*/
-int InfoWidgetLayoutManager::layoutRows() const 
-{
-    DPRINT; 
-    return m_layoutRows;
-} 
-
-/*!
-   Set count of layout rows.  
-*/
-void InfoWidgetLayoutManager::setLayoutRows(int rows) 
-{
-    DPRINT; 
-    m_layoutRows = rows; 
-} 
-
-/*!
    Read row height from style. 
 */
 qreal InfoWidgetLayoutManager::layoutRowHeight()
@@ -183,7 +147,7 @@ qreal InfoWidgetLayoutManager::layoutRowHeight()
                 m_cachedLayoutRowHeight);
             DPRINT << ": row height from style: " << m_cachedLayoutRowHeight;
         if (!ok) {
-            DWARNING << ": Error, paremeters reading failed!!";
+            DWARNING << ": Error, paremeters reading failed!";
         }
     }
     return m_cachedLayoutRowHeight;
@@ -195,6 +159,7 @@ qreal InfoWidgetLayoutManager::layoutRowHeight()
 bool InfoWidgetLayoutManager::textFitsToRect(QString text, 
         QFont font, QRectF rect) const 
 {
+    DPRINT; 
     bool fits(true);
     if (!rect.isEmpty()) { 
         QFontMetricsF metrics(font);
@@ -226,10 +191,10 @@ QList<HbMarqueeItem *> InfoWidgetLayoutManager::marqueeItems()
     QList<HbMarqueeItem *> items;
     
     QList<LayoutItemRole> marqueeItemRoles; 
-    marqueeItemRoles.append(RoleSpnMarqueeItem);
-    marqueeItemRoles.append(RoleMcnMarqueeItem);
-    marqueeItemRoles.append(RoleSatMarqueeItem);
-    
+    marqueeItemRoles.append(RoleSpnMarqueeItem); 
+    marqueeItemRoles.append(RoleMcnMarqueeItem); 
+    marqueeItemRoles.append(RoleSatMarqueeItem); 
+
     foreach (LayoutItemRole role, marqueeItemRoles) {
         QGraphicsWidget *widget = getWidget(role); 
         if (widget) {
@@ -249,8 +214,7 @@ QList<HbMarqueeItem *> InfoWidgetLayoutManager::marqueeItems()
 */
 QGraphicsWidget* InfoWidgetLayoutManager::getWidget(LayoutItemRole itemRole)
 {
-    QGraphicsWidget *widget = m_widgets.value(itemRole); 
-    return widget; 
+    return m_widgets.value(itemRole);
 }
 
 /*!
@@ -258,8 +222,7 @@ QGraphicsWidget* InfoWidgetLayoutManager::getWidget(LayoutItemRole itemRole)
 */
 QObject* InfoWidgetLayoutManager::getObject(LayoutItemRole itemRole)
 {
-    QObject *object = m_objects.value(itemRole); 
-    return object; 
+    return m_objects.value(itemRole);
 }
 
 /*!
@@ -277,7 +240,6 @@ void InfoWidgetLayoutManager::removeWidget(LayoutItemRole itemRole,
             widget->deleteLater(); 
         }
     }
-    
     m_widgets.remove(itemRole);
     m_infoDisplayWidgets.remove(itemRole);
     m_settingsDialogWidgets.remove(itemRole);
@@ -286,48 +248,41 @@ void InfoWidgetLayoutManager::removeWidget(LayoutItemRole itemRole,
 /*!
     Returns info display layout.  
 */
-QGraphicsLayout* InfoWidgetLayoutManager::layoutInfoDisplay()
+QGraphicsWidget* InfoWidgetLayoutManager::layoutInfoDisplay()
 {   
     DPRINT;
     m_displayRole = InfoDisplay;
+    
+    loadWidgets(InfoWidgetLayoutManager::InfoDisplay);
     m_widgets = m_infoDisplayWidgets; 
-           
-    QGraphicsLayout *activeLayout(NULL); 
-    QGraphicsWidget *content = getWidget(RoleContent); 
-    if (content) {
-        DPRINT << ": content found, getting layout";
-        activeLayout = content->layout(); 
-    }
-    return activeLayout; 
+    
+    QGraphicsWidget *infoDisplay = getWidget(RoleContent);
+    Q_ASSERT(infoDisplay); 
+    return infoDisplay; 
 }
 
 /*!
     Returns settings dialog layout. 
 */
-QGraphicsLayout* InfoWidgetLayoutManager::layoutSettingsDialog()
+QGraphicsWidget* InfoWidgetLayoutManager::layoutSettingsDialog()
 {   
     DPRINT;
     m_displayRole = SettingsDialog;
+    loadWidgets(InfoWidgetLayoutManager::SettingsDialog); 
     m_widgets = m_settingsDialogWidgets; 
     
-    QGraphicsLayout *activeLayout(NULL); 
-    QGraphicsWidget *dialog = getWidget(RoleSettingsDialog); 
-    if (dialog) {
-        activeLayout = dialog->layout(); 
-
-        HbAction *okAction = qobject_cast<HbAction *>(
-                getObject(RoleOkAction));
-        if (okAction) {
-            dialog->addAction(okAction); 
-        }
-        
-        HbAction *cancelAction = qobject_cast<HbAction *>(
-                getObject(RoleCancelAction));
-        if (cancelAction) {
-            dialog->addAction(cancelAction);
-        }
+    QGraphicsWidget *dialog = getWidget(RoleSettingsDialog);
+    Q_ASSERT(dialog);
+    
+    HbAction *okAction = qobject_cast<HbAction *>(
+            getObject(RoleOkAction));
+    HbAction *cancelAction = qobject_cast<HbAction *>(
+            getObject(RoleCancelAction));
+    if (okAction && cancelAction) {
+        dialog->addAction(okAction);
+        dialog->addAction(cancelAction);
     }
-    return activeLayout;    
+    return dialog;    
 }
 
 /*!
@@ -343,11 +298,6 @@ bool InfoWidgetLayoutManager::loadWidgets(const DisplayRole displayRole,
     // Cleanup previously loaded content in case of any data  
     widgetMap.clear(); 
     
-    if (!m_documentLoader) {
-        m_documentLoader = new InfoWidgetDocumentLoader;
-    }
-    Q_ASSERT(m_documentLoader); 
-    
     bool loaded = true;
     if (displayRole != SettingsDialog) {
         m_documentLoader->load(INFOWIDGET_DOCML_FILE, &loaded);
@@ -358,7 +308,6 @@ bool InfoWidgetLayoutManager::loadWidgets(const DisplayRole displayRole,
     Q_ASSERT_X(loaded, 
             "InfoWidgetLayoutManager", 
             "Invalid docml file");    
-    
     
     foreach (LayoutItemRole role, displayWidgets) {
         QGraphicsWidget *widget = 
@@ -394,15 +343,14 @@ bool InfoWidgetLayoutManager::loadWidgets(const DisplayRole displayRole,
 }
 
 /*!
-    Restores widgets from layout document. 
-    Called when layout items have been deleted  
-    and items should be shown again. 
+    Loads or restores widgets from layout document. 
+    Called when layout items haven't been loaded yet, or 
+    have been deleted and items should be shown again. 
 */
-bool InfoWidgetLayoutManager::reloadWidgets(const DisplayRole displayRole)
+bool InfoWidgetLayoutManager::loadWidgets(const DisplayRole displayRole)
 {
     QList<LayoutItemRole> displayWidgetRoles = widgetRoles(displayRole); 
     bool loadResult(false); 
-    
     switch (displayRole) {
         case InfoDisplay:
             loadResult = loadWidgets(displayRole, 
@@ -483,8 +431,7 @@ QGraphicsWidget* InfoWidgetLayoutManager::loadWidget(InfoWidgetDocumentLoader &l
             break; 
         }
     
-    QGraphicsWidget *widget = qobject_cast<QGraphicsWidget *>(
-            loader.findWidget(widgetName));
+    QGraphicsWidget *widget = loader.findWidget(widgetName);
     return widget; 
 }
 
@@ -518,7 +465,7 @@ QObject* InfoWidgetLayoutManager::loadObject(InfoWidgetDocumentLoader &loader,
             break; 
         }
 
-    QObject *object = qobject_cast<QObject *>(loader.findObject(objectName));
+    QObject *object = loader.findObject(objectName);
     if (!object) {
         DWARNING << ": ERROR, object not found!";
     }
@@ -535,7 +482,6 @@ const QList<InfoWidgetLayoutManager::LayoutItemRole> InfoWidgetLayoutManager::wi
     QList<LayoutItemRole> widgetRoles; 
     switch (displayRole) {
         case InfoDisplay: 
-            // Fill supported layout item roles for info display
             widgetRoles.append(RoleContent);
             widgetRoles.append(RoleSpnIcon);
             widgetRoles.append(RoleSpnMarqueeItem);
@@ -545,7 +491,6 @@ const QList<InfoWidgetLayoutManager::LayoutItemRole> InfoWidgetLayoutManager::wi
             widgetRoles.append(RoleSatMarqueeItem);
             break;
         case SettingsDialog: 
-            // Fill supported layout item roles for settings display
             widgetRoles.append(RoleSettingsDialog);
             widgetRoles.append(RoleSettingsContainer);
             widgetRoles.append(RoleSpnCheckBox);

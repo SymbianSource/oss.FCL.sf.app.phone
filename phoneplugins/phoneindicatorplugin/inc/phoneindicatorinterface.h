@@ -20,6 +20,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QScopedPointer>
 #include <QVariant>
 #include <hbindicatorinterface.h>
 #include "phoneindicators.h"

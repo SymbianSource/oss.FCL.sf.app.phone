@@ -34,8 +34,7 @@ public:
     void addParticipant(
         int bubbleId,
         const QString &name,
-        int state,
-        bool ciphering);
+        Qt::TextElideMode nameClip = Qt::ElideRight);
 
     void removeParticipant(
         int bubbleId);
@@ -53,14 +52,12 @@ private:
     inline bool isDataChanged(
         const Participant& participant,
         const QString &name,
-        int state,
-        bool ciphering) const;
+        Qt::TextElideMode nameClip) const;
 
     inline void updateData(
         Participant& participant,
         const QString &name,
-        int state,
-        bool ciphering) const;
+        Qt::TextElideMode nameClip) const;
 
 private:
     QList<Participant*> mParticipants;

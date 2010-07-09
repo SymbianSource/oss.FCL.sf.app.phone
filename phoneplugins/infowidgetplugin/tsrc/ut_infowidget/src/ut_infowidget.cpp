@@ -41,13 +41,15 @@ const QString KMcnName("tnw1: 3233255435");
 const QString KSatText("satdisplaytesttext"); 
 
 
-// Stub 
+// Stubbed functions 
 void QGraphicsWidget::resize( 
         const QSizeF & size ) 
 {
     Q_UNUSED(size); 
 }
-
+void QGraphicsWidget::updateGeometry() 
+{
+}
 
 /*!
   UT_InfoWidget::UT_InfoWidget
@@ -387,6 +389,8 @@ void UT_InfoWidget::t_onInitialize()
         .returns(true);
     EXPECT(InfoWidgetLayoutManager::contentWidget)
         .returns(contentWidget);
+    EXPECT(InfoWidgetLayoutManager::layoutInfoDisplay)
+        .returns(contentWidget);
       
     m_infoWidget->onInitialize();
     
@@ -396,6 +400,8 @@ void UT_InfoWidget::t_onInitialize()
     EXPECT(InfoWidgetPreferences::validate)
         .returns(false);
     EXPECT(InfoWidgetLayoutManager::contentWidget)
+        .returns(contentWidget);
+    EXPECT(InfoWidgetLayoutManager::layoutInfoDisplay)
         .returns(contentWidget);
     m_infoWidget->onInitialize();
 }
@@ -539,8 +545,6 @@ void UT_InfoWidget::t_updateItemsVisibility()
     EXPECT(InfoWidgetPreferences::preference)
         .with(InfoWidgetPreferences::DisplaySatText)
         .returns(KPreferenceOn);
-    EXPECT(InfoWidgetLayoutManager::setLayoutRows)
-        .with(3);
     
     m_infoWidget->updateItemsVisibility();
     QVERIFY(verify());
@@ -550,9 +554,8 @@ void UT_InfoWidget::t_updateItemsVisibility()
 void UT_InfoWidget::t_layoutInfoDisplay()
 {
     QGraphicsWidget *contentWidget = NULL; 
-    EXPECT(InfoWidgetLayoutManager::contentWidget)
+    EXPECT(InfoWidgetLayoutManager::layoutInfoDisplay)
         .returns(contentWidget);
-    
     m_infoWidget->layoutInfoDisplay();
     
     QVERIFY(verify());
@@ -560,6 +563,9 @@ void UT_InfoWidget::t_layoutInfoDisplay()
 
 void UT_InfoWidget::t_layoutSettingsDialog()
 {
+    QGraphicsWidget *contentWidget = NULL; 
+    EXPECT(InfoWidgetLayoutManager::layoutSettingsDialog)
+        .returns(contentWidget);
     m_infoWidget->layoutSettingsDialog();
     
     QVERIFY(verify());
@@ -620,7 +626,7 @@ void UT_InfoWidget::t_sizeHint()
     const QSizeF KPreferredSize(134, 160);
     const QSizeF KDefaultSizeInfoDisplay(200, 100);
     const QSizeF KDefaultSizeSettingsDisplay(230, 220);
-    QGraphicsWidget *contentWidget = NULL; 
+    QScopedPointer<QGraphicsWidget> contentWidget(NULL); 
     
     // Test: initial size after construction  
     Qt::SizeHint sizeHint = Qt::PreferredSize;
@@ -628,19 +634,18 @@ void UT_InfoWidget::t_sizeHint()
     QVERIFY(KDefaultSizeInfoDisplay == m_infoWidget->sizeHint(
             sizeHint, constraint));
 
-    EXPECT(InfoWidgetLayoutManager::contentWidget)
-        .returns(contentWidget);
-
+    EXPECT(InfoWidgetLayoutManager::layoutInfoDisplay)
+        .returns(contentWidget.data());
     // Test: size after onInitialize is called 
     // and current display is InfoDisplay 
     m_infoWidget->onInitialize();
 
     QVERIFY(verify());
     
-    contentWidget = new QGraphicsWidget;
+    contentWidget.reset(new QGraphicsWidget);
     contentWidget->setMinimumSize(KMinimumSize); 
-    EXPECT(InfoWidgetLayoutManager::contentWidget).
-            returns(contentWidget);
+    EXPECT(InfoWidgetLayoutManager::contentWidget)
+        .returns(contentWidget.data());
     EXPECT(InfoWidgetPreferences::visibleItemCount).
             returns(1);
     
@@ -649,9 +654,6 @@ void UT_InfoWidget::t_sizeHint()
     QVERIFY(KDefaultSizeInfoDisplay != m_infoWidget->sizeHint(sizeHint, constraint));
     
     QVERIFY(verify());
-
-    delete contentWidget;
-    contentWidget = NULL;
 }
 
 /*!

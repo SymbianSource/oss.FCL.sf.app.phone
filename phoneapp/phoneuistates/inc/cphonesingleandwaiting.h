@@ -101,11 +101,6 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
             TEventCode aEventCode );
         
         /**
-        * Opens menu bar.
-        */    
-        virtual void OpenMenuBarL();
-        
-        /**
         * Sets correct in call CBAs.
         */
         virtual void UpdateInCallCbaL();
@@ -142,11 +137,6 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
         * @param aCallId - call id that received the event
         */ 
         void HandleConnectedL( TInt aCallId );
-        
-        /**
-        * Fetches phone number from new call quoery and dials that number.
-        */ 
-        void CallFromNewCallQueryL();
         
         /**
         * Handles received dialing message from Phone Engine.

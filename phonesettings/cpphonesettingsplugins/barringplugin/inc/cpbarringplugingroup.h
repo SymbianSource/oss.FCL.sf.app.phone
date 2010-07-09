@@ -23,7 +23,7 @@
 
 class PSetWrapper;
 class QModelIndex;
-class CpPhoneNotes;
+class PsUiNotes;
 class QValidator;
 class HbDataFormModel;
 
@@ -118,7 +118,7 @@ private:
     QQueue<CpSettingFormItemData *> m_barringRequestQueue;
     bool m_barringStatusRequestOngoing;
     int m_activeNoteId;
-    CpPhoneNotes* m_phoneNotes;
+    PsUiNotes* m_phoneNotes;
     QValidator *m_barringPasswordValidator;
     bool m_delayedBarringActivationNote;
     CpSettingFormItemData* m_clickedBarringItem; // Not own.

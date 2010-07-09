@@ -112,6 +112,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         }
         
     case R_PHONEUI_OUT_GOING_CALL:
+    case R_PHONEUI_OUT_GOING_VIDEO_CALL:
         {
         PhoneAction *text = new PhoneAction;
         text->setText (hbTrId("txt_phone_other_calling"));
@@ -244,7 +245,7 @@ QString PhoneResourceAdapter::convertToString(
             
         case R_PHONE_ERROR_REQUEST_REJECTED:
             {
-            ret = hbTrId("txt_phone_info_request_rejected").arg(causeCode); 
+            ret = hbTrId("txt_phone_dpopinfo_request_rejected_l1").arg(causeCode); 
             }
             break;
                 
@@ -268,7 +269,7 @@ QString PhoneResourceAdapter::convertToString(
             
         case R_PHONE_INCALL_INFO_NO_NETWORK_SUPPORT:
             {
-            ret = hbTrId("txt_phone_info_no_network_support_for_video_call").arg(causeCode);
+            ret = hbTrId("txt_phone_info_videocall_only_possible_under_3g").arg(causeCode);
             }
             break;
         case R_PHONE_ERROR_EMERGENCY_CALLS_ONLY:
@@ -416,6 +417,11 @@ QString PhoneResourceAdapter::convertToString(
         case R_PHONE_INCALL_INFO_VIDEO_CALL_NOT_ALLOWED_DURING_RESTORE:
             {
             ret = hbTrId("txt_phone_info_video_call_not_allowed_during_resto").arg(causeCode);
+            }
+            break;
+        case R_NOTETEXT_NUMBER_NOT_IN_CUG:
+            {
+            ret = hbTrId("txt_phone_info_number_not_in_closed_group").arg(causeCode);
             }
             break;
         default:

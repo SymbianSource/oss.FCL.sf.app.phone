@@ -21,8 +21,8 @@
 /*!
     Constructor of NetworkHandlingStarter.
  */
-NetworkHandlingStarter::NetworkHandlingStarter(QObject *parent) : 
-    XQServiceProvider(QLatin1String("com.nokia.services.networkhandling"), parent),
+NetworkHandlingStarter::NetworkHandlingStarter(QObject *parent) :
+    XQServiceProvider(QLatin1String("networkhandlingstarter.com.nokia.symbian.IStart"), parent),
     m_privateImpl(NULL)
 {
     // Install plugin specific msg handler

@@ -306,4 +306,5 @@ EXPORTS
 	?Bitmap@TPhoneCmdParamBitmap@@QBEPAVCFbsBitmap@@XZ @ 305 NONAME ; class CFbsBitmap * TPhoneCmdParamBitmap::Bitmap(void) const
 	?SetTone@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 306 NONAME ; void TPhoneCmdParamGlobalNote::SetTone(int)
 	?After@CPhoneTimer@@QAEXVTTimeIntervalMicroSeconds32@@VTCallBack@@@Z @ 307 NONAME ; void CPhoneTimer::After(class TTimeIntervalMicroSeconds32, class TCallBack)
+	??1TPhoneCmdParamCallHeaderData@@QAE@XZ @ 308 NONAME ; TPhoneCmdParamCallHeaderData::~TPhoneCmdParamCallHeaderData(void)
 

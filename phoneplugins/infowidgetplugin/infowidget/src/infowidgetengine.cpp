@@ -30,7 +30,7 @@
 
 
 /*!
-   InfoWidgetEngine::InfoWidgetEngine
+   Constructor. 
  */
 InfoWidgetEngine::InfoWidgetEngine(QObject *parent): 
     QObject(parent),
@@ -63,7 +63,7 @@ InfoWidgetEngine::InfoWidgetEngine(QObject *parent):
 }
 
 /*!
-   InfoWidgetEngine::~InfoWidgetEngine
+   Destructor. 
  */
 InfoWidgetEngine::~InfoWidgetEngine()
 {
@@ -71,8 +71,6 @@ InfoWidgetEngine::~InfoWidgetEngine()
 }    
 
 /*!
-   InfoWidgetEngine::modelData
-   
    Getter for model data. 
  */
 const InfoWidgetEngine::ModelData& InfoWidgetEngine::modelData() const
@@ -82,12 +80,11 @@ const InfoWidgetEngine::ModelData& InfoWidgetEngine::modelData() const
 }
 
 /*!
-   InfoWidgetEngine::updateNetworkDataToModel
-   
    Updates Network Handler's network data to model. 
  */
 void InfoWidgetEngine::updateNetworkDataToModel()
 {
+    DPRINT;
     if (m_networkHandler->isOnline()) {
         DPRINT << ": online, update data";
         m_modelData.setServiceProviderName(
@@ -110,15 +107,10 @@ void InfoWidgetEngine::updateNetworkDataToModel()
         m_modelData.setMcnName("");
         m_modelData.setHomeZoneTextTag(""); 
     }
-        
     emit modelChanged();
-    
-    DPRINT << ": OUT";
 }
 
 /*!
-   InfoWidgetEngine::updateSatDataToModel
-   
    Updates SAT handler's SAT data to model.
  */
 void InfoWidgetEngine::updateSatDataToModel()
@@ -133,7 +125,7 @@ void InfoWidgetEngine::updateSatDataToModel()
 }
 
 /*!
-   InfoWidgetEngine::updateLineDataToModel
+   Updates line handler's data to model. 
  */
 void InfoWidgetEngine::updateLineDataToModel()
 {
@@ -141,7 +133,7 @@ void InfoWidgetEngine::updateLineDataToModel()
 }
 
 /*!
-   InfoWidgetEngine::handleNetworkError
+   Network error handler.  
  */
 void InfoWidgetEngine::handleNetworkError(
         int operation, int errorCode)
@@ -151,7 +143,7 @@ void InfoWidgetEngine::handleNetworkError(
 }
 
 /*!
-   InfoWidgetEngine::handleSatError
+   SAT error handler. 
  */
 void InfoWidgetEngine::handleSatError(
         int operation, int errorCode)
@@ -161,7 +153,7 @@ void InfoWidgetEngine::handleSatError(
 }
 
 /*!
-   InfoWidgetEngine::handleLineError
+   Line error handler. 
  */
 void InfoWidgetEngine::handleLineError(
         int operation, int errorCode)
@@ -182,7 +174,6 @@ void InfoWidgetEngine::handlePreferencesChanged(
         } else {
             m_networkHandler->disableMcn();
         }
-
     if (options.testFlag(InfoWidgetPreferences::DisplaySatText)){
             m_satHandler->connect(true);
         } else {
@@ -191,8 +182,6 @@ void InfoWidgetEngine::handlePreferencesChanged(
 }
 
 /*!
-   InfoWidgetEngine::suspend
-   
    Called when widget is deactivated 
    and widget should suspend all 
    possible activities 
@@ -204,8 +193,6 @@ void InfoWidgetEngine::suspend()
 }
 
 /*!
-   InfoWidgetEngine::preferenceChanged
-   
    Called when widget is activated 
    and widget can resume activities
  */

@@ -53,14 +53,6 @@ class CPhoneSystemEventHandler :
 
     public: // From MPhoneSystemEvents
 
-        void DynInitMenuPaneL( 
-            TInt aResourceId, 
-            CEikMenuPane* aMenuPane );
-
-        void DynInitMenuBarL( 
-            TInt aResourceId, 
-            CEikMenuBar* aMenuBar );
-
         void HandleSystemEventL( const TWsEvent& aEvent );
 
         void HandleForegroundEventL( TBool aForeground );

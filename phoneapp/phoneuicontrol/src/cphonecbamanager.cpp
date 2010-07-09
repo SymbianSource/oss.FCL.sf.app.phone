@@ -148,9 +148,6 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
             }
         else
             {
-            TBool dtmfEditorVisible = iViewCommandHandle.HandleCommandL(
-                    EPhoneViewIsDTMFEditorVisible ) ==
-                    EPhoneViewResponseSuccess;
             TPhoneCmdParamInteger activeCallCount;
             iViewCommandHandle.ExecuteCommandL(
                     EPhoneViewGetCountOfActiveCalls, &activeCallCount );
@@ -162,11 +159,7 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
             
             TInt incomingCall = callStateData.CallId();
 
-            if( dtmfEditorVisible )
-                {
-                resourceId = EPhoneDtmfDialerCBA;
-                }                    
-            else if( activeCallCount.Integer() == ENoActiveCalls )
+            if( activeCallCount.Integer() == ENoActiveCalls )
                 {
                 resourceId = EPhoneNumberAcqCBA;
                 }
@@ -281,10 +274,6 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
         {
         softRejectActivated = EFalse;
         }
-    TPhoneCmdParamBoolean softRejectParam;
-    softRejectParam.SetBoolean( softRejectActivated );
-    iViewCommandHandle.ExecuteCommandL( EPhoneViewSetSoftRejectFlag,
-        &softRejectParam );
 
     TInt incomingCbaResourceId;
 

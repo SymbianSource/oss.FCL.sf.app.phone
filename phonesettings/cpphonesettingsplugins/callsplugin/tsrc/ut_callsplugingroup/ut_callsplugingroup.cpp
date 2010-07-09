@@ -23,7 +23,7 @@
 #include "psetwrapper.h"
 #include "sssettingswrapper.h"
 #include "cpplugincommon.h"
-#include "cpphonenotes.h"
+#include <psuinotes.h>
 
 /*!
   Dummy CPsetContainer class
@@ -104,7 +104,7 @@ void UT_CpCallsPluginGroup::t_showCallDurationStateChanged()
     
     EXPECT(CpSettingsWrapper::isOngoingCall).returns(bOngoing);
     EXPECT(CpSettingsWrapper::showCallDuration).returns(bDuration);
-    EXPECT(CpPhoneNotes::showGlobalNote);
+    EXPECT(PsUiNotes::showGlobalNote);
     m_callspluginGroup->showCallDurationStateChanged();
     
     bDuration = false;
@@ -168,23 +168,23 @@ void UT_CpCallsPluginGroup::t_cliCurrentIndexChanged()
  */
 void UT_CpCallsPluginGroup::t_handleCallWaitingChanged()
 {
-    EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showNotificationDialog);
+    EXPECT(PsUiNotes::cancelNote);
+    EXPECT(PsUiNotes::showNotificationDialog);
     m_callspluginGroup->handleCallWaitingChanged(
         PSetCallWaitingWrapper::ActivateCallWaiting , 0);
     
-    EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showNotificationDialog);
+    EXPECT(PsUiNotes::cancelNote);
+    EXPECT(PsUiNotes::showNotificationDialog);
     m_callspluginGroup->handleCallWaitingChanged(
         PSetCallWaitingWrapper::DeactivateCallWaiting, 0);
     
-    EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showNotificationDialog);
+    EXPECT(PsUiNotes::cancelNote);
+    EXPECT(PsUiNotes::showNotificationDialog);
     m_callspluginGroup->handleCallWaitingChanged(
         PSetCallWaitingWrapper::CheckCallWaitingStatus, 0);
     
-    EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showNotificationDialog);
+    EXPECT(PsUiNotes::cancelNote);
+    EXPECT(PsUiNotes::showNotificationDialog);
     m_callspluginGroup->handleCallWaitingChanged(
         PSetCallWaitingWrapper::DeactivateCallWaiting , -1);
     
@@ -196,21 +196,21 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingChanged()
  */
 void UT_CpCallsPluginGroup::t_handleCallWaitingRequesting()
 {
-    EXPECT(CpPhoneNotes::cancelNote);
+    EXPECT(PsUiNotes::cancelNote);
     m_callspluginGroup->handleCallWaitingRequesting( false, true ); 
     
-    EXPECT(CpPhoneNotes::showGlobalProgressNote);
+    EXPECT(PsUiNotes::showGlobalProgressNote);
     m_callspluginGroup->handleCallWaitingRequesting( true, false );
     
-    EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showGlobalProgressNote);
+    EXPECT(PsUiNotes::cancelNote);
+    EXPECT(PsUiNotes::showGlobalProgressNote);
 //    m_callspluginGroup->handleCallWaitingRequesting( true, true );
 
 //    QVERIFY(verify());
     reset();
     
-    EXPECT(CpPhoneNotes::cancelNote).times(0);
-    EXPECT(CpPhoneNotes::showGlobalProgressNote).times(0);
+    EXPECT(PsUiNotes::cancelNote).times(0);
+    EXPECT(PsUiNotes::showGlobalProgressNote).times(0);
     m_callspluginGroup->handleCallWaitingRequesting( false, false );
     
     QVERIFY(verify());
@@ -221,8 +221,8 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingRequesting()
  */
 void UT_CpCallsPluginGroup::t_handleCallWaitingError()
 {
-    EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showGlobalErrorNote);
+    EXPECT(PsUiNotes::cancelNote);
+    EXPECT(PsUiNotes::showGlobalErrorNote);
     m_callspluginGroup->handleCallWaitingError( -1 );
     
     QVERIFY(verify());
@@ -247,11 +247,11 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingGetStatus()
 {
     QList<unsigned char> basicServiceGroupIds;
     
-    EXPECT(CpPhoneNotes::cancelNote);
+    EXPECT(PsUiNotes::cancelNote);
     m_callspluginGroup->handleCallWaitingGetStatus(
         PSetCallWaitingWrapper::StatusNotProvisioned, basicServiceGroupIds);
     
-    EXPECT(CpPhoneNotes::cancelNote);
+    EXPECT(PsUiNotes::cancelNote);
     m_callspluginGroup->handleCallWaitingGetStatus(
         PSetCallWaitingWrapper::StatusActive, basicServiceGroupIds);
     QVERIFY(verify());
@@ -264,8 +264,8 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingGetStatusDistinguishEnabled()
 {
     QList<unsigned char> basicServiceGroupIds;
     
-    EXPECT(CpPhoneNotes::cancelNote);
-    EXPECT(CpPhoneNotes::showNotificationDialog);
+    EXPECT(PsUiNotes::cancelNote);
+    EXPECT(PsUiNotes::showNotificationDialog);
     m_callspluginGroup->handleCallWaitingGetStatus(
         PSetCallWaitingWrapper::StatusNotProvisioned, basicServiceGroupIds);
     

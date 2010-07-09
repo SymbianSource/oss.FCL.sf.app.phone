@@ -98,15 +98,6 @@ class CPhoneStateIncoming : public CPhoneState
         */
         IMPORT_C virtual void ConstructL();
         
-        /**
-        * From CAknAppUi, initialise a menupane (dynamic).
-        *
-        * @param aResourceId It is the resource id for the pane.
-        * @param aMenuPane It is the menu pane corresponding to the resource.
-        */
-        IMPORT_C virtual void DynInitMenuPaneL( 
-            TInt aResourceId, 
-            CEikMenuPane* aMenuPane );
 
         /**
         * Audio play stopped handling
@@ -136,16 +127,6 @@ class CPhoneStateIncoming : public CPhoneState
         * Open soft reject message editor
         */
         void OpenSoftRejectMessageL();
-
-        /**
-        * Indicator if soft reject message editor is displayed
-        */
-        TBool SoftRejectMessageEditorIsDisplayedL() const;
-
-        /**
-        * Open menu bar
-        */
-        void OpenMenuBarL();
 
         /**
         * Answer the MT call

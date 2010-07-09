@@ -217,8 +217,6 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
         dialerParam.SetBoolean( EFalse );
         }
     
-    SetToolbarDimming( EFalse );
-    
     // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
     
@@ -267,9 +265,6 @@ void CPhoneIncoming::DisplayIncomingCallL(
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneIncoming::DisplayIncomingCallL()");
- 
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     // Cannot delete active note, e.g. New call query, 
     // but show waiting note with or without caller name
@@ -314,20 +309,7 @@ void CPhoneIncoming::AllowShowingOfWaitingCallHeaderL(
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneIncoming::AllowShowingOfWaitingCallHeaderL() ");
 
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewAllowWaitingCallHeader, 
-        &aCommandParam );
-    
-    // Non-touch :Hide number entry if it exists on 
-    // Touch : an internal operation ongoing 
-    // -> do not hide dialer
-    if ( !iOnScreenDialer )
-        {   
-        SetNumberEntryVisibilityL(EFalse);
-        }
-    // If param is true and number entry is open only then
-    // hide number entry.
-    else if ( aCommandParam.Boolean() && IsNumberEntryUsedL() )
+    if ( aCommandParam.Boolean() && IsNumberEntryUsedL() )
         {
         SetNumberEntryVisibilityL(EFalse);
         }

@@ -173,15 +173,8 @@ void CPhoneEmergency::HandlePhoneEngineMessageL(
             CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
             if ( iStateMachine->PhoneEngineInfo()->CallState( KPEEmergencyCallId ) == EPEStateDialing )
                 {
-                TPhoneCmdParamBoolean isProgressNoteVisible;
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewGetIsProgressNoteVisible,
-                      &isProgressNoteVisible );
-
-                if ( !isProgressNoteVisible.Boolean() )
-                    {
-                    UpdateSetupCbaL();
-                    }
-                 }
+                UpdateSetupCbaL();
+                }
             break;
             
         case MEngineMonitor::EPEMessageColpNumberAvailable:
@@ -210,18 +203,11 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
 
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-        {
-        CloseDTMFEditorL();
-        }
-
     if ( aCallId == KEmergencyCallId )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
         // Remove emergency connecting note if still there
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNote );
-        // Close menu bar, if it is displayed
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
         
         TPhoneCmdParamKeyCapture captureParam;
         captureParam.SetKeyCode( EKeyNo );
@@ -242,19 +228,10 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
                 // Continue displaying current app but set up the
                 // idle screen in the background
                 SetupIdleScreenInBackgroundL();
-
-                // Update toolbar
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateToolbar );
                 }
 
             else if ( iOnScreenDialer && IsNumberEntryContentStored() )
                 {
-                if ( !IsNumberEntryUsedL() )
-                    {
-                    CreateNumberEntryL();
-                    }
-                // Restore the number entry content from cache
-                RestoreNumberEntryContentL();
                 SetNumberEntryVisibilityL(ETrue);
                 }
 
@@ -262,8 +239,6 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
                 {
                 // Show the number entry if it exists
                 SetNumberEntryVisibilityL(ETrue);
-                // Update toolbar
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateToolbar );
                 }
 
             else
@@ -336,17 +311,8 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
 
     if ( aCallId == KPEEmergencyCallId )
         {
-        if ( !IsSimOk() )
-            {
-            TPhoneCmdParamBoolean visibleMode;
-            visibleMode.SetBoolean( ETrue );
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetStatusPaneVisible, &visibleMode );
-            }
 
         iDeviceLockOn = IsAutoLockOn();
-
-        // Close menu bar, if it is displayed
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
         // Disable global notes when the phone is dialling
         TPhoneCmdParamBoolean globalNotifierParam;
@@ -389,9 +355,6 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
 
         // Remove exit emergency mode query, if it exists
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveQuery );
-
-        // Enable the volume display
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNaviPaneAudioVolume );
         
         BeginUiUpdateLC();
         
@@ -516,40 +479,8 @@ void CPhoneEmergency::HandleConnectedL( TInt aCallId )
     SetBackButtonActive(ETrue);
 
     EndUiUpdate();
-    SetToolbarDimming( ETrue );
     UpdateInCallCbaL();
     }
-
-// -----------------------------------------------------------
-// CPhoneEmergency::OpenMenuBarL
-// -----------------------------------------------------------
-//
-void CPhoneEmergency::OpenMenuBarL()
-    {
-    __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneEmergency::OpenMenuBarL() ");
-    TInt resourceId;
-
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-        {
-        resourceId = EPhoneDtmfDialerMenubar;
-        }
-    else if ( IsNumberEntryVisibleL() )
-        {
-        resourceId = EPhoneCallHandlingEmergencyMenubarWithNumberEntry;
-        }
-    else
-        {
-        resourceId = EPhoneCallHandlingEmergencyMenubar;
-        }
-
-    TPhoneCmdParamInteger integerParam;
-    integerParam.SetInteger(
-        CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( resourceId ) );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen,
-        &integerParam );
-    }
-
 
 // -----------------------------------------------------------
 // CPhoneEmergency::UpdateInCallCbaL
@@ -577,10 +508,6 @@ void CPhoneEmergency::HandleKeyMessageL(
         // end-key
         case EKeyNo:
             // handle end key
-            if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-                {
-                CloseDTMFEditorL();
-                }
             DisconnectEmergencyCallL();
             break;
 
@@ -651,16 +578,8 @@ TBool CPhoneEmergency::HandleCommandL( TInt aCommand )
              {
              if ( iStateMachine->PhoneEngineInfo()->CallState( KPEEmergencyCallId ) == EPEStateDialing )
                  {
-                 CloseDTMFEditorL();
 
-                 TPhoneCmdParamBoolean isProgressNoteVisible;
-                 iViewCommandHandle->ExecuteCommandL( EPhoneViewGetIsProgressNoteVisible,
-                        &isProgressNoteVisible );
-
-                 if ( !isProgressNoteVisible.Boolean() )
-                     {
-                     UpdateSetupCbaL();
-                     }
+                 UpdateSetupCbaL();
                  }
              else
                  {
@@ -856,21 +775,6 @@ void CPhoneEmergency::UpdateSetupCbaL()
    iCbaManager->SetCbaL( resourceId );
     }
 
-// ---------------------------------------------------------
-// CPhoneEmergency::HandleCreateNumberEntryL
-//
-// ---------------------------------------------------------
-//
-void CPhoneEmergency::HandleCreateNumberEntryL( const TKeyEvent& aKeyEvent,
-        TEventCode aEventCode )
-    {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneEmergency::HandleCreateNumberEntryL() ");
-    if ( !iCallSetup && !iStartupInterrupted )
-        {
-        CPhoneGsmInCall::HandleCreateNumberEntryL( aKeyEvent, aEventCode );
-        }
-
-    }
 
 // -----------------------------------------------------------------------------
 // CPhoneEmergency::HandleRemConCommandL

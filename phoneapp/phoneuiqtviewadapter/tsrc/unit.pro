@@ -16,9 +16,13 @@
 #
 
 TEMPLATE = subdirs
+SUBDIRS += ut_phonebubblewrapper
+SUBDIRS += ut_phonecommandextensionwrapper
+SUBDIRS += ut_phonemessagecontroller
+SUBDIRS += ut_phonenotecontroller
+SUBDIRS += ut_phoneresourceadapter
+SUBDIRS += ut_phoneuicommandcontroller
 SUBDIRS += ut_phoneuiqtbuttonscontroller
 SUBDIRS += ut_phoneuiqtviewadapter
-SUBDIRS += ut_phonebubblewrapper
-SUBDIRS += ut_phoneresourceadapter
-SUBDIRS += ut_telephonyservice
 SUBDIRS += ut_phonevisibilityhandler
+SUBDIRS += ut_telephonyservice

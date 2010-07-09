@@ -78,9 +78,7 @@ class CPhoneConferenceAndWaitingAndCallSetup : public CPhoneConference
         /**
         * ConstructL()
         */
-        virtual void ConstructL();
-        
-        virtual void OpenMenuBarL();        
+        virtual void ConstructL();   
 
         virtual void UpdateInCallCbaL();
         

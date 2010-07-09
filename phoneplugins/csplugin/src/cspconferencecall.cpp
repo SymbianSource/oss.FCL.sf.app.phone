@@ -469,8 +469,7 @@ TInt CSPConferenceCall::GetCallArray( RPointerArray<MCCPCall>& aCallArray )
     aCallArray.Reset();
     TInt err( KErrNone );  
     
-    RMobileCall::TMobileCallInfoV3 callInfo; 
-    RMobileCall::TMobileCallInfoV3Pckg callInfoPck( callInfo );
+    RMobileCall::TMobileCallInfoV3Pckg callInfoPck( iEtelCallInfo );
     
     TInt callCount = CallCount(); 
     CSPCall* call; 
@@ -483,7 +482,7 @@ TInt CSPConferenceCall::GetCallArray( RPointerArray<MCCPCall>& aCallArray )
         if ( KErrNone == err )
             {
             // Find call by call name 
-            call = iCallInfo.FindCall( callInfo.iCallName); 
+            call = iCallInfo.FindCall( iEtelCallInfo.iCallName); 
             if ( call ) 
                 {
                 err = aCallArray.Append( call );
@@ -495,6 +494,7 @@ TInt CSPConferenceCall::GetCallArray( RPointerArray<MCCPCall>& aCallArray )
             }
         CSPLOGSTRING2( CSPERROR, "CSPConferenceCall::GetCallArray err: %d", err );
         }
+
         
     CSPLOGSTRING( CSPREQOUT, "CSPConferenceCall::GetCallArray end"); 
     return err; 
@@ -508,7 +508,7 @@ void CSPConferenceCall::AddObserverL( const MCCPConferenceCallObserver& aObserve
     {
     if ( iObservers.Find( &aObserver ) == KErrNotFound )
         {
-        iObservers.Append( &aObserver );
+        iObservers.AppendL( &aObserver );
         }    
     }
 

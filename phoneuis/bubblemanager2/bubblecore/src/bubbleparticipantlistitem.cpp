@@ -23,6 +23,7 @@
 #include <hbstyleloader.h>
 #include <hbabstractitemview.h>
 #include <hblistviewitem.h>
+#include <hbstringutil.h>
 
 #include "bubbleparticipantlistitem.h"
 #include "bubblemanagerif.h"
@@ -135,7 +136,13 @@ void BubbleParticipantListItem::updateChildItems()
     }
 
     // update group box title (CLI name)
-    mGroupBox->setHeading(modelIndex().data(Qt::DisplayRole).toString());
+    if (modelIndex().data(Qt::TextAlignmentRole).toInt()==Qt::ElideLeft) {
+        QString converted = HbStringUtil::convertDigits(
+            modelIndex().data(Qt::DisplayRole).toString());
+        mGroupBox->setHeading(converted);
+    } else {
+        mGroupBox->setHeading(modelIndex().data(Qt::DisplayRole).toString());
+    }
 }
 
 void BubbleParticipantListItem::polish(HbStyleParameters& params)

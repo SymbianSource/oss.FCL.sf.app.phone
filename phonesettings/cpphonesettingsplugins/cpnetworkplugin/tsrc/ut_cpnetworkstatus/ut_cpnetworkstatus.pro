@@ -22,7 +22,7 @@ DEPENDPATH += . ../../src/
 INCLUDEPATH += .
 INCLUDEPATH +=../../../inc 
 INCLUDEPATH +=../../../cptelephonyutils/inc
-DEFINES += BUILD_NETWORKPLUGIN BUILD_CPTELEPHONYUTILS
+DEFINES += BUILD_NETWORKPLUGIN BUILD_CPTELEPHONYUTILS QT_BUILD_SYSINFO_LIB QT_MAKEDLL
 MOBILITY += systeminfo
 
 QT -= gui
@@ -43,7 +43,8 @@ HEADERS += ut_cpnetworkstatus.h
 SOURCES += ut_cpnetworkstatus.cpp
 
 # code to be tested
-HEADERS += ../../src/cpnetworkstatus.h 
+HEADERS += ../../src/cpnetworkstatus.h \
+           /epoc32/include/mw/qsysteminfo.h
        
 SOURCES += ../../src/cpnetworkstatus.cpp 
 

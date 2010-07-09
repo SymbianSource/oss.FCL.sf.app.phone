@@ -26,6 +26,8 @@
 #include "mpecallcontrolif.h"
 #include "mpecallsettersif.h"
 
+// FORWARD DECLARATIONS
+class XQSettingsManager;
 class DialServiceDepricated : public XQServiceProvider
 {
     Q_OBJECT
@@ -34,124 +36,59 @@ public:
     ~DialServiceDepricated();
     
 public slots:
-    /*!
-        \fn dial(const QString& number)
-        
-        This method makes a cellular switched dial command to
-        Phone Application. It is intended to be used via Qt Highway.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dial(QString)");
-        snd << "0501234567";        
-    */
+    
+    //deprecated
     int dial(const QString& number);
     
-    /*!
-        \fn dial(const QString& number)
-        
-        This method makes a cellular switched dial command to
-        Phone Application. It is intended to be used via Qt Highway.
-        Caller's name is shown according to the given Phonebook contact
-        identifier.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dial(QString,int)");
-        snd << "0501234567" << 123456;        
-    */
+    //deprecated
     int dial(const QString& number, int contactId);
     
-    /*!
-        \fn dialVideo(const QString& number)
-        
-        This method makes a video call dial command to
-        Phone Application. It is intended to be used via Qt Highway.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dial(QString)");
-        snd << "0501234567";        
-    */
+    //deprecated
     void dialVideo(const QString& number);
 
-    /*!
-        \fn dial(const QString& number)
-        
-        This method makes a video call dial command to
-        Phone Application. It is intended to be used via Qt Highway.
-        Caller's name is shown according to the given Phonebook contact
-        identifier.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dial(QString,int)");
-        snd << "0501234567" << 123456;        
-    */
+    //deprecated
     void dialVideo(const QString& number, int contactId);
     
-    /*!
-        \fn dialVoip(const QString& address)
-        
-        This method makes a voip call dial command to
-        Phone Application. It is intended to be used via Qt Highway.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dialVoip(QString)");
-        snd << "address@domain";        
-    */
+    //deprecated
     void dialVoip(const QString& address);
     
-    /*!
-        \fn dialVoip(const QString& address, int contactId)
-        
-        This method makes a voip call dial command to
-        Phone Application. It is intended to be used via Qt Highway.
-        Caller's name is shown according to the given Phonebook contact
-        identifier.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dialVoip(QString,int)");
-        snd << "address@domain" << 123456;        
-    */
+    //deprecated
     void dialVoip(const QString& address, int contactId);
     
-    /*!
-        \fn dialVoipService(const QString& address, int contactId)
-        
-        This method makes a voip call dial command to
-        Phone Application. It is intended to be used via Qt Highway.
-        Call is made by given service (id).
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dialVoipService(QString,int)");
-        snd << "address@domain" << 123;        
-    */
+    //deprecated
     void dialVoipService(const QString& address, int serviceId);
     
-    /*!
-        \fn dialVoipService(const QString& address, int serviceId, int contactId)
-        
-        This method makes a voip call dial command to
-        Phone Application. It is intended to be used via Qt Highway.
-        Call is made by given service (id).
-        Caller's name is shown according to the given Phonebook contact
-        identifier.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","dialVoipService(QString,int,int)");
-        snd << "address@domain" << 123 << 12345;        
-    */
+    //deprecated
     void dialVoipService(const QString& address, int serviceId, int contactId);
     
 private:
+	
+    /*!
+        \fn QString modifyPhoneNumber(QString& number)
+        
+        Returns a modified phone number string. Strips white spaces, makes prefix changes etc. 
+    */
+    QString modifyPhoneNumber(const QString &number) Q_REQUIRED_RESULT;
+	
     /*!
         \fn QString simplified(QString& number)
         
         Returns a string that has whitespaces, '(', ')', '-', '[', and ']' chars removed 
     */
     static QString simplified(const QString &number) Q_REQUIRED_RESULT;
+    
+    /*!
+        \fn QString japanPrefixModifications(QString& number)
+        
+        Returns a string that has japan specific configuration modifications made 
+    */
+    QString japanPrefixModifications(const QString &number) Q_REQUIRED_RESULT;
 
 
 private:
-    MPECallControlIF &m_call;
-    MPECallSettersIF &m_parameters;    
+    MPECallControlIF  &m_call;
+    MPECallSettersIF  &m_parameters;
+    XQSettingsManager *m_settingsManager;
 };
 
 #endif // DIALERSERVICEDEPRICATED_H

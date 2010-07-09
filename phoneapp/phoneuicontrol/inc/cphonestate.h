@@ -121,26 +121,6 @@ class CPhoneState :
             TTimeIntervalMicroSeconds aKeyPressDuration );
 
         /**
-        * From CAknAppUi, initialise a menupane (dynamic).
-        *
-        * @param aResourceId It is the resource id for the pane.
-        * @param aMenuPane It is the menu pane corresponding to the resource.
-        */
-        IMPORT_C virtual void DynInitMenuPaneL(
-            TInt aResourceId,
-            CEikMenuPane* aMenuPane );
-
-        /**
-        * From CAknAppUi, initialise a menubar (dynamic).
-        *
-        * @param aResourceId It is the resource id for the bar.
-        * @param aMenuBar It is the menu bar corresponding to the resource.
-        */
-        IMPORT_C virtual void DynInitMenuBarL(
-            TInt aResourceId,
-            CEikMenuBar* aMenuBar );
-
-        /**
         * From CEikAppUi. For Idle indicator
         */
         IMPORT_C virtual void HandleSystemEventL(
@@ -245,27 +225,10 @@ class CPhoneState :
         IMPORT_C void HandleLongHashL();
 
         /**
-        * Informs view to start Transition effect
-        * @param aType a transition effect, default none
-        * EndTransEffect() must be called when update is done.
-        */
-        IMPORT_C void BeginTransEffectLC( TStateTransEffectType aType = ENoneType );
-
-        /**
-        * Informs view to complete Transition effect
-        */
-        IMPORT_C void EndTransEffect();
-
-        /**
         * Checks whether customized dialer view is active,
         * @return ETrue if customized dialer is active
         */
         IMPORT_C TBool IsCustomizedDialerVisibleL() const;
-
-        /**
-        * Closes customized dialer view
-        */
-        IMPORT_C void CloseCustomizedDialerL();
 
         /**
          * Plays DTMF tone for key event
@@ -352,18 +315,6 @@ class CPhoneState :
         */
         IMPORT_C TBool IsAnyQueryActiveL();
 
-        /**
-        * Check if menu bar is visible
-        * @return boolean value indicating that menu bar is visible
-        */
-        IMPORT_C TBool IsMenuBarVisibleL() const;
-
-        /**
-         * Sets context menu to correspond the incall options menu
-         *
-         */
-        IMPORT_C virtual void UpdateInCallContextMenuL();
-
         /*
         * If KFeatureIdFfSimlessOfflineSupport is undefined and
         * UI shows note which will be closed by key event then
@@ -375,12 +326,6 @@ class CPhoneState :
         
     public: // NumberEntry functions.
 
-        /**
-        * Passes create number entry command forward if NE can be created.
-        */
-        IMPORT_C virtual void HandleCreateNumberEntryL(
-                const TKeyEvent& aKeyEvent,
-                TEventCode aEventCode );
         /**
         * Check if number entry is used
         * @return boolean value indicating that number entry is used
@@ -491,21 +436,6 @@ class CPhoneState :
         IMPORT_C void GetRemoteInfoDataL( TInt aCallId, TDes& aData );
 
         /**
-         * Sets context menu
-         *
-         * @param aResourceId   resource
-         */
-        IMPORT_C virtual void SetContextMenuL( TInt aResourceId );
-
-        /**
-         * Sets context menu to correspond the incoming options menu
-         *
-         * @param aCallId   incoming call id
-         */
-        IMPORT_C virtual void UpdateIncomingContextMenuL( TInt aCallId );
-
-
-        /**
         * Show note
         * @param aResourceId resource id to be resolved
         */
@@ -531,12 +461,6 @@ class CPhoneState :
             TInt aContentCbaResourceId,
             TDes* aDataText,
             TBool aSendKeyEnabled = EFalse );
-
-        /**
-        * Check if note is visible
-        * @return boolean value indicating that note is visible
-        */
-        IMPORT_C TBool IsNoteVisibleL();
 
         /**
         * Handle numeric key event
@@ -686,41 +610,9 @@ class CPhoneState :
         IMPORT_C void SetTouchPaneButtons( TInt aResourceId );
 
         /*
-        * Sets touchpane visibility.
-        *
-        * @param ETrue if visible otherwise EFalse.
-        */
-        IMPORT_C void SetTouchPaneVisible( TBool aVisible );
-
-        /*
         * Destroys touchpane buttons.
         */
         IMPORT_C void DeleteTouchPaneButtons();
-
-        /*
-        * Enables touchpane button that holds given command id.
-        *
-        * @param aCommandId Command id.
-        */
-        IMPORT_C void SetTouchPaneButtonEnabled( TInt aCommandId );
-
-        /*
-        * Disables touchpane button that holds given command id.
-        *
-        * @param aCommandId Command id.
-        */
-        IMPORT_C void SetTouchPaneButtonDisabled( TInt aCommandId );
-
-        /*
-        * Checks if DTMF editor is active,
-        * @return true is DTMF is active
-        */
-        IMPORT_C TBool IsDTMFEditorVisibleL() const;
-
-        /**
-        * Closes dtmf editor.
-        */
-        IMPORT_C void CloseDTMFEditorL();
 
         /**
         * Set default flags values.
@@ -745,16 +637,6 @@ class CPhoneState :
         * @param aCallId: the call id of the call
         */
         IMPORT_C void HandleDisconnectingL( TInt aCallId );
-
-        /**
-        * Returns customized dialer menu resource id
-        */
-        IMPORT_C TInt CustomizedDialerMenuResourceIdL();
-
-        /**
-        * Returns customized dialer CBA resource id
-        */
-        IMPORT_C TInt CustomizedDialerCbaResourceIdL();
         
         /**
         * Opens soft reject message editor.
@@ -797,11 +679,6 @@ class CPhoneState :
         IMPORT_C void StoreNumberEntryContentL();
 
         /**
-        * Restores the number entry content from the cache
-        */
-        IMPORT_C void RestoreNumberEntryContentL();
-
-        /**
         * Clears the number entry content cache
         */
         IMPORT_C void ClearNumberEntryContentCache();
@@ -815,11 +692,6 @@ class CPhoneState :
          * Checks if on screen dialer feature is supported.
          */
         IMPORT_C TBool IsOnScreenDialerSupported() const;
-
-        /**
-        * Informs phoneengine that phone number has been edited i.e. phonenumber parser is run
-        */
-        IMPORT_C virtual  void HandleNumberEntryEdited();
 
         /**
          * Returns ETrue if alphanumeric characters are supported.
@@ -838,19 +710,6 @@ class CPhoneState :
          * Internal number entry handling methods.
          */
          void NumberEntryClearL();
-         
-          
-         /**
-         * Dims silence touch button if call is not alerting.
-         * @param None
-         */
-         IMPORT_C void UpdateSilenceButtonDimming();
-
-         /**
-         * Sets toolbar dimming.
-         * @param aDimmed ETrue if dimmed
-         */
-         IMPORT_C void SetToolbarDimming( TBool aDimmed );
 
          /**
          * Sets toolbar loudspeaker button enabled.
@@ -880,11 +739,6 @@ class CPhoneState :
        TBool IsWaitingCallL( const TInt aCallId );
 
        /**
-       * Shows dtmf dialer
-       */
-       void ShowDtmfDialerL();
-
-       /**
        * Checks status of KFeatureIdSideVolumeKeys and KTelephonyLVFlagScrollVolumeKeys
        * keys. If KTelephonyLVFlagScrollVolumeKeys is false and KFeatureIdSideVolumeKeys is true
        * then side volume keys are only supported and method returns true, otherwise false.
@@ -902,12 +756,6 @@ class CPhoneState :
     private:
 
         /**
-        * Update incall indicator
-        * @param aCallState a call state
-        */
-        void UpdateIncallIndicatorL( TInt aCallState );
-
-        /**
         * Handle EPEMessageChangedCallDuration
         * @param aCallId call id of the message
         */
@@ -917,11 +765,6 @@ class CPhoneState :
         * Update profile display
         */
         void UpdateProfileDisplayL();
-
-        /**
-        * Update operator display
-        */
-        void UpdateOperatorDisplayL();
 
         /**
         * Sends key down event to the phone engine
@@ -940,11 +783,6 @@ class CPhoneState :
         void SendKeyEventL(
             const TKeyEvent& aKeyEvent,
             TEventCode aEventCode );
-
-        /**
-        * ETrue if title pane is visible
-        */
-        TBool TitlePaneIsVisibleL() const;
 
         /**
         * Change Audio volume level
@@ -1023,12 +861,6 @@ class CPhoneState :
         static void UiUpdateCleanup(TAny* aThis );
 
         /**
-        * TCleanupOperation to call EndTransEffect, if leave occurs
-        * after BeginTransEffect().
-        */
-        static void EffectCleanup(TAny* aThis );
-
-        /**
         * Gets volume level from ui control.
         */
         TInt GetVolumeLevel();
@@ -1104,22 +936,6 @@ class CPhoneState :
         */
         void LoadResource( TDes& aData, const TInt aResource ) const;
 
-        /**
-        * Opens virtual keyboard.
-        */
-        void OpenVkbL();
-
-    private: // NumberEntry functions.
-
-        /**
-        * Handles key events in situations when there exists a number entry.
-        * In this case number entry may be visible or hidden.
-        * @param aKeyEvent - key event
-        * @param aEventCode - event code
-        */
-        void KeyEventForExistingNumberEntryL(
-            const TKeyEvent& aKeyEvent,
-            TEventCode aEventCode );
 
     protected:  // Data
 

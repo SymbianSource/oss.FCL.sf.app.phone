@@ -25,7 +25,8 @@ DEPENDPATH += . ../../src/
 INCLUDEPATH += .
 INCLUDEPATH += ../../../inc
 INCLUDEPATH += ../../../cptelephonyutils/inc
-DEFINES += BUILD_NETWORKPLUGIN BUILD_PSETWRAPPER BUILD_CPTELEPHONYUTILS
+DEFINES += BUILD_NETWORKPLUGIN BUILD_PSETWRAPPER \
+           BUILD_CPTELEPHONYUTILS BUILD_PSUINOTES
 
 QT -= gui
 QT += testlib
@@ -47,9 +48,9 @@ HEADERS += ../../src/cpnetworkplugin.h \
            ../../src/cpnetworkpluginform.h \
            ../../src/cellulardatasettings.h \
            ../../../cptelephonyutils/inc/cpplugincommon.h \
-           ../../../cptelephonyutils/inc/cpphonenotes.h \
            ../../../cptelephonyutils/inc/cpphonelocalisation.h \
            /epoc32/include/platform/mw/psetwrapper.h \
+           /epoc32/include/platform/mw/psuinotes.h \
            /epoc32/include/platform/mw/psetcliwrapper.h \
            /epoc32/include/platform/mw/psetcallwaitingwrapper.h \
            /epoc32/include/platform/mw/psetcalldivertingwrapper.h \
@@ -60,7 +61,7 @@ SOURCES += ../../../tsrc/mocks/mock_cpnetworkplugin.cpp \
            ../../../tsrc/mocks/mock_psetwrapper.cpp \
            ../../../tsrc/mocks/mock_psetnetworkwrapper.cpp \
            ../../../tsrc/mocks/mock_cpplugincommon.cpp \
-           ../../../tsrc/mocks/mock_cpphonenotes.cpp \
+           ../../../tsrc/mocks/mock_psuinotes.cpp \
            ../../../tsrc/mocks/mock_cpphonelocalisation.cpp \
            ../../../tsrc/mocks/mock_hbdialog.cpp \
            ../../../tsrc/mocks/mock_hbwidget.cpp \

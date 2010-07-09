@@ -59,12 +59,11 @@ CpTelephonyPluginView::CpTelephonyPluginView() :
         DPRINT << ": Loading cpcallsplugin";
         items.append(groupItemFromPlugin(
                 PLUGIN_NAME_CALLSPLUGIN));
-       // CpSettingFormItemData* expandedItem = items.last();  
+        CpSettingFormItemData* expandedItem = items.last();  
 
         DPRINT << ": Loading vmbxcpplugin";
         items.append(groupItemFromPlugin(
                 PLUGIN_NAME_VMBXPLUGIN));
-
 
         DPRINT << ": Loading cpdivertsplugin";
         items.append(groupItemFromPlugin(
@@ -81,7 +80,6 @@ CpTelephonyPluginView::CpTelephonyPluginView() :
         
         form->setModel(model);
         
-        /*
         if (expandedItem) {
             QModelIndex expandedItemIndex = model->indexFromItem(expandedItem);
             
@@ -89,7 +87,6 @@ CpTelephonyPluginView::CpTelephonyPluginView() :
                 form->setExpanded(expandedItemIndex, true);
             }
         }
-        */
     }
     
     DPRINT << ": OUT";

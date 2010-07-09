@@ -110,28 +110,6 @@ CPhoneSystemEventHandler::~CPhoneSystemEventHandler()
     }
 
 // ---------------------------------------------------------
-// CPhoneSystemEventHandler::DynInitMenuPaneL
-// ---------------------------------------------------------
-//
-void CPhoneSystemEventHandler::DynInitMenuPaneL(
-    TInt aResourceId,
-    CEikMenuPane* aMenuPane )
-    {
-    iStateMachine->State()->DynInitMenuPaneL( aResourceId, aMenuPane );
-    }
-
-// ---------------------------------------------------------
-// CPhoneSystemEventHandler::DynInitMenuBarL
-// ---------------------------------------------------------
-//
-void CPhoneSystemEventHandler::DynInitMenuBarL(
-    TInt aResourceId,
-    CEikMenuBar* aMenuBar )
-    {
-    iStateMachine->State()->DynInitMenuBarL( aResourceId, aMenuBar );
-    }
-
-// ---------------------------------------------------------
 // CPhoneSystemEventHandler::HandleSystemEventL
 // ---------------------------------------------------------
 //

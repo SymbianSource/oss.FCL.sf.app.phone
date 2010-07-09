@@ -29,9 +29,9 @@
 #include <hblabel.h>
 #include <hbparameterlengthlimiter.h>
 #include <cpitemdatahelper.h>
+#include <psuinotes.h>
 #include "cpdivertplugingroup.h"
 #include "cpplugincommon.h"
-#include "cpphonenotes.h"
 #include "cppluginlogging.h"
 #include "cpdivertitemdata.h"
 
@@ -134,9 +134,9 @@ void CpDivertPluginGroup::createVoiceCallItems(CpSettingFormItemData *parent)
     DPRINT << ": IN";
     CpSettingFormItemData *page = new CpSettingFormItemData(
                 HbDataFormModelItem::GroupPageItem,
-                hbTrId("txt_phone_setlabel_service_val_voice_divert"));
+                hbTrId("txt_phone_setlabel_service_val_voice_divert"),
+                this);
     page->setObjectName("voiceCallSettingsGroupItem");
-    parent->appendChild(page);
 
     m_DataItemVoiceAllCalls = createDivertItem(
             DivertConditionUnconditional,
@@ -190,10 +190,9 @@ void CpDivertPluginGroup::createVideoCallItems(CpSettingFormItemData *parent)
     
     CpSettingFormItemData *page = new CpSettingFormItemData(
             HbDataFormModelItem::GroupPageItem,
-            hbTrId("txt_phone_setlabel_service_val_video_divert"));
+            hbTrId("txt_phone_setlabel_service_val_video_divert"),
+            this);
     page->setObjectName("videoCallSettingsGroupItem"); 
-    
-    parent->appendChild(page);
     
     m_DataItemVideoAllCalls = createDivertItem(
             DivertConditionUnconditional,
@@ -273,8 +272,6 @@ CpDivertItemData *CpDivertPluginGroup::createDivertItem(
         item, SIGNAL(itemClicked(CpDivertItemData&)),
         this, SLOT(changeDivertingStateRequested(CpDivertItemData&)));
     
-    parent->appendChild(item);
-    
     DPRINT << ": OUT";
     return item;
 }
@@ -296,10 +293,10 @@ void CpDivertPluginGroup::itemShown(const QModelIndex& item)
     bool isInitialStatusQueryDoneForItem = 
         modelItem->contentWidgetData("text").isValid();
     if (!isInitialStatusQueryDoneForItem) {
-        CpDivertItemData *item = static_cast<CpDivertItemData*>(modelItem); 
-        if (qvariant_cast<PsCallDivertingCondition>(item->property("condition")) !=
+        CpDivertItemData *pitem = static_cast<CpDivertItemData*>(modelItem); 
+        if (qvariant_cast<PsCallDivertingCondition>(pitem->property("condition")) !=
                 DivertConditionAllConditionalCases) {
-            addToDivertingRequestQueue(CheckDivertStatus, *item);
+            addToDivertingRequestQueue(CheckDivertStatus, *pitem);
         }
     }
     
@@ -342,7 +339,7 @@ void CpDivertPluginGroup::divertRequestProcessed()
 
     if (m_divertRequestQueue.isEmpty()) {
         // Queue empty so cancel process note
-        CpPhoneNotes::instance()->cancelNote(m_activeProgressNoteId);
+        PsUiNotes::instance()->cancelNote(m_activeProgressNoteId);
     }
     
     DPRINT << ": OUT";
@@ -557,8 +554,8 @@ void CpDivertPluginGroup::processDivertingRequestQueue()
                 m_divertCommand.iCondition,
                 bscParam(m_divertCommand.iServiceGroup) );
             
-            if (!CpPhoneNotes::instance()->noteShowing()) {
-                CpPhoneNotes::instance()->showGlobalProgressNote(
+            if (!PsUiNotes::instance()->noteShowing()) {
+                PsUiNotes::instance()->showGlobalProgressNote(
                         m_activeProgressNoteId, 
                         hbTrId("txt_common_info_requesting"));
             }
@@ -600,7 +597,7 @@ void CpDivertPluginGroup::handleDivertingChanged(
 {
     DPRINT << ": IN";
     
-    CpPhoneNotes::instance()->cancelNote(m_activeNoteId);
+    PsUiNotes::instance()->cancelNote(m_activeNoteId);
     DPRINT << "aPlural:" << aPlural;
     DPRINT << "iCondition:" << aSetting.iCondition;
     DPRINT << "iNoReplyTimer:" << aSetting.iNoReplyTimer;
@@ -621,10 +618,10 @@ void CpDivertPluginGroup::handleDivertingChanged(
     switch (aSetting.iStatus) {
         case DivertingStatusActive: {
             if (aPlural) {
-                CpPhoneNotes::instance()->showNotificationDialog(
+                PsUiNotes::instance()->showNotificationDialog(
                     hbTrId("txt_phone_info_diverts_activated"));
             } else {
-                CpPhoneNotes::instance()->showNotificationDialog(
+                PsUiNotes::instance()->showNotificationDialog(
                     hbTrId("txt_phone_info_divert_activated"));
             }
             QString voiceMailBoxNumber;
@@ -640,17 +637,17 @@ void CpDivertPluginGroup::handleDivertingChanged(
         case DivertingStatusNotRegistered:  
         case DivertingStatusInactive:
             if (aPlural) {
-                CpPhoneNotes::instance()->showNotificationDialog(
+                PsUiNotes::instance()->showNotificationDialog(
                     hbTrId("txt_phone_info_diverts_deactivated"));
             } else {
-                CpPhoneNotes::instance()->showNotificationDialog(
+                PsUiNotes::instance()->showNotificationDialog(
                     hbTrId("txt_phone_info_divert_deactivated"));
             }
             break;
         case DivertingStatusNotProvisioned:
         case DivertingStatusUnknown:
         default:
-            CpPhoneNotes::instance()->showNotificationDialog(
+            PsUiNotes::instance()->showNotificationDialog(
                 hbTrId("txt_phone_info_request_not_completed"));
             break; 
     }
@@ -707,10 +704,10 @@ void CpDivertPluginGroup::handleDivertingError(int aReason)
     m_divertRequestQueue.clear();
         
     // Cancel previous note
-    CpPhoneNotes::instance()->cancelNote(m_activeNoteId);
+    PsUiNotes::instance()->cancelNote(m_activeNoteId);
         
     // Show error note
-    CpPhoneNotes::instance()->showGlobalErrorNote(m_activeNoteId, aReason);
+    PsUiNotes::instance()->showGlobalErrorNote(m_activeNoteId, aReason);
     
     DPRINT << ": OUT";
 }
@@ -922,7 +919,7 @@ void CpDivertPluginGroup::popUpNumberEditorClosed(HbAction* action)
         DPRINT << ": m_divertCommand.iNumber "
             << m_divertCommand.iNumber;
         if (m_divertCommand.iNumber.isEmpty()) {
-            CpPhoneNotes::instance()->showNotificationDialog(hbTrId("txt_phone_info_invalid_phone_number"));
+            PsUiNotes::instance()->showNotificationDialog(hbTrId("txt_phone_info_invalid_phone_number"));
         }
     }
     if (m_dialog) {
@@ -951,8 +948,8 @@ void CpDivertPluginGroup::setCallDiverting(PSCallDivertingCommand& command)
     int result = m_callDivertingWrapper->setCallDiverting(
             command, bscParam(command.iServiceGroup));
     if (0 == result) {
-        if (!CpPhoneNotes::instance()->noteShowing()) {
-            CpPhoneNotes::instance()->showGlobalProgressNote(
+        if (!PsUiNotes::instance()->noteShowing()) {
+            PsUiNotes::instance()->showGlobalProgressNote(
                     m_activeProgressNoteId, hbTrId("txt_common_info_requesting"));
         }
     } else {
@@ -1313,6 +1310,7 @@ void CpDivertPluginGroup::nextPhaseForActivateDivert(bool ok)
                 m_activateDivertPhase = NonePhase;
                 setCallDiverting(m_divertCommand);
             }
+                break;
             default:
                 DPRINT << "Error: unknown enum value";
                 break;

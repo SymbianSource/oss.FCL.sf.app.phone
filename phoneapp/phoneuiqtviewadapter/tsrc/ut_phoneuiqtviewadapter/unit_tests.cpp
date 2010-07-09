@@ -61,7 +61,6 @@ extern bool m_removeGlobalWaitNoteCalled;
 extern bool m_ordinalPositionCalled;
 extern bool m_sendToBackgroundCalled;
 
-
 #define PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
     { \
@@ -935,8 +934,6 @@ void TestPhoneUIQtViewAdapter::testHandleCommandL ()
     QVERIFY( EPhoneViewResponseFailed == m_adapter->HandleCommandL (
             EPhoneIsDTMFDialerVisible) );    
     QVERIFY( EPhoneViewResponseFailed == m_adapter->HandleCommandL (
-            EPhoneViewIsDTMFEditorVisible) ); 
-    QVERIFY( EPhoneViewResponseFailed == m_adapter->HandleCommandL (
             EPhoneViewGetNumberEntryIsVisibleStatus) ); 
     /*QVERIFY( EPhoneViewResponseFailed == m_adapter->HandleCommandL (
             EPhoneViewGetNumberEntryIsUsedStatus) );*/ 
@@ -951,8 +948,6 @@ void TestPhoneUIQtViewAdapter::testHandleCommandL ()
     QVERIFY( EPhoneViewResponseSuccess == m_adapter->HandleCommandL (0, &boolean) );
     
     m_adapter->ExecuteCommand(0);
-    m_adapter->ExecuteCommand(EPhoneViewSetDtmfOptionsFlag, &boolean);
-    m_adapter->ExecuteCommand(EPhoneViewSetVideoCallDTMFVisibilityFlag, &boolean);
     m_adapter->ExecuteCommand(0, &boolean);
     m_adapter->ExecuteCommandL(0, 0, &boolean);
     _LIT (KText, "test");

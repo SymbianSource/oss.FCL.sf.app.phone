@@ -33,7 +33,7 @@ symbian {
                    ../../../../inc \
                    ../../../phoneui2/srcdata
 
-    LIBS += -lphoneuiutils
+    LIBS += -lmocklib -lsymbianmock -lphoneuiutils
 
     TARGET.CAPABILITY = ALL -TCB
     DEFINES += FT_SYMBIAN_INTEGRATION
@@ -43,7 +43,9 @@ symbian {
 # Input
 HEADERS += ../../inc/phonemessagecontroller.h
 SOURCES += ../../src/phonemessagecontroller.cpp
-HEADERS += ../../inc/phoneapplauncher.h
-SOURCES += phoneapplauncher_stub.cpp
 SOURCES += unit_tests.cpp
 
+# MOCKED DEPENDENCIES
+HEADERS += ../../inc/phoneapplauncher.h
+SOURCES += ../mocks/mock_phoneapplauncher.cpp
+SOURCES += ../../../../internal/mocks/phoneapp/phoneuiutils/mock_cphonecenrepproxy.cpp

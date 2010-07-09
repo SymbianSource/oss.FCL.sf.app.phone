@@ -26,11 +26,16 @@
 class LogsModel;
 class LogsFilter;
 class XQSettingsKey;
+class XQAiwRequest;
+class PhoneVisibilityHandler;
+
 class PhoneIndicatorController : public QObject
     {
     Q_OBJECT
 public:
-    PhoneIndicatorController(QObject *parent = 0);
+    PhoneIndicatorController(
+        PhoneVisibilityHandler& visibilityHandler,
+        QObject *parent = 0);
     virtual ~PhoneIndicatorController();
     
     void setActiveCallData();
@@ -42,6 +47,7 @@ private slots:
     void updateMissedCallIndicator(const XQSettingsKey &key, const QVariant &value);
     void updateDivertIndicator(const XQSettingsKey &key, const QVariant &value);
     void setMissedallIndicatorData();
+    void handleInteraction(QString type,QVariantMap data);
   
 private:
     void updateDiverIndicator(bool activeDiverts);
@@ -55,6 +61,8 @@ private:
 
     QString             m_cli;
     QString             m_callImage;
+    XQAiwRequest*       m_request;
+    PhoneVisibilityHandler& m_phoneVisibilityHandler;
     };
 
 #endif /* PHONEINDICATORCONTROLLER_H_ */

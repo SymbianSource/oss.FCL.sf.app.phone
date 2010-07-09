@@ -20,7 +20,7 @@
 
 #include <QtTest/QtTest>
 #include <mockservice.h>
-#include <hbmainwindow.h>
+#include <xqaiwrequest.h>
 
 class NetworkHandlingStarterPrivate;
 
@@ -38,17 +38,15 @@ private slots:
     void init();
     void cleanup();
     
-    void t_LaunchNetworksettingsPlugin();
-    void t_ViewDone();
     void t_ShowNote();
     void t_RemoveNote();
+    void t_LaunchNetworksettingsPlugin();
 
     
 private:
     
     NetworkHandlingStarterPrivate *m_NetworkHandlingStarterPrivate;
-    HbMainWindow m_HbMainWindow;
-    QList<HbMainWindow *> m_MainWindowList;
+    XQAiwRequest *m_XQAiwRequest;
 
 };
 

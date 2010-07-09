@@ -94,7 +94,12 @@ void CTelDMAudioAccessoryListener::AvailableOutputsChanged( CTelephonyAudioRouti
     // Stores available output
     for ( TInt i=0; i< availableOutputs.Count();i++ )
         {
-        iOutputArray.Append( availableOutputs[i] );
+        TRAPD(err, iOutputArray.AppendL( availableOutputs[i] ));
+        if(err != KErrNone) 
+            {
+            FTRACE( FPrint( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged failed =%d"),
+                err ))
+            }
         }
     
     FLOG( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged>" ) )  
@@ -107,7 +112,7 @@ void CTelDMAudioAccessoryListener::AvailableOutputsChanged( CTelephonyAudioRouti
 void CTelDMAudioAccessoryListener::OutputChanged( CTelephonyAudioRouting& 
                                     aTelephonyAudioRouting)
     {
-    FLOG( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged<" ) )
+    FLOG( _L( "CTelDMAudioAccessoryListener::OutputsChanged<" ) )
     CTelephonyAudioRouting::TAudioOutput output = aTelephonyAudioRouting.Output();
     
         switch ( output )
@@ -135,9 +140,9 @@ void CTelDMAudioAccessoryListener::OutputChanged( CTelephonyAudioRouting&
         default:
             break;     
         }
-    FTRACE( FPrint( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged =%d"), 
+    FTRACE( FPrint( _L( "CTelDMAudioAccessoryListener::OutputsChanged =%d"), 
                                                             iIsActiveAccessory ))
-    FLOG( _L( "CTelDMAudioAccessoryListener::AvailableOutputsChanged>" ) )
+    FLOG( _L( "CTelDMAudioAccessoryListener::OutputsChanged>" ) )
     }
 // -----------------------------------------------------------------------------
 // CTelDMAudioAccessoryListener::SetOutputComplete

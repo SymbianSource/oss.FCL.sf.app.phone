@@ -38,29 +38,19 @@ public:
     
 public slots:
     /*!
-        \fn playDTMFTone(const QChar& keyToPlay)
-        
-        This method plays DTMF tone matching given character.
-        If character doesn't match any supported DTMF tone
-        it is ignored.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.services.telephony","playDTMFTone(QChar)");
-        snd << "5";
+    deprecated
     */
     void playDTMFTone(const QChar& keyToPlay);
 
     /*!
-        \fn stopDTMFPlay()
-        
-        This method stops playing DTMF tone if it is currently played.
+    deprecated
     */
     void stopDTMFPlay();
     
     
 private:
     MPECallControlIF &m_call;
-    MPECallSettersIF &m_parameters;    
+    MPECallSettersIF &m_parameters;
 };
 
 #endif // DTMFSERVICE_H

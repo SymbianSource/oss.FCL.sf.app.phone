@@ -20,7 +20,8 @@ TARGET =
 DEPENDPATH += . ../../src/
 INCLUDEPATH += .
 INCLUDEPATH +=../../../cptelephonyutils/inc
-DEFINES += BUILD_CPTELEPHONYUTILS BUILD_PSETWRAPPER BUILD_SSSETTINGSWRAPPER 
+DEFINES += BUILD_CPTELEPHONYUTILS BUILD_PSETWRAPPER \
+           BUILD_SSSETTINGSWRAPPER BUILD_PSUINOTES
 
 QT -= gui
 QT += testlib
@@ -42,9 +43,9 @@ SOURCES += ut_cpdivertplugin.cpp
 HEADERS += ../../src/cpdivertplugin.h \
            ../../src/cpdivertplugingroup.h \
            ../../src/cpdivertitemdata.h \
-           ../../../cptelephonyutils/inc/cpphonenotes.h \
            ../../../cptelephonyutils/inc/cpplugincommon.h \
            /epoc32/include/platform/mw/psetwrapper.h \
+           /epoc32/include/platform/mw/psuinotes.h \
            /epoc32/include/platform/mw/psetcliwrapper.h \
            /epoc32/include/platform/mw/psetcallwaitingwrapper.h \
            /epoc32/include/platform/mw/psetcalldivertingwrapper.h \
@@ -59,5 +60,5 @@ SOURCES += ../../src/cpdivertplugin.cpp \
 SOURCES += ../../../tsrc/mocks/mock_psetcalldivertingwrapper.cpp \
            ../../../tsrc/mocks/mock_sssettingswrapper.cpp \
            ../../../tsrc/mocks/mock_cpplugincommon.cpp \
-           ../../../tsrc/mocks/mock_cpphonenotes.cpp \
+           ../../../tsrc/mocks/mock_psuinotes.cpp \
            ../../../tsrc/mocks/mock_psetwrapper.cpp 

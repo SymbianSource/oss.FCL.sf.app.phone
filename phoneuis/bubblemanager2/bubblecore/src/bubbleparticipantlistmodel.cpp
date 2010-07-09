@@ -23,20 +23,18 @@ class Participant
 public:
     int mBubbleId;
     QString mName;
-    int mState;
-    bool mCiphering;
+    Qt::TextElideMode mNameClip;
 
 public:
-    Participant(int bubbleId, const QString &name, int state, bool ciphering);
+    Participant(int bubbleId, const QString &name, Qt::TextElideMode mNameClip);
 
 };
 
 Participant::Participant(
     int bubbleId,
     const QString &name,
-    int state,
-    bool ciphering) :
-    mBubbleId(bubbleId), mName(name), mState(state), mCiphering(ciphering)
+    Qt::TextElideMode nameClip) :
+    mBubbleId(bubbleId), mName(name), mNameClip(nameClip)
 {
 }
 
@@ -64,10 +62,8 @@ QVariant BubbleParticipantListModel::data(
 
     if (role == Qt::DisplayRole) {
         return player->mName;
-    } else if (role == Qt::DecorationRole) {
-        return player->mState;
-    } else if (role == Qt::StatusTipRole) {
-        return player->mCiphering;
+    } if (role == Qt::TextAlignmentRole) {
+        return player->mNameClip;
     } else {
         return QVariant();
     }
@@ -76,8 +72,7 @@ QVariant BubbleParticipantListModel::data(
 void BubbleParticipantListModel::addParticipant(
     int bubbleId,
     const QString &name,
-    int state,
-    bool ciphering)
+    Qt::TextElideMode nameClip)
 {
     bool itemExist=false;
 
@@ -85,8 +80,8 @@ void BubbleParticipantListModel::addParticipant(
     for (int i=0; i < mParticipants.count(); i++) {
         Participant* p = mParticipants[i];
         if (p->mBubbleId == bubbleId) {
-            if (isDataChanged(*p,name,state,ciphering)) {
-                updateData(*p,name,state,ciphering);
+            if (isDataChanged(*p,name,nameClip)) {
+                updateData(*p,name,nameClip);
                 QModelIndex index = QAbstractListModel::createIndex(i,0);
                 emit dataChanged(index,index);
             }
@@ -98,7 +93,7 @@ void BubbleParticipantListModel::addParticipant(
     if (!itemExist) {
         // insert new item
         beginInsertRows(QModelIndex(), mParticipants.count(), mParticipants.count());
-        Participant* p = new Participant(bubbleId,name,state, ciphering);
+        Participant* p = new Participant(bubbleId,name,nameClip);
         mParticipants.append(p);
         endInsertRows();
     }
@@ -107,12 +102,11 @@ void BubbleParticipantListModel::addParticipant(
 bool BubbleParticipantListModel::isDataChanged(
     const Participant& participant,
     const QString &name,
-    int state,
-    bool ciphering) const
+    Qt::TextElideMode nameClip) const
 {
-    if ( participant.mName != name ||
-         participant.mState != state ||
-         participant.mCiphering != ciphering ) {
+    if ( participant.mName != name ) {
+        return true;
+    } else if (participant.mNameClip != nameClip) {
         return true;
     } else {
         return false;
@@ -122,12 +116,10 @@ bool BubbleParticipantListModel::isDataChanged(
 void BubbleParticipantListModel::updateData(
     Participant& participant,
     const QString &name,
-    int state,
-    bool ciphering) const
+    Qt::TextElideMode nameClip) const
 {
     participant.mName = name;
-    participant.mState = state;
-    participant.mCiphering = ciphering;
+    participant.mNameClip = nameClip;
 }
 
 void BubbleParticipantListModel::removeParticipant(int bubbleId)

@@ -71,10 +71,6 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
         */
         void StoreNumberEntryContentL();
         
-        /**
-        * Restores the number entry content from the cache 
-        */        
-        void RestoreNumberEntryContentL();
 
         /**
         * Check if number entry content is stored
@@ -89,11 +85,6 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
         void ClearNumberEntryContentCache();
         
         /**
-        * Creates number entry
-        */ 
-        void CreateNumberEntryL();
-        
-        /**
         * Set Number Entry visibility.
         * @param aVisible ETrue if numberentry is wanted to be shown
         *                 (Note ETrue will set NE CBA's)
@@ -101,11 +92,6 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
         *                 (Note EFalse doesnt affect to CBA's)
         */
         void SetNumberEntryVisibilityL( TPhoneCmdParamBoolean aVisible );
-        
-        /**
-        * Passes create number entry command forward if NE can be created.
-        */
-        void HandleCreateNumberEntryL();
         
         /**
         * Check if number entry is used
@@ -125,20 +111,6 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
          */
         HBufC* PhoneNumberFromEntryLC() const;
         
-        /**
-        * Informs phoneengine that phone number has been edited i.e. phonenumber parser is run
-        */
-        void HandleNumberEntryEdited();
-        
-        /**
-        * Handles key events in situations when there exists a number entry.
-        * In this case number entry may be visible or hidden.
-        * @param aKeyEvent - key event
-        * @param aEventCode - event code
-        */
-        void KeyEventForExistingNumberEntryL(
-                const TKeyEvent& aKeyEvent,
-                TEventCode aEventCode );
         
         /**
         * Returns ETrue if alphanumeric characters are supported.
@@ -157,16 +129,6 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
          * Internal number entry handling methods.
          */
         void NumberEntryClearL() const;
-         
-        /**
-         * Returns ETrue if NumberEntry is in numeric mode.
-         */
-        TBool NumberEntryInNumericModeL();
-        
-        /**
-         * Toggles alpha numeric mode.
-         */
-        TBool NumberEntryToggleAlphaNumericModeL();
         
     private:
         

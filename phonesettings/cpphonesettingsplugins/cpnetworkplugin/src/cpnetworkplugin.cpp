@@ -79,16 +79,22 @@ QList<CpSettingFormItemData*> CpNetworkPlugin::createSettingFormItemData(
  */
 CpBaseSettingView *CpNetworkPlugin::createSettingView(const QVariant &hint) const 
     {
-    Q_UNUSED(hint)
     DPRINT << ": IN";
     
     CpItemDataHelper *itemDataHelper(NULL);
     QScopedPointer<CpSettingFormEntryItemDataImpl<CpNetworkPluginView> > 
-        data( new CpSettingFormEntryItemDataImpl<CpNetworkPluginView>(
+        data(new CpSettingFormEntryItemDataImpl<CpNetworkPluginView>(
                     *itemDataHelper,
                     hbTrId("txt_cp_dblist_mobile_network"),
                     m_networkStatus->statusText()));
     CpBaseSettingView *view = data->createSettingView();
+    
+    CpNetworkPluginView *networkPluginView = qobject_cast<CpNetworkPluginView*>(view);
+    QVariantHash hash = hint.value<QVariantHash>();
+    if ((hash.value("command").toString().compare("searchAvailableNetworks",Qt::CaseInsensitive) == 0) &&
+        networkPluginView){
+        networkPluginView->searchAvailableNetworks();
+    }
     
     DPRINT << ": OUT";
     return view;

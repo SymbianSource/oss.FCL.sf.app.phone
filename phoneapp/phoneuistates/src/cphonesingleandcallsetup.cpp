@@ -220,7 +220,7 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
     CaptureKeysDuringCallNotificationL( EFalse );
 
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
+    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
@@ -266,7 +266,7 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
     CaptureKeysDuringCallNotificationL( EFalse );
     
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
+    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
@@ -294,14 +294,10 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetup::HandleIdleL()");
     
-    BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
  
     // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     // Find out do we have single or outgoing call left
     TPhoneCmdParamInteger activeCallCount;
@@ -336,7 +332,6 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
 
         // Single call was terminated
         SetTouchPaneButtons( EPhoneCallSetupButtons );
-        SetToolbarDimming( ETrue );
         SetToolbarButtonLoudspeakerEnabled();
         // Update call setup CBAs
         UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
@@ -344,7 +339,6 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
         }
         
     EndUiUpdate();
-    EndTransEffect();
     }
 
 // -----------------------------------------------------------

@@ -66,13 +66,7 @@ CPhoneSingleAndWaiting::CPhoneSingleAndWaiting(
 //
 CPhoneSingleAndWaiting::~CPhoneSingleAndWaiting()
     {
-    if ( iViewCommandHandle )
-        {
-        TPhoneCmdParamBoolean dtmfSendFlag;
-        dtmfSendFlag.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommand( EPhoneViewSetVideoCallDTMFVisibilityFlag,
-                &dtmfSendFlag );
-        }
+
     }
 
 // -----------------------------------------------------------
@@ -191,11 +185,9 @@ TBool CPhoneSingleAndWaiting::HandleCommandL( TInt aCommand )
             }
 
         case EPhoneInCallCmdNewCall:
-            LaunchNewCallQueryL();
             break;
 
         case EPhoneInCallCmdNewCallCall:
-            CallFromNewCallQueryL();
             break;
 
         case EPhoneCallComingCmdReject: // fall through
@@ -228,65 +220,6 @@ TBool CPhoneSingleAndWaiting::HandleCommandL( TInt aCommand )
         }
 
     return commandStatus;
-    }
-
-// -----------------------------------------------------------
-// CPhoneSingleAndWaiting::OpenMenuBarL
-// -----------------------------------------------------------
-//
-void CPhoneSingleAndWaiting::OpenMenuBarL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates,
-        "CPhoneSingleAndWaiting::OpenMenuBarL() ");
-    TInt resourceId ( KErrNone );
-
-
-    if ( !IsAutoLockOn() )
-        {
-         if( IsVideoCallActiveL() || IsVideoCallRingingL() )
-            {
-            //DTMF hiding will be set to TRUE
-            if( IsVideoCallActiveL() )
-                {
-                TPhoneCmdParamBoolean dtmfSendFlag;
-                dtmfSendFlag.SetBoolean( ETrue );
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewSetVideoCallDTMFVisibilityFlag,
-                        &dtmfSendFlag );
-                }
-            if ( IsNumberEntryVisibleL() )
-                {
-                resourceId = EPhoneVideoCallWaitingMenubarWithNumberEntry;
-                }
-            else
-                {
-                resourceId = EPhoneVideoCallWaitingMenubar;
-                }
-            }
-
-        else // single voice and waiting voice
-            {
-            if ( IsNumberEntryVisibleL() )
-                {
-                resourceId = EPhoneCallWaitingMenubarWithNumberEntry;
-                }
-            else
-                {
-                resourceId = EPhoneCallWaitingMenubar;
-                }
-            }
-        }
-    else
-        {
-        resourceId = EPhoneCallWaitingLockMenubar;
-        }
-
-
-    TPhoneCmdParamInteger integerParam;
-    integerParam.SetInteger(
-        CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( resourceId ) );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen,
-        &integerParam );
     }
 
 // --------------------------------------------------------------
@@ -354,8 +287,6 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::HandleIdleL() ");
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     if ( iSingleCallId == KErrNotFound )
         {
@@ -434,19 +365,17 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
             CheckDisableHWKeysAndCallUIL();
             
             SetTouchPaneButtons( EPhoneIncomingCallButtons );
-            SetTouchPaneButtonEnabled( EPhoneCallComingCmdSilent );
             
             // Bring up callhandling view
             BringIncomingToForegroundL();
 
             //Set incoming cba
             iCbaManager->UpdateIncomingCbaL( callStateData.CallId() );
-            UpdateSilenceButtonDimming();
             
             // Play ringtone
             SetRingingTonePlaybackL( callStateData.CallId() );
             }
-        SetToolbarDimming( ETrue );
+
         SetBackButtonActive(EFalse);
         EndUiUpdate();
 
@@ -454,13 +383,6 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
         }
     else
         {
-        // Effect is shown when dialer exist.
-        TBool effectStarted ( EFalse );
-        if ( !NeedToSendToBackgroundL() )
-            {
-            BeginTransEffectLC( ENumberEntryOpen );
-            effectStarted = ETrue;
-            }
 
         BeginUiUpdateLC();
 
@@ -474,8 +396,6 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
                 {
                 // Return phone to the background if send to background is needed.
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
 
                 UpdateCbaL( EPhoneCallHandlingInCallCBA );
                 }
@@ -509,10 +429,7 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
 
         SetTouchPaneButtons( EPhoneIncallButtons );
         EndUiUpdate();
-        if( effectStarted )
-            {
-            EndTransEffect();
-            }
+
         // CBA updates in above if-else conditions
         iStateMachine->ChangeState( EPhoneStateSingle );
         }
@@ -590,12 +507,6 @@ void CPhoneSingleAndWaiting::HandleUnholdL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::HandleUnholdL() ");
-    // Close menu if focus is somewhere else than number entry.
-    if ( !IsNumberEntryUsedL() )
-        {
-        // Close menubar
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-        }
 
     // Show bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -627,14 +538,6 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL() ");
-
-    // Effect is shown when dialer exist.
-    TBool effectStarted ( EFalse );
-    if ( !NeedToSendToBackgroundL() )
-        {
-        BeginTransEffectLC( ENumberEntryOpen );
-        effectStarted = ETrue;
-        }
     
     // Reset blocked keys list
     iStateMachine->PhoneStorage()->ResetBlockedKeysList();
@@ -660,8 +563,6 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
             // Return phone to the background if send to background is needed.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
 
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
-
             UpdateCbaL( EPhoneCallHandlingInCallCBA );
             }
         else
@@ -676,51 +577,12 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
         UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
         }
 
-    // Close dtmf dialer if exist.
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-        {
-        CloseDTMFEditorL();
-        }
-    else if ( iOnScreenDialer && IsCustomizedDialerVisibleL() )
-        {
-        CloseCustomizedDialerL();
-        }
-
     SetTouchPaneButtons( EPhoneTwoSinglesButtons );
     EndUiUpdate();
-    if( effectStarted )
-        {
-        EndTransEffect();
-        }
 
     // Go to two singles state
     // CBA updates in above if-else conditions
     iStateMachine->ChangeState( EPhoneStateTwoSingles );
-    }
-
-// ---------------------------------------------------------
-// CPhoneSingleAndWaiting::CallFromNewCallQueryL
-// ---------------------------------------------------------
-//
-void CPhoneSingleAndWaiting::CallFromNewCallQueryL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates,
-        "CPhoneSingleAndWaiting::CallFromNewCallQueryL() ");
-    // First get the phone number from the dialog
-    TPhoneCmdParamString phoneNumberParam;
-    HBufC *content = HBufC::NewLC( KPhoneNumberEntryBufferSize );
-    TPtr ptr( content->Des() );
-    phoneNumberParam.SetString( &ptr );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetTextQueryContent,
-        &phoneNumberParam );
-
-    // Store the phone number
-    iStateMachine->PhoneEngineInfo()->SetPhoneNumber( ptr );
-
-    // clean up stack
-    CleanupStack::PopAndDestroy( content );
-
-    DialVoiceCallL();
     }
 
 // -----------------------------------------------------------
@@ -732,7 +594,6 @@ void CPhoneSingleAndWaiting::HandleDiallingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::HandleDiallingL() ");
 
-    BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC();
 
     // Hide number entry if it exists
@@ -749,7 +610,6 @@ void CPhoneSingleAndWaiting::HandleDiallingL( TInt aCallId )
     SetTouchPaneButtons( EPhoneCallSetupButtons );
 
     EndUiUpdate();
-    EndTransEffect();
 
     // Update call setup CBAs
     UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
@@ -766,8 +626,6 @@ void CPhoneSingleAndWaiting::DisplayCallSetupL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::DisplayCallSetupL() ");
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     // Remove dialogs if necessary
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );

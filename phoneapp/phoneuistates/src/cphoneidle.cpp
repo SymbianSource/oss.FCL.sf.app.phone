@@ -146,17 +146,6 @@ EXPORT_C void CPhoneIdle::HandleErrorL( const TPEErrorInfo& aErrorInfo )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneIdle::HandleErrorL() ");
     
-    TPhoneCmdParamBoolean blockingDialogStatus;
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetBlockingDialogStatus, 
-        &blockingDialogStatus );
-
-    if( blockingDialogStatus.Boolean() )
-        {
-        blockingDialogStatus.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetBlockingDialogStatus, 
-            &blockingDialogStatus );
-        }
-    
     CPhoneState::HandleErrorL( aErrorInfo );
     }
 

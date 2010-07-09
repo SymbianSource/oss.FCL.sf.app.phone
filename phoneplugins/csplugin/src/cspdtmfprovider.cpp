@@ -156,7 +156,7 @@ void CSPDTMFProvider::AddObserverL( const MCCPDTMFObserver& aObserver )
     {
     if ( iObservers.Find( &aObserver ) == KErrNotFound )
         {
-        iObservers.Append( &aObserver );
+        iObservers.AppendL( &aObserver );
         }
     }
 

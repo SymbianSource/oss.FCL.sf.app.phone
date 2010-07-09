@@ -15,27 +15,19 @@
 @rem
 
 echo OFF
+call :RUN ut_phonebubblewrapper
+call :RUN ut_phonecommandextensionwrapper
+call :RUN ut_phonemessagecontroller
+call :RUN ut_phonenotecontroller
+call :RUN ut_phoneresourceadapter
+call :RUN ut_phoneuicommandcontroller
+call :RUN ut_phoneuiqtbuttonscontroller
+call :RUN ut_phoneuiqtviewadapter
+call :RUN ut_phonevisibilityhandler
+call :RUN ut_telephonyservice
 
-del \epoc32\winscw\c\data\ut_phoneuiqtbuttonscontroller.log
-\epoc32\release\winscw\udeb\ut_phoneuiqtbuttonscontroller.exe -o c:\data\ut_phoneuiqtbuttonscontroller.log
-type \epoc32\winscw\c\data\ut_phoneuiqtbuttonscontroller.log
+:RUN
+del \epoc32\winscw\c\data\%1.log
+\epoc32\release\winscw\udeb\%1.exe -o c:\data\%1.log
+type \epoc32\winscw\c\data\%1.log
 
-del \epoc32\winscw\c\data\ut_phoneuiqtviewadapter.log
-\epoc32\release\winscw\udeb\ut_phoneuiqtviewadapter.exe -o c:\data\ut_phoneuiqtviewadapter.log
-type \epoc32\winscw\c\data\ut_phoneuiqtviewadapter.log
-
-del \epoc32\winscw\c\data\ut_phonebubblewrapper.log
-\epoc32\release\winscw\udeb\ut_phonebubblewrapper.exe -o c:\data\ut_phonebubblewrapper.log
-type \epoc32\winscw\c\data\ut_phonebubblewrapper.log
-
-del \epoc32\winscw\c\data\ut_phoneresourceadapter.log
-\epoc32\release\winscw\udeb\ut_phoneresourceadapter.exe -o c:\data\ut_phoneresourceadapter.log
-type \epoc32\winscw\c\data\ut_phoneresourceadapter.log
-
-del \epoc32\winscw\c\data\ut_telephonyservice.log
-\epoc32\release\winscw\udeb\ut_telephonyservice.exe -o c:\data\ut_telephonyservice.log
-type \epoc32\winscw\c\data\ut_telephonyservice.log
-
-del \epoc32\winscw\c\data\ut_phonevisibilityhandler.log
-\epoc32\release\winscw\udeb\ut_phonevisibilityhandler.exe -o c:\data\ut_phonevisibilityhandler.log
-type \epoc32\winscw\c\data\ut_phonevisibilityhandler.log

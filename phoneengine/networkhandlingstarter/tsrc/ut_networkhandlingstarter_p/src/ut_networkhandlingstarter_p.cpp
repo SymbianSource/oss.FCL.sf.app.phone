@@ -22,9 +22,10 @@
   ut_networkhandlingstarter_p::ut_networkhandlingstarter_p
  */
 ut_networkhandlingstarter_p::ut_networkhandlingstarter_p() 
-    : m_NetworkHandlingStarterPrivate(0)
+    : m_NetworkHandlingStarterPrivate(0),
+      m_XQAiwRequest(NULL)
 {
-    SmcDefaultValue< QList<HbMainWindow *> >::SetL(m_MainWindowList);
+    
 }
 
 /*!
@@ -53,9 +54,7 @@ void ut_networkhandlingstarter_p::init()
 void ut_networkhandlingstarter_p::cleanup()
 {
     delete m_NetworkHandlingStarterPrivate;
-    m_NetworkHandlingStarterPrivate = 0;
-    m_MainWindowList.clear();
-    
+    m_NetworkHandlingStarterPrivate = 0;    
     reset();
 }
 
@@ -65,22 +64,10 @@ void ut_networkhandlingstarter_p::cleanup()
 void ut_networkhandlingstarter_p::t_LaunchNetworksettingsPlugin()
 {
     m_NetworkHandlingStarterPrivate->LaunchCpNetworkPluginView();
-    
-    m_MainWindowList.append(&m_HbMainWindow);
-    expect("HbInstance::allMainWindows").returns(m_MainWindowList).times(2);
+    XQAiwInterfaceDescriptor descriptor;
+    m_XQAiwRequest = new XQAiwRequest(descriptor, "test", false);
+    SmcDefaultValue<XQAiwRequest *>::SetL(m_XQAiwRequest);
     m_NetworkHandlingStarterPrivate->LaunchCpNetworkPluginView();
-}
-
-/*!
-  ut_networkhandlingstarter_p::t_ViewDone
- */
-void ut_networkhandlingstarter_p::t_ViewDone()
-{
-    m_NetworkHandlingStarterPrivate->ViewDone();
-    
-    m_MainWindowList.append(&m_HbMainWindow);
-    expect("HbInstance::allMainWindows").returns(m_MainWindowList);
-    m_NetworkHandlingStarterPrivate->ViewDone();
 }
 
 /*!

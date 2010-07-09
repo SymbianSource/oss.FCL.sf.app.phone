@@ -160,66 +160,7 @@ void CPhoneUnattendedTransferCmdHandler::ShowTransferDialerL()
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneUnattendedTransferCmdHandler::ShowTransferDialerL" )
-    
-    CPhoneState* phoneState = static_cast<CPhoneState*>( iStateMachine.State() );
-    if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) )
-        {
-        TPhoneCmdParamCustomDialer customDialerParam;
-        customDialerParam.SetDialerController( iTransferDialerController );
-           
-        // Set dialer to transfer mode.
-        iViewCommandHandle.ExecuteCommandL( 
-            EPhoneViewShowCustomizedDialer,
-            &customDialerParam );
-        
-        // Open transfer dialer
-        phoneState->BeginTransEffectLC( ENumberEntryCreate );
-        iViewCommandHandle.ExecuteCommandL( EPhoneViewCreateNumberEntry );
-        phoneState->EndTransEffect();
-        
-        // Update CBA to transfer dialer CBA
-        TPhoneCmdParamInteger resourceId;
-        resourceId.SetInteger( CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( iTransferDialerController->CbaResourceId() ) );
-        iViewCommandHandle.ExecuteCommandL( EPhoneViewUpdateCba,
-            &resourceId );
-        }
-    else
-        {
-        HBufC *text = HBufC::NewLC( KPhoneNumberEntryBufferSize );
-        TPtr ptr( text->Des() );
-        // Pre-populate the query with the number entry contents, if it exists
-        if ( phoneState->IsNumberEntryUsedL() )
-            {
-            // get the number entry contents
-            TPhoneCmdParamString stringParam;
-            stringParam.SetString( &ptr );
-            iViewCommandHandle.ExecuteCommandL(
-                EPhoneViewGetLocalizedNumberFromEntry,
-                &stringParam );
-            }
-        
-        TPhoneCmdParamQuery queryDialogParam;
-        queryDialogParam.SetQueryType( EPhoneGenericTextQuery );
-        queryDialogParam.SetQueryResourceId( 
-            CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneVoIPTransferAddressQuery ) );
-        
-        queryDialogParam.SetDefaultCba( CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneVoIPTransferAddressQueryEmptySoftkeys ) );
-        
-        queryDialogParam.SetContentCba( CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneVoIPTransferAddressQueryNotEmptySoftkeys ) );
-        
-        queryDialogParam.SetDataText( &ptr );
-        queryDialogParam.SetSendKeyEnabled( ETrue );
-        
-        // Display dialog        
-        iViewCommandHandle.ExecuteCommandL( 
-            EPhoneViewShowQuery, &queryDialogParam );
-        
-        CleanupStack::PopAndDestroy( text );
-        }
+
     }
 
 
@@ -245,13 +186,6 @@ void CPhoneUnattendedTransferCmdHandler::DoUnattendedTransferL()
         iViewCommandHandle.ExecuteCommand(
             EPhoneViewGetNumberFromEntry,
             &transferTarget );  
-        
-        phoneState->CloseCustomizedDialerL();
-        }
-    else
-        {
-        iViewCommandHandle.ExecuteCommandL( 
-            EPhoneViewGetTextQueryContent, &transferTarget );
         }
     
     // Set transfer to address to the phoneengine
@@ -275,7 +209,6 @@ void CPhoneUnattendedTransferCmdHandler::CloseTransferDialerL()
     
     CPhoneState* phoneState = 
         static_cast< CPhoneState* >( iStateMachine.State() );
-    phoneState->CloseCustomizedDialerL();
     }
 
 
@@ -292,9 +225,9 @@ void CPhoneUnattendedTransferCmdHandler::OpenSingleItemContactFetchL(
     TPhoneCmdParamInteger integerParam;
     integerParam.SetInteger( aFetchType );
     
-    iViewCommandHandle.HandleCommandL( 
+    /*iViewCommandHandle.HandleCommandL( 
         EPhoneViewOpenSingleItemFetchDialog, 
-        &integerParam );
+        &integerParam );*/
     }
 
 // ---------------------------------------------------------------------------

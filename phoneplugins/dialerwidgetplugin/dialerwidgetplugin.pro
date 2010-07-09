@@ -12,9 +12,13 @@ TEMPLATE = lib
 CONFIG += plugin \
     hb \
     mobility
+HB += hbfeedback
 MOBILITY = serviceframework
+
 win32:PLUGIN_SUBDIR = /hsresources/import/widgetregistry/20022F44
 symbian:PLUGIN_SUBDIR = /private/20022F35/import/widgetregistry/20022F44
+TARGET_DIR = /private/20022F35/import/widgetregistry/20022F7E  
+
 LIBS += -lhswidgetmodel
 DEPENDPATH += ./inc \
     ./src
@@ -35,6 +39,12 @@ symbian: {
     BLD_INF_RULES.prj_exports +=  \
      "$${LITERAL_HASH}include <platform_paths.hrh>" \
      "./rom/dialerwidgetplugin.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(dialerwidgetplugin.iby)"
+     
+    TARGET_DIR = /private/20022F35/import/widgetregistry/20022F44
+    widgetResources.path = $${TARGET_DIR}
+    widgetResources.sources += resource/$${TARGET}.xml
+    widgetResources.sources += resource/$${TARGET}.manifest
+    DEPLOYMENT += widgetResources
 }
 OUTPUT_DIR = $$PWD/bin
 SOURCE_DIR = $$PWD/inc
@@ -52,6 +62,4 @@ INCLUDEPATH += $$MOC_DIR
 plugin:!isEmpty(PLUGIN_SUBDIR):DESTDIR = $$OUTPUT_DIR/$$PLUGIN_SUBDIR
 include(dialerwidgetplugin.pri)
 exportResources(./resource/*.manifest, $$PLUGIN_SUBDIR)
-exportResources(./resource/*.svg, $$PLUGIN_SUBDIR)
-exportResources(./resource/*.png, $$PLUGIN_SUBDIR)
 RESOURCES += dialerwidgetpluging.qrc

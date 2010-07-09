@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -17,11 +17,10 @@
 
 #include <hbdevicemessagebox.h>
 #include <hbaction.h>
-#include <cppluginlauncher.h>
-#include <hbinstance.h>
-#include <hbview.h>
 #include <xqserviceutil.h>
-#include <cpbasesettingview.h>
+#include <xqaiwrequest.h>
+#include <xqappmgr.h>
+#include <hbtranslator.h>
 
 #include "networkhandlingstarter_p.h"
 #include "networkhandlingstarterlogging.h"
@@ -30,12 +29,15 @@
 /*!
     Constructor of NetworkHandlingStarterPrivate.
  */
-NetworkHandlingStarterPrivate::NetworkHandlingStarterPrivate(QObject *parent) : 
-    QObject(parent), m_note(NULL)
+NetworkHandlingStarterPrivate::NetworkHandlingStarterPrivate(QObject *parent) 
+    : 
+    QObject(parent), 
+    m_networkListener(NULL), 
+    m_note(NULL)
 {
     DPRINT << ": IN";
     
-    QT_TRAP_THROWING(m_networkListener = CNetworkListener::NewL(*this));
+    QT_TRAP_THROWING(m_networkListener = CNetworkListener::NewL(*this))
     
     DPRINT << ": OUT";
 }
@@ -67,6 +69,8 @@ void NetworkHandlingStarterPrivate::ShowNote()
         delete m_note;
         m_note = NULL;
     }
+    HbTranslator commonTranslator("common");
+    HbTranslator telephone_cpTranslator("telephone_cp");
     m_note = new HbDeviceMessageBox(
         hbTrId("txt_phone_info_network_lost_select_network"), 
         HbMessageBox::MessageTypeQuestion);
@@ -86,6 +90,7 @@ void NetworkHandlingStarterPrivate::ShowNote()
 /*!
     NetworkHandlingStarterPrivate::RemoveNote()
  */
+
 void NetworkHandlingStarterPrivate::RemoveNote()
 {
     DPRINT << ": IN";
@@ -100,75 +105,35 @@ void NetworkHandlingStarterPrivate::RemoveNote()
 }
 
 /*!
-    NetworkHandlingStarterPrivate::InitaliseCpNetworkPluginView()
- */
-bool NetworkHandlingStarterPrivate::InitaliseCpNetworkPluginView()
-{
-    DPRINT << ": IN";
-    
-    bool ok(false);
-    CpBaseSettingView* view = CpPluginLauncher::launchSettingView("cpnetworkplugin");
-    if (view) {
-        if (QString(view->metaObject()->className()) == 
-            QString("CpNetworkPluginView")) {
-            QObject::connect(
-                view, SIGNAL(aboutToClose()), 
-                this, SLOT(ViewDone()));
-            QObject::connect(
-                this, SIGNAL(SearchAvailableNetworks()), 
-                view, SLOT(SearchAvailableNetworks()));
-            ok = true;
-        }
-    }
-    
-    DPRINT << ": OUT";
-    return ok;
-}
-
-/*!
     NetworkHandlingStarterPrivate::LaunchCpNetworkPluginView()
  */
 void NetworkHandlingStarterPrivate::LaunchCpNetworkPluginView()
 {
     DPRINT << ": IN";
     
-    if (InitaliseCpNetworkPluginView()) {
-        DPRINT << ": Show network settings view";
-        HbMainWindow *mainWnd = MainWindow();
-        if (mainWnd) {
-            mainWnd->show();
-            XQServiceUtil::toBackground(false);
-        }
-        emit SearchAvailableNetworks();
-    }
+    XQApplicationManager appManager;
+    QList<QVariant> args;
+    QString service;
+    QString interface;
+    QString operation;
+    QVariantHash hash;
+    QVariantMap map;
+    
+    interface = "com.nokia.symbian.ICpPluginLauncher";
+    operation = "launchSettingView(QString,QVariant)";
+    args << QVariant("cpnetworkplugin.dll");            
+    hash["command"] = "searchAvailableNetworks";
+    args << hash;
+
+    QScopedPointer<XQAiwRequest> request( service.isEmpty() ? 
+        appManager.create(interface, operation, false):
+        appManager.create(service, interface, operation, false));
+    if (request){
+        request->setArguments(args);
+        request->send();
+    } 
     
     DPRINT << ": OUT";
-}
-
-/*!
-    NetworkHandlingStarterPrivate::ViewDone()
- */
-void NetworkHandlingStarterPrivate::ViewDone()
-{
-    HbMainWindow *mainWnd = MainWindow();
-    if (mainWnd) {
-        mainWnd->hide();
-    }
-    XQServiceUtil::toBackground(true);
-}
-
-/*!
-    NetworkHandlingStarterPrivate::MainWindow()
- */
-
-HbMainWindow * NetworkHandlingStarterPrivate::MainWindow() 
-{
-    HbMainWindow *window(NULL);
-    QList<HbMainWindow*> mainWindows = hbInstance->allMainWindows();
-    if (!mainWindows.isEmpty()) {
-        window = mainWindows.front();
-    }
-    return window;
 }
 
 // End of File.

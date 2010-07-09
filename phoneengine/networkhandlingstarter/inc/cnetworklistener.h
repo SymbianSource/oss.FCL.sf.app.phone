@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -22,13 +22,15 @@
 // System includes
 #include <e32base.h>
 #include <nwhandlingengine.h>
+#include <qsysteminfo.h>
 
 // User includes
 
 // Forward declarations
 class CNWSession;
-class CRepository;
 class MNetworkListenerObserver;
+
+using namespace QtMobility;
 
 /**
  *  Network info listener.
@@ -118,15 +120,15 @@ private: // data
     TBool iRegistered;
     
     /**
-     * Profile API.
-     */
-    CRepository* iProfileApi;
-    
-    /**
      * Observer.
      */
     MNetworkListenerObserver& iObserver;
-    
+
+    /**
+     * System device info API.
+     * Own.
+     */
+    QSystemDeviceInfo* iDeviceInfo;
     };
     
 #endif // CNETWORKLISTENER_H

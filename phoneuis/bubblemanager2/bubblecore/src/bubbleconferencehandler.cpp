@@ -122,8 +122,7 @@ void BubbleConferenceHandler::readBubbleHeader( const BubbleHeader& header )
          mModel->addParticipant(
             participant->bubbleId(),
             participant->cli(),
-            (int)participant->callState(),
-            !(mHeader->callFlags()&BubbleManagerIF::NoCiphering));
+            participant->cliClipDirection());
     }
 
     mHeading->readBubbleHeader(header);

@@ -16,7 +16,8 @@
 
 TEMPLATE = lib
 TARGET = cptelephonyutils
-CONFIG += hb
+CONFIG += hb mobility
+MOBILITY += systeminfo
 MOC_DIR = moc
 
 INCLUDEPATH += inc
@@ -24,11 +25,9 @@ SOURCEPATH += src
 
 # Input
 HEADERS += inc/cpplugincommon.h \
-           inc/cpphonenotes.h \
            inc/cpphonelocalisation.h 
            
-SOURCES += src/cpphonenotes.cpp \
-           src/cpphonelocalisation.cpp 
+SOURCES += src/cpphonelocalisation.cpp 
            
 symbian: {
     SOURCES += src/cpplugincommon.cpp 

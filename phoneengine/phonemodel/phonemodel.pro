@@ -32,7 +32,8 @@ symbian {
                    $$OS_LAYER_GLIB_SYSTEMINCLUDE
     INCLUDEPATH += ../../inc \
                    ../inc \
-                   ../phoneservices/inc 
+                   ../phoneservices/inc \
+                   /epoc32/include/mw/QtGui
     
     engineDefFiles = \
         "$${LITERAL_HASH}ifdef WINSCW" \
@@ -76,6 +77,7 @@ symbian {
             -lmediatorclient \
             -lestor \
             -lxqservice \
+            -lxqserviceutil \
             -llibglib \
             -lpsetwrapper \
             -lpsuinotes
@@ -177,6 +179,7 @@ for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$headers.pa
 BLD_INF_RULES.prj_exports += \
  "$${LITERAL_HASH}include <platform_paths.hrh>" \
  "./rom/phonengengine.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(phonengengine.iby)"
+BLD_INF_RULES.prj_exports += "./conf/ci_s60telephony.confml APP_LAYER_CONFML(ci_s60telephony.confml)"
 BLD_INF_RULES.prj_exports += "./conf/s60telephony.confml APP_LAYER_CONFML(s60telephony.confml)"
 BLD_INF_RULES.prj_exports += "./conf/s60telephony_japan.confml CONFML_EXPORT_PATH(s60telephony_japan.confml,japan)"
 BLD_INF_RULES.prj_exports += "./conf/s60telephony_101f87e3.crml APP_LAYER_CRML(s60telephony_101f87e3.crml)"

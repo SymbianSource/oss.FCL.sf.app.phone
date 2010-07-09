@@ -43,8 +43,12 @@ bool PhoneIndicatorInterface::handleInteraction(InteractionType type)
         switch (m_interaction) {
         case OpenMissedCallView:    //fallthrough
         case OpenCallUi:      //fallthrough
-        case OpenDiverSettingsView:
-            QThreadPool::globalInstance()->start(new PhoneIndicatorServiceSenderTask(m_interaction));
+        case OpenDiverSettingsView: {
+            // Launch services on the client side
+            QVariantMap data;
+            data.insert(QLatin1String("interaction"), m_interaction);
+            emit userActivated(data);
+            }
             break;
         case Deactivate:
             emit deactivate();

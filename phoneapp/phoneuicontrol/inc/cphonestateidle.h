@@ -212,11 +212,6 @@ class CPhoneStateIdle : public CPhoneState
         void HandleIdleL( TInt aCallId );
 
         /**
-        * Launches application.
-        */
-        void LaunchApplicationL();
-
-        /**
         * Send Exit command
         */
         void SendExitCommandL();
@@ -246,20 +241,8 @@ class CPhoneStateIdle : public CPhoneState
         */
         TBool RestoreOngoing();
         
-        /**
-        * Handles back command. 
-        */
-        void HandleBackCommandL();
 
-        /**
-         * Checks for application launching configurations from 
-         * central repository.
-         * @param aCode key code.
-         * @return ETrue if configuration found.
-         */        
-         TBool CheckAppLaunchingL( const TKeyCode aCode );
-
-         void HandleVoiceCallCommandL();
+        void HandleVoiceCallCommandL();
          
     private:
     

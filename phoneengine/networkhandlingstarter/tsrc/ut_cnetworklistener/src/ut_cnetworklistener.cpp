@@ -57,6 +57,9 @@ void ut_cnetworklistener::init()
     
     m_networkListener = CNetworkListener::NewL(*this);
     
+    QT_TRAP_THROWING(SmcDefaultValue<QSystemDeviceInfo::Profile>::SetL(
+        QSystemDeviceInfo::NormalProfile))
+    
     QVERIFY(verify());
 }
 
@@ -67,6 +70,8 @@ void ut_cnetworklistener::cleanup()
 {
     delete m_networkListener;
     m_networkListener = 0;
+    
+    SmcDefaultValue<QSystemDeviceInfo::Profile>::Reset();
     
     reset();
 }
@@ -141,7 +146,7 @@ void ut_cnetworklistener::t_NWLostDelayCallBack()
     TAny* pointer(NULL); 
     m_networkListener->NWLostDelayCallBack(pointer);
     
-    CNetworkListener* networklistener = CNetworkListener::NewL(*this);; 
+    CNetworkListener* networklistener = CNetworkListener::NewL(*this);
     m_networkListener->NWLostDelayCallBack( networklistener );
     delete networklistener;
 }

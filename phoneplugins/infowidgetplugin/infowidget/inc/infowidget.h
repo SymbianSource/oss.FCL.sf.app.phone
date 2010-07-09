@@ -133,19 +133,15 @@ signals:
 private:
     Q_DISABLE_COPY(InfoWidget)
     
-    // Engine for widget, owned
+    // Guarded objects, owned
     QScopedPointer<InfoWidgetEngine> m_engine;
-    
-    // Widget preference store, owned   
     QScopedPointer<InfoWidgetPreferences> m_preferences;
-
-    // Layout manager for widget, owned 
     QScopedPointer<InfoWidgetLayoutManager> m_layoutManager;
     
     // Translators, owned
     QList<QTranslator *> m_translators;
 
-    // Current widget layout, not owned 
+    // Widget main layout, not owned 
     QGraphicsLinearLayout *m_layout;
     
     // Currently animating item(s), not owned 

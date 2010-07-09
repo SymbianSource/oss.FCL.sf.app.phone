@@ -17,42 +17,45 @@
 #include <QDebug>
 #include <QString>
 #include <smcmockclassincludes.h>
-#include "cpphonenotes.h"
+#include <psuinotes.h>
 
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::CpPhoneNotes
+// PsUiNotes::PsUiNotes
 // -----------------------------------------------------------------------------
 //
-CpPhoneNotes::CpPhoneNotes( ): QObject(NULL) 
+PsUiNotes::PsUiNotes(  )
+    //:
+    //QObject( /**/ )
     {
     
     }
 
+
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::instance
+// PsUiNotes::instance
 // -----------------------------------------------------------------------------
 //
-CpPhoneNotes * CpPhoneNotes::instance(  )
+PsUiNotes * PsUiNotes::instance(  )
     {
-    static CpPhoneNotes theInstance;
+    static PsUiNotes theInstance;
     return &theInstance; 
     }
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::~CpPhoneNotes
+// PsUiNotes::~PsUiNotes
 // -----------------------------------------------------------------------------
 //
-CpPhoneNotes::~CpPhoneNotes(  )
+PsUiNotes::~PsUiNotes(  )
     {
 
     }
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::showGlobalProgressNote
+// PsUiNotes::showGlobalProgressNote
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::showGlobalProgressNote( 
+void PsUiNotes::showGlobalProgressNote( 
         int & noteId,
         const QString & text )
     {
@@ -62,10 +65,10 @@ void CpPhoneNotes::showGlobalProgressNote(
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::showGlobalNote
+// PsUiNotes::showGlobalNote
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::showGlobalNote( 
+void PsUiNotes::showGlobalNote( 
         int & noteId,
         const QString & text,
         HbMessageBox::MessageBoxType noteType )
@@ -77,10 +80,10 @@ void CpPhoneNotes::showGlobalNote(
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::showGlobalErrorNote
+// PsUiNotes::showGlobalErrorNote
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::showGlobalErrorNote( 
+void PsUiNotes::showGlobalErrorNote( 
         int & noteId,
         int errorCode )
     {
@@ -90,21 +93,21 @@ void CpPhoneNotes::showGlobalErrorNote(
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::showCallDivertDetails
+// PsUiNotes::showCallDivertDetails
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::showCallDivertDetails( 
-        const PSCallDivertingStatus & divertStatus )
+void PsUiNotes::showCallDivertDetails( 
+        const QList<PSCallDivertingStatus *> & divertingStatusList )
     {
-    SMC_MOCK_METHOD1( void, const PSCallDivertingStatus &, divertStatus )
+    SMC_MOCK_METHOD1( void, const QList<PSCallDivertingStatus *> &, divertingStatusList )
     }
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::showPasswordQueryDialog
+// PsUiNotes::showPasswordQueryDialog
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::showPasswordQueryDialog( 
+void PsUiNotes::showPasswordQueryDialog( 
         const QString & title,
         const QValidator & validator,
         int maxPasswordLength )
@@ -116,10 +119,10 @@ void CpPhoneNotes::showPasswordQueryDialog(
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::cancelNote
+// PsUiNotes::cancelNote
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::cancelNote( 
+void PsUiNotes::cancelNote( 
         int noteId )
     {
     SMC_MOCK_METHOD1( void, int, noteId )
@@ -127,64 +130,75 @@ void CpPhoneNotes::cancelNote(
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::noteShowing
+// PsUiNotes::noteShowing
 // -----------------------------------------------------------------------------
 //
-bool CpPhoneNotes::noteShowing(  )
+bool PsUiNotes::noteShowing(  )
     {
     SMC_MOCK_METHOD0( bool )
     }
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::finishedPasswordQueryDialog
+// PsUiNotes::finishedPasswordQueryDialog
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::finishedPasswordQueryDialog( 
-        HbAction * /*action*/ )
+void PsUiNotes::finishedPasswordQueryDialog( 
+        HbAction * action )
     {
-    //SMC_MOCK_METHOD1( void, HbAction *, action )
+//    SMC_MOCK_METHOD1( void, HbAction *, action )
     }
 
+
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::showNotificationDialog
+// PsUiNotes::showNotificationDialog
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::showNotificationDialog( 
+void PsUiNotes::showNotificationDialog( 
         const QString & text )
     {
     SMC_MOCK_METHOD1( void, const QString &, text )
     }
 
+
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::activeNoteAboutToClose
+// PsUiNotes::showGlobalNotificationDialog
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::activeNoteAboutToClose()
+void PsUiNotes::showGlobalNotificationDialog( 
+        const QString & text )
+    {
+    SMC_MOCK_METHOD1( void, const QString &, text )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PsUiNotes::activeNoteAboutToClose
+// -----------------------------------------------------------------------------
+//
+void PsUiNotes::activeNoteAboutToClose()
 {
     SMC_MOCK_METHOD0( void )
 }
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::handleProgressNoteCanceled
+// PsUiNotes::handleProgressNoteCanceled
 // -----------------------------------------------------------------------------
 //
-void CpPhoneNotes::handleProgressNoteCanceled()
+void PsUiNotes::handleProgressNoteCanceled()
 {
     SMC_MOCK_METHOD0( void )
 }
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneNotes::passwordTextChanged
+// PsUiNotes::passwordTextChanged
 // -----------------------------------------------------------------------------
 //
 
 
-void CpPhoneNotes::passwordTextChanged()
+void PsUiNotes::passwordTextChanged()
 {
     SMC_MOCK_METHOD0( void )
 }
-
-

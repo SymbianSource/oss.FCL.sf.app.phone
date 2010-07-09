@@ -121,12 +121,6 @@ void CPhoneGeneralGsmMessagesHandler::HandlePhoneEngineMessageL(
                 EBasic, 
                 EPhoneUIStates,
                 "CPhoneGeneralGsmMessagesHandler::EPEMessageIssuedSSRequest" );
-
-            TPhoneCmdParamBoolean booleanParam;
-            booleanParam.SetBoolean( EFalse );
-            iViewCommandHandle.ExecuteCommandL( 
-                EPhoneViewSetBlockingDialogStatus, 
-                &booleanParam );
             break;
             }
             
@@ -161,32 +155,11 @@ void CPhoneGeneralGsmMessagesHandler::HandlePhoneEngineMessageL(
                 EPhoneViewSetGlobalNotifiersDisabled,
                 &globalNotifierParam );
             
-            TPhoneCmdParamBoolean booleanParam;
-            booleanParam.SetBoolean( ETrue );
-            iViewCommandHandle.ExecuteCommandL( 
-                EPhoneViewSetBlockingDialogStatus, 
-                &booleanParam );
-            
             // Get active call count
             TPhoneCmdParamInteger activeCallCount;
             iViewCommandHandle.ExecuteCommandL(
                 EPhoneViewGetCountOfActiveCalls, &activeCallCount );
             
-            if( !activeCallCount.Integer() )
-                {
-                __PHONELOG(
-                    EBasic, 
-                    EPhoneUIStates,
-                    "CPhoneGeneralGsmMessagesHandler::EPEMessageIssuingSSRequest no active call" );
-                // Ensure that the dialer is activated to display local notes and dialogs properly.
-                TPhoneCmdParamAppInfo param;
-                param.SetAppUid( KUidPhoneApplication );
-                param.SetViewUid( KUidViewId );
-                param.SetCustomMessageId( TUid::Uid( KTouchDiallerViewCommand ) );
-                iViewCommandHandle.ExecuteCommandL( 
-                    EPhoneViewActivateAppViewWithCustomMessage, 
-                    &param );
-                }
             // Remove phoneumber query
             iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveQuery );
             break;

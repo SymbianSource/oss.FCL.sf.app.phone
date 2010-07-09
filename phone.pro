@@ -11,7 +11,7 @@
 #
 # Contributors:
 # 
-# Description: Project file for building Phone components
+# Description: Project file for building Phone components 
 #
 #
 
@@ -25,6 +25,7 @@ SUBDIRS += phoneengine/phoneservices
 SUBDIRS += phoneengine/phonemodel
 SUBDIRS += phoneengine/networkhandlingstarter
 SUBDIRS += phoneuis/bubblemanager2
+SUBDIRS += phoneuis/ussdeditor
 SUBDIRS += phoneplugins/phoneindicatorplugin
 SUBDIRS += phoneapp/phoneuiview2
 SUBDIRS += phoneapp/phoneuiqtviewadapter

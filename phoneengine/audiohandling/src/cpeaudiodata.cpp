@@ -411,11 +411,16 @@ TArray<TPEAudioOutput> CPEAudioData::GetAvailableOutputs(
 
     for (TInt j = 0; j < availableOutputs.Count(); j++)
         {
-        iPEavailableOutputs.Append(ConvertToPE(availableOutputs[j]));
-        TEFLOGSTRING3( KTAINT,
-                "AUD CPEAudioData::GetAvailableOutputs, index: %d, available: %d",
+        TInt err = iPEavailableOutputs.Append(ConvertToPE(availableOutputs[j]));
+        TEFLOGSTRING4( KTAINT,
+                "AUD CPEAudioData::GetAvailableOutputs, index: %d, available: %d, err: %d",
                 j,
-                availableOutputs[j] );
+                availableOutputs[j],
+                err );
+        if(err != KErrNone)
+            {
+            // Do nothing. Here for just to suppress the compile warning.
+            }
         }
 
     return iPEavailableOutputs.Array();

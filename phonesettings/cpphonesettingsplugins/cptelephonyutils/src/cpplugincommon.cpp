@@ -136,14 +136,17 @@ bool Tools::errorCodeTextMapping(const int errorcode, QString &errorText)
 }
 
 CpSettingsWrapper::CpSettingsWrapper(QObject *parent): 
-    QObject(parent)
+    QObject(parent),
+    m_settings(NULL),
+    m_deviceInfo(NULL)
 {
-    m_Settings = new XQSettingsManager();
+    m_settings = new XQSettingsManager(this);
+    m_deviceInfo = new QSystemDeviceInfo(this);
 }
 
 CpSettingsWrapper::~CpSettingsWrapper()
 {
-    delete m_Settings;
+    
 }
 
 bool CpSettingsWrapper::showCallDuration()
@@ -226,7 +229,7 @@ QVariant CpSettingsWrapper::readCenrepValue(
     const long int uid, const unsigned long int key) const
 {
     XQSettingsKey settingsKey(XQSettingsKey::TargetCentralRepository, uid, key);
-    QVariant ret = m_Settings->readItemValue(settingsKey);
+    QVariant ret = m_settings->readItemValue(settingsKey);
     DPRINT << "ret: " << ret;
     return ret;
 }
@@ -235,7 +238,7 @@ QVariant CpSettingsWrapper::readPubSubValue(
     const long int uid, const unsigned long int key) const
 {
     XQSettingsKey settingsKey(XQSettingsKey::TargetPublishAndSubscribe, uid, key);
-    QVariant ret = m_Settings->readItemValue(settingsKey);
+    QVariant ret = m_settings->readItemValue(settingsKey);
     DPRINT << "PubSub ret: " << ret;
     return ret;
 }
@@ -244,7 +247,7 @@ QString CpSettingsWrapper::readCenrepString(
     const long int uid, const unsigned long int key) const
 {
     XQSettingsKey settingsKey(XQSettingsKey::TargetCentralRepository, uid, key);
-    QString text = m_Settings->readItemValue(settingsKey, XQSettingsManager::TypeString).toString();
+    QString text = m_settings->readItemValue(settingsKey, XQSettingsManager::TypeString).toString();
     DPRINT << "text: " << text;
     return text;
 }
@@ -254,7 +257,7 @@ int CpSettingsWrapper::writeCenrepValue(
 {
     DPRINT << "uid:" << uid << ", key:" << key << ", settingsKeyValue:" << settingsKeyValue;
     XQSettingsKey settingsKey(XQSettingsKey::TargetCentralRepository, uid, key);
-    int err = m_Settings->writeItemValue(settingsKey, settingsKeyValue );
+    int err = m_settings->writeItemValue(settingsKey, settingsKeyValue );
     DPRINT << "err: " << err;
     return err;
 }
@@ -268,13 +271,7 @@ bool CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled()
 
 bool CpSettingsWrapper::isPhoneOffline() const
 {
-    bool offLinesupport(false);
-    if (XQSysInfo::isSupported(KFeatureIdOfflineMode)) {
-        offLinesupport = !readCenrepValue(
-                KCRUidCoreApplicationUIs.iUid, 
-                KCoreAppUIsNetworkConnectionAllowed).toBool();
-    }
-    return offLinesupport;
+    return QSystemDeviceInfo::OfflineProfile == m_deviceInfo->currentProfile();
 }
 
 bool CpSettingsWrapper::isOngoingCall() const
@@ -286,4 +283,3 @@ bool CpSettingsWrapper::isOngoingCall() const
     }
     return callOngoing;
 }
-

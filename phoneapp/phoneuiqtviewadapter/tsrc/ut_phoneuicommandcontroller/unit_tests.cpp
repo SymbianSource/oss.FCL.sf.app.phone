@@ -76,7 +76,7 @@ public:
     int volumeSliderValue () { m_volumeSliderValueCalled = true; return 5; };
     void removeVolumeSlider () { m_removeVolumeSliderCalled = true; };
     void setVolumeSliderValue (
-            int , 
+            int value, 
             int , 
             int , 
             int  ) { m_setVolumeSliderValueCalled = true; m_volumeSliderValue = value; };

@@ -29,7 +29,8 @@ RCC_DIR = rcc
 LIBS += -lcpframework \
         -lpsetwrapper \
         -lsssettingswrapper \
-        -lcptelephonyutils
+        -lcptelephonyutils \
+        -lpsuinotes
 
 # Input
 SOURCES += src/cpdivertplugingroup.cpp \

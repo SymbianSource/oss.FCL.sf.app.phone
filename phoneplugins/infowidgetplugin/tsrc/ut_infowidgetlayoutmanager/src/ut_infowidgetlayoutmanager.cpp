@@ -52,6 +52,7 @@ UT_InfoWidgetLayoutManager::UT_InfoWidgetLayoutManager()
 UT_InfoWidgetLayoutManager::~UT_InfoWidgetLayoutManager()
 {
     delete m_layoutManager;
+    delete m_documentLoader;
     delete m_graphicsWidgetPtr; 
 }
 
@@ -62,24 +63,13 @@ UT_InfoWidgetLayoutManager::~UT_InfoWidgetLayoutManager()
 void UT_InfoWidgetLayoutManager::init()
 {
     initialize();
-    bool loadResultInfoWidgetDocml = true;  
-    bool loadResultSettingsDialogDocml = true;
-    
-    QObjectList objectListInfoDisplayWidgets;
-    QObjectList objectListSettingsDialogWidgets;
-    
-    EXPECT(HbDocumentLoader::load)
-        .with(KInfoWidgetDocmlFile, loadResultInfoWidgetDocml)
-        .returns(&objectListInfoDisplayWidgets);
-    EXPECT(HbDocumentLoader::load)
-        .with(KSettingsDialogDocmlFile, loadResultSettingsDialogDocml)
-        .returns(&objectListSettingsDialogWidgets);
+
     m_layoutManager = new InfoWidgetLayoutManager();
-    
     m_documentLoader = new InfoWidgetDocumentLoader; 
     
     QVERIFY(verify());
 }
+
 
 /*!
   UT_InfoWidgetLayoutManager::cleanup
@@ -95,34 +85,6 @@ void UT_InfoWidgetLayoutManager::cleanup()
     m_documentLoader = NULL; 
 }
 
-/*!
-  UT_InfoWidgetLayoutManager::fillDisplayContainers
- */
-void UT_InfoWidgetLayoutManager::fillDisplayContainers()
-{
-    InfoWidgetLayoutManager::LayoutItemRole currentRole; 
-    
-    QList<InfoWidgetLayoutManager::LayoutItemRole> infoDisplayWidgetRoles = 
-            m_layoutManager->widgetRoles(InfoWidgetLayoutManager::InfoDisplay); 
-    foreach (currentRole, infoDisplayWidgetRoles) {
-        m_layoutManager->m_infoDisplayWidgets.insert(currentRole, m_graphicsWidgetPtr.data());    
-    }
-     
-    QList<InfoWidgetLayoutManager::LayoutItemRole> settingsDisplayWidgetRoles = 
-            m_layoutManager->widgetRoles(InfoWidgetLayoutManager::SettingsDialog); 
-    foreach (currentRole, settingsDisplayWidgetRoles) {
-        m_layoutManager->m_settingsDialogWidgets.insert(currentRole, m_graphicsWidgetPtr.data());    
-    }
-}
-
-/*!
-  UT_InfoWidgetLayoutManager::fillParams
- */
-void UT_InfoWidgetLayoutManager::fillParams(const QString & fileName,
-        bool * ok){
-    Q_UNUSED(fileName)
-    *ok = true;
-}
 
 /*!
   UT_InfoWidgetLayoutManager::fillCurrentWidgetsContainer
@@ -137,6 +99,7 @@ void UT_InfoWidgetLayoutManager::fillCurrentWidgetsContainer()
         m_layoutManager->m_widgets.insert(currentRole, m_graphicsWidgetPtr.data());    
     }
 }
+
 
 /*!
   UT_InfoWidgetLayoutManager::t_currentDisplayRole
@@ -160,12 +123,18 @@ void UT_InfoWidgetLayoutManager::t_currentWidgetRoles()
         m_layoutManager->currentWidgetRoles();
     QVERIFY(roles.count() == 0);
     
-    // Fill display container data 
-    fillDisplayContainers();
+    QObjectList objectList;
+    QGraphicsWidget widget;
     
-    QGraphicsLayout *activeLayout;    
-    activeLayout= m_layoutManager->layoutInfoDisplay(); 
-    QVERIFY(!activeLayout);
+    bool loaded = true;
+    EXPECT(HbDocumentLoader::load)
+            .with(KInfoWidgetDocmlFile, loaded)
+            .returns(&objectList);
+    EXPECT(HbDocumentLoader::findWidget).times(KNumOfInfoDisplayRoles).returns(&widget);
+    
+    QGraphicsWidget *activeWidget = m_layoutManager->layoutInfoDisplay();
+    
+    QVERIFY(activeWidget);
     
     roles = m_layoutManager->currentWidgetRoles();
             
@@ -187,38 +156,27 @@ void UT_InfoWidgetLayoutManager::t_currentWidgetRoles()
             InfoWidgetLayoutManager::RoleSatTextIcon));
     }
     
-    activeLayout= m_layoutManager->layoutSettingsDialog(); 
-    QVERIFY(!activeLayout);
+    EXPECT(HbDocumentLoader::load)
+                .with(KSettingsDialogDocmlFile, loaded)
+                .returns(&objectList);
+    EXPECT(HbDocumentLoader::findWidget).times(KNumOfSettingsDisplayRoles).returns(&widget);
+    
+    QObject action;
+    EXPECT(HbDocumentLoader::findObject).times(2).returns(&action);
+    
+    activeWidget = m_layoutManager->layoutSettingsDialog();
+    
+    QVERIFY(activeWidget);
 
     roles = m_layoutManager->currentWidgetRoles();
-    int dVar = roles.count();  
+    
     QVERIFY(roles.count() == KNumOfSettingsDisplayRoles);
 
 }
 
 
 /*!
-  UT_InfoWidgetLayoutManager::t_layoutRows
- */
-void UT_InfoWidgetLayoutManager::t_layoutRows()
-{
-    int rows = m_layoutManager->layoutRows();
-    QVERIFY(0 == rows);
-}
-
-
-/*!
-  UT_InfoWidgetLayoutManager::t_setLayoutRows
- */
-void UT_InfoWidgetLayoutManager::t_setLayoutRows()
-{
-    const int KLayoutRows = 1;
-    m_layoutManager->setLayoutRows(KLayoutRows);
-    QVERIFY(KLayoutRows == m_layoutManager->layoutRows());
-}
-
-/*!
-  UT_InfoWidgetLayoutManager::t_setLayoutRows
+  UT_InfoWidgetLayoutManager::t_rowHeight
  */
 void UT_InfoWidgetLayoutManager::t_rowHeight()
 {
@@ -233,12 +191,22 @@ void UT_InfoWidgetLayoutManager::t_rowHeight()
     QVERIFY(verify()); 
 }
 
+
 /*!
   UT_InfoWidgetLayoutManager::t_layoutInfoDisplay
  */
 void UT_InfoWidgetLayoutManager::t_layoutInfoDisplay()
 {
-    QVERIFY(!m_layoutManager->layoutInfoDisplay());
+    QObjectList objectList;
+    QGraphicsWidget widget;
+        
+    bool loaded = true;
+    EXPECT(HbDocumentLoader::load)
+            .with(KInfoWidgetDocmlFile, loaded)
+            .returns(&objectList);
+    EXPECT(HbDocumentLoader::findWidget).times(KNumOfInfoDisplayRoles).returns(&widget);
+    
+    QVERIFY(m_layoutManager->layoutInfoDisplay());
 }
 
 
@@ -247,8 +215,20 @@ void UT_InfoWidgetLayoutManager::t_layoutInfoDisplay()
  */
 void UT_InfoWidgetLayoutManager::t_layoutSettingsDialog()
 {
-    QVERIFY(!m_layoutManager->layoutSettingsDialog());
+    QObjectList objectList;
+    QGraphicsWidget widget;
+        
+    bool loaded = true;
+    EXPECT(HbDocumentLoader::load)
+            .with(KSettingsDialogDocmlFile, loaded)
+            .returns(&objectList);
+    EXPECT(HbDocumentLoader::findWidget).times(KNumOfSettingsDisplayRoles).returns(&widget);
+    QObject action;
+    EXPECT(HbDocumentLoader::findObject).times(2).returns(&action);
+    
+    QVERIFY(m_layoutManager->layoutSettingsDialog());
 }
+
 
 /*!
   UT_InfoWidgetLayoutManager::t_widgetRoles
@@ -293,23 +273,26 @@ void UT_InfoWidgetLayoutManager::t_widgetRoles()
     }
 }
 
+
 /*!
   UT_InfoWidgetLayoutManager::t_loadWidgets
  */
 void UT_InfoWidgetLayoutManager::t_loadWidgets()
 {
-    QObjectList list = QObjectList();
+    QObjectList objectList;
+    QGraphicsWidget widget;
+    bool loaded = true;
     EXPECT(HbDocumentLoader::load)
-        .willOnce(invoke(this, &fillParams)).returns(list);
-    
-    const QList<InfoWidgetLayoutManager::LayoutItemRole> settingDisplayRoles =
-            m_layoutManager->widgetRoles(InfoWidgetLayoutManager::SettingsDialog);
-    bool loadResult = m_layoutManager->loadWidgets(InfoWidgetLayoutManager::SettingsDialog, 
-            settingDisplayRoles,
-            m_layoutManager->m_infoDisplayWidgets); 
-    
-    QVERIFY(!loadResult);
+            .with(KSettingsDialogDocmlFile, loaded)
+            .returns(&objectList);
+    QObject action;
+    EXPECT(HbDocumentLoader::findObject).times(2).returns(&action);
+    EXPECT(HbDocumentLoader::findWidget).times(KNumOfSettingsDisplayRoles).returns(&widget);
+    bool loadResult = m_layoutManager->loadWidgets(InfoWidgetLayoutManager::SettingsDialog);
+
+    QVERIFY(loadResult);
 }
+
 
 /*!
   UT_InfoWidgetLayoutManager::t_loadWidget
@@ -352,6 +335,7 @@ void UT_InfoWidgetLayoutManager::t_loadWidget()
     QVERIFY(!currentWidget);
 }
 
+
 /*!
   UT_InfoWidgetLayoutManager::t_loadObject
  */
@@ -383,7 +367,6 @@ void UT_InfoWidgetLayoutManager::t_loadObject()
 }
 
 
-
 /*!
   UT_InfoWidgetLayoutManager::t_getWidget
  */
@@ -395,6 +378,7 @@ void UT_InfoWidgetLayoutManager::t_getWidget()
     QVERIFY(m_layoutManager->getWidget(InfoWidgetLayoutManager::RoleContent));
     QVERIFY(!m_layoutManager->getWidget(InfoWidgetLayoutManager::RoleLastEnum));
 }
+
 
 /*!
   UT_InfoWidgetLayoutManager::t_removeWidget
@@ -421,29 +405,6 @@ void UT_InfoWidgetLayoutManager::t_contentWidget()
     QVERIFY(m_layoutManager->contentWidget());
 }
 
-/*!
-  UT_InfoWidgetLayoutManager::t_reloadWidgets
- */
-void UT_InfoWidgetLayoutManager::t_reloadWidgets()
-{
-    bool loadResultIw = true;  
-    bool loadResultSd = true;
-    
-    QObjectList objectListId;
-    QObjectList objectListSd;
-    
-    EXPECT(HbDocumentLoader::load)
-        .with(KInfoWidgetDocmlFile, loadResultIw)
-        .returns(&objectListId);
-    QVERIFY(!m_layoutManager->reloadWidgets(InfoWidgetLayoutManager::InfoDisplay));
-
-    EXPECT(HbDocumentLoader::load)
-        .with(KSettingsDialogDocmlFile, loadResultSd)
-        .returns(&objectListSd);
-    QVERIFY(!m_layoutManager->reloadWidgets(InfoWidgetLayoutManager::SettingsDialog));
-    
-    QVERIFY(verify());
-}
 
 /*!
   UT_InfoWidgetLayoutManager::t_destroyWidgets
@@ -461,16 +422,17 @@ void UT_InfoWidgetLayoutManager::t_destroyWidgets()
     QVERIFY(verify());
 }
 
+
 /*!
   UT_InfoWidgetLayoutManager::t_textFitsToRect
  */
 void UT_InfoWidgetLayoutManager::t_textFitsToRect()
 {
-    QString text;
+    QString text = "testtesttesttest";
     QFont font; 
     bool fits(false); 
     
-    QRectF testRect; 
+    QRectF testRect(0,0,0,0); 
     
     // Currently not possible to use with .pro definition 
     // QFontMetrics to be properly mocked
@@ -478,12 +440,11 @@ void UT_InfoWidgetLayoutManager::t_textFitsToRect()
     // Test 1: use valid text and rect to which text fits 
     //text = "testtesttesttest";
     //testRect = QRectF(QPointF(0,0), QSizeF(200,100)); 
-    //fits = m_layoutManager->textFitsToRect(text, font, testRect);
-    //QVERIFY(fits); 
+    fits = m_layoutManager->textFitsToRect(text, font, testRect);
+    QVERIFY(fits); 
     
     QVERIFY(verify());
 }
-
 
 
 /*!
@@ -523,10 +484,7 @@ void UT_InfoWidgetLayoutManager::t_createObject()
     object = m_documentLoader->createObject(KMargueeItemClassName, QString());
     QVERIFY(object);
     delete object;
-    
-    //For destructor coverage
-    delete m_layoutManager->m_documentLoader;
-    m_layoutManager->m_documentLoader = NULL;
+   
 }
 
 QTEST_MAIN_S60(UT_InfoWidgetLayoutManager)

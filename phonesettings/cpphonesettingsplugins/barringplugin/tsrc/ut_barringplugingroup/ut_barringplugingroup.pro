@@ -26,7 +26,7 @@ INCLUDEPATH += .
 INCLUDEPATH += ../../../inc
 INCLUDEPATH += ../../../cptelephonyutils/inc
 DEFINES += BUILD_CPTELEPHONYUTILS BUILD_BARRINGPLUGIN \
-           BUILD_PSETWRAPPER BUILD_SSSETTINGSWRAPPER
+           BUILD_PSETWRAPPER BUILD_SSSETTINGSWRAPPER BUILD_PSUINOTES
 DEFINES += QT_NO_DEBUG_STREAM
 
 QT -= gui
@@ -51,9 +51,9 @@ SOURCES += ut_barringplugingroup.cpp
 # code to be tested
 HEADERS += ../../inc/cpbarringplugin.h \
            ../../inc/cpbarringplugingroup.h \
-           ../../../cptelephonyutils/inc/cpphonenotes.h \
            ../../../cptelephonyutils/inc/cpplugincommon.h \
            /epoc32/include/platform/mw/psetwrapper.h \
+           /epoc32/include/platform/mw/psuinotes.h \
            /epoc32/include/platform/mw/psetcliwrapper.h \
            /epoc32/include/platform/mw/sssettingswrapper.h \
            /epoc32/include/platform/mw/psetcallwaitingwrapper.h \
@@ -67,7 +67,7 @@ SOURCES += ../../src/cpbarringplugingroup.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpbarringplugin.cpp
 SOURCES += ../../../tsrc/mocks/mock_psetcallbarringwrapper.cpp
 SOURCES += ../../../tsrc/mocks/mock_psetwrapper.cpp
-SOURCES += ../../../tsrc/mocks/mock_cpphonenotes.cpp
+SOURCES += ../../../tsrc/mocks/mock_psuinotes.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpplugincommon.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpitemdatahelper.cpp
 SOURCES += ../../../tsrc/mocks/mock_hbcheckbox.cpp

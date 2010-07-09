@@ -84,26 +84,6 @@ class CPhoneUIController :
             TEventCode aEventCode );
 
         /**
-        * From CAknAppUi, initialise a menupane (dynamic).
-        *
-        * @param aResourceId It is the resource id for the pane.
-        * @param aMenuPane It is the menu pane corresponding to the resource.
-        */
-        IMPORT_C void DynInitMenuPaneL( 
-            TInt aResourceId, 
-            CEikMenuPane* aMenuPane );
-
-        /**
-        * From CAknAppUi, initialise a menubar (dynamic).
-        *
-        * @param aResourceId It is the resource id for the bar.
-        * @param aMenuBar It is the menu bar corresponding to the resource.
-        */
-        IMPORT_C void DynInitMenuBarL( 
-            TInt aResourceId, 
-            CEikMenuBar* aMenuBar );
-
-        /**
         * From CEikAppUi. For Idle indicator
         */
         IMPORT_C void HandleSystemEventL(

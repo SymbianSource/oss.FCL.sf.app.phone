@@ -31,13 +31,13 @@
 //
 EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneCmdParamCallHeaderData() :
     TPhoneCommandParam(),
-    iLabelText( KNullDesC ),
-    iShortLabelText( KNullDesC ),
+    iLabelText( NULL ),
+    iShortLabelText( NULL ),
     iCallState( 0 ),
     iNumberType( 0 ),
     iCiphering( EFalse ),
-    iCLIText( KNullDesC ),
-    iCNAPText( KNullDesC ),
+    iCLIText( NULL ),
+    iCNAPText( NULL ),
     iPicture( KNullDesC ),
     iLine2 ( EFalse ),
     iThumbnail( NULL ),
@@ -52,6 +52,18 @@ EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneCmdParamCallHeaderData() :
     }
 
 // ---------------------------------------------------------
+// TPhoneCmdParamCallHeaderData::~TPhoneCmdParamCallHeaderData
+// ---------------------------------------------------------
+//
+EXPORT_C TPhoneCmdParamCallHeaderData::~TPhoneCmdParamCallHeaderData()
+    {
+    delete iLabelText;
+    delete iShortLabelText;
+    delete iCLIText;
+    delete iCNAPText;
+    }
+
+// ---------------------------------------------------------
 // TPhoneCmdParamCallHeaderData::SetLabelText
 // Sets the call header label text
 // (other items were commented in a header).
@@ -60,7 +72,8 @@ EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneCmdParamCallHeaderData() :
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetLabelText( 
    const TDesC& aLabelText )
     {
-    iLabelText = aLabelText;
+    delete iLabelText;
+    iLabelText = aLabelText.Alloc();
     }
 
 // ---------------------------------------------------------
@@ -72,7 +85,8 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetLabelText(
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetShortLabelText( 
    const TDesC& aShortLabelText )
     {
-    iShortLabelText = aShortLabelText;
+    delete iShortLabelText;
+    iShortLabelText = aShortLabelText.Alloc();
     }
 
 // ---------------------------------------------------------
@@ -130,7 +144,8 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetCLIText(
    const TDesC& aCLIText,
    TPhoneTextClippingDirection aDirection )
    {
-   iCLIText = aCLIText;
+   delete iCLIText;
+   iCLIText = aCLIText.Alloc();
    iCLITextClippingDirection = aDirection; 
    }
 
@@ -144,7 +159,8 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetCNAPText(
    const TDesC& aCNAPText,
    TPhoneTextClippingDirection aDirection )
    {
-   iCNAPText = aCNAPText;
+   delete iCNAPText;
+   iCNAPText = aCNAPText.Alloc();
    iCNAPTextClippingDirection = aDirection; 
    }
 
@@ -190,7 +206,7 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetLine2(
 //
 EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::LabelText() const
    {
-   return iLabelText;
+   return iLabelText ? *iLabelText : KNullDesC();
    }
 
 // ---------------------------------------------------------
@@ -201,7 +217,7 @@ EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::LabelText() const
 //
 EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::ShortLabelText() const
    {
-   return iShortLabelText;
+   return iShortLabelText ? *iShortLabelText : KNullDesC();
    }
 
 // ---------------------------------------------------------
@@ -256,7 +272,7 @@ EXPORT_C TBool TPhoneCmdParamCallHeaderData::Ciphering() const
 //
 EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::CLIText() const
    {
-   return iCLIText;
+   return iCLIText ? *iCLIText : KNullDesC();
    }
 
 // ---------------------------------------------------------
@@ -291,7 +307,7 @@ TPhoneCmdParamCallHeaderData::CNAPTextClippingDirection() const
 //
 EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::CNAPText() const
    {
-   return iCNAPText;
+   return iCNAPText ? *iCNAPText : KNullDesC();
    }
 
 // ---------------------------------------------------------

@@ -116,10 +116,6 @@ EXPORT_C void CPhoneSingleCall::ConstructL()
 
     iCallId = callStateData.CallId();
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-
-    
-    // Update phone number availability for menu use
-    PhoneNumberAvailableInPhoneEngineL( callStateData.CallId() );
       
     }
 
@@ -269,11 +265,9 @@ EXPORT_C TBool CPhoneSingleCall::HandleCommandL( TInt aCommand )
             break;
             
         case EPhoneInCallCmdNewCall:
-            LaunchNewCallQueryL();
             break;
             
         case EPhoneInCallCmdNewCallCall:
-            CallFromNewCallQueryL();
             break;
 
         case EPhoneInCallCmdSwitchToVideo:
@@ -294,8 +288,6 @@ EXPORT_C TBool CPhoneSingleCall::HandleCommandL( TInt aCommand )
         /* Flow through */ 
         case EPhoneCmdNoSwitchToVideo:
         case EPhoneCmdNoSwitchToVoice:
-            // Sets touch buttons to correct status if 'No' command has occured.    
-            iViewCommandHandle->ExecuteCommand( EPhoneResetTouchButtons );    
             break;        
                 
         case EPhoneCmdYesSwitchToVoice:
@@ -340,24 +332,6 @@ EXPORT_C TBool CPhoneSingleCall::HandleCommandL( TInt aCommand )
     }
 
 // -----------------------------------------------------------
-// CPhoneSingleCall::OpenMenuBarL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneSingleCall::OpenMenuBarL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleCall::OpenMenuBarL()");
-
-    if ( IsVideoCall ( iCallId ))
-        {
-        OpenVideoCallMenuBarL();
-        }
-    else
-        {
-        CPhoneGsmInCall::OpenMenuBarL();            
-        }
-    }
-
-// -----------------------------------------------------------
 // CPhoneSingleCall::CallId
 // -----------------------------------------------------------
 //
@@ -373,26 +347,7 @@ EXPORT_C TInt CPhoneSingleCall::CallId() const
 void CPhoneSingleCall::OpenVideoCallMenuBarL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleCall::OpenVideoCallMenuBarL()");
-    if( FeatureManager::FeatureSupported( KFeatureIdCsVideoTelephony ) )
-        {
-        TInt resourceId;
-
-        if ( IsNumberEntryUsedL() )
-            {
-            resourceId = EPhoneVideoCallMenubarWithNumberEntry;
-            }
-        else
-            {
-            resourceId = EPhoneVideoCallMenubar;
-            }
-        
-        TPhoneCmdParamInteger integerParam;
-        integerParam.SetInteger( 
-            CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( resourceId ) );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
-            &integerParam );
-        }                    
+                   
     }
     
 // -----------------------------------------------------------
@@ -569,8 +524,6 @@ void CPhoneSingleCall::DisplayIncomingCallL(
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::DisplayIncomingCallL()");
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     // Cannot delete active note, e.g. New call query, 
     // but show waiting note with or without caller name
@@ -605,32 +558,6 @@ void CPhoneSingleCall::DisplayIncomingCallL(
 
     DisplayHeaderForCallComingInL( aCallId, ETrue ); //waiting call 
     }    
-    
-// ---------------------------------------------------------
-// CPhoneSingleCall::CallFromNewCallQueryL
-// ---------------------------------------------------------
-//
-void CPhoneSingleCall::CallFromNewCallQueryL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneSingleCall::CallFromNewCallQueryL()");
-    // First get the phone number from the dialog
-    TPhoneCmdParamString phoneNumberParam;
-    HBufC *content = HBufC::NewLC( KPhoneNumberEntryBufferSize );
-    TPtr ptr( content->Des() );
-    phoneNumberParam.SetString( &ptr );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetTextQueryContent,
-        &phoneNumberParam );
-
-    // Store the phone number
-    iStateMachine->PhoneEngineInfo()->SetPhoneNumber( ptr );
-
-    // clean up stack
-    CleanupStack::PopAndDestroy( content );
-    
-    DialVoiceCallL();
-    }
-
 // -----------------------------------------------------------
 // CPhoneSingleCall::HandleDiallingL
 // -----------------------------------------------------------
@@ -639,8 +566,6 @@ void CPhoneSingleCall::HandleDiallingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::HandleDiallingL()");
-    
-    BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC();
     
     SetNumberEntryVisibilityL(EFalse);
@@ -652,8 +577,6 @@ void CPhoneSingleCall::HandleDiallingL( TInt aCallId )
     SetTouchPaneButtons( EPhoneCallSetupAndSingleButtons );
 
     EndUiUpdate();
-    
-    EndTransEffect();
 
     // Go to call setup state
     UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
@@ -668,8 +591,6 @@ void CPhoneSingleCall::DisplayCallSetupL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::DisplayCallSetupL()");
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     // Remove dialogs if necessary
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
@@ -688,60 +609,6 @@ void CPhoneSingleCall::DisplayCallSetupL( TInt aCallId )
     }
 
 // -----------------------------------------------------------
-// CPhoneSingleCall::SetCallHoldL
-// -----------------------------------------------------------
-//
-void CPhoneSingleCall::SetCallHoldL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneSingleCall::SetCallHold()");
-    
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallId( iCallId );
-    iViewCommandHandle->HandleCommandL( EPhoneViewGetCallState,
-        &callStateData );
-    
-    if( callStateData.CallState() == EPEStateConnected && !IsVideoCallActiveL() )
-        {
-        iStateMachine->SetCallId( iCallId );         
-        iStateMachine->SendPhoneEngineMessage( 
-            CPEPhoneModelIF::EPEMessageHold );    
-        }
-    else
-        {
-        // Show not allowed note
-        SendGlobalInfoNoteL( EPhoneNoteTextNotAllowed, ETrue );    
-        }
-    }
-    
-// -----------------------------------------------------------
-// CPhoneSingleCall::SetCallResumeL
-// -----------------------------------------------------------
-//
-void CPhoneSingleCall::SetCallResumeL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneSingleCall::SetCallHold()");
-
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallId( iCallId );
-    iViewCommandHandle->HandleCommandL( EPhoneViewGetCallState,
-        &callStateData );
-    
-    if( callStateData.CallState() == EPEStateHeld )
-        {
-        iStateMachine->SetCallId( iCallId );
-        iStateMachine->SendPhoneEngineMessage(
-            CPEPhoneModelIF::EPEMessageResume );
-        }
-    else
-        {
-        // Show not allowed note
-        SendGlobalInfoNoteL( EPhoneNoteTextNotAllowed, ETrue );    
-        }                
-    }
-
-// -----------------------------------------------------------
 // CPhoneSingleCall::SwitchToVideoL
 // -----------------------------------------------------------
 //
@@ -756,33 +623,23 @@ void CPhoneSingleCall::SwitchToVideoL()
             KNWTelephonyNetworkMode ) );
         TBool restoreOngoing( CPhonePubSubProxy::Instance()->Value( KUidSystemCategory,
             conn::KUidBackupRestoreKey ));
-    
-        TBool resetTouchButtons = EFalse;
         
         if ( networkMode != ENWNetworkModeWcdma )
             {
             // We aren't in 3G, video call not possible
             SendGlobalInfoNoteL( EPhoneInformationNoNetworkSupportForVideoCallNote );    
-            resetTouchButtons = ETrue;
             }
         else if ( restoreOngoing & ( conn::EBURRestoreFull | conn::EBURRestorePartial ))
             {
             // MC restore ongoing
             SendGlobalInfoNoteL( EPhoneInformationVideoCallNotAllowedDuringRestoreNote );
-            resetTouchButtons = ETrue;    
             }
         else
             {
-        iSwitchToVideoQuery = ETrue;
-        ShowQueryL( EPhoneSwitchToVideoQuery );
-        iSwitchToVideoQuery = EFalse;
-        }    
-    
-        if( resetTouchButtons )
-            {
-            // Sets touch buttons to correct status if error has occured.    
-            iViewCommandHandle->ExecuteCommand( EPhoneResetTouchButtons ); 
-            }
+            iSwitchToVideoQuery = ETrue;
+            //ShowQueryL( EPhoneSwitchToVideoQuery );
+            iSwitchToVideoQuery = EFalse;
+            }    
         }
     }
 
@@ -795,7 +652,7 @@ void CPhoneSingleCall::SwitchToVoiceL()
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::SwitchToVoiceL()");
     
-    ShowQueryL( EPhoneSwitchToVoiceQuery );
+    //ShowQueryL( EPhoneSwitchToVoiceQuery );
     }
 
 // End of File

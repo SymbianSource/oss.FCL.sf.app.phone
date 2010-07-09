@@ -23,9 +23,9 @@
 #include <cpitemdatahelper.h>
 #include <psetwrapper.h>
 #include <psetcallbarringwrapper.h>
+#include <psuinotes.h>
 #include "cpbarringplugingroup.h"
 #include "cpplugincommon.h"
-#include "cpphonenotes.h"
 #include "cppluginlogging.h"
 
 const int KMaxPasswordLength = 4;
@@ -72,7 +72,7 @@ CpBarringPluginGroup::CpBarringPluginGroup(CpItemDataHelper &helper)
     
     createBarringItems();
     
-    m_phoneNotes = CpPhoneNotes::instance();
+    m_phoneNotes = PsUiNotes::instance();
     
     QRegExp regExpression("\\d{4}");
     m_barringPasswordValidator = new QRegExpValidator(regExpression, this);
@@ -272,7 +272,6 @@ CpSettingFormItemData *CpBarringPluginGroup::createBarringItem(
     value.setValue(barringType);
     barringItem->setContentWidgetData("barringType", value);
     
-    appendChild(barringItem.data());
     DPRINT << ": OUT";
     return barringItem.take();
 }

@@ -18,7 +18,19 @@
 #include <QtTest/QtTest>
 
 //#include <hbglobal_p.h>
+#include <featmgr.h>
+#include <settingsinternalcrkeys.h>
+#include <xqsettingsmanager.h>
 #include "dialservice.h"
+
+bool m_featureManagerReturnValue;
+int m_featureManagerRequestedFeatureSupport;
+
+TBool FeatureManager::FeatureSupported(TInt aFeature)
+{
+    m_featureManagerRequestedFeatureSupport = aFeature;
+    return m_featureManagerReturnValue;
+}
 
 class TestDialService : public QObject, public MPECallControlIF, public MPECallSettersIF
 {
@@ -47,6 +59,7 @@ private slots:
     void testDial ();
     void testDial2 ();
     void testDial3();
+    void testDialWithJapanPrefixOn();
     void testDialVideo ();
     void testDialVideo2 ();
     void testDialVoip();
@@ -102,6 +115,8 @@ void TestDialService::init ()
     m_handleEndDTMFCalled = false;
     m_handlePlayDTMFLCalled = false;
     m_setKeyCodeCalled = false;
+    m_featureManagerReturnValue = false;
+    m_featureManagerRequestedFeatureSupport = -1;
     keyValue = -1;
     m_DialService = new DialService (*this, *this, this);
 }
@@ -191,6 +206,24 @@ void TestDialService::testDial3()
     QString _number((QChar*)m_phoneNumber.Ptr(), m_phoneNumber.Length());
     QVERIFY (m_setPhoneNumberCalled == true);
     QCOMPARE(_number, QString("+3580501234567"));
+}
+
+void TestDialService::testDialWithJapanPrefixOn()
+{
+    XQSettingsKey dialPrefixMode(XQSettingsKey::TargetCentralRepository, KCRUidTelephonySettings.iUid, KSettingsDialPrefixChangeMode);
+    XQSettingsKey dialPrefixString(XQSettingsKey::TargetCentralRepository, KCRUidTelephonySettings.iUid, KSettingsDialPrefixText);
+    XQSettingsManager setManager;
+    int err = setManager.writeItemValue(dialPrefixString, QString("00"));
+    qDebug() << err;
+    qDebug() << setManager.error();
+    setManager.writeItemValue(dialPrefixMode, 1);
+    m_featureManagerReturnValue = true;
+
+    m_DialService->dial(QString("+358501234567"));    
+    QString number((QChar*)m_phoneNumber.Ptr(), m_phoneNumber.Length());
+    QCOMPARE(m_featureManagerRequestedFeatureSupport, KFeatureIdJapanPrefixChange);
+    QVERIFY(m_setPhoneNumberCalled == true);
+    QCOMPARE(number, QString("00358501234567"));
 }
 
 void TestDialService::testDialVideo()

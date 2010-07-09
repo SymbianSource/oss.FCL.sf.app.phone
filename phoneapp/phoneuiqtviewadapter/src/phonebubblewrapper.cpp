@@ -136,18 +136,20 @@ void PhoneBubbleWrapper::setLabel (int bubble, const TDesC &text)
     m_bubbleManager.setLabel (bubble, labelText, Qt::ElideRight);
 }
 
-void PhoneBubbleWrapper::setCli (int bubble, const TDesC &cliText)
+void PhoneBubbleWrapper::setCli (int bubble, const TDesC &cliText, 
+                                 Qt::TextElideMode elide)
 {
     QString text = QString::fromUtf16 (cliText.Ptr (), cliText.Length ());
     PHONE_DEBUG2("PhoneBubbleWrapper::setCli, cli:", text); 
-    m_bubbleManager.setCli (bubble, text, Qt::ElideRight);
+    m_bubbleManager.setCli (bubble, text, elide);
 }
 
-void PhoneBubbleWrapper::setSecondaryCli (int bubble, const TDesC &cliText)
+void PhoneBubbleWrapper::setSecondaryCli (int bubble, const TDesC &cliText,
+                                          Qt::TextElideMode elide)
 {
     QString text = QString::fromUtf16 (cliText.Ptr (), cliText.Length ());
     PHONE_DEBUG2("PhoneBubbleWrapper::setSecondaryCli, SecondaryCli:", text); 
-    m_bubbleManager.setSecondaryCli (bubble, text);
+    m_bubbleManager.setSecondaryCli (bubble, text, elide);
 }
 
 void PhoneBubbleWrapper::setCallType (int bubble, int callType)
@@ -260,7 +262,7 @@ int PhoneBubbleWrapper::createConferenceBubble(
         m_bubbles.insert(callId,bubble);
         setState(callId, bubble, callState );
         setLabel(bubble, labelText);
-        setCli (bubble, cliText);
+        setCli (bubble, cliText, Qt::ElideRight);
         
         //Set conference bubble expanded if no other
         //bubbles (like waiting bubble).

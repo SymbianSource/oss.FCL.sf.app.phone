@@ -39,6 +39,7 @@
 #include <mpecontacthandling.h>
 #include <mpeloghandling.h>
 #include <xqservicerequest.h>
+#include <xqappmgr.h>
 #include "phoneservices.h"
 
 // CONSTANTS
@@ -1435,17 +1436,30 @@ TBool CPEPhoneModel::StepL()
         case CPEPhoneModel::EPENetworkHandling:
             {
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 18.1" );
-            XQServiceRequest request("com.nokia.services.networkhandling","start()");
-            bool res = request.send();
-            if  (!res) {
-                int error = request.latestError();
-                TEFLOGSTRING2( 
-                    KTAOBJECT, 
-                    "CPEPhoneModel::StepL 18.2 error %d",
-                    error );
-            }
-            TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 18.2" );
             continueStepping = EFalse;
+            QString service("networkhandlingstarter");
+            QString interface("com.nokia.symbian.IStart");
+            QString operation("start()");
+            XQApplicationManager appManager;
+            
+            QScopedPointer<XQAiwRequest> request(
+                    appManager.create(service, interface, operation, false));
+            if (request == NULL) {
+                TEFLOGSTRING(KTAOBJECT, 
+                        "CPEPhoneModel::StepL 18.2 error, service not found");
+                break;
+            }
+            XQRequestInfo info;
+            info.setForeground(false);
+            request->setInfo(info);
+            request->setSynchronous(false);
+            if (!request->send()) {
+                int error = request->lastError();
+                TEFLOGSTRING2(KTAOBJECT, 
+                        "CPEPhoneModel::StepL 18.3 error %d", error);
+                break;
+            }
+            TEFLOGSTRING(KTAOBJECT, "CPEPhoneModel::StepL: 18.4");
             break;
             }
 

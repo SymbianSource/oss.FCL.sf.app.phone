@@ -75,10 +75,6 @@ class CPhoneCallSetupAndWaiting : public CPhoneGsmInCall
         */
         virtual void ConstructL();
             
-        /**
-        * Open menu bar
-        */
-        virtual void OpenMenuBarL();
         
         virtual void UpdateInCallCbaL();
         

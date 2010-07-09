@@ -91,17 +91,13 @@ public:
     DisplayRole currentDisplayRole(); 
     QList<LayoutItemRole> currentWidgetRoles(); 
     
-    QGraphicsLayout* layoutInfoDisplay();
-    QGraphicsLayout* layoutSettingsDialog();
+    QGraphicsWidget* layoutInfoDisplay();
+    QGraphicsWidget* layoutSettingsDialog();
     
     const QList<InfoWidgetLayoutManager::LayoutItemRole> widgetRoles(
             DisplayRole displayRole) const; 
 
-    bool loadWidgets(const DisplayRole displayRole, 
-            const QList<LayoutItemRole> &displayWidgets,
-            QMap<LayoutItemRole, QGraphicsWidget *> &widgetMap);
-    bool reloadWidgets(const DisplayRole displayRole);
-    
+    bool loadWidgets(const DisplayRole displayRole);
     QGraphicsWidget* loadWidget(InfoWidgetDocumentLoader &loader, 
             DisplayRole displayRole, 
             LayoutItemRole widgetRole);
@@ -119,11 +115,14 @@ public:
             bool deleteLater = false);
     void destroyWidgets();
     
-    int layoutRows() const; 
-    void setLayoutRows(int rows);
-    
     qreal layoutRowHeight();
     bool textFitsToRect(QString text, QFont font, QRectF rect) const;  
+    
+protected: 
+    bool loadWidgets(const DisplayRole displayRole, 
+            const QList<LayoutItemRole> &displayWidgets,
+            QMap<LayoutItemRole, QGraphicsWidget *> &widgetMap);
+
     
 private:
     QMap<LayoutItemRole, QGraphicsWidget *> m_widgets;
@@ -131,9 +130,9 @@ private:
     QMap<LayoutItemRole, QGraphicsWidget *> m_settingsDialogWidgets;
     QMap<LayoutItemRole, QObject *> m_objects;
 
-    InfoWidgetDocumentLoader *m_documentLoader;
+    QScopedPointer<InfoWidgetDocumentLoader> m_documentLoader;
+    
     DisplayRole m_displayRole; 
-    int m_layoutRows;
     qreal m_cachedLayoutRowHeight; 
     
 };

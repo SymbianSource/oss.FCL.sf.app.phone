@@ -124,14 +124,14 @@ void PhoneBubbleWrapper::setLabel (int bubble, const TDesC &text)
     m_setLabelText = &text;
 }
 
-void PhoneBubbleWrapper::setCli (int bubble, const TDesC &cliText) 
+void PhoneBubbleWrapper::setCli (int bubble, const TDesC &cliText, Qt::TextElideMode elide) 
 {
     m_setCliCalled = true;
     m_setCliBubbleId = bubble;
     m_setCliText = &cliText;
 }
 
-void PhoneBubbleWrapper::setSecondaryCli (int bubble, const TDesC &cliText) 
+void PhoneBubbleWrapper::setSecondaryCli (int bubble, const TDesC &cliText, Qt::TextElideMode elide) 
 {
     m_setSecondaryCliCalled = true;
     m_setSecondaryCliBubbleId = bubble;

@@ -8,7 +8,5 @@
         <version>1.0</version>
         <description>The dialer widget displays dialing menu</description>
         <capabilities></capabilities>
-        <customproperty key="iconuri">qtg_graf_hs_dialer.svg</customproperty>
-        <customproperty key="title">Dialer</customproperty>
     </interface>
 </service>

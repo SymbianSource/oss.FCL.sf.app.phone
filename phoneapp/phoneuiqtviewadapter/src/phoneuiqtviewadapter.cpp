@@ -71,6 +71,13 @@ const TUid KCRUidTelTouchButtons = {0x2001B2E6};
 const TUint32 KTelIncallTouchButtons   = 0x00000001;
 
 
+inline Qt::TextElideMode clipToElide(
+    TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection clip)
+    {
+    return clip == TPhoneCmdParamCallHeaderData::ELeft ? 
+                   Qt::ElideLeft : Qt::ElideRight;
+    }
+
 PhoneUIQtViewAdapter::PhoneUIQtViewAdapter (PhoneUIQtViewIF &view, QObject *parent) :
     QObject (parent),
     m_view (view),
@@ -104,8 +111,8 @@ PhoneUIQtViewAdapter::PhoneUIQtViewAdapter (PhoneUIQtViewIF &view, QObject *pare
     setToolbarButtons(&intParam);
 
     m_telephonyService = new TelephonyService (this, this);
-	m_indicatorController = new PhoneIndicatorController(this);
     m_visibilityHandler = new PhoneVisibilityHandler(view, this);
+    m_indicatorController = new PhoneIndicatorController(*m_visibilityHandler,this);
     m_appLauncher = new PhoneAppLauncher(this);
     m_messageController = new PhoneMessageController(*m_appLauncher, this);
     
@@ -382,18 +389,11 @@ TPhoneViewResponseId PhoneUIQtViewAdapter::HandleCommandL (TPhoneViewCommandId a
 
     switch (aCmdId) {
     case EPhoneIsDTMFDialerVisible:
-    case EPhoneViewIsDTMFEditorVisible: //TODO
     case EPhoneIsCustomizedDialerVisible:
     case EPhoneViewGetNeedToSendToBackgroundStatus:
         // TODO: currently not supported
         response = EPhoneViewResponseFailed;
         break;
-    case EPhoneViewIsMenuBarVisible:
-        {
-        //TODO
-        response = EPhoneViewResponseFailed;
-        break;
-        }
     case EPhoneViewGetNumberEntryIsVisibleStatus:
     case EPhoneViewGetNumberEntryIsUsedStatus: // Fall through
         {
@@ -459,12 +459,6 @@ void PhoneUIQtViewAdapter::ExecuteCommand (TPhoneViewCommandId aCmdId, TPhoneCom
         break;
     case EPhoneViewGetNumberFromEntry:
         getNumberFromDialpad(aCommandParam);
-        break;
-    case EPhoneViewSetDtmfOptionsFlag:
-        //TODO
-        break;
-    case EPhoneViewSetVideoCallDTMFVisibilityFlag:
-        //TODO
         break;
     case EPhoneViewBackButtonActive: {
         TPhoneCmdParamBoolean *param = static_cast<TPhoneCmdParamBoolean *>(aCommandParam);
@@ -614,10 +608,10 @@ void PhoneUIQtViewAdapter::createCallHeader(
         }
 
     int bubble = m_bubbleWrapper->createCallHeader (callId);
-    m_bubbleWrapper->setState (callId, bubble, data.CallState ());
-    m_bubbleWrapper->setCli (bubble, data.CLIText ());
+    m_bubbleWrapper->setState (callId, bubble, data.CallState ());        
+    m_bubbleWrapper->setCli (bubble, data.CLIText (), clipToElide(data.CLITextClippingDirection()));
     m_bubbleWrapper->setServiceId(callId, data.ServiceId());
-    m_bubbleWrapper->setSecondaryCli (bubble, data.CNAPText ());
+    m_bubbleWrapper->setSecondaryCli (bubble, data.CNAPText (), clipToElide(data.CNAPTextClippingDirection()));
     m_bubbleWrapper->setLabel (bubble, data.LabelText ());
     m_bubbleWrapper->setCallType (bubble, data.CallType ());
     m_bubbleWrapper->setDivert (bubble, data.Diverted ());
@@ -651,7 +645,7 @@ void PhoneUIQtViewAdapter::createEmergencyCallHeader(
     m_bubbleWrapper->bubbleManager ().startChanges ();
     int bubble = m_bubbleWrapper->createCallHeader (callId);
     m_bubbleWrapper->setLabel (bubble, data.LabelText ());
-    m_bubbleWrapper->setCli (bubble, data.HeaderText ());
+    m_bubbleWrapper->setCli (bubble, data.HeaderText (), Qt::ElideRight);
     m_bubbleWrapper->setCiphering(bubble, data.CipheringIndicatorAllowed(), data.Ciphering());
     m_bubbleWrapper->bubbleManager ().endChanges ();
     
@@ -690,8 +684,10 @@ void PhoneUIQtViewAdapter::updateCallHeaderRemoteInfo (int callId, TPhoneCommand
      int bubble = m_bubbleWrapper->bubbleId (callId);
      if ( -1 != bubble ) {
          m_bubbleWrapper->bubbleManager ().startChanges ();
-         m_bubbleWrapper->setCli (bubble, data.CLIText ());
-         m_bubbleWrapper->setSecondaryCli (bubble, data.CNAPText ());
+         m_bubbleWrapper->setCli (bubble, data.CLIText (),
+             clipToElide(data.CLITextClippingDirection()));
+         m_bubbleWrapper->setSecondaryCli (bubble, data.CNAPText (),
+             clipToElide(data.CNAPTextClippingDirection()));
          m_bubbleWrapper->setDivert (bubble, data.Diverted ());
          m_bubbleWrapper->bubbleManager ().endChanges ();
      }
@@ -710,8 +706,10 @@ void PhoneUIQtViewAdapter::updateCallHeaderRemoteInfoAndLabel (int callId, TPhon
      int bubble = m_bubbleWrapper->bubbleId (callId);
      if ( -1 != bubble ) {
          m_bubbleWrapper->bubbleManager ().startChanges ();
-         m_bubbleWrapper->setCli (bubble, data.CLIText ());
-         m_bubbleWrapper->setSecondaryCli (bubble, data.CNAPText ());
+         m_bubbleWrapper->setCli (bubble, data.CLIText (),
+             clipToElide(data.CLITextClippingDirection()));
+         m_bubbleWrapper->setSecondaryCli (bubble, data.CNAPText (),
+             clipToElide(data.CNAPTextClippingDirection()));
          m_bubbleWrapper->setLabel (bubble, data.LabelText ());
          m_bubbleWrapper->setDivert (bubble, data.Diverted ());
          m_bubbleWrapper->bubbleManager ().endChanges ();

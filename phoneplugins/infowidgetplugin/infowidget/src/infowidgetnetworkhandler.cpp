@@ -65,14 +65,9 @@ bool InfoWidgetNetworkHandler::createSession()
     DPRINT;
     bool success(false);
     if (!m_nwSession) {
-        try {
-            QT_TRAP_THROWING(m_nwSession.reset(
-                    CreateL(*this, m_nwInfo)));
-        } catch (const std::exception& ex) {
-            DCRITICAL << ": exception " << ex.what(); 
-        }
-        
-        if (!m_nwSession.isNull()) {
+        QT_TRAP_THROWING(m_nwSession.reset(
+                CreateL(*this, m_nwInfo)));
+        if (m_nwSession) {
             DPRINT << ": session created"; 
             success = true;
         }

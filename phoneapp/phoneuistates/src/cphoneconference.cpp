@@ -81,9 +81,6 @@ void CPhoneConference::ConstructL()
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
     
-  
-    DefineAndSetHoldFlagL();
-    
     }
 
 // -----------------------------------------------------------
@@ -195,7 +192,6 @@ TBool CPhoneConference::HandleCommandL( TInt aCommand )
         {   
         case EAknSoftkeyCancel:
             BeginUiUpdateLC();
-            CloseSelectionListL();
             SetTouchPaneButtons( EPhoneConferenceButtons );
             EndUiUpdate();    
             UpdateCbaL( EPhoneCallHandlingInCallCBA );
@@ -215,7 +211,6 @@ TBool CPhoneConference::HandleCommandL( TInt aCommand )
             
         // Conference -> Drop participant
         case EPhoneInCallCmdDropSelection:
-            OpenDropParticipantSelectionL();
             break;
         
         // Drop CBA    
@@ -224,7 +219,6 @@ TBool CPhoneConference::HandleCommandL( TInt aCommand )
             break;
             
         case EPhoneInCallCmdPrivateSelection:
-            OpenPrivateSelectionL();
             break;
             
         case EPhoneInCallCmdPrivate:
@@ -232,25 +226,13 @@ TBool CPhoneConference::HandleCommandL( TInt aCommand )
             break;
           
         case EPhoneInCallCmdNewCall:
-            LaunchNewCallQueryL();
             break;
             
         case EPhoneInCallCmdNewCallCall:
-            CallFromNewCallQueryL();
             break;
             
         case EPhoneInCallCmdParticipants:
-            OpenParticipantsListL();
-            break;
-            
-        case EPhoneViewOpenNumberEntry:
-            if ( IsConferenceBubbleInSelectionMode() )
-                {
-                CloseSelectionListL();
-                SetTouchPaneButtons( EPhoneConferenceButtons );
-                }
-            commandStatus = CPhoneGsmInCall::HandleCommandL( aCommand );
-            break;            
+            break;     
 
         default:
             commandStatus = CPhoneGsmInCall::HandleCommandL( aCommand );
@@ -270,42 +252,6 @@ void CPhoneConference::UpdateInCallCbaL()
     }
 
 // -----------------------------------------------------------
-// CPhoneConference::OpenMenuBarL
-// -----------------------------------------------------------
-//
-void CPhoneConference::OpenMenuBarL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneConference::OpenMenuBarL()");
-    TInt resourceId;
-
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-        {
-        resourceId = EPhoneDtmfDialerMenubar;
-        }
-    else if ( IsNumberEntryVisibleL() )
-        {
-        resourceId = EPhoneConfCallMenubarWithNumberEntry;
-        }
-    else if ( FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) 
-              && IsConferenceBubbleInSelectionMode() )        
-        {
-        resourceId = EPhoneConfCallParticipantsMenubar;            
-        }
-    else
-        {
-        resourceId = EPhoneConfCallMenubar;
-        }
-
-    TPhoneCmdParamInteger integerParam;
-    integerParam.SetInteger( 
-        CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( resourceId ) );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
-        &integerParam );
-    }
-
-// -----------------------------------------------------------
 // CPhoneConference::HandleKeyEventL
 // -----------------------------------------------------------
 //
@@ -315,33 +261,19 @@ void CPhoneConference::HandleKeyEventL(
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::HandleKeyEventL()");
-    if ( IsConferenceBubbleInSelectionMode() )
+
+    if ( CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) )
         {
-        if ( aKeyEvent.iCode == EKeyUpArrow ||
-             aKeyEvent.iCode == EKeyDownArrow )
-            {
-            TPhoneCmdParamKeyEvent keyEventParam;
-            keyEventParam.SetKeyEvent( aKeyEvent );
-            keyEventParam.SetEventCode( aEventCode );    
-            
-            iViewCommandHandle->ExecuteCommandL( 
-                EPhoneViewMoveHighLightInList, &keyEventParam );
-            }
+        // Handle numeric keys when key events are received 
+        // in conference state.
+        CPhoneGsmInCall::HandleNumericKeyEventL( aKeyEvent, aEventCode );
         }
     else
         {
-        if ( CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) )
-            {
-            // Handle numeric keys when key events are received 
-            // in conference state.
-            CPhoneGsmInCall::HandleNumericKeyEventL( aKeyEvent, aEventCode );
-            }
-        else
-            {
-            // Handle other key events.
-            CPhoneState::HandleKeyEventL( aKeyEvent, aEventCode );
-            }
+        // Handle other key events.
+        CPhoneState::HandleKeyEventL( aKeyEvent, aEventCode );
         }
+    
     }
 
 // --------------------------------------------------------------
@@ -404,12 +336,6 @@ void CPhoneConference::HandleIdleL( TInt aCallId )
 
     // Stop capturing keys
     CaptureKeysDuringCallNotificationL( EFalse );
-
-    // If dialler is not open then close menu bar.
-    if ( !IsNumberEntryUsedL() )
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-        }
         
     // If conference bubble still exists then we have conference and
     // single call
@@ -439,8 +365,6 @@ void CPhoneConference::HandleConferenceIdleL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::HandleConferenceIdleL()");
-    
-    BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
@@ -484,8 +408,7 @@ void CPhoneConference::HandleConferenceIdleL()
             break;
         }
     
-    EndUiUpdate();
-    EndTransEffect();     
+    EndUiUpdate(); 
     }
 
 // -----------------------------------------------------------
@@ -512,59 +435,14 @@ void CPhoneConference::HandleHeldConferenceL( TInt aCallId )
  
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewUpdateBubble, aCallId, &callHeaderParam );
-       
-    // Set Hold flag to view
-    SetHoldFlagL();
-    
+           
     if ( !FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
         {
         SendGlobalInfoNoteL( EPhoneInformationConferenceOnHold, ETrue );
         }
     
-    SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
     SetTouchPaneButtons( EPhoneConferenceButtons );
     UpdateInCallCbaL();
-    }
-
-
-// -----------------------------------------------------------
-// CPhoneConference::DefineAndSetHoldFlagL
-// -----------------------------------------------------------
-//
-void CPhoneConference::DefineAndSetHoldFlagL()
-    {
-    // Find out is conference held or not
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallId( KConferenceCallId );
-    iViewCommandHandle->HandleCommandL( EPhoneViewGetCallState,
-            &callStateData );
-    
-    // Set Hold flag to view
-    TPhoneCmdParamBoolean holdFlag;
-        
-    if( callStateData.CallState() == EPEStateHeld )
-        {
-        holdFlag.SetBoolean( ETrue );
-        }
-    else
-        {
-        holdFlag.SetBoolean( EFalse );   
-        }
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-    
-    }
-
-// -----------------------------------------------------------
-// CPhoneConference::SetHoldFlagL
-// -----------------------------------------------------------
-//
-void CPhoneConference::SetHoldFlagL()
-    {
-    // Set Hold flag to view
-    TPhoneCmdParamBoolean holdFlag;
-    holdFlag.SetBoolean( ETrue );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-
     }
 
 // -----------------------------------------------------------
@@ -602,26 +480,9 @@ void CPhoneConference::HandleConnectedConferenceL()
         SendGlobalInfoNoteL( EPhoneInformationConferenceActiveted, ETrue );
         }
     
-    SetTouchPaneButtonEnabled( EPhoneInCallCmdPrivate );
     SetTouchPaneButtons( EPhoneConferenceButtons );
     
     UpdateInCallCbaL();
-    }
-
-// -----------------------------------------------------------
-// CPhoneConference::OpenDropParticipantSelectionL
-// -----------------------------------------------------------
-//
-void CPhoneConference::OpenDropParticipantSelectionL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneConference::OpenDropParticipantSelectionL()");
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( ETrue );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewOpenConferenceList, &booleanParam );
-
-    iCbaManager->SetCbaL( EPhoneDropParticipantCBA );
     }
 
 // -----------------------------------------------------------
@@ -648,22 +509,6 @@ void CPhoneConference::DropSelectedParticipantL()
     }
 
 // -----------------------------------------------------------
-// CPhoneConference::OpenPrivateSelectionL
-// -----------------------------------------------------------
-//
-void CPhoneConference::OpenPrivateSelectionL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneConference::OpenPrivateSelectionL()");
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( ETrue );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewOpenConferenceList, &booleanParam );
-
-    iCbaManager->SetCbaL( EPhonePrivateParticipantCBA );
-    }
-
-// -----------------------------------------------------------
 // CPhoneConference::PrivateSelectedParticipantL
 // -----------------------------------------------------------
 //
@@ -686,7 +531,6 @@ void CPhoneConference::PrivateSelectedParticipantL()
         
         // Update call view
         BeginUiUpdateLC();
-        CloseSelectionListL();
         SetTouchPaneButtons( EPhoneConferenceButtons );
         EndUiUpdate();    
                 
@@ -708,20 +552,10 @@ void CPhoneConference::MakeStateTransitionToIdleL()
     if ( IsNumberEntryUsedL() )
         {
         // Show the number entry if it exists
-        SetNumberEntryVisibilityL(ETrue);
-        
-        // Close dtmf dialer when call is disconnected.
-        if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-            {            
-            CloseDTMFEditorL();
-            // Display idle screen and update CBAs
-            DisplayIdleScreenL();
-            }        
+        SetNumberEntryVisibilityL(ETrue);      
         }
     else if ( !TopAppIsDisplayedL() )
         {
-        // Close menu bar, if it is displayed
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
         
         // Continue displaying current app but set up the 
         // idle screen in the background
@@ -729,9 +563,6 @@ void CPhoneConference::MakeStateTransitionToIdleL()
         }
     else
         {
-        // Close menu bar, if it is displayed
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-        
          // Display idle screen
         DisplayIdleScreenL();
         }
@@ -752,8 +583,6 @@ void CPhoneConference::MakeStateTransitionToSingleL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::MakeStateTransitionToSingleL()");
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
  
     if ( IsNumberEntryUsedL() )
         {
@@ -775,8 +604,6 @@ void CPhoneConference::MakeStateTransitionToTwoSinglesL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::MakeStateTransitionToTwoSinglesL()");
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     if ( IsNumberEntryUsedL() )
         {
@@ -794,21 +621,6 @@ void CPhoneConference::MakeStateTransitionToTwoSinglesL()
     }
 
 // -----------------------------------------------------------
-// CPhoneConference::CloseSelectionListL
-// -----------------------------------------------------------
-//
-void CPhoneConference::CloseSelectionListL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneConference::CloseSelectionListL()");
-    // Close conference list
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewOpenConferenceList, &booleanParam );
-    }
-
-// -----------------------------------------------------------
 // CPhoneConference::ToggleHold
 // -----------------------------------------------------------
 //
@@ -816,18 +628,25 @@ void CPhoneConference::ToggleHoldL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::ToggleHoldL()");
-    TPhoneCmdParamBoolean hold;
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetHoldFlag, &hold );
     
-    if( hold.Boolean() )
+    TPECallControlCaps callControlCaps =
+        iStateMachine->PhoneEngineInfo()->CallControlCaps( KConferenceCallId );
+    
+    if ( callControlCaps & MCCECallObserver::ECCECapsHold  )
         {
+        iStateMachine->SetCallId( KConferenceCallId );         
         iStateMachine->SendPhoneEngineMessage( 
-            CPEPhoneModelIF::EPEMessageResumeConference );
+            CPEPhoneModelIF::EPEMessageHold );    
+        }
+    else if ( callControlCaps & MCCECallObserver::ECCECapsResume )
+        {
+        iStateMachine->SetCallId( KConferenceCallId );         
+        iStateMachine->SendPhoneEngineMessage( 
+            CPEPhoneModelIF::EPEMessageResume );    
         }
     else
         {
-        iStateMachine->SendPhoneEngineMessage( 
-            CPEPhoneModelIF::EPEMessageHoldConference );
+        SendGlobalInfoNoteL( EPhoneNoteTextNotAllowed, ETrue );    
         }
     }
 
@@ -839,11 +658,7 @@ void CPhoneConference::HandleDiallingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::HandleDiallingL()");
-    
-    BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC(); 
-    
-    CloseSelectionListL(); 
     
     SetNumberEntryVisibilityL(EFalse);
     
@@ -854,8 +669,6 @@ void CPhoneConference::HandleDiallingL( TInt aCallId )
     SetTouchPaneButtons(EPhoneCallSetupAndSingleButtons); 
 
     EndUiUpdate();
-
-    EndTransEffect();
     
     // Set Call Setup CBA 
     UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
@@ -872,8 +685,6 @@ void CPhoneConference::DisplayCallSetupL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::DisplayCallSetupL()");
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     // Remove dialogs if necessary
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
@@ -889,32 +700,6 @@ void CPhoneConference::DisplayCallSetupL( TInt aCallId )
 
     // Display call setup header
     DisplayHeaderForOutgoingCallL( aCallId );
-    }
-
-// ---------------------------------------------------------
-// CPhoneConference::CallFromNewCallQueryL
-// ---------------------------------------------------------
-//
-void CPhoneConference::CallFromNewCallQueryL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneConference::CallFromNewCallQueryL()");
-    // First get the phone number from the dialog
-    TPhoneCmdParamString phoneNumberParam;
-    HBufC *content = HBufC::NewLC( KPhoneNumberEntryBufferSize );
-    TPtr ptr( content->Des() );
-    phoneNumberParam.SetString( &ptr );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetTextQueryContent,
-        &phoneNumberParam );
-
-    // Store the phone number
-    iStateMachine->PhoneEngineInfo()->SetPhoneNumber( ptr );
-
-    // clean up stack
-    CleanupStack::PopAndDestroy( content );
-  
-    // Dial number
-    DialVoiceCallL();
     }
 
 // -----------------------------------------------------------
@@ -933,9 +718,6 @@ void CPhoneConference::HandleIncomingL( TInt aCallId )
     
     // Get allow waiting call header param value.
     AllowShowingOfWaitingCallHeaderL( dialerParam );
-            
-    CloseSelectionListL();
-
     // Close fast swap window if it's displayed
     CEikonEnv::Static()->DismissTaskList();
     
@@ -964,8 +746,6 @@ void CPhoneConference::DisplayIncomingCallL(
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConference::DisplayIncomingCallL()");
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     // Cannot delete active note, e.g. New call query, 
     // but show waiting note with or without caller name
@@ -1028,80 +808,12 @@ void CPhoneConference::HandleWentOneToOneL( TInt aCallId )
         UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
         iStateMachine->ChangeState( EPhoneStateConferenceAndSingle );                    
         SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
-        SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
         }
     else
         {            
         SetTouchPaneButtons( EPhoneTwoSinglesButtons );
         }       
     EndUiUpdate();
-    }
-
-// -----------------------------------------------------------
-// CPhoneConference::OpenParticipantsListL
-// -----------------------------------------------------------
-//    
-void CPhoneConference::OpenParticipantsListL()
-    {
-    BeginUiUpdateLC();
-    
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( ETrue );
-    
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewOpenConferenceList,
-                                         &booleanParam );    
-
-    SetTouchPaneButtons( EPhoneParticipantListButtons );
-                                         
-    EndUiUpdate();
-    
-    iCbaManager->SetCbaL( EPhoneParticipantListCBA );
-     
-    // Find out is conference held or not
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallId( KConferenceCallId );
-    iViewCommandHandle->HandleCommandL( EPhoneViewGetCallState,
-        &callStateData );
-    
-    if( callStateData.CallState() == EPEStateHeld )
-        {
-        //set Private button to Dimmed.        
-        SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
-        } 
-    else
-        {
-        //set Private button to UnDimmed.        
-         SetTouchPaneButtonEnabled( EPhoneInCallCmdPrivate );        
-        }   
-                                           
-    }
-
-// -----------------------------------------------------------
-// CPhoneConference::IsConferenceBubbleInSelectionMode
-// -----------------------------------------------------------
-//
-TBool CPhoneConference::IsConferenceBubbleInSelectionMode() const
-    {
-    TPhoneCmdParamBoolean booleanParam;
-    
-    iViewCommandHandle->ExecuteCommand( 
-        EPhoneViewGetIsConferenceInSelectionMode, &booleanParam );
-    
-    return booleanParam.Boolean();
-    }
-
-// ---------------------------------------------------------
-// CPhoneState::HandleCreateNumberEntryL
-// ---------------------------------------------------------
-//
-void CPhoneConference::HandleCreateNumberEntryL( const TKeyEvent& aKeyEvent,
-        TEventCode aEventCode )
-    {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneConference::HandleCreateNumberEntryL() ");
-    if ( !IsConferenceBubbleInSelectionMode() )
-        {
-        CPhoneGsmInCall::HandleCreateNumberEntryL( aKeyEvent,aEventCode );
-        }
     }
     
 // -----------------------------------------------------------

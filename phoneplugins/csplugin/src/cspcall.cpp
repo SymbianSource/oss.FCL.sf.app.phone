@@ -1011,12 +1011,11 @@ TBool CSPCall::IsCallForwarded( ) const
     CSPLOGSTRING(CSPREQIN, "CSPCall::IsCallForwarded <");
     TBool ret( EFalse );
     TInt err( KErrNone );
-    RMobileCall::TMobileCallInfoV3 callInfo;
-    RMobileCall::TMobileCallInfoV3Pckg pck( callInfo );
+    RMobileCall::TMobileCallInfoV3Pckg pck( iEtelCallInfo );
     err = iCall.GetMobileCallInfo( pck );
     if (err == KErrNone )
         {
-        ret = callInfo.iForwarded;
+        ret = iEtelCallInfo.iForwarded;
         }
     
     CSPLOGSTRING2(CSPREQIN, 
@@ -1390,18 +1389,15 @@ void CSPCall::NotifyRemotePartyNumberChanged()
     // TSY does not send notification so number must be fetched.
     if ( IsMobileOriginated() )
         {
-        RMobileCall::TMobileCallInfoV3 callInfo;
-        RMobileCall::TMobileCallInfoV3Pckg callInfoPckg( callInfo );
-    
-        GetMobileCallInfo( callInfoPckg );    
-        callInfo = callInfoPckg();
-    
-        if ( callInfo.iRemoteParty.iRemoteNumber.iTelNumber.Length() )
-            {     
+        RMobileCall::TMobileCallInfoV3Pckg callInfoPckg( iEtelCallInfo );
+        GetMobileCallInfo( callInfoPckg );
+        if ( iEtelCallInfo.iRemoteParty.iRemoteNumber.iTelNumber.Length() )
+            {
             NotifyRemotePartyInfoChanged( KNullDesC(),
-                callInfo.iRemoteParty.iRemoteNumber.iTelNumber);        
+                iEtelCallInfo.iRemoteParty.iRemoteNumber.iTelNumber);        
             }
         }
+
     }
 
 
@@ -1766,41 +1762,40 @@ TInt CSPCall::ExitCodeError() const
     CSPLOGSTRING2(CSPINT, "CSPCall::ExitCodeError < this: %x", 
                     this );
     TInt callError;
-    RMobileCall::TMobileCallInfoV3 callInfo;
-    RMobileCall::TMobileCallInfoV3Pckg pck( callInfo );
+    RMobileCall::TMobileCallInfoV3Pckg pck( iEtelCallInfo );
     TInt getErr = iCall.GetMobileCallInfo( pck );
     // Is there value in higher 16 bits
-    if ( KErrNone == getErr && (callInfo.iExitCode & 0xFFFF0000) ) 
+    if ( KErrNone == getErr && (iEtelCallInfo.iExitCode & 0xFFFF0000) ) 
         {
         CSPLOGSTRING2(CSPINT, "CSPCall::ExitCodeError callInfo.iExitCode %d", 
-            callInfo.iExitCode );
-        callError = ( callInfo.iExitCode >> KTimesToSplitValue ); 
+            iEtelCallInfo.iExitCode );
+        callError = ( iEtelCallInfo.iExitCode >> KTimesToSplitValue ); 
         
         if ( callError > KErrEtelGsmBase ) 
             // Not in valid exteded range
             {
             // Ignore invalid extented code
-            if ( ( callInfo.iExitCode & 0x0000FFFF ) == KErrNone ) 
+            if ( ( iEtelCallInfo.iExitCode & 0x0000FFFF ) == KErrNone ) 
                 // core error is zero
                 {
                 callError = KErrNone;
                 }
             else
                 {
-                callError = ( ( callInfo.iExitCode & 0x0000FFFF ) 
+                callError = ( ( iEtelCallInfo.iExitCode & 0x0000FFFF ) 
                     | 0xFFFF0000 ); 
                 }
             }
         }
     // Higher and lower 16 bits are zero
-    else if ( !( callInfo.iExitCode & 0xFFFFFFFF ) ) 
+    else if ( !( iEtelCallInfo.iExitCode & 0xFFFFFFFF ) ) 
         {
         callError = KErrNone;
         }
     else 
         {
         // No extended error, expand value to full range
-        callError = ( callInfo.iExitCode | 0xFFFF0000 );
+        callError = ( iEtelCallInfo.iExitCode | 0xFFFF0000 );
         }
         
     CSPLOGSTRING2(CSPINT, "CSPCall::ExitCodeError > err: %d", callError);

@@ -67,7 +67,7 @@ signals:
     void error();
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) { Q_UNUSED(event) }
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     StartResult onStart();
     StopResult onStop();

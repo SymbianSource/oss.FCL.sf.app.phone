@@ -315,7 +315,7 @@ void BubbleTestView::keyPressEvent(QKeyEvent *event)
             bubbleManager().setState(mConfBubbleId,BubbleManagerIF::Active);
             bubbleManager().setCli(mConfBubbleId,"Conference call",Qt::ElideRight);
             if (mCallTimer->isChecked()) {
-                bubbleManager().setCallTime( mConfBubbleId, "0:00" );
+                bubbleManager().setCallTime( mConfBubbleId, "00:00:00" );
             }
             bubbleManager().addAction(mConfBubbleId, mMute);
             bubbleManager().addAction(mConfBubbleId, mEndConference);
@@ -358,7 +358,7 @@ void BubbleTestView::keyPressEvent(QKeyEvent *event)
             foreach (TestCall call, mCalls) {
                 if ( call.callState == BubbleManager::Active ||
                      call.callState == BubbleManager::OnHold ) {
-                    bubbleManager().updateCallTime(call.bubbleId,"0:01");
+                    bubbleManager().updateCallTime(call.bubbleId,"00:00:01");
                 }
             }
         }
@@ -456,7 +456,7 @@ void BubbleTestView::setBubbleData(int bubble, BubbleManagerIF::PhoneCallState s
             bubbleManager().setCli(bubble, "Gloria Andersson", Qt::ElideRight);
             bubbleManager().setSecondaryCli( bubble, "+35850123456789" );
         } else {
-            bubbleManager().setCli(bubble, "+35850123456789", Qt::ElideRight);
+            bubbleManager().setCli(bubble, "+35850123456789", Qt::ElideLeft);
         }
 
         setCallObject(bubble, ":resources/contactpic.jpg");
@@ -479,9 +479,9 @@ void BubbleTestView::setBubbleData(int bubble, BubbleManagerIF::PhoneCallState s
             }
         } else {
             if (callCount()==2) {
-                bubbleManager().setCli(bubble, "+35850232323232", Qt::ElideRight);
+                bubbleManager().setCli(bubble, "+35850232323232", Qt::ElideLeft);
             } else {
-                bubbleManager().setCli(bubble, "+35840987654321", Qt::ElideRight);
+                bubbleManager().setCli(bubble, "+35840987654321", Qt::ElideLeft);
             }
 
         }
@@ -524,7 +524,7 @@ void BubbleTestView::setBubbleData(int bubble, BubbleManagerIF::PhoneCallState s
     case BubbleManager::Active:
         {
         if ( mCallTimer->isChecked() ) {
-            bubbleManager().setCallTime( bubble, "0:00" );
+            bubbleManager().setCallTime( bubble, "00:00:00" );
         }
         break;
         }

@@ -138,47 +138,6 @@ EXPORT_C void CPhoneTwoSingles::HandlePhoneEngineMessageL(
             break;
         }
     }
-
-// -----------------------------------------------------------
-// CPhoneTwoSingles::OpenMenuBarL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneTwoSingles::OpenMenuBarL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneTwoSingles::OpenMenuBarL()");
-    TInt resourceId;
-
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-        {
-        resourceId = EPhoneDtmfDialerMenubar;
-        }
-    if ( iOnScreenDialer && IsCustomizedDialerVisibleL() )
-        {
-        resourceId = CustomizedDialerMenuResourceIdL();
-        }
-    else if ( IsNumberEntryVisibleL() )
-        {
-        resourceId = EPhoneCallActiveAndHeldMenubarWithNumberEntry;
-        }
-    else
-        {
-        resourceId = EPhoneCallActiveAndHeldMenubar;
-        }
-
-    TPhoneCmdParamInteger integerParam;
-    integerParam.SetInteger( 
-        CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( resourceId ) );
-
-    // Set Hold flag to view
-    TPhoneCmdParamBoolean holdFlag;
-    holdFlag.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
-        &integerParam );
-    }
       
 // -----------------------------------------------------------
 // CPhoneTwoSingles:HandleIdleL
@@ -208,8 +167,6 @@ void CPhoneTwoSingles::HandleIdleL( TInt aCallId )
                 }
             else
                 {
-                // Close menu bar if number entry is not open.
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
                 
                 // Set incall CBAs
                 UpdateCbaL( EPhoneCallHandlingInCallCBA );                
@@ -384,7 +341,6 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
 
     SetTouchPaneButtons( EPhoneConferenceButtons );
-    SetTouchPaneButtonEnabled( EPhoneInCallCmdPrivate );
     EndUiUpdate();
     
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
@@ -417,9 +373,6 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
     // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
     
-    // Set touch controls
-    SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
-    
     // Check if HW Keys or Call UI should be disabled
     CheckDisableHWKeysAndCallUIL();
     
@@ -443,8 +396,6 @@ void CPhoneTwoSingles::DisplayIncomingCallL(
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
          "CPhoneTwoSingles::DisplayIncomingCallL()"); 
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     // Cannot delete active note, e.g. New call query, 
     // but show waiting note with or without caller name

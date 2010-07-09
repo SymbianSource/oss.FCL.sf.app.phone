@@ -300,32 +300,13 @@ void CPhoneCallHeaderManager::SetDivertIndication( const TBool aDivertIndication
 // ---------------------------------------------------------------------------
 //
 void CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL( 
-        const TInt aNumberLength,
-        const TBool aContactInfoAvailable )
+        const TInt /*aNumberLength*/,
+        const TBool /*aContactInfoAvailable*/ )
     {
     __LOGMETHODSTARTEND( 
             EPhoneControl, 
             "CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL() ");
-    TPhoneCmdParamBoolean phoneNumberAvailable;
-    if( aNumberLength || aContactInfoAvailable )
-        {
-        // Phone number is available straight or via contact info
-        // so switch to video/voice call is possible
-        __PHONELOG( EBasic, 
-                EPhoneControl, 
-                "CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL - Phonenumber is available" );
-        phoneNumberAvailable.SetBoolean( ETrue );
-        }
-    else
-        {
-        __PHONELOG( EBasic, 
-                EPhoneControl, 
-                "CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL - Phonenumber is not available" );
-        phoneNumberAvailable.SetBoolean( EFalse );              
-        }
-    iViewCommandHandle.ExecuteCommandL( 
-            EPhoneViewSetPhoneNumberAvailableInPhoneEngine, 
-            &phoneNumberAvailable );        
+     
     }
 
 // -----------------------------------------------------------

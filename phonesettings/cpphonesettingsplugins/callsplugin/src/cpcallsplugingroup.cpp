@@ -18,7 +18,7 @@
 #include "cpcallsplugingroup.h"
 #include "cpplugincommon.h"
 #include "cppluginlogging.h"
-#include "cpphonenotes.h"
+#include <psuinotes.h>
 #include <hbdataformmodel.h>
 #include <hbdataformmodelitem.h>
 #include <hbdataformviewitem.h>
@@ -75,7 +75,7 @@ CpCallsPluginGroup::CpCallsPluginGroup(CpItemDataHelper &helper)
     m_ssSettingsWrapper = new SsSettingsWrapper; 
     DPRINT << "SsSettingsWrapper created";
     
-    CpPhoneNotes *phoneNotes = CpPhoneNotes::instance();
+    PsUiNotes *phoneNotes = PsUiNotes::instance();
     QObject::connect(
         this, 
         SIGNAL(showGlobalProgressNote(int &, const QString&)),
@@ -170,7 +170,6 @@ void CpCallsPluginGroup::createShowCallDurationItem()
             "additionalText", QVariant(hbTrId("txt_phone_setlabel_val_yes")));
     }
 
-    appendChild( m_DataItemShowCallDuration ); 
     DPRINT << ": OUT";
 }
     
@@ -205,7 +204,6 @@ void CpCallsPluginGroup::createSoftRejectItem()
         "maxRows", QVariant(5));
     m_DataItemSoftRejectTextEditor->setContentWidgetData(
         "minRows", QVariant(1));
-    appendChild( m_DataItemSoftRejectTextEditor ); 
     
     DPRINT << ": OUT";
 }
@@ -232,7 +230,6 @@ void CpCallsPluginGroup::createCLIItem()
         list << cliSettingMapIterator.value(); 
         };
     m_DataItemCLI->setContentWidgetData("items", QVariant(list));
-    appendChild(m_DataItemCLI);
     
     DPRINT << ": OUT";
 }
@@ -270,7 +267,6 @@ void CpCallsPluginGroup::createOwnVideoInReceivedCall()
     m_OwnVideoInReceivedCall->setContentWidgetData(
         QString("currentIndex"), indexValue);
     
-    appendChild( m_OwnVideoInReceivedCall ); 
     DPRINT << ": OUT";    
 }
 
@@ -292,7 +288,6 @@ void CpCallsPluginGroup::createCallWaitingtem()
     m_DataItemCallWaiting->setContentWidgetData(
         "additionalText", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_check_status")));
 
-    appendChild(m_DataItemCallWaiting);
     DPRINT << ": OUT";
 }
 

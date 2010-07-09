@@ -17,6 +17,7 @@
 
 #include "phoneindicatorcontroller.h"
 #include "phoneindicators.h"
+#include "phonevisibilityhandler.h"
 #include "qtphonelog.h"
 
 #include <QByteArray>
@@ -27,6 +28,9 @@
 #include <logsfilter.h>
 #include <LogsDomainCRKeys.h>
 #include <ctsydomaincrkeys.h>
+#include <xqaiwrequest.h>
+#include <xqappmgr.h>
+#include <logsservices.h>
 #endif
 
 namespace PhoneIndicatorControllerKeys{
@@ -42,8 +46,10 @@ namespace PhoneIndicatorControllerKeys{
 
 
 
-PhoneIndicatorController::PhoneIndicatorController(QObject *parent):
-    QObject(parent), m_logsModel(0), m_missedCallsFilter(0)
+PhoneIndicatorController::PhoneIndicatorController(
+    PhoneVisibilityHandler& visibilityHandler, QObject *parent):
+    QObject(parent), m_logsModel(0), m_missedCallsFilter(0), 
+    m_request(0), m_phoneVisibilityHandler(visibilityHandler)
 {
     PHONE_TRACE
 #ifdef Q_OS_SYMBIAN
@@ -73,6 +79,9 @@ PhoneIndicatorController::PhoneIndicatorController(QObject *parent):
         updateDiverIndicator(cfStatus & KCFVoiceForwarded);
     }
 #endif
+    
+    connect(&m_indicator,SIGNAL(userActivated(QString,QVariantMap)),
+            this,SLOT(handleInteraction(QString,QVariantMap)));
 }
 
 PhoneIndicatorController::~PhoneIndicatorController()
@@ -253,4 +262,58 @@ bool PhoneIndicatorController::compareKeys(
 {   
     PHONE_TRACE
     return ( first.key() == second.key() && first.uid() == second.uid() );
+}
+
+void PhoneIndicatorController::handleInteraction(QString type,QVariantMap data)
+{
+    PHONE_TRACE
+    
+    if (data.contains(QLatin1String("interaction")) && 
+        data.value(QLatin1String("interaction")).canConvert<int>()) {
+        
+        XQApplicationManager appManager;
+        QList<QVariant> args;
+        QString service;
+        QString interface;
+        QString operation;
+        QVariantHash hash;
+        QVariantMap map;
+        int interaction = data.value("interaction").toInt();                
+        
+        switch(interaction){
+            case OpenMissedCallView:
+                service = "logs";
+                interface = "com.nokia.symbian.ILogsView";
+                operation = "show(QVariantMap)";
+                map.insert("view_index",QVariant((int)LogsServices::ViewMissed));
+                map.insert("show_dialpad",QVariant(false));
+                map.insert("dialpad_text", QVariant(QString()));
+                args.append(QVariant(map));
+                break;
+            case OpenCallUi:            
+                m_phoneVisibilityHandler.bringToForeground();
+                break;
+            case OpenDiverSettingsView:
+                interface = "com.nokia.symbian.ICpPluginLauncher";
+                operation = "launchSettingView(QString,QVariant)";
+                args << QVariant("cptelephonyplugin.dll");            
+                hash["view"] = "divert_view";
+                hash["heading"] = "txt_phone_subhead_telephone";
+                args << hash;
+                break;
+            default:            
+                break;
+        }
+        
+        delete m_request;
+        m_request = service.isEmpty() ? 
+            appManager.create( interface, operation, false):
+            appManager.create(service, interface, operation, false);
+        if ( m_request == NULL ){
+            return;       
+        }   
+        m_request->setArguments(args);
+        m_request->send();    
+        
+    }
 }

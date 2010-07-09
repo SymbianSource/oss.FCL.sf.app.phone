@@ -32,7 +32,7 @@ public:
 }; 
 
 
-#define EXPECT_NO_EXCEPTION(statements)    \
+#define EXPECT_EXCEPTION(statements)    \
 {                                       \
     bool exceptionDetected = false;     \
     try {                               \
@@ -40,7 +40,7 @@ public:
     } catch (...) {                     \
         exceptionDetected = true;       \
     }                                   \
-    QVERIFY(false == exceptionDetected); \
+    QVERIFY(true == exceptionDetected); \
 }
 
 const QString KHomeZoneTextTag("HomeZoneText0");    // max length 13
@@ -394,7 +394,7 @@ void UT_InfoWidgetNetworkHandler::t_createLeave()
     EXPECT(CreateL)
             .willOnce(invokeWithoutArguments(this, &doLeaveL));
     
-    EXPECT_NO_EXCEPTION(InfoWidgetNetworkHandler * p = new InfoWidgetNetworkHandler(););
+    EXPECT_EXCEPTION(InfoWidgetNetworkHandler * p = new InfoWidgetNetworkHandler(););
 }
 
 QTEST_MAIN_S60(UT_InfoWidgetNetworkHandler)

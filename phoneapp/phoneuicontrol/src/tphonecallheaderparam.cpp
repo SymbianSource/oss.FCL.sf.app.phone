@@ -575,7 +575,7 @@ void TPhoneCallHeaderParam::UpdateCallHeaderInfoL(
         {
         aCallHeaderData->SetCLIText( 
             iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ),
-            TPhoneCmdParamCallHeaderData::ERight );
+            TPhoneCmdParamCallHeaderData::ELeft );
         }
 
     // If KTelephonyLVFlagUUS is enabled it will over write RemotePartyName setting.
@@ -669,22 +669,23 @@ TBool TPhoneCallHeaderParam::GetRemoteInfoDataL(
             else if ( identity == RMobileCall::ERemoteIdentityUnavailableNoCliCoinOrPayphone || 
                     identity == RMobileCall::ERemoteIdentityAvailableNoCliCoinOrPayphone )
                 {
-                __PHONELOG( EBasic, EPhoneControl, "GetRemoteInfoDataL br2.5: payphone" );
+                __PHONELOG( EBasic, EPhoneControl, "GetRemoteInfoDataL : payphone" );
                 // Display "Payphone".
                 iManagerUtility.LoadResource( aData, EPhoneCLIPayphone );
                 }
             else if ( identity == RMobileCall::ERemoteIdentityUnknown )
                 {
-                __PHONELOG( EBasic, EPhoneControl, "GetRemoteInfoDataL br2.6: unknown number" );
+                __PHONELOG( EBasic, EPhoneControl, "GetRemoteInfoDataL : unknown number" );
                 // Display "Unknown Number".
                 iManagerUtility.LoadResource( aData, EPhoneCallCLIUnknown );
                 }
+            else if ( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ).Length() )
+                {
+                // Display the number if it is available
+                aData.Copy( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ) );
+                }            
             }
-        else if ( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ).Length() )
-            {
-            // Display the number if it is available
-            aData.Copy( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ) );
-            }
+
         }
     return secondaryCli;
     }

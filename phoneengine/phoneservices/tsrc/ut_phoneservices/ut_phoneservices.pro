@@ -45,10 +45,6 @@ symbian {
 HEADERS += ../../inc/phoneservices.h
 HEADERS += ../../inc/dialservice.h
 HEADERS += ../../inc/dtmfservice.h
-HEADERS += ../../inc/dialservicedepricated.h
-HEADERS += ../../inc/dtmfservicedepricated.h
 HEADERS += ../../inc/urischemehandlerservice.h
 SOURCES += ../../src/phoneservices.cpp
-SOURCES += ../../src/dialservicedepricated.cpp
-SOURCES += ../../src/dtmfservicedepricated.cpp
 SOURCES += unit_tests.cpp

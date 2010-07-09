@@ -4,9 +4,11 @@
         <widget name="expandedBubble" type="BubbleContainerWidget">
             <widget name="eb:participantList" type="HbListView">
             </widget>
-            <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
-                <integer name="lines" value="2"/>
-            </widget>            
+            <widget name="eb:groupBox" type="HbGroupBox">            
+		            <widget name="eb:bubbleHeading"  role="HbGroupBox:contentWidget" type="BubbleHeadingWidget">
+		                <integer name="lines" value="2"/>
+		            </widget>
+		        </widget>    
             <widget name="eb:cipheringIcon" type="HbLabel">
                 <sizehint height="var(hb-param-graphic-size-secondary)" width="var(hb-param-graphic-size-secondary)" type="FIXED"/>
             </widget>                        
@@ -26,6 +28,14 @@
     </widget>
 
 <section name="portrait">
+    <widget name="eb:groupBox" type="HbGroupBox">
+        <sizehint height="-1.0" type="PREFERRED"/>
+    </widget>
+
+    <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
+        <integer name="lines" value="2"/>
+    </widget>
+
     <layout type="anchor" widget="content">
         <anchoritem src="expandedBubble" srcEdge="LEFT" dst="" dstEdge="LEFT"/>
         <anchoritem src="expandedBubble" srcEdge="RIGHT" dst="" dstEdge="RIGHT"/>
@@ -34,14 +44,14 @@
     </layout>
     
     <layout type="anchor" widget="expandedBubble">        
-        <anchoritem src="eb:bubbleHeading" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-1.5un"/>
-        <anchoritem src="eb:bubbleHeading" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)"/>               
-        <anchoritem src="eb:bubbleHeading" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="var(hb-param-margin-gene-right)"/>
-        <anchoritem src="eb:bubbleHeading" srcEdge="BOTTOM" dst="eb:participantList" dstEdge="TOP" spacing="var(hb-param-margin-gene-middle-horizontal)"/>
+        <anchoritem src="eb:groupBox" srcEdge="TOP" dst="" dstEdge="TOP"/>
+        <anchoritem src="eb:groupBox" srcEdge="LEFT" dst="" dstEdge="LEFT"/>               
+        <anchoritem src="eb:groupBox" srcEdge="RIGHT" dst="" dstEdge="RIGHT"/>
+        <anchoritem src="eb:groupBox" srcEdge="BOTTOM" dst="eb:participantList" dstEdge="TOP"/>
         
-        <anchoritem src="eb:participantList" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)"/>
-        <anchoritem src="eb:participantList" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="var(hb-param-margin-gene-right)"/>
-        <anchoritem src="eb:participantList" srcEdge="BOTTOM" dst="eb:centerButton" dstEdge="TOP" spacing="var(hb-param-margin-gene-middle-horizontal)"/>
+        <anchoritem src="eb:participantList" srcEdge="LEFT" dst="" dstEdge="LEFT"/>
+        <anchoritem src="eb:participantList" srcEdge="RIGHT" dst="" dstEdge="RIGHT"/>
+        <anchoritem src="eb:participantList" srcEdge="BOTTOM" dst="eb:centerButton" dstEdge="TOP"/>
         
         <anchoritem src="eb:leftButton" srcEdge="RIGHT" dst="" dstEdge="CENTERH" spacing="expr(var(hb-param-margin-gene-middle-horizontal)/2)"/>
         <anchoritem src="eb:leftButton" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-var(hb-param-margin-gene-left)"/>
@@ -57,6 +67,14 @@
 </section>
 
 <section name="landscape">
+    <widget name="eb:groupBox" type="HbGroupBox">
+        <sizehint height="6.5un" type="FIXED"/>
+    </widget>
+
+    <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
+        <integer name="lines" value="1"/>
+    </widget>
+
     <layout type="anchor" widget="content">
         <anchoritem src="expandedBubble" srcEdge="LEFT" dst="" dstEdge="LEFT"/>
         <anchoritem src="expandedBubble" srcEdge="RIGHT" dst="" dstEdge="RIGHT"/>
@@ -65,9 +83,10 @@
     </layout>
 
     <layout type="anchor" widget="expandedBubble">
-        <anchoritem src="eb:bubbleHeading" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-1.5un"/>
-        <anchoritem src="eb:bubbleHeading" srcEdge="LEFT" dst="" dstEdge="CENTERH" spacing="-var(hb-param-margin-gene-left)"/>
-        <anchoritem src="eb:bubbleHeading" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="var(hb-param-margin-gene-right)"/>
+        <anchoritem src="eb:groupBox" srcEdge="TOP" dst="" dstEdge="TOP"/>
+        <anchoritem src="eb:groupBox" srcEdge="LEFT" dst="" dstEdge="LEFT"/>
+        <anchoritem src="eb:groupBox" srcEdge="RIGHT" dst="" dstEdge="RIGHT"/>
+        <anchoritem src="eb:groupBox" srcEdge="BOTTOM" dst="eb:participantList" dstEdge="TOP"/>
         
         <anchoritem src="eb:centerButton" srcEdge="LEFT" dst="" dstEdge="CENTERH" spacing="-13.0un"/>
         <anchoritem src="eb:centerButton" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="13.0un"/>
@@ -78,10 +97,10 @@
         <anchoritem src="eb:rightButton" srcEdge="LEFT" dst="eb:centerButton" dstEdge="CENTERH" spacing="-1.0un"/>
         <anchoritem src="eb:rightButton" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="1.0un"/>
         <anchoritem src="eb:rightButton" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="3.0un"/>        
-        <anchoritem src="eb:participantList" srcEdge="LEFT" dst="" dstEdge="LEFT" spacing="-2.0un"/>
-        <anchoritem src="eb:participantList" srcEdge="RIGHT" dst="" dstEdge="CENTERH" spacing="2.0un"/>
-        <anchoritem src="eb:participantList" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-2.0un"/>
-        <anchoritem src="eb:participantList" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM" spacing="2.0un"/>
+
+        <anchoritem src="eb:participantList" srcEdge="LEFT" dst="" dstEdge="LEFT"/>        
+        <anchoritem src="eb:participantList" srcEdge="RIGHT" dst="" dstEdge="CENTERH"/>
+        <anchoritem src="eb:participantList" srcEdge="BOTTOM" dst="" dstEdge="BOTTOM"/>
     </layout>
 </section>
 

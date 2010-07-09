@@ -251,9 +251,6 @@ void CPhoneGsmInCall::BringIncomingToForegroundL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneGsmInCall::BringIncomingToForegroundL( ) ");
 
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-
     // Remove any phone dialogs if they are displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
 
@@ -289,20 +286,7 @@ void CPhoneGsmInCall::AllowShowingOfWaitingCallHeaderL(
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneGsmInCall::AllowShowingOfWaitingCallHeaderL() ");
 
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewAllowWaitingCallHeader, 
-        &aCommandParam );
-    
-    // Non-touch :Hide number entry if it exists on 
-    // Touch : an internal operation ongoing 
-    // -> do not hide dialer
-    if ( !iOnScreenDialer )
-        {   
-        SetNumberEntryVisibilityL(EFalse);
-        }
-    // If param is true and number entry is open only then
-    // hide number entry.
-    else if ( aCommandParam.Boolean() && IsNumberEntryUsedL() )
+    if ( aCommandParam.Boolean() && IsNumberEntryUsedL() )
         {
         SetNumberEntryVisibilityL(EFalse);
         }
@@ -315,19 +299,6 @@ void CPhoneGsmInCall::AllowShowingOfWaitingCallHeaderL(
 EXPORT_C void CPhoneGsmInCall::HandlePhoneForegroundEventL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneGsmInCall::HandlePhoneForegroundEventL( ) ");
-    if ( iOnScreenDialer && IsNumberEntryUsedL() )
-        {
-        // If numberentry is used then we need to call EPhoneViewSetDialerControlVisible 
-        // to ensure that numberentry/dialler is drawn to UI.
-        TPhoneViewResponseId respond = 
-            iViewCommandHandle->HandleCommandL( EPhoneViewSetDialerControlVisible );
-                
-        if ( respond && IsNumberEntryVisibleL() )
-            {
-            // Set Number Entry CBA
-            iCbaManager->SetCbaL( EPhoneNumberAcqCBA );
-            }
-        }
      }
 
 // -----------------------------------------------------------

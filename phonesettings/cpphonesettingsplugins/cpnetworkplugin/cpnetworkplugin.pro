@@ -29,7 +29,8 @@ TRANSLATIONS = telephone_cp.ts
 
 LIBS += -lcpframework \
         -lpsetwrapper \
-        -lcptelephonyutils
+        -lcptelephonyutils \
+        -lpsuinotes
 
 symbian*::LIBS += -lcmmanager
 

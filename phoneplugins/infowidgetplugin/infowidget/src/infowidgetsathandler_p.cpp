@@ -135,7 +135,7 @@ void InfoWidgetSatHandlerPrivate::getIdleModeData()
                 && !m_idleTxt.isEmpty()){
             m_idleResult = RSatService::ESATIdleSuccess;
         }else{ 
-            // Got empty string, could be permanent problem as well
+            // Got empty string, could be permanent problem as well?
             m_idleResult = RSatService::ESATIdleMeUnableToProcessCmd;
         }
     }

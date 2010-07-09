@@ -80,8 +80,6 @@ class CPhoneConferenceAndSingle : public CPhoneConference
         */
         virtual void ConstructL();
         
-        virtual void OpenMenuBarL();
-        
         virtual void UpdateInCallCbaL();
         
         virtual void HandleIncomingL( TInt aCallId );

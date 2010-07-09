@@ -178,8 +178,7 @@ void CPhoneStateSingleVoIP::HandleKeyMessageL(
             if( IsNumberEntryVisibleL() && neLength )
                 {
                 if ( IsOnScreenDialerSupported() &&  
-                     ( IsDTMFEditorVisibleL() ||
-                       IsCustomizedDialerVisibleL() ) )
+                     IsCustomizedDialerVisibleL()  )
                     {
                     return;
                     }

@@ -60,7 +60,6 @@ private:
     QString  mImageName;
     HbIconItem* mDefaultAvatar;
     bool mKeepSquareShape;
-    int mUpdateCount;
     };
 
 #endif /* BUBBLEIMAGEWIDGET_H_ */

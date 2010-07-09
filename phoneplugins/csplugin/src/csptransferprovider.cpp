@@ -182,7 +182,7 @@ void CSPTransferProvider::AddObserverL( const MCCPTransferObserver& aObserver )
     {
     if ( iObservers.Find( &aObserver ) == KErrNotFound )
         {
-        iObservers.Append( &aObserver );
+        iObservers.AppendL( &aObserver );
         }
     }
 

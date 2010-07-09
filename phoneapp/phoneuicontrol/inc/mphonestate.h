@@ -49,7 +49,6 @@ class MPhoneState :
     public MPhoneDivertIF,
     public MPhoneBlockedKeys,
     public MPhoneNEClearedHandler,
-    public MPhoneNumberEntryEvents,
     public MPhoneLockInfo
     {
     public:

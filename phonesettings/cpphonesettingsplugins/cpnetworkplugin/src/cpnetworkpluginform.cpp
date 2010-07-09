@@ -25,11 +25,11 @@
 #include <hblabel.h>
 #include <cpsettingformitemdata.h>
 #include <psetwrapper.h>
+#include <psuinotes.h>
 
 #include "cpnetworkpluginform.h"
 #include "cpplugincommon.h"
 #include "cppluginlogging.h"
-#include "cpphonenotes.h"
 #include "cellulardatasettings.h"
 
 /*!
@@ -52,7 +52,7 @@ CpNetworkPluginForm::CpNetworkPluginForm(QGraphicsItem *parent) :
     m_psetNetworkWrapper = &pSetWrapperGuard->networkWrapper();
     mCellularSettings = QSharedPointer<CellularDataSettings>(new CellularDataSettings);
     connectToNetworkWrapper(*m_psetNetworkWrapper);
-    connectToPhoneNotes(*CpPhoneNotes::instance());
+    connectToPhoneNotes(*PsUiNotes::instance());
     
     QScopedPointer<HbDataFormModel> model(new HbDataFormModel);
     QScopedPointer<CpSettingsWrapper> cpSettingsWrapperGuard(new CpSettingsWrapper);
@@ -601,12 +601,12 @@ void CpNetworkPluginForm::handleSearchingNetworks(
     
     if (type != PSetNetworkWrapper::RequestNone) {
         QObject::connect(
-            CpPhoneNotes::instance(), SIGNAL(progressNoteCanceled()),
+            PsUiNotes::instance(), SIGNAL(progressNoteCanceled()),
             this, SLOT(userCancel()));
         emit showGlobalProgressNote(m_activeProgressNoteId, hbTrId("txt_cp_info_updating"));
     } else {
         QObject::disconnect(
-            CpPhoneNotes::instance(), SIGNAL(progressNoteCanceled()),
+            PsUiNotes::instance(), SIGNAL(progressNoteCanceled()),
             this, SLOT(userCancel()));
         emit cancelNote(m_activeProgressNoteId);
         m_activeProgressNoteId = 0;
@@ -625,12 +625,12 @@ void CpNetworkPluginForm::handleRequestingSelectedNetwork(bool ongoing)
     
     if (ongoing) {
         QObject::connect(
-            CpPhoneNotes::instance(), SIGNAL(progressNoteCanceled()),
+            PsUiNotes::instance(), SIGNAL(progressNoteCanceled()),
             this, SLOT(userCancel()));
         emit showGlobalProgressNote(m_activeProgressNoteId, hbTrId("txt_common_info_requesting"));
     } else {
         QObject::disconnect(
-            CpPhoneNotes::instance(), SIGNAL(progressNoteCanceled()),
+            PsUiNotes::instance(), SIGNAL(progressNoteCanceled()),
             this, SLOT(userCancel()));
         emit cancelNote(m_activeProgressNoteId);
         m_activeProgressNoteId = 0;
@@ -892,7 +892,7 @@ void CpNetworkPluginForm::connectToNetworkWrapper(PSetNetworkWrapper &wrapper)
 /*!
   CpNetworkPluginForm::connectToPhoneNotes
  */
-void CpNetworkPluginForm::connectToPhoneNotes(CpPhoneNotes &notes)
+void CpNetworkPluginForm::connectToPhoneNotes(PsUiNotes &notes)
 {
     QObject::connect(
         this, 

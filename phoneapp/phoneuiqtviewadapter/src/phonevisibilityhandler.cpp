@@ -117,6 +117,11 @@ bool PhoneVisibilityHandler::phoneVisible()
 void PhoneVisibilityHandler::sendToBackground(bool homeScreenForeground)
 {
     PHONE_TRACE2(": homeScreenForeground =", homeScreenForeground);
+    PHONE_TRACE2(": m_carModeEnabled =", m_carModeEnabled);
+    if(m_carModeEnabled) {
+        // Don't bring homescreen to foreground
+        return;
+    }
     
     enableKeyGuard();
     
@@ -234,22 +239,24 @@ void PhoneVisibilityHandler::adjustVisibility(AdjustAction action)
     } else if (m_hideDeviceDialogs) {
         PHONE_TRACE1(": Hide dialogs");
         m_eikonEnv->RootWin().SetOrdinalPosition(0, ECoeWinPriorityAlwaysAtFront + 100);
-    
+        
     } else if (m_deviceLockEnabled) {
         // critical notes are allowed to show on top of Phone application
         PHONE_TRACE1(": Devicelock");
         m_eikonEnv->RootWin().SetOrdinalPosition(0, ECoeWinPriorityAlwaysAtFront);
-    
+        
     } else if (BringForwards == action) {
         // Try to show phone with normal priority
         PHONE_TRACE1(": Bring forward");
         m_eikonEnv->RootWin().SetOrdinalPosition(0, ECoeWinPriorityNormal);
-    
+        
     } else {
         // Normalize visiblity after ie. device lock
         PHONE_TRACE1(": Normalize");
         m_eikonEnv->RootWin().SetOrdinalPosition(ordinalPos, ECoeWinPriorityNormal);
-        
+        // Flush is needed here, because otherwise launching an application may fail
+        // if done same time with normalization.
+        m_eikonEnv->WsSession().Flush();        
     }
 
     PHONE_TRACE1(": END");

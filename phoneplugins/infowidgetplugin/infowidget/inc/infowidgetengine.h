@@ -33,7 +33,6 @@ class InfoWidgetEngine : public QObject
     Q_OBJECT
     
 public:     
-    
     enum HandlerEntity {
         NotDefined = 0, 
         NetworkHandler, 

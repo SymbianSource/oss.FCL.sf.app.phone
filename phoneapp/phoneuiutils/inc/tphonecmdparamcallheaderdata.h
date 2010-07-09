@@ -58,6 +58,10 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         */
         IMPORT_C TPhoneCmdParamCallHeaderData();
 
+        /**
+        * destructor.
+        */
+        IMPORT_C ~TPhoneCmdParamCallHeaderData();
     public: 
         
         /**
@@ -311,12 +315,12 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         /**
         * Call header label text
         */
-        TBuf<KPhoneCallHeaderLabelMaxLength> iLabelText;
+        HBufC *iLabelText;
 
         /**
         * Call header short label text
         */
-        TBuf<KPhoneCallHeaderLabelMaxLength> iShortLabelText;
+        HBufC *iShortLabelText;
 
         /**
         * Call header call state
@@ -341,7 +345,7 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         /**
         * Call header CLI Text
         */
-        TBuf<KCntMaxTextFieldLength> iCLIText;
+        HBufC *iCLIText;
 
         /**
          * Clipping direction of the CLI text.
@@ -357,7 +361,7 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         /**
         * Call header CNAP Text
         */
-        TBuf<KCntMaxTextFieldLength> iCNAPText;
+        HBufC *iCNAPText;
 
         /**
         * Call header picture data

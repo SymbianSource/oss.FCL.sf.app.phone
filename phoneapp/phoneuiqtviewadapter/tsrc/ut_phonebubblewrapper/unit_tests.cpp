@@ -204,7 +204,7 @@ void TestPhoneBubbleWrapper::testSetLabel ()
 void TestPhoneBubbleWrapper::testSetCli ()
 {
     _LIT (KTestText, "Test Name");
-    m_wrapper->setCli (3, KTestText);
+    m_wrapper->setCli (3, KTestText, Qt::ElideRight);
     QCOMPARE (m_int, 3);
     QCOMPARE (m_string, QString ("Test Name"));
     QCOMPARE (m_elideMode, Qt::ElideRight);	
@@ -213,7 +213,7 @@ void TestPhoneBubbleWrapper::testSetCli ()
 void TestPhoneBubbleWrapper::testSetSecondaryCli ()
 {
     _LIT (KTestText, "Test Name");
-    m_wrapper->setSecondaryCli (4, KTestText);
+    m_wrapper->setSecondaryCli (4, KTestText, Qt::ElideLeft);
     QCOMPARE (m_int, 4);
     QCOMPARE (m_string, QString ("Test Name"));
     QCOMPARE (m_elideMode, Qt::ElideLeft);	

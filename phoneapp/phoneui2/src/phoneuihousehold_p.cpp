@@ -189,9 +189,6 @@ void PhoneUiHouseHoldPrivate::ConstructL()
 	HbTranslator *translator2 = new HbTranslator(QString("telephone_cp"));
     if (translator2) {
         m_translators.append(translator2);
-    } else {
-        delete translator2;
-        translator2 = 0;
     }
 
     PhoneUIQtView *view = new PhoneUIQtView(m_window);

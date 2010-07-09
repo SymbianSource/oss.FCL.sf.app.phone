@@ -45,7 +45,6 @@ SOURCES += ../../src/networkhandlingstarter_p.cpp
 
 # mocks needed for testing
 SOURCES += ../mocks/mock_cnetworklistener.cpp
-SOURCES += ../mocks/mock_cppluginlauncher.cpp
 SOURCES += ../mocks/mock_hbdevicemessagebox.cpp
 SOURCES += ../mocks/mock_hbaction.cpp
 SOURCES += ../mocks/mock_hbinstance.cpp
@@ -53,4 +52,7 @@ SOURCES += ../mocks/mock_hbmainwindow.cpp
 SOURCES += ../mocks/mock_qgraphicsview.cpp
 SOURCES += ../mocks/mock_qabstractscrollarea.cpp
 SOURCES += ../mocks/mock_qframe.cpp
+SOURCES += ../mocks/mock_xqappmgr.cpp
+SOURCES += ../mocks/mock_xqaiwrequest.cpp
+SOURCES += ../mocks/mock_hbtranslator.cpp
 

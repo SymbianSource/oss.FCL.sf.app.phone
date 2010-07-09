@@ -188,7 +188,7 @@ void CPhoneCustomizationVoip::CustomizeMenuPaneL(
     TInt menuItemCount = menuPane->NumberOfItemsInPane();
     for ( TInt i( 0 ); i < menuItemCount; i++ )
         {
-        menuItemArray.Append( menuPane->MenuItemCommandId( i ) );
+        menuItemArray.AppendL( menuPane->MenuItemCommandId( i ) );
         }
 
     // Menu items to be deleted 
@@ -772,43 +772,11 @@ void CPhoneCustomizationVoip::InsertInternetCallMenuItemL(
 // -----------------------------------------------------------
 //
 void CPhoneCustomizationVoip::InsertTextInputModeChangeMenuItemL( 
-        CEikMenuPane& aMenuPane )
+        CEikMenuPane& /*aMenuPane*/ )
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneCustomizationVoip::InsertTextInputModeChangeMenuItemL" );
-    
-    TInt modeChangeOptionIndex = KErrNotFound;
-    if ( aMenuPane.MenuItemExists( 
-             EPhoneNumberAcqCmdToggleNeAlphaMode, modeChangeOptionIndex ) ||
-         aMenuPane.MenuItemExists( 
-             EPhoneNumberAcqCmdToggleNeNumericMode, modeChangeOptionIndex ) )
-        {
-        __PHONELOG( EBasic, PhoneUIVoIPExtension,
-            "InsertTextInputModeChangeMenuItemL, MENU ITEM ALREADY EXISTS" );
-        __ASSERT_DEBUG( EFalse, Panic( EPhoneCtrlInvariant ) );
-        }
-    
-    CEikMenuPaneItem* menuItem = NULL;
-    TBool numberEntryInNumericMode = iViewCommandHandle.HandleCommandL( 
-        EPhoneViewIsNumberEntryNumericMode ) == EPhoneViewResponseSuccess;
-    if ( numberEntryInNumericMode )
-        {
-        menuItem = CreateMenuPaneItemLC( 
-            EPhoneNumberAcqCmdToggleNeAlphaMode,
-            R_PHONEUI_NUMBERACQ_OPTIONS_MENU_ITEM_ALPHA_MODE );
-        }
-    else
-        {
-        menuItem = CreateMenuPaneItemLC( 
-            EPhoneNumberAcqCmdToggleNeNumericMode,
-            R_PHONEUI_NUMBERACQ_OPTIONS_MENU_ITEM_NUMERIC_MODE );
-        }
-    
-    // alpha/numeric mode option is always second item in number entry menu
-    const TInt KTextInputModeChangeMenuItemIndex = 1;
-    aMenuPane.InsertMenuItemL( 
-        menuItem->iData, KTextInputModeChangeMenuItemIndex );
-    CleanupStack::PopAndDestroy( menuItem );
+
     }
 
 
@@ -900,7 +868,7 @@ void CPhoneCustomizationVoip::GetActiveCallArrayL(
 
         if( callInfo.iCallState != CTelMenuExtension::ENone )
             {
-            aArray.Append( callInfo );                                   
+            aArray.AppendL( callInfo );                                   
             }
 
         }

@@ -15,14 +15,15 @@
 *
 */
 
-#include "ut_cpplugincommon.h"
-#include "qtestmains60.h"
+#include <xqsettingsmanager.h>
+#include <xqsysinfo.h>
 #include <gsmerror.h>
 #include <exterror.h>
 #include <etelmm.h>
 #include <btsapdomainpskeys.h>
-#define private public
+#include "ut_cpplugincommon.h"
 #include "cpplugincommon.h"
+#include "qtestmains60.h"
 
 /*!
   UT_CpPluginCommon::UT_CpPluginCommon
@@ -74,7 +75,7 @@ void UT_CpPluginCommon::t_memleak()
  */
 void UT_CpPluginCommon::t_showCallDuration()
 {
-    expect("XQSettingsManager::readItemValue").
+    EXPECT(XQSettingsManager::readItemValue).
         returns(QVariant(23324));
     
     mWrapper->showCallDuration();
@@ -98,18 +99,18 @@ void UT_CpPluginCommon::t_readSoftRejectText()
 {
     QString text="";
     bool userDefined=true;
-    expect("XQSettingsManager::readItemValue").
+    EXPECT(XQSettingsManager::readItemValue).
             returns(QVariant(true));
     
-    expect("XQSettingsManager::readItemValue").
+    EXPECT(XQSettingsManager::readItemValue).
             returns(QVariant("text"));
     
     mWrapper->readSoftRejectText(text, userDefined);
     
     userDefined=false;
-    expect("XQSettingsManager::readItemValue").
+    EXPECT(XQSettingsManager::readItemValue).
                     returns(QVariant(false));
-    expect("XQSettingsManager::readItemValue").
+    EXPECT(XQSettingsManager::readItemValue).
             returns(QVariant("text"));
     mWrapper->readSoftRejectText(text, userDefined);
     
@@ -134,7 +135,7 @@ void UT_CpPluginCommon::t_writeSoftRejectText()
  */
 void UT_CpPluginCommon::t_numberGroupingSupported()
 {
-    expect("XQSettingsManager::readItemValue").
+    EXPECT(XQSettingsManager::readItemValue).
             returns(QVariant(true));
     
     mWrapper->numberGroupingSupported();
@@ -147,10 +148,10 @@ void UT_CpPluginCommon::t_numberGroupingSupported()
 
 void UT_CpPluginCommon::t_voipSupported()
 {
-    expect("XQSysInfo::isSupported").with(
+    EXPECT(XQSysInfo::isSupported).with(
             KFeatureIdCommonVoip).returns(false);
     QCOMPARE( Tools::voipSupported(), false );
-    expect("XQSysInfo::isSupported").with(
+    EXPECT(XQSysInfo::isSupported).with(
             KFeatureIdCommonVoip).returns(true);
     QCOMPARE( Tools::voipSupported(), true );
     
@@ -162,10 +163,10 @@ void UT_CpPluginCommon::t_voipSupported()
  */
 void UT_CpPluginCommon::t_videoSupported()
 {
-    expect("XQSysInfo::isSupported").with(
+    EXPECT(XQSysInfo::isSupported).with(
             KFeatureIdCsVideoTelephony).returns(true);
     QCOMPARE( Tools::videoSupported(), true );
-    expect("XQSysInfo::isSupported").with(
+    EXPECT(XQSysInfo::isSupported).with(
             KFeatureIdCsVideoTelephony).returns(false);
     QCOMPARE( Tools::videoSupported(), false );
     
@@ -235,21 +236,21 @@ void UT_CpPluginCommon::t_errorCodeTextMapping()
     Tools::errorCodeTextMapping(KErrGsmSSUnknownAlphabet, text);
     QCOMPARE( text, QString("txt_phone_info_invalid_phone_number"));
     
-    expect("XQSysInfo::isSupported").returns(false);
+    EXPECT(XQSysInfo::isSupported).returns(false);
     Tools::errorCodeTextMapping(KErrGsmOfflineOpNotAllowed, text);
     QCOMPARE( text, QString(
             "txt_phone_info_request_not_completed"));
     QVERIFY( verify() );
     
-    expect("XQSysInfo::isSupported").returns(true);
-    expect("XQSettingsManager::readItemValue").returns(QVariant(EBTSapConnected));
+    EXPECT(XQSysInfo::isSupported).returns(true);
+    EXPECT(XQSettingsManager::readItemValue).returns(QVariant(EBTSapConnected));
     Tools::errorCodeTextMapping(KErrGsmOfflineOpNotAllowed, text);
     QCOMPARE( text, QString(
             "Operation not possible in SIM access profile mode"));
     QVERIFY( verify() );
     
-    expect("XQSysInfo::isSupported").returns(true);
-    expect("XQSettingsManager::readItemValue").returns(QVariant(EBTSapNotConnected));
+    EXPECT(XQSysInfo::isSupported).returns(true);
+    EXPECT(XQSettingsManager::readItemValue).returns(QVariant(EBTSapNotConnected));
     Tools::errorCodeTextMapping(KErrGsmOfflineOpNotAllowed, text);
     QCOMPARE( text, QString(
             "Operation not possible in Off-line mode"));
@@ -267,7 +268,7 @@ void UT_CpPluginCommon::t_errorCodeTextMapping()
  */
 void UT_CpPluginCommon::t_readVtVideoSending()
 {
-    expect("XQSettingsManager::readItemValue").
+    EXPECT(XQSettingsManager::readItemValue).
             returns(QVariant(1));
     mWrapper->readVtVideoSending();
     QVERIFY( verify() );
@@ -278,7 +279,7 @@ void UT_CpPluginCommon::t_readVtVideoSending()
  */
 void UT_CpPluginCommon::t_writeVtVideoSending()
 {
-    expect("XQSettingsManager::writeItemValue");//.
+    EXPECT(XQSettingsManager::writeItemValue);//.
             //times(2);
     int i=0;
     mWrapper->writeVtVideoSending(i);
@@ -290,7 +291,7 @@ void UT_CpPluginCommon::t_writeVtVideoSending()
  */
 void UT_CpPluginCommon::t_isFeatureCallWaitingDistiquishNotProvisionedEnabled()
 {
-    expect("XQSettingsManager::readItemValue").
+    EXPECT(XQSettingsManager::readItemValue).
                 returns(QVariant(1));
     mWrapper->isFeatureCallWaitingDistiquishNotProvisionedEnabled();
     QVERIFY( verify() );
@@ -301,9 +302,17 @@ void UT_CpPluginCommon::t_isFeatureCallWaitingDistiquishNotProvisionedEnabled()
  */
 void UT_CpPluginCommon::t_isPhoneOffline()
 {
-    expect("XQSysInfo::isSupported");
-    mWrapper->isPhoneOffline();
-    QVERIFY( verify() );
+    EXPECT(QtMobility::QSystemDeviceInfo::currentProfile)
+        .returns(QSystemDeviceInfo::NormalProfile);
+    bool isOffline = mWrapper->isPhoneOffline();
+    QCOMPARE(isOffline, false);
+    QVERIFY(verify());
+    
+    EXPECT(QtMobility::QSystemDeviceInfo::currentProfile)
+        .returns(QSystemDeviceInfo::OfflineProfile);
+    isOffline = mWrapper->isPhoneOffline();
+    QCOMPARE(isOffline, true);
+    QVERIFY(verify());
 }
 
 /*!
@@ -311,7 +320,7 @@ void UT_CpPluginCommon::t_isPhoneOffline()
  */
 void UT_CpPluginCommon::t_isOngoingCall()
 {
-    expect("XQSettingsManager::readItemValue").
+    EXPECT(XQSettingsManager::readItemValue).
                     returns(QVariant(1));
     mWrapper->isOngoingCall();
     QVERIFY( verify() );

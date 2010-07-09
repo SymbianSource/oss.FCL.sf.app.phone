@@ -67,7 +67,10 @@ QList<CpSettingFormItemData*> CpTelephonyPlugin::createSettingFormItemData(
 
     QList<CpSettingFormItemData*> ret;
     ret.append(new CpSettingFormEntryItemDataImpl<CpTelephonyPluginView>(
-            itemDataHelper, hbTrId("txt_cp_dblist_telephone"), hbTrId("")));
+            itemDataHelper, 
+            hbTrId("txt_cp_dblist_telephone"), 
+            hbTrId(""), 
+            HbIcon(QString("qtg_large_voice_call"))));
     return ret;
 }
 

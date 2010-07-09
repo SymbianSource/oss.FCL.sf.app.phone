@@ -62,12 +62,6 @@ EXPORT_C void CPhoneStateStartup::ConstructL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::ConstructL() ");
     CPhoneState::BaseConstructL();
-    
-    // Set send key activation off.
-    TPhoneCmdParamBoolean boolean;
-    boolean.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetSendKeyDialerActivationFlag, 
-            &boolean );
 
     // CAPTURE KEY EVENTS PERMANENTLY
         
@@ -159,8 +153,6 @@ void CPhoneStateStartup::HandlePEConstructionReadyL( TInt /*aCallId*/ )
         SetDefaultFlagsL();
         iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
         
-        iViewCommandHandle->ExecuteCommand( EPhoneViewPrepareIcons );
-        
         iStateMachine->ChangeState( EPhoneStateIdle );
         }
     }
@@ -194,17 +186,6 @@ EXPORT_C void CPhoneStateStartup::HandleKeyEventL(
         const TKeyEvent& /*aKeyEvent*/, TEventCode /*aEventCode*/ )
     {
     // Empty implementation
-    }
-
-// CPhoneStateStartup::HandleCreateNumberEntryL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneStateStartup::HandleCreateNumberEntryL( 
-        const TKeyEvent& /* aKeyEvent */ ,
-        TEventCode /* aEventCode */ )
-    {
-    // Empty implementation
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::HandleCreateNumberEntryL() ");   
     }
 
 // -----------------------------------------------------------
@@ -247,9 +228,6 @@ EXPORT_C void CPhoneStateStartup::HandlePhoneStartupL()
         // Go to idle state
         SetDefaultFlagsL();
         iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
-        
-        iViewCommandHandle->ExecuteCommand( EPhoneViewPrepareIcons );
-        iViewCommandHandle->ExecuteCommand( EPhoneViewLoadPlugins );
         
         iStateMachine->ChangeState( EPhoneStateIdle );
         }

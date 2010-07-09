@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
  * All rights reserved.
  * This component and the accompanying materials are made available
  * under the terms of "Eclipse Public License v1.0"
@@ -16,9 +16,6 @@
  */
 #include <networkhandlingproxy.h>
 #include <cnwsession.h>
-#include <e32property.h>
-#include <centralrepository.h>
-#include <ProfileEngineSDKCRKeys.h>
 #include <BTSapDomainPSKeys.h>
 #include <startupdomainpskeys.h>
 
@@ -31,16 +28,13 @@
 // 1-minute timeout before showing soft notification
 const TInt KNetworkLostTimeout = 60*1000000;
 
-// Offline profile, from ProfileEngineSDKCRKeys.h
-const TInt KOfflineProfileId = 5;
-
-
 // ======== MEMBER FUNCTIONS ========
 
 /*!
     Constructor of CNetworkListener.
  */
-CNetworkListener::CNetworkListener(MNetworkListenerObserver& aObserver) : 
+CNetworkListener::CNetworkListener( MNetworkListenerObserver& aObserver )
+    :
     iRegistered(ETrue),
     iObserver(aObserver)
 {
@@ -59,7 +53,7 @@ void CNetworkListener::ConstructL()
     //Create network handling engine session.
     iSession = CreateL(*this, iInfo);
     iTimer = CPeriodic::NewL(CActive::EPriorityStandard);
-    iProfileApi = CRepository::NewL(KCRUidProfileEngine);
+    QT_TRYCATCH_LEAVING(iDeviceInfo = new QSystemDeviceInfo())
     
     DPRINT << ": OUT";
 }
@@ -67,7 +61,7 @@ void CNetworkListener::ConstructL()
 /*!
     Constructor of CNetworkListener.
  */
-CNetworkListener* CNetworkListener::NewL(MNetworkListenerObserver& aObserver)
+CNetworkListener* CNetworkListener::NewL( MNetworkListenerObserver& aObserver )
 {
     DPRINT << ": IN";
     
@@ -89,7 +83,7 @@ CNetworkListener::~CNetworkListener()
     
     delete iSession;
     delete iTimer;
-    delete iProfileApi;
+    delete iDeviceInfo;
     
     DPRINT << ": OUT";
 }
@@ -210,12 +204,13 @@ TBool CNetworkListener::IsOffLineMode() const
 {
     DPRINT << ": IN";
     
-    TInt profileId;
-    TInt err = iProfileApi->Get(KProEngActiveProfile, profileId);
+    TInt result = KErrNone;
+    TBool isOffLineMode = EFalse;
+    QT_TRYCATCH_ERROR(result, isOffLineMode =
+        QSystemDeviceInfo::OfflineProfile == iDeviceInfo->currentProfile())
     
-    DPRINT << ": OUT";
-    
-    return profileId == KOfflineProfileId && err == KErrNone;
+    DPRINT << ": OUT, result: " << result;
+    return (isOffLineMode && (KErrNone == result));
     }
     
 /*!

@@ -26,7 +26,7 @@ DTMFServiceDepricated::DTMFServiceDepricated(
     QObject* parent) 
     : 
     XQServiceProvider(
-        QLatin1String("com.nokia.services.telephony.dtmf"), parent), 
+        QLatin1String("com.nokia.symbian.IDtmfPlay"), parent), 
     m_call(call), 
     m_parameters(parameters)
 {

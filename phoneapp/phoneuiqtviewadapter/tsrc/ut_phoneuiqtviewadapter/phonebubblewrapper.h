@@ -70,8 +70,8 @@ public:
     void removeCallHeader (int callId);
     void setState (int callId, int bubble, int callState);
     void setLabel (int bubble, const TDesC &text);
-    void setCli (int bubble, const TDesC &cliText);
-    void setSecondaryCli (int bubble, const TDesC &cliText);
+    void setCli (int bubble, const TDesC &cliText, Qt::TextElideMode elide);
+    void setSecondaryCli (int bubble, const TDesC &cliText, Qt::TextElideMode elide);
     void setCallType (int bubble, int callType);
     BubbleManagerIF& bubbleManager ();
     int bubbleId (int callId);
