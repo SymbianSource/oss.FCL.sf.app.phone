@@ -230,6 +230,12 @@ class CPhoneStateIdle : public CPhoneState
         */
         TBool IsBubbleInitialized();
         
+        /**
+        * Removes NE and sets idle to background, for more detailed
+        * information check comments from implementation.
+        */
+        void RemoveNumberEntryAndSetIdleToBackgroundIfNeededL();
+        
     private: // New functions
         
         /**
@@ -317,6 +323,12 @@ class CPhoneStateIdle : public CPhoneState
          TInt GetNumberAcqMenuIdL();
          
          /**
+          * Sets UI elements to correct state and launches
+          * call header to screen by calling DisplayCallSetupL.
+          */
+         void ShowCallHandlingViewL( TInt aCallId );
+         
+         /**
           * Launches initializing call bubble.
           */
          void DisplayInitializingCallL( TInt aCallId );
@@ -338,8 +350,6 @@ class CPhoneStateIdle : public CPhoneState
          void ChangeTo( TInt aState );
          
     private:
-         // indicates that incomming call is arrived.
-         TBool iIncommingCall;
         
          // Indicates call bubble is already initiliazed.
          TBool iBubbleInitialized;

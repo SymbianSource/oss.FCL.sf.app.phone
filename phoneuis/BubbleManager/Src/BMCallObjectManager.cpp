@@ -167,36 +167,52 @@ void CBubbleCallObjectManager::ReadFromFileL(
     
     TSize sourceSize( iMediaReader->SourceSize() );
     
-    TReal scaleFactor;
-    TRect clipRect;
-    TSize targetSize;
-    if ( BubbleCallObjectUtils::GetScaleFactorAndClipRect(
+    TReal scaleFactor( 0 );
+    TRect clipRect( 0, 0, 0, 0 );
+    TSize targetSize( 0, 0 );
+    
+    // if the caller image (source size) is bigger than aPreferredImageSize (the whole caller-image area)
+    // then some down scaling is required.
+    if ( sourceSize.iHeight > aPreferredImageSize.iHeight && sourceSize.iWidth > aPreferredImageSize.iWidth )
+        {
+        targetSize = aPreferredImageSize;
+        
+        BubbleCallObjectUtils::GetScaleFactorAndClipRect(
              sourceSize,
              aPreferredImageSize,
              BubbleCallObjectUtils::EFillTarget,
              scaleFactor,
-             clipRect ) &&
-         aTinyImageSize != TSize(0,0) )
-        {
-        // Tiny image
-        BubbleCallObjectUtils::GetScaleFactorAndClipRect(
-             sourceSize,
-             aTinyImageSize,
-             BubbleCallObjectUtils::EMaximumFit,
-             scaleFactor,
-             clipRect );
-        
-        targetSize = aTinyImageSize;           
+             clipRect ); 
         }
-    else
+    else // no scaling. wide or tall images gets cropped from center if required.
         {
-        targetSize = aPreferredImageSize;    
-        }        
-    
+        targetSize = aPreferredImageSize;
+        scaleFactor = 1;
+        TInt x_offset = 0;
+        TInt y_offset = 0;
+
+        if ( sourceSize.iWidth > aPreferredImageSize.iWidth )
+            {
+            x_offset = ( sourceSize.iWidth - aPreferredImageSize.iWidth ) / 2;
+            }
+        if ( sourceSize.iHeight > aPreferredImageSize.iHeight )
+            {
+            y_offset = ( sourceSize.iHeight - aPreferredImageSize.iHeight ) / 2; 
+            }
+
+        clipRect = sourceSize;
+                
+        if ( x_offset > 0 || y_offset > 0 )
+            {
+            // clip from center of the source image
+            clipRect.Shrink( x_offset, y_offset );
+            }
+        }
+
     iMediaReader->StartReadingL( targetSize, 
                                  scaleFactor, 
                                  clipRect, 
-                                 this );    
+                                 this );   
     }
 
 // ---------------------------------------------------------------------------

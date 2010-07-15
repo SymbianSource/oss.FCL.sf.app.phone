@@ -106,14 +106,6 @@ void CPhCntSpeedDialImpl::CopyContactInfoToFieldInfoL(
         TInt aSpeedDialPosition, 
         TSpdDialFieldInfo& aFieldInfo )
     {
-    
-    MVPbkContactLink* contactLink = aContact.ContactLink()->CloneLC();
-    CPhCntVPbkContactId* contactId = 
-        CPhCntVPbkContactId::NewL( contactLink, iContactManager );
-    CleanupStack::Pop(); // contactLink
-    aFieldInfo.iContactId = contactId;
-        
-    aFieldInfo.iThumbIndex = KErrNotFound;
 	TPhCntNumber speedDial = aContact.SpeedDialNumber( aSpeedDialPosition );    
 	aFieldInfo.iNumberType = speedDial.Type();
     }
@@ -260,6 +252,9 @@ TInt CPhCntSpeedDialImpl::AssignSpeedDialFieldL(
     TInt err = iSpdDial->ShowAssign( aSpeedDialPosition, link );
     delete iSpdDial;
     iSpdDial = NULL;
+    delete link;
+    link = NULL;
+    
     if ( err == KErrNone )
         {
         err = FetchNumberL( aSpeedDialPosition, aPhoneNumber );    

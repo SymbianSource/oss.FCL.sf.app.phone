@@ -138,4 +138,5 @@ EXPORTS
 	_ZTV25CBubbleOutlookNumberEntry @ 137 NONAME
 	_ZTV29CBubbleOutlookBottomImageCnap @ 138 NONAME
 	_ZTV29CBubbleOutlookBottomRightCnap @ 139 NONAME
-
+	_ZTI21CTelBubbleImageScaler @ 140 NONAME
+	_ZTV21CTelBubbleImageScaler @ 141 NONAME

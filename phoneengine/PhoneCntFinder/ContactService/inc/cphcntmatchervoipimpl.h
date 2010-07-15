@@ -44,7 +44,7 @@ public:
      * Match number to phonebook.
      * @since S60 v3.2
      * @param aMatch Found match, owership tranferred. NULL if not found any.
-     * @param aNumber Number to match against.
+     * @param aMatchString Number to match against.
      * @param aAllowUserNameMatch If true user name match is allowed.
      * @param aCharsForMatching Characters for user name match. Match is started from
      *                          the rigth of the user name part. (see CS call match)
@@ -54,7 +54,7 @@ public:
      */    
     TInt MatchVoipNumber(
         MPhCntMatch*& aMatch,
-        const TDesC& aNumber,
+        const TDesC& aMatchString,
         TBool aAllowUserNameMatch,
         MDesCArray* aContactStoreUris,
         TInt aCharsForMatching = 0 );
@@ -65,6 +65,7 @@ public:
      * by contact id.
      * @since Series60 3.2
      * @param aMatch for found match, owership tranferred. Empty if not found.
+     * @param aMatchString Number to match against.
      * @param aContactId for current contact.
      * @return Error code: KErrNone - VoIP call contact found
      *                     KErrNotFound - no VoIP call contact found
@@ -72,6 +73,7 @@ public:
      */
     TInt MatchVoipNumber(
         MPhCntMatch*& aMatch,
+        const TDesC& aMatchString,
         const CPhCntContactId& aContactId );
 
     
@@ -110,6 +112,16 @@ private:
      */
     TInt CreateMatcher();
 
+    /**
+     * Sets matched VoIP number if it was found.
+     *
+     * @param aContact Contact, which is checked.
+     * @param aMatchString Number to match against.
+     */
+    void SetMatchedVoIPNumberIfExists( 
+        CPhCntContact& aContact,
+        const TDesC& aMatchString );
+    
 private: // data
 
       

@@ -81,7 +81,7 @@ CPEContactMatch::~CPEContactMatch()
     delete iSpeedDialCommand;
     if ( iContactThumbnailLoader && iThumbnailId )
         {
-      	iContactThumbnailLoader->Cancel( iThumbnailId );
+        iContactThumbnailLoader->Cancel( iThumbnailId );
         }
     delete iThumbnailImage;
     delete iContactThumbnailLoader;
@@ -194,11 +194,10 @@ void CPEContactMatch::ConstructSpeedDialCommandL()
 void CPEContactMatch::MatchWithContactIdL(
         const TInt aCallId
         )
-
     {
     TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::MatchWithContactIdL" );
     MPhCntMatch* match( NULL );
-    CPhCntContactId* contactId = NULL;
+    CPhCntContactId* contactId( NULL );
     contactId = CreateContactIdL( iDataStore.CallClientInformation( aCallId ).ContactLink() );
     CleanupStack::PushL( contactId );
     if ( iDataStore.CallType( aCallId ) == EPECallTypeVoIP )
@@ -208,6 +207,7 @@ void CPEContactMatch::MatchWithContactIdL(
             TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::MatchWithContactIdL > CPhCntMatcher::MatchVoipNumber" );
             // Get contact based on contact id.
             iContactMatcher->MatchVoipNumber( match, 
+                                              iDataStore.RemotePhoneNumber( aCallId ),
                                               *contactId );
             }
         else
@@ -220,9 +220,9 @@ void CPEContactMatch::MatchWithContactIdL(
         if ( contactId && contactId->IsValid() )
             {
             TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::MatchWithContactIdL > CPhCntMatcher::MatchNumber" );
-	        iContactMatcher->MatchNumber( match, 
-	                                      iDataStore.RemotePhoneNumber( aCallId ),
-	                                      *contactId );
+            iContactMatcher->MatchNumber( match, 
+                                          iDataStore.RemotePhoneNumber( aCallId ),
+                                          *contactId );
             }
         else
             {
@@ -230,7 +230,7 @@ void CPEContactMatch::MatchWithContactIdL(
             }
         }
 
-    if ( match != NULL )
+    if ( match )
         {
         TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::MatchWithContactIdL, Contact match found" );
         CopyContactFieldsDataL( *match, aCallId );
@@ -277,7 +277,7 @@ void CPEContactMatch::MatchWithNumberL(
         iContactMatcher->MatchNumber( match, remoteNumber );
         }
 
-    if ( match != NULL )
+    if ( match )
         {
         TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::MatchWithNumberL, Contact match found" );
         CopyContactFieldsDataL( *match, aCallId );
@@ -645,7 +645,7 @@ void CPEContactMatch::MatchWithVoipAdressL(
 // -----------------------------------------------------------
 //
 CDesCArray* CPEContactMatch::StoreUrisForServiceL( TUint aServiceId )
-    {	
+    {
     CDesCArray* storeUris = new ( ELeave ) CDesC16ArrayFlat( 1 );
     CleanupStack::PushL( storeUris );
     

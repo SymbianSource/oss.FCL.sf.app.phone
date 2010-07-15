@@ -43,7 +43,10 @@ CPhoneRingingToneServerSession::CPhoneRingingToneServerSession( MPhoneRingingTon
 //
 CPhoneRingingToneServerSession::~CPhoneRingingToneServerSession()
     {
-    iServer.DecrementSessions();
+    if( iStartSession == KErrNone )
+        {
+        iServer.CloseSession();
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -68,7 +71,10 @@ CPhoneRingingToneServerSession* CPhoneRingingToneServerSession::NewL( MPhoneRing
 void CPhoneRingingToneServerSession::ConstructL()
     {
     PHONEUIVIEW_PRINT( "CPhoneRingingToneServerSession::ConstructL" );
-    iServer.IncrementSessions();
+
+    iStartSession = iServer.StartSession();
+
+    User::LeaveIfError( iStartSession );
     }
 
 // -----------------------------------------------------------------------------

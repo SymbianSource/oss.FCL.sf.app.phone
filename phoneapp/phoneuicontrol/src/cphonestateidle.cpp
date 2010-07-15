@@ -76,7 +76,8 @@ EXPORT_C CPhoneStateIdle::CPhoneStateIdle(
     MPhoneStateMachine* aStateMachine, 
     MPhoneViewCommandHandle* aViewCommandHandle,
     MPhoneCustomization* aCustomization ) : 
-    CPhoneState( aStateMachine, aViewCommandHandle, aCustomization )
+    CPhoneState( aStateMachine, aViewCommandHandle, aCustomization ),
+    iBubbleInitialized( EFalse )
     {
     }
 
@@ -480,32 +481,45 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
 EXPORT_C void CPhoneStateIdle::HandleDialingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::HandleDialingL( ) ");
+    if( IsBubbleInitialized() )
+        {
+        UpdateCallBubbleL( aCallId );
+        }
+    else
+        {
+        ShowCallHandlingViewL( aCallId );
+        }
+    ChangeTo( EPhoneStateCallSetup );
+    }
 
+// -----------------------------------------------------------
+// CPhoneStateIdle::ShowCallHandlingViewL
+// -----------------------------------------------------------
+//
+void CPhoneStateIdle::ShowCallHandlingViewL( TInt aCallId )
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, 
+            "CPhoneStateIdle::ShowCallHandlingViewL( ) ");
     BeginUiUpdateLC();
-    
     SetNumberEntryVisibilityL(EFalse);
 
     // Show call setup buttons
     SetTouchPaneButtons( EPhoneCallSetupButtons );
-    SetTouchPaneButtonDisabled( EPhoneInCallCmdHold );    
-
-    // Display call setup 
-    DisplayCallSetupL( aCallId );            
+    SetTouchPaneButtonDisabled( EPhoneInCallCmdHold );
     
+    // Display call setup 
+    DisplayCallSetupL( aCallId );
     EndUiUpdate();
     
     // Remove any phone dialogs if they are displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-            
+    
     // Go to call setup state
     iCbaManager->UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
 
     SetToolbarDimming( ETrue );
-
     SetToolbarButtonLoudspeakerEnabled();
     SetToolbarButtonHandsetEnabled();
-    
-    ChangeTo( EPhoneStateCallSetup );
     }
 
 // -----------------------------------------------------------
@@ -831,11 +845,18 @@ EXPORT_C void CPhoneStateIdle::DisplayCallSetupL( TInt aCallId )
     // Set Phone as the top application
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetTopApplication,
         &uidParam ); 
-    
-    if ( !UpdateCallBubbleL( aCallId ) )
+
+    if( !IsBubbleInitialized() )
         {
         // Create and Display call setup header if update was not done.
         DisplayHeaderForOutgoingCallL( aCallId );
+        }
+    else 
+        {
+        /* Create and Display initializing call header, difference
+        to DisplayHeaderForOutgoingCallL is that this doesnt load 
+        CLI information to header.*/
+        DisplayHeaderForInitializingCallL( aCallId );
         }
     }
 
@@ -884,40 +905,7 @@ void CPhoneStateIdle::DisplayInitializingCallL( TInt aCallId )
     iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageCheckEmergencyNumber );
     if ( IsBubbleInitialized() )
         {
-        BeginUiUpdateLC();
-        
-        SetNumberEntryVisibilityL(EFalse);
-        
-        // Show call setup buttons
-        SetTouchPaneButtons( EPhoneCallSetupButtons );
-        
-        // Close menu bar, if it is displayed
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-
-        // Capture keys when the phone is dialling
-        CaptureKeysDuringCallNotificationL( ETrue );
-        
-        // Bring Phone app in the foreground
-        TPhoneCmdParamInteger uidParam;
-        uidParam.SetInteger( KUidPhoneApplication.iUid );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewBringAppToForeground,
-            &uidParam );
-
-        // Set Phone as the top application
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetTopApplication,
-            &uidParam ); 
-        
-        DisplayHeaderForInitializingCallL( aCallId );
-            
-        EndUiUpdate();
-        
-        // Remove any phone dialogs if they are displayed
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-                
-        // Go to call setup state
-        iCbaManager->UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
-
-        SetToolbarDimming( ETrue );
+        ShowCallHandlingViewL( aCallId );
         }
     }
 
@@ -1032,12 +1020,11 @@ void CPhoneStateIdle::HandleIdleL( TInt /*aCallId*/ )
 // -----------------------------------------------------------
 // CPhoneStateIdle::SpeedDialL
 // -----------------------------------------------------------
-//   
+//
 EXPORT_C void CPhoneStateIdle::SpeedDialL( const TUint& aDigit, 
         TDialInitiationMethod aDialMethod )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::SpeedDialL( ) ");
-    
     iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF );
     
     TPhoneCmdParamSpeedDial speedDialParam;
@@ -1050,29 +1037,43 @@ EXPORT_C void CPhoneStateIdle::SpeedDialL( const TUint& aDigit,
     if ( NULL != phoneNumber && KNullDesC() != *phoneNumber )
         {
         DialL( *phoneNumber, speedDialParam.NumberType(), aDialMethod );
-        
-        if ( IsNumberEntryUsedL()  ) 
-            {         
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-            
-            // Set Idle background, if still idle
-            if ( iStateMachine->State() == this )
-                {
-                SetupIdleScreenInBackgroundL();
-                }
-            }
+        RemoveNumberEntryAndSetIdleToBackgroundIfNeededL();
         }
     else
         {
         // User cancelled dialog or didn't give a valid number
         SpeedDialCanceledL( aDigit );
         }
-    
     CleanupStack::PopAndDestroy( phoneNumber );
     }
 
 // -----------------------------------------------------------
-// CPhoneStateIdle:SpeedDialCanceledL
+// CPhoneStateIdle::RemoveNumberEntryAndSetIdleToBackgroundIfNeededL
+// -----------------------------------------------------------
+//
+void CPhoneStateIdle::RemoveNumberEntryAndSetIdleToBackgroundIfNeededL()
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, 
+    "CPhoneStateIdle::RemoveNumberEntryAndSetIdleToBackgroundIfNeededL( ) ");
+    if ( IsNumberEntryUsedL() )
+        {
+        /*NE should be removed because if speeddial dial is interupted during
+        call setup phone should not return to NE/Dialler view.*/
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
+        
+        /*It might be possible that some async operation was ongoing and 
+        state has already in that case do not set idle to background. If 
+        there is initialized call then do not set idle to background.*/
+        if ( ( iStateMachine->State() == this ) && 
+            ( !IsBubbleInitialized() ) )
+            {
+            SetupIdleScreenInBackgroundL();
+            }
+        }
+    }
+
+// -----------------------------------------------------------
+// CPhoneStateIdle::SpeedDialCanceledL
 // -----------------------------------------------------------
 //
 EXPORT_C void CPhoneStateIdle::SpeedDialCanceledL( const TUint& aDigit )
@@ -1609,8 +1610,9 @@ EXPORT_C void CPhoneStateIdle::HandleErrorL( const TPEErrorInfo& aErrorInfo )
     __PHONELOG1( EBasic, EPhoneControl,
             "PhoneUIControl: CPhoneStateIdle::HandleErrorL - aErrorInfo.iCallId =%d ",
             aErrorInfo.iCallId );
-    if( ( ECCPErrorNone != aErrorInfo.iErrorCode ) &&
-            IsBubbleInitialized() )
+    if( ( KErrNotFound < aErrorInfo.iCallId ) && 
+        ( ECCPErrorNone != aErrorInfo.iErrorCode ) &&
+          IsBubbleInitialized() )
         {
         HandleInitializingCallErrorL( aErrorInfo.iCallId );
         SetBubbleInitialized( EFalse );

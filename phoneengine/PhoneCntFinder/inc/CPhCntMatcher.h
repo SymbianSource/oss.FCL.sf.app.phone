@@ -102,7 +102,7 @@ class CPhCntMatcher
         /**
         * Match number to phonebook.
         * @param aMatch Found match, owership tranferred. NULL if not found any.
-        * @param aNumber Number to match against.
+        * @param aMatchString Number to match against.
         * @param aAllowUsernameMatch 
         *						is ETrue if username is sufficient for match.
         * @param aContactStoreUris
@@ -116,7 +116,7 @@ class CPhCntMatcher
         */    
         virtual TInt MatchVoipNumber(
             MPhCntMatch*& aMatch,
-            const TDesC& aNumber,
+            const TDesC& aMatchString,
             const TBool aAllowUsernameMatch,
             MDesCArray* aContactStoreUris,
             TInt aCharsForMatching = 0 ) = 0;
@@ -126,6 +126,7 @@ class CPhCntMatcher
         * by contact id.
         * @since Series60 3.0
         * @param aMatch for found match, owership tranferred. Empty if not found.
+        * @param aMatchString Number to match against.
         * @param aContactId for current contact.
         * @return Error code: KErrNone - VoIP call contact found
         *                     KErrNotFound - no VoIP call contact found
@@ -133,6 +134,7 @@ class CPhCntMatcher
         */    
         virtual TInt MatchVoipNumber(
             MPhCntMatch*& aMatch,
+            const TDesC& aMatchString,
             const CPhCntContactId& aContactId ) = 0;
             
         /**

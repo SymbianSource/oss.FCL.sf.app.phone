@@ -28,6 +28,8 @@
 #include <AknIconUtils.h>
 #include <layoutmetadata.cdl.h>
 
+#define SCALE_FACTOR 1.5
+
 // ---------------------------------------------------------------------------
 // C++ constructor
 // ---------------------------------------------------------------------------
@@ -36,7 +38,9 @@ CBubbleMainPaneControl::CBubbleMainPaneControl(
     CBubbleManager& aBubbleManager,  
     CBubbleCallObjectManager& aCallObjectManager ) : 
     iBubbleManager( aBubbleManager ), 
-    iCallObjectManager ( aCallObjectManager )
+    iCallObjectManager ( aCallObjectManager ),
+    iScaler( NULL ),
+    iScaledImage( NULL )
     {
     }
 
@@ -46,6 +50,7 @@ CBubbleMainPaneControl::CBubbleMainPaneControl(
 //
 void CBubbleMainPaneControl::ConstructL()
     {
+    iScaler = CTelBubbleImageScaler::NewL( *this );
     }
 
 // ---------------------------------------------------------------------------
@@ -72,6 +77,11 @@ CBubbleMainPaneControl* CBubbleMainPaneControl::NewL(
 //
 CBubbleMainPaneControl::~CBubbleMainPaneControl()
     {
+    delete iScaler;
+    iScaler = NULL;
+    
+    delete iScaledImage;
+    iScaledImage = NULL;	
     }
 
 // ---------------------------------------------------------------------------
@@ -82,23 +92,49 @@ void CBubbleMainPaneControl::ReadBubbleHeader(
     const CBubbleHeader& aHeader )
     {
     iBubble = aHeader.BubbleId();
-    iBitmap = aHeader.CallObjectImage();
-    iMask = aHeader.CallObjectImageMask();
+    TBool thumbnail( EFalse );
+    TBool noScaling( EFalse );
+    
+    if ( aHeader.CallObjectImage() )
+        {
+        iBitmap = aHeader.CallObjectImage();
+        iMask = aHeader.CallObjectImageMask();
+        }
+    else if ( aHeader.TnBitmap() )
+        {
+        iBitmap = aHeader.TnBitmap();
+        iMask = aHeader.TnBitmapMask();
+        thumbnail = ETrue;
+        }
+    else
+        {
+        iBitmap = NULL;
+        }
+    
     iThreeLinedBubble = ( aHeader.CNAP().Length() > 0 );
+    
+    // PrepareBitmapsL() needs to know if a brand new thumbnail is about to get prepared.
+    if ( thumbnail && (iOldBitmap != NULL) && (iOldBitmap == iBitmap) && (iScaler->GetState() != CTelBubbleImageScaler::EScalingStarted) )
+        {
+        noScaling = ETrue;
+        }
     
     if ( iBitmap )
         {
-        CFbsBitmap* bitmap;
-        CFbsBitmap* mask;
-        TBool bitmapOwnership;
-        TBool maskOwnership;
+        iOldBitmap = iBitmap;
+        
+        CFbsBitmap* bitmap( NULL );
+        CFbsBitmap* mask( NULL );
+        TBool bitmapOwnership( EFalse );
+        TBool maskOwnership( EFalse );
         
         TRAPD(err, PrepareBitmapsL( bitmap, 
                                     bitmapOwnership, 
                                     mask, 
                                     maskOwnership,
                                     aHeader.CallObjectImageType() == 
-                                    CBubbleHeader::EThemeImage ) );
+                                    CBubbleHeader::EThemeImage,
+                                    noScaling ));
         
         if ( err )
             {
@@ -119,6 +155,12 @@ void CBubbleMainPaneControl::ReadBubbleHeader(
         
         iIsUsed = ETrue;
         MakeVisible( ETrue );
+        
+        // upscale thumbnails if loading it for the first time.
+        if ( thumbnail && !noScaling && ( iScaler->GetState() != CTelBubbleImageScaler::EScalingStarted ) )
+            {
+            StartScaling( iBitmap );
+            }
         }
     }
 
@@ -131,9 +173,18 @@ void CBubbleMainPaneControl::PrepareBitmapsL(
     TBool& aBitmapOwnership, 
     CFbsBitmap*& aMask,
     TBool& aMaskOwnership,
-    TBool aIsScalable )
+    TBool aIsScalable,
+    TBool aThumbnail )
     {
-    aBitmap = iBitmap;
+    if ( aThumbnail )
+        {
+        aBitmap = iScaledImage;
+        }
+    else
+        {
+        aBitmap = iBitmap;
+        }
+
     aMask = iMask;
     aBitmapOwnership = EFalse;
     aMaskOwnership = EFalse;
@@ -278,5 +329,117 @@ void CBubbleMainPaneControl::SizeChanged()
         }
     }
 
+// ---------------------------------------------------------------------------
+// CTelBubbleCallImage::ImageScalingComplete
+//
+// ---------------------------------------------------------------------------
+//
+void CBubbleMainPaneControl::ImageScalingComplete( TInt aError,
+        CFbsBitmap* aBitmap )
+    {
+    if ( aError == KErrNone )
+        {
+        // Draw the scaled image
+        iScaledImage = aBitmap;
+        iScaler->SetState( CTelBubbleImageScaler::EScalingDone );
+        
+        CFbsBitmap* bitmap( NULL );
+        CFbsBitmap* mask( NULL );
+        TBool bitmapOwnership( EFalse );
+        TBool maskOwnership( EFalse );
+      
+        TRAPD(err, PrepareBitmapsL( bitmap, 
+                                    bitmapOwnership, 
+                                    mask, 
+                                    maskOwnership,
+                                    EFalse,
+                                    ETrue ) );
+        
+        if ( err )
+            {
+            return;
+            }
+                
+        if ( iCallImage->ControlType() == 
+             CTelBubbleCustomElement::EBubbleCallImage )
+            {
+            CTelBubbleCallImage* image = 
+                static_cast<CTelBubbleCallImage*> ( iCallImage->Control() );
+            image->SetImage( bitmap, EFalse, mask, maskOwnership );
+            } 
+
+        SizeChanged();
+        
+        iIsUsed = ETrue;
+        MakeVisible( ETrue );
+        
+        Parent()->DrawNow(); // refreshing view with scaled image
+        }
+    else if ( aError == KErrCancel )
+        {
+        // error is ignored
+        // This error is returned when a previous scaling is cancelled
+        // while new scaling request is given to active object
+        }
+    else
+        {
+        // draw the unscaled image in error cases
+    
+        delete iScaledImage;
+        iScaledImage = NULL;
+        }
+    
+    iScaler->SetState( CTelBubbleImageScaler::EScalingDone );
+    }
+
+// ---------------------------------------------------------------------------
+// CTelBubbleCallImage::StartScaling
+//
+// ---------------------------------------------------------------------------
+//
+void CBubbleMainPaneControl::StartScaling( CFbsBitmap *aSourceBitmap )
+    {
+    if ( !iScaler )
+        {
+        return;
+        }
+    
+    iScaler->Cancel(); // cancels any outstanding scaling requests
+    
+    delete iScaledImage;
+    iScaledImage = NULL;
+
+    // create a bitmap for scaled size
+    TRAPD( err, iScaledImage = new (ELeave) CFbsBitmap );
+    if ( err != KErrNone )
+        {
+        // no scaling in error cases
+        iScaler->SetState( CTelBubbleImageScaler::EScalingIdle );
+        return;
+        }
+
+    TSize size = aSourceBitmap->SizeInPixels();
+    TRect scaledRect( 0, 0, size.iWidth * SCALE_FACTOR, size.iHeight * SCALE_FACTOR );
+    
+    TRAP( err, iScaledImage->Create( scaledRect.Size(), aSourceBitmap->DisplayMode() ) );
+    if ( err != KErrNone )
+        {
+        delete iScaledImage;
+        iScaledImage = NULL;
+        iScaler->SetState( CTelBubbleImageScaler::EScalingIdle );
+        }
+    else
+        {
+        //start scaling
+        TRAPD( err, iScaler->StartScaleL( aSourceBitmap, iScaledImage ) );
+        if (err != KErrNone)
+            {
+            iScaler->SetState( CTelBubbleImageScaler::EScalingIdle );
+            delete iScaledImage;
+            iScaledImage = NULL;
+            }
+        }
+    }
+	
 // END OF FILE
 

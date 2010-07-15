@@ -249,8 +249,6 @@ void CPhCntGetUserSelectedPhoneNumberLink::ConstructL(
 
     aContactManager.AppendFilterToSelectorL( *iContactViewFilter,   
         EVPbkContactViewFilterPhoneNumber );
-    
-	iDefaultPriorities.Append( EVPbkDefaultTypePhoneNumber );    
 	
     TAiwSingleItemSelectionDataV3 data = TAiwSingleItemSelectionDataV3();
 	  

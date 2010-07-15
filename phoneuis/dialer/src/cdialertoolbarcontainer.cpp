@@ -471,13 +471,13 @@ void CDialerToolbarContainer::SimulateBackspace()
     keyEvent.iCode = 0; // key code is always 0 for key up and down events
     keyEvent.iScanCode = EStdKeyBackspace;
 
-    iCoeEnv->SimulateKeyEventL( keyEvent, EEventKeyDown );
+    TRAP_IGNORE( iCoeEnv->SimulateKeyEventL( keyEvent, EEventKeyDown ) );
 
     keyEvent.iCode = EKeyBackspace;
-    iCoeEnv->SimulateKeyEventL( keyEvent, EEventKey );
+    TRAP_IGNORE( iCoeEnv->SimulateKeyEventL( keyEvent, EEventKey ) );
     
     keyEvent.iCode = 0;
-    iCoeEnv->SimulateKeyEventL( keyEvent, EEventKeyUp );
+    TRAP_IGNORE( iCoeEnv->SimulateKeyEventL( keyEvent, EEventKeyUp ) );
     }
 
 // end of file

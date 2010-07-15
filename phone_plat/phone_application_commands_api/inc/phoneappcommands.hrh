@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -11,10 +11,10 @@
 *
 * Contributors:
 *
-* Description: 
+* Description:
 *     This file contains declarations for commands of PhoneAppS60.
 *     The file can be included in C++ or resource file.
-*     
+*
 *
 */
 
@@ -28,7 +28,7 @@
 //  CONSTANTS
 
 #define KPhoneCmdBase 6000
-enum 
+enum
     {
     // commands for all
     EPhoneCmdDoNothing = KPhoneCmdBase,
@@ -132,13 +132,13 @@ enum
     EPhoneInCallCmdCancelSendingDtmfString,
     EPhoneInCallCmdContinueSendingDtmfString,
     EPhoneInCallCmdVoiceMode,
-    EPhoneInCallCmdSendToCallerMenu,    
+    EPhoneInCallCmdSendToCallerMenu,
     EPhoneInCallCmdSendNew,
     EPhoneInCallCmdSendFile,
     EPhoneInCallCmdProcessSend, // NOT IN MENU!
     EPhoneInCallCmdDrop,
     EPhoneInCallCmdPrivate,
-    EPhoneInCallCmdCbaJoin,	// NOT IN MENU!
+    EPhoneInCallCmdCbaJoin,    // NOT IN MENU!
     EPhoneInCallCmdDialer,
 
     // Enable video
@@ -160,7 +160,7 @@ enum
     EPhoneInCallCmdNewCallCall,
     EPhoneInCallCmdGoToIdle,
     EPhoneInCallCmdParticipants,
-    
+
     // CDMA specific
     EPhoneInCallCmdMulticall3WayCall,
     EPhoneInCallCmdMulticallIgnore,
@@ -181,12 +181,12 @@ enum
     EPhoneCmdSettingsUiExit,
     // Settings GUI - Data Parameters GUI (commands specific to DataParameters)
     EPhoneCmdDataParametersRestoreSettings,
-    EPhoneCmdRelease,	
+    EPhoneCmdRelease,
     // DTMF specific
     EPhoneCmdDtmfSearch,
     EPhoneCmdDtmfOk,
     EPhoneCmdDtmfSpeedDialOk,
-    EPhoneInCallCmdDtmfListViewSearch,    
+    EPhoneInCallCmdDtmfListViewSearch,
     // other commands
     EPhoneCmdWaitNoteOk,
     EPhoneCmdVideoCallMemoryLowNoteDismissed,
@@ -196,7 +196,7 @@ enum
     EPhoneCmdYesSwitchToVideo,
     EPhoneCmdNoSwitchToVideo,
     EPhoneCmdYesSwitchToVoice,
-    EPhoneCmdNoSwitchToVoice,    
+    EPhoneCmdNoSwitchToVoice,
     EPhoneMediatorSetPhoneNumber,
     EPhoneCmdCoverUiShowMultimediaRingingTone,
     EPhoneInCallCmdLockKeypad,
@@ -204,17 +204,17 @@ enum
     EPhoneCmdYesVideoFailedNoMemorySwitchToVoice,
     EPhoneCmdNoVideoFailedNoMemorySwitchToVoice,
     EPhoneInCallCmdSetVolumeLevel,
-    
+
     //Dialer commands
     EPhoneDialerCmdLog,
     EPhoneDialerCmdContacts,
-    EPhoneDialerCmdClear,  
+    EPhoneDialerCmdClear,
     EPhoneDialerCallHandling,
     EPhoneDialerCmdTouchInput,
     EPhoneDialerCmdSpeedDial,
     EPhoneDialerCmdEditText,
-    EPhoneDialerCallSettings,	
-    EPhoneDtmfDialerCancel,	
+    EPhoneDialerCallSettings,
+    EPhoneDtmfDialerCancel,
     EPhoneDtmfDialerExit,
     EPhoneIsDTMFDialerVisible,
     EPhoneDialerCmdHelp,
@@ -232,10 +232,13 @@ enum
     EPhoneCmdBlockingDialogLaunched,
     EPhoneCmdBlockingDialogClosed,
 
+    // Update cba in case of emergency call
+    EPhoneCmdUpdateEmergencyCba,
+
     EPhoneCmdLast
     };
-    
-    
+
+
 // Command range for custom menu commands.
 // Custom commands can be used for menu extensions.
 #define KPhoneCustomCmdBase 8000

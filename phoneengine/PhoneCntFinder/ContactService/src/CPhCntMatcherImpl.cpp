@@ -78,25 +78,25 @@ TInt CPhCntMatcherImpl::MatchNumber(
     TEFLOGSTRING( KTAOBJECT, "CNT CPhCntMatcherImpl::MatchNumber" );
     TInt err = CreateMatcher();
     if ( !err )
-    	{
-	    // Check if we already have the contact.
-	    CPhCntContact* contact = iFoundContacts->FindContact( aTelNumber );
+        {
+        // Check if we already have the contact.
+        CPhCntContact* contact = iFoundContacts->FindContact( aTelNumber );
 
-	    err = KErrNone;
-	    if( !contact )
-	        {
-	        // Get contact from contact stores
-	        TRAPD( traperr, err = GetContactL( aMatch, aTelNumber ));
-	        if ( traperr )
-	            {
-	            err = traperr;
-	            }
-	        }
-	    else
-	        {
-	        aMatch = contact;
-	        }
-    	}
+        err = KErrNone;
+        if( !contact )
+            {
+            // Get contact from contact stores
+            TRAPD( traperr, err = GetContactL( aMatch, aTelNumber ));
+            if ( traperr )
+                {
+                err = traperr;
+                }
+            }
+        else
+            {
+            aMatch = contact;
+            }
+        }
     TEFLOGSTRING2( KTAOBJECT, "CNT CPhCntMatcherImpl::MatchNumber %d " , err);
     return err;
     }
@@ -113,31 +113,31 @@ TInt CPhCntMatcherImpl::MatchNumber(
     {
     TInt err = CreateMatcher();
     if ( !err )
-	    {
-	    if( aContactId.IsValid() )
-	        {
-	        // Do we have existing contact for the link and number.
-	        const CPhCntVPbkContactId& contactId =
-	            static_cast<const CPhCntVPbkContactId&>( aContactId );
-	        const MVPbkContactLink& link = contactId.ContactLink();
-	        aMatch =
-	            iFoundContacts->FindContact( aTelNumber, link );
-	        if( !aMatch )
-	            {
-	            // Get the contact.
-	            CPhCntContact* match = NULL;
-	            err = FetchContact( match, link, aTelNumber );
-	            if( !err )
-	                {
-	                aMatch = match;
-	                }
-	            }
-	        }
-	    else
-	        {
-	        err = MatchNumber( aMatch, aTelNumber );
-	        }
-	    }
+        {
+        if( aContactId.IsValid() )
+            {
+            // Do we have existing contact for the link and number.
+            const CPhCntVPbkContactId& contactId =
+                static_cast<const CPhCntVPbkContactId&>( aContactId );
+            const MVPbkContactLink& link = contactId.ContactLink();
+            aMatch =
+                iFoundContacts->FindContact( aTelNumber, link );
+            if( !aMatch )
+                {
+                // Get the contact.
+                CPhCntContact* match = NULL;
+                err = FetchContact( match, link, aTelNumber );
+                if( !err )
+                    {
+                    aMatch = match;
+                    }
+                }
+            }
+        else
+            {
+            err = MatchNumber( aMatch, aTelNumber );
+            }
+        }
     return err;
     }
 
@@ -163,6 +163,7 @@ TInt CPhCntMatcherImpl::MatchVoipNumber(
 //
 TInt CPhCntMatcherImpl::MatchVoipNumber(
     MPhCntMatch*& /*aMatch*/,
+    const TDesC& /*aMatchString*/,
     const CPhCntContactId& /*aContactId*/ )
     {
     return KErrNotFound;
@@ -266,26 +267,26 @@ CPhCntMatcherImpl::CPhCntMatcherImpl( const MPhoneCntPbkOwner& aOwner ) :
 // ---------------------------------------------------------------------------
 //
 void CPhCntMatcherImpl::DoCreateMatcherL()
-	{
-	TEFLOGSTRING( KTAOBJECT, "CNT CPhCntMatcherImpl::DoCreateMatcherL" );
-	if ( !iContactStores )
-		{
-		iFoundContacts = CPhCntFoundContacts::NewL();
-	    iContactStores = CPhCntContactStores::NewL( iContactManager );
-	    iMatchContact = CPhCntMatchContact::NewL();
-	    iFetchContact = CPhCntFetchContact::NewL( *iContactStores );
-		}
-	}
+    {
+    TEFLOGSTRING( KTAOBJECT, "CNT CPhCntMatcherImpl::DoCreateMatcherL" );
+    if ( !iContactStores )
+        {
+        iFoundContacts = CPhCntFoundContacts::NewL();
+        iContactStores = CPhCntContactStores::NewL( iContactManager );
+        iMatchContact = CPhCntMatchContact::NewL();
+        iFetchContact = CPhCntFetchContact::NewL( *iContactStores );
+        }
+    }
 
 // ---------------------------------------------------------------------------
 // Delayed on-demand based construction
 // ---------------------------------------------------------------------------
 //
 TInt CPhCntMatcherImpl::CreateMatcher()
-	{
-	TRAPD( err, DoCreateMatcherL() );
-	return err;
-	}
+    {
+    TRAPD( err, DoCreateMatcherL() );
+    return err;
+    }
 
 // ---------------------------------------------------------------------------
 // Second phase constructor

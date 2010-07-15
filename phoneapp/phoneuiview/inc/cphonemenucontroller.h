@@ -159,6 +159,8 @@ class CPhoneMenuController : public CBase, public MPhonePubSubObserver
         void ShowTaskSwapper( TInt aResourceId ) const;
         
         TBool IsSwivelClosed() const;
+        
+        TBool IsQwertyMode() const;
     
     private:
         CEikMenuBar* iMenu;

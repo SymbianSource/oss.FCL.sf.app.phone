@@ -58,6 +58,8 @@ protected:
 private:
     // Server.
     MPhoneRingingToneServer& iServer;
+
+    TInt iStartSession;
     };
 
 #endif

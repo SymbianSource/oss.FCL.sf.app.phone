@@ -78,117 +78,116 @@ TInt CPhCntMatcherVoIPImpl::MatchVoipNumber(
     TInt err = CreateMatcher();    
 
     if ( err == KErrNone )
-    {
-    CPhCntContact* existingContact = 
-        iFoundContacts->FindContact( sipUri.SipURI() );
-    if( !existingContact )
         {
-        // Check for service specific contact stores and
-        // open stores if not open
-        if ( aContactStoreUris )
+        CPhCntContact* existingContact = 
+            iFoundContacts->FindContact( sipUri.SipURI() );
+        if( !existingContact )
             {
-            TInt storeCount = aContactStoreUris->MdcaCount();
-            for( TInt i = 0; i < storeCount ; i++ )
+            // Check for service specific contact stores and
+            // open stores if not open
+            if ( aContactStoreUris )
                 {
-                TPtrC storeUri = aContactStoreUris->MdcaPoint( i );
-               
-                err = iContactStoreLoader->LoadContactStoreWithUri( storeUri );              
-                }  
-            }
-
-        const MVPbkContactLinkArray* linkArray = NULL;
-        
-        // Find possible contacts.
-        if( aAllowUserNameMatch && !aCharsForMatching )
-            {
-            err = iMatchContact->MatchContact(
-                linkArray, sipUri.UserNamePart(), *iVoipMatchStrategy );
-            }
-        else if ( aCharsForMatching )
-            {
-            err = iMatchContact->MatchContact(
-                linkArray, sipUri.FixedUserNamePart(), *iVoipMatchStrategy );            
-            }
-        else
-            {
-            err = iMatchContact->MatchContact( 
-                linkArray, sipUri.SipURI() , *iVoipMatchStrategy );    
-            }
-        
-            
-        MPhCntMatch* match = NULL;
-        if( !err )
-            {
-            // Fetch all the matched contacts, because iVoipMatchStrategy
-            // could give us a match that is matched to wrong contact field.
-            const TInt matchedContacts( linkArray->Count() );
-
-            // Find real matches.
-            TPhCntVoipMatchArray voipMatches;
-            for( TInt i = 0; i < matchedContacts; i++ )
-                {
-                // Get contacts from phone book.
-                CPhCntContact* match = NULL;
-                err = FetchContact( match, linkArray->At( i ), sipUri.SipURI() );
-                if( !err )
+                TInt storeCount = aContactStoreUris->MdcaCount();
+                for( TInt i = 0; i < storeCount ; i++ )
                     {
-                    TRAP_IGNORE( voipMatches.AppendL( match ) );
-                    }
-                else
-                    {
-                    // Error in fetching contacts 
-                    break;
-                    }
+                    TPtrC storeUri = aContactStoreUris->MdcaPoint( i );
+                   
+                    err = iContactStoreLoader->LoadContactStoreWithUri( storeUri );              
+                    }  
                 }
-                
-            if( aAllowUserNameMatch || aCharsForMatching )   
+    
+            const MVPbkContactLinkArray* linkArray = NULL;
+            
+            // Find possible contacts.
+            if( aAllowUserNameMatch && !aCharsForMatching )
                 {
-                match = voipMatches.FindFullOrUsernameMatch( sipUri, aCharsForMatching );
+                err = iMatchContact->MatchContact(
+                    linkArray, sipUri.UserNamePart(), *iVoipMatchStrategy );
+                }
+            else if ( aCharsForMatching )
+                {
+                err = iMatchContact->MatchContact(
+                    linkArray, sipUri.FixedUserNamePart(), *iVoipMatchStrategy );            
                 }
             else
                 {
-                // Take the first match, that is voip contact. Gives NULL if match not found.
-                match = voipMatches.FindFullMatch( sipUri );
+                err = iMatchContact->MatchContact( 
+                    linkArray, sipUri.SipURI() , *iVoipMatchStrategy );    
                 }
             
-            // Release extra matches
-            voipMatches.ReleaseMatches();
-            }
-        
-        // If no error and match still null pointer, then no contacts were found.
-        if( !err && !match )        
-            {
-            err = KErrNotFound;
+            MPhCntMatch* match = NULL;
+            if( !err )
+                {
+                // Fetch all the matched contacts, because iVoipMatchStrategy
+                // could give us a match that is matched to wrong contact field.
+                const TInt matchedContacts( linkArray->Count() );
+    
+                // Find real matches.
+                TPhCntVoipMatchArray voipMatches;
+                for( TInt i = 0; i < matchedContacts; i++ )
+                    {
+                    // Get contacts from phone book.
+                    CPhCntContact* match = NULL;
+                    err = FetchContact( match, linkArray->At( i ), sipUri.SipURI() );
+                    if( !err )
+                        {
+                        TRAP_IGNORE( voipMatches.AppendL( match ) );
+                        }
+                    else
+                        {
+                        // Error in fetching contacts 
+                        break;
+                        }
+                    }
+                    
+                if( aAllowUserNameMatch || aCharsForMatching )   
+                    {
+                    match = voipMatches.FindFullOrUsernameMatch( sipUri, aCharsForMatching );
+                    }
+                else
+                    {
+                    // Take the first match, that is voip contact. Gives NULL if match not found.
+                    match = voipMatches.FindFullMatch( sipUri );
+                    }
+                
+                // Release extra matches
+                voipMatches.ReleaseMatches();
+                }
+            
+            // If no error and match still null pointer, then no contacts were found.
+            if( !err && !match )        
+                {
+                err = KErrNotFound;
+                }
+            else
+                {
+                aMatch = match;
+                }
             }
         else
             {
-            aMatch = match;
+            aMatch = existingContact;
             }
         }
-    else
-        {
-        aMatch = existingContact;
-        }
-    }
 
     return err;
     }
-    
+
 // ---------------------------------------------------------------------------
 // From class CPhCntMatcher
 // Matches voip contacts
 // ---------------------------------------------------------------------------
 TInt CPhCntMatcherVoIPImpl::MatchVoipNumber(
-            MPhCntMatch*& aMatch,
-            const CPhCntContactId& aContactId )
+    MPhCntMatch*& aMatch,
+    const TDesC& aMatchString,
+    const CPhCntContactId& aContactId )
     {
     const CPhCntVPbkContactId& contactId = 
             static_cast<const CPhCntVPbkContactId&>( aContactId );
-            
+
     const MVPbkContactLink& contactLink = contactId.ContactLink();
     
-    
-    TInt err = CreateMatcher();    
+    TInt err = CreateMatcher();
 
     const TVPbkContactStoreUriPtr uri 
         = contactLink.ContactStore().StoreProperties().Uri(); 
@@ -197,59 +196,76 @@ TInt CPhCntMatcherVoIPImpl::MatchVoipNumber(
     iContactStoreLoader->LoadContactStoreWithUri( uri.UriDes() );
     
     if ( err == KErrNone )
-    {
-    CPhCntContact* existingContact = 
-        iFoundContacts->FindContact( contactLink );
-     
-    
-    if( !existingContact )
         {
-        CPhCntContact* contact = NULL;
-        err = iFetchContact->FetchContact( contactLink,  contact );
-
-        if( !err )
+        CPhCntContact* existingContact = 
+            iFoundContacts->FindContact( contactLink );
+        
+        if ( !existingContact )
             {
-            const RArray<TPhCntNumber>& allNumbers = 
-                contact->AllNumbers();
-            const TInt count( allNumbers.Count() );
-            for( TInt i = 0; i < count; i++ )
+            CPhCntContact* contact = NULL;
+            err = iFetchContact->FetchContact( contactLink,  contact );
+    
+            if ( !err )
                 {
-                // Take first voip number and set it as contacts number.
-                TPhCntNumber number = allNumbers[i];
-                if( number.Type() == MPhCntMatch::EVoipNumber ||
-                    number.Type() == MPhCntMatch::EMobileNumber ||
-                    number.Type() == MPhCntMatch::EStandardNumber ||
-                    number.Type() == CPhCntContact::EPagerNumber ||
-                    number.Type() == CPhCntContact::EVideoNumber ||
-                    number.Type() == CPhCntContact::EAssistantNumber ||
-                    number.Type() == CPhCntContact::EFaxNumber ||
-                    number.Type() == CPhCntContact::ECarNumber ) 
+                SetMatchedVoIPNumberIfExists( *contact, aMatchString );
+
+                TPhCntSipURI sipUri( contact->Number() );
+                TRAP( err, iFoundContacts->AddL( contact, sipUri.SipURI() ) );
+                if ( err )
                     {
-                    contact->SetMatchedVoipNumber( TPhCntSipURI( number.Number() ) );
-                    break;
+                    delete contact;
+                    }
+                else
+                    {
+                    aMatch = contact;
                     }
                 }
-            TPhCntSipURI sipUri( contact->Number() );
-            TRAP( err, iFoundContacts->AddL( contact, sipUri.SipURI() ) );
-            if( err )
-                {
-                delete contact;
-                }
-            else
-                {
-                aMatch = contact;
-                }
-         
+            }
+        else
+            {
+            aMatch = existingContact;
             }
         }
-    else
-        {
-        aMatch = existingContact;
-        }
-    }
     return err;
     }
 
+
+// ---------------------------------------------------------------------------
+// Sets matched VoIP number if it was found.
+// ---------------------------------------------------------------------------
+//    
+void CPhCntMatcherVoIPImpl::SetMatchedVoIPNumberIfExists( 
+    CPhCntContact& aContact,
+    const TDesC& aMatchString )
+    {
+    const RArray<TPhCntNumber>& allNumbers = aContact.AllNumbers();
+    const TInt numberCount( allNumbers.Count() );
+    TPhCntSipURI sipUri( aMatchString );
+    
+    for ( TInt i = 0; i < numberCount; i++ ) 
+        {
+        TPhCntNumber number = allNumbers[i];
+        if ( number.Type() == CPhCntContact::EVoipNumber ||
+             number.Type() == CPhCntContact::EMobileNumber || 
+             number.Type() == CPhCntContact::EStandardNumber ||
+             number.Type() == CPhCntContact::EPagerNumber ||
+             number.Type() == CPhCntContact::EVideoNumber ||
+             number.Type() == CPhCntContact::EAssistantNumber ||
+             number.Type() == CPhCntContact::EFaxNumber ||
+             number.Type() == CPhCntContact::ECarNumber ) 
+            {
+            // If uris are the same then we have a full match.
+            // (usernamepart requires case sensitive match, domain is not sensitive)
+            TPhCntSipURI matchURI( number.Number() );
+            if ( matchURI.SipURI().CompareF( sipUri.SipURI() ) == KErrNone &&
+                 matchURI.UserNamePart().Compare( sipUri.UserNamePart() ) == KErrNone )
+                {
+                aContact.SetMatchedVoipNumber( matchURI );
+                break;
+                }
+            }
+        }
+    }
 
 // ---------------------------------------------------------------------------
 // From class CPhCntMatcher
@@ -265,28 +281,26 @@ TBool CPhCntMatcherVoIPImpl::HasCSNumbers(
     
     if ( CreateMatcher() == KErrNone )
         {
+        // Check if we have contact already.
+        CPhCntContact* contact = 
+            iFoundContacts->FindContact( contactId.ContactLink() );
             
-    // Check if we have contact already.
-    CPhCntContact* contact = 
-        iFoundContacts->FindContact( contactId.ContactLink() );
-        
-    if( contact ) 
-        {
-        hasCSNumbers = HasCSNumbers( contact );
-        contact->Release();
-        }
-    else
-        {
-        // Fetch the contact from Virtual phonebook.
-        const TInt err = 
-            iFetchContact->FetchContact( contactId.ContactLink(), contact );
-        hasCSNumbers = HasCSNumbers( contact );
-        
-        // We can delete the contact, because it is not added to 
-        // iFoundContacts.
-        delete contact;
-        }
-    
+        if ( contact ) 
+            {
+            hasCSNumbers = HasCSNumbers( contact );
+            contact->Release();
+            }
+        else
+            {
+            // Fetch the contact from Virtual phonebook.
+            const TInt err = 
+                iFetchContact->FetchContact( contactId.ContactLink(), contact );
+            hasCSNumbers = HasCSNumbers( contact );
+            
+            // We can delete the contact, because it is not added to 
+            // iFoundContacts.
+            delete contact;
+            }
         }
 
     return hasCSNumbers;
@@ -323,17 +337,17 @@ TBool CPhCntMatcherVoIPImpl::HasCSNumbers(
     {
     
     TBool hasCSNumbers = EFalse;
-    if( aContact )
+    if ( aContact )
         {
         const RArray<TPhCntNumber>& allNumbers = aContact->AllNumbers();
         const TInt count( allNumbers.Count() );
         for( TInt i = 0; i < count; i++ )
             {
             const MPhCntMatch::TNumberType type = allNumbers[i].Type();
-            if( type != MPhCntMatch::ENone &&
-                type != MPhCntMatch::EFaxNumber &&
-                type != MPhCntMatch::EPagerNumber &&
-                type != MPhCntMatch::EVoipNumber 
+            if ( type != MPhCntMatch::ENone &&
+                 type != MPhCntMatch::EFaxNumber &&
+                 type != MPhCntMatch::EPagerNumber &&
+                 type != MPhCntMatch::EVoipNumber 
                 )
                 {
                 hasCSNumbers = ETrue;
@@ -343,10 +357,14 @@ TBool CPhCntMatcherVoIPImpl::HasCSNumbers(
     return hasCSNumbers;
     }
 
+// ---------------------------------------------------------------------------
+// Creates the contact matcher.
+// ---------------------------------------------------------------------------
+//  
 TInt CPhCntMatcherVoIPImpl::CreateMatcher()
     {
     TInt err = CPhCntMatcherImpl::CreateMatcher();
-    if (!err && !iVoipMatchStrategy )
+    if ( !err && !iVoipMatchStrategy )
         {
         TRAP( err, iVoipMatchStrategy = 
             CPhCntVoipContactMatchStrategy::NewL( iContactManager, 

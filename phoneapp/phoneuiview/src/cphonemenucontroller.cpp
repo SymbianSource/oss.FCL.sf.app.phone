@@ -40,7 +40,7 @@
 #include <phoneappvoipcommands.hrh>
 #include <phoneui.rsg>
 #include <telephonyvariant.hrh>
-
+#include <AvkonInternalCRKeys.h>
 #include <hwrmdomainpskeys.h>
 
 #include <AiwServiceHandler.h>
@@ -175,6 +175,15 @@ TBool CPhoneMenuController::IsSwivelClosed() const
 
     } 
 
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+//
+TBool CPhoneMenuController::IsQwertyMode() const
+    {
+    return CPhonePubSubProxy::Instance()->Value(
+                    KCRUidAvkon, 
+                    KAknQwertyInputModeActive );
+    } 
 // ---------------------------------------------------------
 // CPhoneMenuController::DynInitMenuBar
 // ---------------------------------------------------------
@@ -522,7 +531,8 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                 break;
             case EPhoneDialerCmdTouchInput:
                 {
-                if ( !FeatureManager::FeatureSupported( KFeatureIdCommonVoip ) )
+                if ( !FeatureManager::FeatureSupported( KFeatureIdCommonVoip ) ||
+                     IsQwertyMode() )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[i] );      
                     }

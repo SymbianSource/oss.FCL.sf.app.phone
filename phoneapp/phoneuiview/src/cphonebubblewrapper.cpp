@@ -336,7 +336,7 @@ CBubbleManager::TBubbleId CPhoneBubbleWrapper::CreateCallHeaderL(
             // 3. Thumbnail
             if ( callHeaderParam->Thumbnail() )
                 {
-                iBubbleManager->SetCallObjectImage( bubble, callHeaderParam->Thumbnail(), NULL );
+                iBubbleManager->SetThumbnail( bubble, callHeaderParam->Thumbnail(), NULL );
                 }
             }
         else if ( iCallTheme->CallImageThemeSettings() == 2 )
@@ -609,7 +609,7 @@ void CPhoneBubbleWrapper::SetCallHeaderParameters(
                 "CPhoneBubbleWrapper::SetCallHeaderParameters()-> Set 3.Thumbnail");
             if ( aCallHeaderParam->Thumbnail() )
                 {
-                iBubbleManager->SetCallObjectImage( aBubble, aCallHeaderParam->Thumbnail(), NULL );
+                iBubbleManager->SetThumbnail( aBubble, aCallHeaderParam->Thumbnail(), NULL );
                 }
             }
         else

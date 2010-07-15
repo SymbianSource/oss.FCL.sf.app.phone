@@ -88,24 +88,37 @@ CSession2* CPhoneRingingToneServer::NewSessionL( const TVersion& /*aVersion*/,  
     }
 
 // -----------------------------------------------------------------------------
-// CPhoneRingingToneServer::IncrementSessions
+// CPhoneRingingToneServer::StartSession
 // -----------------------------------------------------------------------------
 //
-void CPhoneRingingToneServer::IncrementSessions()
+TInt CPhoneRingingToneServer::StartSession()
     {
-    iSessionCount++;
+    PHONEUIVIEW_PRINTF( "CPhoneRingingToneServer::StartSession err %d", iSessionCount );
+
+    TInt err( KErrNone );
+
+    if( !iSessionInUse )
+        {
+        iSessionInUse = ETrue;
+        }
+    else
+        {
+        err = KErrAccessDenied;
+        }
+
+    return err;
     }
 
 // -----------------------------------------------------------------------------
-// CPhoneRingingToneServer::DecrementSessions
+// CPhoneRingingToneServer::CloseSession
 // -----------------------------------------------------------------------------
 //
-void CPhoneRingingToneServer::DecrementSessions()
+void CPhoneRingingToneServer::CloseSession()
     {
-    if ( --iSessionCount <= 0 )
-        {
-        CActiveScheduler::Stop();
-        }
+    PHONEUIVIEW_PRINT( "CPhoneRingingToneServer::CloseSession()" );
+
+    CActiveScheduler::Stop();
+    iSessionInUse = EFalse;
     }
 
 // -----------------------------------------------------------------------------

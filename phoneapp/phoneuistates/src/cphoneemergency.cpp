@@ -45,8 +45,10 @@
 
 // ================= MEMBER FUNCTIONS =======================
 
+// -----------------------------------------------------------
 // C++ default constructor can NOT contain any code, that
 // might leave.
+// -----------------------------------------------------------
 //
 CPhoneEmergency::CPhoneEmergency(
     MPhoneStateMachine* aStateMachine,
@@ -62,7 +64,7 @@ CPhoneEmergency::CPhoneEmergency(
 // Destructor
 // (other items were commented in a header).
 // -----------------------------------------------------------
-
+//
 CPhoneEmergency::~CPhoneEmergency()
     {
     }
@@ -183,10 +185,10 @@ void CPhoneEmergency::HandlePhoneEngineMessageL(
                     }
                  }
             break;
-            
+
         case MEngineMonitor::EPEMessageColpNumberAvailable:
             //Don't show COLP note during emergency call.
-            break; 
+            break;
 
         default:
             CPhoneGsmInCall::HandlePhoneEngineMessageL(
@@ -551,11 +553,11 @@ void CPhoneEmergency::UpdateInCallCbaL()
             }
         }
     else if ( iStateMachine->SecurityMode()->IsAutolockEnabled()
-    	|| SimState() != EPESimUsable
-    	|| iStartupInterrupted )
+        || SimState() != EPESimUsable
+        || iStartupInterrupted )
         {
         if ( TouchCallHandlingSupported() )
-        	{
+            {
             resourceId = EPhoneCallHandlingEmergencyInCallNoOptions;
             }
         else if ( audioOutput == EPEWiredAudioAccessory || IsSwivelClosed())
@@ -581,8 +583,8 @@ void CPhoneEmergency::UpdateInCallCbaL()
             {
             resourceId = EPhoneCallHandlingEmergencyHandsetCBA;
             }
-        else if ( ( audioOutput == EPEHandset ) 
-        		&& ( btAvailable ) )
+        else if ( ( audioOutput == EPEHandset )
+                && ( btAvailable ) )
             {
             resourceId = EPhoneCallHandlingInCallBtaaCBA;
             }
@@ -643,10 +645,10 @@ void CPhoneEmergency::HandleKeyMessageL(
             {
             if ( TouchCallHandlingSupported() )
                 {
-                CPhoneGsmInCall::HandleKeyMessageL( aMessage, aCode ); 
+                CPhoneGsmInCall::HandleKeyMessageL( aMessage, aCode );
                 }
             else if ( !iStateMachine->SecurityMode()->IsAutolockEnabled()
-            	&& SimState() == EPESimUsable )   
+                && SimState() == EPESimUsable )
                 {
                 // do base operation
                 CPhoneGsmInCall::HandleKeyMessageL( aMessage, aCode );
@@ -694,6 +696,10 @@ TBool CPhoneEmergency::HandleCommandL( TInt aCommand )
         case EPhoneInCallCmdEndThisOutgoingCall:
         case EPhoneInCallCmdEndThisActiveCall:
             DisconnectEmergencyCallL();
+            break;
+
+        case EPhoneCmdUpdateEmergencyCba:
+            UpdateInCallCbaL();
             break;
 
         default:
@@ -768,24 +774,24 @@ void CPhoneEmergency::HandleKeyEventL(
     TEventCode aEventCode )
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneEmergency::HandleKeyEventL( ) ");
-    
+
     if ( TouchCallHandlingSupported() )
         {
         CPhoneState::HandleKeyEventL( aKeyEvent, aEventCode );
         }
     else
         {
-		 if ( iStateMachine->SecurityMode()->IsAutolockEnabled()
-			&& CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) )
-			{
-			// Send the key event to the phone engine
-			SendKeyEventL( aKeyEvent, aEventCode );
-			}
-		else
-			{
-			// Handle numeric keys when key events are received in idle state
-			CPhoneState::HandleKeyEventL( aKeyEvent, aEventCode );
-			}
+         if ( iStateMachine->SecurityMode()->IsAutolockEnabled()
+            && CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) )
+            {
+            // Send the key event to the phone engine
+            SendKeyEventL( aKeyEvent, aEventCode );
+            }
+        else
+            {
+            // Handle numeric keys when key events are received in idle state
+            CPhoneState::HandleKeyEventL( aKeyEvent, aEventCode );
+            }
         }
     }
 
@@ -880,8 +886,8 @@ void CPhoneEmergency::UpdateSetupCbaL()
     const TPEAudioOutput audioOutput =
         iStateMachine->PhoneEngineInfo()->AudioOutput();
 
-    if ( !( TouchCallHandlingSupported() ) 
-    		&& iCallSetup && audioOutput != EPENotActive )
+    if ( !( TouchCallHandlingSupported() )
+            && iCallSetup && audioOutput != EPENotActive )
         {
         if ( audioOutput == EPELoudspeaker )
             {
@@ -951,33 +957,33 @@ EXPORT_C TBool CPhoneEmergency::HandleRemConCommandL(
 // --------------------------------------------------------------
 //
 TBool CPhoneEmergency::TouchCallHandlingSupported () const
-	{
-	if ( FeatureManager::FeatureSupported ( KFeatureIdTouchCallHandling ) )
-		{
-		return ETrue;
-		}
-	else 
-		{
-		return EFalse;
-		}
-	}
+    {
+    if ( FeatureManager::FeatureSupported ( KFeatureIdTouchCallHandling ) )
+        {
+        return ETrue;
+        }
+    else
+        {
+        return EFalse;
+        }
+    }
 
 // --------------------------------------------------------------
 // CPhoneEmergency::UseEmergencyNoIhfCBA
 // --------------------------------------------------------------
 //
 TBool CPhoneEmergency::UseEmergencyNoIhfCBA( const TPEAudioOutput& aAudioOutput ) const
-	{
-	if ( !( TouchCallHandlingSupported() ) 
-		&& ( ( aAudioOutput == EPEWiredAudioAccessory ) || ( IsSwivelClosed() ) ) )
-		{
-		return ETrue;
-		}
-	else 
-		{
-		return EFalse;
-		}
-	}
+    {
+    if ( !( TouchCallHandlingSupported() )
+        && ( ( aAudioOutput == EPEWiredAudioAccessory ) || ( IsSwivelClosed() ) ) )
+        {
+        return ETrue;
+        }
+    else
+        {
+        return EFalse;
+        }
+    }
 
 // --------------------------------------------------------------
 // CPhoneEmergency::UseHandsetEmergencyCBA
@@ -985,15 +991,15 @@ TBool CPhoneEmergency::UseEmergencyNoIhfCBA( const TPEAudioOutput& aAudioOutput 
 //
 TBool CPhoneEmergency::UseHandsetEmergencyCBA( const TPEAudioOutput& aAudioOutput ) const
     {
-	if ( !( TouchCallHandlingSupported() ) 
-		&& ( ( aAudioOutput == EPELoudspeaker ) || ( aAudioOutput == EPEBTAudioAccessory ) ) )
-		{
-		return ETrue;
-		}
-	else 
-		{
-		return EFalse;
-		}
+    if ( !( TouchCallHandlingSupported() )
+        && ( ( aAudioOutput == EPELoudspeaker ) || ( aAudioOutput == EPEBTAudioAccessory ) ) )
+        {
+        return ETrue;
+        }
+    else
+        {
+        return EFalse;
+        }
     }
 
 // --------------------------------------------------------------

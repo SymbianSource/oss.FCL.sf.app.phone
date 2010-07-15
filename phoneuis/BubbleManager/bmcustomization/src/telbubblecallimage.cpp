@@ -203,33 +203,37 @@ EXPORT_C void CTelBubbleCallImage::SizeChanged()
         {
         return;                    
         }
-    
-    // If bitmap is bigger than drawing area then clip from center.
-    TRect rect;
-    if ( IsFullScreenImage() )
-        {
-        rect = Rect();
-        }
-    else
-        {
-        rect = ImagePlacingArea();
-        }
-    
+        
+    // If bitmap is bigger than drawing area then clip from center of the image.
+    TRect rect = Rect();
     iSourceRect = iImage->SizeInPixels();
-    
+
     TInt offsetX = ( iSourceRect.Width() > rect.Width() ) ? 
                    ((iSourceRect.Width() - rect.Width()) / 2) : 0;
     TInt offsetY = ( iSourceRect.Height() > rect.Height() ) ? 
                    ((iSourceRect.Height() - rect.Height()) / 2) : 0;
-    iSourceRect.Shrink( offsetX, offsetY );    
     
-    // If bitmap is smaller than drawing area then center it.
+    iSourceRect.Shrink( offsetX, offsetY ); 
+    
+    // If bitmap is smaller than the drawing area then center the image on it.
     iOffset.iX = ( iSourceRect.Width() < rect.Width() ) ? 
                 ((rect.Width() - iSourceRect.Width()) / 2) : 0;
-    iOffset.iY = ( iSourceRect.Height() < rect.Height() ) ? 
-                ((rect.Height() - iSourceRect.Height()) / 2) : 0;
+    
+    iOffset.iY = 0;
+    
+    // lift the image higher if needed.
+    if ( iSourceRect.Height() < rect.Height() )
+        {
+        // check if it fits totally above the bubble
+        TInt height = iImagePlacingArea.iBr.iY - iImagePlacingArea.iTl.iY;
+      
+        if ( iSourceRect.Height() < height )
+            {
+            // if it fits then center it above the bubble
+            iOffset.iY = ( height - iSourceRect.Height() ) / 2;
+            }
+        }
     }
-
 
 // ---------------------------------------------------------------------------
 // CTelBubbleCallImage::Draw
@@ -237,26 +241,30 @@ EXPORT_C void CTelBubbleCallImage::SizeChanged()
 //
 EXPORT_C void CTelBubbleCallImage::Draw( const TRect& /*aRect*/ ) const
     {
-    if ( iImage ) 
+    if ( iImage )
         {
         CWindowGc& gc = SystemGc();
-        const TPoint topLeft = IsFullScreenImage() ? Rect().iTl : iImagePlacingArea.iTl;
+    
+        const TPoint topLeft = Rect().iTl;
         const TPoint bitmapTopLeft = topLeft + iOffset;
-       
-        if( iMask ) 
+    
+        // if we have y offset then the image wont go under the bubble in any case and so
+        // no need for masking
+        if ( iMask && iOffset.iY == 0 ) 
             {
             gc.BitBltMasked( bitmapTopLeft,
-                             iImage, 
-                             iSourceRect, 
-                             iMask, 
-                             EFalse );
+                         iImage, 
+                         iSourceRect, 
+                         iMask, 
+                         EFalse );
             }
-        else            
+        else
             {
             gc.BitBlt( bitmapTopLeft,
-                       iImage,
-                       iSourceRect );    
+                   iImage,
+                   iSourceRect );    
             }
+    
         DrawRoundRect( gc, bitmapTopLeft, iSourceRect.Size() );
         }
     }

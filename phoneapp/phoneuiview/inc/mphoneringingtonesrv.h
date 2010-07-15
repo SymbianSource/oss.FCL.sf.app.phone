@@ -24,14 +24,14 @@ class MPhoneRingingToneServer
     {
 public:
     /**
-    * Increments sessions.
+    * Start session.
     */
-    virtual void IncrementSessions() = 0;
+    virtual TInt StartSession() = 0;
 
     /**
-    * Decrements sessions.
+    * Close session.
     */
-    virtual void DecrementSessions() = 0;
+    virtual void CloseSession() = 0;
 
     // Ringing tone settings
     

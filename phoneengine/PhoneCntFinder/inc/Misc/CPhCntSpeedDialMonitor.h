@@ -49,12 +49,7 @@ NONSHARABLE_CLASS( CPhCntSpeedDialMonitor )
         */
         struct TSpdDialFieldInfo
             {
-            CPhCntContactId* iContactId;
-            
             MPhCntMatch::TNumberType iNumberType;
-            
-            // Thumbnail index of a grid array.
-            TInt iThumbIndex;
             };
         
         /**

@@ -80,18 +80,20 @@ HBufC* EasyDialingUtils::CreateContactStringLC(
             ptr.Append( KNameSeparatorChar );
             ptr.Append( *firstName );
             }        
-        } 
-    
-    // If firstname and last name are missing, duplicate company name into name field.
+        }
+
+    // If firstname and last name are missing, put company name into the first field.
     if ( ptr.Length() == 0 )
         {
         ptr.Append( *companyName );
         }
-    
-    // Append company name using tab as a separator.
-    ptr.Append( KListFieldSeparatorChar );
-    ptr.Append( *companyName );
-    
+    else
+        {
+        // Otherwise add company name into the second field using tab as a separator.
+        ptr.Append( KListFieldSeparatorChar );
+        ptr.Append( *companyName );
+        }
+
     CleanupStack::Pop( string );
     CleanupStack::PopAndDestroy( 3, firstName );
     CleanupStack::PushL( string );

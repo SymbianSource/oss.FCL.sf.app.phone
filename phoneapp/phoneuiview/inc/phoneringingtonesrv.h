@@ -51,14 +51,14 @@ public:
     ~CPhoneRingingToneServer();
 
     /**
-    * Increments sessions.
+    * Start session.
     */
-    void IncrementSessions();
+    TInt StartSession();
 
     /**
-    * Decrements sessions.
+    * Close session.
     */
-    void DecrementSessions();
+    void CloseSession();
 
     /**
     * Thread entry function.
@@ -180,8 +180,8 @@ private:
     // File server connection
     RFs iFs;
 
-    // Number of active sessions
-    TInt iSessionCount;
+    // Indicates is session already in use
+    TBool iSessionInUse;
 
     // Player active object
     CPhoneRingingToneSrvPlayerAO* iPlayer;

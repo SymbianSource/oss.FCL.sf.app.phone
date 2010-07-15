@@ -67,7 +67,7 @@ CPhoneNumberEntryManager::CPhoneNumberEntryManager(
      iStateMachine ( aStateMachine ),
      iCustomization ( aCustomization ),
      iCbaManager ( aCbaManager ),
-     iEnv( *CEikonEnv::Static() )
+     iEnv( *CEikonEnv::Static() ) // codescanner::eikonenvstatic
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::CPhoneNumberEntryManager() ");
     }
@@ -478,9 +478,12 @@ TBool CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput(
         const TKeyEvent& aKeyEvent ) const
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput( ) ");
-    TBool ret = ( iViewCommandHandle.HandleCommandL( EPhoneViewIsNumberEntryNumericMode ) 
-                    != EPhoneViewResponseSuccess )
-                        &&
+    
+    TBool numericMode = EFalse;
+    TRAP_IGNORE( numericMode = ( iViewCommandHandle.HandleCommandL( EPhoneViewIsNumberEntryNumericMode ) 
+            == EPhoneViewResponseSuccess ) );
+    
+    TBool ret = !numericMode &&
                 ( ( aKeyEvent.iScanCode >= KPhoneKeyStart &&
                     aKeyEvent.iScanCode <= KPhoneKeyEnd ) ||
                   aKeyEvent.iModifiers & EModifierSpecial );

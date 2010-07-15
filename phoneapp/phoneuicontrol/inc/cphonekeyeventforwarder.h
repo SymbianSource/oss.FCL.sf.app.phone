@@ -186,7 +186,7 @@ class CPhoneKeyEventForwarder
         /**
         * Convert key code
         */   
-        void ConvertKeyCode( TUint& aCode, const TKeyEvent& aKeyEvent ); 
+        void ConvertKeyCodeL( TUint& aCode, const TKeyEvent& aKeyEvent ); 
 
         /**
         * Handle key long press
@@ -197,7 +197,7 @@ class CPhoneKeyEventForwarder
          * Checks from the statemachine is the given keyevent 
          * one which produces a legal character in the current mode.
          */
-        TBool IsKeyAllowed( const TKeyEvent& aKeyEvent );
+        TBool IsKeyAllowedL( const TKeyEvent& aKeyEvent );
                 
         /**
          * Checks is the given key special character (*, 0, # ) from half-qwerty
@@ -296,6 +296,13 @@ class CPhoneKeyEventForwarder
          * Status of virtual keyboard.
          */     
         TBool iVirtualKeyBoardOpen;
+        
+        
+        /**
+         * Indicates if menu or dialog was displayed
+         * when the key was pressed down.
+         */
+        TBool iDisplayingMenuOrDialogOnEventKeyDown;
         
         /**
          * Application menu.

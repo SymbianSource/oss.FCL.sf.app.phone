@@ -194,10 +194,10 @@ public:
 		EPhoneViewPrivateFromConference,
 		/** EPhoneViewSelectedConfMember */
 		EPhoneViewSelectedConfMember,
-		/** EPhoneViewOpenConferenceList */
-		EPhoneViewOpenConferenceList,
 		/** EPhoneViewGetConferenceListVisibleFlag */
 		EPhoneViewGetConferenceListVisibleFlag,
+		/** EPhoneViewOpenConferenceList */
+		EPhoneViewOpenConferenceList,
 		/** EPhoneViewGetCallState */
 		EPhoneViewGetCallState,
 		/** EPhoneViewGetCallIdByState */
@@ -246,10 +246,6 @@ public:
 		EPhoneViewSetBlockingDialogStatus,
 		/** EPhoneViewSetPhoneNumberAvailableInPhoneEngine */
 		EPhoneViewSetPhoneNumberAvailableInPhoneEngine,
-		/** EPhoneViewSetSecurityMode */
-		EPhoneViewSetSecurityMode,
-		/** EPhoneViewGetSecurityModeStatus */
-		EPhoneViewGetSecurityModeStatus,
 		/** EPhoneViewSetStatusPaneVisible */
 		EPhoneViewSetStatusPaneVisible,
 		/** EPhoneViewEnableKeyLock */
@@ -366,12 +362,12 @@ public:
 		EPhoneViewSetVideoCallDTMFVisibilityFlag,
 		/** EPhoneViewLoadPlugins */
 		EPhoneViewLoadPlugins,
-		/** PhoneViewServiceSelection */
-		PhoneViewServiceSelection,
 		/** EPhoneViewOpenVirtualKeyBoard */
 		EPhoneViewOpenVirtualKeyBoard,
 		/** EPhoneViewUpdateNoteSoftkeys */
 		EPhoneViewUpdateNoteSoftkeys,
+		/** EPhoneViewSendAiwCommand */
+		EPhoneViewSendAiwCommand,
 		/** EPhoneViewShowCustomizedDialer */
 		EPhoneViewShowCustomizedDialer,
 		/** EPhoneViewHideCustomizedDialer */
@@ -380,6 +376,8 @@ public:
 		EPhoneViewGetCustomizedDialerMenuResourceId,
 		/** EPhoneViewGetCustomizedDialerCbaResourceId */
 		EPhoneViewGetCustomizedDialerCbaResourceId,
+		/** EPhoneViewCipheringInfoChangePlayTone */
+		EPhoneViewCipheringInfoChangePlayTone,
 		/** EPhoneViewCreatePhoneBookServices */
 		EPhoneViewCreatePhoneBookServices,
 		/** EPhoneViewDisableKeyLockWithoutNote */
@@ -404,6 +402,8 @@ public:
 		EPhoneViewAddContactByString,
 		/** EPhoneViewIsActiveNoteDissmissableByKeyEvent */
 		EPhoneViewIsActiveNoteDissmissableByKeyEvent,
+		/** EPhoneViewUpdateContextMenu */
+		EPhoneViewUpdateContextMenu,
 		/** EPhoneViewSetNoConnectedCalls */
 		EPhoneViewSetNoConnectedCalls,
 		/** EPhoneViewIsDTMFEditorVisible */
@@ -430,12 +430,18 @@ public:
 		EPhoneViewGetNeedToReturnToForegroundAppStatus,
 		/** EPhoneViewSetNeedToReturnToForegroundAppStatus */
 		EPhoneViewSetNeedToReturnToForegroundAppStatus,
+		/** EPhoneViewSetConferenceAndWaitingVideo */
+		EPhoneViewSetConferenceAndWaitingVideo,
+		/** EPhoneViewLaunchMultimediaSharing */
+		EPhoneViewLaunchMultimediaSharing,
 		/** EPhoneViewGetQwertyModeObserver */
 		EPhoneViewGetQwertyModeObserver,
 		/** EPhoneViewSetIncallBubbleTrue */
 		EPhoneViewSetIncallBubbleTrue,
 		/** EPhoneViewSetIncallBubbleFalse */
 		EPhoneViewSetIncallBubbleFalse,
+		/** EPhoneViewIsDisplayingMenuOrDialog */
+		EPhoneViewIsDisplayingMenuOrDialog,
 		/** , // Don't remove this, this should always be the last in list. */
 		EPhoneAmountOfCommands
 		};

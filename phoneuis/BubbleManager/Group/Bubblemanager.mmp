@@ -89,6 +89,7 @@ source  BMCallStatusAnimSmall.cpp
 source  BMNumberTypeIcon.cpp
 source  BMMainPaneControl.cpp
 source  BMTouchPaneButton.cpp
+SOURCE  telbubbleimagescaler.cpp
 
 sourcepath ../laf
 source  BMLayout.cpp
@@ -122,5 +123,5 @@ LIBRARY gfxtrans.lib
 LIBRARY akntransitionutils.lib
 #endif
 LIBRARY bmcustomization.lib
-
+LIBRARY bitmaptransforms.lib
 // End of File

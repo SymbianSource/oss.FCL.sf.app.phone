@@ -19,8 +19,9 @@
 #ifndef C_BUBBLEMAINPANECONTROL_H
 #define C_BUBBLEMAINPANECONTROL_H
 
-#include "BMBubbleManager.h"
 #include <coecntrl.h>
+#include "BMBubbleManager.h"
+#include "telbubbleimagescaler.h"
 
 class CBubbleCallObjectManager;
 class CTelBubbleCustomElement;
@@ -34,7 +35,8 @@ class CFbsBitmap;
  *  @lib BubbleManager.lib
  *  @since S60 v5.0
  */
-NONSHARABLE_CLASS( CBubbleMainPaneControl ) : public CCoeControl
+NONSHARABLE_CLASS( CBubbleMainPaneControl ) : public CCoeControl,
+    public MTelBubbleImageScalerObserver
     {
 public:
     /**
@@ -77,7 +79,18 @@ public:
      * Returns ETrue when image is being displayed.
      */
     TBool IsUsed() const;
-        
+    
+    // from MTelBubbleImageScalerObserver    
+    /**
+     * Callback function from CTelBubbleImageScaler
+     * 
+     * @param aError Error happened during scaling
+     * @param aBitmap Scaled bitmap
+     * @return None 
+     */ 
+    void ImageScalingComplete
+                    (TInt aError, CFbsBitmap* aBitmap);
+            
 private:    
     CBubbleMainPaneControl( CBubbleManager& aCustomManager, 
                             CBubbleCallObjectManager& aCallObjectManager );
@@ -87,8 +100,10 @@ private:
                           TBool& aBitmapOwnership, 
                           CFbsBitmap*& aMask,
                           TBool& aMaskOwnership,
-                          TBool aIsScalable ); 
+                          TBool aIsScalable,
+                          TBool aThumbnail = EFalse );
 
+    void StartScaling( CFbsBitmap *aSourceBitmap );
 private: // data
     CBubbleManager& iBubbleManager;
     CBubbleCallObjectManager& iCallObjectManager;
@@ -98,6 +113,11 @@ private: // data
     TBool iIsUsed;
     CFbsBitmap* iBitmap; // not owned
     CFbsBitmap* iMask; // not owned
+    CTelBubbleImageScaler *iScaler;
+    CFbsBitmap *iScaledImage;
+    
+    // to prevent loading & scaling the same image again.
+    CFbsBitmap* iOldBitmap;	
     };
 
 #endif // C_BUBBLEMAINPANECONTROL_H

@@ -260,31 +260,31 @@ class CPhoneViewController :
          * From base class MNumberEntryObserver
          * Indication that numberentry state changed
          */
-        void NumberEntryStateChanged( TBool aEntryHasText );    
+        void NumberEntryStateChanged( TBool aEntryHasText );
 
 // From MPhoneSecurityModeChangeObserver
 
-		IMPORT_C void HandleSecurityModeChanged( TBool aIsEnabled );
-		
-		/**
+        IMPORT_C void HandleSecurityModeChanged( TBool aIsEnabled );
+
+        /**
         * Sets incall small bubble´s visibility in special cases.
-        */ 
-		void AllowInCallBubbleInSpecialCases();
-		
-		/**
+        */
+        void AllowInCallBubbleInSpecialCases();
+
+        /**
         * Sets value for incall bubble visibility.
-        */ 
-		void SetIncallBubbleVisibility( TBool aIncallBubbleVisible );
+        */
+        void SetIncallBubbleVisibility( TBool aIncallBubbleVisible );
 
     private:     // New functions
 
-		/**
-		 * Set security mode
-		 *
-		 * @param aMode ETrue if mode should be set enabled.
-		 */
-    	void SetSecurityMode( TBool aMode );
-    	
+        /**
+         * Set security mode
+         *
+         * @param aMode ETrue if mode should be set enabled.
+         */
+        void SetSecurityMode( TBool aMode );
+
         /**
         * read IdleApplicationUid from PubSub
         */
@@ -526,7 +526,7 @@ class CPhoneViewController :
         * @return Phone number's type
         */
         TPhoneNumberType ConvertNumberTypeFromSpeedDialFieldInfo(
-            CPhCntSpeedDialMonitor::TSpdDialFieldInfo aFieldInfo );
+            const CPhCntSpeedDialMonitor::TSpdDialFieldInfo& aFieldInfo  );
 
         /**
         * Open the Unified message editor and get
@@ -586,7 +586,7 @@ class CPhoneViewController :
         /**
         * Handles transition effect.
         */
-        void HandleTransitionEffect( TPhoneTransEffectType aType, 
+        void HandleTransitionEffect( TPhoneTransEffectType aType,
                 const TUid& aAppUidEffectParam = KUidPhoneApplication );
 
         /**
@@ -633,15 +633,15 @@ class CPhoneViewController :
         TInt SingleItemFetchType() const;
 
         /**
-         * Checks if DTMF dialer mode is currently active        
+         * Checks if DTMF dialer mode is currently active
          */
         TBool IsDtmfDialerActive() const;
-        
+
         /**
-         * Checks if custom dialer mode is currently active        
+         * Checks if custom dialer mode is currently active
          */
         TBool IsCustomDialerActive() const;
-        
+
         /**
         * Checks if the effect could and should be triggered.
         */
@@ -659,14 +659,19 @@ class CPhoneViewController :
         * Complete transition effect.
         */
         void EndTransEffect();
-        
+
         /**
          * TCleanupOperation to call EndTransEffect, if leave occurs
          * after BeginTransEffectForAppStartFromDialerLC.
          */
         static void EffectCleanup(TAny* aThis );
-        
-    private: 
+
+        /**
+         * Checks if emergency call is ongoing.
+         */
+        TBool IsEmergencyCallOngoing();
+
+    private:
         /**
          * Called by the skin server when skin content is changed and the
          * connected client wants to be informed.
@@ -692,12 +697,12 @@ class CPhoneViewController :
          */
          void SkinPackageChanged(
              const TAknsSkinStatusPackageChangeReason aReason );
-        
+
     private:    // Data
 
         CPhoneView* iPhoneView;
 
-		CPhoneDialerView* iDialerView;
+        CPhoneDialerView* iDialerView;
 
         // iCba
         CEikButtonGroupContainer* iCba;
@@ -712,16 +717,16 @@ class CPhoneViewController :
 
         // Controls the touch buttons
         CPhoneDialerController* iDialerController;
-        
+
         // Controls touch dialer in DTMF mode
         CPhoneDtmfDialerController* iDtmfDialerController;
-        
+
         // Controls the toolbar
         CPhoneToolbarController* iToolbarController;
 
         // Handles easydialing commands. Owned.
         CPhoneEasyDialingController* iEasyDialingController;
-        
+
         // For accessing incall indicator
         CPhoneIncallIndicator* iIncallIndicator;
 
@@ -736,7 +741,7 @@ class CPhoneViewController :
         CPhoneApplicationExit* iApplicationExit;
 
         CPhoneAudioController* iAudioController;
-        
+
         CPhoneRingingTonePlayerAO* iRingingTonePlayerAO;
 
         // EikEnv for CPhoneKeyCaptureController, CPhoneNoteController,
@@ -830,18 +835,18 @@ class CPhoneViewController :
         TInt iPrevious;
 
         TBool iPriotityChanged;
-		
-		/**
-		 * Internal flag to define if security mode is enabled.
-		 */
+
+        /**
+         * Internal flag to define if security mode is enabled.
+         */
         TBool iSecurityMode;
-        
+
         // Boolean flag. ETrue if the application needs to return
         // to the foreground after call ended
         TBool iNeedToReturnToForegroundAppAfterCall;
-        
+
         CAknIncallBubble* iIncallBubble;
-        
+
         // Server wich sends events about background image changes
         RAknsSrvSession iSkinServerSession;
     };

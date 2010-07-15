@@ -45,12 +45,12 @@ NONSHARABLE_CLASS( CPhCntMatcherImpl ) : public CPhCntMatcher
     {
 public:
 
-	/**
-	 * Static constructor.
-	 *
-	 * @since S60 v3.1
-	 * @param aOwner Phonebook owner.
-	 */
+    /**
+     * Static constructor.
+     *
+     * @since S60 v3.1
+     * @param aOwner Phonebook owner.
+     */
     static CPhCntMatcherImpl* NewL( const MPhoneCntPbkOwner& aOwner );
 
     /**
@@ -110,14 +110,14 @@ public:
     /**
     * Match number to phonebook.
     * @param aMatch Found match, owership tranferred. NULL if not found any.
-    * @param aNumber Number to match against.
+    * @param aMatchString Number to match against.
     * @return Error code: KErrNone - one match found
     *                     KErrNotFound - no matches found
     *                     other - normal Symbian OS error
     */
-	TInt MatchVoipNumber(
+    TInt MatchVoipNumber(
         MPhCntMatch*& aMatch,
-        const TDesC& aNumber,
+        const TDesC& aMatchString,
         TBool aAllowUserNameMatch,
         MDesCArray* aContactStoreUris,
         TInt aCharsForMatching = 0 );
@@ -127,6 +127,7 @@ public:
     * by contact id.
     * @since Series60 3.0
     * @param aMatch for found match, owership tranferred. Empty if not found.
+    * @param aMatchString Number to match against.
     * @param aContactId for current contact.
     * @return Error code: KErrNone - VoIP call contact found
     *                     KErrNotFound - no VoIP call contact found
@@ -134,6 +135,7 @@ public:
     */
     TInt MatchVoipNumber(
         MPhCntMatch*& aMatch,
+        const TDesC& aMatchString,
         const CPhCntContactId& aContactId );
 
 

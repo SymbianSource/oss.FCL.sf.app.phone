@@ -174,7 +174,7 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventL(
         
         // Open number entry view if any allowed character key
         // is pressed on homescreen or in-call ui
-        if ( aType != EEventKeyUp && IsKeyAllowed( keyEvent ) )
+        if ( aType != EEventKeyUp && IsKeyAllowedL( keyEvent ) )
             {
             // Do not open number entry with up key
             iStateMachine->State()->HandleCreateNumberEntryL( keyEvent, aType );
@@ -252,13 +252,13 @@ void CPhoneKeyEventForwarder::ConstructL( const TRect& aRect )
     }
 
 // -----------------------------------------------------------------------------
-// CPhoneKeyEventForwarder::IsAlphaNumericKey
+// CPhoneKeyEventForwarder::IsKeyAllowedL
 // -----------------------------------------------------------------------------
 //
-TBool CPhoneKeyEventForwarder::IsKeyAllowed( const TKeyEvent& aKeyEvent )
+TBool CPhoneKeyEventForwarder::IsKeyAllowedL( const TKeyEvent& aKeyEvent )
     {
     __LOGMETHODSTARTEND( EPhoneControl,
-        "CPhoneKeyEventForwarder::IsAlphaNumericKey");
+        "CPhoneKeyEventForwarder::IsKeyAllowedL");
 
     TKeyEvent keyEvent( aKeyEvent );
     
@@ -428,14 +428,20 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventAfterControlStackL(
     
     if ( EEventKeyUp == aType && EKeyNull != iKeyPressedDown )
         {
-        // Handle short key press
-        iStateMachine->State()->HandleKeyMessageL( 
-            MPhoneKeyEvents::EPhoneKeyShortPress, 
-            TKeyCode( iKeyPressedDown ) );
-
+		// EKeyEnter is always offered to Telephony so don´t offer it 
+		// to state if there is menu or a dialog open.
+        if ( !( EKeyEnter == iKeyPressedDown 
+                && iDisplayingMenuOrDialogOnEventKeyDown ) )
+            {
+            // Handle short key press
+            iStateMachine->State()->HandleKeyMessageL( 
+                    MPhoneKeyEvents::EPhoneKeyShortPress, 
+                    TKeyCode( iKeyPressedDown ) );
+            }
         // Reset key code
         iScanCode = EStdKeyNull;
         iKeyPressedDown = EKeyNull;
+        iDisplayingMenuOrDialogOnEventKeyDown = EFalse;
         }
 
     return EKeyWasNotConsumed;
@@ -478,7 +484,7 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyDownBeforeControlStackL(
         "CPhoneKeyEventForwarder::HandleEventKeyDownBeforeControlStackL");
 
     // Convert key code
-    ConvertKeyCode( iKeyPressedDown, aKeyEvent );
+    ConvertKeyCodeL( iKeyPressedDown, aKeyEvent );
     // Save key scan code
     iScanCode = aKeyEvent.iScanCode;
     
@@ -520,7 +526,15 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyDownBeforeControlStackL(
             this ) );
         }
 
-    return ( EKeyWasNotConsumed );
+    // Check if dialog or menu is open
+    // EikAppUi()->IsDisplayingMenuOrDialog doesn´t always return correct 
+    // value for menubar, so ask visibility also from CEikMenuBar
+    iDisplayingMenuOrDialogOnEventKeyDown = ( iViewCommandHandle->HandleCommandL(
+            EPhoneViewIsDisplayingMenuOrDialog ) == 
+            EPhoneViewResponseSuccess ) || ( iMenu && iMenu->IsDisplayed() );
+
+    // Consume dialer simulated key events, pass others on
+    return ( IsKeySimulatedByTouchDialer( aKeyEvent ) ? EKeyWasConsumed : EKeyWasNotConsumed );
     }
 
 // -----------------------------------------------------------
@@ -631,7 +645,8 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyUpBeforeControlStackL(
     // Store the previous scan code
     iPreviousScanCode = iScanCode;
 
-    return EKeyWasNotConsumed;
+    // Consume dialer simulated key events, pass others on
+    return ( IsKeySimulatedByTouchDialer( aKeyEvent ) ? EKeyWasConsumed : EKeyWasNotConsumed );
     }
 
 // ---------------------------------------------------------
@@ -699,19 +714,19 @@ void CPhoneKeyEventForwarder::HandleLongPressKeyEventL()
     }
 
 // -----------------------------------------------------------
-// CPhoneKeyEventForwarder::ConvertKeyCode
+// CPhoneKeyEventForwarder::ConvertKeyCodeL
 // -----------------------------------------------------------
 //
-void CPhoneKeyEventForwarder::ConvertKeyCode( TUint& aCode,
+void CPhoneKeyEventForwarder::ConvertKeyCodeL( TUint& aCode,
         const TKeyEvent& aKeyEvent )
     {
     __LOGMETHODSTARTEND( EPhoneControl,
-        "CPhoneKeyEventForwarder::ConvertKeyCode");
+        "CPhoneKeyEventForwarder::ConvertKeyCodeL");
 
     // Handler for special device key mapping in case iScanCode
     // to iCode conversion hasn't been handled by CAknAppUi::GetAliasKeyCodeL
     __PHONELOG1( EBasic, EPhoneControl,
-        "CPhoneKeyEventHandler::ConvertKeyCode scan code (%d)",
+        "CPhoneKeyEventHandler::ConvertKeyCodeL scan code (%d)",
         aKeyEvent.iScanCode );
 
     if ( !ConvertHalfQwertySpecialChar( aCode, aKeyEvent ) )
@@ -743,6 +758,7 @@ void CPhoneKeyEventForwarder::ConvertKeyCode( TUint& aCode,
                 case EStdKeyYes:
                     aCode = EKeyYes;
                     break;
+                case EStdKeyEnd: // End key is emulated if the device has combined power and end key
                 case EStdKeyNo:
                     aCode = EKeyNo;
                     break;
@@ -766,7 +782,7 @@ void CPhoneKeyEventForwarder::ConvertKeyCode( TUint& aCode,
         }
 
     __PHONELOG1( EBasic, EPhoneControl,
-        "CPhoneKeyEventHandler::ConvertKeyCode aCode (%d)", aCode );
+        "CPhoneKeyEventHandler::ConvertKeyCodeL aCode (%d)", aCode );
     }
 
 //  End of File

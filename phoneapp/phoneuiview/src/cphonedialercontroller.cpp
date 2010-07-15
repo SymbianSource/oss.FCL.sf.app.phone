@@ -132,7 +132,7 @@ static const CPhoneDialerController::TLocalButtonData KClearButtonDataTable[] =
         EAknsMinorGenericQgnIndiDialerClear,
         EMbmPhoneuiQgn_indi_dialer_clear,
         EMbmPhoneuiQgn_indi_dialer_clear_mask,
-        R_PHONEUI_DIALER_TOOLTIP_CLEAR
+        0   //no tooltip for clear key
         }
     };
 static const TInt KClearButtonDataTableCount = 
@@ -491,7 +491,15 @@ MPhoneDialerController::CButtonData* CPhoneDialerController::CreateButtonDataL(
         const TDesC& aMifFile ) const
     {
     // Create tooltip text
-    HBufC* tooltip = StringLoader::LoadLC( aSourceData.iTooltipResourceId );
+    HBufC* tooltip = NULL;
+    if ( aSourceData.iTooltipResourceId > 0 )
+        {
+        tooltip = StringLoader::LoadLC( aSourceData.iTooltipResourceId );
+        }
+    else
+        {
+        tooltip = HBufC::NewLC(0);
+        }
     
     // Create icon
     TAknsItemID skinId = { EAknsMajorGeneric, aSourceData.iSkinItemIdMinor };
