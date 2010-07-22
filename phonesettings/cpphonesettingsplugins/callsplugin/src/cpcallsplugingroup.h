@@ -46,11 +46,13 @@ public:
 private:     
     
     void createShowCallDurationItem();
+    void createOwnVideoInReceivedCall();
     void createSoftRejectItem();
     void createCLIItem();
     void createCallWaitingtem();
     
     void connectShowCallDurationItem();
+    void connectOwnVideoInReceivedCall();
     void connectSoftRejectItem();
     void connectCLIItem();
     void connectCallWaitingItem();
@@ -60,6 +62,7 @@ private:
 public slots:
     
     void showCallDurationStateChanged();
+    void ownVideoInReceivedCallStateChanged(int index);
     void softRejectTextChanged();
     void callWaitingCurrentIndexChanged();
     void cliCurrentIndexChanged(int index);
@@ -81,6 +84,7 @@ signals:
         int &noteId, const QString& text, HbMessageBox::MessageBoxType);
     void showGlobalErrorNote(int &noteId, int errorCode);
     void cancelNote(int noteId);
+    void showNotificationDialog(const QString& text);
     
 private:   
 
@@ -94,7 +98,8 @@ private:
     PSetCallWaitingWrapper* m_callWaitingWrapper;
     
     // Not owned objects
-    CpSettingFormItemData *m_DataItemShowCallDuration; 
+    CpSettingFormItemData *m_DataItemShowCallDuration;
+    CpSettingFormItemData *m_OwnVideoInReceivedCall;
     CpSettingFormItemData *m_DataItemSoftRejectTextEditor;
     CpSettingFormItemData *m_DataItemCLI; 
     CpSettingFormItemData *m_DataItemCallWaiting;

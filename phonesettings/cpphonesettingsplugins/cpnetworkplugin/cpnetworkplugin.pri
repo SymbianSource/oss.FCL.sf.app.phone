@@ -19,10 +19,12 @@ HEADERS += src/cellulardatasettings.h \
            src/cellulardatasettings_s60_p.h \
            src/cpnetworkplugin.h \
            src/cpnetworkpluginview.h \
-           src/cpnetworkpluginform.h
+           src/cpnetworkpluginform.h \
+           src/cpnetworkstatus.h
 
 SOURCES += src/cellulardatasettings.cpp \
            src/cellulardatasettings_s60.cpp \
            src/cpnetworkplugin.cpp \
            src/cpnetworkpluginview.cpp \
-           src/cpnetworkpluginform.cpp
+           src/cpnetworkpluginform.cpp \
+           src/cpnetworkstatus.cpp

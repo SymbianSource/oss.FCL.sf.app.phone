@@ -40,9 +40,11 @@ SOURCES += ut_cpplugincommon.cpp
 
 # code to be tested
 HEADERS += ../../inc/cpplugincommon.h \
-           /epoc32/include/mw/xqsettingskey.h \
-           /epoc32/include/mw/xqsettingsmanager.h \
-           /epoc32/include/mw/xqsysinfo.h
+           /epoc32/include/platform/mw/xqsettingskey.h \
+           /epoc32/include/platform/mw/xqsettingsmanager.h \
+           /epoc32/include/platform/mw/xqsysinfo.h \
+           ../../../../../inc/telephonyvariant.hrh \
+           ../../../../../inc/telinternalcrkeys.h
            
 SOURCES += ../../src/cpplugincommon.cpp
 

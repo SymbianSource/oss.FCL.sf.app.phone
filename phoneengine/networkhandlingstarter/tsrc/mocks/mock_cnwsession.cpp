@@ -15,7 +15,7 @@
 *
 */
 #include <smcmockclassincludes.h>
-#include <CNWSession.h>
+#include <cnwsession.h>
 
 // ============================ MEMBER FUNCTIONS ===============================
 

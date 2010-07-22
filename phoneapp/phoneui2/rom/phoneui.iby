@@ -26,13 +26,6 @@
 REM PhoneUI
 S60_APP_EXE(phoneui)
 UPGRADABLE_APP_REG_RSC(phoneui)
-S60_APP_AIF_RSC(phoneui)
-//S60_APP_BITMAP(phoneui)
-//S60_APP_AIF_ICONS(phoneui)
-
-//#if defined (FF_TOUCH_CALL_HANDLING) || defined ( __ON_SCREEN_DIALER )
-//SCALABLE_IMAGE(APP_BITMAP_DIR,APP_BITMAP_DIR,PhoneUI)
-//#endif // FF_TOUCH_CALL_HANDLING || __ON_SCREEN_DIALER
 
 file=ABI_DIR\BUILD_DIR\phoneuicontrol.dll               SHARED_LIB_DIR\phoneuicontrol.dll
 file=ABI_DIR\BUILD_DIR\phoneuiutils.dll                 SHARED_LIB_DIR\phoneuiutils.dll
@@ -44,6 +37,8 @@ file=ABI_DIR\BUILD_DIR\phonestringloader.dll            SHARED_LIB_DIR\phonestri
 file=ABI_DIR\BUILD_DIR\phonemediatorcenter.dll          SHARED_LIB_DIR\phonemediatorcenter.dll
 file=ABI_DIR\BUILD_DIR\phoneuivoipextension.dll         SHARED_LIB_DIR\phoneuivoipextension.dll
 
+data=\epoc32\data\c\resource\qt\crml\carmode.qcrml   resource\qt\crml\carmode.qcrml
+
 data=ZSYSTEM\install\phoneuivoipextension_stub.sis  System\Install\phoneuivoipextension_stub.sis
 //data=ZSYSTEM\install\phoneui_stub.sis               System\Install\phoneui_stub.sis
 data=ZSYSTEM\install\phoneuicontrol_stub.sis        System\Install\phoneuicontrol_stub.sis
@@ -52,3 +47,4 @@ data=ZSYSTEM\install\phoneuiutils_stub.sis          System\Install\phoneuiutils_
 data=ZSYSTEM\install\phonemediatorcenter_stub.sis   System\Install\phonemediatorcenter_stub.sis
 
 #endif
+

@@ -18,6 +18,7 @@
 #include "ut_cpnetworkplugin.h"
 #include "qtestmains60.h"
 #include <cpsettingformitemdata.h>
+#include <hbicon.h>
 #define private public
 #include "cpnetworkplugin.h"
 #include "cpitemdatahelper.h"
@@ -51,6 +52,9 @@ void UT_CpNetworkPlugin::init()
 {
     initialize();
 
+    QT_TRAP_THROWING(SmcDefaultValue<QString>::SetL(QString("")));
+    QT_TRAP_THROWING(SmcDefaultValue<HbIcon>::SetL(HbIcon("")));
+    
     m_networkPlugin = (CpNetworkPlugin*)qt_plugin_instance();
 }
 
@@ -75,10 +79,30 @@ void UT_CpNetworkPlugin::t_createSettingFormItemData()
     CpItemDataHelper itemDataHelper;
     CpNetworkPlugin* p = (CpNetworkPlugin*)qt_plugin_instance();
     QList<CpSettingFormItemData*> list;
+    
+    EXPECT(CpNetworkStatus::statusText);
+    EXPECT(CpNetworkStatus::statusIcon);
     list.append(p->createSettingFormItemData(itemDataHelper));
     qDeleteAll(list);
+    
+    QVERIFY(verify());
 }
 
+
+/*!
+  UT_CpNetworkPlugin::t_createSettingView
+ */
+void UT_CpNetworkPlugin::t_createSettingView()
+{
+    CpNetworkPlugin* p = (CpNetworkPlugin*)qt_plugin_instance();
+    QVariant hint;
+    
+    EXPECT(CpNetworkStatus::statusText);
+    CpBaseSettingView *view = p->createSettingView(hint);
+    delete view;
+    
+    QVERIFY(verify());
+}
 
 /*!
   UT_CpNetworkPlugin::t_memleak

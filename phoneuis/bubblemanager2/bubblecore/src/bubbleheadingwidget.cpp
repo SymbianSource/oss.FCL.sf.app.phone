@@ -23,8 +23,6 @@
 #include <hbfontspec.h>
 #include <hbdeviceprofile.h>
 #include <hbstyleloader.h>
-#include <hbiconanimationmanager.h>
-#include <hbiconanimator.h>
 
 #include "bubbleheadingwidget.h"
 #include "bubblemanager2.h"
@@ -32,13 +30,15 @@
 #include "bubbleheader.h"
 
 BubbleHeadingWidget::BubbleHeadingWidget(QGraphicsItem* item)
-    : HbWidget(item), mStatusIcon(0), mNumberTypeIcon(0),
-      mCipheringIcon(0), mText1(0), mText2(0), mText3(0)
+    : HbWidget(item), mIndicator1(0), mIndicator2(0),
+      mText1(0), mText2(0), mText3(0)
 {
     createPrimitives();
 
-    HbStyleLoader::registerFilePath(":/bubbleheadingwidget.css");
-    HbStyleLoader::registerFilePath(":/bubbleheadingwidget.widgetml");
+    HbStyleLoader::registerFilePath(
+        QLatin1String(":/bubbleheadingwidget.css"));
+    HbStyleLoader::registerFilePath(
+        QLatin1String(":/bubbleheadingwidget.widgetml"));
 
     // font is update in code, because cli position is changing
     mCliFont = new HbFontSpec(HbFontSpec::Primary);
@@ -47,9 +47,6 @@ BubbleHeadingWidget::BubbleHeadingWidget(QGraphicsItem* item)
     HbDeviceProfile profile;
     mCliFont->setTextHeight(4*HbDeviceProfile::current().unitValue());
     mTextFont->setTextHeight(4*HbDeviceProfile::current().unitValue());
-
-    HbIconAnimationManager *mgr = HbIconAnimationManager::global();
-    mgr->addDefinitionFile(":/bubble_icon_anim.axml");
 }
 
 BubbleHeadingWidget::~BubbleHeadingWidget()
@@ -64,10 +61,8 @@ void BubbleHeadingWidget::reset()
     mText1->setText(QString());
     mText2->setText(QString());
     mText3->setText(QString());
-    mStatusIcon->hide();
-    mStatusIcon->animator().stopAnimation();
-    mNumberTypeIcon->hide();
-    mCipheringIcon->hide();
+    mIndicator1->hide();
+    mIndicator2->hide();
 }
 
 void BubbleHeadingWidget::readBubbleHeader(const BubbleHeader& header)
@@ -79,36 +74,28 @@ void BubbleHeadingWidget::readBubbleHeader(const BubbleHeader& header)
 void BubbleHeadingWidget::createPrimitives()
 {
     mText1 = new HbTextItem(this);
-    style()->setItemName( mText1, "text_line_1" );
+    style()->setItemName( mText1, QLatin1String("text_line_1"));
 
     mText2 = new HbTextItem(this);
-    style()->setItemName( mText2, "text_line_2" );
+    style()->setItemName( mText2, QLatin1String("text_line_2"));
 
     mText3 = new HbTextItem(this);
-    style()->setItemName( mText3, "text_line_3" );
+    style()->setItemName( mText3, QLatin1String("text_line_3"));
 
-    //mStatusIcon = new BubbleAnimIconItem(BUBBLE_ICON_ANIM_INTERVAL, this);
-    mStatusIcon = new HbIconItem(this);
-    style()->setItemName( mStatusIcon, "status_icon" );
+    mIndicator1 = new HbIconItem(this);
+    style()->setItemName( mIndicator1, QLatin1String("indicator_icon_1"));
 
-    mNumberTypeIcon = new HbIconItem(this);
-    style()->setItemName( mNumberTypeIcon, "number_type_icon" );
-
-    mCipheringIcon = new HbIconItem(this);
-    style()->setItemName( mCipheringIcon, "ciphering_icon" );
+    mIndicator2 = new HbIconItem(this);
+    style()->setItemName( mIndicator2, QLatin1String("indicator_icon_2"));
 }
 
 void BubbleHeadingWidget::updatePrimitives()
 {
     if (mHeader!=0) {
-        BubbleUtils::setCallStatusIcon(
-            mHeader->callState(), mHeader->callFlags(), *mStatusIcon);
-
-        BubbleUtils::setNumberTypeIcon(
-            mHeader->callState(), mHeader->callFlags(), *mNumberTypeIcon);
-
-        BubbleUtils::setCipheringIcon(
-            mHeader->callState(), mHeader->callFlags(), *mCipheringIcon);
+        BubbleUtils::setIndicators(mHeader->callState(),
+                                   mHeader->callFlags(),
+                                   *mIndicator1,
+                                   *mIndicator2);
 
         // update text lines
         int cliLine = 0;
@@ -143,26 +130,36 @@ void BubbleHeadingWidget::updatePrimitives()
     repolish();
 }
 
-void BubbleHeadingWidget::polishEvent()
+void BubbleHeadingWidget::polish(HbStyleParameters &params)
 {
+    QString layout;
+
     if (lines == 3) {
-        setLayout("three_lines");
+        layout = QLatin1String("three_lines");
         mText1->setVisible(true);
         mText2->setVisible(true);
         mText3->setVisible(true);
     } else if (lines == 2) {
-        setLayout("two_lines");
+        layout = QLatin1String("two_lines");
         mText1->setVisible(true);
         mText2->setVisible(true);
         mText3->setVisible(false);
     } else if (lines == 1) {
-        setLayout("one_line");
+        layout = QLatin1String("one_line");
         mText1->setVisible(true);
         mText2->setVisible(true);
         mText3->setVisible(false);
     }
 
-    HbWidget::polishEvent();
+    if (mIndicator2->isVisible()) {
+        layout.append(QLatin1String("_2"));
+    } else if (mIndicator1->isVisible()) {
+        layout.append(QLatin1String("_1"));
+    }
+
+    setLayout(layout);
+
+    HbWidget::polish(params);
 }
 
 int BubbleHeadingWidget::lineCount() const
@@ -174,7 +171,7 @@ void BubbleHeadingWidget::setLineCount(int count)
 {
     lines = count;
     if (isVisible()) {
-        repolish();        
+        repolish();
     }
 }
 
@@ -199,19 +196,4 @@ void BubbleHeadingWidget::updateTimerDisplayNow()
             mText3->setElideMode(Qt::ElideRight);
         }
     }
-}
-
-void BubbleHeadingWidget::changeEvent(QEvent *event)
-{
-    if (event->type() == HbEvent::ThemeChanged) {
-        updatePrimitives();
-    }
-
-    HbWidget::changeEvent(event);
-}
-
-void BubbleHeadingWidget::showEvent(QShowEvent *event)
-{
-    Q_UNUSED(event)
-    mStatusIcon->animator().startAnimation();
 }

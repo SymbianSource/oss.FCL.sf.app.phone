@@ -24,13 +24,11 @@
 
 class DialService;
 class DTMFService;
-class MPEKeySequenceRecognitionIF;
-class KeySequenceRecognitionService;
+class UriSchemeHandlerService;
 
 // Depricated APIs
 class DialServiceDepricated;
 class DTMFServiceDepricated;
-class KeySequenceRecognitionServiceDepricated;
 
 #ifdef BUILD_PHONESERVICES
 #define PHONESERVICES_EXPORT Q_DECL_EXPORT
@@ -45,19 +43,17 @@ public:
     PhoneServices(
         MPECallControlIF &call, 
         MPECallSettersIF &parameters,
-        MPEKeySequenceRecognitionIF &keySequenceRecognition,
         QObject *parent = 0);
     ~PhoneServices();    
     
 private:
     QScopedPointer<DialService> dialService;
     QScopedPointer<DTMFService> dtmfService;
-    QScopedPointer<KeySequenceRecognitionService> m_keySequenceRecognitionService;
-
+    QScopedPointer<UriSchemeHandlerService> uriSchemeHandlerService;
+    
     // Depricated
     QScopedPointer<DialServiceDepricated> dialServiceDepricated;
     QScopedPointer<DTMFServiceDepricated> dtmfServiceDepricated;
-    QScopedPointer<KeySequenceRecognitionServiceDepricated> m_keySequenceRecognitionServiceDepricated;
 };
 
 #endif // PHONESERVICES_H

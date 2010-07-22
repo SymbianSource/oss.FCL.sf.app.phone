@@ -276,6 +276,10 @@ void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState 
 
             iDontReportTerm = ETrue;
             NotifyCallStateChanged( MCCPCallObserver::ECCPStateConnected );
+            
+            // Agreement with TSY is that the
+            // COLP number is available in connected state.
+            NotifyRemotePartyNumberChanged();            
             break;
             }
         // Indicates that call is disconnecting. (Same as RCall::HangingUp)
@@ -1374,6 +1378,34 @@ int CSPCall::UpdateCallState()
     }
 
 // ---------------------------------------------------------------------------
+// CSPCall::NotifyRemotePartyNumberChanged
+//   
+// ---------------------------------------------------------------------------
+//
+void CSPCall::NotifyRemotePartyNumberChanged()
+    {
+    CSPLOGSTRING(CSPINT, "CSPCall::NotifyRemotePartyNumberChanged <");
+    // If COLP number is different from original dialled number
+    // it is available in connected state of a MO call.
+    // TSY does not send notification so number must be fetched.
+    if ( IsMobileOriginated() )
+        {
+        RMobileCall::TMobileCallInfoV3 callInfo;
+        RMobileCall::TMobileCallInfoV3Pckg callInfoPckg( callInfo );
+    
+        GetMobileCallInfo( callInfoPckg );    
+        callInfo = callInfoPckg();
+    
+        if ( callInfo.iRemoteParty.iRemoteNumber.iTelNumber.Length() )
+            {     
+            NotifyRemotePartyInfoChanged( KNullDesC(),
+                callInfo.iRemoteParty.iRemoteNumber.iTelNumber);        
+            }
+        }
+    }
+
+
+// ---------------------------------------------------------------------------
 // CSPCall::CreateCallHandlersL
 // Create call handlers for call related requests and call monitoring  
 // ---------------------------------------------------------------------------
@@ -1801,10 +1833,20 @@ TInt CSPCall::ExitCodeError() const
 // CSPCall::NotifyRemotePartyInfoChanged
 // ---------------------------------------------------------------------------
 //
-void CSPCall::NotifyRemotePartyInfoChanged(const TDesC& aRemoteParty) 
+void CSPCall::NotifyRemotePartyInfoChanged( const TDesC& aRemotePartyName,
+                                            const TDesC& aRemotePartyNumber )
     {
     CSPLOGSTRING(CSPREQIN, "CSPCall::NotifyRemotePartyInfoChanged");
-    iRemotePartyName = aRemoteParty;
+    if ( aRemotePartyName.Length() )    
+        {
+        iRemotePartyName = aRemotePartyName;
+        }
+    
+    if ( aRemotePartyNumber.Length() )    
+        {
+        iRemotePartyNumber = aRemotePartyNumber;
+        }
+    
     NotifyCallEventOccurred( MCCPCallObserver::ECCPNotifyRemotePartyInfoChange );
     }
 

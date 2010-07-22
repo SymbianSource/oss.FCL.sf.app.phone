@@ -110,3 +110,11 @@ bool CpSettingsWrapper::isPhoneOffline() const
     DPRINT << "DUMMY WRAPPER: enabled: " << enabled;
     return enabled;
 }
+
+
+bool CpSettingsWrapper::isOngoingCall() const
+{
+    bool ongoingCall = false;
+    DPRINT << "DUMMY WRAPPER: ongoingCall: " << ongoingCall;
+    return ongoingCall;
+}

@@ -16,38 +16,34 @@
 */
 
 #include <QtTest/QtTest>
-
-//#include <hbglobal_p.h>
 #include "phoneservices.h"
 #include "dialservice.h"
 #include "dtmfservice.h"
-#include "keysequencerecognitionservice.h"
-#include "mpekeysequencerecognitionif.h"
+#include "urischemehandlerservice.h"
 
-bool m_dialServiceConstructed;
-bool m_dtmfServiceConstructed;
-bool g_keySequenceServiceConstructed;
-MPECallControlIF* m_dialServiceCallPointer;
-MPECallSettersIF* m_dialServiceParameterPointer;
-MPEKeySequenceRecognitionIF* g_keySequenceRecognizerParameterPointer;
-MPECallControlIF* m_dtmfServiceCallPointer;
-MPECallSettersIF* m_dtmfServiceParameterPointer;
+bool g_dialServiceConstructed;
+MPECallControlIF* g_dialServiceCallPointer;
+MPECallSettersIF* g_dialServiceParameterPointer;
+
+bool g_dtmfServiceConstructed;
+MPECallControlIF* g_dtmfServiceCallPointer;
+MPECallSettersIF* g_dtmfServiceParameterPointer;
+
+bool g_uriSchemeHandlerServiceConstructed;
+MPECallControlIF* g_uriSchemeServiceCallPointer;
+MPECallSettersIF* g_uriSchemeServiceParameterPointer;
 
 class TestPhoneServices 
     : 
     public QObject,
     public MPECallControlIF,
-    public MPECallSettersIF,
-    public MPEKeySequenceRecognitionIF
+    public MPECallSettersIF
 {
     Q_OBJECT
 public:
     TestPhoneServices();
     virtual ~TestPhoneServices();    
 
-public:
-    TBool ExecuteKeySequenceL(const TDesC16& aSequence);
-    
 public slots:
     void initTestCase ();
     void cleanupTestCase ();
@@ -86,9 +82,9 @@ private:
 DialService::DialService(MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent) : 
     XQServiceProvider(QLatin1String("com.nokia.symbian.ICallDial"), parent), m_call (call), m_parameters (parameters)
 {
-    m_dialServiceConstructed = true;
-    m_dialServiceCallPointer = &call;
-    m_dialServiceParameterPointer = &parameters;
+    g_dialServiceConstructed = true;
+    g_dialServiceCallPointer = &call;
+    g_dialServiceParameterPointer = &parameters;
 }
 
 DialService::~DialService()
@@ -97,59 +93,59 @@ DialService::~DialService()
 
 int DialService::dial(const QString& number)
 {
-    Q_UNUSED(number);
+    Q_UNUSED(number)
     return 0;
 }
 
 int DialService::dial(const QString& number, int contactId)
 {
-    Q_UNUSED(number);
-    Q_UNUSED (contactId);
+    Q_UNUSED(number)
+    Q_UNUSED (contactId)
     return 0;
 }
 
 void DialService::dialVideo(const QString& number)
 {
-    Q_UNUSED(number);
+    Q_UNUSED(number)
 }
 
 void DialService::dialVideo(const QString& number, int contactId)
 {
-    Q_UNUSED(number);
-    Q_UNUSED(contactId);
+    Q_UNUSED(number)
+    Q_UNUSED(contactId)
 }
 
 void DialService::dialVoip(const QString& address)
 {
-Q_UNUSED(address);
+    Q_UNUSED(address)
 }
 
 void DialService::dialVoip(const QString& address, int contactId)
 {
-Q_UNUSED(address);
-Q_UNUSED(contactId);
+    Q_UNUSED(address)
+    Q_UNUSED(contactId)
 }
 
 void DialService::dialVoipService(const QString& address, int serviceId)
 {
-Q_UNUSED(address);
-Q_UNUSED(serviceId);
+    Q_UNUSED(address)
+    Q_UNUSED(serviceId)
 }
 
 void DialService::dialVoipService(
         const QString& address, int serviceId, int contactId)
 {
-Q_UNUSED(address);
-Q_UNUSED(serviceId);
-Q_UNUSED(contactId);
+    Q_UNUSED(address)
+    Q_UNUSED(serviceId)
+    Q_UNUSED(contactId)
 }
 
 DTMFService::DTMFService(MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent) : 
     XQServiceProvider(QLatin1String("com.nokia.symbian.IDtmfPlay"), parent), m_call (call), m_parameters (parameters)
 {
-    m_dtmfServiceConstructed = true;
-    m_dtmfServiceCallPointer = &call;
-    m_dtmfServiceParameterPointer = &parameters;
+    g_dtmfServiceConstructed = true;
+    g_dtmfServiceCallPointer = &call;
+    g_dtmfServiceParameterPointer = &parameters;
 }
 
 DTMFService::~DTMFService()
@@ -158,34 +154,35 @@ DTMFService::~DTMFService()
 
 void DTMFService::playDTMFTone(const QChar& keyToPlay)
 {
-    Q_UNUSED(keyToPlay);
+    Q_UNUSED(keyToPlay)
 }
 
 void DTMFService::stopDTMFPlay()
 {
 }
 
-KeySequenceRecognitionService::KeySequenceRecognitionService(
-    MPEKeySequenceRecognitionIF &keySequenceRecognizer,
-    QObject* parent) 
+UriSchemeHandlerService::UriSchemeHandlerService(
+    MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent)
     : 
     XQServiceProvider(
-        QLatin1String("com.nokia.symbian.IDtmfPlay"), parent),
-        m_keySequenceRecognizer(keySequenceRecognizer)
+        QLatin1String("phoneui.com.nokia.symbian.IUriView"), parent),
+    m_callControlIf(call),
+    m_callParameters(parameters)
 {
-    g_keySequenceServiceConstructed = true;
-    g_keySequenceRecognizerParameterPointer = &keySequenceRecognizer;
+    g_uriSchemeHandlerServiceConstructed = true;
+    g_uriSchemeServiceCallPointer = &call;
+    g_uriSchemeServiceParameterPointer = &parameters;
 }
 
-bool KeySequenceRecognitionService::executeKeySequence(
-    const QString &keySequence)
+UriSchemeHandlerService::~UriSchemeHandlerService()
 {
-    Q_UNUSED(keySequence);
+    
+}
+
+bool UriSchemeHandlerService::view(const QString &uri)
+{
+    Q_UNUSED(uri)
     return true;
-}
-
-KeySequenceRecognitionService::~KeySequenceRecognitionService()
-{
 }
 
 TestPhoneServices::TestPhoneServices ()
@@ -216,33 +213,31 @@ void TestPhoneServices::init ()
     m_handlePlayDTMFLCalled = false;
     m_setKeyCodeCalled = false;
     keyValue = -1;
-    m_dialServiceConstructed = false;
-    m_dtmfServiceConstructed = false;
-    g_keySequenceServiceConstructed = false;
+    g_dialServiceConstructed = false;
+    g_dtmfServiceConstructed = false;
     
-    m_phoneServices = new PhoneServices (*this, *this, *this, this);
+    g_uriSchemeHandlerServiceConstructed = false;
+    g_uriSchemeServiceCallPointer = NULL;
+    g_uriSchemeServiceParameterPointer = NULL;
+    
+    m_phoneServices = new PhoneServices(*this, *this, this);
 
-    QVERIFY(m_dialServiceConstructed == true);
-    QVERIFY(m_dialServiceCallPointer == this);
-    QVERIFY(m_dialServiceParameterPointer == this);
+    QVERIFY(g_dialServiceConstructed == true);
+    QVERIFY(g_dialServiceCallPointer == this);
+    QVERIFY(g_dialServiceParameterPointer == this);
     
-    QVERIFY(m_dtmfServiceConstructed == true);
-    QVERIFY(m_dtmfServiceCallPointer == this);
-    QVERIFY(m_dtmfServiceParameterPointer == this);
+    QVERIFY(g_dtmfServiceConstructed == true);
+    QVERIFY(g_dtmfServiceCallPointer == this);
+    QVERIFY(g_dtmfServiceParameterPointer == this);
     
-    QVERIFY(g_keySequenceServiceConstructed == true);
-    QVERIFY(g_keySequenceRecognizerParameterPointer == this);
+    QVERIFY(g_uriSchemeHandlerServiceConstructed == true);
+    QVERIFY(g_uriSchemeServiceCallPointer == this);
+    QVERIFY(g_uriSchemeServiceParameterPointer == this);
 }
 
 void TestPhoneServices::cleanup ()
 {
     delete m_phoneServices;
-}
-
-TBool TestPhoneServices::ExecuteKeySequenceL(const TDesC16& aSequence)
-{
-    Q_UNUSED(aSequence)
-    return ETrue;
 }
 
 void TestPhoneServices::SetKeyCode( const TChar& aKeyCode )

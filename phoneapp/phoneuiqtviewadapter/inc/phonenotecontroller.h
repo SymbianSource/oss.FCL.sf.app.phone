@@ -26,7 +26,9 @@
 // FORWARD DECLARATION
 class TPhoneCommandParam;
 class TPhoneCmdParamQuery;
+class TPhoneCmdParamGlobalNote;
 class HbDeviceMessageBox;
+class HbDeviceNotificationDialog;
 class HbDeviceProgressDialog;
 class HbProgressDialog;
 class HbMessageBox;
@@ -119,13 +121,21 @@ signals:
 private slots:
 
     /*!
-        \fn void destroyDialog ()
+        \fn void destroyDialog()
         
-        Slot is called when global note is closed.
+        Slot is called when device message box is closed.
     
     */
     void destroyDialog();
 
+    /*!
+        \fn void destroyNotification()
+        
+        Slot is called when device notification dialog is closed.
+    
+    */
+    void destroyNotification();
+    
     /*!
         \fn void removeMappings ()
         
@@ -180,11 +190,26 @@ private:
         This method shows global wait note.
     */
     void showGlobalWaitNote(TPhoneCmdParamQuery* params);
+
+    /*!
+        \fn void showDeviceMessageBox()
+        
+        This method shows device message box.
+    */
+    void showDeviceMessageBox(TPhoneCmdParamGlobalNote* params);
+    
+    /*!
+        \fn void showDeviceNotificationDialog()
+        
+        This method shows device notification dialog.
+    */
+    void showDeviceNotificationDialog(TPhoneCmdParamGlobalNote* params);
     
 private:
 
     QTimer *m_timer;
     QList<HbDeviceMessageBox *> m_messageBoxList;
+    QList<HbDeviceNotificationDialog* > m_notificationList;
     HbDeviceProgressDialog *m_progressDialog;
     HbProgressDialog *m_dtmfNote;
     HbMessageBox *m_queryNote;

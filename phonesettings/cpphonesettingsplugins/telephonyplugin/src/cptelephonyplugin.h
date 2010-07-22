@@ -21,6 +21,7 @@
 #include <QObject>
 #include <QList>
 #include <cpplugininterface.h>
+#include <cplauncherinterface.h>
 #include "cpphonelocalisation.h"
 
 /*!
@@ -29,13 +30,14 @@
  */
 class CpTelephonyPlugin
         : public QObject,
-          public CpPluginInterface
+          public CpPluginInterface,
+          public CpLauncherInterface
 {
     Q_OBJECT
     Q_INTERFACES(CpPluginInterface)
+    Q_INTERFACES(CpLauncherInterface)
     
 public:
- 
     CpTelephonyPlugin();
     ~CpTelephonyPlugin();
     
@@ -45,6 +47,12 @@ public:
      */
     QList<CpSettingFormItemData*> createSettingFormItemData(
             CpItemDataHelper &itemDataHelper) const;
+    
+    /*!
+     From CpLauncherInterface.
+     @see CpLauncherInterface.
+     */
+    virtual CpBaseSettingView *createSettingView(const QVariant &hint) const;
     
 private: 
     

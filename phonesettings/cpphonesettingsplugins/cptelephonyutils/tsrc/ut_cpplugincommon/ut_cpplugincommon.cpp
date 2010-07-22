@@ -70,7 +70,7 @@ void UT_CpPluginCommon::t_memleak()
 }
 
 /*!
-  UT_CpPluginCommon::t_memleak
+  UT_CpPluginCommon::t_showCallDuration
  */
 void UT_CpPluginCommon::t_showCallDuration()
 {
@@ -82,15 +82,17 @@ void UT_CpPluginCommon::t_showCallDuration()
 }
 
 /*!
-  UT_CpPluginCommon::t_memleak
+  UT_CpPluginCommon::t_setShowCallDuration
  */
 void UT_CpPluginCommon::t_setShowCallDuration()
 {
     mWrapper->setShowCallDuration(true);
+    mWrapper->setShowCallDuration(false);
+    QVERIFY(verify());
 }
 
 /*!
-  UT_CpPluginCommon::t_memleak
+  UT_CpPluginCommon::t_readSoftRejectText
  */
 void UT_CpPluginCommon::t_readSoftRejectText()
 {
@@ -100,24 +102,35 @@ void UT_CpPluginCommon::t_readSoftRejectText()
             returns(QVariant(true));
     
     expect("XQSettingsManager::readItemValue").
-                returns(QVariant("text"));
+            returns(QVariant("text"));
     
     mWrapper->readSoftRejectText(text, userDefined);
+    
+    userDefined=false;
+    expect("XQSettingsManager::readItemValue").
+                    returns(QVariant(false));
+    expect("XQSettingsManager::readItemValue").
+            returns(QVariant("text"));
+    mWrapper->readSoftRejectText(text, userDefined);
+    
     QVERIFY(verify());
 }
 
 /*!
-  UT_CpPluginCommon::t_memleak
+  UT_CpPluginCommon::t_writeSoftRejectText
  */
 void UT_CpPluginCommon::t_writeSoftRejectText()
 {
     QString text="";
     bool userDefined=true;
     mWrapper->writeSoftRejectText(text, userDefined);
+    userDefined=false;
+    mWrapper->writeSoftRejectText(text, userDefined);
+    QVERIFY(verify());
 }
 
 /*!
-  UT_CpPluginCommon::t_memleak
+  UT_CpPluginCommon::t_numberGroupingSupported
  */
 void UT_CpPluginCommon::t_numberGroupingSupported()
 {
@@ -160,7 +173,7 @@ void UT_CpPluginCommon::t_videoSupported()
 }
 
 /*!
-  UT_CpPluginCommon::t_memleak
+  UT_CpPluginCommon::t_errorCodeTextMapping
  */
 void UT_CpPluginCommon::t_errorCodeTextMapping()
 {
@@ -191,7 +204,7 @@ void UT_CpPluginCommon::t_errorCodeTextMapping()
             "txt_phone_info_not_allowed"));
     Tools::errorCodeTextMapping(KErrGsmSSIncompatibility, text);
     QCOMPARE( text, QString(
-            "Services in conflict"));
+            "txt_phone_info_conflict_error"));
     Tools::errorCodeTextMapping(KErrGsmSSSystemFailure, text);
     QCOMPARE( text, QString(
             "txt_phone_info_result_unknown"));
@@ -249,5 +262,59 @@ void UT_CpPluginCommon::t_errorCodeTextMapping()
         
 }
 
+/*!
+  UT_CpPluginCommon::t_readVtVideoSending
+ */
+void UT_CpPluginCommon::t_readVtVideoSending()
+{
+    expect("XQSettingsManager::readItemValue").
+            returns(QVariant(1));
+    mWrapper->readVtVideoSending();
+    QVERIFY( verify() );
+}
+
+/*!
+  UT_CpPluginCommon::t_writeVtVideoSending
+ */
+void UT_CpPluginCommon::t_writeVtVideoSending()
+{
+    expect("XQSettingsManager::writeItemValue");//.
+            //times(2);
+    int i=0;
+    mWrapper->writeVtVideoSending(i);
+    QVERIFY( verify() );
+}
+
+/*!
+  UT_CpPluginCommon::t_isFeatureCallWaitingDistiquishNotProvisionedEnabled
+ */
+void UT_CpPluginCommon::t_isFeatureCallWaitingDistiquishNotProvisionedEnabled()
+{
+    expect("XQSettingsManager::readItemValue").
+                returns(QVariant(1));
+    mWrapper->isFeatureCallWaitingDistiquishNotProvisionedEnabled();
+    QVERIFY( verify() );
+}
+
+/*!
+  UT_CpPluginCommon::t_isPhoneOffline
+ */
+void UT_CpPluginCommon::t_isPhoneOffline()
+{
+    expect("XQSysInfo::isSupported");
+    mWrapper->isPhoneOffline();
+    QVERIFY( verify() );
+}
+
+/*!
+  UT_CpPluginCommon::t_isOngoingCall
+ */
+void UT_CpPluginCommon::t_isOngoingCall()
+{
+    expect("XQSettingsManager::readItemValue").
+                    returns(QVariant(1));
+    mWrapper->isOngoingCall();
+    QVERIFY( verify() );
+}
 
 QTEST_MAIN_S60(UT_CpPluginCommon)

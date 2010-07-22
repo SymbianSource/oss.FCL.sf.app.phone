@@ -406,7 +406,7 @@ EXPORT_C void CPhoneStateCallSetup::HandleKeyMessageL(
             else // aMessage == EPhoneKeyLongPress
                 {
                 // Display call in progress information note
-                CPhoneState::SendGlobalInfoNoteL( EPhoneCallInProgress );
+                CPhoneState::SendGlobalInfoNoteL( EPhoneCallInProgress, ETrue );
                 }
             break;
 
@@ -661,12 +661,12 @@ void CPhoneStateCallSetup::HandleRemoteTerminatedL( TInt aCallId )
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleRemoteTerminatedL( ) ");
 
     // Remove call header
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
+    /*iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     
     TPhoneCmdParamBoolean globalNotifierParam;
     globalNotifierParam.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetGlobalNotifiersDisabled, &globalNotifierParam );
+        EPhoneViewSetGlobalNotifiersDisabled, &globalNotifierParam );*/
 
     // Video call not possible note is shown by 
     // CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL method,
@@ -680,11 +680,11 @@ void CPhoneStateCallSetup::HandleRemoteTerminatedL( TInt aCallId )
 void CPhoneStateCallSetup::HandleAudioOutputChangedL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleAudioOutputChangedL( ) ");
-   
+       
+    CPhoneState::HandleAudioOutputChangedL();
     // Update the call setup CBA
     UpdateInCallCbaL();
-    
-    CPhoneState::HandleAudioOutputChangedL();
+    SetTouchPaneButtons(0);
     }
  
 // -----------------------------------------------------------

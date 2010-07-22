@@ -23,9 +23,7 @@
 #include <etelmm.h>
 #include <psetcalldivertingwrapper.h>
 
-class CpPhoneNotes;
 class HbDialog;
-
 
 class UT_CpPhoneNotes : public QObject, MockService
 {
@@ -57,10 +55,10 @@ private slots:
     void t_showGlobalProgressNote();
     void t_showGlobalNote();
     void t_showGlobalErrorNote();
-    void t_showBasicServiceList();
     void t_showCallDivertDetails();
     void t_showPasswordQueryDialog();
     void t_cancelNote();
+    void t_showNotificationDialog();
 
 private:
     int m_noteid1;

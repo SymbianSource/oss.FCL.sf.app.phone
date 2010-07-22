@@ -20,18 +20,23 @@
 
 #include <qobject.h>
 #include <cpplugininterface.h>
+#include <cplauncherinterface.h>
+#include "cpnetworkstatus.h"
 #include "cpphonelocalisation.h"
 
 
-class CpNetworkPlugin : public QObject, public CpPluginInterface
+class CpNetworkPlugin 
+    : public QObject, 
+      public CpPluginInterface,
+      public CpLauncherInterface
+
 {
     Q_OBJECT
     Q_INTERFACES(CpPluginInterface)
-    
+    Q_INTERFACES(CpLauncherInterface)
+
 public:
-    
     CpNetworkPlugin();
-    
     ~CpNetworkPlugin();
     
     /**
@@ -40,10 +45,16 @@ public:
      */
     QList<CpSettingFormItemData*> createSettingFormItemData(
         CpItemDataHelper &itemDataHelper) const;
+    
+	/**
+     * From CpLauncherInterface
+     * @see CpLauncherInterface.
+     */
+    CpBaseSettingView *createSettingView(const QVariant &hint) const;
 
 private:
-    
-    QScopedPointer<CpPhoneLocalisation> m_localisation; 
+    QScopedPointer<CpPhoneLocalisation> m_localisation;
+    QScopedPointer<CpNetworkStatus> m_networkStatus; 
 };
 
 #endif  // CPNETWORKPLUGIN_H

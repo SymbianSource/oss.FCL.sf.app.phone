@@ -23,20 +23,22 @@
 #include <QString>
 
 
-static const char *IndicatorNameTemplate = "PhoneIndicator_%1";
+static const char *IndicatorNameTemplate = "com.nokia.symbian.phoneindicatorplugin_%1";
 
 enum Interaction
 {
     InteractionNone,
     OpenMissedCallView,
-    SwitchBackToCall,
+    OpenCallUi,
+    OpenDiverSettingsView,
     Deactivate
 };
 
 enum PhoneIndicatorTypes
 {
     PhoneMissedCallIndicator = 0,
-    PhoneActiveCallIndicator
+    PhoneActiveCallIndicator,
+    PhoneDivertIndidicator
 };
 
 inline QString indicatorName(int indicatorType) {
@@ -53,10 +55,11 @@ struct PhoneIndicatorInfo
 
 Q_DECLARE_METATYPE(PhoneIndicatorInfo)
 
-static const int PhoneIndicatorCount = 2;
+static const int PhoneIndicatorCount = 3;
 static const PhoneIndicatorInfo IndicatorInfos[PhoneIndicatorCount] = {
     {"qtg_mono_info.svg",   "Missed call", "Name/Number", OpenMissedCallView },
-    {"qtg_mono_info.svg",   "Active call", " ", SwitchBackToCall }
+    {"qtg_mono_info.svg",   "Active call", " ", OpenCallUi },
+    {"qtg_mono_info.svg",   "Active diverts", " ", OpenDiverSettingsView }
 };
 
 #endif // PHONEINDICATORS_H

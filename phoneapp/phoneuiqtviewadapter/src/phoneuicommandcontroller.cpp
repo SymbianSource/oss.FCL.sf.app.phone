@@ -93,9 +93,8 @@ QMap<PhoneAction::ActionType, PhoneAction *>
         int callId)
 {
     QMap<PhoneAction::ActionType, PhoneAction *> translatedActions;
-    bool sameServices = areServicesSame(callStates, serviceIds);
     QList<int> commands = buttonCommandList(
-            callState, emergencyCall, sameServices, callStates.values());
+            callState, emergencyCall, callStates.values());
 
     PhoneCommandExtensionWrapper *extension = commandExtension(serviceId);
     
@@ -127,8 +126,57 @@ QMap<PhoneAction::ActionType, PhoneAction *>
     return translatedActions;
 }
 
+QList<PhoneAction *> PhoneUiCommandController::toolBarActions( 
+        int resourceId,
+        QMap<int,int> callStates,
+        QMap<int,int> serviceIds,
+        int serviceId,
+        int callId)
+{
+    QList<PhoneAction *> actions;
+    
+    //Set tool bar button flags
+    setJoinFlag(callStates, serviceIds);
+    setConferenceFlag(callStates.values());
+    setHoldFlag(callStates.value(callId));
+    setMultiCallFlag(callStates.values());
+    setOutgoingFlag(callStates.values());
+    
+    //Get tool bar item list by resource id.
+    QList<PhoneAction::ToolBarItem> commands = PhoneResourceAdapter::Instance()->
+            convertToToolBarCommandList(resourceId);
+
+    if (serviceId != -1) {
+        PhoneCommandExtensionWrapper *extension = commandExtension(serviceId);
+        
+        if (extension) {
+            QList<XQTelUiCommandExtension::CallInfo> callInfo;
+            extension->getCallInfoList(
+                    callInfo,callStates,serviceIds,callId);
+            
+            QList<XQTelUiCommandExtension::ToolBarCommand> toolBarCmdList;
+            
+            mapToExtensionToolBarItems(commands,toolBarCmdList);
+            //Modify tool bar command list by extension
+            extension->modifyToolBarCommandList(callInfo,toolBarCmdList);
+            // Map tool bar item list back to the phone action tool bar item list.
+            mapToPhoneActionToolBarItems(toolBarCmdList,commands);
+        }
+    }
+    
+    for ( int i=0; i < commands.count(); ++i) {
+        PhoneAction *action = mapCommandToAction(
+                commands.at(i).mCommandId, !commands.at(i).mEnabled);
+        if (action) {
+            actions.append(action);
+        }
+    }
+    
+    return actions;
+}
+
 QList<int> PhoneUiCommandController::menuCommands(
-        QMap<int,int> callStates, QMap<int,int> serviceIds )
+        QMap<int,int> callStates, QMap<int,int> serviceIds ) const
 {
     PHONE_DEBUG("PhoneMenuController::menuCommands");
     QList<int> commands;
@@ -188,7 +236,7 @@ void PhoneUiCommandController::addMenuItems(QList<int> menuCmdList)
     qDeleteAll(values);
 }
 
-int PhoneUiCommandController::mapCommand(int command)
+int PhoneUiCommandController::mapCommand(int command) const
 {
     int ret(-1);
     
@@ -202,12 +250,6 @@ int PhoneUiCommandController::mapCommand(int command)
     case PhoneInCallCmdSwitchToVideo:
         ret = EPhoneInCallCmdSwitchToVideo;
         break;  
-    case PhoneInCallCmdSendMessage:
-        //TODO
-        break;    
-    case PhoneInCallShareVideo:
-        //TODO
-        break;
     case PhoneInCallCmdHandoverToWlan:
         ret = EPhoneCmdHandoverToWlan;
         break;
@@ -230,7 +272,7 @@ PhoneCommandExtensionWrapper *PhoneUiCommandController::commandExtension(
 }
 
 TUid PhoneUiCommandController::ResolveImplementationUidL( 
-        TUint32 aServiceId, TServicePropertyName aPropertyName )
+        TUint32 aServiceId, TServicePropertyName aPropertyName ) const
     {
     TUid implUid = { 0 };
     CSPEntry* entry = CSPEntry::NewLC();
@@ -272,16 +314,14 @@ PhoneCommandExtensionWrapper
         }
     }
     
-    if ( -1 == pluginInd )
-        {
+    if ( -1 == pluginInd ) {
         wrapper = new PhoneCommandExtensionWrapper( pluginUid.iUid );
-        if (wrapper)
+        if (wrapper) {
             m_commandExtensions.append( wrapper );
         }
-    else
-        {
+    } else {
         wrapper = m_commandExtensions[pluginInd];
-        }
+    }
     
     m_lastCommandExtension = wrapper;
     return wrapper;
@@ -302,14 +342,14 @@ void PhoneUiCommandController::releaseMenu()
 }
 
 bool PhoneUiCommandController::areServicesSame(
-        QMap<int,int> callStates, QMap<int,int> serviceIds)
+        QMap<int,int> callStates, QMap<int,int> serviceIds) const
 {
     bool ret(true);
     int serviceId(-1);
     for(int i=0;i<callStates.count()&&ret;++i) {
         if (-1==serviceId) {
             serviceId = serviceIds.value(callStates.keys().at(i));
-        } else if (serviceId!=serviceIds.value(callStates.keys().at(i))) {
+        } else if (serviceId != serviceIds.value(callStates.keys().at(i))) {
             ret = false;
         }
     }
@@ -317,11 +357,98 @@ bool PhoneUiCommandController::areServicesSame(
     return ret;
 }
 
+void PhoneUiCommandController::setJoinFlag(
+        QMap<int,int> callStates, QMap<int,int> serviceIds) const
+{
+    bool disable(PhoneResourceAdapter::Instance()->buttonsController()->
+                    getButtonFlags(PhoneUIQtButtonsController::FullConference));
+    
+    if (!disable) {
+        disable = !areServicesSame(callStates, serviceIds);
+    }
+
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::DisableJoin, disable);
+}
+
+void PhoneUiCommandController::setHoldFlag(int callState) const
+{
+    bool hold = (callState == EPEStateHeldConference ||
+                 callState == EPEStateHeld );
+
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::Hold,hold);
+}
+
+void PhoneUiCommandController::setOutgoingFlag(
+        QList<int> callStates) const
+{
+    bool outgoing(callStates.contains(EPEStateDialing) ||
+                  callStates.contains(EPEStateConnecting));
+    
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::Outgoing, outgoing);
+}
+
+void PhoneUiCommandController::setConferenceFlag(
+        QList<int> callStates) const
+{
+    bool conference(callStates.contains(EPEStateConnectedConference) ||
+                    callStates.contains(EPEStateHeldConference));
+    
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::Conference, conference);
+}
+
+void PhoneUiCommandController::setMultiCallFlag(
+        QList<int> callStates) const
+{
+    bool multicall(false);
+    
+    if (1<callStates.count()) {  
+        if (callStates.count() == 2 && callStates.contains(EPEStateRinging)) {
+            multicall = false;
+        } else {
+            multicall = true;   
+        }        
+    }
+    
+    PhoneResourceAdapter::Instance()->buttonsController()->
+            setButtonFlags(PhoneUIQtButtonsController::MultiCall, multicall);
+}
+
+void PhoneUiCommandController::mapToExtensionToolBarItems(
+        const QList<PhoneAction::ToolBarItem> &sourceList, 
+        QList<XQTelUiCommandExtension::ToolBarCommand> &toolBarCmdList) const
+{
+    toolBarCmdList.clear();
+    
+    for (int i=0;i<sourceList.count();++i) {
+        XQTelUiCommandExtension::ToolBarCommand command;
+        command.mCommandId = sourceList.at(i).mCommandId;
+        command.mIsEnabled = sourceList.at(i).mEnabled;
+        toolBarCmdList.append(command);
+    }
+}
+
+void PhoneUiCommandController::mapToPhoneActionToolBarItems( 
+        const QList<XQTelUiCommandExtension::ToolBarCommand> &sourceList,
+        QList<PhoneAction::ToolBarItem> &commandList) const
+{
+    commandList.clear();
+    
+    for (int i=0;i<sourceList.count();++i) {
+        PhoneAction::ToolBarItem command(
+                sourceList.at(i).mCommandId,
+                sourceList.at(i).mIsEnabled);
+        commandList.append(command);
+    }
+}
+
 QList<int> PhoneUiCommandController::buttonCommandList(
         int callState,
         bool emergencyCall,
-        bool sameServices,
-        QList<int> callStates)
+        QList<int> callStates) const
 {
     QList<int> ret;
     
@@ -333,6 +460,36 @@ QList<int> PhoneUiCommandController::buttonCommandList(
     
     case EPEStateDialing:
     case EPEStateConnecting: {
+        if (!emergencyCall) {
+            if (PhoneResourceAdapter::Instance()->buttonsController()->
+                   getButtonFlags(
+                           PhoneUIQtButtonsController::IhfAsPushButton)) {
+                if (PhoneResourceAdapter::Instance()->buttonsController()->getButtonFlags(
+                        PhoneUIQtButtonsController::BluetoothAvailable)) {
+                    if (PhoneResourceAdapter::Instance()->buttonsController()->getButtonFlags(
+                            PhoneUIQtButtonsController::Btaa)) {
+                        ret.append(PhoneInCallCmdHandset);
+                    } else {
+                        ret.append(PhoneInCallCmdBtHandsfree);
+                    } 
+                } else {
+                    if (!PhoneResourceAdapter::Instance()->buttonsController()->
+                            getButtonFlags(PhoneUIQtButtonsController::Ihf)) {
+                        ret.append(PhoneInCallCmdActivateIhf);
+                    } else {
+                        ret.append(PhoneInCallCmdDeactivateIhf);
+                    }           
+                }
+            } else {
+                if (PhoneResourceAdapter::Instance()->buttonsController()->
+                        getButtonFlags(PhoneUIQtButtonsController::Mute)) {
+                    ret.append(PhoneInCallCmdUnmute);
+                } else {
+                    ret.append(PhoneInCallCmdMute);
+                }
+            }
+        }
+        
         ret.append(PhoneInCallCmdEndOutgoingCall);  
     }
     break;
@@ -347,49 +504,35 @@ QList<int> PhoneUiCommandController::buttonCommandList(
     break;
     
     case EPEStateConnected:
-    case EPEStateConnectedConference: {
-        if (!emergencyCall) {
-            if ( 1 == callStates.size() || 
-                 (2 == callStates.size() && 
-                  callStates.contains(EPEStateRinging)) ) {
-                ret.append(PhoneInCallCmdHold);
-            } else {
-                
-                if (EPEStateConnectedConference == callState) {
-                    ret.append(PhoneInCallCmdSwap);
-                } else if (sameServices && 
-                    false == PhoneResourceAdapter::Instance()->buttonsController()->
-                        getButtonFlags(PhoneUIQtButtonsController::DisableJoin)) {
-                    if ( callStates.contains(EPEStateHeldConference) ) {
-                        ret.append(PhoneInCallCmdJoinToConference);                  
-                    } else {
-                        ret.append(PhoneInCallCmdCreateConference);
-                    }
-                }
-            }            
-        }
-        
-        ret.append(PhoneInCallCmdEndActive); 
-    }
-    break;
-    
+    case EPEStateConnectedConference:     
     case EPEStateHeld:
     case EPEStateHeldConference: {
-        if (1 == callStates.size() || 
-            (2 == callStates.size() && 
-             callStates.contains(EPEStateRinging))) {
-             
-            ret.append(PhoneInCallCmdUnhold);
-        } else {
-            if (EPEStateHeldConference == callState) {
-                ret.append(PhoneInCallCmdSwap);
-            } else if (sameServices && 
-                    false == PhoneResourceAdapter::Instance()->buttonsController()->
-                        getButtonFlags(PhoneUIQtButtonsController::DisableJoin)) {
-                if ( callStates.contains(EPEStateConnectedConference)) {
-                    ret.append(PhoneInCallCmdJoinToConference);
+        if (!emergencyCall) {
+            if (PhoneResourceAdapter::Instance()->buttonsController()->
+                   getButtonFlags(
+                           PhoneUIQtButtonsController::IhfAsPushButton)) {
+                if (PhoneResourceAdapter::Instance()->buttonsController()->getButtonFlags(
+                        PhoneUIQtButtonsController::BluetoothAvailable)) {
+                    if (PhoneResourceAdapter::Instance()->buttonsController()->getButtonFlags(
+                            PhoneUIQtButtonsController::Btaa)) {
+                        ret.append(PhoneInCallCmdHandset);
+                    } else {
+                        ret.append(PhoneInCallCmdBtHandsfree);
+                    } 
                 } else {
-                    ret.append(PhoneInCallCmdCreateConference);
+                    if (!PhoneResourceAdapter::Instance()->buttonsController()->
+                            getButtonFlags(PhoneUIQtButtonsController::Ihf)) {
+                        ret.append(PhoneInCallCmdActivateIhf);
+                    } else {
+                        ret.append(PhoneInCallCmdDeactivateIhf);
+                    }           
+                }
+            } else {
+                if (PhoneResourceAdapter::Instance()->buttonsController()->
+                        getButtonFlags(PhoneUIQtButtonsController::Mute)) {
+                    ret.append(PhoneInCallCmdUnmute);
+                } else {
+                    ret.append(PhoneInCallCmdMute);
                 }
             }
         }
@@ -408,7 +551,8 @@ QList<int> PhoneUiCommandController::buttonCommandList(
     return ret;
 }
 
-PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
+PhoneAction *PhoneUiCommandController::mapCommandToAction(
+        int command, bool disabled) const
 {
     PhoneAction *action=0;
     
@@ -416,6 +560,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     case PhoneInCallCmdJoinToConference: {
         action = new PhoneAction;
         action->setIcon(HbIcon("qtg_mono_join_call"));
+        action->setDisabled(disabled);
         action->setCommand(EPhoneInCallCmdJoin);
     }
     break;
@@ -423,6 +568,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     case PhoneInCallCmdCreateConference: {
         action = new PhoneAction;
         action->setIcon(HbIcon("qtg_mono_join_call"));
+        action->setDisabled(disabled);
         action->setCommand(EPhoneInCallCmdCreateConference);
     }
     break;
@@ -430,7 +576,8 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     case PhoneInCallCmdAnswer: {
         action = new PhoneAction;
         action->setIcon(HbIcon("qtg_mono_call"));
-        action->setCommand (EPhoneCallComingCmdAnswer);
+        action->setDisabled(disabled);
+        action->setCommand (EPhoneCallComingCmdAnswer);        
         action->setActionRole(PhoneAction::Accept);
     }
     break;
@@ -438,6 +585,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     case PhoneInCallCmdReject: {
         action = new PhoneAction;
         action->setIcon(HbIcon("qtg_mono_reject_call"));
+        action->setDisabled(disabled);
         action->setCommand (EPhoneCallComingCmdReject);
         action->setActionRole(PhoneAction::Decline);
     }
@@ -446,6 +594,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     case PhoneInCallCmdHold: {
         action = new PhoneAction;
         action->setIcon(HbIcon("qtg_mono_hold_call"));
+        action->setDisabled(disabled);
         action->setCommand(EPhoneInCallCmdHold);
     }
     break;
@@ -453,6 +602,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     case PhoneInCallCmdUnhold: {
         action = new PhoneAction;
         action->setIcon(HbIcon("qtg_mono_call"));
+        action->setDisabled(disabled);
         action->setCommand(EPhoneInCallCmdUnhold);
     }
     break;
@@ -460,6 +610,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     case PhoneInCallCmdEndActive: {
         action = new PhoneAction;
         action->setIcon(HbIcon("qtg_mono_end_call"));
+        action->setDisabled(disabled);
         action->setCommand(EPhoneInCallCmdEndThisActiveCall);
         action->setActionRole(PhoneAction::Decline);
     }
@@ -468,6 +619,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     case PhoneInCallCmdEndOutgoingCall: {
         action = new PhoneAction;
         action->setIcon(HbIcon("qtg_mono_end_call"));
+        action->setDisabled(disabled);
         action->setCommand(EPhoneInCallCmdEndThisOutgoingCall);
         action->setActionRole(PhoneAction::Decline);
     }
@@ -476,6 +628,7 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     case PhoneInCallCmdReplace: {
         action = new PhoneAction;
         action->setIcon(HbIcon("qtg_mono_replace_call"));
+        action->setDisabled(disabled);
         action->setCommand(EPhoneInCallCmdReplace);
         action->setActionRole(PhoneAction::Accept);
     }
@@ -483,11 +636,81 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(int command)
     
     case PhoneInCallCmdSwap: {
         action = new PhoneAction;
-        action->setIcon(HbIcon("qtg_mono_swap"));
+        action->setIcon(HbIcon("qtg_mono_replace_call"));
+        action->setDisabled(disabled);
         action->setCommand(EPhoneInCallCmdSwap); 
     }
     break;
-    
+    case PhoneCallComingCmdSoftReject: {
+        action = new PhoneAction;
+        action->setIcon(HbIcon("qtg_mono_send"));
+        action->setDisabled(disabled);
+        action->setCommand(EPhoneCallComingCmdSoftReject); 
+    }
+    break;
+    case PhoneCallComingCmdSilent: {
+        action = new PhoneAction;
+        action->setIcon(HbIcon("qtg_mono_speaker_off"));
+        action->setDisabled(disabled);
+        action->setCommand(EPhoneCallComingCmdSilent); 
+    }
+    break;
+    case PhoneInCallCmdOpenDialer: {
+        action = new PhoneAction;
+        action->setIcon(HbIcon("qtg_mono_dialer"));
+        action->setDisabled(disabled);
+        action->setCommand(EPhoneInCallCmdDialer); 
+    }
+    break;
+    case PhoneInCallCmdMute: {
+        action = new PhoneAction;
+        action->setIcon(HbIcon("qtg_mono_mic_mute"));
+        action->setDisabled(disabled);
+        action->setCommand(EPhoneInCallCmdMute); 
+    }
+    break;
+    case PhoneInCallCmdUnmute: {
+        action = new PhoneAction;
+        action->setIcon(HbIcon("qtg_mono_mic_unmute"));
+        action->setDisabled(disabled);
+        action->setCommand(EPhoneInCallCmdUnmute); 
+    }
+    break;
+    case PhoneInCallCmdActivateIhf: {
+        action = new PhoneAction;
+        action->setIcon(HbIcon("qtg_mono_speaker"));
+        action->setDisabled(disabled);
+        action->setCommand(EPhoneInCallCmdActivateIhf); 
+    }
+    break;
+    case PhoneInCallCmdDeactivateIhf: {
+        action = new PhoneAction;
+        action->setIcon(HbIcon("qtg_mono_mobile"));
+        action->setDisabled(disabled);
+        action->setCommand(EPhoneInCallCmdDeactivateIhf); 
+    }
+    break;
+    case PhoneInCallCmdOpenContacts: {
+        action = new PhoneAction;
+        action->setIcon(HbIcon("qtg_mono_contacts"));
+        action->setDisabled(disabled);
+        action->setCommand(EPhoneInCallCmdContacts); 
+    }
+    break;
+    case PhoneInCallCmdBtHandsfree: {
+        action = new PhoneAction;
+        action->setIcon(HbIcon("qtg_mono_bluetooth_headset"));
+        action->setDisabled(disabled);
+        action->setCommand(EPhoneInCallCmdBtHandsfree); 
+    }
+    break;
+    case PhoneInCallCmdHandset: {
+        action = new PhoneAction;
+        action->setIcon(HbIcon("qtg_mono_mobile"));
+        action->setDisabled(disabled);
+        action->setCommand(EPhoneInCallCmdHandset); 
+    }
+    break;
     default:
     break;
     }

@@ -21,9 +21,6 @@
 
 #include <data_caging_paths_for_iby.hrh>
 
-data=DATAZ_\RESOURCE_FILES_DIR\ussdeditor.rsc RESOURCE_FILES_DIR\ussdeditor.rsc
-data=ZPRIVATE\10003a3f\import\apps\ussdeditor_reg.rsc  private\10003a3f\import\apps\ussdeditor_reg.rsc
-
-//data=DATAZ_\QT_TRANSLATIONS_DIR\phcltsrvussd.qm QT_TRANSLATIONS_DIR\phcltsrvussd.qm
+data=DATAZ_\QT_TRANSLATIONS_DIR\ussd.qm QT_TRANSLATIONS_DIR\ussd.qm
 
 #endif

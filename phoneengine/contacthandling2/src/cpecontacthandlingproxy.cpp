@@ -123,41 +123,6 @@ EXPORT_C TInt CPEContactHandlingProxy::FindContactInfoSync
     return KErrBadHandle;
     }
 
-// -----------------------------------------------------------------------------
-// CPEContactHandlingProxy::GetSpeedDialLocation
-// Get's phone number and contact id from given location.
-// -----------------------------------------------------------------------------
-//
-EXPORT_C TInt CPEContactHandlingProxy::GetSpeedDialLocation( 
-    TInt aLocationIndex, 
-    TPEPhoneNumber& aNumber )
-    {
-    if ( iContactHandling )
-        {
-        TEFLOGSTRING( 
-            KTAINT, 
-            "CNT CPEContactHandlingProxy::GetSpeedDialLocation > CPEContactHandling::GetSpeedDialLocation" );
-        return iContactHandling->GetSpeedDialLocation( aLocationIndex, aNumber );
-        }
-    else if ( iContactHandlingDummy )
-        {
-        TEFLOGSTRING( 
-            KTAINT, 
-            "CNT CPEContactHandlingProxy::GetSpeedDialLocation > CPEContactHandlingDummy::GetSpeedDialLocation" );
-        return iContactHandlingDummy->GetSpeedDialLocation( 
-            aLocationIndex, 
-            aNumber );
-        }
-    else
-        {
-        TEFLOGSTRING( 
-            KTAERROR, 
-            "CNT CPECONTACTHANDLINGPROXY::GETSPEEDDIALLOCATION ! NEITHER CONTACT HANDLING NOR CONTACT HANDLING DUMMY EXISTS" );
-        User::Invariant();
-        }
-    return KErrBadHandle;
-    }
-
 // ================= OTHER EXPORTED FUNCTIONS ===============================
 
 //  End of File 

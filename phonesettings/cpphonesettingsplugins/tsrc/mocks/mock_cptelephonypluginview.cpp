@@ -15,6 +15,7 @@
  *
  */
 #include <QDebug>
+#include <QVariantList>
 #include "cptelephonypluginview.h"
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -29,6 +30,15 @@ CpTelephonyPluginView::CpTelephonyPluginView(  )
     
     }
 
+// -----------------------------------------------------------------------------
+// CpTelephonyPluginView::CpTelephonyPluginView
+// -----------------------------------------------------------------------------
+//
+CpTelephonyPluginView::CpTelephonyPluginView(const QVariantList &params)
+    :CpBaseSettingView(0, 0)
+    {
+    
+    }    
 
 // -----------------------------------------------------------------------------
 // CpTelephonyPluginView::~CpTelephonyPluginView

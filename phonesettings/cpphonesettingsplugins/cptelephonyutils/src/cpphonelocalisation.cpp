@@ -81,6 +81,7 @@ bool CpPhoneLocalisation::installTranslator(
             fileName = TS_FILE_COMMON; 
             break;
         default: 
+            DWARNING << ": Unknown enum value!";
             break; 
     }
 
@@ -95,7 +96,7 @@ bool CpPhoneLocalisation::installTranslator(
         } else {
             delete translator; 
             translator = NULL;
-            DWARNING << ": WARNING! Translator not loaded!";
+            DWARNING << ": Translator not loaded!";
         }
     }
 

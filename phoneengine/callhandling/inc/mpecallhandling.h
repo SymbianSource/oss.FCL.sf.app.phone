@@ -110,15 +110,6 @@ class MPECallHandling
         virtual TInt TerminateAllConnections() = 0;
         
         /**
-        * Asks phone identity parameters from the mmetel.
-        * @since Series60_4.0
-        * @param aMessage Reply message to the phone application.
-        * @return Error (KErrNone or KErrNotFound).
-        */
-        virtual TInt UpdatePhoneIdentity( 
-            MEngineMonitor::TPEMessagesFromPhoneEngine aMessage ) = 0;
-
-        /**
         * Determines if there is a call in given state.
         * @since Series60_4.0
         * @param aState Call state search key.
@@ -368,14 +359,6 @@ class MPECallHandling
         * @return None.
         */
         virtual void CancelDtmfPlay() = 0;
-        
-        /**
-        * This method gets the lifetime of the MS. The lifetime information 
-        * includes the manufacturing date of the MS and the total amount of airtime use.
-        * @param aLifeTimeInfo Life time information
-        * @return Get succeeded or not.
-        */
-        virtual TBool GetLifeTime( TDes8& aLifeTimeInfo ) = 0;
         
         /**
         * This method gets the reference to MPECallOwner object.

@@ -84,19 +84,23 @@ class CPhoneErrorMessagesHandler : public CBase,
         * Show global InfoNote
         * @param aResourceId resource id to be resolved
         */
-        IMPORT_C void SendGlobalInfoNoteL( TInt aResourceId );
+        IMPORT_C void SendGlobalInfoNoteL( TInt aResourceId, 
+                                           TBool aNotificationDialog = EFalse );
  
         /**
         * Show global ErrorNote
         * @param aResourceId resource id to be resolved
         */
-        IMPORT_C void SendGlobalErrorNoteL( TInt aResourceId );
+        IMPORT_C void SendGlobalErrorNoteL( TInt aResourceId,
+                                            TBool aNotificationDialog = EFalse );
 
         /**
         * Show global WarningNote
         * @param aResourceId resource id to be resolved
         */        
-        IMPORT_C void SendGlobalWarningNoteL( TInt aResourceId );
+        IMPORT_C void SendGlobalWarningNoteL( 
+                TInt aResourceId,
+                TBool aNotificationDialog = EFalse );
         
 
     private:        
@@ -109,7 +113,18 @@ class CPhoneErrorMessagesHandler : public CBase,
         * Return ETrue if video call.
         */
         TBool IsVideoCall( const TInt aCallId ) const;
- 
+        
+        /**
+        * Return ETrue if voice call.
+        */
+        TBool IsVoiceCall( const TInt aCallId ) const;
+
+        /**
+        * Gets cause code and resource id.
+        */
+        TBool GetCauseCode( TInt &aCauseCode, 
+                TInt &aResourceId, TBool &aNotification ) const; 
+				
     protected:
         
         /**
@@ -118,6 +133,10 @@ class CPhoneErrorMessagesHandler : public CBase,
         MPhoneViewCommandHandle* iViewCommandHandle;
         
         MPhoneStateMachine* iStateMachine;
+        
+        TBool iCauseCodeVariation;
+        
+        TInt iCallId;
               
     };
 

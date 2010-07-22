@@ -15,12 +15,12 @@
 *
 */
 
-#include <QtGui>
+#include <QTimer>
+
 #include <hbaction.h>
 #include <hbtextitem.h>
 #include <hblabel.h>
 #include <hblistview.h>
-#include <hbcolorscheme.h>
 
 #include "bubblemanager2.h"
 #include "bubbleconferencehandler.h"
@@ -29,6 +29,7 @@
 #include "bubbleparticipantlistitem.h"
 #include "bubbleparticipantlistmodel.h"
 #include "bubblebutton.h"
+#include "bubbleheadingwidget.h"
 
 static const int BUBBLE_SELECTION_TIMEOUT = 3000;
 
@@ -39,14 +40,9 @@ BubbleConferenceHandler::BubbleConferenceHandler(
     QObject* parent )
     : BubbleHandler(widgetManager,view,container,parent)
 {
-    mTimerLabel =
-        qobject_cast<HbLabel*>(widget(BubbleWidgetManager::ConferenceTimer));
-    Q_ASSERT(mTimerLabel);
-    HbDeviceProfile profile;
-    HbFontSpec spec(HbFontSpec::Secondary);
-    spec.setTextHeight(4*HbDeviceProfile::current().unitValue());
-    mTimerLabel->setFontSpec(spec);
-    mTimerLabel->setAlignment(Qt::AlignLeft);
+    mHeading =
+        qobject_cast<BubbleHeadingWidget*>(widget(BubbleWidgetManager::Heading));
+    Q_ASSERT(mHeading);
 
     mButtonCenter =
         qobject_cast<BubbleButton*>(widget(BubbleWidgetManager::CenterButton));
@@ -63,6 +59,11 @@ BubbleConferenceHandler::BubbleConferenceHandler(
     Q_ASSERT(mList);
     mModel = new BubbleParticipantListModel();
     mList->setModel(mModel);
+    
+    HbAbstractItemView::ItemAnimations noCreationAndRemovalAnimations = HbAbstractItemView::All;
+    noCreationAndRemovalAnimations ^= HbAbstractItemView::Appear;
+    noCreationAndRemovalAnimations ^= HbAbstractItemView::Disappear;
+    mList->setEnabledAnimations(noCreationAndRemovalAnimations);
 
     mPrototype =
         qobject_cast<BubbleParticipantListItem*>(
@@ -91,7 +92,7 @@ void BubbleConferenceHandler::reset()
 
     mSelectionTimer->stop();
     mPrototype->clearActions();
-    mTimerLabel->hide();
+    mHeading->reset();
     mButtonCenter->hide();
     mButtonCenter->setDown(false);
     mButtonCenter->disconnect();
@@ -125,15 +126,7 @@ void BubbleConferenceHandler::readBubbleHeader( const BubbleHeader& header )
             !(mHeader->callFlags()&BubbleManagerIF::NoCiphering));
     }
 
-    if (header.timerCost().length()) {
-        QColor color;
-        color = HbColorScheme::color("list_item_title_normal");
-        if (color.isValid()) {
-            mTimerLabel->setTextColor(color);
-        }
-        mTimerLabel->setPlainText(header.timerCost());
-        mTimerLabel->show();
-    }
+    mHeading->readBubbleHeader(header);
 
     setButtons(mHeader->actions());
 
@@ -148,6 +141,8 @@ void BubbleConferenceHandler::setButtons(const QList<HbAction*>& actions)
         BubbleUtils::setButtonStyleForAction(*mButtonCenter,*action);
         connect(mButtonCenter, SIGNAL( clicked() ),
                 action, SLOT( trigger() ) );
+        connect(mButtonCenter, SIGNAL( longPress(QPointF)),
+                action, SLOT( trigger() ) );
         mButtonCenter->show();
     } else  if (actions.count()==2 && mButtonLeft && mButtonRight ) {
         // Left button
@@ -156,6 +151,8 @@ void BubbleConferenceHandler::setButtons(const QList<HbAction*>& actions)
         BubbleUtils::setButtonStyleForAction(*mButtonLeft,*action1);
         connect( mButtonLeft, SIGNAL( clicked() ),
                  action1, SLOT( trigger() ) );
+        connect(mButtonLeft, SIGNAL( longPress(QPointF)),
+                action1, SLOT( trigger() ) );
         mButtonLeft->show();
         // Right button
         HbAction* action2 = actions.at(1);
@@ -163,6 +160,8 @@ void BubbleConferenceHandler::setButtons(const QList<HbAction*>& actions)
         BubbleUtils::setButtonStyleForAction(*mButtonRight,*action2);
         connect( mButtonRight, SIGNAL( clicked() ),
                  action2, SLOT( trigger() ) );
+        connect(mButtonRight, SIGNAL( longPress(QPointF)),
+                action2, SLOT( trigger() ) );
         mButtonRight->show();
     }
 }
@@ -183,10 +182,7 @@ QGraphicsWidget* BubbleConferenceHandler::graphicsWidgetForAction(
 
 void BubbleConferenceHandler::updateTimerDisplayNow()
 {
-    Q_ASSERT(mHeader);
-
-    mTimerLabel->setPlainText(mHeader->timerCost());
-    mTimerLabel->update();
+    mHeading->updateTimerDisplayNow();
 }
 
 void BubbleConferenceHandler::handleItemSelected(

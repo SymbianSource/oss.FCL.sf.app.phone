@@ -26,6 +26,8 @@ class HbIconItem;
 class BubbleImageWidget : public HbWidget
     {
     Q_OBJECT
+
+    Q_PROPERTY(bool keepSquareShape READ keepSquareShape WRITE setKeepSquareShape)
     
 public:
     explicit BubbleImageWidget(
@@ -34,6 +36,9 @@ public:
     virtual ~BubbleImageWidget();
 
     void setImage(const QString& name);
+
+    bool keepSquareShape() const;
+    void setKeepSquareShape(bool keepSquare);
 
 protected slots:
     void imageLoaded(QString imageFileName);
@@ -44,10 +49,18 @@ protected:
         const QStyleOptionGraphicsItem* option,
         QWidget* widget);
 
+    QSizeF sizeHint(
+        Qt::SizeHint which,
+        const QSizeF & constraint) const;
+
+    void resizeEvent(QGraphicsSceneResizeEvent * event);
+
 private:
     BubbleImageManager& mImageManager;
     QString  mImageName;
     HbIconItem* mDefaultAvatar;
+    bool mKeepSquareShape;
+    int mUpdateCount;
     };
 
 #endif /* BUBBLEIMAGEWIDGET_H_ */

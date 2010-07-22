@@ -50,9 +50,7 @@ private:
     void updatePrimitives();
 
 protected:
-    void polishEvent();
-    void changeEvent(QEvent *event);
-    void showEvent(QShowEvent *event);
+    void polish(HbStyleParameters &params);
 
 private:
     int lines;
@@ -61,10 +59,8 @@ private:
     const BubbleHeader* mHeader;
 
     // primitives
-    //BubbleAnimIconItem* mStatusIcon;
-    HbIconItem* mStatusIcon;
-    HbIconItem* mNumberTypeIcon;
-    HbIconItem* mCipheringIcon;
+    HbIconItem* mIndicator1;
+    HbIconItem* mIndicator2;
     HbTextItem* mText1;
     HbTextItem* mText2;
     HbTextItem* mText3;

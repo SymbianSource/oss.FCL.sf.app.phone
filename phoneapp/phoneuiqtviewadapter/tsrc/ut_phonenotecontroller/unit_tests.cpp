@@ -66,7 +66,12 @@ private slots:
     void testShowNote();
     void testShowQuery();
     void testShowClobalWaitNote();
-
+    void testShowIndicationDialogDefault ();
+    void testShowIndicationDialogWithResourceId ();
+    void testShowIndicationDialogWithText ();
+    void testShowIndicationDialogTextAndResourceId ();
+    void testShowIndicationDialogTwoTimes ();
+    void testShowIndicationDialogThreeTimes ();
     
 private:
     PhoneNoteController *m_noteController; // class under test
@@ -182,7 +187,7 @@ void TestPhoneNoteController::testShowGlobalNoteThreeTimes ()
     
     m_noteController->showGlobalNote(&globalNoteParam);
     
-    QTest::qWait(20000);
+    QTest::qWait(5000);
 }
 
 void TestPhoneNoteController::testShowNote()
@@ -200,16 +205,16 @@ void TestPhoneNoteController::testShowNote()
     noteParam.SetText(_L("Sending:\n123p456"));
     
     m_noteController->showNote(&noteParam);
-    QTest::qWait(20000);
+    QTest::qWait(5000);
     
     noteParam.SetText(_L("Sending:\n123p456"));
     m_noteController->showNote(&noteParam);
     
-    QTest::qWait(20000);
+    QTest::qWait(5000);
     
     m_noteController->removeNote();
     
-    QTest::qWait(20000);
+    QTest::qWait(5000);
 }
 
 void TestPhoneNoteController::testShowQuery()
@@ -227,12 +232,12 @@ void TestPhoneNoteController::testShowQuery()
     queryParam.SetQueryResourceId(R_PHONEUI_DTMF_WAIT_CHARACTER_CONFIRMATION_QUERY);
     m_noteController->showQuery(&queryParam);
     
-    QTest::qWait(20000);
+    QTest::qWait(5000);
     m_noteController->showQuery(&queryParam);
     
     m_noteController->removeQuery();
     
-    QTest::qWait(20000);
+    QTest::qWait(5000);
 }
 
 void TestPhoneNoteController::testShowClobalWaitNote()
@@ -256,11 +261,99 @@ void TestPhoneNoteController::testShowClobalWaitNote()
     queryParam.SetDataText(&buf);
     queryParam.SetTimeOut(2000);
     m_noteController->showQuery(&queryParam);
-    QTest::qWait(10000);
+    QTest::qWait(5000);
      
     queryParam.SetCustomCommandForTimeOut(10);
     m_noteController->showQuery(&queryParam);
-    QTest::qWait(10000);
+    QTest::qWait(5000);
+}
+
+void TestPhoneNoteController::testShowIndicationDialogDefault ()
+{
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    globalNoteParam.SetNotificationDialog( ETrue );
+    globalNoteParam.SetTimeout(0);
+    m_noteController->showGlobalNote(&globalNoteParam);
+    QTest::qWait(2500);
+    
+    globalNoteParam.SetTimeout(KPhoneNoteNoTimeout);
+    m_noteController->showGlobalNote(&globalNoteParam);
+    QTest::qWait(2500);
+}
+
+void TestPhoneNoteController::testShowIndicationDialogWithResourceId ()
+{
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    globalNoteParam.SetNotificationDialog( ETrue );
+    globalNoteParam.SetTextResourceId(R_NOTETEXT_NO_ANSWER);
+    globalNoteParam.SetType( EAknGlobalInformationNote );
+    
+    m_noteController->showGlobalNote(&globalNoteParam);
+    
+    QTest::qWait(5000);
+}
+
+void TestPhoneNoteController::testShowIndicationDialogWithText ()
+{
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    globalNoteParam.SetNotificationDialog( ETrue );
+    globalNoteParam.SetType( EAknGlobalWarningNote );
+    globalNoteParam.SetText(_L("Test indication 1"));
+    
+    m_noteController->showGlobalNote(&globalNoteParam);
+}
+
+void TestPhoneNoteController::testShowIndicationDialogTextAndResourceId ()
+{
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    globalNoteParam.SetNotificationDialog( ETrue );
+    globalNoteParam.SetTextResourceId(R_PHONE_TEXT_COLP_CONNECTED);
+    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetText(_L("Indication number"));
+    globalNoteParam.SetTimeout(1000);
+    
+    m_noteController->showGlobalNote(&globalNoteParam);
+    
+    QTest::qWait(2000);
+}
+
+void TestPhoneNoteController::testShowIndicationDialogTwoTimes ()
+{
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    globalNoteParam.SetNotificationDialog( ETrue );
+    //globalNoteParam.SetTextResourceId(R_NOTETEXT_NO_ANSWER);
+    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetText(_L("Test indication 2"));
+    
+    m_noteController->showGlobalNote(&globalNoteParam);
+    
+    globalNoteParam.SetText(_L("Test indication 3"));
+    
+    m_noteController->showGlobalNote(&globalNoteParam);
+    
+    QTest::qWait(5000);
+
+}
+
+void TestPhoneNoteController::testShowIndicationDialogThreeTimes ()
+{
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    globalNoteParam.SetNotificationDialog( ETrue );
+    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetText(_L("Test indication 4"));
+    
+    m_noteController->showGlobalNote(&globalNoteParam);
+    
+    globalNoteParam.SetText(_L("Test indication 5"));
+    
+    globalNoteParam.SetTimeout(1000);
+    m_noteController->showGlobalNote(&globalNoteParam);
+    
+    globalNoteParam.SetText(_L("Test indication 6"));
+    
+    m_noteController->showGlobalNote(&globalNoteParam);
+    
+    QTest::qWait(20000);
 }
 
 PHONE_QT_NOTE_CONTROLLER_TEST_MAIN(TestPhoneNoteController)

@@ -25,12 +25,12 @@
 
 class MPEPhoneModel;
 class CPhoneUIController;
-class CPhoneQwertyHandler;
 class HbMainWindow;
 class PhoneUIKeyEventAdapter;
 class PhoneUiCommandAdapter;
 class QtCall;
 class PhoneUIQtViewAdapter;
+class HbTranslator;
 
 class PhoneUiHouseHoldPrivate : 
     private MPhonePubSubObserver
@@ -102,8 +102,6 @@ private:
         
     //Indicates whether onscreen dialer is defined
     TBool iOnScreenDialer;
-    
-    CPhoneQwertyHandler* iQwertyHandler;
 
     CPhoneUIController* iPhoneUIController;
     
@@ -116,7 +114,7 @@ private:
     PhoneUIQtViewAdapter* iViewAdapter;
     
     //List for translators
-    QList<QTranslator*> m_translators;
+    QList<HbTranslator*> m_translators;
     
 };
 

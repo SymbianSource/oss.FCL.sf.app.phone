@@ -20,7 +20,6 @@
 //  INCLUDE FILES
 #include "cpeactivestarter.h"
 #include "cpeexternaldatahandler.h"
-#include "cpeidlestatusmonitor.h"
 #include "cpemessagehandler.h"
 #include "cpephonemodel.h"
 #include "cpeservicehandling.h"
@@ -41,11 +40,11 @@
 #include <mpeloghandling.h>
 #include <xqservicerequest.h>
 #include "phoneservices.h"
-#include "parserrecognizer.h"
 
 // CONSTANTS
 const TInt KDriveProfile ( 6 );
 const TInt KPECallTimerOff = 0;
+const TInt KTimesToSplitValue = 16;
 
 // ==================== LOCAL FUNCTIONS ====================
 
@@ -99,6 +98,8 @@ void CPEPhoneModel::ConstructL()
     TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::ConstructL: 5" );
     iActiveStarter->StartUp();
     TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::ConstructL: 6" );
+    // Reserve needed callinfo and remoteinfo from heap.
+    iCallInfo = new ( ELeave ) RMobileCall::TMobileCallInfoV3;
     }// ConstructL
 
 // -----------------------------------------------------------------------------
@@ -148,6 +149,7 @@ CPEPhoneModel::~CPEPhoneModel()
     delete iCallHandling;
     delete iExternalDataHandler;
     delete iCallStackCutter;
+    delete iCallInfo;
 
     if ( iActiveStarter )
         {
@@ -158,12 +160,7 @@ CPEPhoneModel::~CPEPhoneModel()
     iFsSession.Close();
     delete iEngineInfo;
     delete iConvergedCallEngine;
-    if ( iIdleStatusMonitor )
-        {
-        delete iIdleStatusMonitor;
-        } 
     delete iPhoneServices;
-    delete iParserRecognizer;
     }// ~CPEPhoneModel
 
 // -----------------------------------------------------------------------------
@@ -461,16 +458,8 @@ TPtrC CPEPhoneModel::NameByMessageFromPhoneEngine(
             return MESSAGE("EPEMessageCallAdded");
         case MEngineMonitor::EPEMessageRemoteTerminated:
             return MESSAGE("EPEMessageRemoteTerminated");
-        case MEngineMonitor::EPEMessageShowIMEI:
-            return MESSAGE("EPEMessageShowIMEI");
         case MEngineMonitor::EPEMessageUnknown:
             return MESSAGE("EPEMessageUnknown");
-        case MEngineMonitor::EPEMessagePromptSpeedDial:
-            return MESSAGE("EPEMessagePromptSpeedDial");
-        case MEngineMonitor::EPEMessageSpeedDialNotAssigned:
-            return MESSAGE("EPEMessageSpeedDialNotAssigned");
-        case MEngineMonitor::EPEMessageInvalidSpeedDial:
-            return MESSAGE("EPEMessageInvalidSpeedDial"); 
         case MEngineMonitor::EPEMessageDataPortLoaned:
             return MESSAGE("EPEMessageDataPortLoaned");
             
@@ -562,8 +551,6 @@ TPtrC CPEPhoneModel::NameByMessageFromPhoneEngine(
             return MESSAGE("EPEMessageInValidEmergencyNumber");
         case MEngineMonitor::EPEMessageValidEmergencyNumber:
             return MESSAGE("EPEMessageValidEmergencyNumber");
-        case MEngineMonitor::EPEMessagePhoneIdentityReady:
-            return MESSAGE("EPEMessagePhoneIdentityReady");
         case MEngineMonitor::EPEMessageStartATDialing:
             return MESSAGE("EPEMessageStartATDialing");
         case MEngineMonitor::EPEMessageLogEventSaved:
@@ -608,13 +595,13 @@ TPtrC CPEPhoneModel::NameByMessageFromPhoneEngine(
             return MESSAGE("EPEMessageRemoteHeld");
         case MEngineMonitor::EPEMessageRemoteResumed:
             return MESSAGE("EPEMessageRemoteResumed");
-        case MEngineMonitor::EPEMessageShowVersion:
-            return MESSAGE("EPEMessageShowVersion");
         case MEngineMonitor::EPEMessageTempClirSuppressUnsuccessful:
             return MESSAGE("EPEMessageTempClirSuppressUnsuccessful");
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
             return MESSAGE("EPEMessageTempClirActivationUnsuccessful");
-
+        case MEngineMonitor::EPEMessageOutgoingCallBarred:
+            return MESSAGE("EPEMessageOutgoingCallBarred");
+            
         // Contact messages                       11400 - 11599
 
         // Error messages                         11600 - 11799
@@ -634,8 +621,6 @@ TPtrC CPEPhoneModel::NameByMessageFromPhoneEngine(
             return MESSAGE("EPEMessageActivateRfsDeep");
         case MEngineMonitor::EPEMessageActivateRfsNormal:
             return MESSAGE("EPEMessageActivateRfsNormal");
-        case MEngineMonitor::EPEMessageActivateWarrantyMode:
-            return MESSAGE("EPEMessageActivateWarrantyMode");
         case MEngineMonitor::EPEMessageIssuedSSRequest:
             return MESSAGE("EPEMessageIssuedSSRequest");
         case MEngineMonitor::EPEMessageIssuingSSRequest:
@@ -931,6 +916,12 @@ void CPEPhoneModel::SendMessage(
             }
         }
 
+    if ( message == MEngineMonitor::EPEMessageOutgoingCallBarred )
+        {
+        iEngineInfo->SetOutgoingCallBarringActivated( ETrue );
+        message = KPEDontSendMessage;
+        }
+    
     if ( ( message == MEngineMonitor::EPEMessageIncoming ) )
         {
         if ( FeatureManager::FeatureSupported( KFeatureIdDriveMode ) )
@@ -968,6 +959,7 @@ void CPEPhoneModel::SendMessage(
             "PE cpephonemodel::sendmessage > iEngineMonitor.HandleError: messageName=%s, CallId=%d",
         messageName2.Ptr( ), aCallId );
         #endif
+        SetCallError( aCallId );
         TPEErrorInfo errorInfo;
         errorInfo.iErrorCode = errorCode;
         errorInfo.iCallId = aCallId;
@@ -980,16 +972,25 @@ void CPEPhoneModel::SendMessage(
             KTAERROR, 
             "PE cpephonemodel::sendmessage > iEngineMonitor.HandleError: messageName=EPEMessageCallHandlingError, CallId=%d"
         , aCallId );
-        TPEErrorInfo errorInfo = iEngineInfo->ErrorInfo();
-        errorInfo.iCallId = aCallId;
-        errorInfo.iErrorType = EPECcp;
-        iEngineMonitor.HandleError( errorInfo );
+        SetCallError( aCallId );
+	    TPEErrorInfo errorInfo = iEngineInfo->ErrorInfo();
+    	errorInfo.iCallId = aCallId;
+    	errorInfo.iErrorType = EPECcp;
+
+        if ( ECCPErrorCCCallRejected == errorInfo.iErrorCode )
+            {
+            // Call direction is not set if the call was rejected before Dialing-state
+            iEngineInfo->SetCallDirection( RMobileCall::EMobileOriginated, aCallId );
+            iMessageHandler->AddSIMRejectedMoCsCallToLog( aCallId );
+            }
+    	iEngineMonitor.HandleError( errorInfo );
         }
     else if ( message == MEngineMonitor::EPEMessageServiceHandlingError )
         {
         TEFLOGSTRING( 
             KTAERROR, 
             "PE cpephonemodel::sendmessage > iEngineMonitor.HandleError: messageName=EPEMessageServiceHandlingError" );
+        SetCallError( aCallId );
         TPEErrorInfo errorInfo = iEngineInfo->ErrorInfo();
         errorInfo.iCallId = aCallId;
         errorInfo.iErrorType = EPECch;
@@ -1024,12 +1025,6 @@ void CPEPhoneModel::SendMessage(
             static_cast<MEngineMonitor::TPEMessagesFromPhoneEngine>( message ), 
             aCallId );
         }
-
-        if( iParserRecognizer )
-            {
-            iParserRecognizer->sendMessage( aMessage, aCallId );
-            }
-
     }// SendMessage( 2 params )
 
 // -----------------------------------------------------------------------------
@@ -1111,6 +1106,8 @@ TInt CPEPhoneModel::ProcessMessage(
                 {
                 errorCode = iMessageHandler->ContinueSwitchToCall( aCallId );
                 }
+            
+            iEngineInfo->SetOutgoingCallBarringActivated( EFalse );
             break;
 
         case MEngineMonitor::EPEMessageRemoteBusy:
@@ -1168,10 +1165,6 @@ TInt CPEPhoneModel::ProcessMessage(
             errorCode = iMessageHandler->HandleDtmfSent();
             break;
 
-        case MEngineMonitor::EPEMessageActivateWarrantyMode:
-            errorCode = iMessageHandler->HandleGetLifeTimerData( );
-            break;
-          
         case MEngineMonitor::EPEMessageStartATDialing:
             errorCode = iMessageHandler->HandleDialCall( EFalse );
             iMessageHandler->HandleATDialingStarted( errorCode ? EFalse : ETrue );
@@ -1214,7 +1207,7 @@ TInt CPEPhoneModel::ProcessMessage(
             break;
             
         case MEngineMonitor::EPEMessageRemotePartyInfoChanged:
-            iMessageHandler->HandleRemotePartyInfoChanged( );
+            iMessageHandler->HandleRemotePartyInfoChanged( aCallId );
             break;    
 
         default:
@@ -1236,24 +1229,41 @@ TBool CPEPhoneModel::DelayMessageSending(
     TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::DelayMessageSending" );
         
     TBool sendingDelayed( EFalse );
-    
-    if ( MEngineMonitor::EPEMessageInitiatedEmergencyCall == aMessage )
+        
+    switch ( aMessage )
         {
-        iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );
-        if ( iCallStackCutter )
+        case MEngineMonitor::EPEMessageInitiatedEmergencyCall:
             {
-            delete iCallStackCutter;
-            iCallStackCutter = NULL;
+            iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );  
+            sendingDelayed = ETrue;            
             }
-        TRAPD( err, iCallStackCutter = CIdle::NewL( CActive::EPriorityHigh ) );
-        if ( !err )
-            {
-            iCallBackMessage = aMessage; 
-            iCallBackCallId  = aCallId;
-            iCallStackCutter->Start( TCallBack( CallBackMessageSend , this ) );
+            break;
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            {              
+            sendingDelayed = ETrue;            
             }
-        sendingDelayed = ETrue;        
+            break;
+        default:
+            // Other messages cause no action.
+            break;
         }
+    
+        if ( sendingDelayed )
+            {        
+            if ( iCallStackCutter )
+                {
+                delete iCallStackCutter;
+                iCallStackCutter = NULL;
+                }
+            TRAPD( err, iCallStackCutter = CIdle::NewL( CActive::EPriorityHigh ) );
+            if ( !err )
+                {
+                iCallBackMessage = aMessage; 
+                iCallBackCallId  = aCallId;
+                iCallStackCutter->Start( TCallBack( CallBackMessageSend , this ) );
+                }
+            }                
+        
     return sendingDelayed;
     }
 
@@ -1417,20 +1427,11 @@ TBool CPEPhoneModel::StepL()
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 16.1" );
             __ASSERT_DEBUG( iMessageHandler, Panic( EPEPanicNullPointer ) );
             __ASSERT_DEBUG( iEngineInfo, Panic( EPEPanicNullPointer ) );
-            iPhoneServices = new PhoneServices(
-                *iMessageHandler, *iEngineInfo, *iMessageHandler);
+            iPhoneServices = new PhoneServices(*iMessageHandler, *iEngineInfo);
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 16.2" );
             break;
             }
 
-        case CPEPhoneModel::EPEParserRecognizer:
-            {
-            TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 17.1" );
-            iParserRecognizer = new ParserRecognizer;
-            TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 17.2" );
-            break;
-            }
-            
         case CPEPhoneModel::EPENetworkHandling:
             {
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 18.1" );
@@ -1493,9 +1494,6 @@ void CPEPhoneModel::ConstructContactHandlingPhaseTwoL()
     TEFLOGSTRING( KTAOBJECT, 
         "PE CPEPhoneModel::ConstructContactHandlingPhaseTwo, complete" );
     SendMessage( MEngineMonitor::EPEMessagePEConstructionTwoPhaseReady );   
-    // not need any more
-    delete iIdleStatusMonitor; 
-    iIdleStatusMonitor = NULL; 
     }
 
 // -----------------------------------------------------------------------------
@@ -1514,4 +1512,23 @@ TInt CPEPhoneModel::CallBackMessageSend( TAny* aSelf )
     return KErrNone;
     }
 
+// -----------------------------------------------------------------------------
+// SetCallError
+// -----------------------------------------------------------------------------
+//
+void CPEPhoneModel::SetCallError( TInt aCallId )
+    {
+    TInt callError = KErrNone;
+    if ( iCallHandling )
+        {
+        TInt err = iCallHandling->GetCallInfo( *iCallInfo, aCallId );
+        
+        if ( err == KErrNone && ( iCallInfo->iExitCode & 0xFFFF0000 ) ) 
+            {
+            callError = ( iCallInfo->iExitCode >> KTimesToSplitValue ); 
+            //Set protocol spesific error code to TPEErrorInfo
+            EngineInfo()->SetProtocolError( callError, aCallId );
+            }
+        }
+    }
 // End of File

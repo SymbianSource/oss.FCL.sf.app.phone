@@ -61,4 +61,9 @@ EXPORTS
 	?clearAndHideDialpad@PhoneUIQtView@@UAEXXZ @ 60 NONAME ; void PhoneUIQtView::clearAndHideDialpad(void)
 	?isDisabled@PhoneAction@@QBE_NXZ @ 61 NONAME ; bool PhoneAction::isDisabled(void) const
 	?networkNameChanged@PhoneUIQtView@@QAEXW4NetworkMode@QSystemNetworkInfo@QtMobility@@ABVQString@@@Z @ 62 NONAME ; void PhoneUIQtView::networkNameChanged(enum QtMobility::QSystemNetworkInfo::NetworkMode, class QString const &)
+	?windowDeactivated@PhoneUIQtView@@IAEXXZ @ 63 NONAME ; void PhoneUIQtView::windowDeactivated(void)
+	?windowActivated@PhoneUIQtView@@IAEXXZ @ 64 NONAME ; void PhoneUIQtView::windowActivated(void)
+	?clearDialpad@PhoneUIQtView@@UAEXXZ @ 65 NONAME ; void PhoneUIQtView::clearDialpad(void)
+	?captureKey@PhoneUIQtView@@UAEXW4Key@Qt@@_N@Z @ 66 NONAME ; void PhoneUIQtView::captureKey(enum Qt::Key, bool)
+	?setRestrictedMode@PhoneUIQtView@@UAEX_N@Z @ 67 NONAME ; void PhoneUIQtView::setRestrictedMode(bool)
 

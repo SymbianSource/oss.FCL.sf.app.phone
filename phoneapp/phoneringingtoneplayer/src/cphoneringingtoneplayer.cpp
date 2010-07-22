@@ -23,7 +23,6 @@
 #include <ProfileEngineDomainCRKeys.h>
 #include <DRMHelperServerInternalCRKeys.h>
 #include <DRMHelper.h>
-#include <activeidle2domainpskeys.h>
 #include <data_caging_path_literals.hrh>
 #include "cphoneringingtoneplayer.h"
 #include "cphoneaudioplayer.h"

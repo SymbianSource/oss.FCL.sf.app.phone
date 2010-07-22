@@ -46,26 +46,24 @@ UssdEditorQuery::UssdEditorQuery(CUssdComms &ussd, QGraphicsItem *parent)
     :HbInputDialog(parent), mComms(ussd)
 {
     TFLOGSTRING("USSDEDITOR: UssdEditorQuery::UssdEditorQuery IN")
-    setPromptText(hbTrId("Reply"));
+    setPromptText(hbTrId("txt_ussd_title_reply"));
 
     if (lineEdit()){
         // Set max length and rows
         lineEdit()->setMaxLength(KUssdEditorMaxLength);
         lineEdit()->setMaxRows(KUssdMaxNumberOfEditorLines);
         lineEdit()->setText(QString());
+        lineEdit()->setFocus();
 
         // 0-9, *, +, #
-        HbEditorInterface interface(lineEdit());
-        interface.setFilter(HbPhoneNumberFilter::instance());
-        // TODO: cannot open keypad
-        interface.vkbHost()->openKeypad();
+        HbEditorInterface inputMode(lineEdit());
+        inputMode.setFilter(HbPhoneNumberFilter::instance());
 
         mComms.appStarting();
         // Disable Ok key by default
-        primaryAction()->setEnabled(false);
-
+        actions().at(0)->setEnabled(false);
         bool ret(false);
-        ret = connect(primaryAction(), SIGNAL(triggered(bool)),
+        ret = connect(actions().at(0), SIGNAL(triggered(bool)),
                       this, SLOT(sendUssdString()));
         TFLOGSTRING2("USSDEDITOR: UssdEditorQuery::UssdEditorQuery \
             connect send %d", ret);  
@@ -76,7 +74,7 @@ UssdEditorQuery::UssdEditorQuery(CUssdComms &ussd, QGraphicsItem *parent)
             connect ok button %d", ret);
         
         // Connect cancel
-        ret = connect(secondaryAction(), SIGNAL(triggered(bool)),
+        ret = connect(actions().at(1), SIGNAL(triggered(bool)),
                       this, SLOT(cancelUssdString()));
         TFLOGSTRING2("USSDEDITOR: UssdEditorQuery::UssdEditorQuery \
             connect send %d", ret);
@@ -134,9 +132,9 @@ void UssdEditorQuery::updateButtonVisible( const QString &text )
 {
     TFLOGSTRING("USSDEDITOR: UssdEditorQuery::updateButtonVisible IN"); 
     if (text.length() > 0) {
-        primaryAction()->setEnabled(true);
+        actions().at(0)->setEnabled(true);
     } else {
-        primaryAction()->setEnabled(false);
+        actions().at(0)->setEnabled(false);
     }
     TFLOGSTRING("USSDEDITOR: UssdEditorQuery::updateOkButton OUT");
 }

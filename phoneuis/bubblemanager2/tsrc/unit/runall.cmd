@@ -25,6 +25,7 @@ call runtest.cmd ut_bubblecontainerwidget
 call runtest.cmd ut_bubbleheadingwidget
 call runtest.cmd ut_bubbleimagewidget
 call runtest.cmd ut_bubbleparticipantlistitem
+call runtest.cmd ut_bubblebutton
 rem call runtest.cmd mt_bubblemanager2
 )
 
@@ -38,6 +39,7 @@ call runtest_w32.cmd ut_bubblecontainerwidget
 call runtest_w32.cmd ut_bubbleheadingwidget
 call runtest_w32.cmd ut_bubbleimagewidget
 call runtest_w32.cmd ut_bubbleparticipantlistitem
+call runtest_w32.cmd ut_bubblebutton
 rem call runtest_w32.cmd mt_bubblemanager2
 )
 

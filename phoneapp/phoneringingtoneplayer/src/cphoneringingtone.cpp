@@ -44,6 +44,9 @@ _LIT(KV3gpp, "video/3gpp");
 _LIT(KVMp4, "video/mp4");
 _LIT(KV3gpp2, "video/3gpp2");
 
+//file size limit
+const TUint KPhoneToneFileSizeLimitKB = 5000;
+
 // MACROS
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -424,26 +427,8 @@ TInt CPhoneRingingTone::CheckToneFileSize( const TDesC& aFile,
 //
 void CPhoneRingingTone::GetMaxToneFileSize()
     {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneRingingtone::GetMaxToneFileSize()" );
-
-    TInt error(KErrNone);           
-    iToneFileSizeLimitKB = 5000;
-   
-    if ( error != KErrNone )
-        {
-        iToneFileSizeLimitKB = 0;
-        }
-    if ( iToneFileSizeLimitKB < 0 )
-        {
-        iToneFileSizeLimitKB = 0;
-        }
-  
-    __PHONELOG2( 
-        EBasic,
-        EPhoneControl, 
-        "CPhoneRingingtonePlayer::GetMaxToneFileSize - error (%d), aMaxSizeKB(%d)",
-        error,
-        iToneFileSizeLimitKB );       
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneRingingtone::GetMaxToneFileSize()" );              
+    iToneFileSizeLimitKB = KPhoneToneFileSizeLimitKB;   
     }
 
 //  End of File  

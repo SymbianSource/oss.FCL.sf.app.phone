@@ -21,21 +21,21 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
-INCLUDEPATH += ..\..\inc
+INCLUDEPATH += ..\..\..\..\inc
 INCLUDEPATH += \epoc32\include\platform\mw \
-                   \epoc32\include\platform \
-                   \epoc32\include \
-                   \epoc32\include\platform\app \
-                   \epoc32\include\app 
+               \epoc32\include\platform \
+               \epoc32\include \
+               \epoc32\include\platform\app \
+               \epoc32\include\app 
                
 # Input
-HEADERS += ..\mocks\qcontact.h
-HEADERS += ..\mocks\qcontactdetail.h
+#HEADERS += ..\mocks\qcontact.h
+#HEADERS += ..\mocks\qcontactdetail.h
 HEADERS += ..\..\inc\cphcntmatch2.h
 HEADERS += ..\..\inc\cphcntcontactidimpl2.h
 
-SOURCES += ..\mocks\qcontact_stub.cpp
-SOURCES += ..\mocks\qcontactdetail_stub.cpp
+#SOURCES += ..\mocks\qcontact_stub.cpp
+#SOURCES += ..\mocks\qcontactdetail_stub.cpp
 SOURCES += ..\..\src\cphcntmatch2.cpp
 SOURCES += ..\..\src\cphcntcontactidimpl2.cpp
 SOURCES += u_cphcntmatch2.cpp

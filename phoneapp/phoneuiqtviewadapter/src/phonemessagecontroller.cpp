@@ -19,21 +19,21 @@
 #include "phoneconstants.h"
 #include "cphonecenrepproxy.h"
 #include "cphonepubsubproxy.h"
+#include "phoneapplauncher.h"
 #include <settingsinternalcrkeys.h>
 #include <coreapplicationuisdomainpskeys.h>
 #include <hbglobal.h>
-#include <xqservicerequest.h>
 
 
-PhoneMessageController::PhoneMessageController(QObject *parent) : 
-    QObject(parent)
+PhoneMessageController::PhoneMessageController(PhoneAppLauncher &appLauncher, QObject *parent) : 
+    QObject(parent),
+    m_appLauncher(appLauncher)
 {
 
 }
 
 PhoneMessageController::~PhoneMessageController()
 {
-
 }
 
 void PhoneMessageController::openSoftRejectMessageEditor(
@@ -83,18 +83,5 @@ void PhoneMessageController::openSoftRejectMessageEditor(
 
     
     // open message editor
-    openEditor(toField, alias, messageBody );
+    m_appLauncher.launchMessaging(toField, alias, messageBody);
 }
-
-void PhoneMessageController::openEditor(
-        QString /*toField*/, QString /*name*/, QString /*messageBody*/)
-{
-    //TODO
-    /*XQServiceRequest snd(QLatin1String("com.nokia.services.hbserviceprovider.imessage.send"), QLatin1String("send(QVariant)"));
-    QVariant data;
-    snd << data;
-    snd.send();*/
-}
-
-
-

@@ -139,12 +139,7 @@ NONSHARABLE_CLASS( CPhoneCallHeaderManager ) :  public CBase,
         void SetPhoneNumberAvailabilityL( 
                 const TInt aNumberLength,
                 const TBool aContactInfoAvailable );
-        
-        /**
-        * @see MPhoneBubbleManagerUtility.
-        */
-        void GetInCallNumberTextL( TInt aCallId, TDes& aData ) const;
-        
+
         /**
         * @see MPhoneBubbleManagerUtility.
         */

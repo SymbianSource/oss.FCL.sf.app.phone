@@ -116,7 +116,7 @@ EXPORT_C void CPhoneAlerting::HandleKeyMessageL(
                 {
                 // Show not allowed note
                 SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed );
+                    EPhoneNoteTextNotAllowed, ETrue );
                 }
             break;
 
@@ -255,8 +255,6 @@ EXPORT_C void CPhoneAlerting::HandleConnectedL( TInt aCallId )
     SetToolbarDimming( EFalse );
         
     EndUiUpdate();
-    
-    HandleColpNoteL( aCallId );
     
     // Go to single state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );    

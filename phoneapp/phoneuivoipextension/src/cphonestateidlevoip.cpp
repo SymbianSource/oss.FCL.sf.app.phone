@@ -30,7 +30,6 @@
 #include "cphonelogger.h"
 #include "phoneui.pan"
 #include "cphonecustomizationvoip.h"
-#include "tphonecmdparamspeeddial.h"
 #include "cphonecenrepproxy.h"
 #include "cphonestateutilsvoip.h"
 #include "cphonestatemachinevoip.h"
@@ -155,10 +154,6 @@ void CPhoneStateIdleVoIP::HandleSendCommandL()
         {
         CPhoneIdle::HandleSendCommandL();         
         }  
-    else if ( IsSpeedDialNumber( *phoneNumber ) )
-        {
-        SpeedDialL( (*phoneNumber)[0], EDialMethodSendCommand );
-        }
     else
         {
         TUint serviceId( 0 );

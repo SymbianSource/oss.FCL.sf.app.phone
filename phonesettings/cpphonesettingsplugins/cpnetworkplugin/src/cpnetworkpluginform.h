@@ -38,26 +38,22 @@ class CpNetworkPluginForm : public HbDataForm
     Q_OBJECT
     
 public:
-    
     explicit CpNetworkPluginForm(QGraphicsItem *parent = 0);
-    
     virtual ~CpNetworkPluginForm();
-    
+
     void searchAvailableNetworks();
     
 signals:
-    
     void showGlobalProgressNote(int &noteId, const QString& text);
     void showGlobalNote(
         int &noteId, const QString& text, HbMessageBox::MessageBoxType msgBoxType);
     void cancelNote(int noteId);
 
-public slots: 
-
+public slots:
     void cellularDataUseHomeStateChanged(int index);
     void cellularDataUseRoamStateChanged(int index);
     void networkModeStateChanged(int index);
-    void operatorSelectionStateChanged(bool index);
+    void operatorSelectionStateChanged();
     void networkAccessModeGot(int mode);
     void availableNetworksGot(
         QList<PSetNetworkWrapper::NetworkInfo*> &m_networkInfoList);
@@ -72,7 +68,7 @@ public slots:
         PSetNetworkWrapper::RegistrationStatus& status);
     void finishedManualSelectiondialog(HbAction* action);
 
-private:     
+protected:     
     HbDataFormModelItem *createNetworkModeItem();
     HbDataFormModelItem *createOperatorSelectionItem();
     HbDataFormModelItem *createHomeDataUsageItem();
@@ -86,18 +82,17 @@ private:
     void gsmSelection();
     
     HbDialog* createDialog(const QString& heading) const;
-    void addItemToListWidget(
-        HbListWidget* w, const QString& item, const int& data) const;
+    void addItemToListWidget(HbListWidget* w, const QString& item, 
+                            const int& data, const HbIcon& primaryIcon) const;
     
     void showManualSelectiondialog();
-    void restoreUiSelection();
+    void restoreOperatorSelectionUi();
     QString networkName(PSetNetworkWrapper::NetworkInfo &info);
 
     void connectToNetworkWrapper(PSetNetworkWrapper &wrapper);
-    
     void connectToPhoneNotes(CpPhoneNotes &notes);
-    
-    bool isPhoneOnLine();
+
+    QString primaryIconForNetwork(const PSetNetworkWrapper::NetworkInfo &info);
     
 private:
     

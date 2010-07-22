@@ -39,15 +39,12 @@ SOURCE          cphonecenrepeventhandler.cpp
 SOURCE          cphonecenrepproxy.cpp
 SOURCE          cphoneclearblacklist.cpp
 SOURCE          cphonekeys.cpp
-SOURCE          cphonelangsettingmonitor.cpp
 SOURCE          cphonelibrarycontainer.cpp
 SOURCE          cphonelogger.cpp
 SOURCE          cphonemainresourceresolver.cpp
 SOURCE          cphonemainerrormessageshandler.cpp
 SOURCE          cphonepublishsubscriberao.cpp
 SOURCE          cphonepubsubproxy.cpp
-SOURCE          cphoneqwertyhandler.cpp
-SOURCE          cphoneqwertymodemonitor.cpp
 SOURCE          cphonerecoverysystem.cpp
 SOURCE          cphoneresourceresolverbase.cpp
 SOURCE          cphonetimer.cpp
@@ -86,7 +83,6 @@ SOURCE          tphonecmdparamsfidata.cpp
 // <-- QT PHONE START -->
 //SOURCE          tphonecmdparamsingleitemfetch.cpp
 // <-- QT PHONE END -->
-SOURCE          tphonecmdparamspeeddial.cpp
 SOURCE          tphonecmdparamstring.cpp
 SOURCE          tphonecommandparam.cpp
 SOURCE          tphonecmdparamtranseffect.cpp

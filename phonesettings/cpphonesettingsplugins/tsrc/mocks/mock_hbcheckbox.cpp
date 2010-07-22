@@ -17,7 +17,6 @@
 
 #include <QDebug>
 #include <hbcheckbox.h>
-#include <hbstyleoptioncheckbox.h>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItem>
 #include <smcmockclassincludes.h>
@@ -30,7 +29,7 @@
 // -----------------------------------------------------------------------------
 //
 HbCheckBox::HbCheckBox( 
-        const QString & text,
+        const QString & /*text*/,
         QGraphicsItem * parent )
     :
     HbAbstractButton( parent )
@@ -138,9 +137,9 @@ void HbCheckBox::updatePrimitives(  )
 // -----------------------------------------------------------------------------
 //
 void HbCheckBox::initStyleOption( 
-        HbStyleOptionCheckBox * option ) const
+        HbStyleOptionCheckBox *  ) const
     {
-    SMC_MOCK_METHOD1( void, HbStyleOptionCheckBox *, option )
+    
     }
 
 
@@ -186,6 +185,7 @@ void HbCheckBox::nextCheckState(  )
     }
 
 
+#ifndef HB_GESTURE_FW
 // -----------------------------------------------------------------------------
 // HbCheckBox::mouseReleaseEvent
 // -----------------------------------------------------------------------------
@@ -206,6 +206,18 @@ void HbCheckBox::mouseMoveEvent(
     {
     SMC_MOCK_METHOD1( void, QGraphicsSceneMouseEvent *, event )
     }
+#endif
+#ifdef HB_GESTURE_FW
+    // -----------------------------------------------------------------------------
+    // HbCheckBox::gestureEvent
+    // -----------------------------------------------------------------------------
+    //
+    void HbCheckBox::gestureEvent( 
+            QGestureEvent * event )
+        {
+        SMC_MOCK_METHOD1( void, QGestureEvent *, event )
+        }
+#endif
 
 
 // -----------------------------------------------------------------------------

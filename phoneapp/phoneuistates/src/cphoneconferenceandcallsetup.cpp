@@ -311,8 +311,7 @@ void CPhoneConferenceAndCallSetup::HandleConnectedL( TInt aCallId )
     SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
     SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
     EndUiUpdate(); 
-
-    HandleColpNoteL( aCallId );
+    
     UpdateCbaL ( EPhoneCallHandlingNewCallSwapCBA );
    
     iStateMachine->ChangeState( EPhoneStateConferenceAndSingle );                     

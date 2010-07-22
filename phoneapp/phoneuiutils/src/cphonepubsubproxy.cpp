@@ -170,7 +170,7 @@ EXPORT_C void CPhonePubSubProxy::NotifyChangeL(
     {
     __ASSERT_DEBUG( aObserver, Panic( EPhoneUtilsParameterNotInitialized ) );
     __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhonePubSubProxy::NotifyChangeL() ");
-    
+
     // make sure this a new item in iObserverArray
     TBool requestIssued = EFalse;
     TBool sameRequestIssuedByObserver = EFalse;
@@ -291,7 +291,7 @@ void CPhonePubSubProxy::CancelAllObserverNotifies(
     {
     TInt count = iObserverArray->Count();
 
-    // Remove the observer and its subscriptions
+    // Remove the observer
     TBool observerRemoved = EFalse;
     for( TInt i = count - 1; i >= 0 && !observerRemoved; i-- ) 
         {
@@ -301,22 +301,6 @@ void CPhonePubSubProxy::CancelAllObserverNotifies(
             // Remove observer 
             observerRemoved = ETrue;
             iObserverArray->Delete( i );
-
-            // Remove this observers' subscriptions
-            TInt pubSubCount = iPublishSubscriberArray->Count();
-     
-            for ( TInt j = pubSubCount - 1; j >= 0; j++ )
-                {
-                CPhonePublishSubscriberAO* publishSubscriber = 
-                    iPublishSubscriberArray->At( j );
-
-                if ( publishSubscriber->Category() == observerTag.iCategory && 
-                    publishSubscriber->Key() == observerTag.iKey )
-                    {
-                    iPublishSubscriberArray->Delete( i );
-                    delete publishSubscriber;
-                    }
-                }
             }
         }
     }

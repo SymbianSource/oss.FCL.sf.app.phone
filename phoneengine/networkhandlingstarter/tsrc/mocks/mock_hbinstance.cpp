@@ -41,29 +41,6 @@ QList <HbMainWindow * > HbInstance::allMainWindows(  ) const
 
 
 // -----------------------------------------------------------------------------
-// HbInstance::orientation
-// -----------------------------------------------------------------------------
-//
-Qt::Orientation HbInstance::orientation(  ) const
-    {
-    SMC_MOCK_METHOD0( Qt::Orientation )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbInstance::setOrientation
-// -----------------------------------------------------------------------------
-//
-void HbInstance::setOrientation( 
-        Qt::Orientation orientation,
-        bool animate )
-    {
-    SMC_MOCK_METHOD2( void, Qt::Orientation, orientation, 
-        bool, animate )
-    }
-
-
-// -----------------------------------------------------------------------------
 // HbInstance::style
 // -----------------------------------------------------------------------------
 //
@@ -80,16 +57,6 @@ HbStyle * HbInstance::style(  ) const
 HbTheme * HbInstance::theme(  ) const
     {
     SMC_MOCK_METHOD0( HbTheme * )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbInstance::typefaceInfo
-// -----------------------------------------------------------------------------
-//
-HbTypefaceInfo * HbInstance::typefaceInfo(  ) const
-    {
-    SMC_MOCK_METHOD0( HbTypefaceInfo * )
     }
 
 

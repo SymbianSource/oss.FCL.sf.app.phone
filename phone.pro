@@ -22,7 +22,6 @@ symbian: {
 :BLD_INF_RULES.prj_mmpfiles += $$LITERAL_HASH"include \"group/bld.inf\""
 SUBDIRS += phoneengine/phonecntfinder2
 SUBDIRS += phoneengine/phoneservices
-SUBDIRS += phoneengine/parserrecognizer
 SUBDIRS += phoneengine/phonemodel
 SUBDIRS += phoneengine/networkhandlingstarter
 SUBDIRS += phoneuis/bubblemanager2
@@ -32,8 +31,7 @@ SUBDIRS += phoneapp/phoneuiqtviewadapter
 SUBDIRS += phoneapp/phonestringloader
 SUBDIRS += phoneapp/phoneui2
 SUBDIRS += phonesettings/cpphonesettingsplugins
-SUBDIRS += phoneplugins/hsdialerwidgetplugin
+SUBDIRS += phoneplugins/dialerwidgetplugin
 SUBDIRS += phoneplugins/infowidgetplugin
-SUBDIRS += phoneuis/ussdeditor
 }
           

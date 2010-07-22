@@ -25,7 +25,7 @@
 // -----------------------------------------------------------------------------
 //
 CpPhoneLocalisation::CpPhoneLocalisation( 
-        QObject * parent )
+        QObject * /*parent*/ )
     //:
     //QObject( /*parent*/ )
     {

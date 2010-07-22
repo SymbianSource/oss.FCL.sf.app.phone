@@ -15,6 +15,7 @@
 *
 */
 #include <QDebug>
+#include <smcmockclassincludes.h>
 #include "cpnetworkplugin.h"
 #include <cpsettingformitemdata.h>
 
@@ -44,9 +45,22 @@ CpNetworkPlugin::~CpNetworkPlugin(  )
 // CpNetworkPlugin::createSettingFormItemData
 // -----------------------------------------------------------------------------
 //
-QList<CpSettingFormItemData*> CpNetworkPlugin::createSettingFormItemData(
-        CpItemDataHelper &itemDataHelper) const
+QList <CpSettingFormItemData * > CpNetworkPlugin::createSettingFormItemData( 
+        CpItemDataHelper & itemDataHelper ) const
     {
     Q_UNUSED( itemDataHelper )
     return QList<CpSettingFormItemData *> ();
     }
+
+
+// -----------------------------------------------------------------------------
+// CpNetworkPlugin::createSettingView
+// -----------------------------------------------------------------------------
+//
+CpBaseSettingView * CpNetworkPlugin::createSettingView( 
+        const QVariant & hint ) const
+    {
+    SMC_MOCK_METHOD1( CpBaseSettingView *, const QVariant &, hint )
+    }
+
+

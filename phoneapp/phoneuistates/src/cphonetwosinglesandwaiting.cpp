@@ -124,7 +124,7 @@ void CPhoneTwoSinglesAndWaiting::HandleKeyMessageL(
                 // Waiting call bubble is over number entry
                 // so display not allowed note because we
                 // can't answer the call
-                SendGlobalWarningNoteL( EPhoneNoteTextCallNotAllowed );                     
+                SendGlobalWarningNoteL( EPhoneNoteTextCallNotAllowed, ETrue );                     
                 }
             break;
             }

@@ -147,6 +147,12 @@ void CPhoneConference::HandlePhoneEngineMessageL(
             {
             TPhoneCmdParamCallHeaderData callHeaderParam;
             callHeaderParam.SetCallState( EPEStateHeld );
+            TBuf<KPhoneCallHeaderLabelMaxLength> labelText( KNullDesC );
+            TInt callLabelId = CPhoneMainResourceResolver::Instance()->
+                    ResolveResourceID( EPhoneCallOnHold );
+
+            StringLoader::Load( labelText, callLabelId, CCoeEnv::Static() );
+            callHeaderParam.SetLabelText( labelText );
             iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
                 &callHeaderParam );
             }
@@ -512,7 +518,7 @@ void CPhoneConference::HandleHeldConferenceL( TInt aCallId )
     
     if ( !FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
         {
-        SendGlobalInfoNoteL( EPhoneInformationConferenceOnHold );
+        SendGlobalInfoNoteL( EPhoneInformationConferenceOnHold, ETrue );
         }
     
     SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
@@ -593,7 +599,7 @@ void CPhoneConference::HandleConnectedConferenceL()
     
     if ( !FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
         { 
-        SendGlobalInfoNoteL( EPhoneInformationConferenceActiveted );
+        SendGlobalInfoNoteL( EPhoneInformationConferenceActiveted, ETrue );
         }
     
     SetTouchPaneButtonEnabled( EPhoneInCallCmdPrivate );

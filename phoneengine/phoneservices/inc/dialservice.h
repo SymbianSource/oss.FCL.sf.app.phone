@@ -13,6 +13,26 @@
 *
 * Description:  Dial API to be used through Qt Highway.
 *
+*
+*            Example usage:
+*            QString service("phoneui");
+*            QString interface(""com.nokia.symbian.ICallDial");
+*            QString operation("dial(QString)"); // choose appropriate operation
+*            XQApplicationManager appManager;
+*            QScopedPointer<XQAiwRequest> request(appManager.create(service, interface, operation, false));
+*            if (request == NULL) {
+*                //Service not found 
+*            }
+*            QList<QVariant> args;
+*            args << QString("0501234567"); // number or address
+*            // add contactId and serviceId when needed by operation
+*            request->setArguments(args);
+*            if (request->send()) {
+*               //error
+*            }
+*
+*            Note:
+*            
 */
 
 #ifndef DIALSERVICE_H
@@ -23,6 +43,9 @@
 #include <xqserviceprovider.h>
 #include "mpecallcontrolif.h"
 #include "mpecallsettersif.h"
+
+// FORWARD DECLARATIONS
+class XQSettingsManager;
 
 class DialService : public XQServiceProvider
 {
@@ -37,10 +60,6 @@ public slots:
         
         This method makes a cellular switched dial command to
         Phone Application. It is intended to be used via Qt Highway.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.symbian.ICallDial","dial(QString)");
-        snd << "0501234567";        
     */
     int dial(const QString& number);
     
@@ -51,10 +70,7 @@ public slots:
         Phone Application. It is intended to be used via Qt Highway.
         Caller's name is shown according to the given Phonebook contact
         identifier.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.symbian.ICallDial","dial(QString,int)");
-        snd << "0501234567" << 123456;        
+     
     */
     int dial(const QString& number, int contactId);
     
@@ -63,10 +79,7 @@ public slots:
         
         This method makes a video call dial command to
         Phone Application. It is intended to be used via Qt Highway.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.symbian.ICallDial","dial(QString)");
-        snd << "0501234567";        
+
     */
     void dialVideo(const QString& number);
 
@@ -77,10 +90,6 @@ public slots:
         Phone Application. It is intended to be used via Qt Highway.
         Caller's name is shown according to the given Phonebook contact
         identifier.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.symbian.ICallDial","dial(QString,int)");
-        snd << "0501234567" << 123456;        
     */
     void dialVideo(const QString& number, int contactId);
     
@@ -89,10 +98,6 @@ public slots:
         
         This method makes a voip call dial command to
         Phone Application. It is intended to be used via Qt Highway.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.symbian.ICallDial","dialVoip(QString)");
-        snd << "address@domain";        
     */
     void dialVoip(const QString& address);
     
@@ -103,10 +108,7 @@ public slots:
         Phone Application. It is intended to be used via Qt Highway.
         Caller's name is shown according to the given Phonebook contact
         identifier.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.symbian.ICallDial","dialVoip(QString,int)");
-        snd << "address@domain" << 123456;        
+
     */
     void dialVoip(const QString& address, int contactId);
     
@@ -116,10 +118,6 @@ public slots:
         This method makes a voip call dial command to
         Phone Application. It is intended to be used via Qt Highway.
         Call is made by given service (id).
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.symbian.ICallDial","dialVoipService(QString,int)");
-        snd << "address@domain" << 123;        
     */
     void dialVoipService(const QString& address, int serviceId);
     
@@ -131,25 +129,37 @@ public slots:
         Call is made by given service (id).
         Caller's name is shown according to the given Phonebook contact
         identifier.
-        
-        Usage example:
-        XQServiceRequest snd("com.nokia.symbian.ICallDial","dialVoipService(QString,int,int)");
-        snd << "address@domain" << 123 << 12345;        
     */
     void dialVoipService(const QString& address, int serviceId, int contactId);
     
 private:
+	
+    /*!
+        \fn QString modifyPhoneNumber(QString& number)
+        
+        Returns a modified phone number string. Strips white spaces, makes prefix changes etc. 
+    */
+    QString modifyPhoneNumber(const QString &number) Q_REQUIRED_RESULT;
+	
     /*!
         \fn QString simplified(QString& number)
         
         Returns a string that has whitespaces, '(', ')', '-', '[', and ']' chars removed 
     */
     static QString simplified(const QString &number) Q_REQUIRED_RESULT;
+    
+    /*!
+        \fn QString japanPrefixModifications(QString& number)
+        
+        Returns a string that has japan specific configuration modifications made 
+    */
+    QString japanPrefixModifications(const QString &number) Q_REQUIRED_RESULT;
 
 
 private:
-    MPECallControlIF &m_call;
-    MPECallSettersIF &m_parameters;    
+    MPECallControlIF  &m_call;
+    MPECallSettersIF  &m_parameters;
+    XQSettingsManager *m_settingsManager;
 };
 
 #endif // DIALERSERVICE_H

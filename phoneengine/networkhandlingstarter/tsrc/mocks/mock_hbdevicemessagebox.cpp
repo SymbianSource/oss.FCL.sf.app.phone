@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -19,6 +19,20 @@
 #include <hbdevicemessagebox.h>
 
 // ============================ MEMBER FUNCTIONS ===============================
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::HbDeviceMessageBox
+// -----------------------------------------------------------------------------
+//
+HbDeviceMessageBox::HbDeviceMessageBox( 
+        HbMessageBox::MessageBoxType type,
+        QObject * parent )
+    //:
+    //QObject( /*type, parent*/ )
+    {
+    
+    }
+
 
 // -----------------------------------------------------------------------------
 // HbDeviceMessageBox::HbDeviceMessageBox
@@ -51,12 +65,12 @@ HbDeviceMessageBox::~HbDeviceMessageBox(  )
 //
 bool HbDeviceMessageBox::question( 
         const QString & text,
-        const QString & primaryButtonText,
-        const QString & secondaryButtonText )
+        const QString & acceptButtonText,
+        const QString & rejectButtonText )
     {
     SMC_MOCK_METHOD3( bool, const QString &, text, 
-        const QString &, primaryButtonText, 
-        const QString &, secondaryButtonText )
+        const QString &, acceptButtonText, 
+        const QString &, rejectButtonText )
     }
 
 
@@ -93,6 +107,16 @@ void HbDeviceMessageBox::show(  )
 
 
 // -----------------------------------------------------------------------------
+// HbDeviceMessageBox::update
+// -----------------------------------------------------------------------------
+//
+void HbDeviceMessageBox::update(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
 // HbDeviceMessageBox::close
 // -----------------------------------------------------------------------------
 //
@@ -106,9 +130,51 @@ void HbDeviceMessageBox::close(  )
 // HbDeviceMessageBox::exec
 // -----------------------------------------------------------------------------
 //
-HbAction * HbDeviceMessageBox::exec(  )
+const QAction * HbDeviceMessageBox::exec(  )
     {
-    SMC_MOCK_METHOD0( HbAction * )
+    SMC_MOCK_METHOD0( const QAction * )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::triggeredAction
+// -----------------------------------------------------------------------------
+//
+const QAction * HbDeviceMessageBox::triggeredAction(  ) const
+    {
+    SMC_MOCK_METHOD0( const QAction * )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::isAcceptAction
+// -----------------------------------------------------------------------------
+//
+bool HbDeviceMessageBox::isAcceptAction( 
+        const QAction * action ) const
+    {
+    //SMC_MOCK_METHOD1( bool, const QAction *, action )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::setMessageBoxType
+// -----------------------------------------------------------------------------
+//
+void HbDeviceMessageBox::setMessageBoxType( 
+        HbMessageBox::MessageBoxType type )
+    {
+    SMC_MOCK_METHOD1( void, HbMessageBox::MessageBoxType, type )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::messageBoxType
+// -----------------------------------------------------------------------------
+//
+HbMessageBox::MessageBoxType HbDeviceMessageBox::messageBoxType(  ) const
+    {
+    SMC_MOCK_METHOD0( HbMessageBox::MessageBoxType )
     }
 
 
@@ -155,118 +221,23 @@ QString HbDeviceMessageBox::iconName(  ) const
 
 
 // -----------------------------------------------------------------------------
-// HbDeviceMessageBox::setIconAlignment
+// HbDeviceMessageBox::setIconVisible
 // -----------------------------------------------------------------------------
 //
-void HbDeviceMessageBox::setIconAlignment( 
-        Qt::Alignment align )
+void HbDeviceMessageBox::setIconVisible( 
+        bool visible )
     {
- //   SMC_MOCK_METHOD1( void, Qt::Alignment, align )
+    SMC_MOCK_METHOD1( void, bool, visible )
     }
 
 
 // -----------------------------------------------------------------------------
-// HbDeviceMessageBox::iconAlignment
+// HbDeviceMessageBox::iconVisible
 // -----------------------------------------------------------------------------
 //
-Qt::Alignment HbDeviceMessageBox::iconAlignment(  ) const
+bool HbDeviceMessageBox::iconVisible(  ) const
     {
- //   SMC_MOCK_METHOD0( Qt::Alignment )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDeviceMessageBox::setTimeout
-// -----------------------------------------------------------------------------
-//
-void HbDeviceMessageBox::setTimeout( 
-        int timeout )
-    {
-    SMC_MOCK_METHOD1( void, int, timeout )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDeviceMessageBox::setTimeout
-// -----------------------------------------------------------------------------
-//
-void HbDeviceMessageBox::setTimeout( 
-        HbPopup::DefaultTimeout timeout )
-    {
-  //  SMC_MOCK_METHOD1( void, HbPopup::DefaultTimeout, timeout )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDeviceMessageBox::timeout
-// -----------------------------------------------------------------------------
-//
-int HbDeviceMessageBox::timeout(  ) const
-    {
-    SMC_MOCK_METHOD0( int )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDeviceMessageBox::setDismissPolicy
-// -----------------------------------------------------------------------------
-//
-void HbDeviceMessageBox::setDismissPolicy( 
-        HbPopup::DismissPolicy dismissPolicy )
-    {
-  //  SMC_MOCK_METHOD1( void, HbPopup::DismissPolicy, dismissPolicy )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDeviceMessageBox::dismissPolicy
-// -----------------------------------------------------------------------------
-//
-HbPopup::DismissPolicy HbDeviceMessageBox::dismissPolicy(  ) const
-    {
- //   SMC_MOCK_METHOD0( HbPopup::DismissPolicy )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDeviceMessageBox::primaryAction
-// -----------------------------------------------------------------------------
-//
-HbAction * HbDeviceMessageBox::primaryAction(  ) const
-    {
-    SMC_MOCK_METHOD0( HbAction * )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDeviceMessageBox::setPrimaryAction
-// -----------------------------------------------------------------------------
-//
-void HbDeviceMessageBox::setPrimaryAction( 
-        HbAction * action )
-    {
-  //  SMC_MOCK_METHOD1( void, HbAction *, action )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDeviceMessageBox::secondaryAction
-// -----------------------------------------------------------------------------
-//
-HbAction * HbDeviceMessageBox::secondaryAction(  ) const
-    {
-    SMC_MOCK_METHOD0( HbAction * )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbDeviceMessageBox::setSecondaryAction
-// -----------------------------------------------------------------------------
-//
-void HbDeviceMessageBox::setSecondaryAction( 
-        HbAction * action )
-    {
-  //  SMC_MOCK_METHOD1( void, HbAction *, action )
+    SMC_MOCK_METHOD0( bool )
     }
 
 
@@ -288,6 +259,83 @@ void HbDeviceMessageBox::setAnimationDefinition(
 QString HbDeviceMessageBox::animationDefinition(  ) const
     {
     SMC_MOCK_METHOD0( QString )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::setTimeout
+// -----------------------------------------------------------------------------
+//
+void HbDeviceMessageBox::setTimeout( 
+        int timeout )
+    {
+    SMC_MOCK_METHOD1( void, int, timeout )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::setTimeout
+// -----------------------------------------------------------------------------
+//
+void HbDeviceMessageBox::setTimeout( 
+        HbPopup::DefaultTimeout timeout )
+    {
+    SMC_MOCK_METHOD1( void, HbPopup::DefaultTimeout, timeout )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::timeout
+// -----------------------------------------------------------------------------
+//
+int HbDeviceMessageBox::timeout(  ) const
+    {
+    SMC_MOCK_METHOD0( int )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::setDismissPolicy
+// -----------------------------------------------------------------------------
+//
+void HbDeviceMessageBox::setDismissPolicy( 
+        HbPopup::DismissPolicy dismissPolicy )
+    {
+    SMC_MOCK_METHOD1( void, HbPopup::DismissPolicy, dismissPolicy )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::dismissPolicy
+// -----------------------------------------------------------------------------
+//
+HbPopup::DismissPolicy HbDeviceMessageBox::dismissPolicy(  ) const
+    {
+    SMC_MOCK_METHOD0( HbPopup::DismissPolicy )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::setAction
+// -----------------------------------------------------------------------------
+//
+void HbDeviceMessageBox::setAction( 
+        QAction * action,
+        ActionRole role )
+    {
+    //SMC_MOCK_METHOD2( void, QAction *, action, 
+    //    ActionRole, role )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::action
+// -----------------------------------------------------------------------------
+//
+QAction * HbDeviceMessageBox::action( 
+        ActionRole role ) const
+    {
+    //SMC_MOCK_METHOD1( QAction *, ActionRole, role )
     }
 
 

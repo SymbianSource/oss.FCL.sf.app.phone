@@ -36,6 +36,7 @@ class HbListWidget;
 class CpDivertItemData;
 class QEventLoop; 
 class HbLineEdit; 
+class HbDataFormModelItem;
 
 using namespace CpTelephonyUtils;
 
@@ -60,6 +61,13 @@ class CpDivertPluginGroup : public CpSettingFormItemData
         CpDivertItemData *item;
     };
     
+    // Activate divert phases
+    enum ActivateDivertPhases
+    {
+        NonePhase,
+        PopUpVoiceNumberListQueryPhase,
+        PopUpTimerQueryPhase
+    };
     
 public:
 
@@ -134,14 +142,14 @@ private:
     /**
      Show to user divert number query list.
      */
-    bool popUpVoiceNumberListQuery(
-            const QString& heading, QString& result, PsServiceGroup serviceGroup);
+    void popUpVoiceNumberListQuery(
+            const QString& heading, PsServiceGroup serviceGroup);
     
     /**
      Show to user number query.
      */
     void popUpNumberEditor(
-            const QString& heading, QString& result);
+            const QString& heading);
     
     
     /**
@@ -152,7 +160,7 @@ private:
     /**
      Show to user divert time out query list.
      */
-    bool popUpTimerQuery(int &timeout);
+    void popUpTimerQuery();
     
     /**
      Desides which bsc parameters to use.
@@ -223,7 +231,7 @@ private:
      */
     void updateDependentDivertOptions(bool fetchFromNetwork = false);
     void activateDependentDivertOption(CpDivertItemData* item, bool fetchFromNetwork);
-    void deActivateDependentDivertOption(CpDivertItemData* item) const;
+    void deactivateDependentDivertOption(CpDivertItemData* item) const;
     
     /**
      Synchronizes content and status of not available divert option based on
@@ -231,6 +239,10 @@ private:
      */
     void updateNotAvailableDivertOption();
     
+    void nextPhaseForActivateDivert(bool ok);
+    
+    bool isDivertSettingsItem(HbDataFormModelItem* modelItem);
+     
 private:   // data
 
     // Setting wrappers 
@@ -256,9 +268,6 @@ private:   // data
     int m_activeNoteId;
     int m_activeProgressNoteId;
 
-    // To prevent adding vmbx number to defaultlist
-    bool m_divertToVoiceMailBox;
-
     /**
      Divert request queue
      */
@@ -266,14 +275,11 @@ private:   // data
 
     CpItemDataHelper &m_helper;
     
-    int m_divertTimeout;
-    
-    HbListWidget *m_voiceNumberList;
-    HbListWidget *m_popupTimerList; 
-    QString m_divertNumber; 
-    HbLineEdit *m_voiceNumberEditor; 
-    QEventLoop *m_eventLoop; 
-    
+    ActivateDivertPhases m_activateDivertPhase;
+    PSCallDivertingCommand m_divertCommand;
+    int m_timerId;
+    HbDialog *m_dialog;
+
 };
 
 #endif // CPDIVERTPLUGINGROUP_H

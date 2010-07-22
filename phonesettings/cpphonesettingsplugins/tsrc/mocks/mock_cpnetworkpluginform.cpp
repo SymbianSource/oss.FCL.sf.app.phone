@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -96,10 +96,9 @@ void CpNetworkPluginForm::networkModeStateChanged(
 // CpNetworkPluginForm::operatorSelectionStateChanged
 // -----------------------------------------------------------------------------
 //
-void CpNetworkPluginForm::operatorSelectionStateChanged( 
-        bool index )
+void CpNetworkPluginForm::operatorSelectionStateChanged(  )
     {
-    SMC_MOCK_METHOD1( void, bool, index )
+    SMC_MOCK_METHOD0( void )
     }
 
 
@@ -180,6 +179,16 @@ void CpNetworkPluginForm::handleNetworkChanged(
     {
 //    SMC_MOCK_METHOD2( void, PSetNetworkWrapper::NetworkInfo &, currentInfo, 
 //        PSetNetworkWrapper::RegistrationStatus &, status )
+    }
+
+// -----------------------------------------------------------------------------
+// CpNetworkPluginForm::finishedManualSelectiondialog
+// -----------------------------------------------------------------------------
+//
+void CpNetworkPluginForm::finishedManualSelectiondialog( 
+        HbAction* /*action*/  )
+    {
+   // SMC_MOCK_METHOD1( void, HbAction *, action )
     }
 
 

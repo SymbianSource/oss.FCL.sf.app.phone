@@ -25,6 +25,7 @@ class CpDivertPlugin;
 class CpDivertPluginGroup;
 class CpItemDataHelper;
 class HbDialog;
+class HbDataFormModel;
 
 class UT_CpDivertPlugin : public QObject, MockService
 {
@@ -37,21 +38,20 @@ public:
 private slots:
 
     void init();
+    void cleanup();
     
     void t_createSettingFormItemData();
 
     void t_changeDivertingStateRequested();
     
     void t_itemShown();
-    void t_popUpTimerQuery();
     
     void t_handleDivertingChanged();
     void t_handleDivertingStatus();
     void t_handleDivertingError();
-    
-    void cleanup();
-    
+
     void t_memleak();
+    void t_popUpTimerQuery();
     
 private:
     
@@ -82,12 +82,17 @@ private:
     void doAndVerifyAction( const QString& dialog, const QString& action );
     void selectItemFromListWidget( const QString& dialog, const QString& item );
     void timerEvent( QTimerEvent* event );
+    void waitForQueueEmpty();
+    
+signals:
+    void queueEmpty();
     
 private:
 
     CpDivertPlugin *m_divertplugin;
     CpDivertPluginGroup *m_divertpluginGroup;
     CpItemDataHelper *m_helper;
+    HbDataFormModel *m_dataForm;
 
     QQueue<dialogAction*> actionQueue;
     

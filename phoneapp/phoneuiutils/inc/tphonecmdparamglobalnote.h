@@ -89,6 +89,19 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         IMPORT_C void SetTimeout( TInt aTimeout );
         
         /**
+        * Sets notification dialog flag.
+        * @param aNotificationDialog True if notification dialog 
+        *        should be used.
+        */
+        IMPORT_C void SetNotificationDialog( TBool aNotificationDialog );
+        
+        /**
+        * Sets cause code.
+        * @param aCauseCode Cause code.
+        */
+        IMPORT_C void SetCauseCode( TInt aCauseCode );
+        
+        /**
         * Returns the global note type
         * @return Returns the type
         */
@@ -129,6 +142,18 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
          * @return   Timeout value.
          */
         IMPORT_C TInt Timeout() const;
+        
+        /**
+         * Returns the notification dialog flag.
+         * @return Notification dialog flag.
+         */
+        IMPORT_C TBool NotificationDialog() const;
+        
+        /**
+        * Returns cause code.
+        * @return Cause code.
+        */
+        IMPORT_C TInt CauseCode() const;
     
     private:    
         
@@ -166,6 +191,16 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         * Timeout for a note.
         */
         TInt iTimeout;
+        
+        /**
+        * Notification Dialog flag.
+        */
+        TBool iNotificationDialog;
+        
+        /**
+        * Cause code. 
+        */
+        TInt iCauseCode; 
     };
 
 #endif // __TPHONECMDPARAMGLOBALNOTE_H

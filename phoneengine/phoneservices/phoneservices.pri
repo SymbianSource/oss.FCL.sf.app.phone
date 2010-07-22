@@ -18,19 +18,23 @@ SOURCES=\
     ./src/phoneservices.cpp \
     ./src/dialservice.cpp \
     ./src/dtmfservice.cpp \
-    ./src/keysequencerecognitionservice.cpp \
     ./src/dialservicedepricated.cpp \
     ./src/dtmfservicedepricated.cpp \
-    ./src/keysequencerecognitionservicedepricated.cpp
+    ./src/urischemehandlerservice.cpp \
+    ./src/urischemeparser.cpp \
+    ./src/telurischemeparser.cpp \
+    ./src/ctiurischemeparser.cpp
 
 HEADERS=\
     ./inc/phoneservices.h \
     ./inc/dialservice.h \
     ./inc/dtmfservice.h \
-    ./inc/keysequencerecognitionservice.h \
     ./inc/dialservicedepricated.h \
     ./inc/dtmfservicedepricated.h \
-    ./inc/keysequencerecognitionservicedepricated.h
+    ./inc/urischemehandlerservice.h \
+    ./inc/urischemeparser.h \
+    ./inc/telurischemeparser.h \
+    ./inc/ctiurischemeparser.h
     
 PHONESERVICES_API_HEADERS=\
 		./inc/phoneservices.h

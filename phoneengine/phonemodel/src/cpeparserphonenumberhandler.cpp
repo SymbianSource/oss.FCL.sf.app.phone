@@ -185,6 +185,7 @@ TPtrC CPEParserPhoneNumberHandler::FilterPostfixL( TPtrC aPostfix )
                 stripStart = i;
                 }
             }
+        input.Inc();
         }
     if ( stripStart != KErrNotFound )
         {
@@ -205,7 +206,7 @@ TBool CPEParserPhoneNumberHandler::IsPhoneOffline()
     TBool isPhoneOffline( EFalse );
 
     if( FeatureManager::FeatureSupported( KFeatureIdOfflineMode )
-        && ( iDataStore.ProfileId() == EProfileOffLineId ) )
+        && ( EFalse == iOwner.IsNetworkConnectionAllowed() ) )
         {
         isPhoneOffline = ETrue;
         }

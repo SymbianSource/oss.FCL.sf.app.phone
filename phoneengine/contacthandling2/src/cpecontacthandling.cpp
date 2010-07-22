@@ -209,22 +209,6 @@ void CPEContactHandling::FindContactInfoSyncFromContactDbL
         }
     }
 
-// -----------------------------------------------------------------------------
-// CPEContactHandling::GetSpeedDialLocation
-// Get's phone number and contact id from given location.
-// -----------------------------------------------------------------------------
-//
-TInt CPEContactHandling::GetSpeedDialLocation( 
-    TInt aLocationIndex, 
-    TPEPhoneNumber& aNumber )
-    {
-    TInt error = KErrLocked;
-    ASSERT( iContactMatcher );
-    TRAP( error, iContactMatcher->GetSpeedDialLocationL( aLocationIndex, 
-                                                        aNumber ) );
-    return error;
-    }
-
 // ================= OTHER EXPORTED FUNCTIONS ===============================
 
 //  End of File 

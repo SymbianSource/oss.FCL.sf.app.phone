@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -44,7 +44,7 @@ HbIcon::HbIcon(  )
 // -----------------------------------------------------------------------------
 //
 HbIcon::HbIcon( 
-        const QString & iconName )
+        const QString & /*iconName*/ )
     {
     
     }
@@ -55,7 +55,7 @@ HbIcon::HbIcon(
 // -----------------------------------------------------------------------------
 //
 HbIcon::HbIcon( 
-        const QIcon & icon )
+        const QIcon & /*icon*/ )
     {
     
     }
@@ -66,7 +66,7 @@ HbIcon::HbIcon(
 // -----------------------------------------------------------------------------
 //
 HbIcon::HbIcon( 
-        const HbIcon & other )
+        const HbIcon & /*other*/ )
     {
     
     }
@@ -86,6 +86,16 @@ HbIcon::~HbIcon(  )
 // -----------------------------------------------------------------------------
 //
 bool HbIcon::isNull(  ) const
+    {
+    SMC_MOCK_METHOD0( bool )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbIcon::isBadged
+// -----------------------------------------------------------------------------
+//
+bool HbIcon::isBadged(  ) const
     {
     SMC_MOCK_METHOD0( bool )
     }
@@ -116,7 +126,7 @@ QPixmap HbIcon::pixmap(  )
 // -----------------------------------------------------------------------------
 //
 void HbIcon::setColor( 
-        const QColor & color )
+        const QColor & /*color*/ )
     {
 //    SMC_MOCK_METHOD1( void, const QColor &, color )
     }
@@ -158,8 +168,8 @@ void HbIcon::setIconName(
 // -----------------------------------------------------------------------------
 //
 QString HbIcon::iconName( 
-        QIcon::Mode mode,
-        QIcon::State state ) const
+        QIcon::Mode /*mode*/,
+        QIcon::State /*state*/ ) const
     {
 //    SMC_MOCK_METHOD2( QString, QIcon::Mode, mode, 
 //        QIcon::State, state )
@@ -171,9 +181,9 @@ QString HbIcon::iconName(
 // -----------------------------------------------------------------------------
 //
 void HbIcon::setIconName( 
-        const QString & iconName,
-        QIcon::Mode mode,
-        QIcon::State state )
+        const QString & /*iconName*/,
+        QIcon::Mode /*mode*/,
+        QIcon::State /*state*/ )
     {
 //    SMC_MOCK_METHOD3( void, const QString &, iconName, 
 //        QIcon::Mode, mode, 
@@ -206,7 +216,7 @@ QSizeF HbIcon::size(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbIcon::setSize( 
-        const QSizeF & size )
+        const QSizeF & /*size*/ )
     {
 //    SMC_MOCK_METHOD1( void, const QSizeF &, size )
     }
@@ -217,7 +227,7 @@ void HbIcon::setSize(
 // -----------------------------------------------------------------------------
 //
 void HbIcon::setHeight( 
-        qreal height )
+        qreal /*height*/ )
     {
 //    SMC_MOCK_METHOD1( void, qreal, height )
     }
@@ -228,7 +238,7 @@ void HbIcon::setHeight(
 // -----------------------------------------------------------------------------
 //
 void HbIcon::setWidth( 
-        qreal width )
+        qreal /*width*/ )
     {
 //    SMC_MOCK_METHOD1( void, qreal, width )
     }
@@ -253,22 +263,44 @@ qreal HbIcon::height(  ) const
 //    SMC_MOCK_METHOD0( qreal )
     }
 
+
+// -----------------------------------------------------------------------------
+// HbIcon::mirroringMode
+// -----------------------------------------------------------------------------
+//
+HbIcon::MirroringMode HbIcon::mirroringMode(  ) const
+    {
+    SMC_MOCK_METHOD0( MirroringMode )
+    }
+
+
 // -----------------------------------------------------------------------------
 // HbIcon::setMirroringMode
 // -----------------------------------------------------------------------------
 //
 void HbIcon::setMirroringMode( 
-        MirroringMode mode )
+        HbIcon::MirroringMode /*mode*/ )
     {
 //    SMC_MOCK_METHOD1( void, MirroringMode, mode )
     }
+
+
+// -----------------------------------------------------------------------------
+// HbIcon::flags
+// -----------------------------------------------------------------------------
+//
+HbIcon::Flags HbIcon::flags(  ) const
+    {
+    //SMC_MOCK_METHOD0( Flags )
+    }
+
 
 // -----------------------------------------------------------------------------
 // HbIcon::setFlags
 // -----------------------------------------------------------------------------
 //
 void HbIcon::setFlags( 
-        Flags flags )
+        Flags /*flags*/ )
     {
 //    SMC_MOCK_METHOD1( void, Flags, flags )
     }
@@ -279,12 +311,12 @@ void HbIcon::setFlags(
 // -----------------------------------------------------------------------------
 //
 void HbIcon::paint( 
-        QPainter * painter,
-        const QRectF & rect,
-        Qt::AspectRatioMode aspectRatioMode,
-        Qt::Alignment alignment,
-        QIcon::Mode mode,
-        QIcon::State state ) const
+        QPainter * /*painter*/,
+        const QRectF & /*rect*/,
+        Qt::AspectRatioMode /*aspectRatioMode*/,
+        Qt::Alignment /*alignment*/,
+        QIcon::Mode /*mode*/,
+        QIcon::State /*state*/ ) const
     {
 /*    SMC_MOCK_METHOD6( void, QPainter *, painter, 
         const QRectF &, rect, 
@@ -296,12 +328,61 @@ void HbIcon::paint(
 
 
 // -----------------------------------------------------------------------------
+// HbIcon::QVariant
+// -----------------------------------------------------------------------------
+//
+/*
+operator HbIcon::QVariant(  ) const
+    {
+    SMC_MOCK_METHOD0( operator )
+    }
+*/
+
+// -----------------------------------------------------------------------------
 // HbIcon::qicon
 // -----------------------------------------------------------------------------
 //
 QIcon & HbIcon::qicon(  ) const
     {
  //   SMC_MOCK_METHOD0( QIcon & )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbIcon::addBadge
+// -----------------------------------------------------------------------------
+//
+bool HbIcon::addBadge( 
+        Qt::Alignment alignment,
+        const HbIcon & badge,
+        int z )
+    {
+   /*
+    SMC_MOCK_METHOD3( bool, Qt::Alignment, alignment, 
+        const HbIcon &, badge, 
+        int, z )
+        */
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbIcon::removeBadge
+// -----------------------------------------------------------------------------
+//
+bool HbIcon::removeBadge( 
+        const HbIcon & badge )
+    {
+   // SMC_MOCK_METHOD1( bool, const HbIcon &, badge )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbIcon::removeAllBadges
+// -----------------------------------------------------------------------------
+//
+void HbIcon::removeAllBadges(  )
+    {
+    SMC_MOCK_METHOD0( void )
     }
 
 

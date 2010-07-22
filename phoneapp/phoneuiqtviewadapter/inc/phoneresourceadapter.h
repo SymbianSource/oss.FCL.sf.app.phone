@@ -76,7 +76,8 @@ public:
         
         Returns QString.
     */
-    QString convertToString(int symbianResourceId) const;
+    QString convertToString(int symbianResourceId, 
+            const QString &causeCode = QString("")) const;
 
     /*!
         \fn QString PhoneResourceAdapter::convert (int symbianResourceId, QString text )
@@ -86,7 +87,7 @@ public:
         
         Returns QString.
     */   
-    QString convertToString(int symbianResourceId, const QString &text) const;
+    QString convertToStringWithParam(int symbianResourceId, const QString &text) const;
     
     /*!
         \fn int PhoneResourceAdapter::defaultToolbarResourceId ()
@@ -112,6 +113,16 @@ public:
         Returns HbAction list.
     */ 
     QList<HbAction*> convertToHbActions(int symbianResourceId) const;
+
+    /*!
+        \fn QString PhoneResourceAdapter::convertToToolBarCommandList()
+        
+        Converts given Symbian command id to tool bar command list.
+        
+        Returns command list.
+    */
+    QList<PhoneAction::ToolBarItem> convertToToolBarCommandList(
+            int symbianResourceId ) const;
     
 protected:    
 

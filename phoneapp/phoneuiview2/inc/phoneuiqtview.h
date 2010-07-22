@@ -31,6 +31,7 @@ class HbToolBar;
 class HbVolumeSliderPopup;
 class Dialpad;
 class XqKeyCapture;
+class DialpadKeyHandler;
 
 #ifdef BUILD_PHONEUIQTVIEW
 #define PHONEUIQTVIEW_EXPORT Q_DECL_EXPORT
@@ -190,6 +191,13 @@ public:
     void clearAndHideDialpad();
     
     /*!
+        \fn void PhoneUIQtView::clearDialpad()
+        
+        Clears text from dialpad.
+    */
+    void clearDialpad();
+    
+    /*!
         \fn void PhoneUIQtView::bringToForeground()
         
         Brings to foreground.
@@ -217,6 +225,20 @@ public:
     */
     HbMenu &menuReference();
 
+    /*!
+        \fn void PhoneUIQtViewIF::captureKey()
+        
+        Captures key.
+    */
+    void captureKey(Qt::Key key, bool capture);
+    
+    /*
+        \fn void setRestrictedMode()
+        
+        Sets Ui to restricted mode. Decides which keyevent are allowed.
+     */
+    void setRestrictedMode(bool restrictedMode);
+    
 public slots:
 
     /*!
@@ -371,6 +393,9 @@ private:
     QSignalMapper       *m_menuSignalMapper;
     XqKeyCapture        *m_keyCapture;
     QSystemNetworkInfo  *m_networkInfo;
+    QList<Qt::Key>      m_keyCaptures;
+    DialpadKeyHandler   *m_dialpadKeyHandler;
+    bool                m_restrictedMode;
 };
 
 #endif // PHONEUIQTVIEW_H

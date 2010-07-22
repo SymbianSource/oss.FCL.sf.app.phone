@@ -20,6 +20,7 @@
 #include <hbmainwindow.h>
 #include <HbDeviceMessageBox.h>
 #include <HbMessageBox.h>
+#include <hbnotificationdialog.h>
 #define private public
 #include "cpphonenotes.h"
 
@@ -138,12 +139,21 @@ void UT_CpPhoneNotes::t_memleak()
 }
 
 /*!
+  UT_CpPhoneNotes::t_showNotificationDialog
+ */
+void UT_CpPhoneNotes::t_showNotificationDialog()
+{
+    CpPhoneNotes::instance()->showNotificationDialog("NotificationDialog");
+}
+
+/*!
   UT_CpPhoneNotes::t_showProgressNote
  */
 void UT_CpPhoneNotes::t_showProgressNote()
 {
-    CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid1, "test");
-    CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid2, "test");
+    CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid1, "testshowProgressNote1");
+    QTest::qWait(5000);
+    CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid2, "testshowProgressNote2");
     QTest::qWait(5000);
 }
 
@@ -152,7 +162,10 @@ void UT_CpPhoneNotes::t_showProgressNote()
  */
 void UT_CpPhoneNotes::t_showGlobalProgressNote()
 {
-    CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid1, "test");
+    CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid1, "testshowGPN");
+    QTest::qWait(5000);
+    CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid2,
+            hbTrId("txt_common_info_requesting"));
     QTest::qWait(5000);
 }
 
@@ -180,17 +193,6 @@ void UT_CpPhoneNotes::t_showGlobalErrorNote()
 
 }
 
-/*!
-  UT_CpPhoneNotes::t_showBasicServiceList
- */
-void UT_CpPhoneNotes::t_showBasicServiceList()
-{
-    QList<unsigned char> basicServiceGroupIds;
-    basicServiceGroupIds << Telephony;
-    basicServiceGroupIds << AllDataTele;
-    CpPhoneNotes::instance()->
-        showBasicServiceList("Basic Service List", basicServiceGroupIds );
-}
 
 /*!
   UT_CpPhoneNotes::t_showCallDivertDetails
@@ -230,7 +232,7 @@ void UT_CpPhoneNotes::t_showPasswordQueryDialog()
 void UT_CpPhoneNotes::t_cancelNote()
 {
     CpPhoneNotes::instance()->cancelNote(m_noteid1);
-    CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid1, "test");
+    CpPhoneNotes::instance()->showGlobalProgressNote(m_noteid1, "testcancelNote");
     CpPhoneNotes::instance()->noteShowing();
     CpPhoneNotes::instance()->cancelNote(m_noteid1);
         

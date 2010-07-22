@@ -94,9 +94,6 @@ enum
     EPhoneViewStartCapturingKey,
     EPhoneViewStopCapturingKey,
     EPhoneViewSetGlobalNotifiersDisabled,
-    EPhoneViewSetSpeedDialLocation, 
-    EPhoneViewGetNumberFromSpeedDialLocation,
-    EPhoneViewAssignSpeedDialLocation,
     EPhoneViewGetHoldFlag,
     EPhoneViewSetHoldFlag,
     EPhoneViewSetSoftRejectFlag,
@@ -235,6 +232,11 @@ enum
     EPhoneViewBackButtonActive,
     EPhoneViewHsToForegroundAfterCall,
     EPhoneViewOpenContacts,
+    EPhoneViewSetIhfFlag,
+    EPhoneViewSetMuteFlag,
+    EPhoneViewLaunchLogs,
+    EPhoneViewSetBlueToothFlag,
+    EPhoneViewSetBluetoothAvailableFlag,
     EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.
 };
 

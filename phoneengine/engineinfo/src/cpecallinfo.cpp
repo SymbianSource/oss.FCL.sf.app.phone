@@ -106,6 +106,7 @@ void CPECallInfo::Reset( TBool aIsConference )
     iDtmfPostFix = KNullDesC;
     iForwardAddressChoices = NULL;
     iCallIndex = KPEInvalidCallIndex;
+    iProtocolError = KErrNotFound;
     }
 
 // ---------------------------------------------------------------------------
@@ -650,5 +651,22 @@ TPECallOrigin CPECallInfo::CallOrigin() const
     return iCallOrigin;
     }
     
-   
+// ---------------------------------------------------------------------------
+// Sets the protocol error of a call.
+// ---------------------------------------------------------------------------
+//
+void CPECallInfo::SetProtocolError( TInt aError )
+    {
+    iProtocolError = aError;
+    }
+
+// ---------------------------------------------------------------------------
+// Returns protocol error of a call.
+// ---------------------------------------------------------------------------
+//
+TInt CPECallInfo::ProtocolError() const
+    {
+    return iProtocolError;
+    }
+
 // End of File

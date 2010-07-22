@@ -24,6 +24,7 @@
 #include <hblabel.h>
 #include <hbaction.h>
 #include <hbmessagebox.h>
+#include <hbnotificationdialog.h>
 #include <QStandardItemModel>
 #include <QItemSelectionModel>
 #include <hbstringutil.h>
@@ -72,14 +73,8 @@ CpPhoneNotes::~CpPhoneNotes()
     DPRINT << ": IN";
 
     delete m_cpSettingsWrapper;
-    QObject* note(NULL);
-    foreach (note, *m_notesQueue) {
-        delete note;
-    }
+    qDeleteAll(*m_notesQueue);
     delete m_notesQueue;
-    if(m_passwordDialog) {
-        delete m_passwordDialog;
-    }
         
     
     DPRINT << ": OUT";
@@ -96,9 +91,12 @@ void CpPhoneNotes::showGlobalProgressNote(
     HbDeviceProgressDialog *note = 
         new HbDeviceProgressDialog(HbProgressDialog::WaitDialog, this);
     note->setText(text);
-    QAction *action = new QAction(hbTrId("txt_common_button_hide"), this);
-    //Ownership of action is not transferred. Deleted when note closes.
-    note->setAction(action, HbDeviceProgressDialog::CancelButtonRole );
+    
+    if(hbTrId("txt_common_info_requesting") == text){
+        QAction *action = new QAction(hbTrId("txt_common_button_hide"), note);
+        note->setAction(action, HbDeviceProgressDialog::CancelButtonRole );
+    }
+    
     noteId = reinterpret_cast<int>(note);
     DPRINT << ", NOTEID: " << noteId;
     QObject::connect(
@@ -143,54 +141,6 @@ void CpPhoneNotes::showGlobalNote(int &noteId, const QString& text,
     DPRINT << ": OUT";
 }
 
-/*!
-  CpPhoneNotes::showBasicServiceList.
- */
-void CpPhoneNotes::showBasicServiceList(
-    const QString &title, 
-    const QList<unsigned char> &basicServiceGroupIds)
-{
-    DPRINT << ": IN";
-    
-    Q_ASSERT(title != "");
-    Q_ASSERT(0 < basicServiceGroupIds.count());
-    
-    QScopedPointer<HbDialog> serviceListPopup(new HbDialog());
-    serviceListPopup->setDismissPolicy(HbDialog::NoDismiss);
-    serviceListPopup->setTimeout(HbPopup::NoTimeout);
-    
-    QScopedPointer<HbLabel> heading(
-        new HbLabel(title, serviceListPopup.data()));
-    heading->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    serviceListPopup->setHeadingWidget(heading.take());
-    
-    QScopedPointer<HbListView> serviceList(
-        new HbListView(serviceListPopup.data()));
-    QScopedPointer<QStandardItemModel> serviceListModel(
-        new QStandardItemModel(serviceList.data()));
-    for (int i = 0; i < basicServiceGroupIds.count(); i++) {
-        BasicServiceGroups groupId = 
-            static_cast<BasicServiceGroups>(basicServiceGroupIds.at(i));
-        QString groupName = basicServiceGroupName(groupId);
-        QScopedPointer<QStandardItem> listItem(new QStandardItem(groupName));
-        serviceListModel->appendRow(listItem.take());
-    }
-    serviceList->setModel(serviceListModel.take());
-    serviceList->setSelectionMode(HbAbstractItemView::NoSelection);
-    serviceListPopup->setContentWidget(serviceList.take());
-    
-    HbAction *backAction = 
-        new HbAction(hbTrId("txt_common_button_back"), serviceListPopup.data());
-    serviceListPopup->setPrimaryAction(backAction);
-    
-    HbDialog *serviceListPopupDialog = serviceListPopup.take();
-    QObject::connect(
-        serviceListPopupDialog, SIGNAL(finished(HbAction*)), 
-        serviceListPopupDialog, SLOT(deleteLater()));
-    serviceListPopupDialog->show();
-    
-    DPRINT << ": OUT";
-}
 
 /*!
   CpPhoneNotes::cancelNote.
@@ -230,77 +180,6 @@ void CpPhoneNotes::cancelNote(int noteId)
 bool CpPhoneNotes::noteShowing()
 {
     return !m_notesQueue->isEmpty();
-}
-
-/*!
-  CpPhoneNotes::basicServiceGroupName.
-  Resolves basic service group name by group identifier.
- */
-QString CpPhoneNotes::basicServiceGroupName(BasicServiceGroups basicServiceGroupId) const
-{
-    DPRINT << ": IN";
-    
-    QString string = "";
-    switch (basicServiceGroupId) {
-        case AllTeleAndBearer:
-            string = hbTrId("All services");
-            break;
-        case AllTele:
-            string = hbTrId("Voice, fax and messages");
-            break;
-        case Telephony:
-            string = hbTrId("Voice calls");
-            break;
-        case AllDataTele:
-            string = hbTrId("Fax and messages");
-            break;
-        case Fax:
-            string = hbTrId("Fax");
-            break;
-        case Sms:
-            string = hbTrId("Messages");
-            break;
-        case AllTeleExcSms:
-            string = hbTrId("Voice calls and fax");
-            break;
-        case AllBearer:
-            if (Tools::videoSupported()) {
-                string = hbTrId("Data and video services");
-            } else {
-                string = hbTrId("Data services");
-            }
-            break;
-        case AllAsync:
-            string = hbTrId("Asynchronous services");
-            break;
-        case AllSync:
-            string = hbTrId("Synchronous services");
-            break;
-        case SyncData:
-            string = hbTrId("Synchronous data services");
-            break;
-        case AsyncData:
-            string = hbTrId("Asynchronous data services");
-            break;
-        case PacketData:
-            string = hbTrId("Packet data");
-            break;
-        case PadAccess:
-            string = hbTrId("PAD access");
-            break;
-        case 30:
-            string = hbTrId("Video calls");
-            break;
-        case AltTele:
-            string = hbTrId("Alternate line services");
-            break;
-        default:
-            DPRINT << ", DEFAULT";
-            break;
-    }
-    
-    DPRINT << ": OUT";
-    return string;
 }
 
 /*!
@@ -353,7 +232,7 @@ void CpPhoneNotes::showCallDivertDetails(
     HbAction *backAction = new HbAction(
         hbTrId("txt_common_button_back"), 
         divertInfoScopedPointer.data());
-    divertInfoScopedPointer->setPrimaryAction(backAction);
+    divertInfoScopedPointer->addAction(backAction);
     
     HbMessageBox *divertInfo = divertInfoScopedPointer.take();
     QObject::connect(
@@ -380,17 +259,18 @@ void CpPhoneNotes::showPasswordQueryDialog(
     passwordDialog->setPromptText(title);
     passwordDialog->setEchoMode(HbLineEdit::Password);
     passwordDialog->setInputMethodHints(Qt::ImhDigitsOnly);
+    passwordDialog->actions().at(0)->setEnabled(false);
+    
     HbLineEdit *hbLineEdit = passwordDialog->lineEdit();
     hbLineEdit->setMaxLength(maxPasswordLength);
-    HbEditorInterface editorInterface(hbLineEdit);
     
+    HbEditorInterface editorInterface(hbLineEdit);
     editorInterface.setMode(HbInputModeNumeric);
     editorInterface.setInputConstraints(HbEditorConstraintFixedInputMode);
-    
     editorInterface.setFilter(HbDigitsOnlyFilter::instance());
     
     m_passwordValidator = &validator;
-    passwordDialog->primaryAction()->setEnabled(false);
+    
     connect(
         hbLineEdit, SIGNAL(contentsChanged()), 
         this, SLOT(passwordTextChanged()));
@@ -401,7 +281,7 @@ void CpPhoneNotes::showPasswordQueryDialog(
 		m_passwordDialog = NULL;
 	}
     m_passwordDialog = passwordDialog.take();
-        
+    m_passwordDialog->setParent(this);
     DPRINT << ": OUT";
 }
 
@@ -413,7 +293,7 @@ void CpPhoneNotes::finishedPasswordQueryDialog(HbAction* action)
     bool ok;
     QString password;
     if(m_passwordDialog) {
-        if (action == m_passwordDialog->secondaryAction()) {
+        if (action == m_passwordDialog->actions().at(1)) {
             ok = false;
         } else {
             ok = true;
@@ -507,9 +387,6 @@ void CpPhoneNotes::activeNoteAboutToClose()
             DPRINT << ", delete note: " << reinterpret_cast<int>(note);
             HbDeviceProgressDialog *pNote = 
                 qobject_cast<HbDeviceProgressDialog *>(note);
-            if(pNote){
-                delete pNote->action();
-            }
             note->deleteLater();
         }
     }
@@ -543,8 +420,24 @@ void CpPhoneNotes::passwordTextChanged()
     bool isPasswordValid = 
         (QValidator::Acceptable == m_passwordValidator->validate(
             password, position));
-    m_passwordDialog->primaryAction()->setEnabled(isPasswordValid);
-    
+    m_passwordDialog->actions().at(0)->setEnabled(isPasswordValid);
+        
+    DPRINT << ": OUT";
+}
+
+
+/*!
+  CpPhoneNotes::showNotificationDialog.
+ */
+void CpPhoneNotes::showNotificationDialog(const QString& text)
+{
+    DPRINT << ": IN";
+    HbNotificationDialog *notifDialog = new HbNotificationDialog();
+    notifDialog->setDismissPolicy(HbPopup::TapAnywhere);
+    notifDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+    notifDialog->setText(text);
+    notifDialog->show();
+
     DPRINT << ": OUT";
 }
 

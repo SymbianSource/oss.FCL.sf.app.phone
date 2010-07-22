@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -25,7 +25,7 @@
 // -----------------------------------------------------------------------------
 //
 HbView::HbView( 
-        QGraphicsItem * parent )
+        QGraphicsItem * /*parent*/ )
     //:
     //HbWidget( /*parent*/ )
     {
@@ -219,19 +219,11 @@ bool HbView::isItemVisible(
 // -----------------------------------------------------------------------------
 //
 void HbView::setItemVisible( 
-        Hb::SceneItem ,
-        bool  )
+        Hb::SceneItem item,
+        bool visible )
     {
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbView::unsetVisibleItems
-// -----------------------------------------------------------------------------
-//
-void HbView::unsetVisibleItems(  )
-    {
-    SMC_MOCK_METHOD0( void )
+    SMC_MOCK_METHOD2( void, Hb::SceneItem, item, 
+        bool, visible )
     }
 
 
@@ -246,11 +238,12 @@ bool HbView::isContentFullScreen(  ) const
 
 
 // -----------------------------------------------------------------------------
-// HbView::titleBarFlags
+// HbView::viewFlags
 // -----------------------------------------------------------------------------
 //
-HbView::HbTitleBarFlags HbView::titleBarFlags(  ) const
+HbView::HbViewFlags HbView::viewFlags(  ) const
     {
+    // SMC_MOCK_METHOD0( HbViewFlags )
     }
 
 
@@ -265,15 +258,49 @@ void HbView::setTitleBarVisible(
     }
 
 
+// -----------------------------------------------------------------------------
+// HbView::setStatusBarVisible
+// -----------------------------------------------------------------------------
+//
+void HbView::setStatusBarVisible( 
+        bool visible )
+    {
+    SMC_MOCK_METHOD1( void, bool, visible )
+    }
+
+
 
 // -----------------------------------------------------------------------------
 // HbView::addAction
 // -----------------------------------------------------------------------------
 //
 void HbView::addAction( 
-        HbAction * ,
-        ActionContainer  )
+        HbAction * action,
+        ActionContainer preferredActionContainer )
     {
+   // SMC_MOCK_METHOD2( void, HbAction *, action, 
+     //   ActionContainer, preferredActionContainer )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbView::navigationAction
+// -----------------------------------------------------------------------------
+//
+HbAction * HbView::navigationAction(  ) const
+    {
+    SMC_MOCK_METHOD0( HbAction * )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbView::setNavigationAction
+// -----------------------------------------------------------------------------
+//
+void HbView::setNavigationAction( 
+        HbAction * action )
+    {
+ //   SMC_MOCK_METHOD1( void, HbAction *, action )
     }
 
 
@@ -300,12 +327,75 @@ void HbView::setContentFullScreen(
 
 
 // -----------------------------------------------------------------------------
-// HbView::setTitleBarFlags
+// HbView::setViewFlags
 // -----------------------------------------------------------------------------
 //
-void HbView::setTitleBarFlags( 
-        HbView::HbTitleBarFlags  )
+void HbView::setViewFlags( 
+        HbViewFlags flags )
     {
+  //  SMC_MOCK_METHOD1( void, HbViewFlags, flags )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbView::titleChanged
+// -----------------------------------------------------------------------------
+//
+void HbView::titleChanged( 
+        const QString & title )
+    {
+    SMC_MOCK_METHOD1( void, const QString &, title )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbView::iconChanged
+// -----------------------------------------------------------------------------
+//
+void HbView::iconChanged( 
+        const HbIcon & icon )
+    {
+  //  SMC_MOCK_METHOD1( void, const HbIcon &, icon )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbView::toolBarChanged
+// -----------------------------------------------------------------------------
+//
+void HbView::toolBarChanged(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbView::visibleItemsChanged
+// -----------------------------------------------------------------------------
+//
+void HbView::visibleItemsChanged(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbView::contentFullScreenChanged
+// -----------------------------------------------------------------------------
+//
+void HbView::contentFullScreenChanged(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbView::dockWidgetChanged
+// -----------------------------------------------------------------------------
+//
+void HbView::dockWidgetChanged(  )
+    {
+    SMC_MOCK_METHOD0( void )
     }
 
 
@@ -314,8 +404,8 @@ void HbView::setTitleBarFlags(
 // -----------------------------------------------------------------------------
 //
 HbView::HbView( 
-        HbViewPrivate & ,
-        QGraphicsItem *  )
+        HbViewPrivate & dd,
+        QGraphicsItem * parent )
     //:
     //HbWidget( /*dd, parent*/ )
     {
@@ -328,8 +418,9 @@ HbView::HbView(
 // -----------------------------------------------------------------------------
 //
 bool HbView::event( 
-        QEvent *  )
+        QEvent * event )
     {
+  //  SMC_MOCK_METHOD1( bool, QEvent *, event )
     }
 
 

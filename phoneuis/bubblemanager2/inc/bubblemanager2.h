@@ -344,6 +344,7 @@ private:
     void findNextDrawableHeader(int& index) const;
     void polishEvent();
     void releaseImageIfNotUsed(const QString& imageFileName);
+    void releaseNonCachedViews();
 
 private slots:
     void showExpanded( int bubbleId );

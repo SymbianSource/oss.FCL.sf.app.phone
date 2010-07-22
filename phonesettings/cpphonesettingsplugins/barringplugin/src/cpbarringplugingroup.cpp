@@ -106,8 +106,8 @@ void CpBarringPluginGroup::itemShown(const QModelIndex& item)
     CpSettingFormItemData* formItem = 
         static_cast<CpSettingFormItemData*>(
             qobject_cast<const HbDataFormModel*>(item.model())->itemFromIndex(item));
-    
-    if (!formItem->property("barringType").isValid()) {
+
+    if (!formItem->contentWidgetData("barringType").isValid()) {
         // Shown item does not belong to the barring settings group.
         return;
         }
@@ -270,7 +270,7 @@ CpSettingFormItemData *CpBarringPluginGroup::createBarringItem(
     
     QVariant value;
     value.setValue(barringType);
-    barringItem->setProperty("barringType", value);
+    barringItem->setContentWidgetData("barringType", value);
     
     appendChild(barringItem.data());
     DPRINT << ": OUT";
@@ -301,35 +301,33 @@ void CpBarringPluginGroup::barringStatusRequestCompleted(
         m_barringRequestQueue.clear();
         return;
     }
+
+    if (!m_barringRequestQueue.isEmpty()) {
+        CpSettingFormItemData *itemForCompletedRequest = 
+            m_barringRequestQueue.dequeue();
     
-    CpSettingFormItemData *itemForCompletedRequest = 
-        m_barringRequestQueue.dequeue();
+        if (!itemForCompletedRequest->isEnabled()) {
+            // After enabling setting item here status query will not be started 
+            // again for the item when user collapses and expands the barring 
+            // settings group again.
+            itemForCompletedRequest->setEnabled(true);
+            // start to observe user initiated state changes
+            m_helper.addConnection(
+                itemForCompletedRequest, SIGNAL(stateChanged(int)),
+                this, SLOT(changeBarringStateRequested(int)));
+        }
     
-    if (!itemForCompletedRequest->isEnabled()) {
-        // After enabling setting item here status query will not be started 
-        // again for the item when user collapses and expands the barring 
-        // settings group again.
-        itemForCompletedRequest->setEnabled(true);
-        // start to observe user initiated state changes
-        m_helper.addConnection(
-            itemForCompletedRequest, SIGNAL(stateChanged(int)),
-            this, SLOT(changeBarringStateRequested(int)));
+        Qt::CheckState checkState = 
+            (PSetCallBarringWrapper::BarringStatusActive == status) 
+                ? Qt::Checked 
+                : Qt::Unchecked;
+        updateCheckStateOfItem(*itemForCompletedRequest, checkState);
     }
-    
-    Qt::CheckState checkState = 
-        (PSetCallBarringWrapper::BarringStatusActive == status) 
-            ? Qt::Checked 
-            : Qt::Unchecked;
-    updateCheckStateOfItem(*itemForCompletedRequest, checkState);
-    
     if (m_barringRequestQueue.isEmpty()) {
         m_phoneNotes->cancelNote(m_activeNoteId);
         if (m_delayedBarringActivationNote) {
             m_delayedBarringActivationNote = false;
-            m_phoneNotes->showGlobalNote(
-                m_activeNoteId, 
-                hbTrId("txt_phone_info_barring_activated"),
-                HbMessageBox::MessageTypeInformation);
+            m_phoneNotes->showNotificationDialog(hbTrId("txt_phone_info_barring_activated"));
         }
         
         // Password editing is enabled only after all barring statuses are 
@@ -339,8 +337,8 @@ void CpBarringPluginGroup::barringStatusRequestCompleted(
         if (!m_editBarringPasswordItem->isEnabled()) {
             m_editBarringPasswordItem->setEnabled(true);
             m_helper.addConnection(
-                m_editBarringPasswordItem, SIGNAL(clicked(bool)),
-                this, SLOT(changeBarringPasswordRequested(bool)));
+                m_editBarringPasswordItem, SIGNAL(valueChanged(QPersistentModelIndex, QVariant)),
+                this, SLOT(changeBarringPasswordRequested()));
         }
     } else {
         processBarringStatusRequestQueue();
@@ -365,24 +363,23 @@ void CpBarringPluginGroup::enableBarringRequestCompleted(
     Q_UNUSED(barringStatus)
     Q_UNUSED(plural)
     
-    CpSettingFormItemData *barringItem = m_barringRequestQueue.dequeue();
-    if (PSetCallBarringWrapper::BarringErrorNone == result) {
-        if (updateDependentBarringProgramStatuses(*barringItem)) {
-            // Indicate barring activation completion only when dependent 
-            // barring items are also updated.
-            m_delayedBarringActivationNote = true;
+    if (!m_barringRequestQueue.isEmpty()) {
+        CpSettingFormItemData *barringItem = m_barringRequestQueue.dequeue();
+        if (PSetCallBarringWrapper::BarringErrorNone == result) {
+            if (updateDependentBarringProgramStatuses(*barringItem)) {
+                // Indicate barring activation completion only when dependent 
+                // barring items are also updated.
+                m_delayedBarringActivationNote = true;
+            } else {
+                m_phoneNotes->cancelNote(m_activeNoteId);
+                m_phoneNotes->showNotificationDialog(hbTrId("txt_phone_info_barring_activated"));
+            }
         } else {
-            m_phoneNotes->cancelNote(m_activeNoteId);
-            m_phoneNotes->showGlobalNote(
-                m_activeNoteId, 
-                hbTrId("txt_phone_info_barring_activated"),
-                HbMessageBox::MessageTypeInformation);
-        }
-    } else {
-        revertCheckStateOfItem(barringItem);
+            revertCheckStateOfItem(barringItem);
         
-        m_phoneNotes->cancelNote(m_activeNoteId);
-        m_phoneNotes->showGlobalErrorNote(m_activeNoteId, result);
+            m_phoneNotes->cancelNote(m_activeNoteId);
+            m_phoneNotes->showGlobalErrorNote(m_activeNoteId, result);
+        }
     }
     
     DPRINT << ": OUT";
@@ -406,14 +403,13 @@ void CpBarringPluginGroup::disableBarringRequestCompleted(
     
     m_phoneNotes->cancelNote(m_activeNoteId);
     
-    CpSettingFormItemData *barringItem = m_barringRequestQueue.dequeue();
     if (PSetCallBarringWrapper::BarringErrorNone == result) {
-        m_phoneNotes->showGlobalNote(
-            m_activeNoteId, 
-            hbTrId("txt_phone_info_barring_deactivated"),
-            HbMessageBox::MessageTypeInformation);
+        m_phoneNotes->showNotificationDialog(hbTrId("txt_phone_info_barring_deactivated"));
     } else {
-        revertCheckStateOfItem(barringItem);
+        if (!m_barringRequestQueue.isEmpty()) {
+            CpSettingFormItemData *barringItem = m_barringRequestQueue.dequeue();
+            revertCheckStateOfItem(barringItem);
+        }
         
         m_phoneNotes->showGlobalErrorNote(m_activeNoteId, result);
     }
@@ -432,10 +428,7 @@ void CpBarringPluginGroup::barringPasswordChangeRequestCompleted(int result)
     m_phoneNotes->cancelNote(m_activeNoteId);
     
     if (PSetCallBarringWrapper::BarringErrorNone == result) {
-        m_phoneNotes->showGlobalNote(
-            m_activeNoteId, 
-            hbTrId("txt_phone_info_password_changed"),
-            HbMessageBox::MessageTypeInformation);
+        m_phoneNotes->showNotificationDialog(hbTrId("txt_phone_info_password_changed"));
     } else {
         m_phoneNotes->showGlobalErrorNote(m_activeNoteId, result);
     }
@@ -455,7 +448,7 @@ void CpBarringPluginGroup::processBarringStatusRequestQueue()
         CpSettingFormItemData *item = m_barringRequestQueue.head();
         PSetCallBarringWrapper::BarringType barringType =
             qvariant_cast<PSetCallBarringWrapper::BarringType>(
-                item->property("barringType"));
+                item->contentWidgetData("barringType"));
         m_barringWrapper->barringStatus(ServiceGroupVoice, barringType);
         
         m_barringStatusRequestOngoing = true;
@@ -463,7 +456,7 @@ void CpBarringPluginGroup::processBarringStatusRequestQueue()
         if (!m_phoneNotes->noteShowing()) {
             // Launch progress note only once for status update.
             m_phoneNotes->showGlobalProgressNote(
-                m_activeNoteId, hbTrId("txt_phone_info_requesting"));
+                m_activeNoteId, hbTrId("txt_common_info_requesting"));
         }
     }
     
@@ -517,26 +510,26 @@ void CpBarringPluginGroup::completeBarringStateChangeRequestHandling(
 	QObject::disconnect(
         m_phoneNotes, SIGNAL(passwordQueryCompleted(QString, bool)),
         this, SLOT(completeBarringStateChangeRequestHandling(QString, bool)));
-    if (okPressed) {
+    if (okPressed && m_clickedBarringItem) {
         QVariant checkState = m_clickedBarringItem->contentWidgetData("checkState");
         if (Qt::Checked == checkState.toInt()) {
             m_barringWrapper->enableBarring(
                 ServiceGroupVoice,
                 qvariant_cast<PSetCallBarringWrapper::BarringType>(
-                    m_clickedBarringItem->property("barringType")), 
+                    m_clickedBarringItem->contentWidgetData("barringType")),
                 barringPassword);
         } else {
             m_barringWrapper->disableBarring(
                 ServiceGroupVoice,
                 qvariant_cast<PSetCallBarringWrapper::BarringType>(
-                    m_clickedBarringItem->property("barringType")), 
+                    m_clickedBarringItem->contentWidgetData("barringType")),
                 barringPassword);
         }
         
         m_barringRequestQueue.enqueue(m_clickedBarringItem);
         m_phoneNotes->showGlobalProgressNote(
-            m_activeNoteId, hbTrId("txt_phone_info_requesting"));
-    } else {
+            m_activeNoteId, hbTrId("txt_common_info_requesting"));
+    } else if (m_clickedBarringItem) {
         revertCheckStateOfItem(m_clickedBarringItem);
     }
     m_clickedBarringItem = NULL;
@@ -547,10 +540,9 @@ void CpBarringPluginGroup::completeBarringStateChangeRequestHandling(
 /*!
   CpBarringPluginGroup::changeBarringPasswordRequested.
  */
-void CpBarringPluginGroup::changeBarringPasswordRequested(bool checked)
+void CpBarringPluginGroup::changeBarringPasswordRequested()
 {
     DPRINT << ": IN";
-    Q_UNUSED(checked)
     
     m_changeBarringPasswordPhase = CurrentPasswordPhase;
     QString currentPasswordQueryDialogTitle(
@@ -614,7 +606,7 @@ void CpBarringPluginGroup::changeBarringPasswordPhasesHandling(
                     m_newPasswordVerified);
                 m_phoneNotes->showGlobalProgressNote(
                     m_activeNoteId, 
-                    hbTrId("txt_phone_info_requesting"));
+                    hbTrId("txt_common_info_requesting"));
                 QObject::disconnect(
                     m_phoneNotes, SIGNAL(passwordQueryCompleted(QString, bool)),
                     this, SLOT(changeBarringPasswordPhasesHandling(QString, bool)));
@@ -651,7 +643,7 @@ bool CpBarringPluginGroup::updateDependentBarringProgramStatuses(
     CpSettingFormItemData* barringItem = NULL;
     PSetCallBarringWrapper::BarringType barringType =
         qvariant_cast<PSetCallBarringWrapper::BarringType>(
-            changedBarringItem.property("barringType"));
+            changedBarringItem.contentWidgetData("barringType"));
     QList<CpSettingFormItemData*> itemCandidatesForUpdate;
     switch (barringType) {
         case PSetCallBarringWrapper::BarringTypeAllOutgoing:
@@ -750,7 +742,7 @@ CpSettingFormItemData &CpBarringPluginGroup::barringItemByProgram(
             static_cast<CpSettingFormItemData*>(childAt(childInd));
         PSetCallBarringWrapper::BarringType candidateBarringProgram =
             qvariant_cast<PSetCallBarringWrapper::BarringType>(
-                itemCandidate->property("barringType"));
+                itemCandidate->contentWidgetData("barringType"));
         if (candidateBarringProgram == barringProgram) {
             item = itemCandidate;
         }

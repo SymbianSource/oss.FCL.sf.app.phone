@@ -18,10 +18,10 @@
 #include <QtCore>
 #include "bubbleeffecthandler.h"
 
-const char *BUBBLE_MUTED_APPEAR_FXML = ":/bubble_muted_appear.fxml";
-const char *BUBBLE_MUTED_DISAPPEAR_FXML = ":/bubble_muted_disappear.fxml";
-const char *BUBBLE_APPEAR_EVENT = "appear";
-const char *BUBBLE_DISAPPEAR_EVENT = "disappear";
+const QLatin1String BUBBLE_MUTED_APPEAR_FXML(":/bubble_muted_appear.fxml");
+const QLatin1String BUBBLE_MUTED_DISAPPEAR_FXML(":/bubble_muted_disappear.fxml");
+const QLatin1String BUBBLE_APPEAR_EVENT("appear");
+const QLatin1String BUBBLE_DISAPPEAR_EVENT("disappear");
 
 
 BubbleEffectHandler::BubbleEffectHandler(QObject* parent)
@@ -86,6 +86,12 @@ void BubbleEffectHandler::startEffect(BubbleEffect effect)
     default:
         break;
     }
+}
+
+void BubbleEffectHandler::cancelAllEffects(QGraphicsItem* item)
+{
+    Q_ASSERT(item);
+    HbEffect::cancel(item);
 }
 
 void BubbleEffectHandler::handleEffectFinished(

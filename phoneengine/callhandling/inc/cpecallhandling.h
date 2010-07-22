@@ -54,6 +54,7 @@ class CPsetSAObserver;
 class CCCECallParameters;
 class CPECCEObserver;
 class CPESystemCallState;
+class CRepository;
 
 // CLASS DECLARATION
 
@@ -283,14 +284,6 @@ class CPECallHandling
         IMPORT_C TInt TerminateAllConnections();
         
         /**
-        * Asks phone identity parameters from the mmetel.
-        * @param aMessage Reply message to the phone application.
-        * @return Error (KErrNone or KErrNotFound).
-        */
-        IMPORT_C TInt UpdatePhoneIdentity( 
-            MEngineMonitor::TPEMessagesFromPhoneEngine aMessage );
-
-        /**
         * Sets active line
         */
         IMPORT_C void SetActiveLine();
@@ -378,14 +371,6 @@ class CPECallHandling
         * @return Return errorCode
         */        
         IMPORT_C TInt CallTerminatedError( const TInt aCallId );
-        
-        /**
-        * This method gets the lifetime of the MS. The lifetime information 
-        * includes the manufacturing date of the MS and the total amount of airtime use.
-        * @param aLifeTimeInfo Life time information
-        * @return Get succeeded or not.
-        */
-        IMPORT_C TBool GetLifeTime( TDes8& aLifeTimeInfo );
         
         /**
         * Replace active call with waiting call. 
@@ -648,6 +633,15 @@ class CPECallHandling
          * @param aCall reference to call object
          */
         void SetCallOrigin( const TInt aCallId, const MCCECall& aCall ) const;
+        
+        /**
+         * Set COLP number to datastore if remote party number is 
+         * different from dialled number.
+         * @param aCallid.
+         * @param aCall reference to call object
+         * @return Updating Colp number was necessary.
+         */
+        TBool UpdateColpNumber( TInt aCallId, const MCCECall& aCall ) const;
 
     protected:
         // Phone model instance which owns this object.
@@ -689,6 +683,8 @@ class CPECallHandling
         CPECCEObserver* iCCEObserver;
         // System Call State
         CPESystemCallState* iSystemCallState;
+        
+        CRepository* iRepository;
     };
 
 #endif    // CPECALLHANDLING_H

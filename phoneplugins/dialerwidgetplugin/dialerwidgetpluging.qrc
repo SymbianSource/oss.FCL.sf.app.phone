@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>resource/qtg_fr_shortcut_badge_bg_r.png</file>
+        <file>resource/qtg_fr_shortcut_badge_bg_c.png</file>
+        <file>resource/qtg_fr_shortcut_badge_bg_l.png</file>
+        <file>resource/qtg_graf_hs_dialer.svg</file>
+    </qresource>
+    <qresource prefix="/data">
+    	<file>resource/dialerwidget.widgetml</file>
+    	<file>resource/dialerwidget.css</file>
+    </qresource>
+    
+</RCC>

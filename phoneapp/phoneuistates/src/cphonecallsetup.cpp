@@ -105,7 +105,6 @@ EXPORT_C void CPhoneCallSetup::HandlePhoneEngineMessageL(
         // fall through.    
         case MEngineMonitor::EPEMessageIssuingSSRequest:
         case MEngineMonitor::EPEMessageCallBarred:
-        case MEngineMonitor::EPEMessageShowVersion:
         case MEngineMonitor::EPEMessageIssuedSSRequest:
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
         case MEngineMonitor::EPEMessageIncCallIsForw:

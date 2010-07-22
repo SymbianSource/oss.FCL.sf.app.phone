@@ -43,5 +43,7 @@ symbian {
 # Input
 HEADERS += ../../inc/phonemessagecontroller.h
 SOURCES += ../../src/phonemessagecontroller.cpp
+HEADERS += ../../inc/phoneapplauncher.h
+SOURCES += phoneapplauncher_stub.cpp
 SOURCES += unit_tests.cpp
 

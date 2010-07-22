@@ -148,6 +148,14 @@
 #define KTelephonyLVFlagOptionsChange 0x00400000
 
 /**
+* KTelephonyLVFlagForbiddenIcon defines if forbidden feature is enabled.
+* When flag is set, applications should show GSM, WCDMA, GSM/WCDMA 
+* and Forbiddeb icons in manual selection of network.
+* @since Series 60 5.0
+*/
+#define KTelephonyLVFlagForbiddenIcon 0x00800000
+
+/**
 * Ussd ( service command ) shows number of remaining characters 
 * Requirement RM-RIM TOOL ID 107-8820 
 * @since Series 60 3.0

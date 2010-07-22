@@ -27,17 +27,13 @@ class CpNetworkPluginView : public CpBaseSettingView
     Q_OBJECT
     
 public:
-    
     explicit CpNetworkPluginView(QGraphicsItem *parent = 0);
-    
     virtual ~CpNetworkPluginView();
     
 public slots: 
-
     void SearchAvailableNetworks();
 
 private:
-    
     CpNetworkPluginForm* m_networkSettingsForm;
 
 };

@@ -192,19 +192,9 @@ class CPhoneStateInCall : public CPhoneState
         void CancelDTMFSendingL();
 
         /**
-        * Handle EPEMessagePromptSpeedDial
-        */
-        void HandleDTMFPromptSpeedDialL();
-
-        /**
         * Sends DTMF sequence to Phone Engine
         */
         void SendDtmfL();
-        
-        /**
-        * Sends DTMF speed dial number sequence to Phone Engine
-        */
-        void SendDtmfSpeedDialNumberL();
         
         /**
         * Sends command to view for launching manual DTMF entry

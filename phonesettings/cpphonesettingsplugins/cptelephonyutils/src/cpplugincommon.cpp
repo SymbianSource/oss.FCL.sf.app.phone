@@ -30,6 +30,9 @@
 #include <NumberGroupingCRKeys.h>
 #include <hbglobal.h>
 #include <CoreApplicationUIsSDKCRKeys.h>
+#include <telephonyvariant.hrh>
+#include <telinternalcrkeys.h>
+#include <ctsydomainpskeys.h>
 #include "cptelephonyutilsdefs.h"
 #include "cpplugincommon.h"
 #include "cppluginlogging.h"
@@ -79,7 +82,7 @@ bool Tools::errorCodeTextMapping(const int errorcode, QString &errorText)
             errorText = hbTrId("txt_phone_info_not_allowed");
             break;
         case KErrGsmSSIncompatibility:
-            errorText = hbTrId("Services in conflict");
+            errorText = hbTrId("txt_phone_info_conflict_error");
             break;
         case KErrGsmSSSystemFailure:
             errorText = hbTrId("txt_phone_info_result_unknown");
@@ -169,6 +172,18 @@ int CpSettingsWrapper::setShowCallDuration(bool value)
     return writeCenrepValue(KCRUidLogs.iUid, KLogsShowCallDuration, cenrepValue );
 }
 
+int CpSettingsWrapper::readVtVideoSending()
+{
+    DPRINT << ": IN";
+    return readCenrepValue(KCRUidTelephonySettings.iUid, KSettingsVTVideoSending).toInt();
+}
+
+int CpSettingsWrapper::writeVtVideoSending(int value)
+{
+    DPRINT << ": IN";
+    return writeCenrepValue(KCRUidTelephonySettings.iUid, KSettingsVTVideoSending, value);
+}
+
 void CpSettingsWrapper::readSoftRejectText(QString &text, bool &userDefined )
 {
     if (SoftRejectTextDefault ==
@@ -200,6 +215,12 @@ int CpSettingsWrapper::writeSoftRejectText(const QString &text, bool userDefined
  {
      return readCenrepValue(KCRUidNumberGrouping.iUid, KNumberGrouping).toBool();
  }
+ 
+ bool CpSettingsWrapper::forbiddenIconSupported() const
+ {
+     int keyValue = readCenrepValue(KCRUidTelVariation.iUid, KTelVariationFlags).toInt();
+     return (KTelephonyLVFlagForbiddenIcon & keyValue);
+ }
 
 QVariant CpSettingsWrapper::readCenrepValue(
     const long int uid, const unsigned long int key) const
@@ -207,6 +228,15 @@ QVariant CpSettingsWrapper::readCenrepValue(
     XQSettingsKey settingsKey(XQSettingsKey::TargetCentralRepository, uid, key);
     QVariant ret = m_Settings->readItemValue(settingsKey);
     DPRINT << "ret: " << ret;
+    return ret;
+}
+
+QVariant CpSettingsWrapper::readPubSubValue(
+    const long int uid, const unsigned long int key) const
+{
+    XQSettingsKey settingsKey(XQSettingsKey::TargetPublishAndSubscribe, uid, key);
+    QVariant ret = m_Settings->readItemValue(settingsKey);
+    DPRINT << "PubSub ret: " << ret;
     return ret;
 }
 
@@ -246,3 +276,14 @@ bool CpSettingsWrapper::isPhoneOffline() const
     }
     return offLinesupport;
 }
+
+bool CpSettingsWrapper::isOngoingCall() const
+{
+    bool callOngoing(false);
+    if (EPSCTsyCallStateNone < 
+            readPubSubValue(KPSUidCtsyCallInformation.iUid, KCTsyCallState).toInt()) {
+        callOngoing = true; 
+    }
+    return callOngoing;
+}
+

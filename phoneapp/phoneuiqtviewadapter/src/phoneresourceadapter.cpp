@@ -19,6 +19,7 @@
 #include "phoneui.hrh"
 #include "phoneuiqtbuttonscontroller.h"
 #include <phoneappvoipcommands.hrh>
+#include <xqphoneappcommands.h>
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
@@ -65,189 +66,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     QMap<PhoneAction::ActionType, PhoneAction *> translatedActions;
     
     switch (symbianResourceId) {
-    
-    case R_PHONEUI_CALLHANDLING_INCOMINGCALL_CBA:
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon("qtg_mono_send"));
-        leftButton->setCommand(EPhoneCallComingCmdSoftReject);
-        translatedActions [PhoneAction::ToolbarButton1] = leftButton;       
-        
-        PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon (HbIcon("qtg_mono_speaker_off"));
-        rightButton->setCommand (EPhoneCallComingCmdSilent);
-        translatedActions [PhoneAction::ToolbarButton2] = rightButton;            
-        }
-        break;
-
-    case R_PHONEUI_CALLHANDLING_INCOMINGCALL_REJECT_CBA:
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon("qtg_mono_send"));
-        leftButton->setCommand(EPhoneCallComingCmdSoftReject);
-        translatedActions [PhoneAction::ToolbarButton1] = leftButton;
-               
-        PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon (HbIcon("qtg_mono_reject_call"));
-        rightButton->setCommand (EPhoneCallComingCmdReject);
-        translatedActions [PhoneAction::ToolbarButton2] = rightButton;      
-        }
-        break;
-        
-    case R_PHONEUI_CALLHANDLING_INCOMINGCALL_SOFT_REJECT_CBA:
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon("qtg_mono_send"));
-        leftButton->setCommand(EPhoneCallComingCmdSoftReject);
-        translatedActions [PhoneAction::ToolbarButton1] = leftButton;    
-        
-        PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon (HbIcon("qtg_mono_speaker_off"));
-        rightButton->setDisabled(true);
-        translatedActions [PhoneAction::ToolbarButton2] = rightButton;        
-        }
-        break;
-        
-    case R_PHONEUI_CALLHANDLING_CALLWAITING_CBA:        
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon("qtg_mono_send"));
-        leftButton->setCommand(EPhoneCallComingCmdSoftReject);
-        translatedActions [PhoneAction::ToolbarButton1] = leftButton;       
-        
-        PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon (HbIcon("qtg_mono_join_call"));
-        rightButton->setCommand (EPhoneInCallCmdJoin);
-        rightButton->setDisabled(true);
-        translatedActions [PhoneAction::ToolbarButton2] = rightButton;            
-        }
-        break;        
-        
-    case R_PHONEUI_DIALER_CBA:
-    case R_PHONEUI_INCALL_DIALER_CBA:
-    case R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA:
-    case R_PHONEUI_CALLHANDLING_INCALL_UNHOLD_CBA:
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon("qtg_mono_dialer"));
-        leftButton->setCommand(EPhoneInCallCmdDialer);
-        translatedActions [PhoneAction::ToolbarButton1] = leftButton;
-        
-        PhoneAction *centerButton = new PhoneAction;
-        centerButton->setIcon (HbIcon("qtg_mono_mic_mute"));
-        centerButton->setCommand (EPhoneInCallCmdMute);
-        translatedActions [PhoneAction::ToolbarButton2] = centerButton;        
-
-        PhoneAction *centerButton2 = new PhoneAction;
-        if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
-            {
-            centerButton2->setIcon (HbIcon("qtg_mono_speaker"));
-            centerButton2->setCommand (EPhoneInCallCmdActivateIhf);
-            }
-        else
-            {
-            centerButton2->setIcon (HbIcon("qtg_mono_mobile"));
-            centerButton2->setCommand (EPhoneInCallCmdDeactivateIhf);
-            }
-        translatedActions [PhoneAction::ToolbarButton3] = centerButton2; 
-        
-        PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon(HbIcon("qtg_mono_contacts"));
-        rightButton->setDisabled( 
-                (symbianResourceId==
-                 R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA));        
-        rightButton->setCommand(EPhoneInCallCmdContacts);
-        
-        translatedActions[PhoneAction::ToolbarButton4] = rightButton;
-        }
-        break;
-        
-    case R_PHONEUI_CALLHANDLING_EMERGENCY_CBA:
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon("qtg_mono_dialer"));
-        leftButton->setCommand(EPhoneInCallCmdDialer);
-        translatedActions [PhoneAction::ToolbarButton1] = leftButton;
-        
-        PhoneAction *rightButton = new PhoneAction;
-        if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
-            {
-            rightButton->setIcon (HbIcon("qtg_mono_speaker"));
-            rightButton->setCommand (EPhoneInCallCmdActivateIhf);
-            }
-        else
-            {
-            rightButton->setIcon (HbIcon("qtg_mono_mobile"));
-            rightButton->setCommand (EPhoneInCallCmdDeactivateIhf);
-            }
-        translatedActions [PhoneAction::ToolbarButton2] = rightButton;                    
-        }
-        break;
-        
-    case R_PHONEUI_CALLHANDLING_INCALL_UNMUTE_CBA:
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon("qtg_mono_dialer"));
-        leftButton->setCommand(EPhoneInCallCmdDialer);
-        translatedActions [PhoneAction::ToolbarButton1] = leftButton;
-        
-        PhoneAction *centerButton = new PhoneAction;
-        centerButton->setIcon (HbIcon("qtg_mono_mic_unmute"));
-        centerButton->setCommand (EPhoneInCallCmdUnmute);
-        translatedActions [PhoneAction::ToolbarButton2] = centerButton;        
-
-        PhoneAction *centerButton2 = new PhoneAction;
-        if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
-            {
-            centerButton2->setIcon (HbIcon("qtg_mono_speaker"));
-            centerButton2->setCommand (EPhoneInCallCmdActivateIhf);
-            }
-        else
-            {
-            centerButton2->setIcon (HbIcon("qtg_mono_mobile"));
-            centerButton2->setCommand (EPhoneInCallCmdDeactivateIhf);
-            }
-        translatedActions [PhoneAction::ToolbarButton3] = centerButton2;     
-        
-        PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon(HbIcon("qtg_mono_contacts"));
-        rightButton->setCommand(EPhoneInCallCmdContacts);
-        translatedActions[PhoneAction::ToolbarButton4] = rightButton;   
-        }
-        break;
-        
-    case R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA:
-        {
-        PhoneAction *leftButton = new PhoneAction;
-        leftButton->setIcon (HbIcon("qtg_mono_dialer"));
-        leftButton->setCommand(EPhoneInCallCmdDialer);
-        translatedActions [PhoneAction::ToolbarButton1] = leftButton;
-        
-        PhoneAction *centerButton1 = new PhoneAction;
-        if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Hold))
-            {
-            centerButton1->setIcon (HbIcon("qtg_mono_mic_mute"));
-            centerButton1->setCommand (EPhoneInCallCmdMute);
-            }
-        else
-            {
-            centerButton1->setIcon (HbIcon("qtg_mono_mic_unmute"));
-            centerButton1->setCommand (EPhoneInCallCmdUnmute);
-            }
-        translatedActions [PhoneAction::ToolbarButton2] = centerButton1;
-
-        PhoneAction *centerButton2 = new PhoneAction;
-        centerButton2->setIcon (HbIcon("qtg_mono_mobile"));
-        centerButton2->setCommand (EPhoneInCallCmdDeactivateIhf);
-        translatedActions [PhoneAction::ToolbarButton3] = centerButton2;
-        
-        PhoneAction *rightButton = new PhoneAction;
-        rightButton->setIcon(HbIcon("qtg_mono_contacts"));
-        rightButton->setCommand(EPhoneInCallCmdContacts);
-        translatedActions[PhoneAction::ToolbarButton4] = rightButton;
-        }
-        break;
-
+	
     case R_PHONEUI_MTCAL_INCOMING_CALL:
         {
         PhoneAction *text = new PhoneAction;
@@ -280,18 +99,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         }
         break; 
 
-    case R_PHONEUI_INCALL_CALL_NUMBER:
-        {
-        PhoneAction *text = new PhoneAction;
-        VA_LIST list;
-        VA_START (list, symbianResourceId);
-        int intValue = VA_ARG (list, int);
-        text->setText(hbTrId("txt_phone_other_call_ln").arg(intValue));
-        translatedActions [PhoneAction::Text] = text;
-        VA_END (list);
-        }
-        break;
-        
+       
     case R_PHONEUI_TIME_DURAT_LONG_WITH_ZERO:
         {
         PhoneAction *text = new PhoneAction;
@@ -318,10 +126,18 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         translatedActions [PhoneAction::Text] = text;
         break;
         }
-    case R_PHONEUI_MTCAL_CALL:
+    case R_PHONEUI_MTCAL_CLI_UNKNOWN:
         {
         PhoneAction *text = new PhoneAction;
-        text->setText (hbTrId("txt_common_button_call")); //Call
+        text->setText (hbTrId("txt_phone_other_unknown_number"));
+        translatedActions [PhoneAction::Text] = text;
+        break;
+        }
+        
+    case R_PHONE_MTCAL_CLI_PAYPHONE:
+        {
+        PhoneAction *text = new PhoneAction;
+        text->setText (hbTrId("Payphone number"));
         translatedActions [PhoneAction::Text] = text;
         break;
         }
@@ -383,32 +199,6 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         VA_END (list);
         }
         break;
-    case R_PHONE_IMEI_STRING:
-        {
-        QScopedPointer<PhoneAction> text(new PhoneAction);
-        VA_LIST list;
-        VA_START(list, symbianResourceId);
-        const TDesC *string = static_cast<TDesC*>(VA_ARG(list, TDesC*));
-        QString serialNumber = 
-            QString::fromUtf16(string->Ptr(), string->Length());
-        text->setText(hbTrId("txt_phone_info_serial_no").arg(serialNumber));
-        translatedActions[PhoneAction::Text] = text.take();
-        VA_END(list);
-        }
-        break;
-    case R_PHONEUI_LIFE_TIMER_STRING:
-        {
-        QScopedPointer<PhoneAction> text(new PhoneAction);
-        VA_LIST list;
-        VA_START(list, symbianResourceId);
-        const TDesC *string = static_cast<TDesC*>(VA_ARG(list, TDesC*));
-        QString lifeTimerText =
-            QString::fromUtf16(string->Ptr(), string->Length());
-        text->setText(hbTrId("txt_phone_info_life_timer").arg(lifeTimerText));
-        translatedActions[PhoneAction::Text] = text.take();
-        VA_END(list);
-        }
-        break;
     default:
         break;
     }
@@ -416,56 +206,57 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     return translatedActions;
 }
 
-QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
+QString PhoneResourceAdapter::convertToString(
+        int symbianResourceId, const QString &causeCode) const
 {
     QString ret;
     
     switch (symbianResourceId) {
         case R_PHONE_ERROR_CALL_NOT_ALLOWED:
             {
-            ret = hbTrId("txt_phone_dpopinfo_not_allowed");      
+            ret = hbTrId("txt_phone_dpopinfo_not_allowed").arg(causeCode);      
             }
             break;
             
         case R_ERROR_NOTE_NOT_ALLOWED:
             {
-            ret =  hbTrId("txt_phone_dpopinfo_not_allowed");  
+            ret =  hbTrId("txt_phone_dpopinfo_not_allowed").arg(causeCode);  
             }
             break;
             
         case R_NOTETEXT_INVALID_PHONENUMBER:
             {
-            ret = hbTrId("txt_phone_info_invalid_phone_number"); 
+            ret = hbTrId("txt_phone_info_invalid_phone_number").arg(causeCode); 
             }
             break;
             
         case R_NOTETEXT_NO_ANSWER:
             {
-            ret = hbTrId("txt_phone_info_no_answer"); 
+            ret = hbTrId("txt_phone_info_no_answer").arg(causeCode); 
             }
             break;
         
         case R_PHONE_ERROR_NUMBER_BUSY:
             {
-            ret = hbTrId("txt_phone_info_number_busy"); 
+            ret = hbTrId("txt_phone_info_number_busy").arg(causeCode);
             }
             break;
             
-        case R_PHONE_SS_NOTIFICATION_MOCAL_WAITING_TEXT:
+        case R_PHONE_ERROR_REQUEST_REJECTED:
             {
-            ret = hbTrId("txt_phone_other_waiting");
+            ret = hbTrId("txt_phone_info_request_rejected").arg(causeCode); 
             }
             break;
-            
+                
         case R_PHONE_SS_NOTIFICATION_INCAL_INFO_HOLD_TEXT:
             {
-            ret = hbTrId("txt_phone_other_on_hold");
+            ret = hbTrId("txt_phone_dpopinfo_on_hold");
             }
             break;
             
         case R_INCAL_INFO_HOLD_TEXT:
             {
-            ret = hbTrId("txt_phone_other_on_hold");
+            ret = hbTrId("txt_phone_dpopinfo_on_hold");
             }
             break;
             
@@ -475,39 +266,34 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
             }
             break;
             
-        case R_INCAL_INFO_CONF_HOLD_TEXT:
-            {
-            ret = hbTrId("Conference on hold");
-            }
-            break;
         case R_PHONE_INCALL_INFO_NO_NETWORK_SUPPORT:
             {
-            ret = hbTrId("txt_phone_info_no_network_support_for_video_call");
+            ret = hbTrId("txt_phone_info_no_network_support_for_video_call").arg(causeCode);
             }
             break;
         case R_PHONE_ERROR_EMERGENCY_CALLS_ONLY:
             {
-            ret = hbTrId("txt_phone_info_emergency_calls_only");         
+            ret = hbTrId("txt_phone_info_emergency_calls_only").arg(causeCode);         
             }
             break;
         case R_NOTETEXT_NUMBER_NOT_IN_USE:
             {
-            ret = hbTrId("txt_phone_info_number_not_in_use");         
+            ret = hbTrId("txt_phone_info_number_not_in_use").arg(causeCode);         
             }
             break;
         case R_NOTETEXT_NETWORK_BUSY:
             {
-            ret = hbTrId("txt_phone_info_network_busy");         
+            ret = hbTrId("txt_phone_info_network_busy").arg(causeCode);         
             }
             break;
         case R_NOTETEXT_ERROR_IN_CONNECTION:
             {
-            ret = hbTrId("txt_phone_info_error_in_connection");         
+            ret = hbTrId("txt_phone_info_error_in_connection").arg(causeCode);         
             }
             break;
         case R_PHONEUI_ERROR_EMERGENCY_ATTEMPT_FAILED:
             {
-            ret = hbTrId("txt_phone_info_emergency_call_failed");         
+            ret = hbTrId("txt_phone_info_emergency_call_failed").arg(causeCode);         
             }
             break;
         case R_PHONE_SS_NOTIFICATION_INCAL_TRANSFERRED_TEXT:
@@ -517,7 +303,119 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
             break;
         case R_PHONE_ERROR_NO_SERVICE:
             {
-            ret = hbTrId("txt_phone_dpopinfo_no_network_coverage");         
+            ret = hbTrId("txt_phone_dpopinfo_no_network_coverage").arg(causeCode);         
+            }
+            break;
+        case R_NOTETEXT_NUMBER_BARRED:
+            {
+            ret = hbTrId("txt_phone_info_number_barred").arg(causeCode);
+            }
+            break;
+        case R_PHONEUI_VIDEO_CALL_NOT_POSSIBLE:
+            {
+            ret = hbTrId("txt_phone_info_video_call_didnt_succeed_to_called").arg(causeCode);
+            }
+            break;
+        case R_CALL_INFO_CAUSE_VALUE127:
+        case R_CALL_INFO_NOT_SUPPORTED:
+        case R_CALL_INFO_SERVICE_NOT_AVAILABLE:
+        case R_CALL_INFO_CAUSE_VALUE38:
+        case R_CALL_INFO_CAUSE_VALUE55:
+        case R_CALL_INFO_CAUSE_VALUE58:
+        case R_NOTE_UNABLE_TO_MAKE_VIDEO_CALL_NOT_SUPPORTED_BY_OTHER_PHONE:
+            {
+            ret = hbTrId("txt_phone_info_unable_to_make_video_call_not_supp").arg(causeCode);
+            }
+            break;
+        case R_NOTE_PHONE_OUT_OF_3G_COVERAGE:
+            {
+            ret = hbTrId("txt_phone_info_phone_switched_off_or_out_of_3g").arg(causeCode);
+            }
+            break;
+        case R_NOTE_VIDEO_CALL_ONLY_POSSIBLE_UNDER_3G_COVERAGE:
+            {
+            ret = hbTrId("txt_phone_info_videocall_only_possible_under_3g").arg(causeCode);
+            }
+            break;
+        case R_NOTE_CALLED_NUMBER_HAS_BARRED_INCOMING_CALLS:
+            {
+            ret = hbTrId("txt_phone_info_called_number_has_barred_incoming").arg(causeCode);
+            }
+            break;
+        case R_INCAL_REMOTE_CREATE_CONFERENCE_TEXT:
+            {
+            ret = hbTrId("txt_phone_info_conference_call_active");
+            }
+            break;
+        case R_NOTETEXT_CALL_BARRINGS:
+            {
+            ret = hbTrId("txt_phone_dpopinfo_note_you_have_active_barrings");
+            }
+            break;
+        case R_CALL_INFO_CAUSE_VALUE16:
+            {
+            ret = hbTrId("txt_phone_info_no_answer").arg(causeCode);
+            }
+            break;
+        case R_CALL_INFO_CAUSE_VALUE18:
+            {
+            ret = hbTrId("txt_phone_info_no_answer").arg(causeCode);
+            }
+            break;
+        case R_CALL_INFO_CAUSE_VALUE21:
+            {
+            ret = hbTrId("txt_phone_info_request_rejected");
+            }
+            break;
+        case R_CALL_INFO_CAUSE_VALUE22:
+            {
+            ret = hbTrId("txt_phone_info_number_not_in_use").arg(causeCode);
+            }
+            break;
+        case R_CALL_INFO_CAUSE_VALUE34:
+            {
+            ret = hbTrId("txt_phone_info_network_busy").arg(causeCode);
+            }
+            break;
+        case R_PHONE_ERROR_CALL_NOT_ALLOWED_FDN:
+            {
+            ret = hbTrId("txt_phone_info_call_not_allowed_fixed_dialling").arg(causeCode);
+            }
+            break;
+        case R_NOTETEXT_DIVERTING_INCOMING_CALL:
+        case R_NOTETEXT_DIVERTING:
+            {
+            ret = hbTrId("txt_phone_dpopinfo_diverting");
+            }
+            break;
+        case R_NOTETEXT_ALL_INCOMING_CALLS_DIVERTED:
+            {
+            ret = hbTrId("txt_phone_dpopinfo_note_all_incoming_calls_diver");
+            }
+            break;
+        case R_PHONE_ERROR_CHECK_CLIR:
+            {
+            ret = hbTrId("txt_phone_info_check_own_number_sending").arg(causeCode);
+            }
+            break;
+        case R_PHONE_SS_NOTIFICATION_CLIR_SUPPR_REJECT_TEXT:
+            {
+            ret = hbTrId("txt_phone_info_could_not_send_own_number").arg(causeCode);
+            }
+            break;
+        case R_NOTE_TEXT_CLIR_CHANGE:
+            {
+            ret = hbTrId("txt_phone_info_activate_own_number_sending").arg(causeCode);
+            }
+            break;
+        case R_PHONE_ERROR_CHECK_NETWORK_SERVICES:
+            {
+            ret = hbTrId("txt_phone_info_check_network_services").arg(causeCode);
+            }
+            break;
+        case R_PHONE_INCALL_INFO_VIDEO_CALL_NOT_ALLOWED_DURING_RESTORE:
+            {
+            ret = hbTrId("txt_phone_info_video_call_not_allowed_during_resto").arg(causeCode);
             }
             break;
         default:
@@ -527,7 +425,7 @@ QString PhoneResourceAdapter::convertToString(int symbianResourceId) const
     return ret;
 }
 
-QString PhoneResourceAdapter::convertToString(
+QString PhoneResourceAdapter::convertToStringWithParam(
         int symbianResourceId, const QString &text) const
 {
     QString ret;
@@ -562,10 +460,7 @@ QString PhoneResourceAdapter::convertCommandToString(
         break;     
     case EPhoneInCallCmdTransfer:
         ret = hbTrId("txt_phone_opt_transfer");
-        break;    
-    case EPhoneInCallCmdSwitchToVideo:
-        ret = hbTrId("Call back with video call");
-        break;  
+        break;
     case EPhoneCmdHandoverToWlan:
         ret = hbTrId("Handover to WLAN");
         break;  
@@ -611,4 +506,169 @@ QList<HbAction*> PhoneResourceAdapter::convertToHbActions(
 
     return ret;
 }
+
+QList<PhoneAction::ToolBarItem> PhoneResourceAdapter::convertToToolBarCommandList(
+        int symbianResourceId ) const
+{
+    QList<PhoneAction::ToolBarItem> ret;
+    
+    switch(symbianResourceId) {
+        case R_PHONEUI_CALLHANDLING_INCOMINGCALL_CBA:
+            {
+            ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSoftReject,true)); 
+            ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSilent,true));      
+            }
+            break;
+
+        case R_PHONEUI_CALLHANDLING_INCOMINGCALL_REJECT_CBA:
+            {
+            ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSoftReject,true));
+            ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdReject,true));  
+            }
+            break;
+            
+        case R_PHONEUI_CALLHANDLING_INCOMINGCALL_SOFT_REJECT_CBA:
+            {
+            ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSoftReject,true));            
+            ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSilent,false)); 
+            }
+            break;
+            
+        case R_PHONEUI_CALLHANDLING_CALLWAITING_CBA:        
+            {
+            ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSoftReject,true));            
+            ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdJoinToConference,false));        
+            }
+            break;        
+            
+        case R_PHONEUI_DIALER_CBA:
+        case R_PHONEUI_INCALL_DIALER_CBA:
+        case R_PHONEUI_CALLHANDLING_INCALL_UNHOLD_CBA:
+        case R_PHONEUI_CALLHANDLING_INCALL_UNMUTE_CBA:
+        case R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA:
+        case R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA:
+        case R_PHONEUI_CALLHANDLING_INCALL_BTAA_CBA:
+            {
+            if (m_buttonsCtrl->getButtonFlags(
+                    PhoneUIQtButtonsController::IhfAsPushButton)) {
+                if (m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::Mute)) {
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdUnmute,true));
+                } else {
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdMute,true));
+                }
+            } else {
+                if (m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::BluetoothAvailable)) {
+                    if (m_buttonsCtrl->getButtonFlags(
+                            PhoneUIQtButtonsController::Btaa)) {
+                        ret.append(PhoneAction::ToolBarItem(
+                                PhoneInCallCmdHandset,true));
+                    } else {
+                        ret.append(PhoneAction::ToolBarItem(
+                                PhoneInCallCmdBtHandsfree,true));
+                    }               
+                } else {
+                    if (!m_buttonsCtrl->getButtonFlags(
+                            PhoneUIQtButtonsController::Ihf)) {
+                        ret.append(PhoneAction::ToolBarItem(
+                                PhoneInCallCmdActivateIhf,true));
+                    } else {
+                        ret.append(PhoneAction::ToolBarItem(
+                                PhoneInCallCmdDeactivateIhf,true));
+                    }
+                }
+            }
+            
+            if (!m_buttonsCtrl->getButtonFlags(
+                    PhoneUIQtButtonsController::MultiCall)) {
+                bool outgoing(m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::Outgoing));
+                if (m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::Hold)) {
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdUnhold,!outgoing));
+                } else {
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdHold,!outgoing));
+                }
+                         
+                ret.append(PhoneAction::ToolBarItem(
+                        PhoneInCallCmdOpenContacts,true));
+            } else {
+                bool outgoing(m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::Outgoing));
+                bool disableJoin(outgoing ? true : 
+                    m_buttonsCtrl->getButtonFlags(
+                            PhoneUIQtButtonsController::DisableJoin));
+                
+                ret.append(PhoneAction::ToolBarItem(
+                        PhoneInCallCmdSwap,!outgoing));
+                
+                if (m_buttonsCtrl->getButtonFlags(
+                        PhoneUIQtButtonsController::Conference)) {
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdJoinToConference,!disableJoin));
+                } else {
+                    ret.append(PhoneAction::ToolBarItem(
+                            PhoneInCallCmdCreateConference,!disableJoin));
+                }
+            }
+            
+            ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdOpenDialer,true)); 
+            }
+            break;
+            
+        case R_PHONEUI_CALLHANDLING_EMERGENCY_CBA:
+            {
+            
+            if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Ihf))
+                {
+                ret.append(PhoneAction::ToolBarItem(
+                        PhoneInCallCmdActivateIhf,true));
+                }
+            else
+                {
+                ret.append(PhoneAction::ToolBarItem(
+                        PhoneInCallCmdDeactivateIhf,true));
+                }                 
+            }
+			
+            ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdOpenDialer,true));
+            break;
+            
+        /*case R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA:
+            {
+            ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdOpenDialer,true));
+
+            if (m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Hold))
+                {
+                ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdUnhold,true));
+                }
+            else
+                {
+                ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdHold,true));
+                }
+            if (!m_buttonsCtrl->getButtonFlags(PhoneUIQtButtonsController::Hold))
+                {
+                ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdMute,true));
+                }
+            else
+                {
+                ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdUnmute,true));
+                }
+
+            ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdDeactivateIhf,true));
+            ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdOpenContacts,true));
+            }
+            break;*/
+        default:
+            break;
+    }
+
+    return ret;
+}
+
 

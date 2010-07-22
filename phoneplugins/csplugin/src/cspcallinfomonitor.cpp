@@ -102,7 +102,8 @@ void CSPCallInfoMonitor::RunL()
             if ( idStatus == RMobileCall::ERemoteIdentityAvailable) 
                 {
                 iObserver.NotifyRemotePartyInfoChanged(
-                    iRemotePartyInfo.iCallingName);
+                    iRemotePartyInfo.iCallingName,
+                    KNullDesC());
                 }
             else
                 {

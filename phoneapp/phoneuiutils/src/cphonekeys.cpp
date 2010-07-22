@@ -86,7 +86,6 @@ EXPORT_C TBool CPhoneKeys::IsNumericKey(
             case KPhoneDtmfHashCharacter:      // Hash
             case KPhoneDtmfStarCharacter:      // Asterisk
                 // the following key can be got via taps of *
-            case KPhoneDtmfSpeedDialCharacter: // Plus
             case KPhoneDtmfPauseCharacter:     // DTMF Soft-Pause character
             case KPhoneDtmfWaitCharacter:      // DTMF Wait character
                 result = ETrue;

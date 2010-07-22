@@ -169,7 +169,7 @@ goto end
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :CALCULATECOVERAGE
 echo Calculating coverage
-ctcpost %PATH_TO_COVERAGE_DATA%\*.sym | ctcmerge -i - -o profile.txt
+ctcpost %PATH_TO_COVERAGE_DATA%\*.sym -p - | ctcmerge -i - -o profile.txt
 call ctc2html -t 70 -i profile.txt -o \coverage_result -nsb
 goto end
 

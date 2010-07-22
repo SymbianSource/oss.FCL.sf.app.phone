@@ -72,20 +72,20 @@ EXPORT_C void CPhoneStateStartup::ConstructL()
     // CAPTURE KEY EVENTS PERMANENTLY
         
     // Capture the up and down events for the No key
-    TPhoneCmdParamKeyCapture noKeyCaptureParam;
+    /*TPhoneCmdParamKeyCapture noKeyCaptureParam;
     noKeyCaptureParam.SetKey( EStdKeyNo );
     noKeyCaptureParam.SetKeyCode( EKeyNo );
     noKeyCaptureParam.SetCaptureType( EPhoneKeyAllEvents );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStartCapturingKey, 
-        &noKeyCaptureParam );
+        &noKeyCaptureParam );*/
           
     // Capture the up and down events for the EStdKeyEnd key
-    TPhoneCmdParamKeyCapture endKeyCaptureParam;
+    /*TPhoneCmdParamKeyCapture endKeyCaptureParam;
     endKeyCaptureParam.SetKey( EStdKeyEnd );
     endKeyCaptureParam.SetKeyCode( EKeyEnd );
     endKeyCaptureParam.SetCaptureType( EPhoneKeyAllEvents );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStartCapturingKey, 
-        &endKeyCaptureParam );
+        &endKeyCaptureParam );*/
     }
 
 // -----------------------------------------------------------
@@ -182,7 +182,7 @@ EXPORT_C void CPhoneStateStartup::HandleKeyMessageL(
     // if the phone engine is not ready.
     if ( iPhoneReady && !iPEReady )
         {
-        SendGlobalErrorNoteL( EPhoneNoteTextPEFailedAtStartup );
+        SendGlobalErrorNoteL( EPhoneNoteTextPEFailedAtStartup, ETrue );
         }
     }
 

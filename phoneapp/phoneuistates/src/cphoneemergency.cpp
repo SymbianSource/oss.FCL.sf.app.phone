@@ -31,6 +31,7 @@
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparamemergencycallheaderdata.h"
 #include "tphonecmdparamcallheaderdata.h"
+#include "tphonecmdparamkeycapture.h"
 #include "mphonestatemachine.h"
 #include "phonestatedefinitionsgsm.h"
 #include "phoneviewcommanddefinitions.h"
@@ -182,6 +183,10 @@ void CPhoneEmergency::HandlePhoneEngineMessageL(
                     }
                  }
             break;
+            
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            //Don't show COLP note during emergency call.
+            break; 
 
         default:
             CPhoneGsmInCall::HandlePhoneEngineMessageL(
@@ -217,6 +222,11 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNote );
         // Close menu bar, if it is displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
+        
+        TPhoneCmdParamKeyCapture captureParam;
+        captureParam.SetKeyCode( EKeyNo );
+        iViewCommandHandle->ExecuteCommand( 
+                EPhoneViewStopCapturingKey, &captureParam );
 
         const TBool isSimStateNotPresentWithSecurityMode = IsSimStateNotPresentWithSecurityModeEnabled();
 
@@ -345,6 +355,10 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
             EPhoneViewSetGlobalNotifiersDisabled,
             &globalNotifierParam );
 
+        TPhoneCmdParamKeyCapture captureParam;
+        captureParam.SetKeyCode( EKeyNo );
+        iViewCommandHandle->ExecuteCommand( EPhoneViewStartCapturingKey, &captureParam );
+        
         // Capture keys when the phone is dialling
         CaptureKeysDuringCallNotificationL( ETrue );
 
@@ -581,7 +595,7 @@ void CPhoneEmergency::HandleKeyMessageL(
                 if ( neLength )
                     {
                     // Show not allowed note
-                    SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed );
+                    SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed, ETrue );
                     }
                 else
                     {
@@ -592,7 +606,7 @@ void CPhoneEmergency::HandleKeyMessageL(
             else
                 {
                 // Show not allowed note
-                SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed );
+                SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed, ETrue );
                 }
             break;
 
@@ -709,7 +723,7 @@ void CPhoneEmergency::HandleErrorL( const TPEErrorInfo& aErrorInfo )
         case ECCPErrorCCNoChannelAvailable:
         case ECCPErrorNetworkBusy:
         case ECCPEmergencyFailed:
-            SendGlobalErrorNoteL( EPhoneNoteNoNetworkCallEmergency );
+            SendGlobalErrorNoteL( EPhoneNoteNoNetworkCallEmergency, ETrue );
             break;
 
        default:
@@ -813,7 +827,8 @@ void CPhoneEmergency::HandleAudioOutputChangedL()
         iStateMachine->PhoneEngineInfo()->AudioOutput();
 
     UpdateSetupCbaL();
-
+    SetTouchPaneButtons(0);
+    
     // view update
     outputParam.SetAudioOutput( audioOutput );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewActivateAudioPathUIChanges,

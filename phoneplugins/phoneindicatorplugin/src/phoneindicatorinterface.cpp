@@ -11,22 +11,17 @@
  *
  * Contributors:
  *
- * Description:  
+ * Description:
  *
  */
 
-#include "Phoneindicatorinterface.h"
+#include "phoneindicatorinterface.h"
+#include "phoneindicatorservicesendertask.h"
 #include "phoneindicators.h"
 
 #include <QTime>
-#include <QStringList> 
-#ifdef Q_OS_SYMBIAN
-#include <logsservices.h>
-#include <xqservicerequest.h>
-#include <eikenv.h>
-#include <apgtask.h>
-
-#endif
+#include <QStringList>
+#include <QThreadPool>
 
 PhoneIndicatorInterface::PhoneIndicatorInterface(
                 const QString &indicatorType,
@@ -39,42 +34,17 @@ PhoneIndicatorInterface::PhoneIndicatorInterface(
         m_primaryText(IndicatorInfos[typeIndex].primaryText),
         m_secondaryText(IndicatorInfos[typeIndex].secondaryText),
         m_icon(IndicatorInfos[typeIndex].icon)
-
 {
-}
-
-PhoneIndicatorInterface::~PhoneIndicatorInterface()
-{
-
 }
 
 bool PhoneIndicatorInterface::handleInteraction(InteractionType type)
 {
     if (type == InteractionActivated) {
         switch (m_interaction) {
-            
-        case OpenMissedCallView: {
-#ifdef Q_OS_SYMBIAN
-            XQServiceRequest snd("com.nokia.services.logsservices.starter",
-                                 "start(int,bool)", false);
-            snd << (int)LogsServices::ViewMissed;
-            snd << false;
-            int retValue;
-            snd.send(retValue);
-
-//            LogsServices::start( LogsServices::ViewMissed, false );
-#endif
-            }
-            break;
-        case SwitchBackToCall: {
-#ifdef Q_OS_SYMBIAN
-            RWsSession& wsSession = CEikonEnv::Static()->WsSession();
-            TApaTaskList taskList( wsSession );
-            const TUid KUidPhoneApp = { 0x100058B3 };   // Phone application
-            TApaTask task = taskList.FindApp(KUidPhoneApp);
-            task.BringToForeground();
-#endif
-            }
+        case OpenMissedCallView:    //fallthrough
+        case OpenCallUi:      //fallthrough
+        case OpenDiverSettingsView:
+            QThreadPool::globalInstance()->start(new PhoneIndicatorServiceSenderTask(m_interaction));
             break;
         case Deactivate:
             emit deactivate();
@@ -90,7 +60,7 @@ bool PhoneIndicatorInterface::handleInteraction(InteractionType type)
 QVariant PhoneIndicatorInterface::indicatorData(int role) const
 {
     QVariantMap map = m_parameter.value<QVariantMap>();
-    
+
     if (role == PrimaryTextRole) {
         return map.value( (QVariant(PrimaryTextRole)).toString()).toString();
     } else if (role == SecondaryTextRole ) {
@@ -107,7 +77,6 @@ bool PhoneIndicatorInterface::handleClientRequest(RequestType type, const QVaria
 {
     bool handled(false);
     switch (type) {
-        
     case RequestActivate:
         if (m_parameter != parameter) {
             m_parameter = parameter;
@@ -118,6 +87,6 @@ bool PhoneIndicatorInterface::handleClientRequest(RequestType type, const QVaria
     default:
         m_parameter.clear();
     }
-
     return handled;
 }
+

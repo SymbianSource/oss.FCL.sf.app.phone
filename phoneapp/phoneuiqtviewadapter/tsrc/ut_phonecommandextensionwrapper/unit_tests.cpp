@@ -27,6 +27,7 @@
 
 extern bool m_modifyMenuCommandListCalled;
 extern bool m_modifyPushButtonCommandListCalled;
+extern bool m_modifyToolBarCommandListCalled;
 extern bool m_addMenuActionsCalled;
 extern bool m_releaseMenuCalled;
 extern bool m_releaseCalled;
@@ -105,6 +106,7 @@ void TestPhoneCommandExtensionWrapper::testNullPlugin()
     QList<XQTelUiCommandExtension::CallInfo> callInfo; 
     QList<int> menuCmdList;
     QList<HbAction*> menuActions;
+    QList<XQTelUiCommandExtension::ToolBarCommand> toolBar;
     m_useExtensionStub = false;
     m_wrapper = new PhoneCommandExtensionWrapper(123456);
     
@@ -113,6 +115,9 @@ void TestPhoneCommandExtensionWrapper::testNullPlugin()
     
     m_wrapper->modifyPushButtonCommandList(callInfo, menuCmdList);
     QVERIFY( false == m_modifyPushButtonCommandListCalled );
+   
+    m_wrapper->modifyToolBarCommandList(callInfo, toolBar);
+    QVERIFY( false == m_modifyToolBarCommandListCalled );
     
     m_wrapper->addMenuActions(callInfo, menuActions);
     QVERIFY( false == m_addMenuActionsCalled );
@@ -130,6 +135,7 @@ void TestPhoneCommandExtensionWrapper::testPlugin()
     QList<XQTelUiCommandExtension::CallInfo> callInfo; 
     QList<int> menuCmdList;
     QList<HbAction*> menuActions;
+    QList<XQTelUiCommandExtension::ToolBarCommand> toolBar;
     m_useExtensionStub = true;
     m_wrapper = new PhoneCommandExtensionWrapper(123456);
     
@@ -140,6 +146,9 @@ void TestPhoneCommandExtensionWrapper::testPlugin()
     
     m_wrapper->modifyPushButtonCommandList(callInfo, menuCmdList);
     QVERIFY( m_modifyPushButtonCommandListCalled );
+    
+    m_wrapper->modifyToolBarCommandList(callInfo, toolBar);
+    QVERIFY( m_modifyToolBarCommandListCalled );
     
     m_wrapper->addMenuActions(callInfo, menuActions);
     QVERIFY( m_addMenuActionsCalled );

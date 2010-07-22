@@ -15,8 +15,6 @@
  *
  */
 #include "cpdivertitemdata.h"
-#include "cpdivertselectionitem.h"
-
 
 CpDivertItemData::CpDivertItemData(
                 HbDataFormModelItem::DataItemType type,

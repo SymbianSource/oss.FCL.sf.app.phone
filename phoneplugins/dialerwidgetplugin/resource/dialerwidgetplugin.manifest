@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widgetprovider>
+    <widget library="dialerwidgetplugin"
+            uri="dialerwidgetplugin"
+            title="txt_long_caption_dialer"
+            iconuri="qtg_graf_hs_dialer.svg"
+            description="txt_dial_dblist_val_dialer_enable_access_to_recent"/>
+</widgetprovider>

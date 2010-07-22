@@ -20,26 +20,21 @@
 #include "cppluginloader.h"
 
 // ============================ MEMBER FUNCTIONS ===============================
-
 // -----------------------------------------------------------------------------
-// CpPluginLoader::loadCpPlugin
+// CpPluginLoader::loadCpPluginInterface
 // -----------------------------------------------------------------------------
 //
-CpPluginInterface * CpPluginLoader::loadCpPlugin( 
-        const QString & pluginFile )
-    {
+CpPluginInterface *CpPluginLoader::loadCpPluginInterface(const QString &pluginFile)
+{
     SMC_MOCK_METHOD1( CpPluginInterface *, const QString &, pluginFile )
-    }
-
+}
 
 // -----------------------------------------------------------------------------
-// CpPluginLoader::loadPlatCpPlugin
+// CpPluginLoader::loadCpLauncherInterface
 // -----------------------------------------------------------------------------
 //
-CpPluginPlatInterface * CpPluginLoader::loadPlatCpPlugin( 
-        const QString & pluginFile )
-    {
-    SMC_MOCK_METHOD1( CpPluginPlatInterface *, const QString &, pluginFile )
-    }
-
+CpLauncherInterface *CpPluginLoader::loadCpLauncherInterface(const QString &pluginFile)
+{
+    SMC_MOCK_METHOD1( CpLauncherInterface *, const QString &, pluginFile )
+}
 

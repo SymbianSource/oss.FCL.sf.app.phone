@@ -34,16 +34,12 @@ LIBS += -lcpframework \
 # Input
 SOURCES += src/cpdivertplugingroup.cpp \
     src/cpdivertplugin.cpp \
-    src/cpdivertselectionitem.cpp \
-    src/cpdivertselectioncustomitem.cpp \
     src/cpdivertitemdata.cpp
-    
+
 HEADERS += src/cpdivertplugingroup.h \
     src/cpdivertplugin.h \
-    src/cpdivertselectionitem.h \
-    src/cpdivertselectioncustomitem.h \
     src/cpdivertitemdata.h
-    
+
 include(../cpplugincommon.pri)
 
 symbian: {

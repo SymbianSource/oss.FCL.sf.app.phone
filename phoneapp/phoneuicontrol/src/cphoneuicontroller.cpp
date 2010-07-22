@@ -31,7 +31,6 @@
 #include "phonelogger.h"
 #include "phoneconstants.h"
 #include "phoneui.pan"
-#include "cphonekeyeventforwarder.h"
 #include "cphonecenrepproxy.h"
 #include "cphonemediatorfactory.h"
 #include "tphonecmdparamnumberentryobserver.h"
@@ -153,7 +152,6 @@ EXPORT_C CPhoneUIController::~CPhoneUIController()
     delete iRemoteControlHandler;
     delete iSystemEventHandler;
     delete iEngineHandler;
-    delete iKeyEventForwarder;
     delete iStateHandle;
     }
 
@@ -337,10 +335,6 @@ EXPORT_C void CPhoneUIController::HandlePhoneStartupL()
 EXPORT_C TBool CPhoneUIController::HandleCommandL( TInt aCommand )
     {
     __ASSERT_DEBUG( iStateMachine->State(), Panic( EPhoneCtrlInvariant ) );
-
-    // Send key up message to engine so that we wouldn't accidentally play
-    // any DTMF tone.
-    iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF );
 
     return iStateMachine->State()->HandleCommandL( aCommand );
     }

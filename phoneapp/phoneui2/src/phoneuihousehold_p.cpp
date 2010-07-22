@@ -19,7 +19,7 @@
 #include <starterclient.h>
 #include <telinternalpskeys.h>
 #include <QLocale>
-#include <QTranslator>
+#include <HbTranslator>
 #include <telremotepartyinformationpskeys.h>
 #include <telinformationpskeys.h>
 #include <UikonInternalPSKeys.h>
@@ -29,7 +29,6 @@
 #include "phoneconstants.h"
 #include "cphonelogger.h"
 #include "cphonepubsubproxy.h"
-#include "cphoneqwertyhandler.h"
 #include "cphoneuicontroller.h"
 #include "phoneuihousehold_p.h"
 #include "phoneuiqtviewadapter.h"
@@ -43,7 +42,7 @@
 
 PhoneUiHouseHoldPrivate::PhoneUiHouseHoldPrivate(HbMainWindow &window) :
     iAppsReady (0), iStartupSignalRecoveryId (0), iLightIdleReached (EFalse),
-    iOnScreenDialer (EFalse), iQwertyHandler (0), iPhoneUIController (0),
+    iOnScreenDialer (EFalse), iPhoneUIController (0),
     m_window (window)
 {
     PHONE_DEBUG("phoneui - Start phoneapp");
@@ -55,8 +54,7 @@ PhoneUiHouseHoldPrivate::PhoneUiHouseHoldPrivate(HbMainWindow &window) :
 PhoneUiHouseHoldPrivate::~PhoneUiHouseHoldPrivate()
 {
     while (!m_translators.isEmpty()) {
-        QTranslator *translator = m_translators.takeFirst();
-        qApp->removeTranslator(translator);
+        HbTranslator *translator = m_translators.takeFirst();
         delete translator;
         translator = 0;
     }
@@ -178,38 +176,22 @@ void PhoneUiHouseHoldPrivate::ConstructL()
     new( ELeave ) CPhoneLogger( KUidPhoneUILoggerSingleton );
     FeatureManager::InitializeLibL();
     
-    QString locale = QLocale::system ().name ();
-    QTranslator *translator = new QTranslator;
-    QString path = QString("z:\\resource\\qt\\translations\\");
+    HbTranslator *translator = new HbTranslator(QString("telephone"));
 
-    bool translatorLoaded = translator->load(QString(path + "telephone_" + locale));
-    PHONE_DEBUG2("PhoneUiHouseHoldPrivate::ConstructL() translator.load:", translatorLoaded);
-	if (translatorLoaded) {
-        qApp->installTranslator(translator);
+	if (translator) {
+        translator->loadCommon();
         m_translators.append(translator);
-	}else {
-        delete translator;
-        translator = 0;
-    }
+	} else {
+    delete translator;
+    translator = 0;
+}
     
-    QTranslator *translator2 = new QTranslator;
-    translatorLoaded = translator2->load(path + "telephone_cp_" + locale);
-    if (translatorLoaded) {
-        qApp->installTranslator(translator2);
+	HbTranslator *translator2 = new HbTranslator(QString("telephone_cp"));
+    if (translator2) {
         m_translators.append(translator2);
     } else {
         delete translator2;
         translator2 = 0;
-    }
-
-    QTranslator *translator3 = new QTranslator;
-    translatorLoaded = translator3->load(path + "common_" + locale);
-    if (translatorLoaded) {
-        qApp->installTranslator(translator3);
-        m_translators.append(translator3);
-    } else {
-        delete translator3;
-        translator3 = 0;
     }
 
     PhoneUIQtView *view = new PhoneUIQtView(m_window);
@@ -219,7 +201,6 @@ void PhoneUiHouseHoldPrivate::ConstructL()
     m_window.addView (view);
     m_window.setCurrentView (view);
     m_window.scene ()->setFocusItem (view);
-    iQwertyHandler = CPhoneQwertyHandler::NewL();
     iKeyEventAdapter = new PhoneUIKeyEventAdapter (*iPhoneUIController);
     iCommandAdapter = new PhoneUiCommandAdapter (*iPhoneUIController);
     QObject::connect(view, SIGNAL(dialpadIsAboutToClose()), iViewAdapter, SLOT(dialpadClosed()));

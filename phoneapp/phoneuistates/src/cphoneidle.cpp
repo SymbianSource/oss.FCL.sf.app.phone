@@ -93,12 +93,12 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
         {
         case MEngineMonitor::EPEMessageRemoteHeld:
             CPhoneState::SendGlobalInfoNoteL( 
-                EPhoneInformationRemotePutOnHoldNote );
+                EPhoneInformationRemotePutOnHoldNote, ETrue );
             break;
         
         case MEngineMonitor::EPEMessageRemoteResumed:
             CPhoneState::SendGlobalInfoNoteL( 
-                EPhoneInformationConnectedNote );
+                EPhoneInformationConnectedNote, ETrue );
             break;
             
         case MEngineMonitor::EPEMessageAudioOutputChanged:
@@ -114,7 +114,6 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
                 }
         case MEngineMonitor::EPEMessageIssuingSSRequest: // fall through
         case MEngineMonitor::EPEMessageCallBarred: // fall through
-        case MEngineMonitor::EPEMessageShowVersion: // fall through
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
         case MEngineMonitor::EPEMessageIncCallIsForw: // fall through
         case MEngineMonitor::EPEMessageIncCallForwToC: // fall through
@@ -137,20 +136,6 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
                 aMessage, aCallId );
             break;
         }
-
-#ifndef __SYNCML_DM
-      switch ( aMessage )
-        {
-        case MEngineMonitor::EPEMessageShowVersion:
-            if ( !iOnScreenDialer )
-                {
-                HandleNumberEntryClearedL();
-                }
-            break;
-        default:    
-            break;
-        }
-#endif        
     }
 
 // -----------------------------------------------------------

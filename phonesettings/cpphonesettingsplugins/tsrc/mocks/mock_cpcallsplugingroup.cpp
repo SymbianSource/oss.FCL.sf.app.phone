@@ -53,6 +53,17 @@ void CpCallsPluginGroup::showCallDurationStateChanged( )
 
 
 // -----------------------------------------------------------------------------
+// CpCallsPluginGroup::ownVideoInReceivedCallStateChanged
+// -----------------------------------------------------------------------------
+//
+void CpCallsPluginGroup::ownVideoInReceivedCallStateChanged( 
+        int index )
+    {
+    Q_UNUSED( index )
+    }
+
+
+// -----------------------------------------------------------------------------
 // CpCallsPluginGroup::softRejectTextChanged
 // -----------------------------------------------------------------------------
 //

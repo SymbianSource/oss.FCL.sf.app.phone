@@ -29,11 +29,18 @@ public:
     
     enum PhoneButtonFlag
     {
-        Hold            = 0x02, // Hold
-        Ihf             = 0x04, // Ihf
-        Wired           = 0x08, // Wired
-        Btaa            = 0x10, // Btaa
-        DisableJoin     = 0x20  // Should join option be disabled
+        Hold            = 0x02,  // Hold
+        Ihf             = 0x04,  // Ihf
+        Wired           = 0x08,  // Wired
+        Btaa            = 0x10,  // Btaa
+        DisableJoin     = 0x20,  // Should join option be disabled
+        Conference      = 0x40,  // Conference call active
+        Mute            = 0x80,  // Mute
+        MultiCall       = 0x100, // Multi call
+        FullConference  = 0x200, // Max member count in conference
+        Outgoing        = 0x400, // Outgoing call
+        IhfAsPushButton  = 0x800,  // Speaker as push button in bubble
+        BluetoothAvailable   = 0x1000  // Bluetooth available
     };
     Q_DECLARE_FLAGS(PhoneButtonFlags, PhoneButtonFlag)
 

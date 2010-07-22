@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -55,9 +55,31 @@ bool CpSettingsWrapper::showCallDuration(  )
 // CpSettingsWrapper::setShowCallDuration
 // -----------------------------------------------------------------------------
 //
-int CpSettingsWrapper::setShowCallDuration( bool value )
+int CpSettingsWrapper::setShowCallDuration( 
+        bool value )
     {
     SMC_MOCK_METHOD1( int, bool, value )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpSettingsWrapper::readVtVideoSending
+// -----------------------------------------------------------------------------
+//
+int CpSettingsWrapper::readVtVideoSending(  )
+    {
+    SMC_MOCK_METHOD0( int )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpSettingsWrapper::writeVtVideoSending
+// -----------------------------------------------------------------------------
+//
+int CpSettingsWrapper::writeVtVideoSending( 
+        int value )
+    {
+    SMC_MOCK_METHOD1( int, int, value )
     }
 
 
@@ -75,7 +97,8 @@ void CpSettingsWrapper::readSoftRejectText(
         userDefined = true;
         i=1;
     }
-    SMC_MOCK_METHOD2( void, QString &, text, bool, userDefined )
+    SMC_MOCK_METHOD2( void, QString &, text,
+        bool &, userDefined )
     }
 
 
@@ -84,9 +107,11 @@ void CpSettingsWrapper::readSoftRejectText(
 // -----------------------------------------------------------------------------
 //
 int CpSettingsWrapper::writeSoftRejectText( 
-        const QString & text, bool userDefined )
+        const QString & text,
+        bool userDefined )
     {
-    SMC_MOCK_METHOD2( int, const QString &, text, bool, userDefined )
+    SMC_MOCK_METHOD2( int, const QString &, text, 
+        bool, userDefined )
     }
 
 
@@ -104,19 +129,40 @@ bool CpSettingsWrapper::numberGroupingSupported(  ) const
 // CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled
 // -----------------------------------------------------------------------------
 //
-bool CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled()
-{
+bool CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled(  )
+    {
     SMC_MOCK_METHOD0( bool )
-}
+    }
+
 
 // -----------------------------------------------------------------------------
 // CpSettingsWrapper::isPhoneOffline
 // -----------------------------------------------------------------------------
 //
-bool CpSettingsWrapper::isPhoneOffline() const
-{
+bool CpSettingsWrapper::isPhoneOffline(  ) const
+    {
     SMC_MOCK_METHOD0( bool )
-}
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpSettingsWrapper::isOngoingCall
+// -----------------------------------------------------------------------------
+//
+bool CpSettingsWrapper::isOngoingCall(  ) const
+    {
+    SMC_MOCK_METHOD0( bool )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CpSettingsWrapper::forbiddenIconSupported
+// -----------------------------------------------------------------------------
+//
+bool CpSettingsWrapper::forbiddenIconSupported(  ) const
+    {
+    SMC_MOCK_METHOD0( bool )
+    }
 
 
 // -----------------------------------------------------------------------------
@@ -138,12 +184,17 @@ bool Tools::videoSupported(  )
     SMC_MOCK_METHOD0( bool )
     }
 
+
 // -----------------------------------------------------------------------------
 // Tools::errorCodeTextMapping
 // -----------------------------------------------------------------------------
 //
-bool Tools::errorCodeTextMapping( const int errorcode, QString & errorText )
+bool Tools::errorCodeTextMapping( 
+        const int errorcode,
+        QString & errorText )
     {
-    SMC_MOCK_METHOD2( bool, int, errorcode, QString &, errorText )
+    SMC_MOCK_METHOD2( bool, const int, errorcode, 
+        QString &, errorText )
     }
-	
+
+

@@ -23,6 +23,7 @@
 #include <mpedatastore.h>
 #include <MProfileExtraTones.h>
 #include <talogger.h>
+#include <ProfileEngineInternalCRKeys.h>
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -63,7 +64,8 @@ CPEProfileSettingMonitor::~CPEProfileSettingMonitor( )
 //
 CPEProfileSettingMonitor::CPEProfileSettingMonitor(
         MPEPhoneModelInternal& aModel
-        ) : iModel( aModel )
+        ) : CPECenRepMonitor( KProEngSilenceMode ), 
+            iModel( aModel )
     {
     }
 
@@ -78,7 +80,8 @@ void CPEProfileSettingMonitor::ConstructL()
     iProfileEngine = CreateProfileEngineL();
     
     // Retrieve current profile settings    
-    GetProfileSettingsL();
+
+    BaseConstructL( KCRUidProfileEngine );
     
     iModel.SendMessage( MEngineMonitor::EPEMessageProfileChanged ); 
     
@@ -121,8 +124,18 @@ void CPEProfileSettingMonitor::GetProfileSettingsL()
     const TProfileToneSettings& toneSettings = activeTones.ToneSettings();  
     
     // Get ringing type and volume and keypad volume
-    TProfileRingingType ringingType = toneSettings.iRingingType;    
-    iModel.DataStore()->SetRingingType( static_cast<TProfileRingingType>( ringingType ) );
+    TProfileRingingType ringingType = toneSettings.iRingingType;
+    
+    TInt silentVolume(0);
+    if ( KErrNone == Get(silentVolume) && silentVolume )
+        {
+        iModel.DataStore()->SetRingingType(EProfileRingingTypeSilent);
+        }
+    else 
+        {
+        iModel.DataStore()->SetRingingType( static_cast<TProfileRingingType>( ringingType ) );
+        }
+    
     iModel.DataStore()->SetRingingVolume( toneSettings.iRingingVolume );
     iModel.DataStore()->SetTextToSpeech( toneSettings.iTextToSpeech );
                   
@@ -147,6 +160,19 @@ void CPEProfileSettingMonitor::GetProfileSettingsL()
     CleanupStack::Pop(); // activeProfile
     activeProfile->Release();
     __UHEAP_MARKEND;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEProfileSettingMonitor::UpdateL
+// Callback function - implements virtual function from CPECenRepMonitor
+// This is called whenever cr settings change
+// -----------------------------------------------------------------------------
+//
+void CPEProfileSettingMonitor::UpdateL()
+    {
+    TEFLOGSTRING( KTAINT, "PE CPEProfileSettingMonitor::UpdateL" );
+    GetProfileSettingsL();
+    iModel.SendMessage( MEngineMonitor::EPEMessageProfileChanged );
     }
 
 // -----------------------------------------------------------------------------

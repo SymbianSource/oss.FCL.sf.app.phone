@@ -99,7 +99,7 @@ private slots:
     
     void changeBarringStateRequested(int checkState);
     
-    void changeBarringPasswordRequested(bool checked = false);
+    void changeBarringPasswordRequested();
     
     void completeBarringStateChangeRequestHandling(
             QString barringPassword,

@@ -61,10 +61,7 @@ bool XQSettingsManager::writeItemValue(
         const XQSettingsKey & key,
         const QVariant & value )
     {
-    Q_UNUSED( key )
-    Q_UNUSED( value )
-    bool variable;
-    return variable;
+    SMC_MOCK_METHOD2( bool, XQSettingsKey &, key, QVariant &, value )
     }
 
 

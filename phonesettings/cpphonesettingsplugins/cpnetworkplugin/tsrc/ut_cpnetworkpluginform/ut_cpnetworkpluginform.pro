@@ -32,9 +32,7 @@ QT += testlib
 
 symbian: { 
     #CONFIG += no_icon
-    INCLUDEPATH += /epoc32/include/mw/QtTest \
-        /epoc32/include/platform/mw \
-        /epoc32/include/mw/qt
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     LIBS += -lmocklib \
         -lsymbianmock \
         -lcpframework 
@@ -57,8 +55,6 @@ HEADERS += ../../src/cpnetworkplugin.h \
            /epoc32/include/platform/mw/psetcalldivertingwrapper.h \
            /epoc32/include/platform/mw/psetnetworkwrapper.h
 
-SOURCES += ../../src/cpnetworkpluginform.cpp 
-
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cpnetworkplugin.cpp \
            ../../../tsrc/mocks/mock_psetwrapper.cpp \
@@ -66,18 +62,9 @@ SOURCES += ../../../tsrc/mocks/mock_cpnetworkplugin.cpp \
            ../../../tsrc/mocks/mock_cpplugincommon.cpp \
            ../../../tsrc/mocks/mock_cpphonenotes.cpp \
            ../../../tsrc/mocks/mock_cpphonelocalisation.cpp \
-           ../../../tsrc/mocks/mock_hbdataform.cpp \
-           ../../../tsrc/mocks/mock_hbabstractitemview.cpp \
-           ../../../tsrc/mocks/mock_hbscrollarea.cpp \
            ../../../tsrc/mocks/mock_hbdialog.cpp \
-           ../../../tsrc/mocks/mock_hbpopup.cpp \
            ../../../tsrc/mocks/mock_hbwidget.cpp \
-           ../../../tsrc/mocks/mock_hblabel.cpp \
-           ../../../tsrc/mocks/mock_hblistwidget.cpp \
-           ../../../tsrc/mocks/mock_hblistview.cpp \
-           ../../../tsrc/mocks/mock_hbaction.cpp \
-           ../../../tsrc/mocks/mock_qaction.cpp \
-           ../../../tsrc/mocks/mock_qobject.cpp \
-           ../../../tsrc/mocks/mock_hblistwidgetitem.cpp \
            ../../../tsrc/mocks/mock_cellulardatasettings.cpp
+           
+SOURCES += ../../src/cpnetworkpluginform.cpp 
            

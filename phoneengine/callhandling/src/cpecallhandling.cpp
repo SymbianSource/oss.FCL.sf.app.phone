@@ -29,6 +29,7 @@
 #include    "mpecallhandling.h"
 #include    "cpecceobserver.h"
 #include    "cpesystemcallstate.h"
+#include    "tpematcher.h"
 
 #include    <gsmerror.h>
 #include    <mpedatastore.h>
@@ -39,6 +40,7 @@
 #include    <mccecall.h>
 #include    <psetsaobserver.h>
 #include    <cccecallparameters.h>
+#include    <centralrepository.h>
 
 // EXTERNAL DATA STRUCTURES
 // None
@@ -47,7 +49,19 @@
 // None
 
 // CONSTANTS
-// None
+/******************************************************************************
+* Telephony Configuration API
+* Keys under this category are used in defining telephony configuration.
+******************************************************************************/
+const TUid KCRUidTelConfiguration = {0x102828B8};
+
+/**
+* Amount of digits to be used in contact matching.
+* This allows a customer to variate the amount of digits to be matched.
+*/
+const TUint32 KTelMatchDigits                               = 0x00000001;
+
+const TInt KPEMatchDefault = 7;
 
 // MACROS
 // None
@@ -92,6 +106,7 @@ EXPORT_C CPECallHandling::~CPECallHandling()
     {  
     TEFLOGSTRING( KTAOBJECT, "CALL CPECallHandling::~CPECallHandling() start");
     
+    delete iRepository;
     delete iSystemCallState;
     delete iDtmfHandling;
     
@@ -163,6 +178,8 @@ void CPECallHandling::ConstructL()
     iCallOpenParams = CCCECallParameters::NewL();
     
     iSystemCallState = CPESystemCallState::NewL( *iCallArrayOwner, *iModel.DataStore() );
+    
+    iRepository = CRepository::NewL( KCRUidTelConfiguration );
     
     TEFLOGSTRING( KTAOBJECT, "CALL CPECallHandling::BaseConstructL() complete");
     }
@@ -437,19 +454,20 @@ void CPECallHandling::SendMessage(
             {
             TEFLOGSTRING( KTAMESINT, "CALL CPECallHandling::SendMessage -> EPEMessageRemotePartyInfoChanged");
             // HO cases call type can changes
-            CPESingleCall* connectedCall;
-            connectedCall = iCallArrayOwner->CallPointerByState( EPEStateConnected );
-            
-            if( connectedCall )
+            CPESingleCall* call;
+            call = static_cast<CPESingleCall*>( iCallArrayOwner->CallByCallId( aCallId ) );
+                                 
+            MCCECall& connectedCall = call->Call();
+            CCPCall::TCallType callType = connectedCall.Parameters().CallType();
+ 
+            if ( EPEStateConnected == call->GetCallState() )
                 {
-                CCPCall::TCallType callType = connectedCall->Call().Parameters().CallType();
-                
                 if ( callType == CCPCall::ECallTypePS ) 
                     {
                     TEFLOGSTRING( KTAMESINT, 
                         "CALL CPECallHandling::SendMessage -> EPEMessageRemotePartyInfoChanged->update call type to PS");
                     iModel.DataStore()->SetCallType( EPECallTypeVoIP, aCallId ); 
-                    iModel.DataStore()->SetServiceIdCommand( connectedCall->Call().Parameters().ServiceId() );
+                    iModel.DataStore()->SetServiceIdCommand( call->Call().Parameters().ServiceId() );
                     iCallOpenParams->SetCallType( CCPCall::ECallTypePS); 
                     }
                 else if ( callType == CCPCall::ECallTypeCSVoice )
@@ -458,14 +476,23 @@ void CPECallHandling::SendMessage(
                         "CALL CPECallHandling::SendMessage -> EPEMessageRemotePartyInfoChanged->update call type to CS");
                     iCallOpenParams->SetCallType( CCPCall::ECallTypeCSVoice );
                     iModel.DataStore()->SetServiceIdCommand( 1 );
-                    iModel.DataStore()->SetCallType( EPECallTypeCSVoice, aCallId );    
+                    iModel.DataStore()->SetCallType( EPECallTypeCSVoice, aCallId ); 
+                    if ( UpdateColpNumber( aCallId, connectedCall ))
+                        {
+                        iModel.SendMessage( MEngineMonitor::EPEMessageColpNumberAvailable, aCallId );
+                        }
                     }
                 }
+            // CNAP informations must be in incoming call
+            iModel.DataStore()->SetRemotePartyName( connectedCall.RemotePartyName(), aCallId );                
+            iModel.DataStore()->SetRemotePhoneNumber( connectedCall.RemoteParty().Left( KPEPhoneNumberMaxLength ), aCallId );
+            iModel.DataStore()->SetCallIndex( connectedCall.CallIndex(), aCallId );            
+            break;
             }
-       // Flow throught
-            
+                   
         case MEngineMonitor::EPEMessageIncoming:
             {
+            TEFLOGSTRING( KTAMESINT, "CALL CPECallHandling::SendMessage -> EPEMessageIncoming");
             CPESingleCall* callData = iCallArrayOwner->GetCallObject( aCallId );
             if( callData )
                 {
@@ -867,28 +894,6 @@ EXPORT_C TInt CPECallHandling::TerminateAllConnections()
         }
     //Terminate all ringing data calls, connected data calls and packet data connections
     return iVideoCallHandling->TerminateAllConnections();
-    }
-
-// -----------------------------------------------------------------------------
-// CPECallHandling::UpdatePhoneIdentity
-// Method updates phone identity
-// -----------------------------------------------------------------------------
-//
-EXPORT_C TInt CPECallHandling::UpdatePhoneIdentity(
-    MEngineMonitor::TPEMessagesFromPhoneEngine /*aMessage*/ )
-    {
-    TInt retValue( KErrNone ); 
-    CSInfo csinfo;
-    retValue = iConvergedCallEngine.GetCSInfo( csinfo );
-    
-    TPEPhoneIdentityParameters phoneIdentityParameters;
-    
-    phoneIdentityParameters.iSerialNumber = csinfo.iSerialNumber;
-        
-    iModel.DataStore()->SetPhoneIdentityParameters( phoneIdentityParameters );
-
-    SendMessage( MEngineMonitor::EPEMessageShowIMEI );
-    return retValue;
     }
 
 // -----------------------------------------------------------------------------
@@ -1903,7 +1908,10 @@ EXPORT_C void CPECallHandling::DialEmergencyCall( const TPEPhoneNumber& aEmergen
     SendMessage( MEngineMonitor::EPEMessageInitiatedEmergencyCall );
     TEFLOGSTRING( KTAINT, "CALL CPECallHandling::DialEmergencyCall start emergency dialing" );
     CPESingleCall* callData = iCallArrayOwner->GetCallObject( KPEEmergencyCallId );
-    callData->DialEmergency( aEmergencyNumber );   
+    if ( callData )
+        {
+        callData->DialEmergency( aEmergencyNumber );   
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -1949,16 +1957,7 @@ void CPECallHandling::CreateConferenceCallL(
     TEFLOGSTRING( KTAINT, "CALL CPECallHandling::CreateConferenceCallL end" );
     }
 
-// -----------------------------------------------------------------------------
-// CPECallHandling::GetLifeTime
-// -----------------------------------------------------------------------------
-//
-EXPORT_C TBool CPECallHandling::GetLifeTime( TDes8& aLifeTimeInfo )
-    {
-    TEFLOGSTRING( KTAINT, "CALL CPECallHandling::GetLifeTime" );
-    return iConvergedCallEngine.GetLifeTime( aLifeTimeInfo );
-    }
-    
+
 // -----------------------------------------------------------------------------
 // CPECallHandling::UpdateSaSetting
 // -----------------------------------------------------------------------------
@@ -2417,5 +2416,54 @@ void  CPECallHandling::SetCallOrigin( const TInt aCallId, const MCCECall& aCall 
         }                
     }
 
+
+// -----------------------------------------------------------------------------
+// CPECallHandling::UpdateColpNumber
+// -----------------------------------------------------------------------------
+//
+TBool CPECallHandling::UpdateColpNumber( TInt aCallId, const MCCECall& aCall ) const
+    {
+    TEFLOGSTRING( KTAINT, "CALL CPECallHandling::UpdateColpNumber" );
+    
+    TBool updateDone( EFalse );
+    TInt errorCode( KErrNone );
+    TInt value( KPEMatchDefault );
+    TPEMatcher matcher;       
+    TPEPhoneNumber remoteNumber;
+    
+    MPEDataStore* dataStore = iModel.DataStore();
+    
+    if ( dataStore->RemoteColpNumber( aCallId ).Length() )
+        {
+        remoteNumber = dataStore->RemoteColpNumber( aCallId );
+        }
+    else
+        {
+        remoteNumber = dataStore->RemotePhoneNumber( aCallId );
+        }    
+        
+    const TPEPhoneNumber& updatedNumber = aCall.RemoteParty();
+    
+    errorCode = iRepository->Get( KTelMatchDigits, value );
+    if ( !errorCode == KErrNone )
+        {
+        TEFLOGSTRING( KTAOBJECT, "Reading KTelMatchDigits failed, use default value for matching");
+        } 
+    
+    //check if remote number is different from dialled number
+    if ( !matcher.numbersMatch( remoteNumber, updatedNumber, value ) )
+        {
+        //set COLP number        
+        dataStore->SetRemoteColpNumber( updatedNumber, aCallId );
+        
+        TEFLOGSTRING3( KTAMESINT, 
+                "CPECallHandling::UpdateColpNumber, colp number: '%S', call id: %d", 
+                &updatedNumber, aCallId );
+        updateDone = ETrue;
+        }  
+    
+    return updateDone;
+    }
+       
 
 //  End of File 

@@ -49,18 +49,6 @@ class MPEContactHandling
         virtual TInt FindContactInfoSync( 
             const TInt aCallId,
             const TPEFindContactKey aFindKey ) = 0;
-
-        /**
-        * Fetch number from speed dial location
-        * @param aLocationIndex Index to look for
-        * @param aNumber Filled with speed dial location phone number
-        * @param aContactItemId Contact item id. KErrNotFound if given location
-        *                                        was not set.
-        * @return possible Symbian OS error code
-        */
-        virtual TInt GetSpeedDialLocation( 
-            TInt aLocationIndex, 
-            TPEPhoneNumber& aNumber ) = 0;
     };
 
 #endif      // MPECONTACTHANDLING_H

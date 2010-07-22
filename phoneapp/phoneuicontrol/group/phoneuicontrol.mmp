@@ -50,7 +50,6 @@ SOURCE          cphonestatemachine.cpp
 SOURCE          cphonestatestartup.cpp
 SOURCE          cphonesystemeventhandler.cpp
 SOURCE          cphoneuicontroller.cpp
-SOURCE          cphonekeyeventforwarder.cpp
 SOURCE          cphoneaccessorybthandler.cpp
 SOURCE          tphonecallheaderparam.cpp
 SOURCE          cphonecallheadermanager.cpp 
@@ -89,6 +88,7 @@ LIBRARY         phonestringloader.lib
 LIBRARY         featmgr.lib // FeatureManager
 LIBRARY         connmon.lib // RConnectionMonitor
 LIBRARY         avkon.lib // AknTextUtils
+LIBRARY         hal.lib
 
 // RemCon
 LIBRARY         remconcoreapi.lib

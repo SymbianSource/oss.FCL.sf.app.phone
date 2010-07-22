@@ -26,9 +26,11 @@
 //
 PSetCallDivertingWrapper::PSetCallDivertingWrapper( 
         CPsetContainer & psetContainer,
-        QObject * parent ) : QObject( parent )
+        QObject * parent )
+    //:
+    //QObject( /*psetContainer, parent*/ )
     {
-    Q_UNUSED(psetContainer);
+    
     }
 
 
@@ -88,15 +90,10 @@ void PSetCallDivertingWrapper::cancelProcess(  )
 void PSetCallDivertingWrapper::getDefaultNumbers( 
         QStringList & aDefNumbers )
     {
-    static int i =0;
-    if(i == 0){
-        QStringList list;
-        list << "0401234567" << "0501234567" << "0451234567";
-        aDefNumbers = list;
-        i=1;
-    }else{
-        i=0;
-    }
+    QStringList list;
+    list << "0401234567" << "0501234567" << "0451234567";
+    aDefNumbers = list;
+    
     SMC_MOCK_METHOD1( void, QStringList &, aDefNumbers )
     }
 
@@ -111,11 +108,29 @@ void PSetCallDivertingWrapper::setNewDefaultNumber(
     SMC_MOCK_METHOD1( void, QString, aNumber )
     }
 
+
 // -----------------------------------------------------------------------------
 // PSetCallDivertingWrapper::getVoiceMailBoxNumber
 // -----------------------------------------------------------------------------
 //
-void PSetCallDivertingWrapper::getVoiceMailBoxNumber(QString &number)
-{
-    SMC_MOCK_METHOD1( void, QString&, number )
-}
+int PSetCallDivertingWrapper::getVoiceMailBoxNumber( 
+        QString & aNumber,
+        PsService aService )
+    {
+    SMC_MOCK_METHOD2( int, QString &, aNumber, 
+        PsService, aService )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PSetCallDivertingWrapper::queryVoiceMailBoxNumber
+// -----------------------------------------------------------------------------
+//
+int PSetCallDivertingWrapper::queryVoiceMailBoxNumber( 
+        QString & aNumber,
+        PsService aService )
+    {
+    SMC_MOCK_METHOD2( int, QString &, aNumber, 
+        PsService, aService )
+    }
+

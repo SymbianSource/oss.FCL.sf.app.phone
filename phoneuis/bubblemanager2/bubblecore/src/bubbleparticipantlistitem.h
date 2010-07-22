@@ -21,11 +21,8 @@
 #include <hbabstractviewitem.h>
 
 class QGraphicsItem;
-class HbPushButton;
+class HbGroupBox;
 class HbAction;
-class HbIconItem;
-class HbFrameItem;
-class HbTextItem;
 
 class BubbleParticipantListItem : public HbAbstractViewItem
 {
@@ -39,29 +36,23 @@ public:
     HbAbstractViewItem* createItem();
 
     void updateChildItems();
-    void setExpanded(bool expanded);
     void addAction(HbAction* action);
     void clearActions();
 
 private:
     void polish(HbStyleParameters& params);
 
-    int type() const;
-
 private slots:
     void currentIndexChanged(const QModelIndex &current,
                              const QModelIndex &previous);
 
-private:
-    HbTextItem* mText;
-    HbIconItem* mStatusIcon;
-    HbIconItem* mCipheringIcon;
-    HbIconItem* mExpandIcon;
-    HbPushButton* mButton1;
-    HbPushButton* mButton2;
-    QList<HbAction*> mActions;
+    void setCollapsed();
 
-    bool mExpanded;
+    void handleItemStateChange(bool collapsed);
+
+private:
+    HbGroupBox*      mGroupBox;
+    QList<HbAction*> mActions;
 };
 
 #endif // BUBBLEPARTICIPANTLISTITEM_H

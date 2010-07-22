@@ -40,6 +40,7 @@ SOURCE      cpegprstermination.cpp
 SOURCE      cpesystemcallstate.cpp
 SOURCE      cpevideocallhandling.cpp
 SOURCE      cpecceobserver.cpp
+SOURCE      tpematcher.cpp
 
 USERINCLUDE     ../inc
 
@@ -57,6 +58,7 @@ LIBRARY euser.lib
 LIBRARY featmgr.lib // Feature manager. 
 LIBRARY flogger.lib
 LIBRARY phonesettings.lib
+LIBRARY centralrepository.lib   // CenRep.
 
 LANG            SC
 START WINS

@@ -97,16 +97,6 @@ class CPEContactHandling
         void SendMessage( MEngineMonitor::TPEMessagesFromPhoneEngine aMessage, 
                           const TInt aCallId = KPECallIdNotUsed );
         
-        /**
-        * Fetch number from speed dial location
-        * @param aLocationIndex Index to look for
-        * @param aNumber Filled with speed dial location phone number
-        * @return Error code.
-        */
-        TInt GetSpeedDialLocation( 
-            TInt aLocationIndex, 
-            TPEPhoneNumber& aNumber );
-
    protected:  // New functions
         
         /**

@@ -76,31 +76,6 @@ CPhoneAccessoryBTHandler::~CPhoneAccessoryBTHandler()
     {
     }
 
-// -----------------------------------------------------------
-// CPhoneAccessoryBTHandler::SetBTDebugModeL
-// Handling for message EPEMessageBTDebugMode.
-// Sets BT debug mode PS key on.
-// -----------------------------------------------------------
-//
-void CPhoneAccessoryBTHandler::SetBTDebugModeL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneAccessoryBTHandler::SetBTDebugModeL( ) ");
-    if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) )
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewClearNumberEntryContent );                      
-        }
-    else
-        {
-        // Remove number entry from screen
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );   
-        }
-    iNEClearedHandler->HandleNumberEntryClearedL();
-    if ( RProperty::Set( KPSUidBluetoothDutMode, KBTSspDebugmode, EBTSspDebugModeOn ))
-        {
-        __PHONELOG( EOnlyFatal, EPhoneControl, "CPhoneAccessoryBTHandler::SetBTDebugModeL PS key not defined" );
-        }
-    }
-
 // ---------------------------------------------------------
 // CPhoneAccessoryBTHandler::SetBTHandsfreeModeL
 // ---------------------------------------------------------

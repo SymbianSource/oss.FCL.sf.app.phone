@@ -53,20 +53,11 @@ public:
         BubbleButton& button,
         const HbAction& action);
 
-    static void setCallStatusIcon(
+    static void setIndicators(
         int callState,
         int callFlags,
-        HbIconItem& icon);
-
-    static void setNumberTypeIcon(
-        int callState,
-        int callFlags,
-        HbIconItem& icon);
-
-    static void setCipheringIcon(
-        int callState,
-        int callFlags,
-        HbIconItem& icon);
+        HbIconItem& indicator1,
+        HbIconItem& indicator2);
 
 private:
     static void setText(

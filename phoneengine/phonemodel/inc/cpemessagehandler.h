@@ -28,7 +28,6 @@
 
 #include "mpecallhandling.h"
 #include "mpecallcontrolif.h" 
-#include "mpekeysequencerecognitionif.h"
 
 // CONSTANTS
 const TInt KModeNormal = 0;  // Normal System mode  
@@ -39,21 +38,6 @@ const TInt KModePDA    = 2;  // PDA mode
 _LIT( KPEClientValidChars, "+0123456789*#pwPW" );
 _LIT( KPEValidDTMFChars, "0123456789*#pwPW" );
 _LIT( KPEValidDTMFStringStopChars, "+pPwW" );
-
-// DTMF Speed dial substitution
-_LIT( KPEValidSpeedDialChars, "23456789" );
-const TInt KPEDtmfSpeedDialSubstitutionsMax = 2; // prevent infinite loop.
-const TInt KPESpeedDialIndexMin = 2;
-const TInt KPESpeedDialIndexMax = 9;
-
-// DTMF parsing status for Speed dial location
-enum TPESpeedDialSubstituionStatus
-    {
-    EPEDtmfSpeedDialOk,
-    EPEDtmfSpeedDialPromptUser,
-    EPEDtmfSpeedDialNotAssigned,
-    EPEDtmfSpeedDialInvalidSpeedDial
-    };
 
 // Invalid characters in an dialing string, these chars can be removed from dial string
 _LIT( KPECharsThatCanBeDelete, "\"/ ().-" );
@@ -109,8 +93,7 @@ class MPEServiceHandling;
 NONSHARABLE_CLASS( CPEMessageHandler ) 
     : 
         public CBase, 
-        public MPECallControlIF,
-        public MPEKeySequenceRecognitionIF
+        public MPECallControlIF
     {
     public:  // Destructor
 
@@ -253,12 +236,6 @@ NONSHARABLE_CLASS( CPEMessageHandler )
                                            const TBool aCheckForDelete ) const;
 
         /**
-        * Handles lifetimer data from customa api -> engineinfo.
-        * @return TInt possible error code..
-        */
-        TInt HandleGetLifeTimerData() const;
-
-        /**
         * Handles EPEMessageDTMFSent message from call handling subsystem
         * @param ECCPErrorNone or KPEDontSendMessage
         */
@@ -282,12 +259,6 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         * @return error code.
         */
         static TInt CallBackHandleSendDtmf( TAny* aAny );
-
-        /**
-        * Handles plus (+) sign in a DTMF string.
-        * @param aDtmfString Current DTMF string to process.
-        */
-        void HandlePlusSignInDtmf( const TPEDtmfString& aDtmfString );
         
         /**
         * Called asyncronously from callback.
@@ -510,10 +481,11 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         TInt HandleServiceEnabled();
         
         /**
-         * Handles remote party information changed         
+         * Handles remote party information changed   
+         * @param aCallId is the identification number of the call.               
          * @since Series60_5.2         
          */
-        void HandleRemotePartyInfoChanged( );
+        void HandleRemotePartyInfoChanged( const TInt aCallId );
 
         /**
         * Handles swap message from the phone application 
@@ -599,16 +571,24 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         void HandleDisableService();
 
         /**
+        * Adds SIM rejected MO CS call to logs. 
+        * @param aCallId is the identification number of the call.   
+        * @return KErrNone if succesfull
+        */
+        TInt AddSIMRejectedMoCsCallToLog( const TInt aCallId );
+
+        /**
         * Handle dial service call
         */ 
         TInt HandleDialServiceCall(
             const TBool aClientCall );
-    
-    public: // from MPEKeySequenceRecognitionIF
+        
         /**
-         * Executes provided key sequence if recognized.
-         */ 
-        TBool ExecuteKeySequenceL(const TDesC16 &aSequence);
+        * Returns a boolean to indicate whether network connection 
+        * is allowed or not.  
+        * @return Return a True or False. 
+        */
+        TBool IsNetworkConnectionAllowed() const;
     
     private: // New functions
         
@@ -653,12 +633,6 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         * @return TBool.
         */
         TBool AutomaticAnswer( const TInt aCallId ) const;
-
-        /**
-        * Returns a boolean to indicate whether emergency call is allowed or not.  
-        * @return Return a True or False. 
-        */
-        TBool IsEmergencyAllowed() const;
 
         /**
         * Handle Client Call Data.
@@ -774,7 +748,12 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         * @param aClientCall, Informs is the current call client originated or not.
         * @return Return possible error code.
         */
-        TInt HandleDialCallL( const TBool aClientCall );      
+        TInt HandleDialCallL( const TBool aClientCall );
+
+        /**
+        * Reset CCCECallParameters to prevent of use a previous call´s parameters
+        */
+        void ResetClientCallData();
 
         /**
         * Checks if there are any connected video calls

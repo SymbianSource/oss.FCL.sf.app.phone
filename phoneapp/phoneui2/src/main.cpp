@@ -19,6 +19,7 @@
 #include <hbapplication.h>
 #include <hbmainwindow.h>
 #include <hbtoolbar.h>
+#include <xqserviceutil.h>
 
 #include "hbphonemainwindow.h"
 
@@ -27,5 +28,6 @@ int main (int argc, char *argv[])
 {
     HbApplication app (argc, argv, Hb::NoSplash);
     HbPhoneMainWindow window;
+    XQServiceUtil::toBackground( true );
     return app.exec ();
 }

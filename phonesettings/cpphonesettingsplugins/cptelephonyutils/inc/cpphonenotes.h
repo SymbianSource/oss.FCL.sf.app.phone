@@ -93,14 +93,6 @@ public slots: // Slots:
      */
     void showGlobalErrorNote(int &noteId, int errorCode);
     
-    /**
-     Shows the basic service list.
-     @param     title                   Heading to be used for the list.
-     @param     basicServiceGroupIds    Basic services to be listed. 
-     */
-    void showBasicServiceList(
-        const QString &title, 
-        const QList<unsigned char> &basicServiceGroupIds);
     
     /**
      Shows detailed call divert information about the selected divert service
@@ -138,15 +130,14 @@ public slots: // Slots:
      Slot for HbDialog finished singal.
      */
     void finishedPasswordQueryDialog(HbAction* action);
-    
-private:
-    
+
     /**
-     Resolves basic service group name by identifier.
-     @param     basicServiceGroupId     Group identifier.
-     @return    Group name.
+     Shows notification dialog. 
+     @param     text        Text to show on a dialog.
      */
-    QString basicServiceGroupName(BasicServiceGroups basicServiceGroupId) const;
+    void showNotificationDialog(const QString& text);
+
+private:
     
     /**
      Formats phone number according to locale specific rules.

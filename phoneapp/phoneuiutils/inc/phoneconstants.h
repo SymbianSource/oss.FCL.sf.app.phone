@@ -46,9 +46,7 @@ const TUid KUidPhoneApplication = { 0x100058B3 };   // Phone application
 const TUid KPhoneUidAppPhonebook = { 0x101F4CCE };  // PhoneBook
 const TUid KPhoneUidAppPhoneInfo = { 0x101fc0ef };  // Phone Info
 const TUid KPhoneUidAppFTD = { 0x100058F2 };        // Field Test Display
-const TUid KDeviceManagerUid = {0x101F6DE5};        // Device manager application  
 const TUid KUidStartupApplication = { 0x100058F4 }; // Startup application
-const TUid KUidSpdia = { 0x1000590A };              // Speeddial application.
 const TUid KVtUiAppUidValue = { 0x101F8681 };       // Video Telephony application
 
 // Contants below define which view will be activated. 
@@ -162,12 +160,6 @@ const TUint KPhoneDtmfWaitCharacter  = 'w';
 
 // The character to be used as the 'soft pause' character, by DTMF code.
 const TUint KPhoneDtmfPauseCharacter = 'p';
-
-// The character to be used as the 'speed-dial' character, by DTMF code.
-const TUint KPhoneDtmfSpeedDialCharacter = '+';
-
-// The length of the speed dial prefix, used to prevent buffer overflow
-const TUint KPhoneDtmfSpeedDialPrefixLength = 1;
 
 // Following, are the standard DTMF characters...
 const TInt KPhoneDtmfHashCharacter    = '#';
@@ -308,12 +300,6 @@ const TInt KEmergencyCallId = 7;
 
 // Conference call id
 const TInt KConferenceCallId = 8;
-
-// LifeTimer const
-const TInt KPhoneLifeTimerHoursLength   = 6;
-const TInt KPhoneLifeTimerMinutesLength = 2;
-const TInt KTimerTextLength             = 64;
-const TInt KTimerMinuteSeparator        = 2;
 
 //AudioVolume const
 // CONSTANTS

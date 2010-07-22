@@ -38,7 +38,7 @@ class MPhoneStateMachine;
 class CPhoneStateHandle;
 class CPEPhoneModel;
 class CPhoneRemoteControlHandler;
-class CPhoneKeyEventForwarder;
+
 
 class CPhoneUIController : 
     public CBase, 
@@ -231,11 +231,6 @@ class CPhoneUIController :
         * MPhoneStateMachine
         */
         MPhoneStateMachine* iStateMachine;  // NOT OWNED
-        
-        /**
-        * iKeyEventForwarder
-        */
-        CPhoneKeyEventForwarder* iKeyEventForwarder;
         
     };
 

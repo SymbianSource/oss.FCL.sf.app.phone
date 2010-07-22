@@ -106,22 +106,21 @@ void CPhoneGsmInCall::HandlePhoneEngineMessageL(
         {
         case MEngineMonitor::EPEMessageRemoteHeld:
             CPhoneState::SendGlobalInfoNoteL( 
-                EPhoneInformationRemotePutOnHoldNote );
+                EPhoneInformationRemotePutOnHoldNote, ETrue );
             break;
         
         case MEngineMonitor::EPEMessageRemoteResumed:
             CPhoneState::SendGlobalInfoNoteL( 
-                EPhoneInformationConnectedNote );
+                EPhoneInformationConnectedNote, ETrue );
             break;
             
         case MEngineMonitor::EPEMessageRemoteCreatedConference:
             CPhoneState::SendGlobalInfoNoteL( 
-                EPhoneInformationRemoteCreateConferenceNote );
+                EPhoneInformationRemoteCreateConferenceNote, ETrue );
             break;        
         case MEngineMonitor::EPEMessageIncCallIsForw:  // fall through
         case MEngineMonitor::EPEMessageIssuingSSRequest: // fall through
         case MEngineMonitor::EPEMessageCallBarred: // fall through
-        case MEngineMonitor::EPEMessageShowVersion: // fall through
         case MEngineMonitor::EPEMessageIssuedSSRequest: // fall through
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
         case MEngineMonitor::EPEMessageIncCallForwToC: // fall through
@@ -140,8 +139,14 @@ void CPhoneGsmInCall::HandlePhoneEngineMessageL(
             // Needed also in non-touch, if call waiting request (*43#) 
             // is sent during active call at least.
             UpdateCbaL( EPhoneCallHandlingInCallCBA );
+			}
+			break;
+			
+        case MEngineMonitor::EPEMessageColpNumberAvailable:
+            {
+            HandleColpNoteL( aCallId );                    
             }
-            break;
+            break; 
 
         default:
             CPhoneStateInCall::HandlePhoneEngineMessageL( 
@@ -218,26 +223,24 @@ void CPhoneGsmInCall::ReplaceCallL()
 // CPhoneGsmInCall::HandleColpNoteL
 // -----------------------------------------------------------
 //
-void CPhoneGsmInCall::HandleColpNoteL( 
-    TInt aCallId )
+void CPhoneGsmInCall::HandleColpNoteL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneGsmInCall::HandleColpNoteL() ");
 
     MPEEngineInfo* EngineInfo = CPhoneState::iStateMachine->PhoneEngineInfo();
-
-    if ( EngineInfo->RemoteColpNumber( aCallId ).Length() )
-        {
-        TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetText(  EngineInfo->RemoteColpNumber( aCallId ) ); 
-        globalNoteParam.SetType( EAknGlobalInformationNote );
-        globalNoteParam.SetTextResourceId( 
+    
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    globalNoteParam.SetText(  EngineInfo->RemoteColpNumber( aCallId ) ); 
+    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetTextResourceId( 
             CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneColpConnected ) );
-        globalNoteParam.SetTone( EAvkonSIDInformationTone );
-            
-        iViewCommandHandle->ExecuteCommandL( 
-                EPhoneViewShowGlobalNote, &globalNoteParam );
-        }
+	        ResolveResourceID( EPhoneColpConnected ) );
+    globalNoteParam.SetTone( EAvkonSIDInformationTone );
+    globalNoteParam.SetNotificationDialog( ETrue );
+	        
+    iViewCommandHandle->ExecuteCommandL( 
+            EPhoneViewShowGlobalNote, &globalNoteParam );
+    
     }
 
 // -----------------------------------------------------------

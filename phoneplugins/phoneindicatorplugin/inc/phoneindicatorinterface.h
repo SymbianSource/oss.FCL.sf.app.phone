@@ -24,6 +24,8 @@
 #include <hbindicatorinterface.h>
 #include "phoneindicators.h"
 
+#include <xqappmgr.h>
+
 class PhoneIndicatorInterface : public HbIndicatorInterface
 {
 public:
@@ -31,7 +33,7 @@ public:
                                  int typeIndex,
                                  Interaction interaction);
 
-    ~PhoneIndicatorInterface();
+    ~PhoneIndicatorInterface(){}
 
     bool handleInteraction(InteractionType type);
     QVariant indicatorData(int role) const;

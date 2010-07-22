@@ -1,4 +1,4 @@
-/* 
+/*
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
@@ -52,7 +52,7 @@ HbAction::HbAction(
 // -----------------------------------------------------------------------------
 //
 HbAction::HbAction( 
-        Hb::SoftKeyAction action,
+        Hb::NavigationAction action,
         QObject * parent )
     : QAction( parent ), d_ptr(NULL)
     {
@@ -109,6 +109,27 @@ void HbAction::setMenu(
 HbMenu * HbAction::menu(  ) const
     {
  //   SMC_MOCK_METHOD0( HbMenu * )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbAction::setToolTip
+// -----------------------------------------------------------------------------
+//
+void HbAction::setToolTip( 
+        const QString & tooltip )
+    {
+    SMC_MOCK_METHOD1( void, const QString &, tooltip )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbAction::toolTip
+// -----------------------------------------------------------------------------
+//
+QString HbAction::toolTip(  ) const
+    {
+    SMC_MOCK_METHOD0( QString )
     }
 
 

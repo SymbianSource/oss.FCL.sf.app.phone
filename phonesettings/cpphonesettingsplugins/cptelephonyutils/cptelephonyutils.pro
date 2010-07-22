@@ -25,7 +25,7 @@ SOURCEPATH += src
 # Input
 HEADERS += inc/cpplugincommon.h \
            inc/cpphonenotes.h \
-           inc/cpphonelocalisation.h
+           inc/cpphonelocalisation.h 
            
 SOURCES += src/cpphonenotes.cpp \
            src/cpphonelocalisation.cpp 
@@ -43,8 +43,9 @@ DEFINES += BUILD_CPTELEPHONYUTILS
 
 symbian: {
     load(data_caging_paths)
-    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
-    
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE 
+    INCLUDEPATH +=  ../../../inc
+
     LIBS += -lsssettings    \
             -lphonesettings \
             -lxqsysinfo \
@@ -54,6 +55,14 @@ symbian: {
     TARGET.EPOCALLOWDLLDATA = 1 
     TARGET.CAPABILITY = CAP_GENERAL_DLL
     TARGET.UID3 = 0X20029F1F
+
+    defFiles = \
+    "$${LITERAL_HASH}ifdef WINS" \
+        "DEFFILE bwins/cptelephonyutils.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE eabi/cptelephonyutils.def" \
+    "$${LITERAL_HASH}endif"
+    MMP_RULES += defFiles
 
     # For sis file
     dllfile.sources = $${TARGET}.dll

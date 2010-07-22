@@ -11,14 +11,14 @@
 *
 * Contributors:
 *
-* Description: Defines interface for manipulating telephony call menus.
+* Description: Defines interface for manipulating telephony call commands.
 *
 */
 
 #ifndef XQTELUICOMMANDEXTENSION_H
 #define XQTELUICOMMANDEXTENSION_H
 
-#include <qobject>
+#include <QObject>
 #include <hbaction.h>
 
 
@@ -30,7 +30,7 @@
 
 /*!
     XQTelUiCommandExtension
-    Defines interface for manipulating telephony call menus.
+    Defines interface for manipulating telephony call commands.
     
 */
 class DLL_EXPORT XQTelUiCommandExtension 
@@ -70,6 +70,21 @@ public:
         };
     
     /*!
+       Capsulates Tool Bar command info.
+    */
+    class ToolBarCommand
+        {
+    public:
+        
+        // Tool Bar command Id
+        int mCommandId;
+
+        // Is command enabled
+        bool mIsEnabled;
+
+        };
+    
+    /*!
         \fn void modifyMenuItemList(QList<int> &menuCmdList)
         
         Modifies menu command list. CallInfo contains current call information and 
@@ -95,6 +110,22 @@ public:
     */
     virtual void modifyPushButtonCommandList(const QList<CallInfo> &callInfo,
                                              QList<int> &buttonCmdList) = 0;
+    
+                                             
+    /*!
+        \fn void modifyToolBarCommandList(QList<int> &menuCmdList)
+        
+        Modifies tool bar command list. CallInfo contains current call 
+        information and toolBarCmdList contains current list of tool 
+        bar commands. 
+        Interface can remove/disable commands if the command list contains 
+        unsupported call commands (For example if service doesn't support 
+        conference call) or add commads which should be handled by telephony  
+        call handling (maximum amount of tool bar commands is 4 and list
+        index 0 is used for right button).
+    */
+    virtual void modifyToolBarCommandList(const QList<CallInfo> &callInfo,
+                                          QList<ToolBarCommand> &toolBarCmdList) = 0;
     
     /*!
         \fn void addMenuActions(QList<HbAction*> &menuActions)

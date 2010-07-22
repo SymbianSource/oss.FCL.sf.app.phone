@@ -96,13 +96,6 @@ const TInt KPEMessagesFromPhoneEngineGsmFirst = 11000;
 const TInt KPEMessagesFromPhoneEngineGsmLast = 12999;
 const TInt KPEMessagesFromPhoneEngineVariantFirst = KPEMessagesFromPhoneEngineGsmFirst;
 
-// Lifetimer data in hours and minutes
-NONSHARABLE_STRUCT( TPELifeTimeData )                      
-    {
-    TUint32 iHours;                         //range 0-999999 
-    TUint8 iMinutes;                        //range 0-59
-    };
-
 // Used when initializing number variables with non negative value range.
 const TInt KPENumberInitValue = -1; 
 //CallId not used in SendErrorMessageL
@@ -317,16 +310,6 @@ NONSHARABLE_STRUCT( TPEVoiceMailBoxNumberInfo )
     TPEPhoneNumber iDTMFVMBXL2; // Line 2 DTMFVoiceMailBoxNumber
     };
 
-
-// Contains information of PhoneIdentity paramteres
-NONSHARABLE_STRUCT( TPEPhoneIdentityParameters )
-    {
-    TPEManufacturer iManufacturer;
-    TPEModel iModel;
-    TPERevision iRevision;
-    TPESerialNumber iSerialNumber;
-    };
-
 // Contains information of call audio route parameters
 NONSHARABLE_STRUCT( TPEPhoneAudioRouteParameters )
     {
@@ -395,17 +378,14 @@ NONSHARABLE_CLASS( MEngineMonitor )
         EPEMessageIncoming,
         EPEMessageInitiatedEmergencyCall,
         EPEMessageInitiatedEmergencyWhileActiveVideo,
-        EPEMessageInvalidSpeedDial,
         EPEMessageIssuingUSSDRequest,
         EPEMessageIssuedUSSDRequest,
         EPEMessagePacketNetworkDetached,   
-        EPEMessagePromptSpeedDial,
         EPEMessageRemoteBusy,
         EPEMessageRemoteTerminated,               
         EPEMessageSendingDTMF,
         EPEMessageSentDTMF,
         EPEMessageSentSSString,
-        EPEMessageSpeedDialNotAssigned,
         EPEMessageStoppedDTMF,
         EPEMessageSwapped,
         EPEMessageTransferDone,
@@ -420,6 +400,7 @@ NONSHARABLE_CLASS( MEngineMonitor )
         EPEMessageRemoteForwarding,
         EPEMessageMovedPermanently,        
         EPEMessageMultipleChoices,        
+        EPEMessageColpNumberAvailable,
 
         // Contact messages                   3000 - 3999
         EPEMessageThumbnailLoadingCompleted  = 3000,
@@ -447,14 +428,10 @@ NONSHARABLE_CLASS( MEngineMonitor )
         // Parser messages                    6000 - 6999
         EPEMessageActivateRfsDeep           = 6000,
         EPEMessageActivateRfsNormal,
-        EPEMessageActivateWarrantyMode,
         EPEMessageShowBTDeviceAddress,
         EPEMessageShowBTLoopback,
-        EPEMessageShowIMEI,
-        EPEMessageShowVersion,
         EPEMessageShowWlanMacAddress,
         EPEMessageSSRequestFailed,
-        EPEMessageBTDebugMode,
 
         // Security messages                  7000 - 7999
         EPEMessageBadBarringPasswordChange  = 7000,
@@ -485,7 +462,6 @@ NONSHARABLE_CLASS( MEngineMonitor )
         EPEMessageDoNotSendMe               = 10000,
         EPEMessageInValidEmergencyNumber,
         EPEMessageLogEventSaved, 
-        EPEMessagePhoneIdentityReady,
         EPEMessageStartATDialing,
         EPEMessageValidEmergencyNumber,
         EPEMessageMuteRingingTone,
@@ -512,6 +488,7 @@ NONSHARABLE_CLASS( MEngineMonitor )
         EPEMessageTempClirActivationUnsuccessful,
         EPEMessageShowIncCallGroupIndex,
         EPEMessageDataPortLoaned,
+        EPEMessageOutgoingCallBarred,
         // Contact messages                       11400 - 11599
 
         // Error messages                         11600 - 11799

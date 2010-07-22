@@ -138,7 +138,7 @@ void CPhoneSingleAndAlerting::HandleKeyMessageL(
                 {
                 // Show not allowed note
                 CPhoneState::SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed );
+                    EPhoneNoteTextNotAllowed, ETrue );
                 }
             break;
 
@@ -231,9 +231,7 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         TPhoneCmdParamBoolean holdFlag;
         holdFlag.SetBoolean( EFalse );
         iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-        }
-        
-    CPhoneGsmInCall::HandleColpNoteL( aCallId );
+        }    
     }
 // -----------------------------------------------------------
 // CPhoneSingleAndAlerting::HandleIdleL

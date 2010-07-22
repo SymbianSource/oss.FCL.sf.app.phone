@@ -16,10 +16,10 @@
 */
 
 #include <QGraphicsLinearLayout>
-#include <hbiconitem.h>
-#include <hbtextitem.h>
+#include <QTimer>
 #include <hbaction.h>
 #include <hbpushbutton.h>
+#include <hbgroupbox.h>
 #include <hbstyleloader.h>
 #include <hbabstractitemview.h>
 #include <hblistviewitem.h>
@@ -28,19 +28,46 @@
 #include "bubblemanagerif.h"
 #include "bubbleutils.h"
 
+// helper class to wrap buttons for group box
+class BubbleParticipantListButtons : public HbWidget
+{
+    Q_OBJECT
+
+public:
+    BubbleParticipantListButtons(QGraphicsItem *parent = 0);
+    ~BubbleParticipantListButtons();
+
+    HbPushButton* mButton1;
+    HbPushButton* mButton2;
+};
+
+BubbleParticipantListButtons::BubbleParticipantListButtons(
+    QGraphicsItem *parent) : HbWidget(parent)
+{
+    HbStyleLoader::registerFilePath(
+        QLatin1String(":/bubbleparticipantlistbuttons.css"));
+    HbStyleLoader::registerFilePath(
+        QLatin1String(":/bubbleparticipantlistbuttons.widgetml"));
+
+    mButton1 = new HbPushButton(this);
+    style()->setItemName( mButton1, QLatin1String("button-1"));
+    mButton2 = new HbPushButton(this);
+    style()->setItemName( mButton2, QLatin1String("button-2"));
+}
+
+BubbleParticipantListButtons::~BubbleParticipantListButtons()
+{
+}
+
 BubbleParticipantListItem::BubbleParticipantListItem(
     QGraphicsItem *parent) :
     HbAbstractViewItem(parent),
-    mText(0),
-    mStatusIcon(0),
-    mCipheringIcon(0),
-    mExpandIcon(0),
-    mButton1(0),
-    mButton2(0),
-    mExpanded(false)
+    mGroupBox(0)
 {
-    HbStyleLoader::registerFilePath(":/bubbleparticipantlistitem.css");
-    HbStyleLoader::registerFilePath(":/bubbleparticipantlistitem.widgetml");
+    HbStyleLoader::registerFilePath(
+        QLatin1String(":/bubbleparticipantlistitem.css"));
+    HbStyleLoader::registerFilePath(
+        QLatin1String(":/bubbleparticipantlistitem.widgetml"));
 }
 
 BubbleParticipantListItem::~BubbleParticipantListItem()
@@ -56,121 +83,64 @@ void BubbleParticipantListItem::updateChildItems()
 {
     HbAbstractViewItem::updateChildItems();
 
-    setFocusPolicy(Qt::ClickFocus); // to enable expanding
+    // create controls
+    if (!mGroupBox) {
+        mGroupBox = new HbGroupBox(this);
+        style()->setItemName( mGroupBox, QLatin1String("group-box" ));
 
-    // create primitives
-    if (!mText) {
-        mText = new HbTextItem(this);
-        style()->setItemName( mText, "text" );
-    }
+        // create buttons for actions (same for all items)
+        BubbleParticipantListItem* p =
+                static_cast<BubbleParticipantListItem*>(prototype());
 
-    if (!mCipheringIcon) {
-        mCipheringIcon = new HbIconItem(this);
-        style()->setItemName( mCipheringIcon, "ciphering" );
-    }
+        if (p->mActions.count()==2) {
+            BubbleParticipantListButtons* content =
+                    new BubbleParticipantListButtons();
 
-    if (!mStatusIcon) {
-        mStatusIcon = new HbIconItem(this);
-        style()->setItemName( mStatusIcon, "icon" );
-    }
+            // button 1
+            HbAction* action1 = p->mActions.at(0);
+            content->mButton1->setIcon(action1->icon());
+            connect(content->mButton1,
+                    SIGNAL(clicked()),
+                    action1,
+                    SLOT(trigger()),
+                    Qt::QueuedConnection);
 
-    if (!mExpandIcon) {
-        mExpandIcon = new HbIconItem(this);
-        style()->setItemName( mExpandIcon, "expand-indi" );
+            // button 2
+            HbAction* action2 = p->mActions.at(1);
+            content->mButton2->setIcon(action2->icon());
+            connect(content->mButton2,
+                    SIGNAL(clicked()),
+                    action2,
+                    SLOT(trigger()),
+                    Qt::QueuedConnection);
 
-        // for expand/collapse controls
-        if (itemView()) {
-            connect( itemView()->selectionModel(),
-                     SIGNAL(currentChanged(QModelIndex,QModelIndex)),
-                     this,
-                     SLOT(currentIndexChanged(QModelIndex,QModelIndex)) );
-        }
-    }
+            mGroupBox->setHeading(QLatin1String(" "));
+            mGroupBox->setContentWidget(content);
+            mGroupBox->setCollapsed(true);
 
-    BubbleParticipantListItem* p =
-            static_cast<BubbleParticipantListItem*>(prototype());
+            // for scrolling to selected item
+            connect(mGroupBox,SIGNAL(toggled(bool)),
+                    this,SLOT(handleItemStateChange(bool)));
 
-    if (mExpanded && !mButton1) {
-        Q_ASSERT(p->mActions.count()==2);
-        HbAction* action = p->mActions.at(0);
-        mButton1 = new HbPushButton(this);
-        mButton1->setIcon(action->icon());
-        style()->setItemName( mButton1, "button-1" );
-
-        // connect first action
-        connect(mButton1,
-                SIGNAL(clicked()),
-                action,
-                SLOT(trigger()),
-                Qt::QueuedConnection);
-    } else {
-        delete mButton1;
-        mButton1 = 0;
-    }
-
-    if (mExpanded && !mButton2) {
-        Q_ASSERT(p->mActions.count()==2);
-        HbAction* action = p->mActions.at(1);
-        mButton2 = new HbPushButton(this);
-        mButton2->setIcon(action->icon());
-        style()->setItemName( mButton2, "button-2" );
-
-        // connect second action
-        connect(mButton2,
-                SIGNAL(clicked()),
-                action,
-                SLOT(trigger()),
-                Qt::QueuedConnection );
-
-    } else {
-        delete mButton2;
-        mButton2 = 0;
-    }
-
-    if (mText) {
-        mText->setText(modelIndex().data(Qt::DisplayRole).toString());
-    }
-
-    int state = (BubbleManagerIF::PhoneCallState)
-        modelIndex().data(Qt::DecorationRole).toInt();
-
-    if (mStatusIcon) {
-        BubbleUtils::setCallStatusIcon(state,0,*mStatusIcon);
-    }
-
-    if (mCipheringIcon) {
-        int flags = !modelIndex().data(Qt::StatusTipRole).toBool() ?
-                    BubbleManagerIF::NoCiphering : 0;
-
-        BubbleUtils::setCipheringIcon(state,flags,*mCipheringIcon);
-    }
-
-    if (mExpandIcon) {
-        if (mExpanded) {
-            mExpandIcon->setIcon(HbIcon("qtg_small_collapse"));
+            // for expand/collapse controls
+            if (itemView()) {
+                connect( itemView()->selectionModel(),
+                         SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+                         this,
+                         SLOT(currentIndexChanged(QModelIndex,QModelIndex)) );
+            }
         } else {
-            mExpandIcon->setIcon(HbIcon("qtg_small_expand"));
+            mGroupBox->setCollapsable(false);
         }
     }
 
-    repolish();
+    // update group box title (CLI name)
+    mGroupBox->setHeading(modelIndex().data(Qt::DisplayRole).toString());
 }
 
 void BubbleParticipantListItem::polish(HbStyleParameters& params)
 {
-    if (mExpanded) {
-        setProperty("layoutOption","expanded");
-    } else {
-        setProperty("layoutOption","collapsed");
-    }
-
     HbAbstractViewItem::polish(params);
-}
-
-void BubbleParticipantListItem::setExpanded(bool expanded)
-{
-    mExpanded = expanded;
-    updateChildItems();
 }
 
 void BubbleParticipantListItem::addAction(HbAction* action)
@@ -181,7 +151,6 @@ void BubbleParticipantListItem::addAction(HbAction* action)
 void BubbleParticipantListItem::clearActions()
 {
     mActions.clear();
-    mExpanded = false;
 }
 
 void BubbleParticipantListItem::currentIndexChanged(
@@ -190,17 +159,25 @@ void BubbleParticipantListItem::currentIndexChanged(
 {
     Q_UNUSED(previous);
 
-    if (modelIndex() == current) {
-        if ( !mExpanded ) {
-            setExpanded(true);
-        }
-    } else if (mExpanded) {
-        setExpanded(false);
+    if ((modelIndex()!=current) && !mGroupBox->isCollapsed()) {
+        // change state asynchronously
+        QTimer::singleShot(100,this,SLOT(setCollapsed()));
     }
 }
 
-int BubbleParticipantListItem::type() const
+void BubbleParticipantListItem::setCollapsed()
 {
-    return HbListViewItem::Type;
+    mGroupBox->setCollapsed(true);
 }
+
+void BubbleParticipantListItem::handleItemStateChange(bool collapsed)
+{
+    if (!collapsed) {
+        itemView()->scrollTo(
+            modelIndex(),
+            HbAbstractItemView::EnsureVisible);
+    }
+}
+
+#include "bubbleparticipantlistitem.moc"
 

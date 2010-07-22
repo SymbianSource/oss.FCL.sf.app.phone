@@ -76,8 +76,6 @@ NONSHARABLE_STRUCT( TPEBasicInfo )                         // Contains informati
     TPEContactFileName iVideoCallRingingTone; // Video call ringingtone name                                    
     TPEDtmfString iDtmfString;              // Dtmf string.                 
     TPEErrorInfo iErrorInfo;                // possible error code                  
-    TPELifeTimeData iLifeTimeData;                  
-    TPEPhoneIdentityParameters iPhoneIdentityParameters; // the phone identity parameters                   
     TPEProfileName iProfileName;            // the name of the profile                  
     TProfileRingingType iRingingType;       // Includes current ringing type                    
     TPEVoiceMailBoxNumberInfo iVMBXNumbers; // Voice mail box numbers
@@ -90,6 +88,7 @@ NONSHARABLE_STRUCT( TPEBasicInfo )                         // Contains informati
     TBool iSecureSpecified;                 // Secure specified status
     TName iDataPortName;                    // the name of data port currently on-loan
     TBool iSwitchToOngoing;                 // Switch to operation status
+    TBool iOutgoingBarringActivated;        // Outgoing barring activated 
     };
 
 NONSHARABLE_STRUCT( TPEConferenceCallInfo ) // Contains conference call related variables 
@@ -279,22 +278,10 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         const TCCPTone& InbandTone() const;
 
         /**
-        * Gets lifetimer data
-        * @return lifetime data (TDes8&)
-        */
-        const TPELifeTimeData& LifeTimerData() const;
-
-        /**
         * Gets network registration status
         * @return TNWNetworkRegistrationStatus Network registration status
         */
         const TNWNetworkRegistrationStatus& NetworkRegistrationStatus() const;
-
-        /**
-        * Gets phone identity parameters from TPEBasicInfo-structure
-        * @param aPhoneIdentityParameters is the phone identity parameters. 
-        */
-        const TPEPhoneIdentityParameters& PhoneIdentityParameters() const;
 
         /**
         * Gets phone number
@@ -621,6 +608,13 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * @param aCallState state to be checked.
          */
           TBool CheckIfCallStateExists( const TPEState& aCallState );
+          
+          /**
+          * Sets the protocol spesific error code
+          * @param aError is the error code from protocol.
+          * @return None.
+          */
+           void SetProtocolError( TInt aError ); 
 
     // Functions from MPEDataStore (reading values)
     public:
@@ -1167,12 +1161,6 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         void SetKeypadVolume( const TInt aKeypadVolume );
 
         /**
-        * Sets lifetimer data of the phone to TPEBasicInfo-structure
-        * @param aLifeTimerData lifetime data (TDesc8&).
-        */
-        void SetLifeTimerData( TCCPLifeTimeDataPckg& aPckg );
-
-        /**
         * Sets a logging indicator to TPECallInfo-tructure
         * @param aLoggingIndicator, Continuous logging indicator.
         * @param aCallId, the call identification number.
@@ -1209,13 +1197,6 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         * @param aPersonalTone is personal tone status (EFalse/ETrue).
         */
         void SetPersonalToneStatus( const TInt& aPersonalToneStatus );
-
-        /**
-        * Sets phone number to TPECallCommandInfo-structure
-        * @param aPhoneIdentityParameters is the phone identity parameters
-        */
-        void SetPhoneIdentityParameters( 
-            const TPEPhoneIdentityParameters& aPhoneIdentityParameters );
         
         /**
         * Sets phone number parsing result
@@ -1258,7 +1239,7 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         * @param aCallId, is the call identification number.
         */
         void SetRemoteColpNumber(
-            TPEPhoneNumber& aColpNumber, 
+            const TPEPhoneNumber& aColpNumber, 
             const TInt aCallId );
 
         /**
@@ -1540,6 +1521,32 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * Returns Phonebook contact identifier.
          */
         TInt ContactId2() const;
+        
+        /**
+        * Sets the protocol spesific error code
+        * @param aError is the error code from protocol.
+        * @return None.
+        */
+        void SetProtocolError( TInt aError, TInt aCallId ); 
+ 
+        /**
+        * Returns the protocol spesific error code
+        * @return Error code.
+        */
+        TInt ProtocolError( TInt aCallId ); 
+        
+        /**
+        * Returns flag if the outgoing barring is activated.
+        * @return ETrue if barring activated.
+        */
+        TBool IsOutgoingCallBarringActivated();
+        
+        /**
+        * Sets the flag if the outgoing barring is activated.
+        * @return ETrue if barring activated.
+        */
+        void SetOutgoingCallBarringActivated( 
+                TBool aActivated );
           
     private:
           /**

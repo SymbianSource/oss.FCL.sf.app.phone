@@ -142,26 +142,31 @@ NONSHARABLE_CLASS( CPhCntMatch2 ) : public CBase, public MPhCntMatch
         */
         CDesCArray& AllDtmfNumbers() const;
 
-
- 
     private:
 
         /**
         * C++ constructor.
         */
         CPhCntMatch2(const QContact aContact);
+        
+        
     private:
+        
         void ConstructL();
         /*
          * checks for exactly 1 item in the list
          */
-         TPtrC FieldValue(const QString& name, const QString& key) const;
+         QString FieldValue(const QString& name, const QString& key) const;
 
     private:    // Data
         const QContact iContact;
         HBufC* iNumber;
         CPhCntContactIdImpl2* iContactId;
-        CDesCArrayFlat* iDummyArray;
+        CDesCArrayFlat* iDTMFArray;
+        QString iFirstname;
+        QString iLastname;
+        QString iPersonalRingtone;
+        QString iCallImage;
 
     };
 

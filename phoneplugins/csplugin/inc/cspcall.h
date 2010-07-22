@@ -499,11 +499,13 @@ class CSPCall : public CBase,
             
         /**
         * From MCSPCallObserver
-        * Notify that remote party info has changed.
-        * @param aRemoteParty new remote party information
+        * Notify that remote party info has changed.        
+        * @param aRemotePartyName new remote party name
+        * @param aRemotePartyNumber new remote party number
         */
-        virtual void NotifyRemotePartyInfoChanged( 
-            const TDesC& aRemoteParty);
+        virtual void NotifyRemotePartyInfoChanged(                
+            const TDesC& aRemotePartyName,
+            const TDesC& aRemotePartyNumber );
 
         /**
         * Open call handle.  
@@ -588,8 +590,14 @@ class CSPCall : public CBase,
         * @return system wide error code 
         */
         int UpdateCallState();
+        
+        /**
+         * Sends a remote party info changed notification
+         * if the remote party number has changed. 
+         */
+        void NotifyRemotePartyNumberChanged();
 
-    private: 
+	private: 
 
         enum TCSPCallAudioStatus {
             ECSPCallAudioStatusInactive,

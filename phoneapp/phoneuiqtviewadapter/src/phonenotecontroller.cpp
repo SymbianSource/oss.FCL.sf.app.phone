@@ -22,12 +22,14 @@
 #include <QSignalMapper>
 #include <QTimer>
 #include <hbdevicemessagebox.h>
+#include <hbdevicenotificationdialog.h>
 #include <hbdeviceprogressdialog.h>
 #include <hbmessagebox.h>
 #include <hbprogressdialog.h>
 #include <hbaction.h>
 #include <phoneappcommands.hrh>
-  
+#include <hbstringutil.h>
+
 PhoneNoteController::PhoneNoteController(QObject *parent) : 
     QObject(parent), m_timer(0), m_progressDialog(0), m_dtmfNote(0), 
     m_queryNote(0), m_queryCanceledCommand(-1), m_timeoutCommand(-1)
@@ -53,55 +55,12 @@ void PhoneNoteController::showGlobalNote(TPhoneCommandParam *commandParam)
     TPhoneCmdParamGlobalNote* globalNoteParam = 
         static_cast<TPhoneCmdParamGlobalNote*>( commandParam );
     
-        
-    HbMessageBox::MessageBoxType type;
-    
-    switch( globalNoteParam->Type() ) {
-    case EAknGlobalInformationNote:
-        type = HbMessageBox::MessageTypeInformation;
-        break;
-    case EAknGlobalWarningNote:
-    default:
-        type = HbMessageBox::MessageTypeWarning;
-        break;
+    if (globalNoteParam->NotificationDialog()) {
+        showDeviceNotificationDialog(globalNoteParam);
+    } else {
+        showDeviceMessageBox(globalNoteParam);
     }
     
-    QString noteString = globalNoteText(globalNoteParam);
-    
-    if (false == noteString.isNull()) {
-        bool showNote(true);
-        for (int i = 0; i < m_messageBoxList.count(); ++i) {
-            // Do not show same note/text several times, e.g when user hits
-            // the end button several times we should show only one "not allowed"
-            // note.
-            if (noteString == m_messageBoxList.at(i)->text()) {
-                showNote = false;
-                break;
-            }
-        }
-        
-        if (showNote) {
-            QScopedPointer<HbDeviceMessageBox> messageBox( 
-                new HbDeviceMessageBox(noteString, type));
-            
-            int timeout = globalNoteParam->Timeout();
-            if (timeout == 0) {
-                messageBox->setTimeout(HbDialog::StandardTimeout);
-            } else {
-                messageBox->setTimeout(timeout);
-            }
-            
-            HbDeviceMessageBox *messageBoxPtr = messageBox.data();
-            m_messageBoxList.append(messageBoxPtr);
-            messageBox.take();
-            
-            if (1 == m_messageBoxList.size()) {
-                QObject::connect(messageBoxPtr, SIGNAL(aboutToClose()), 
-                                 this, SLOT(destroyDialog()));
-                messageBoxPtr->show();
-            }
-        }
-    }
 }
 
 void PhoneNoteController::showNote(TPhoneCommandParam *commandParam)
@@ -186,6 +145,22 @@ void PhoneNoteController::destroyDialog()
     }
 }
 
+void PhoneNoteController::destroyNotification()
+{
+    PHONE_DEBUG("PhoneNoteController::destroyDialog"); 
+    HbDeviceNotificationDialog *notification = m_notificationList.takeFirst();
+    notification->deleteLater();
+    notification = 0;
+    
+    if ( 0 < m_notificationList.size() ) {
+        PHONE_DEBUG("PhoneNoteController::show pending note");
+        HbDeviceNotificationDialog *notificationTemp = m_notificationList[0];
+        QObject::connect(notificationTemp, SIGNAL(aboutToClose()), 
+                         this, SLOT(destroyNotification()));
+        notificationTemp->show();
+    }
+}
+
 void PhoneNoteController::removeMappings()
 {
     foreach (HbAction *action, m_actions ) {
@@ -243,14 +218,20 @@ QString PhoneNoteController::globalNoteText(
     if ( globalNoteParam->TextResourceId() && 
          KErrNone != globalNoteParam->Text().Compare( KNullDesC() ) ) {
          // resource and text exists
-         ret = PhoneResourceAdapter::Instance()->convertToString(
+         ret = PhoneResourceAdapter::Instance()->convertToStringWithParam(
                      globalNoteParam->TextResourceId(),
                      QString::fromUtf16(globalNoteParam->Text().Ptr(), 
                                      globalNoteParam->Text().Length()) );         
     } else if ( globalNoteParam->TextResourceId() ) {
         // resource exists
+        QString causeCode;
+        if (-1 != globalNoteParam->CauseCode()) {
+            causeCode.setNum(globalNoteParam->CauseCode());
+            causeCode = HbStringUtil::convertDigits(causeCode);
+        }
+        
         ret = PhoneResourceAdapter::Instance()->convertToString(
-                    globalNoteParam->TextResourceId());
+                    globalNoteParam->TextResourceId(), causeCode);
 
     } else if ( KErrNone != globalNoteParam->Text().Compare( KNullDesC() ) ) {
         // text exists
@@ -376,6 +357,106 @@ void PhoneNoteController::showGlobalWaitNote(TPhoneCmdParamQuery* params)
         
         m_progressDialog->show();
     }
+}
+
+void PhoneNoteController::showDeviceMessageBox(
+        TPhoneCmdParamGlobalNote* params)
+{
+    PHONE_DEBUG("PhoneNoteController::showDeviceMessageBox");
+
+    HbMessageBox::MessageBoxType type;
+        
+    switch( params->Type() ) {
+    case EAknGlobalInformationNote:
+        type = HbMessageBox::MessageTypeInformation;
+        break;
+    case EAknGlobalWarningNote:
+    default:
+        type = HbMessageBox::MessageTypeWarning;
+        break;
+    }
+    
+    QString noteString = globalNoteText(params);
+    
+    if (false == noteString.isNull()) {
+        bool showNote(true);
+        for (int i = 0; i < m_messageBoxList.count(); ++i) {
+            // Do not show same note/text several times, e.g when user hits
+            // the end button several times we should show only one "not allowed"
+            // note.
+            if (noteString == m_messageBoxList.at(i)->text()) {
+                showNote = false;
+                break;
+            }
+        }
+        
+        if (showNote) {
+            QScopedPointer<HbDeviceMessageBox> messageBox( 
+                new HbDeviceMessageBox(noteString, type));
+            
+            int timeout = params->Timeout();
+            if (timeout <= 0) {
+                messageBox->setTimeout(HbDialog::StandardTimeout);
+            } else {
+                messageBox->setTimeout(timeout);
+            }
+            
+            HbDeviceMessageBox *messageBoxPtr = messageBox.data();
+            m_messageBoxList.append(messageBoxPtr);
+            messageBox.take();
+            
+            if (1 == m_messageBoxList.size()) {
+                QObject::connect(messageBoxPtr, SIGNAL(aboutToClose()), 
+                                 this, SLOT(destroyDialog()));
+                messageBoxPtr->show();
+            }
+        }
+    }    
+}
+
+void PhoneNoteController::showDeviceNotificationDialog(
+        TPhoneCmdParamGlobalNote* params)
+{
+    PHONE_DEBUG("PhoneNoteController::showDeviceNotificationDialog");
+    
+    QString noteString = globalNoteText(params);
+    
+    if (false == noteString.isNull()) {
+        bool showNote(true);
+        for (int i = 0; i < m_notificationList.count(); ++i) {
+            // Do not show same note/text several times, e.g when user hits
+            // the end button several times we should show only one "not allowed"
+            // note.
+            if (noteString == m_notificationList.at(i)->title()) {
+                showNote = false;
+                break;
+            }
+        }
+        
+        if (showNote) {
+            QScopedPointer<HbDeviceNotificationDialog> notification( 
+                new HbDeviceNotificationDialog());
+            
+            notification->setTitle(noteString);
+            
+            int timeout = params->Timeout();
+            if (timeout > 0) {
+                // If timeout not set we use default timeout. 
+                // Default value is HbPopup::StandardTimeout (3000 ms)
+                notification->setTimeout(timeout);
+            }
+            
+            HbDeviceNotificationDialog *notificationPtr = notification.data();
+            m_notificationList.append(notificationPtr);
+            notification.take();
+            
+            if (1 == m_notificationList.size()) {
+                QObject::connect(notificationPtr, SIGNAL(aboutToClose()), 
+                                 this, SLOT(destroyNotification()));
+                notificationPtr->show();
+            }
+        }
+    }        
 }
 
 

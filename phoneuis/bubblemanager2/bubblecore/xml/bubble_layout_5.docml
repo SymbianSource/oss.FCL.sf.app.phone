@@ -27,8 +27,8 @@
 
 <section name="landscape">
     <layout type="anchor" widget="content">
-        <anchoritem src="mutedIcon" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-2.0un"/>
-        <anchoritem src="mutedIcon" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="21.0un"/>        
+        <anchoritem src="mutedIcon" srcEdge="TOP" dst="" dstEdge="TOP" spacing="-1.5un"/>
+        <anchoritem src="mutedIcon" srcEdge="RIGHT" dst="" dstEdge="RIGHT" spacing="20.5un"/>        
     </layout>
 </section>
 

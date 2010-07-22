@@ -15,7 +15,6 @@
  *
  */
 
-#include <QEventLoop>
 #include <hbdataformmodel.h>
 #include <hbdataformmodelitem.h>
 #include <hblineedit.h>
@@ -28,21 +27,18 @@
 #include <hblistwidget.h>
 #include <hblistwidgetitem.h>
 #include <hblabel.h>
+#include <hbparameterlengthlimiter.h>
 #include <cpitemdatahelper.h>
-#include "cpdivertselectionitem.h"
 #include "cpdivertplugingroup.h"
 #include "cpplugincommon.h"
 #include "cpphonenotes.h"
 #include "cppluginlogging.h"
 #include "cpdivertitemdata.h"
-#include "cpdivertselectioncustomitem.h"
 
 Q_DECLARE_METATYPE(PsCallDivertingCondition)
 Q_DECLARE_METATYPE(PsServiceGroup)
 
 // CONSTANTS 
-const QString KVoiceMail("voiceMail");
-const QString KVideoMail("voiceMail");
 const QString KOtherNumber("otherNumber");
 
 /*!
@@ -63,9 +59,9 @@ CpDivertPluginGroup::CpDivertPluginGroup(CpItemDataHelper &helper)
        m_DataItemVideoIfNotAvailable(NULL),
        m_activeNoteId(0),
        m_activeProgressNoteId(0),
-       m_divertToVoiceMailBox(false),
        m_helper(helper),
-       m_divertTimeout(0)
+       m_activateDivertPhase(NonePhase),
+       m_dialog(NULL)
 {
     DPRINT << ": IN";
     
@@ -105,9 +101,6 @@ CpDivertPluginGroup::CpDivertPluginGroup(CpItemDataHelper &helper)
         SIGNAL(requestDone()),
         this,
         SLOT(divertRequestProcessed()));
-
-    // Create custom item prototype
-    m_helper.addItemPrototype(new CpDivertSelectionItem());
     
     // Listen form item visibility change
     m_helper.connectToForm(
@@ -116,9 +109,7 @@ CpDivertPluginGroup::CpDivertPluginGroup(CpItemDataHelper &helper)
     // Create grouped setting items
     createVoiceCallItems(this);
     createVideoCallItems(this);
-    
-    m_eventLoop = new QEventLoop(this); 
-    
+        
     DPRINT << ": OUT";
 }
 
@@ -144,6 +135,7 @@ void CpDivertPluginGroup::createVoiceCallItems(CpSettingFormItemData *parent)
     CpSettingFormItemData *page = new CpSettingFormItemData(
                 HbDataFormModelItem::GroupPageItem,
                 hbTrId("txt_phone_setlabel_service_val_voice_divert"));
+    page->setObjectName("voiceCallSettingsGroupItem");
     parent->appendChild(page);
 
     m_DataItemVoiceAllCalls = createDivertItem(
@@ -152,6 +144,7 @@ void CpDivertPluginGroup::createVoiceCallItems(CpSettingFormItemData *parent)
             hbTrId("txt_phone_setlabel_all_calls"),
             hbTrId("txt_phone_setlabel_all_calls"), false,
             page);
+    m_DataItemVoiceAllCalls->setObjectName("voiceAllCallsDataItem");
 
     m_DataItemVoiceIfBusy = createDivertItem(
             DivertConditionBusy,
@@ -159,6 +152,7 @@ void CpDivertPluginGroup::createVoiceCallItems(CpSettingFormItemData *parent)
             hbTrId("txt_phone_setlabel_if_busy"),
             hbTrId("txt_phone_setlabel_if_busy"), false,
             page);
+    m_DataItemVoiceIfBusy->setObjectName("voiceIfBusyDataItem"); 
 
     m_DataItemVoiceIfNotAnswered = createDivertItem(
             DivertConditionNoReply,
@@ -166,22 +160,23 @@ void CpDivertPluginGroup::createVoiceCallItems(CpSettingFormItemData *parent)
             hbTrId("txt_phone_setlabel_if_not_answered"),
             hbTrId("txt_phone_setlabel_if_not_answered"), true,
             page);
-    m_DataItemVoiceIfNotAnswered->setContentWidgetData(
-            "timeoutText", hbTrId("txt_phone_setlabel_delay"));
-
+    m_DataItemVoiceIfNotAnswered->setObjectName("voiceIfNotAnsweredDataItem");
+    
     m_DataItemVoiceIfOutOfReach = createDivertItem(
             DivertConditionNotReachable,
             ServiceGroupVoice,
             hbTrId("txt_phone_setlabel_if_out_of_reach"),
             hbTrId("txt_phone_setlabel_if_out_of_reach"), false,
             page);
-
+    m_DataItemVoiceIfOutOfReach->setObjectName("voiceIfOutOfReachDataItem");
+    
     m_DataItemVoiceIfNotAvailable = createDivertItem(
             DivertConditionAllConditionalCases,
             ServiceGroupVoice,
             hbTrId("txt_phone_setlabel_if_not_available"),
             hbTrId("txt_phone_setlabel_if_not_available"), true,
             page);
+    m_DataItemVoiceIfNotAvailable->setObjectName("voiceIfNotAvailableDataItem");
 
     DPRINT << ": OUT";
 }
@@ -192,9 +187,11 @@ void CpDivertPluginGroup::createVoiceCallItems(CpSettingFormItemData *parent)
 void CpDivertPluginGroup::createVideoCallItems(CpSettingFormItemData *parent)
 {
     DPRINT << ": IN";
+    
     CpSettingFormItemData *page = new CpSettingFormItemData(
             HbDataFormModelItem::GroupPageItem,
             hbTrId("txt_phone_setlabel_service_val_video_divert"));
+    page->setObjectName("videoCallSettingsGroupItem"); 
     
     parent->appendChild(page);
     
@@ -204,6 +201,7 @@ void CpDivertPluginGroup::createVideoCallItems(CpSettingFormItemData *parent)
             hbTrId("txt_phone_setlabel_all_calls"),
             hbTrId("txt_phone_setlabel_all_calls"), false,
             page);
+    m_DataItemVideoAllCalls->setObjectName("videoAllCallsDataItem");
 
     m_DataItemVideoIfBusy = createDivertItem(
             DivertConditionBusy,
@@ -211,29 +209,31 @@ void CpDivertPluginGroup::createVideoCallItems(CpSettingFormItemData *parent)
             hbTrId("txt_phone_setlabel_if_busy"),
             hbTrId("txt_phone_setlabel_if_busy"), false,
             page);
-
+    m_DataItemVideoIfBusy->setObjectName("videoIfBusyDataItem");
+    
     m_DataItemVideoIfNotAnswered = createDivertItem(
             DivertConditionNoReply,
             ServiceGroupData,
             hbTrId("txt_phone_setlabel_if_not_answered"),
             hbTrId("txt_phone_setlabel_if_not_answered"), true,
             page);
-    m_DataItemVideoIfNotAnswered->setContentWidgetData(
-            "timeoutText", hbTrId("txt_phone_setlabel_delay"));
-
+    m_DataItemVideoIfNotAnswered->setObjectName("videoIfNotAnsweredDataItem");
+    
     m_DataItemVideoIfOutOfReach = createDivertItem(
             DivertConditionNotReachable,
             ServiceGroupData,
             hbTrId("txt_phone_setlabel_if_out_of_reach"),
             hbTrId("txt_phone_setlabel_if_out_of_reach"), false,
             page);
-
+    m_DataItemVideoIfOutOfReach->setObjectName("videoIfOutOfReachDataItem");
+    
     m_DataItemVideoIfNotAvailable = createDivertItem(
             DivertConditionAllConditionalCases,
             ServiceGroupData,
             hbTrId("txt_phone_setlabel_if_not_available"),
             hbTrId("txt_phone_setlabel_if_not_available"), true,
             page);
+    m_DataItemVideoIfNotAvailable->setObjectName("videoIfNotAvailableDataItem");
     
     DPRINT << ": OUT";
 }
@@ -250,13 +250,13 @@ CpDivertItemData *CpDivertPluginGroup::createDivertItem(
         CpSettingFormItemData *parent)
 {
     DPRINT << ": IN";
-
+    
     CpDivertItemData *item = new CpDivertItemData(
-        static_cast<HbDataFormModelItem::DataItemType>
-            (CpDivertSelectionItem::CpDivertSelectionItemId), 
+        HbDataFormModelItem::CheckBoxItem,
             label,
             m_helper,
             parent);
+    
     QVariant conditionVar;
     conditionVar.setValue(condition);
     item->setProperty("condition", conditionVar);
@@ -265,6 +265,7 @@ CpDivertItemData *CpDivertPluginGroup::createDivertItem(
     item->setProperty("serviceGroup", serviceGroupVar);
     item->setProperty("queryLabel", queryLabel);
     item->setProperty("needTimeoutInfo", needTimeoutInfo);
+    item->setProperty("divertItem", true);
     item->setEnabled(false);
     
     // Connect signals
@@ -273,6 +274,7 @@ CpDivertItemData *CpDivertPluginGroup::createDivertItem(
         this, SLOT(changeDivertingStateRequested(CpDivertItemData&)));
     
     parent->appendChild(item);
+    
     DPRINT << ": OUT";
     return item;
 }
@@ -286,18 +288,21 @@ void CpDivertPluginGroup::itemShown(const QModelIndex& item)
     DPRINT << "item:" << item;
     
     HbDataFormModelItem* modelItem = 
-            qobject_cast<const HbDataFormModel*>(item.model())->itemFromIndex(item);
+        qobject_cast<const HbDataFormModel*>(item.model())->itemFromIndex(item);
+    if (!isDivertSettingsItem(modelItem)) {
+        return;
+    }
     
-    if (!modelItem->contentWidgetData("number").isValid() &&
-        (static_cast<HbDataFormModelItem::DataItemType>
-            (CpDivertSelectionItem::CpDivertSelectionItemId == modelItem->type()))){
+    bool isInitialStatusQueryDoneForItem = 
+        modelItem->contentWidgetData("text").isValid();
+    if (!isInitialStatusQueryDoneForItem) {
         CpDivertItemData *item = static_cast<CpDivertItemData*>(modelItem); 
-        if(qvariant_cast<PsCallDivertingCondition>(item->property("condition")) !=
+        if (qvariant_cast<PsCallDivertingCondition>(item->property("condition")) !=
                 DivertConditionAllConditionalCases) {
             addToDivertingRequestQueue(CheckDivertStatus, *item);
         }
     }
-
+    
     DPRINT << ": OUT";
 }
 
@@ -308,20 +313,16 @@ void CpDivertPluginGroup::addToDivertingRequestQueue(
         DivertRequest request, CpDivertItemData &item)
 {
     DPRINT << ": IN";
+    
     CpDivertRequestQueueItem i;
     i.request = request;
     i.item = &item;
     m_divertRequestQueue.enqueue(i);
 
-    if (m_divertRequestQueue.count()==1) {
-       // Process if first item was added, process other later
-        try {
-            processDivertingRequestQueue();
-        } catch(...) {
-            DPRINT << "error!!";
-        }
+    if (m_divertRequestQueue.count() == 1) {
+        // Process if first item was added, process other later
+        processDivertingRequestQueue();
     }
-
 
     DPRINT << ": OUT";
 }
@@ -332,6 +333,7 @@ void CpDivertPluginGroup::addToDivertingRequestQueue(
 void CpDivertPluginGroup::divertRequestProcessed()
 {
     DPRINT << ": IN";
+    
     // Remove previous request and process next one
     if (!m_divertRequestQueue.isEmpty()) {
         m_divertRequestQueue.dequeue();
@@ -353,19 +355,28 @@ void CpDivertPluginGroup::changeItemData(
         PsServiceGroup serviceGroup,
         PsCallDivertingCondition condition,
         PsCallDivertingStatus status,
-        const QString& number, int timeout)
+        const QString& aNumber, int aTimeout)
 {
     DPRINT << ": IN";
     
-    CpDivertSelectionCustomitem::State itemState = 
-        CpDivertSelectionCustomitem::Disabled;
+    Qt::CheckState itemState = Qt::Unchecked;
     if (status == DivertingStatusActive) {
-        itemState = CpDivertSelectionCustomitem::Enabled;
+        itemState = Qt::Checked;
     } else if (status == DivertingStatusInactive) {
-        itemState = CpDivertSelectionCustomitem::Deactivated;
+        itemState = Qt::PartiallyChecked;
     } else {
-        itemState = CpDivertSelectionCustomitem::Disabled;
+        itemState = Qt::Unchecked;
     }
+
+    QString number = aNumber;
+    int timeout = aTimeout;
+    if (Qt::PartiallyChecked == itemState) {
+        number = QString("");
+        timeout = 0;
+    }
+    
+    QVariant numberValue;
+    numberValue.setValue(number);
     
     switch (condition) {
     case DivertConditionAllConditionalCases:
@@ -381,24 +392,43 @@ void CpDivertPluginGroup::changeItemData(
     case DivertConditionNoReply:
     case DivertConditionNotReachable:
         if (serviceGroup & ServiceGroupVoice) {
-            item(ServiceGroupVoice, condition)->setContentWidgetData("number", number);
-            item(ServiceGroupVoice, condition)->setContentWidgetData("timeout", timeout);
-            item(ServiceGroupVoice, condition)->setContentWidgetData("state", itemState);
-            item(ServiceGroupVoice, condition)->setEnabled(true);
+            CpSettingFormItemData* itemData = item(ServiceGroupVoice, condition); 
+            itemData->setContentWidgetData("text", numberValue);
+            if (DivertConditionNoReply == condition) {
+                if (timeout > 0) {
+                    itemData->setDescription(
+                            hbTrId("txt_phone_setlabel_divert_delay_ln_seconds", timeout));
+                } else {
+                    itemData->setDescription("");
+                }
+            }
+            itemData->setContentWidgetData("checkState", itemState);
+            itemData->setEnabled(true);
         }
         
         if (serviceGroup & ServiceGroupData) {
-            item(ServiceGroupData, condition)->setContentWidgetData("number", number);
-            item(ServiceGroupData, condition)->setContentWidgetData("timeout", timeout);
-            item(ServiceGroupData, condition)->setContentWidgetData("state", itemState);
-            item(ServiceGroupData, condition)->setEnabled(true);
+            CpSettingFormItemData* itemData = item(ServiceGroupData, condition);
+            itemData->setContentWidgetData("text", numberValue);
+            if (DivertConditionNoReply == condition) {
+                if (timeout > 0) {
+                    itemData->setDescription(
+                            hbTrId("txt_phone_setlabel_divert_delay_ln_seconds", timeout));
+                } else {
+                    itemData->setDescription("");
+                }
+            }
+            itemData->setContentWidgetData("checkState", itemState);
+            itemData->setEnabled(true);
         }
+        
         break;
     case DivertConditionAllCalls:
     case DivertConditionUnknown:
     default:
         break;
     }
+    
+    DPRINT << ": OUT";
 }
 
 /*!
@@ -408,16 +438,23 @@ void CpDivertPluginGroup::revertItemData(
         PsServiceGroup serviceGroup, PsCallDivertingCondition condition)
 {
     DPRINT << ": IN";
+    
     if (serviceGroup & ServiceGroupVoice) {
-        item(ServiceGroupVoice, condition)->setContentWidgetData("state",
-            item(ServiceGroupVoice, condition)->contentWidgetData("state"));
+        CpSettingFormItemData* itemData = item(ServiceGroupVoice, condition);
+        int checkState = itemData->contentWidgetData("checkState").toInt();
+        int revertedCheckState = 
+            Qt::Checked == checkState ? Qt::Unchecked : Qt::Checked;
+        itemData->setContentWidgetData("checkState", revertedCheckState);
     }
     
     if (serviceGroup & ServiceGroupData) {
-        item(ServiceGroupData, condition)->setContentWidgetData("state",
-            item(ServiceGroupData, condition)->contentWidgetData("state"));
+        CpSettingFormItemData* itemData = item(ServiceGroupData, condition);
+        int checkState = itemData->contentWidgetData("checkState").toInt();
+        int revertedCheckState = 
+            Qt::Checked == checkState ? Qt::Unchecked : Qt::Checked;
+        itemData->setContentWidgetData("checkState", revertedCheckState);
     }
-
+    
     DPRINT << ": OUT";
 }
 
@@ -427,6 +464,8 @@ void CpDivertPluginGroup::revertItemData(
 CpSettingFormItemData* CpDivertPluginGroup::item(
         PsService service, PsCallDivertingCondition condition)
 {
+    DPRINT << ": IN";
+    
     CpSettingFormItemData *ret = 0;
     switch (condition) {
         case DivertConditionUnconditional:
@@ -470,6 +509,8 @@ CpSettingFormItemData* CpDivertPluginGroup::item(
             break;
     }
     Q_CHECK_PTR(ret);
+    
+    DPRINT << ": OUT";
     return ret;
 }
 
@@ -485,61 +526,41 @@ void CpDivertPluginGroup::processDivertingRequestQueue()
     }
     CpDivertRequestQueueItem request = m_divertRequestQueue.head();
     // Command param
-    PSCallDivertingCommand divertCommand;
-    divertCommand.iServiceGroup = qvariant_cast<PsServiceGroup>(
+    m_divertCommand.iServiceGroup = qvariant_cast<PsServiceGroup>(
             request.item->property("serviceGroup"));
-    divertCommand.iCondition = qvariant_cast<PsCallDivertingCondition>(
+    m_divertCommand.iCondition = qvariant_cast<PsCallDivertingCondition>(
             request.item->property("condition"));
-    divertCommand.iStatus = DivertingStatusUnknown;
-    divertCommand.iNumber = "";
-    divertCommand.iNoReplyTimer = 0;
+    m_divertCommand.iStatus = DivertingStatusUnknown;
+    m_divertCommand.iNumber = "";
+    m_divertCommand.iNoReplyTimer = 0;
 
     switch (request.request) {
         case ActivateDivert: {
             DPRINT << "activate";
-            divertCommand.iSetting = RegisterDiverting;
-            if (popUpVoiceNumberListQuery(
-                    request.item->property("queryLabel").toString(),
-                    divertCommand.iNumber,
-                    divertCommand.iServiceGroup)) {
-                if (request.item->property("needTimeoutInfo").toBool()) {
-                    if (popUpTimerQuery(divertCommand.iNoReplyTimer)) {
-                        setCallDiverting(divertCommand);
-                    } else {
-                        // Query was cancelled
-                        revertItemData(
-                                divertCommand.iServiceGroup, 
-                                divertCommand.iCondition);
-                        m_divertRequestQueue.clear();
-                    }
-                } else {
-                    setCallDiverting(divertCommand);
-                }
-            } else {
-                // Query was cancelled
-                revertItemData(
-                        divertCommand.iServiceGroup, 
-                        divertCommand.iCondition);
-                m_divertRequestQueue.clear();
-            }
+            m_divertCommand.iSetting = RegisterDiverting;
+            m_activateDivertPhase = PopUpVoiceNumberListQueryPhase;
+            popUpVoiceNumberListQuery(
+                request.item->property("queryLabel").toString(),
+                        m_divertCommand.iServiceGroup);
         }
             break;
         case DeactivateDivert: {
             DPRINT << "deactivate";
-            divertCommand.iSetting = EraseDiverting;
-            setCallDiverting(divertCommand);
+            m_divertCommand.iSetting = EraseDiverting;
+            setCallDiverting(m_divertCommand);
         }
             break;
         case CheckDivertStatus: {
             DPRINT << "check status";
             m_callDivertingWrapper->getCallDivertingStatus(
-                divertCommand.iServiceGroup,
-                divertCommand.iCondition,
-                bscParam(divertCommand.iServiceGroup) );
+                m_divertCommand.iServiceGroup,
+                m_divertCommand.iCondition,
+                bscParam(m_divertCommand.iServiceGroup) );
             
             if (!CpPhoneNotes::instance()->noteShowing()) {
                 CpPhoneNotes::instance()->showGlobalProgressNote(
-                        m_activeProgressNoteId, hbTrId("txt_phone_info_requesting"));
+                        m_activeProgressNoteId, 
+                        hbTrId("txt_common_info_requesting"));
             }
         }
             break;
@@ -559,12 +580,11 @@ void CpDivertPluginGroup::changeDivertingStateRequested(
 {
     DPRINT << ": IN";
     
-    DivertRequest event=ActivateDivert;
-    if (CpDivertSelectionCustomitem::Enabled == 
-            item.contentWidgetData("state").toInt()) {
-        event = DeactivateDivert;
-    } else {
+    DivertRequest event = ActivateDivert;
+    if (Qt::Checked == item.contentWidgetData("checkState").toInt()) {
         event = ActivateDivert;
+    } else {
+        event = DeactivateDivert;
     }
     
     addToDivertingRequestQueue(event, item);
@@ -598,47 +618,41 @@ void CpDivertPluginGroup::handleDivertingChanged(
             (DivertConditionUnconditional == aSetting.iCondition) &&
             (DivertingStatusActive != aSetting.iStatus) );
     
-    switch(aSetting.iStatus) {
-        case DivertingStatusActive:
+    switch (aSetting.iStatus) {
+        case DivertingStatusActive: {
             if (aPlural) {
-                CpPhoneNotes::instance()->showGlobalNote(m_activeNoteId,
-                    hbTrId("txt_phone_info_diverts_activated"), 
-                    HbMessageBox::MessageTypeInformation);
+                CpPhoneNotes::instance()->showNotificationDialog(
+                    hbTrId("txt_phone_info_diverts_activated"));
             } else {
-                CpPhoneNotes::instance()->showGlobalNote(m_activeNoteId,
-                    hbTrId("txt_phone_info_divert_activated"), 
-                    HbMessageBox::MessageTypeInformation);
+                CpPhoneNotes::instance()->showNotificationDialog(
+                    hbTrId("txt_phone_info_divert_activated"));
             }
-            if (!m_divertToVoiceMailBox) {
+            QString voiceMailBoxNumber;
+            QString videoMailBoxNumber;
+            m_callDivertingWrapper->getVoiceMailBoxNumber(voiceMailBoxNumber, ServiceGroupVoice);
+            m_callDivertingWrapper->getVoiceMailBoxNumber(videoMailBoxNumber, ServiceGroupData);
+            if ((aSetting.iNumber != voiceMailBoxNumber) && (aSetting.iNumber != videoMailBoxNumber)) {
                 // Number, except vmbx number, will be added to defaultnumber list
                 m_callDivertingWrapper->setNewDefaultNumber(aSetting.iNumber);
             }
-            // Diverting calls does not affect Internet calls
-            if (Tools::voipSupported() &&
-                    (aSetting.iServiceGroup & ServiceGroupVoice)) {
-                CpPhoneNotes::instance()->showGlobalNote(m_activeNoteId,
-                    hbTrId("Diverting calls does not affect Internet calls"), 
-                    HbMessageBox::MessageTypeInformation);
-            }
+        }
             break;
         case DivertingStatusNotRegistered:  
         case DivertingStatusInactive:
             if (aPlural) {
-                CpPhoneNotes::instance()->showGlobalNote(m_activeNoteId,
-                    hbTrId("txt_phone_info_diverts_deactivated"), 
-                    HbMessageBox::MessageTypeInformation);
+                CpPhoneNotes::instance()->showNotificationDialog(
+                    hbTrId("txt_phone_info_diverts_deactivated"));
             } else {
-                CpPhoneNotes::instance()->showGlobalNote(m_activeNoteId,
-                    hbTrId("txt_phone_info_divert_deactivated"), 
-                    HbMessageBox::MessageTypeInformation);
+                CpPhoneNotes::instance()->showNotificationDialog(
+                    hbTrId("txt_phone_info_divert_deactivated"));
             }
             break;
         case DivertingStatusNotProvisioned:
         case DivertingStatusUnknown:
         default:
-            CpPhoneNotes::instance()->showGlobalNote(m_activeNoteId,
-                hbTrId("txt_phone_info_request_not_completed"), 
-                HbMessageBox::MessageTypeInformation);
+            CpPhoneNotes::instance()->showNotificationDialog(
+                hbTrId("txt_phone_info_request_not_completed"));
+            break; 
     }
     
     DPRINT << ": OUT";
@@ -655,7 +669,7 @@ void CpDivertPluginGroup::handleDivertingStatus(
     DPRINT << "divertList.Size():" << divertList.size();
     DPRINT << "plural:" << plural;
 
-    foreach(PSCallDivertingStatus* status, divertList) {
+    foreach (PSCallDivertingStatus* status, divertList) {
         DPRINT << status->iCondition;
         DPRINT << status->iNumber;
         DPRINT << status->iServiceGroup;
@@ -688,13 +702,13 @@ void CpDivertPluginGroup::handleDivertingError(int aReason)
             qvariant_cast<PsCallDivertingCondition>(
                     m_divertRequestQueue.head().item->property("condition")));
     }
-    
+        
     // Clear queue
     m_divertRequestQueue.clear();
-    
+        
     // Cancel previous note
     CpPhoneNotes::instance()->cancelNote(m_activeNoteId);
-    
+        
     // Show error note
     CpPhoneNotes::instance()->showGlobalErrorNote(m_activeNoteId, aReason);
     
@@ -704,65 +718,82 @@ void CpDivertPluginGroup::handleDivertingError(int aReason)
 /*!
   CpDivertPluginGroup::popUpVoiceNumberListQuery.
  */
-bool CpDivertPluginGroup::popUpVoiceNumberListQuery(
-        const QString& heading, QString& result, PsServiceGroup serviceGroup)
+void CpDivertPluginGroup::popUpVoiceNumberListQuery(
+        const QString& heading, PsServiceGroup serviceGroup)
 {
     DPRINT << ": IN";
-    
-    bool requestOK(false);
+    if (m_dialog) {
+        m_dialog->deleteLater();
+        m_dialog = NULL;
+    }
 
-    if (!m_eventLoop->isRunning()){
-        m_divertNumber = ""; 
-        m_divertToVoiceMailBox = false;
-        QStringList defNumbers;
-        HbDialog *dialog = createDialog(heading);
-        m_voiceNumberList = new HbListWidget(dialog);
-        if (serviceGroup == ServiceGroupVoice) {
-            addItemToListWidget(
-                    m_voiceNumberList, hbTrId("txt_phone_setlabel_voice_mbx"), KVoiceMail );
-        } else if(serviceGroup == ServiceGroupData) {
-            // TODO: Implement video voicemail
-        }
+    m_divertCommand.iNumber.clear();
+    QStringList defNumbers;
+    QScopedPointer<HbDialog> dialog(createDialog(heading));
+    HbListWidget *list = new HbListWidget(dialog.data());
     
-        // Add "old" divert number to list
-        m_callDivertingWrapper->getDefaultNumbers(defNumbers);
-        int count(defNumbers.count());
-        for (int i = 0; i < count; i++) {
-            addItemToListWidget(m_voiceNumberList, defNumbers[i], defNumbers[i]);
-        }
-        addItemToListWidget(m_voiceNumberList, hbTrId("txt_phone_list_enter_number_manually"), KOtherNumber );
-        dialog->setContentWidget(m_voiceNumberList);
+    QString vmbxNumber;
+    int vmbxErr = 0;
+    if (serviceGroup == ServiceGroupVoice) {
+        vmbxErr = m_callDivertingWrapper->getVoiceMailBoxNumber(
+                vmbxNumber, ServiceGroupVoice);
         
-        // Connect list item activation signal to close the popup
-        QObject::connect(m_voiceNumberList, 
-                SIGNAL(activated(HbListWidgetItem*)), 
-                dialog, 
-                SLOT(close()), 
-                Qt::UniqueConnection);
+    } else if(serviceGroup == ServiceGroupData) {
+        vmbxErr = m_callDivertingWrapper->getVoiceMailBoxNumber(
+                vmbxNumber, ServiceGroupData);
         
-        // Sets the "Cancel"-action/button
-        HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"));
-        dialog->addAction(cancelAction);
-        QObject::connect(cancelAction, 
-                SIGNAL(triggered(bool)), 
-                dialog, 
-                SLOT(close()));
-        
-        dialog->open(this, SLOT(voiceNumberListQueryClosed(HbAction *))); 
-        
-        QPointer<QObject> guard = this;
-        m_eventLoop->exec(); 
-        if (guard.isNull()) {
-            requestOK = false;
-        } else if (!m_divertNumber.isEmpty()) {
-            result = m_divertNumber;
-            requestOK = true;
-        }    
+    } else {
+        vmbxErr = -1;
+        // Skip
     }
     
-    DPRINT << ": OUT : result:" << result;
-    DPRINT << ": OUT : requestOK :" << requestOK;
-    return requestOK;
+    if (!vmbxErr) {
+        if (serviceGroup == ServiceGroupVoice) {
+            addItemToListWidget(
+                list, 
+                hbTrId("txt_phone_setlabel_voice_mbx"), 
+                vmbxNumber );
+                
+        } else {
+            addItemToListWidget(
+                list, 
+                hbTrId("txt_phone_setlabel_video_mbx"), 
+                vmbxNumber );
+        }
+    }
+
+    // Add "old" divert number to list
+    m_callDivertingWrapper->getDefaultNumbers(defNumbers);
+    int count(defNumbers.count());
+    for (int i = 0; i < count; i++) {
+        addItemToListWidget(list, defNumbers[i], defNumbers[i]);
+    }
+    addItemToListWidget(
+            list, 
+            hbTrId("txt_phone_list_enter_number_manually"), 
+            KOtherNumber );
+    dialog->setContentWidget(list);
+    
+    // Connect list item activation signal to close the popup
+    QObject::connect(list, 
+            SIGNAL(activated(HbListWidgetItem*)), 
+            dialog.data(), 
+            SLOT(close()), 
+            Qt::UniqueConnection);
+    
+    // Sets the "Cancel"-action/button
+    HbAction *cancelAction = new HbAction(hbTrId(
+            "txt_common_button_cancel"), 
+            dialog.data());
+    dialog->addAction(cancelAction);
+    QObject::connect(cancelAction, 
+            SIGNAL(triggered(bool)), 
+            dialog.data(), 
+            SLOT(close()));
+    
+    dialog->open(this, SLOT(voiceNumberListQueryClosed(HbAction *)));
+    m_dialog = dialog.take();
+    DPRINT << ": OUT";
 }
 
 /*!
@@ -771,40 +802,65 @@ bool CpDivertPluginGroup::popUpVoiceNumberListQuery(
 void CpDivertPluginGroup::voiceNumberListQueryClosed(HbAction* action)
 {
     DPRINT << ": IN";
+    HbListWidget *list(NULL);
+    m_divertCommand.iNumber.clear();
+    bool processNextPhase(true);
     
-    bool exitLoop(true); 
-    
-    // Enter if cancel wasn't selected 
-    if (!action) {  
-        // Update the view with selected text
-        QString data = m_voiceNumberList->currentItem()->data().toString();
-        DPRINT << ": data: " << data; 
-        
-        if (data == KVoiceMail) {
-            m_callDivertingWrapper->getVoiceMailBoxNumber(m_divertNumber);
-            if (!m_divertNumber.isEmpty()) {
-                DPRINT << ": voicemailboxnumber found";
-            }
-            
-            m_eventLoop->quit();
-            
-        } else if (data == KOtherNumber) {
-                // Event loop is terminated by popUpNumberEditorClosed
-                exitLoop = false;
-                
-                DPRINT << ": open popUpNumberEditor";                
-                popUpNumberEditor(hbTrId("txt_phone_info_number"), m_divertNumber);
-        } else {
-            //TODO if matched contact name not work
-            DPRINT << ": else";
-            m_divertNumber = data;
-        }        
-        
+    if (m_dialog) {
+        bool err = QObject::disconnect(m_dialog->contentWidget(), 
+            SIGNAL(activated(HbListWidgetItem*)), 
+            m_dialog, 
+            SLOT(close()));
+        list = qobject_cast<HbListWidget*>(m_dialog->contentWidget());
+        m_dialog->deleteLater();
+        m_dialog = NULL;
     }
     
-    if (exitLoop) {
-        DPRINT << ": quit eventloop";
-        m_eventLoop->quit();
+    // Enter if cancel wasn't selected 
+    if (!action && list) {
+        // Update the view with selected text
+        QString data = list->currentItem()->data().toString();
+        QString text = list->currentItem()->text();
+
+        DPRINT << ": data: " << data; 
+        DPRINT << ": text: " << text; 
+
+        if (data == KOtherNumber) {
+            DPRINT << ": open popUpNumberEditor";
+            processNextPhase = false;
+            popUpNumberEditor(hbTrId("txt_phone_info_number"));
+        } else if (text == hbTrId("txt_phone_setlabel_voice_mbx")) {
+            DPRINT << ": get voicemailboxnumber";
+            m_callDivertingWrapper->getVoiceMailBoxNumber(
+                m_divertCommand.iNumber, ServiceGroupVoice);
+            if (m_divertCommand.iNumber.isEmpty()) {
+                DPRINT << ": voicemailboxnumber query";
+                m_callDivertingWrapper->queryVoiceMailBoxNumber(
+                    m_divertCommand.iNumber, ServiceGroupVoice);
+            }
+        } else if (text == hbTrId("txt_phone_setlabel_video_mbx")) {
+            DPRINT << ": get videomailboxnumber";
+            m_callDivertingWrapper->getVoiceMailBoxNumber(
+                m_divertCommand.iNumber, ServiceGroupData);
+            if (m_divertCommand.iNumber.isEmpty()) {
+                DPRINT << ": videomailboxnumber query";
+                m_callDivertingWrapper->queryVoiceMailBoxNumber(
+                    m_divertCommand.iNumber, ServiceGroupData);
+            }
+        }  else {
+            //TODO if matched contact name not work
+            DPRINT << ": else";
+            m_divertCommand.iNumber = data;
+        }        
+    }
+    DPRINT << ": processNextPhase: " << processNextPhase; 
+    DPRINT << ": m_divertCommand.iNumber: " << m_divertCommand.iNumber; 
+    if (processNextPhase) {
+        if (m_divertCommand.iNumber.isEmpty()) {
+            nextPhaseForActivateDivert(false);
+        } else {
+            nextPhaseForActivateDivert(true);
+        }
     }
     
     DPRINT << ": OUT";
@@ -814,26 +870,32 @@ void CpDivertPluginGroup::voiceNumberListQueryClosed(HbAction* action)
   CpDivertPluginGroup::popUpNumberEditor.
  */
 void CpDivertPluginGroup::popUpNumberEditor(
-        const QString& heading, QString& result)
+        const QString& heading)
 {
     DPRINT << ": IN";
 
-    Q_UNUSED(result); 
-    
-    HbDialog *dialog = createDialog(heading);
+    if (m_dialog) {
+        m_dialog->deleteLater();
+        m_dialog = NULL;
+    }
+    QScopedPointer<HbDialog> dialog(createDialog(heading));
 
-    m_voiceNumberEditor = new HbLineEdit(dialog);
-    m_voiceNumberEditor->setInputMethodHints(Qt::ImhDialableCharactersOnly);    
-    dialog->setContentWidget(m_voiceNumberEditor);
+    HbLineEdit *editor = new HbLineEdit(dialog.data());
+    editor->setInputMethodHints(Qt::ImhDialableCharactersOnly);    
+    //Ownership is transferred
+    dialog->setContentWidget(editor);
     
-    HbAction *okAction = new HbAction(hbTrId("txt_common_button_ok"));
+    HbAction *okAction = new HbAction(
+            hbTrId("txt_common_button_ok"), 
+            dialog.data());
     dialog->addAction(okAction);
     
-    HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"));
+    HbAction *cancelAction = new HbAction(
+            hbTrId("txt_common_button_cancel"), 
+            dialog.data());
     dialog->addAction(cancelAction);
-    
     dialog->open(this, SLOT(popUpNumberEditorClosed(HbAction*)));
-    
+    m_dialog = dialog.take();
     DPRINT << ": OUT";
 }
 
@@ -843,32 +905,33 @@ void CpDivertPluginGroup::popUpNumberEditor(
 void CpDivertPluginGroup::popUpNumberEditorClosed(HbAction* action)
 {
     DPRINT << ": IN";
-    
     bool cancelled(true); 
     if (action) {
-        if (action->text() == hbTrId("txt_common_button_ok")) 
-            {
+        if (action->text() == hbTrId("txt_common_button_ok")) {
             cancelled = false;  
             DPRINT << ": ok selected";
-            }
+        }
     }
     
     if (!cancelled) {
-        m_divertNumber = m_voiceNumberEditor->text();
-            DPRINT << ": m_divertNumber "
-                << m_divertNumber;
-            if (m_divertNumber.isEmpty()) {
-                CpPhoneNotes::instance()->showGlobalNote(m_activeNoteId, 
-                    hbTrId("txt_phone_info_invalid_phone_number"), HbMessageBox::MessageTypeWarning);
-            }
+        HbLineEdit *editor = qobject_cast<HbLineEdit *>(m_dialog->contentWidget());
+        if (editor) {
+            m_divertCommand.iNumber = editor->text();
+        }
+        
+        DPRINT << ": m_divertCommand.iNumber "
+            << m_divertCommand.iNumber;
+        if (m_divertCommand.iNumber.isEmpty()) {
+            CpPhoneNotes::instance()->showNotificationDialog(hbTrId("txt_phone_info_invalid_phone_number"));
+        }
+    }
+    if (m_dialog) {
+        m_dialog->deleteLater();
+        m_dialog = NULL;
     }
     
-    if (m_voiceNumberEditor) {
-        delete m_voiceNumberEditor;
-        m_voiceNumberEditor = NULL; 
-    } 
+    nextPhaseForActivateDivert(!cancelled);
     
-    m_eventLoop->quit();
     DPRINT << ": OUT";
 }
 
@@ -890,7 +953,7 @@ void CpDivertPluginGroup::setCallDiverting(PSCallDivertingCommand& command)
     if (0 == result) {
         if (!CpPhoneNotes::instance()->noteShowing()) {
             CpPhoneNotes::instance()->showGlobalProgressNote(
-                    m_activeProgressNoteId, hbTrId("txt_phone_info_requesting"));
+                    m_activeProgressNoteId, hbTrId("txt_common_info_requesting"));
         }
     } else {
         handleDivertingError(result);
@@ -902,52 +965,48 @@ void CpDivertPluginGroup::setCallDiverting(PSCallDivertingCommand& command)
 /*!
   CpDivertPluginGroup::popUpTimerQuery.
  */
-bool CpDivertPluginGroup::popUpTimerQuery(int &timeout) 
+void CpDivertPluginGroup::popUpTimerQuery() 
 {
     DPRINT << ": IN";
-    Q_UNUSED(timeout); 
     
-    bool requestOK(false);
-    m_divertTimeout = 0; 
+    m_divertCommand.iNoReplyTimer = 0; 
     
-    if (!m_eventLoop->isRunning()) {
-        HbDialog *dialog = createDialog(hbTrId("txt_phone_title_delay"));
-        
-        if (m_popupTimerList) {
-            m_popupTimerList = new HbListWidget(dialog);
-            
-            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_5_seconds"), 5 );
-            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_10_seconds"), 10);
-            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_15_seconds"), 15);
-            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_20_seconds"), 20);
-            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_25_seconds"), 25);
-            addItemToListWidget(m_popupTimerList, hbTrId("txt_phone_list_30_seconds"), 30);
-            
-            // Connect list item activation signal to close the popup
-            QObject::connect(
-                    m_popupTimerList, SIGNAL(activated(HbListWidgetItem*)), 
-                    dialog, SLOT(close()), 
-                    Qt::UniqueConnection);
-        }
-        
-        // Sets the "Cancel"-action/button
-        HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"));
-        dialog->addAction(cancelAction);
-        dialog->setContentWidget(m_popupTimerList);
+    QScopedPointer<HbDialog> dialog(createDialog(hbTrId("txt_phone_title_delay")));
+    HbListWidget *list = new HbListWidget(dialog.data());
     
-        dialog->open(this, SLOT(popUpTimerQueryClosed(HbAction *))); 
-        
-        QPointer<QObject> guard = this;
-        m_eventLoop->exec(); 
-        if (guard.isNull()) {
-            requestOK = false;
-        } else if (m_divertTimeout > 0) {
-            requestOK = true;
-        }
+    HbParameterLengthLimiter pluralLimiter;
+    pluralLimiter = HbParameterLengthLimiter("txt_phone_list_ln_seconds", 5);
+    addItemToListWidget(list, pluralLimiter, 5 );
+    pluralLimiter = HbParameterLengthLimiter("txt_phone_list_ln_seconds", 10);
+    addItemToListWidget(list, pluralLimiter, 10);
+    pluralLimiter = HbParameterLengthLimiter("txt_phone_list_ln_seconds", 15);
+    addItemToListWidget(list, pluralLimiter, 15);
+    pluralLimiter = HbParameterLengthLimiter("txt_phone_list_ln_seconds", 20);
+    addItemToListWidget(list, pluralLimiter, 20);
+    pluralLimiter = HbParameterLengthLimiter("txt_phone_list_ln_seconds", 25);
+    addItemToListWidget(list, pluralLimiter, 25);
+    pluralLimiter = HbParameterLengthLimiter("txt_phone_list_ln_seconds", 30);
+    addItemToListWidget(list, pluralLimiter, 30);
+    
+    // Connect list item activation signal to close the popup
+    QObject::connect(
+            list, SIGNAL(activated(HbListWidgetItem*)), 
+            dialog.data(), SLOT(close()), 
+            Qt::UniqueConnection);
+    
+    // Sets the "Cancel"-action/button
+    HbAction *cancelAction = new HbAction(hbTrId("txt_common_button_cancel"));
+    dialog->addAction(cancelAction);
+    dialog->setContentWidget(list);
+
+    dialog->open(this, SLOT(popUpTimerQueryClosed(HbAction *)));
+    if (m_dialog) {
+        m_dialog->deleteLater();
+        m_dialog = NULL;
     }
+    m_dialog = dialog.take();
     
-    DPRINT << ": OUT : requestOK :" << requestOK;
-    return requestOK;
+    DPRINT << ": OUT";
 }
 
 /*!
@@ -955,22 +1014,28 @@ bool CpDivertPluginGroup::popUpTimerQuery(int &timeout)
  */
 void CpDivertPluginGroup::popUpTimerQueryClosed(HbAction* action)
 {
+    DPRINT << ": IN";
+    
     // If not cancel action selected 
+    bool cancelled(true);
     if (!action) {
+        cancelled = false;
         // Update the view with selected text
-        if (m_popupTimerList->currentItem()) {
-            m_divertTimeout = 
-                    m_popupTimerList->currentItem()->data().toInt();
+        HbListWidget *list = qobject_cast<HbListWidget*>(m_dialog->contentWidget());
+        if (list && list->currentItem()) {
+            m_divertCommand.iNoReplyTimer = 
+                    list->currentItem()->data().toInt();
         }
     }
-    else {
-        DPRINT << ": Cancel";
+    
+    if (m_dialog) {
+        m_dialog->deleteLater();
+        m_dialog = NULL;
     }
+    
+    nextPhaseForActivateDivert(!cancelled);
 
-    DPRINT << ": quit eventloop";
-    m_eventLoop->quit();
-
-    DPRINT << ": OUT: timeout: " << m_divertTimeout;
+    DPRINT << ": OUT: timeout: " << m_divertCommand.iNoReplyTimer;
 }
 
 
@@ -1004,8 +1069,6 @@ int CpDivertPluginGroup::bscParam(PsServiceGroup serviceGroup)
         bsc = AllBearer;
     }
 
-
-    
     DPRINT << ": OUT : bsc :" << bsc;
     return bsc;
 }
@@ -1074,12 +1137,12 @@ void CpDivertPluginGroup::updateDependentDivertOptions(bool fetchFromNetwork)
     DPRINT << ": IN";
     
     // all calls divert activation deactivates automatically other diverts
-    QVariant itemState = m_DataItemVoiceAllCalls->contentWidgetData("state");
+    QVariant itemState = m_DataItemVoiceAllCalls->contentWidgetData("checkState");
     if ((itemState.isValid()) && 
-        (itemState.toInt() == CpDivertSelectionCustomitem::Enabled)) {
-        deActivateDependentDivertOption(m_DataItemVoiceIfBusy);
-        deActivateDependentDivertOption(m_DataItemVoiceIfNotAnswered);
-        deActivateDependentDivertOption(m_DataItemVoiceIfOutOfReach);
+        (itemState.toInt() == Qt::Checked)) {
+        deactivateDependentDivertOption(m_DataItemVoiceIfBusy);
+        deactivateDependentDivertOption(m_DataItemVoiceIfNotAnswered);
+        deactivateDependentDivertOption(m_DataItemVoiceIfOutOfReach);
     } else {
         // Must query data for diverts depending on all calls divert, because 
         // data may have been lost for registered diverts, which were 
@@ -1090,12 +1153,12 @@ void CpDivertPluginGroup::updateDependentDivertOptions(bool fetchFromNetwork)
     }
     
     // all calls divert activation deactivates automatically other diverts
-    itemState = m_DataItemVideoAllCalls->contentWidgetData("state");
+    itemState = m_DataItemVideoAllCalls->contentWidgetData("checkState");
     if ((itemState.isValid()) && 
-        (itemState.toInt() == CpDivertSelectionCustomitem::Enabled)) {
-        deActivateDependentDivertOption(m_DataItemVideoIfBusy);
-        deActivateDependentDivertOption(m_DataItemVideoIfNotAnswered);
-        deActivateDependentDivertOption(m_DataItemVideoIfOutOfReach);
+        (itemState.toInt() == Qt::Checked)) {
+        deactivateDependentDivertOption(m_DataItemVideoIfBusy);
+        deactivateDependentDivertOption(m_DataItemVideoIfNotAnswered);
+        deactivateDependentDivertOption(m_DataItemVideoIfOutOfReach);
     } else {
         // Must query data for diverts depending on all calls divert, because 
         // data may have been lost for registered diverts, which were 
@@ -1112,18 +1175,25 @@ void CpDivertPluginGroup::updateDependentDivertOptions(bool fetchFromNetwork)
 }
 
 /*!
-  CpDivertPluginGroup::deActivateDependentDivertOption.
+  CpDivertPluginGroup::deactivateDependentDivertOption.
 */
-void CpDivertPluginGroup::deActivateDependentDivertOption(
+void CpDivertPluginGroup::deactivateDependentDivertOption(
         CpDivertItemData* item) const
 {
-    QVariant itemState = item->contentWidgetData("state");
-    if ((itemState.isValid()) && 
-        (itemState == CpDivertSelectionCustomitem::Enabled)) {
-        item->setContentWidgetData(
-            "state", CpDivertSelectionCustomitem::Deactivated);
+    DPRINT << ": IN";
+    
+    QVariant itemState = item->contentWidgetData("checkState");
+    if ((itemState.isValid()) && (itemState == Qt::Checked)) {
+        item->setContentWidgetData("checkState", Qt::Unchecked);
+        item->setContentWidgetData("text", QString(""));
+        
+        if (!item->description().isEmpty()) {
+            item->setDescription("");
+        }
     }
     item->setEnabled(false);
+    
+    DPRINT << ": OUT";
 }
 
 /*!
@@ -1132,13 +1202,15 @@ void CpDivertPluginGroup::deActivateDependentDivertOption(
 void CpDivertPluginGroup::activateDependentDivertOption(
         CpDivertItemData* item, bool fetchFromNetwork)
 {
-    if ((CpDivertSelectionCustomitem::Deactivated == 
-            item->contentWidgetData("state").toInt()) &&
+    DPRINT << ": IN";
+    
+    if ((Qt::Unchecked == item->contentWidgetData("checkState").toInt()) &&
             fetchFromNetwork) {
-        addToDivertingRequestQueue(
-            CheckDivertStatus, *item);
+        addToDivertingRequestQueue(CheckDivertStatus, *item);
     }
     item->setEnabled(true);
+    
+    DPRINT << ": OUT";
 }
 
 /*!
@@ -1152,31 +1224,28 @@ void CpDivertPluginGroup::updateNotAvailableDivertOption()
     // CFNrc before concluding that not available divert is enabled, because
     // some networks may not return divert number for inactive diverts.
     int cfbState = 
-        m_DataItemVoiceIfBusy->contentWidgetData("state").toInt();
+        m_DataItemVoiceIfBusy->contentWidgetData("checkState").toInt();
     int cfnryState = 
-        m_DataItemVoiceIfNotAnswered->contentWidgetData("state").toInt();
+        m_DataItemVoiceIfNotAnswered->contentWidgetData("checkState").toInt();
     int cfnrcState = 
-        m_DataItemVoiceIfOutOfReach->contentWidgetData("state").toInt();
+        m_DataItemVoiceIfOutOfReach->contentWidgetData("checkState").toInt();
     QVariant cfbNumber = 
-        m_DataItemVoiceIfBusy->contentWidgetData("number");
+        m_DataItemVoiceIfBusy->contentWidgetData("text");
     QVariant cfnryNumber = 
-        m_DataItemVoiceIfNotAnswered->contentWidgetData("number");
+        m_DataItemVoiceIfNotAnswered->contentWidgetData("text");
     QVariant cfnrcNumber = 
-        m_DataItemVoiceIfOutOfReach->contentWidgetData("number");
+        m_DataItemVoiceIfOutOfReach->contentWidgetData("text");
     
     if ((cfbNumber == cfnryNumber) && (cfbNumber == cfnrcNumber) &&
         (cfbState == cfnryState) && (cfbState == cfnrcState)) {
         m_DataItemVoiceIfNotAvailable->setContentWidgetData(
-            "number", m_DataItemVoiceIfBusy->contentWidgetData("number"));
+            "text", m_DataItemVoiceIfBusy->contentWidgetData("text"));
         m_DataItemVoiceIfNotAvailable->setContentWidgetData(
-            "timeout", m_DataItemVoiceIfNotAnswered->contentWidgetData("timeout"));
-        m_DataItemVoiceIfNotAvailable->setContentWidgetData(
-            "state", m_DataItemVoiceIfBusy->contentWidgetData("state"));
+            "checkState", m_DataItemVoiceIfBusy->contentWidgetData("checkState"));
     } else {
-        m_DataItemVoiceIfNotAvailable->setContentWidgetData("number", "");
-        m_DataItemVoiceIfNotAvailable->setContentWidgetData("timeout", 0);
+        m_DataItemVoiceIfNotAvailable->setContentWidgetData("text", "");
         m_DataItemVoiceIfNotAvailable->setContentWidgetData(
-            "state", CpDivertSelectionCustomitem::Disabled);
+            "checkState", Qt::Unchecked);
 
     }
     // Item dimming
@@ -1190,32 +1259,28 @@ void CpDivertPluginGroup::updateNotAvailableDivertOption()
     // CFNrc before concluding that not available divert is enabled, because
     // some networks may not return divert number for inactive diverts.
     cfbState = 
-        m_DataItemVideoIfBusy->contentWidgetData("state").toInt();
+        m_DataItemVideoIfBusy->contentWidgetData("checkState").toInt();
     cfnryState = 
-        m_DataItemVideoIfNotAnswered->contentWidgetData("state").toInt();
+        m_DataItemVideoIfNotAnswered->contentWidgetData("checkState").toInt();
     cfnrcState = 
-        m_DataItemVideoIfOutOfReach->contentWidgetData("state").toInt();
+        m_DataItemVideoIfOutOfReach->contentWidgetData("checkState").toInt();
     cfbNumber = 
-        m_DataItemVideoIfBusy->contentWidgetData("number");
+        m_DataItemVideoIfBusy->contentWidgetData("text");
     cfnryNumber = 
-        m_DataItemVideoIfNotAnswered->contentWidgetData("number");
+        m_DataItemVideoIfNotAnswered->contentWidgetData("text");
     cfnrcNumber = 
-        m_DataItemVideoIfOutOfReach->contentWidgetData("number");
+        m_DataItemVideoIfOutOfReach->contentWidgetData("text");
     
     if ((cfbNumber == cfnryNumber) && (cfbNumber == cfnrcNumber) &&
         (cfbState == cfnryState) && (cfbState == cfnrcState)) {
         m_DataItemVideoIfNotAvailable->setContentWidgetData(
-            "number", m_DataItemVideoIfBusy->contentWidgetData("number"));
+            "text", m_DataItemVideoIfBusy->contentWidgetData("text"));
         m_DataItemVideoIfNotAvailable->setContentWidgetData(
-            "timeout", m_DataItemVideoIfNotAnswered->contentWidgetData("timeout"));
-        m_DataItemVideoIfNotAvailable->setContentWidgetData(
-            "state", m_DataItemVideoIfBusy->contentWidgetData("state"));
+            "checkState", m_DataItemVideoIfBusy->contentWidgetData("checkState"));
     } else {
-        m_DataItemVideoIfNotAvailable->setContentWidgetData("number", "");
-        m_DataItemVideoIfNotAvailable->setContentWidgetData("timeout", 0);
+        m_DataItemVideoIfNotAvailable->setContentWidgetData("text", "");
         m_DataItemVideoIfNotAvailable->setContentWidgetData(
-            "state", CpDivertSelectionCustomitem::Disabled);
-
+            "checkState", Qt::Unchecked);
     }
     
     // Item dimming
@@ -1225,6 +1290,62 @@ void CpDivertPluginGroup::updateNotAvailableDivertOption()
             m_DataItemVideoIfOutOfReach->isEnabled()); 
     
     DPRINT << ": OUT";
+}
+
+void CpDivertPluginGroup::nextPhaseForActivateDivert(bool ok)
+{
+    DPRINT << ": IN";
+    
+    if (ok) {
+        switch (m_activateDivertPhase) {
+            case PopUpVoiceNumberListQueryPhase: {
+                CpDivertRequestQueueItem request = m_divertRequestQueue.head();
+                if (request.item->property("needTimeoutInfo").toBool()) {
+                    m_activateDivertPhase = PopUpTimerQueryPhase;
+                    popUpTimerQuery();
+                } else {
+                    m_activateDivertPhase = NonePhase;
+                    setCallDiverting(m_divertCommand);
+                    }
+            }
+                break;
+            case PopUpTimerQueryPhase: {
+                m_activateDivertPhase = NonePhase;
+                setCallDiverting(m_divertCommand);
+            }
+            default:
+                DPRINT << "Error: unknown enum value";
+                break;
+        }
+    } else {
+        // Query was cancelled
+        revertItemData(
+            m_divertCommand.iServiceGroup, 
+            m_divertCommand.iCondition);
+        m_divertRequestQueue.clear();
+        m_activateDivertPhase = NonePhase;
+    }
+    
+    DPRINT << ": OUT";
+}
+
+/*!
+  CpDivertPluginGroup::itemShown.
+ */
+bool CpDivertPluginGroup::isDivertSettingsItem(HbDataFormModelItem* modelItem) {
+    return (
+        modelItem == m_DataItemVoiceAllCalls ||
+        modelItem == m_DataItemVoiceIfBusy ||
+        modelItem == m_DataItemVoiceIfNotAnswered ||
+        modelItem == m_DataItemVoiceIfOutOfReach ||
+        modelItem == m_DataItemVoiceIfNotAvailable ||
+        
+        modelItem == m_DataItemVideoAllCalls ||
+        modelItem == m_DataItemVideoIfBusy ||
+        modelItem == m_DataItemVideoIfNotAnswered ||
+        modelItem == m_DataItemVideoIfOutOfReach ||
+        modelItem == m_DataItemVideoIfNotAvailable
+    );
 }
 
 // End of File. 
