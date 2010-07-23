@@ -17,6 +17,7 @@
 #include <QString>
 #include <QPainter>
 #include <QEvent>
+#include <QGesture>
 #include <QGraphicsWidget>
 #include <QGraphicsSceneMouseEvent>
 #include <HbMarqueeItem>
@@ -184,54 +185,6 @@ void UT_InfoWidget::t_paint()
     m_infoWidget->paint(painter.data(), option, widget);
 }
 
-/*!
-  UT_InfoWidget::t_mousePressEvent
- */
-void UT_InfoWidget::t_mousePressEvent()
-{
-    QGraphicsSceneMouseEvent event;
-    m_infoWidget->mousePressEvent(&event);
-}
-
-/*!
-  UT_InfoWidget::t_mouseReleaseEvent
- */
-void UT_InfoWidget::t_mouseReleaseEvent()
-{
-    QGraphicsSceneMouseEvent event;
-    
-    // widget clicked while showing info display => 
-    // switch to settings display expected
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::InfoDisplay);
-    EXPECT(InfoWidgetLayoutManager::layoutSettingsDialog);
-    m_infoWidget->mousePressEvent(&event);
-    m_infoWidget->mouseReleaseEvent(&event);
-    
-    // widget clicked while showing settings display => 
-    // no action expected
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
-        .returns(InfoWidgetLayoutManager::SettingsDialog);
-    EXPECT(InfoWidgetLayoutManager::layoutSettingsDialog).times(0);
-    m_infoWidget->mousePressEvent(&event);
-    m_infoWidget->mouseReleaseEvent(&event);
-    
-    // release event received after dragging widget => 
-    // no action expected
-    EXPECT(InfoWidgetLayoutManager::layoutSettingsDialog).times(0);
-    m_infoWidget->mouseMoveEvent(&event);
-    m_infoWidget->mouseReleaseEvent(&event);
-    
-    QVERIFY(verify());
-}
-
-/*!
-  UT_InfoWidget::t_mouseMoveEvent
- */
-void UT_InfoWidget::t_mouseMoveEvent()
-{
-    
-}
 
 /*!
   UT_InfoWidget::t_updateInfoDisplay
@@ -814,6 +767,19 @@ void UT_InfoWidget::t_timerEvent()
     
     QVERIFY(verify());
 }
+
+/*!
+  UT_InfoWidget::t_gestureEvent
+ */
+void UT_InfoWidget::t_gestureEvent()
+{
+    QList<QGesture> gestures; 
+    //QScopedPointer<QGestureEvent> event(new QGestureEvent); 
+    //void gestureEvent(QGestureEvent *event); 
+    m_infoWidget->gestureEvent(NULL);  
+    QVERIFY(verify());
+}
+
 
 
 QTEST_MAIN_S60(UT_InfoWidget)

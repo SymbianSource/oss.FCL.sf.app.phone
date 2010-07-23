@@ -15,6 +15,8 @@
 *
 */
 
+#include <QGraphicsSceneMouseEvent>
+
 #include <HbStyle>
 #include <HbStyleLoader>
 #include <HbFrameItem>
@@ -39,7 +41,8 @@
 
 namespace
 {
-    const char KDialerWidgetIcon[] = "qtg_graf_hs_dialer_normal";
+    const char KDialerWidgetIconNormal[] = "qtg_graf_hs_dialer_normal";
+    const char KDialerWidgetIconPressed[] = "qtg_graf_hs_dialer_pressed";
     const char KMissedCallShortcutBadge[] = "qtg_fr_shortcut_badge_bg";
     const char KDialerWidgetWidgetml[] = ":/data/resource/dialerwidget.widgetml";
     const char KDialerWidgetCss[] = ":/data/resource/dialerwidget.css";
@@ -58,7 +61,8 @@ namespace
 */
 DialerWidget::DialerWidget(QGraphicsItem *parent, Qt::WindowFlags flags)
   : HsWidget(parent, flags),
-    m_background(0), m_badgeBackground(0), m_text(0), m_touchArea(0)
+    m_background(0), m_badgeBackground(0), m_text(0), m_touchArea(0),
+    m_engine(0)
 {   
     PHONE_TRACE 
 }
@@ -199,20 +203,34 @@ void DialerWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     PHONE_TRACE;
     Q_UNUSED(event)
-    HbInstantFeedback::play(HbFeedback::Basic);
+    setBackgroundToPressed();
 }
 
-/*!
-    \fn void DialerWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+void DialerWidget::handleMouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (contains(event->pos())) {
+        setBackgroundToPressed();
+    } else {
+        setBackgroundToNormal();
+    }
+}
 
-    Dialer widget start is triggered from release \a event.
-    \sa startDialer()
-*/
 void DialerWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
     PHONE_TRACE;
     Q_UNUSED(event);
-    startDialer();
+    HbInstantFeedback::play(HbFeedback::Basic);
+    setBackgroundToNormal();
+    startDialer();    
+}
+
+bool DialerWidget::sceneEvent(QEvent *event)
+{
+    if (event->type() == QEvent::UngrabMouse) {
+        setBackgroundToNormal();
+    }
+
+    return HsWidget::sceneEvent(event);;
 }
 
 HsWidget::StartResult DialerWidget::onStart()
@@ -238,9 +256,9 @@ void DialerWidget::createPrimitives()
     // Background
     if (!m_background) {
         HbFrameDrawer *drawer = new HbFrameDrawer(
-            KDialerWidgetIcon, HbFrameDrawer::OnePiece);
+            KDialerWidgetIconNormal, HbFrameDrawer::OnePiece);
         m_background = new HbFrameItem(drawer, this);
-        style()->setItemName(m_background, /*QLatin1String(*/"background"/*)*/);
+        style()->setItemName(m_background, QLatin1String("background"));
         m_background->moveBy(0,10);
         m_background->resize(81,81);
     }
@@ -278,6 +296,22 @@ void DialerWidget::createPrimitives()
         style()->setItemName(m_touchArea, QLatin1String("touch_area"));
         m_touchArea->moveBy(0,10);
         m_touchArea->resize(81,81);
+    }
+}
+
+void DialerWidget::setBackgroundToNormal()
+{
+    if (m_background) {
+        m_background->frameDrawer().
+            setFrameGraphicsName(KDialerWidgetIconNormal);
+    }
+}
+
+void DialerWidget::setBackgroundToPressed()
+{
+    if (m_background) {
+        m_background->frameDrawer().
+            setFrameGraphicsName(KDialerWidgetIconPressed);
     }
 }
 

@@ -21,10 +21,6 @@
 file=ABI_DIR\BUILD_DIR\dialerwidgetplugin.dll                                        	SHARED_LIB_DIR\dialerwidgetplugin.dll
 data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.qtplugin    	private\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.qtplugin
 data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.manifest    	private\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.manifest
-data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\qtg_graf_hs_dialer.svg		   	private\20022f35\import\widgetregistry\20022F44\qtg_graf_hs_dialer.svg	
-data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_r.png    private\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_r.png
-data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_l.png	private\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_l.png
-data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_c.png    private\20022f35\import\widgetregistry\20022F44\qtg_fr_shortcut_badge_bg_c.png       
 data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.xml          private\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.xml
 
 #endif //__DIALERWIDETPLUGIN_IBY__

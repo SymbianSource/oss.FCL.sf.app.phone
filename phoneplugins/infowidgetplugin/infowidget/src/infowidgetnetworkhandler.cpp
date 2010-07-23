@@ -52,9 +52,14 @@ InfoWidgetNetworkHandler::InfoWidgetNetworkHandler(QObject *parent)
 InfoWidgetNetworkHandler::~InfoWidgetNetworkHandler()
 {
     DPRINT;
-    // Disable MCN setting, 
-    // display client is being deleted 
-    disableMcn(); 
+    try {
+        // Disable MCN setting, 
+        // display client is being deleted
+        disableMcn(); 
+    } catch (const std::exception& ex) {
+        DCRITICAL << ": exception detected: " << ex.what();  
+    }      
+     
 }    
 
 /*!
@@ -287,9 +292,7 @@ void InfoWidgetNetworkHandler::HandleNetworkError(
 }
 
 /*!
-    InfoWidgetNetworkHandler::writeMcnDisplayState()
-    
-    Handler for cenrep key writing   
+    Write Mcn cenrep key.   
 */
 void InfoWidgetNetworkHandler::writeMcnDisplayState(bool enabled)
 {
@@ -309,7 +312,7 @@ void InfoWidgetNetworkHandler::writeMcnDisplayState(bool enabled)
 }
 
 /*!
-    InfoWidgetNetworkHandler::readMcnDisplayState()
+    Read Mcn cenrep key.
 */
 bool InfoWidgetNetworkHandler::readMcnDisplayState()
 {

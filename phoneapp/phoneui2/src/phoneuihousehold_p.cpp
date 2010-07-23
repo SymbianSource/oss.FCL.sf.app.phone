@@ -181,10 +181,7 @@ void PhoneUiHouseHoldPrivate::ConstructL()
 	if (translator) {
         translator->loadCommon();
         m_translators.append(translator);
-	} else {
-    delete translator;
-    translator = 0;
-}
+	}
     
 	HbTranslator *translator2 = new HbTranslator(QString("telephone_cp"));
     if (translator2) {

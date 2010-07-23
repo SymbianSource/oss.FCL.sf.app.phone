@@ -45,9 +45,6 @@ class DialerWidget : public HsWidget
 public:
     DialerWidget(QGraphicsItem* parent = 0, Qt::WindowFlags flags = 0);
     ~DialerWidget();
-private:
-    
-    void createPrimitives();
     
 public slots:
     void startDialer();
@@ -68,12 +65,19 @@ signals:
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void handleMouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    bool sceneEvent(QEvent *event);
     StartResult onStart();
     StopResult onStop();
     SuspendResult onSuspend();
     ResumeResult onResume();
-
+    
+private:    
+    void createPrimitives();
+    void setBackgroundToNormal();
+    void setBackgroundToPressed();    
+    
 private:
     
     HbFrameItem         *m_background;

@@ -27,14 +27,15 @@
 #include <hbmessagebox.h>
 #include <hbframedrawer.h>
 #include <hbframeitem.h>
+#include <hbtapgesture.h>
 #include <QPainter>
 #include <QPainterPath>
 #include <QBrush>
 #include <QGraphicsLinearLayout>
 #include <QApplication>
 #include <QLocale>
-#include <QTranslator>
 #include <QScopedPointer>
+#include <QGesture>
 #include "infowidgetlogging.h"
 #include "infowidgetengine.h"
 #include "infowidgetlayoutmanager.h"
@@ -54,8 +55,6 @@
 const int INFOWIDGET_DEFAULT_HEIGHT = 100;
 const int INFOWIDGET_DEFAULT_WIDTH = 200;
 const int INFOWIDGET_MARQUEE_START_DELAY = 5000; 
-const char *TS_FILE_OPERATOR_WIDGET = "operator_widget"; 
-const char *TS_FILE_COMMON = "common";
 const char *BACKGROUND_FRAME_NAME = "qtg_fr_hswidget_normal"; 
 
 /*!
@@ -71,15 +70,11 @@ InfoWidget::InfoWidget(QGraphicsItem* parent, Qt::WindowFlags flags)
     m_backgroundFrameItem(NULL),
     m_timerId(0),
     m_layoutChanging(false),
-    m_dragEvent(false), 
     m_initialized(false)
 {
     INSTALL_TRACE_MSG_HANDLER; 
     DPRINT;
-    
-    // Localization file loading
-    installTranslator(TS_FILE_OPERATOR_WIDGET);
-
+ 
     // Create layout & child-widget manager 
     m_layoutManager.reset(new InfoWidgetLayoutManager);
     
@@ -116,7 +111,10 @@ InfoWidget::InfoWidget(QGraphicsItem* parent, Qt::WindowFlags flags)
     m_backgroundFrameItem = new HbFrameItem(
             backgroundFrameDrawer.take(), this);  
     
-    setBackgroundItem(m_backgroundFrameItem); 
+    setBackgroundItem(m_backgroundFrameItem);
+    
+    // Listen for tap events 
+    grabGesture(Qt::TapGesture);
 }
 
 /*!
@@ -128,9 +126,6 @@ InfoWidget::~InfoWidget()
     // Force layout manager to delete widgets 
     // before InfoWidget is destroyed   
     m_layoutManager->destroyWidgets(); 
-    
-    // Remove and delete language translators 
-    removeTranslators(); 
     UNINSTALL_TRACE_MSG_HANDLER;
 }
 
@@ -145,7 +140,6 @@ void InfoWidget::onInitialize()
     m_initialized = true; 
     // Initialize preferences from meta-object data
     if (!readPersistentPreferences()) {
-
         // Reading failed, initialize default values  
         m_preferences->setPreference(InfoWidgetPreferences::DisplaySpn, 
                 DISPLAY_SETTING_ON);
@@ -226,40 +220,6 @@ void InfoWidget::timerEvent(QTimerEvent *event)
 }
 
 /*!
-    Install widget translator for given translation file.  
-*/
-bool InfoWidget::installTranslator(QString translationFile)
-{
-    DPRINT;
-    QString lang = QLocale::system().name();
-    QString path = "z:/resource/qt/translations/";
-    bool translatorLoaded(false);  
-    
-    QScopedPointer<QTranslator> widgetTranslator; 
-    widgetTranslator.reset(new QTranslator);
-    translatorLoaded = widgetTranslator->load(
-            path + translationFile + "_" + lang);
-    if (translatorLoaded) {
-        qApp->installTranslator(widgetTranslator.data());
-        m_translators.append(widgetTranslator.take()); 
-        DPRINT << ": translator installed: " << translationFile; 
-    }
-    return translatorLoaded;
-}
-
-/*!
-    Remove translators. No need to call 
-    QApplication::removeTranslator, 
-    QTranslator object removes itself before deletion.  
-*/
-void InfoWidget::removeTranslators()
-{
-    DPRINT;
-    qDeleteAll(m_translators);
-    m_translators.clear();
-}
-
-/*!
     Returns bounding rect. 
 */
 QRectF InfoWidget::boundingRect() const
@@ -270,7 +230,8 @@ QRectF InfoWidget::boundingRect() const
 /*!
     Calculate widget size hint based on visible row count.  
 */
-QSizeF InfoWidget::sizeHint(Qt::SizeHint which, const QSizeF & constraint) const   
+QSizeF InfoWidget::sizeHint(Qt::SizeHint which, 
+        const QSizeF & constraint) const   
 {
     Q_UNUSED(which);
     Q_UNUSED(constraint); 
@@ -503,43 +464,28 @@ void InfoWidget::handleModelError(int operation,int errorCode)
 }
 
 /*!
-    Mouse press handler. 
+    Tap gesture handler.   
 */
-void InfoWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void InfoWidget::gestureEvent(QGestureEvent *event)
 {
-    Q_UNUSED(event);
-    // Clear flag 
-    m_dragEvent = false; 
-}
+HbTapGesture *gesture = qobject_cast<HbTapGesture *>(
+        event->gesture(Qt::TapGesture));
 
-/*!
-    Mouse release handler.  
-*/
-void InfoWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    Q_UNUSED(event);
-    // If widget wasn't dragged 
-    // layout and open settings dialog
-    if ((!m_dragEvent) && 
-          m_layoutManager->currentDisplayRole() == 
-                  InfoWidgetLayoutManager::InfoDisplay) {
-        DPRINT << ": layout and display settings dialog";
-        layoutSettingsDialog();
-    } 
+if(!gesture)return;
+switch (gesture->state()) {
+    case Qt::GestureFinished:
+        if (gesture->tapStyleHint() == HbTapGesture::Tap) {
+            if (m_layoutManager->currentDisplayRole() == 
+                            InfoWidgetLayoutManager::InfoDisplay) {
+                  DPRINT << ": layout and display settings dialog";
+                  layoutSettingsDialog();
+              } 
+        }
+    break;
     
-    // Clear flag 
-    m_dragEvent = false; 
-}
-
-/*!
-    Mouse move handler.  
-*/
-void InfoWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    Q_UNUSED(event);
-    // Mouse is moving 
-    // after mouse press event
-    m_dragEvent = true; 
+    default: 
+        break;
+    }
 }
 
 /*!
@@ -852,7 +798,7 @@ void InfoWidget::endChanges()
 }
 
 /*!
-   \reimp
+   Listen for theme change event. 
 */
 void InfoWidget::changeEvent(QEvent *event)
 {
@@ -878,8 +824,6 @@ void InfoWidget::settingsValidationFailed()
 
 /*!
    Start marquee animations. 
-   First find existing marquee items and 
-   enable marquee sequence. 
 */
 bool InfoWidget::startMarquees()
 {  
@@ -957,7 +901,9 @@ void InfoWidget::stopMarquees()
 
 /*!
    Starts marquee animation for 
-   next item in sequence.  
+   next item in sequence. Called if there are 
+   multiple text items needing marquee and animation 
+   start/stop logic is needed.    
 */
 void InfoWidget::marqueeNext()
 {  

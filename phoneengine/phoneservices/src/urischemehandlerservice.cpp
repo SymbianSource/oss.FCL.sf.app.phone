@@ -81,6 +81,7 @@ bool UriSchemeHandlerService::view(const QString &uri)
                 hbTrId("txt_phone_info_call_l1").arg(dialString),
                 HbMessageBox::MessageTypeQuestion, 
                 NULL);
+            confirmationNote.setStandardButtons(HbMessageBox::Yes | HbMessageBox::No);
             confirmationNote.setTimeout(0);
             
             const QAction *action = confirmationNote.exec();

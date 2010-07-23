@@ -51,9 +51,6 @@ private slots:
     void t_setSatDisplay();
 
     void t_paint(); 
-    void t_mousePressEvent();
-    void t_mouseReleaseEvent(); 
-    void t_mouseMoveEvent(); 
     void t_updateInfoDisplay();
     void t_readPersistentPreferences();
 
@@ -86,7 +83,7 @@ private slots:
      * Not work from commmand prompt.
      */
     void t_changeEvent();
-    
+    void t_gestureEvent(); 
     void t_timerEvent(); 
 
 private:

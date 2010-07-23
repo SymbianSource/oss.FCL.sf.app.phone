@@ -75,28 +75,6 @@ void HbStyle::updatePrimitive(
 
 
 // -----------------------------------------------------------------------------
-// HbStyle::registerPlugin
-// -----------------------------------------------------------------------------
-//
-int HbStyle::registerPlugin( 
-        const QString & pluginName )
-    {
-    SMC_MOCK_METHOD1( int, const QString &, pluginName )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbStyle::unregisterPlugin
-// -----------------------------------------------------------------------------
-//
-void HbStyle::unregisterPlugin( 
-        const QString & pluginName )
-    {
-    SMC_MOCK_METHOD1( void, const QString &, pluginName )
-    }
-
-
-// -----------------------------------------------------------------------------
 // HbStyle::setItemName
 // -----------------------------------------------------------------------------
 //

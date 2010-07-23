@@ -23,10 +23,24 @@
 //  INCLUDES
 
 #include <w32std.h>
-#include <AknGlobalNote.h> // for CAknGlobalNote
+// ##### QT CHANGE begin
+// #include <AknGlobalNote.h> // for CAknGlobalNote
+// ##### QT CHANGE end
 #include "tphonecommandparam.h"
 
 // DATA TYPES
+
+// ##### QT CHANGE begin
+// Note: as AknGlobalNote API is removed, the enumeration is temporarily copied here
+// to avoid compile break. The API needs to be changed though.
+enum TAknGlobalNoteType {
+    EAknGlobalInformationNote = 1,
+    EAknGlobalWarningNote,
+    EAknGlobalConfirmationNote,
+    EAknGlobalErrorNote,
+    EAknGlobalWaitNote
+    };
+// ##### QT CHANGE end
 
 // CLASS DECLARATION
 

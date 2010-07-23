@@ -29,6 +29,7 @@
 class QGraphicsSceneMouseEvent;
 class QGraphicsLinearLayout;
 class QTranslator; 
+class QGestureEvent; 
 class HbDialog;
 class HbIconItem; 
 class HbMarqueeItem;
@@ -39,7 +40,8 @@ class HbFrameItem;
 class HbAction; 
 class InfoWidgetEngine; 
 class InfoWidgetPreferences;
- 
+
+
 // Class declaration
 class InfoWidget : public HbWidget
 {
@@ -81,17 +83,13 @@ public: // Property definitions
     void setSpnDisplay(QString value);
     
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event); 
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event); 
+    void gestureEvent(QGestureEvent *event); 
     void changeEvent(QEvent *event);
     void timerEvent(QTimerEvent *event);
     
     void updateInfoDisplay();
     bool readPersistentPreferences();
     void initializeCheckBoxStates(); 
-    bool installTranslator(QString translationFile); 
-    void removeTranslators(); 
      
 private: 
     void updateItemsVisibility();
@@ -137,9 +135,6 @@ private:
     QScopedPointer<InfoWidgetEngine> m_engine;
     QScopedPointer<InfoWidgetPreferences> m_preferences;
     QScopedPointer<InfoWidgetLayoutManager> m_layoutManager;
-    
-    // Translators, owned
-    QList<QTranslator *> m_translators;
 
     // Widget main layout, not owned 
     QGraphicsLinearLayout *m_layout;
@@ -156,7 +151,6 @@ private:
     
     // Flags 
     bool m_layoutChanging;
-    bool m_dragEvent; 
     bool m_initialized;
 
 };
