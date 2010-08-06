@@ -121,7 +121,7 @@ void TestPhoneNoteController::testShowGlobalInfoNoteWithResourceId ()
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetTextResourceId(R_NOTETEXT_NO_ANSWER);
     globalNoteParam.SetWaitForReady(EFalse);
-    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetType( EPhoneMessageBoxInformation );
     
     m_noteController->showGlobalNote(&globalNoteParam);
     
@@ -132,7 +132,7 @@ void TestPhoneNoteController::testShowGlobalWarningNoteWithText ()
 {
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetWaitForReady(ETrue);
-    globalNoteParam.SetType( EAknGlobalWarningNote );
+    globalNoteParam.SetType( EPhoneMessageBoxWarning );
     globalNoteParam.SetText(_L("Test note 1"));
     
     m_noteController->showGlobalNote(&globalNoteParam);
@@ -143,7 +143,7 @@ void TestPhoneNoteController::testShowGlobalNoteWithTextAndResourceId ()
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetTextResourceId(R_PHONE_TEXT_COLP_CONNECTED);
     globalNoteParam.SetWaitForReady(EFalse);
-    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetType( EPhoneMessageBoxInformation );
     globalNoteParam.SetText(_L("Test number"));
     
     m_noteController->showGlobalNote(&globalNoteParam);
@@ -156,7 +156,7 @@ void TestPhoneNoteController::testShowGlobalNoteTwoTimes ()
     TPhoneCmdParamGlobalNote globalNoteParam;
     //globalNoteParam.SetTextResourceId(R_NOTETEXT_NO_ANSWER);
     globalNoteParam.SetWaitForReady(EFalse);
-    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetType( EPhoneMessageBoxInformation );
     globalNoteParam.SetText(_L("Test note 2"));
     
     m_noteController->showGlobalNote(&globalNoteParam);
@@ -174,7 +174,7 @@ void TestPhoneNoteController::testShowGlobalNoteThreeTimes ()
     TPhoneCmdParamGlobalNote globalNoteParam;
     //globalNoteParam.SetTextResourceId(R_NOTETEXT_NO_ANSWER);
     globalNoteParam.SetWaitForReady(EFalse);
-    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetType( EPhoneMessageBoxInformation );
     globalNoteParam.SetText(_L("Test note 4"));
     
     m_noteController->showGlobalNote(&globalNoteParam);
@@ -286,7 +286,7 @@ void TestPhoneNoteController::testShowIndicationDialogWithResourceId ()
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetNotificationDialog( ETrue );
     globalNoteParam.SetTextResourceId(R_NOTETEXT_NO_ANSWER);
-    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetType( EPhoneNotificationDialog );
     
     m_noteController->showGlobalNote(&globalNoteParam);
     
@@ -308,7 +308,7 @@ void TestPhoneNoteController::testShowIndicationDialogTextAndResourceId ()
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetNotificationDialog( ETrue );
     globalNoteParam.SetTextResourceId(R_PHONE_TEXT_COLP_CONNECTED);
-    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetType( EPhoneNotificationDialog );
     globalNoteParam.SetText(_L("Indication number"));
     globalNoteParam.SetTimeout(1000);
     
@@ -322,7 +322,7 @@ void TestPhoneNoteController::testShowIndicationDialogTwoTimes ()
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetNotificationDialog( ETrue );
     //globalNoteParam.SetTextResourceId(R_NOTETEXT_NO_ANSWER);
-    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetType( EPhoneNotificationDialog );
     globalNoteParam.SetText(_L("Test indication 2"));
     
     m_noteController->showGlobalNote(&globalNoteParam);
@@ -339,7 +339,7 @@ void TestPhoneNoteController::testShowIndicationDialogThreeTimes ()
 {
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetNotificationDialog( ETrue );
-    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetType( EPhoneNotificationDialog );
     globalNoteParam.SetText(_L("Test indication 4"));
     
     m_noteController->showGlobalNote(&globalNoteParam);

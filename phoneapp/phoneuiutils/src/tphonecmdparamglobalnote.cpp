@@ -31,12 +31,9 @@
 //
 EXPORT_C TPhoneCmdParamGlobalNote::TPhoneCmdParamGlobalNote():
     TPhoneCommandParam(),
-    iType( EAknGlobalErrorNote ),
+    iType( EPhoneNotificationDialog ),
     iTextResourceId( 0 ),
     iText( KNullDesC ),
-    iTone( EAvkonSIDErrorTone ),
-    iWaitforReady ( EFalse ),
-    iSoftkeys( 0 ),
     iTimeout( 0 ),
     iNotificationDialog( EFalse ),
     iCauseCode( KErrNotFound ) 
@@ -50,7 +47,7 @@ EXPORT_C TPhoneCmdParamGlobalNote::TPhoneCmdParamGlobalNote():
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C void TPhoneCmdParamGlobalNote::SetType( TAknGlobalNoteType aType )
+EXPORT_C void TPhoneCmdParamGlobalNote::SetType( /*TAknGlobalNoteType*/ PhoneNotificationType aType )
    {
    iType = aType;   
    }
@@ -79,39 +76,6 @@ EXPORT_C void TPhoneCmdParamGlobalNote::SetText(
    const TDesC& aText )
    {
    iText.Set( aText );
-   }
-
-// ---------------------------------------------------------
-// TPhoneCmdParamGlobalNote::SetTone
-// Sets the global note tone
-// (other items were commented in a header).
-// ---------------------------------------------------------
-//
-EXPORT_C void TPhoneCmdParamGlobalNote::SetTone( TInt aTone )
-   {
-   iTone = aTone;   
-   }
-
-// ---------------------------------------------------------
-// TPhoneCmdParamGlobalNote::SetWaitForReady
-// Sets the note to wait for completed
-// (other items were commented in a header).
-// ---------------------------------------------------------
-//
-EXPORT_C void TPhoneCmdParamGlobalNote::SetWaitForReady( TBool aStatus )
-   {
-   iWaitforReady = aStatus;   
-   }
-
-// ---------------------------------------------------------
-// TPhoneCmdParamGlobalNote::SetSoftkeys
-// Sets the global note softkeys
-// (other items were commented in a header).
-// ---------------------------------------------------------
-//
-EXPORT_C void TPhoneCmdParamGlobalNote::SetSoftkeys( TInt aSoftkeys )
-   {
-   iSoftkeys = aSoftkeys;   
    }
 
 // ---------------------------------------------------------
@@ -155,7 +119,7 @@ EXPORT_C void TPhoneCmdParamGlobalNote::SetCauseCode(
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C TAknGlobalNoteType TPhoneCmdParamGlobalNote::Type() const
+EXPORT_C /*TAknGlobalNoteType*/ PhoneNotificationType TPhoneCmdParamGlobalNote::Type() const
    {
    return iType;
    }
@@ -180,39 +144,6 @@ EXPORT_C TInt TPhoneCmdParamGlobalNote::TextResourceId() const
 EXPORT_C const TDesC& TPhoneCmdParamGlobalNote::Text() const
    {
    return iText;
-   }
-
-// ---------------------------------------------------------
-// TPhoneCmdParamGlobalNote::Tone
-// Returns the note tone
-// (other items were commented in a header).
-// ---------------------------------------------------------
-//
-EXPORT_C TInt TPhoneCmdParamGlobalNote::Tone() const
-   {
-   return iTone;
-   }
-
-// ---------------------------------------------------------
-// TPhoneCmdParamGlobalNote::WaitForReady
-// Returns the status of wait for completed
-// (other items were commented in a header).
-// ---------------------------------------------------------
-//
-EXPORT_C TBool TPhoneCmdParamGlobalNote::WaitForReady() const
-   {
-   return iWaitforReady;
-   }
-   
-// ---------------------------------------------------------
-// TPhoneCmdParamGlobalNote::Softkeys
-// Returns the note softkeys
-// (other items were commented in a header).
-// ---------------------------------------------------------
-//
-EXPORT_C TInt TPhoneCmdParamGlobalNote::Softkeys() const
-   {
-   return iSoftkeys;
    }
 
 // ---------------------------------------------------------

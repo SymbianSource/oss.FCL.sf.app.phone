@@ -89,8 +89,6 @@ void PhoneNoteController::showQuery(TPhoneCommandParam *commandParam)
         showGlobalWaitNote(&params);
         
     }
-
-        
 }
 
 void PhoneNoteController::removeDtmfNote()
@@ -367,10 +365,10 @@ void PhoneNoteController::showDeviceMessageBox(
     HbMessageBox::MessageBoxType type;
         
     switch( params->Type() ) {
-    case EAknGlobalInformationNote:
+    case EPhoneMessageBoxInformation:
         type = HbMessageBox::MessageTypeInformation;
         break;
-    case EAknGlobalWarningNote:
+    case EPhoneMessageBoxWarning:
     default:
         type = HbMessageBox::MessageTypeWarning;
         break;

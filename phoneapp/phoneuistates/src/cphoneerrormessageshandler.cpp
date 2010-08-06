@@ -125,10 +125,9 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL(
                 &globalNotifierParam );
             
         TPhoneCmdParamGlobalNote globalNoteParam;
-      
-        globalNoteParam.SetType( EAknGlobalInformationNote );
-
-        globalNoteParam.SetTone( EAvkonSIDInformationTone );
+        PhoneNotificationType type = aNotificationDialog ? 
+                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+        globalNoteParam.SetType( type );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
         TInt resourceID( KErrNotFound );
@@ -177,9 +176,9 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL(
             &globalNotifierParam );
             
         TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetType( EAknGlobalErrorNote );
-
-        globalNoteParam.SetTone( CAknNoteDialog::EErrorTone );
+        PhoneNotificationType type = aNotificationDialog ? 
+                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+        globalNoteParam.SetType( type );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
         
         TInt resourceID( KErrNotFound );
@@ -228,9 +227,9 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL(
             &globalNotifierParam );
             
         TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetType( EAknGlobalWarningNote );
-
-        globalNoteParam.SetTone( EAvkonSIDWarningTone );
+        PhoneNotificationType type = aNotificationDialog ? 
+                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+        globalNoteParam.SetType( type );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
         TInt resourceID( KErrNotFound );

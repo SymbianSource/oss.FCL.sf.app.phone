@@ -501,8 +501,7 @@ void CPhoneState::HandleSimStateChangedL()
                 __PHONELOG( EBasic, EPhoneControl, "SIM card was removed" );
 
                 TPhoneCmdParamGlobalNote globalNoteParam;
-                globalNoteParam.SetType( EAknGlobalInformationNote );
-                globalNoteParam.SetTone( EAvkonSIDNoSound );
+                globalNoteParam.SetType( EPhoneMessageBoxInformation );
 
                 globalNoteParam.SetTextResourceId(
                     CPhoneMainResourceResolver::Instance()->
@@ -2125,9 +2124,9 @@ EXPORT_C void CPhoneState::DisplayCallTerminationNoteL()
         noteText.Append( timeString );
 
         TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetType( EAknGlobalInformationNote );
+        globalNoteParam.SetType( EPhoneMessageBoxInformation );
         globalNoteParam.SetText( noteText );
-        globalNoteParam.SetTone( CAknNoteDialog::ENoTone );
+
         iViewCommandHandle->ExecuteCommandL(
             EPhoneViewShowGlobalNote, &globalNoteParam );
         }
@@ -2152,12 +2151,13 @@ EXPORT_C void CPhoneState::SendGlobalInfoNoteL(
             &globalNotifierParam );
 
         TPhoneCmdParamGlobalNote globalNoteParam;
-
-        globalNoteParam.SetType( EAknGlobalInformationNote );
+        PhoneNotificationType type = aNotificationDialog ? 
+            EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+        globalNoteParam.SetType( type );
         globalNoteParam.SetTextResourceId(
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
-        globalNoteParam.SetTone( EAvkonSIDInformationTone );
+
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
         
         iViewCommandHandle->ExecuteCommandL(
@@ -2185,11 +2185,13 @@ EXPORT_C void CPhoneState::SendGlobalWarningNoteL(
             &globalNotifierParam );
 
         TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetType( EAknGlobalWarningNote );
+        PhoneNotificationType type = aNotificationDialog ? 
+                    EPhoneNotificationDialog : EPhoneMessageBoxWarning;
+        globalNoteParam.SetType( type );
         globalNoteParam.SetTextResourceId(
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
-        globalNoteParam.SetTone( EAvkonSIDWarningTone );
+  
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
         
         iViewCommandHandle->ExecuteCommandL(
@@ -2216,11 +2218,13 @@ EXPORT_C void CPhoneState::SendGlobalErrorNoteL(
             &globalNotifierParam );
 
         TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetType( EAknGlobalErrorNote );
+        PhoneNotificationType type = aNotificationDialog ? 
+                    EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+        globalNoteParam.SetType( type );
+        
         globalNoteParam.SetTextResourceId(
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
-        globalNoteParam.SetTone( CAknNoteDialog::EErrorTone );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
         iViewCommandHandle->ExecuteCommandL(
@@ -2818,13 +2822,13 @@ EXPORT_C void CPhoneState::ShowNumberBusyNoteL()
         resource = iCustomization->CustomizeBusyNoteText();
         }
 
-    // Show number busy note
+    // Show number busy notification
     TPhoneCmdParamGlobalNote globalNoteParam;
-    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetType( EPhoneNotificationDialog );
     globalNoteParam.SetTextResourceId(
         CPhoneMainResourceResolver::Instance()->
         ResolveResourceID( resource ) );
-    globalNoteParam.SetTone( EAvkonSIDInformationTone );
+    
     globalNoteParam.SetNotificationDialog( ETrue );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewShowGlobalNote,
         &globalNoteParam );
@@ -3160,8 +3164,8 @@ EXPORT_C void CPhoneState::CallWaitingNoteL( TInt aCallId )
 
         TPhoneCmdParamGlobalNote globalNoteParam;
         globalNoteParam.SetText( callText );
-        globalNoteParam.SetType( EAknGlobalInformationNote );
-        globalNoteParam.SetTone( EAvkonSIDInformationTone );
+        globalNoteParam.SetType( EPhoneNotificationDialog );
+
         globalNoteParam.SetTextResourceId(
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( EPhoneCallWaitingWithLabel ) );
@@ -3302,9 +3306,8 @@ void CPhoneState::HandleCugInUseNoteL()
 
         TPhoneCmdParamGlobalNote globalNoteParam;
         globalNoteParam.SetText( *buf );
-        globalNoteParam.SetType( EAknGlobalInformationNote );
-        globalNoteParam.SetTone( EAvkonSIDInformationTone );
-
+        globalNoteParam.SetType( EPhoneMessageBoxInformation );
+   
         iViewCommandHandle->ExecuteCommandL(
                 EPhoneViewShowGlobalNote, &globalNoteParam );
 

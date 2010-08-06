@@ -238,13 +238,13 @@ void CPhoneUnattendedTransferCmdHandler::ShowWaitingAcceptanceNoteL()
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneUnattendedTransferCmdHandler::ShowWaitingAcceptanceNoteL" )
-    // Show "Waiting acceptance..." note
-    TPhoneCmdParamGlobalNote globalNoteParam;
-    globalNoteParam.SetType( EAknGlobalWaitNote );
-    globalNoteParam.SetTone( EAvkonSIDNoSound );
-    globalNoteParam.SetSoftkeys( R_AVKON_SOFTKEYS_EMPTY );
-    globalNoteParam.SetTextResourceId( CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( EPhoneVoIPWaitingAcceptanceNote ) );
-    iViewCommandHandle.ExecuteCommandL( 
-        EPhoneViewShowGlobalNote, &globalNoteParam );
+    //TODO: Show "Waiting acceptance..." note
+//    TPhoneCmdParamGlobalNote globalNoteParam;
+//    globalNoteParam.SetType( EAknGlobalWaitNote );
+//    globalNoteParam.SetTone( EAvkonSIDNoSound );
+//    globalNoteParam.SetSoftkeys( R_AVKON_SOFTKEYS_EMPTY );
+//    globalNoteParam.SetTextResourceId( CPhoneMainResourceResolver::Instance()->
+//        ResolveResourceID( EPhoneVoIPWaitingAcceptanceNote ) );
+//    iViewCommandHandle.ExecuteCommandL( 
+//        EPhoneViewShowGlobalNote, &globalNoteParam );
     }

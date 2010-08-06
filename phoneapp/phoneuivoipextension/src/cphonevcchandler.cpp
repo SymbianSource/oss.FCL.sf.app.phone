@@ -287,16 +287,16 @@ void CPhoneVccHandler::HandoverInProgressNoteL( TInt aCommand )
 // Check notification tone user setting
      TInt tone = GetHoNotifToneModeL();
     
-      if ( tone == 1 )
-           {
-           globalNoteParam.SetTone( EAvkonSIDConfirmationTone );
-           }
-       else
-           {
-           globalNoteParam.SetTone( EAvkonSIDNoSound );
-           }
+//      if ( tone == 1 )
+//           {
+//           globalNoteParam.SetTone( EAvkonSIDConfirmationTone );
+//           }
+//       else
+//           {
+//           globalNoteParam.SetTone( EAvkonSIDNoSound );
+//           }
 
-     globalNoteParam.SetType( EAknGlobalWaitNote );
+     globalNoteParam.SetType( EPhoneNotificationDialog );
      globalNoteParam.SetSoftkeys( R_AVKON_SOFTKEYS_EMPTY );
      globalNoteParam.SetTextResourceId( 
                  CPhoneMainResourceResolver::Instance()->

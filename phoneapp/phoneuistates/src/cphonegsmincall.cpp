@@ -231,11 +231,10 @@ void CPhoneGsmInCall::HandleColpNoteL( TInt aCallId )
     
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetText(  EngineInfo->RemoteColpNumber( aCallId ) ); 
-    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetType( EPhoneNotificationDialog );
     globalNoteParam.SetTextResourceId( 
             CPhoneMainResourceResolver::Instance()->
 	        ResolveResourceID( EPhoneColpConnected ) );
-    globalNoteParam.SetTone( EAvkonSIDInformationTone );
     globalNoteParam.SetNotificationDialog( ETrue );
 	        
     iViewCommandHandle->ExecuteCommandL( 
@@ -345,8 +344,7 @@ void CPhoneGsmInCall::HandleHoldNoteL(
         }
          
     globalNoteParam.SetText( holdText ); 
-    globalNoteParam.SetType( EAknGlobalConfirmationNote );
-    globalNoteParam.SetTone( EAvkonSIDInformationTone );
+    globalNoteParam.SetType( EPhoneMessageBoxInformation );
         
     iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam ); 

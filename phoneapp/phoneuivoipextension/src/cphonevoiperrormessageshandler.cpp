@@ -294,8 +294,8 @@ void CPhoneVoIPErrorMessagesHandler::HandleHoldErrorNotesL(
         }
      
     globalNoteParam.SetText( *text );
-    globalNoteParam.SetType( EAknGlobalConfirmationNote );
-    globalNoteParam.SetTone( EAvkonSIDInformationTone );
+    globalNoteParam.SetType( EPhoneMessageBoxInformation );
+
             
     iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam );
@@ -401,12 +401,11 @@ void CPhoneVoIPErrorMessagesHandler::SendGlobalErrorNoteWithTextL(
             &globalNotifierParam );
             
         TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetType( EAknGlobalErrorNote );
+        globalNoteParam.SetType( EPhoneMessageBoxInformation );
         globalNoteParam.SetTextResourceId( 
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
         globalNoteParam.SetText( aText );
-        globalNoteParam.SetTone( CAknNoteDialog::EErrorTone );
 
         iViewCommandHandle->ExecuteCommandL(  
             EPhoneViewShowGlobalNote, &globalNoteParam );

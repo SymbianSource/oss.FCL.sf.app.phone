@@ -23,25 +23,16 @@
 //  INCLUDES
 
 #include <w32std.h>
-// ##### QT CHANGE begin
-// #include <AknGlobalNote.h> // for CAknGlobalNote
-// ##### QT CHANGE end
+//#include <AknGlobalNote.h> // for CAknGlobalNote
+
 #include "tphonecommandparam.h"
 
 // DATA TYPES
-
-// ##### QT CHANGE begin
-// Note: as AknGlobalNote API is removed, the enumeration is temporarily copied here
-// to avoid compile break. The API needs to be changed though.
-enum TAknGlobalNoteType {
-    EAknGlobalInformationNote = 1,
-    EAknGlobalWarningNote,
-    EAknGlobalConfirmationNote,
-    EAknGlobalErrorNote,
-    EAknGlobalWaitNote
-    };
-// ##### QT CHANGE end
-
+enum PhoneNotificationType{
+    EPhoneNotificationDialog = 0, // notify of a state change that does not require user input.
+    EPhoneMessageBoxInformation,
+    EPhoneMessageBoxWarning
+};
 // CLASS DECLARATION
 
 /**
@@ -62,7 +53,7 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         * Sets the global note type.
         * @param aType is the global note type
         */
-        IMPORT_C void SetType( TAknGlobalNoteType aType );
+        IMPORT_C void SetType( PhoneNotificationType aType );
 
         /**
         * Sets the text resource ID for the global note
@@ -76,25 +67,7 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         */
         IMPORT_C void SetText( const TDesC& aText );
 
-        /**
-        * Sets the global note tone.
-        * @param aTone is the note tone
-        */
-        IMPORT_C void SetTone( TInt aTone );
-       
-        /**
-        * Sets the global note wait status.
-        * @param aStatus Wait for completed or not
-        */
-        IMPORT_C void SetWaitForReady( TBool aStatus );
-        
-        /**
-        * Sets the global note softkeys.
-        * @param aTone is the note softkeys
-        */
-        IMPORT_C void SetSoftkeys( TInt aSoftkeys );
-
-        /**
+       /**
         * Sets timeout for a note.
         * @param    aTimeout    Timeout in milliseconds. If timeout == 0 then 
         * default timeout is used. If timeout < 0 the note is not closed 
@@ -119,7 +92,7 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         * Returns the global note type
         * @return Returns the type
         */
-        IMPORT_C TAknGlobalNoteType Type() const;
+        IMPORT_C PhoneNotificationType Type() const;
 
         /**
         * Returns the global note text resource ID.
@@ -133,24 +106,6 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         */
         IMPORT_C const TDesC& Text() const;
 
-        /**
-        * Returns the global note tone.
-        * @return Returns the global note tone
-        */
-        IMPORT_C TInt Tone() const;
-        
-        /**
-        * Gets the global note wait status
-        * @return  ETrue if wait for completed
-        */
-        IMPORT_C TBool WaitForReady() const;
-        
-        /**
-        * Returns the global note softkeys.
-        * @return Returns the global note softkeys
-        */
-        IMPORT_C TInt Softkeys() const;
-        
         /**
          * Returns the timeout value.
          * @return   Timeout value.
@@ -174,8 +129,8 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         /**
         * Global note type
         */
-        TAknGlobalNoteType iType;
-
+        PhoneNotificationType iType;
+        
         /**
         * Global note text resource ID
         */
@@ -185,21 +140,6 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         * Global note text
         */
         TPtrC iText;
-
-        /**
-        * Global note tone
-        */
-        TInt iTone;
-        
-        /**
-        * Wait for ready status
-        */
-        TBool iWaitforReady;
-        
-        /**
-        * Global note softkeys
-        */
-        TInt iSoftkeys;
         
         /**
         * Timeout for a note.

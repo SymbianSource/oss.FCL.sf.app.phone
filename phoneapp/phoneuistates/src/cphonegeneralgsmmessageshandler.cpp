@@ -202,12 +202,13 @@ void CPhoneGeneralGsmMessagesHandler::SendGlobalInfoNoteL(
             &globalNotifierParam );
             
         TPhoneCmdParamGlobalNote globalNoteParam;
+        PhoneNotificationType type = aNotificationDialog ? 
+                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+        globalNoteParam.SetType( type );
       
-        globalNoteParam.SetType( EAknGlobalInformationNote );
         globalNoteParam.SetTextResourceId( 
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
-        globalNoteParam.SetTone( EAvkonSIDInformationTone );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
         iViewCommandHandle.ExecuteCommandL( 
@@ -249,11 +250,12 @@ void CPhoneGeneralGsmMessagesHandler::SendGlobalErrorNoteL(
             &globalNotifierParam );
             
         TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetType( EAknGlobalErrorNote );
+        PhoneNotificationType type = aNotificationDialog ? 
+                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+        globalNoteParam.SetType( type );
         globalNoteParam.SetTextResourceId( 
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
-        globalNoteParam.SetTone( CAknNoteDialog::EErrorTone );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
         
         iViewCommandHandle.ExecuteCommandL( 
