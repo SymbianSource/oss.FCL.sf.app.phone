@@ -2443,8 +2443,10 @@ TInt CPEMessageHandler::HandleEmergencyCheck( )
         {
         iModel.SendMessage( MEngineMonitor::EPEMessageInValidEmergencyNumber );
         }
-
-    return errorCode;
+    // CPhCltEmergencyCall::IsEmergencyPhoneNumber can legitamately return an error code
+    // This simply means that the number is NOT an emergency number (eg it can return KErrArgument)
+    // Therefore we are ignoring any KErrArgument errors that come from this
+    return (errorCode == KErrArgument) ? ECCPErrorNone : errorCode;
     }
 
 // -----------------------------------------------------------------------------
