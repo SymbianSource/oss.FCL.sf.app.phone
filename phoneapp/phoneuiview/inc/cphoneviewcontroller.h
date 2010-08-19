@@ -295,7 +295,7 @@ class CPhoneViewController :
         * background after being brought to the foreground using
         * BringToForeground()
         */
-        TBool GetNeedToReturnToForegroundAppAfterCall() const;
+        TBool GetNeedToReturnToForegroundAppAfterCallL();
 
         /**
         * Gets the blocking dialogs status
@@ -624,7 +624,7 @@ class CPhoneViewController :
         * @return TInt  KErrNotFound if app not exists anymore in the list
         *                   otherwise app index in the list.
         */
-        TInt FindAppByWgIDL( TInt aAppWgID );
+        TInt FindAppByWgIDL( TInt aAppWgID ) const;
 
        /**
         * Returns single item fetch type
@@ -670,6 +670,12 @@ class CPhoneViewController :
          * Checks if emergency call is ongoing.
          */
         TBool IsEmergencyCallOngoing();
+        
+        /**
+        * Is it ok to aType effect inside phoneapp.
+        */
+        TBool IsOkToUseThisTypeOfEffectInsidePhoneApp( 
+                TPhoneTransEffectType aType );
 
     private:
         /**

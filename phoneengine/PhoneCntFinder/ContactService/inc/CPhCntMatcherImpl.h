@@ -21,6 +21,8 @@
 #include <e32base.h>
 #include "CPhCntMatcher.h"
 #include "MVPbkContactLink.h"
+#include "MPhCntContactManager.h"
+#include "tphcntcontactselectionstrategy.h"
 
 class MPhCntContactStores;
 class CPhCntContactManager;
@@ -165,16 +167,14 @@ private:
     TInt GetContactL(
         MPhCntMatch*& aMatch,
         const TDesC& aTelNumber );
-
+    
     /**
-     * Match contacts against product specific stores.
-     *
-     * @since S60 v3.2
-     * @param aLinkArray Array of contacts to match
-     * @return Error code.
+     * Matches contacts
      */
-    TInt MatchFromAdditionalStore( const MVPbkContactLinkArray& aLinkArray ) const;
-
+    TInt MatchContactL( 
+        const MVPbkContactLinkArray*& aContactLinkArray, 
+        const TDesC& aTelNumber,
+        MPhCntContactManager::TDuplicateRemovalStrategy aRemoveDuplicatesStrategy );
 
 protected:
 
@@ -259,6 +259,9 @@ private: // Data
      * Own.
      */
     MPhCntContactMatchStrategy* iCSMatchStrategy;
+    
+    
+    TPhCntContactSelectionStrategy iContactSelectionStrategy;
 
     };
 

@@ -434,6 +434,9 @@ NONSHARABLE_CLASS(CDialer) :
         void OnPeninputUiActivated();
         
     private:    // Data
+        
+        // Component controls of dialer.
+        RPointerArray<CCoeControl> iComponentControls;
           
         // Keypad container  - owned
         CDialerKeyPadContainer* iKeypadArea;
@@ -479,6 +482,11 @@ NONSHARABLE_CLASS(CDialer) :
          * Is qwerty mode on.
          */
         TBool iQwertyMode;
+        
+        /**
+         * Is hybrid keyboard mode used. 
+         */
+        TBool iHybridKeyboardMode;
 
         /**
          * Server wich sends events via callback when the virtual keyboard is opened/closed.

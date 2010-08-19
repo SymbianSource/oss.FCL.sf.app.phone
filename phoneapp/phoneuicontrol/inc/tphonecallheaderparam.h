@@ -70,16 +70,6 @@ class TPhoneCallHeaderParam
         void SetOutgoingCallHeaderParamsL(
                 const TInt aCallId,
                 TPhoneCmdParamCallHeaderData* aCallHeaderData );
-        
-       /**
-       * Sets info to initializing call header.
-       * @param aCallId - call id.
-       * @param aCallHeaderData - Call header parameter into which the text/picture
-       *                          parameters will be set.
-       */
-        void SetIniticalizingCallHeaderParamsL(
-                const TInt aCallId,
-                TPhoneCmdParamCallHeaderData* aCallHeaderData );
 				
         /**
         * Updates call header info. 
@@ -109,14 +99,6 @@ class TPhoneCallHeaderParam
         * of call bubble.
         */
         CBubbleManager::TPhoneCallTypeFlags CallHeaderType() const;
-            
-        /**
-        * Setter for divert indication showing in bubble.
-        * @param aDivertIndication ETrue to show divert indication,
-        *        EFalse to not. Usually setting EFalse isn't necessary
-        *        as it's a default value in bubble creation.
-        */
-        void SetDivertIndication( const TBool aDivertIndication );
         
         /**
         * Return remote info data
@@ -152,8 +134,7 @@ class TPhoneCallHeaderParam
         */
         void SetBasicCallHeaderParamsL(
             const TInt aCallId, 
-            TPhoneCmdParamCallHeaderData* aCallHeaderData,
-            TBool aInitializing );
+            TPhoneCmdParamCallHeaderData* aCallHeaderData );
         
         /**
         * Sets divert indication to call header if necessary
@@ -271,8 +252,6 @@ class TPhoneCallHeaderParam
         MPhoneCallHeaderManagerUtility& iManagerUtility;
         MPhoneStateMachine& iStateMachine;
         CBubbleManager::TPhoneCallTypeFlags iCallHeaderType;
-        TBool iSetDivertIndication;
-            
     };
 
 #endif // TPHONECALLHEADERPARAM_H

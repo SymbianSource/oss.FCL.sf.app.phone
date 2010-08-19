@@ -142,6 +142,13 @@ class CPhoneStateMachine :
          IMPORT_C void HandlePropertyChangedL(const TUid& aCategory,
          	const TUint aKey,
          	const TInt aValue );
+         
+         /**
+           * Getter for CEikonEnv to avoid use of static system calls
+           * @return CEikonEnv handle
+           */
+          IMPORT_C CEikonEnv* EikonEnv() const;
+         
 
     protected:
 
@@ -192,6 +199,11 @@ class CPhoneStateMachine :
          * Not own.
          */
         MPhoneSecurityMessageHandler* iSecurityMessageHandler;
+        
+        /** Internal variable for EikonEnv to avoid use of static system calls
+         * Not own.
+         */
+        CEikonEnv* iEnv;
         
     };
 

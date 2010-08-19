@@ -374,35 +374,30 @@ void CPhoneConferenceAndCallSetup::HandleIdleL( TInt aCallId )
                 }
             else
                 {
-                iStateMachine->ChangeState( EPhoneStateCallSetupInSingle );     
+                iStateMachine->ChangeState( EPhoneStateCallSetupInSingle );
                 }
             }
         }
     else
-        {       
-        // Remove  outgoing call
+        {
+        // Remove  outgoing call 
+        BeginTransEffectLC( ENumberEntryOpen );
         BeginUiUpdateLC();
-        
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-        
         CheckIfRestoreNEContentAfterDtmfDialer();
-         
         if ( IsNumberEntryUsedL() )
             {
             // Show the number entry if it exists
             SetNumberEntryVisibilityL(ETrue);
-	        }
-	        
+            }
+            
         SetTouchPaneButtons( EPhoneConferenceButtons );
         EndUiUpdate();
-        
-        // Go to conference state
+        EndTransEffect(); 
         UpdateCbaL( EPhoneCallHandlingInCallCBA );
         iStateMachine->ChangeState( EPhoneStateConference );
-        } 
-
+        }
     }
-   
     
 // -----------------------------------------------------------
 // CPhoneConferenceAndCallSetup::UpdateInCallCbaL

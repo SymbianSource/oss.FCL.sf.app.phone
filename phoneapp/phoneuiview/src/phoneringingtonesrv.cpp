@@ -93,8 +93,6 @@ CSession2* CPhoneRingingToneServer::NewSessionL( const TVersion& /*aVersion*/,  
 //
 TInt CPhoneRingingToneServer::StartSession()
     {
-    PHONEUIVIEW_PRINTF( "CPhoneRingingToneServer::StartSession err %d", iSessionCount );
-
     TInt err( KErrNone );
 
     if( !iSessionInUse )
@@ -105,6 +103,7 @@ TInt CPhoneRingingToneServer::StartSession()
         {
         err = KErrAccessDenied;
         }
+    PHONEUIVIEW_PRINTF( "CPhoneRingingToneServer::StartSession err %d", err );
 
     return err;
     }

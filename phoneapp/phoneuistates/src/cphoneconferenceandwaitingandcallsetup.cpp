@@ -385,12 +385,9 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL");
-
     BeginUiUpdateLC();
-        
+    
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
-        
-    // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     if ( IsNumberEntryUsedL() )
@@ -428,18 +425,13 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL()
             // Reset Hold flag to view
             TPhoneCmdParamBoolean holdFlag;
             holdFlag.SetBoolean( EFalse );
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );       
-
-            // Go to Call Setup And Waiting state
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
             SetTouchPaneButtons( EPhoneCallSetupButtons ); 
-
             SetToolbarDimming( ETrue );
-
-            // No need update cbas            
             iStateMachine->ChangeState( EPhoneStateCallSetupAndWaiting );
             }
         }
-    EndUiUpdate();            
+    EndUiUpdate();
     }
 
 // -----------------------------------------------------------
@@ -517,7 +509,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleIdleL( TInt aCallId )
                 UpdateCbaL( EPhoneCallHandlingInCallCBA );                  
                 iStateMachine->ChangeState( EPhoneStateConferenceAndCallSetup );
                 }
-            EndUiUpdate();            
+            EndUiUpdate();
             }
         }
     }

@@ -55,6 +55,7 @@
 #include "mphonenumberentry.h"
 #include "cphonenumberentry.h"
 #include "phonebubbleextensionmanager.h"
+#include "phonevanitydialingutils.h"
 
 #include "mphonecustomization.h"
 
@@ -553,6 +554,14 @@ void CPhoneBubbleWrapper::SetCallHeaderParameters(
             aCallHeaderParam->CNAPText(),
             aCallHeaderParam->CNAPTextClippingDirection() );
 
+    // Set CLI type to be used in conference call participant list
+    CBubbleManager::TBubbleParticipantListCLI partipantCli =
+        ( aCallHeaderParam->ParticipantCLI() ==
+          TPhoneCmdParamCallHeaderData::EPhoneParticipantCNAPText ) ?
+        CBubbleManager::EParticipantListCNAP :
+        CBubbleManager::EParticipantListCLIText;
+    iBubbleManager->SetParticipantListCLI( aBubble, partipantCli );
+
     iBubbleManager->SetCallFlags( aBubble, aCallHeaderParam->CallFlag() );
 
     // Set ciphering indicator
@@ -653,13 +662,18 @@ void CPhoneBubbleWrapper::GetNumberEntryContent(
 
     AknTextUtils::ConvertDigitsTo( *entryContent->String(), EDigitTypeWestern );
 
+    if ( FeatureManager::FeatureSupported( KFeatureIdFfHomeScreenVanityDialing ) )
+        {
+        PhoneVanityDialingUtils::DoVanityNumberConversion( *entryContent->String() );
+        }
+    
     __PHONELOG1( EBasic, EPhoneUIView,
         "CPhoneBubbleWrapper::GetNumberEntryContent(%S)",
         entryContent->String() );
     }
 
 // -----------------------------------------------------------------------------
-// CPhoneBubbleWrapper.::GetNumberEntryContent
+// CPhoneBubbleWrapper.::GetLocalizedNumberEntryContent
 // -----------------------------------------------------------------------------
 //
 void CPhoneBubbleWrapper::GetLocalizedNumberEntryContent(

@@ -88,6 +88,29 @@ public:
 class CDialingExtensionInterface : public CCoeControl
     {
 public:
+
+    
+    /**
+     * Enumeration for keyboard modes. Keyboardmode affect on how search string is matched 
+     * with contacts. 
+     */
+    typedef enum 
+        {
+    
+        /*
+         * ENormalKeyboard is used when there is no QWERTY keyboard, or non-hybrid mode
+         * QWERTY keyboard.
+         */
+        EDefaultKeyboard = 0,
+        
+        /*
+         * EHybridQwerty is used with hybrid mode QWERTY keyboard. Hybrid mode means
+         * that keys where a letter and number share a common key, short press to that key
+         * produces the number, not the letter.
+         */
+        EHybridQwerty
+        
+        } TKeyboardMode;
     
     /**
      * Creates an instance of plugin.
@@ -182,6 +205,13 @@ public:
      * @return  ETrue if extension is enabled, EFalse otherwise.
      */
     virtual TBool IsEnabled() const = 0;
+    
+    
+    /**
+     * Set keyboard mode to be used in matching.
+     * @param  aMode    Mode to be used.
+     */
+    virtual void SetKeyboardMode( TKeyboardMode aMode ) = 0;
     
 private: // data
 

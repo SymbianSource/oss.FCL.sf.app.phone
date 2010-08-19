@@ -332,7 +332,7 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
 
     if ( aCallId == KPEEmergencyCallId )
         {
-        if ( !IsSimOk() )
+        if ( !IsSimOk() || IsSimStateNotPresentWithSecurityModeEnabled() )
             {
             TPhoneCmdParamBoolean visibleMode;
             visibleMode.SetBoolean( ETrue );
@@ -362,12 +362,8 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
 
         // Indicate that the Phone needs to be sent to the background if
         // an application other than the top application is in the foreground
-        TPhoneCmdParamBoolean booleanParam;
-        booleanParam.SetBoolean( !TopAppIsDisplayedL() );
-        iViewCommandHandle->ExecuteCommandL(
-                EPhoneViewSetNeedToReturnToForegroundAppStatus,
-            &booleanParam );
-
+        SetNeedToReturnToForegroundAppStatusL( !TopAppIsDisplayedL() );
+        
         // Bring Phone app in the foreground
         TPhoneCmdParamInteger uidParam;
         uidParam.SetInteger( KUidPhoneApplication.iUid );

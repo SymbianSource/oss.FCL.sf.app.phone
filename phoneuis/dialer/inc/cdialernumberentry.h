@@ -156,6 +156,18 @@ NONSHARABLE_CLASS(CDialerNumberEntry) :
         void SetOperationMode( TDialerOperationMode aMode );
         
         TBool Validate( const TDesC& aString );
+        
+    protected:
+        
+        /**
+        * Callback function for CIdle.
+        */
+        static TInt SetLateFocus( TAny* aThis );
+        
+        /**
+        * Sets focus to number entry. 
+        */
+        void DoSetFocus( TBool aFocus, TDrawNow aDrawNow );
 
     private:  // Functions from MCoeControlObserver
         /**
@@ -322,6 +334,9 @@ NONSHARABLE_CLASS(CDialerNumberEntry) :
         
         // NOT OWNED.
         CEikAppUi* iAppUi;
+        
+        CIdle* iLateFocuser;
+
     };
 
 #endif      // CDIALERNUMBERENTRY_H

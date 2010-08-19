@@ -143,6 +143,9 @@
 const TInt KTouchDialerOpenEffect  = 3;
 const TInt KTouchDialerCloseEffect = 5;
 
+const TInt KTouchCallUiOpenEffect  = 1000;
+const TInt KTouchCallUiCloseEffect = 1001;
+
 const TInt KDialerInputMaxChars( 100 );
 
 // ================= MEMBER FUNCTIONS =======================
@@ -838,7 +841,6 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             iMenuController->SetMuteFlag( aCommandParam );
             iBubbleWrapper->SetPhoneMuted( aCommandParam );
             iIncallIndicator->HandleMuteChange( aCommandParam );
-            iAudioController->HandleMuteChange( aCommandParam );
             iToolbarController->SetMuteFlag( aCommandParam );
             if ( iButtonsController )
                 {
@@ -1119,7 +1121,15 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
                                                 booleanParam->Boolean() );
             break;
             }
-
+		 
+		 case EPhoneViewSetVoipCallDTMFVisibilityFlag:
+            {
+            TPhoneCmdParamBoolean*  booleanParam =
+                static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
+            iMenuController->SetHideVoipCallDTMFVisibilityFlag(
+                                                    booleanParam->Boolean() );
+            break;
+            }
         case EPhoneViewSetVideoCallDTMFVisibilityFlag:
             {
             TPhoneCmdParamBoolean*  booleanParam =
@@ -1583,7 +1593,7 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
             break;
 
         case EPhoneViewGetNeedToReturnToForegroundAppStatus:
-            viewResponse = GetNeedToReturnToForegroundAppAfterCall() ?
+            viewResponse = GetNeedToReturnToForegroundAppAfterCallL() ?
                 EPhoneViewResponseSuccess :
                 EPhoneViewResponseFailed;
             break;
@@ -2085,11 +2095,8 @@ EXPORT_C TInt CPhoneViewController::DoFetchForegroundApplicationWindowGroupIdL(
     CEikonEnv& aEnv )
     {
     TInt result = 0;
-
     RWsSession& wsSession = aEnv.WsSession();
-
-    const TInt numWg =
-        wsSession.NumWindowGroups(
+    const TInt numWg = wsSession.NumWindowGroups(
             KPhoneApplicationWindowGroupPriority );
 
     CArrayFixFlat<TInt>* wgList =
@@ -2426,15 +2433,12 @@ void CPhoneViewController::SendToBackgroundL()
 // CPhoneViewController::FindAppByWgIDL
 // ---------------------------------------------------------------------------
 //
-TInt CPhoneViewController::FindAppByWgIDL( TInt aAppWgID )
+TInt CPhoneViewController::FindAppByWgIDL( TInt aAppWgID ) const
     {
     __LOGMETHODSTARTEND( EPhoneUIView,
         "CPhoneViewController::FindAppByWgIDL() ")
-
     TInt appExists( KErrNotFound );
-
     RWsSession& wsSession = iEikEnv.WsSession();
-
     const TInt numWg = wsSession.NumWindowGroups(
             KPhoneApplicationWindowGroupPriority );
 
@@ -2444,7 +2448,6 @@ TInt CPhoneViewController::FindAppByWgIDL( TInt aAppWgID )
     wgList->SetReserveL( numWg );
 
     // Get list of window groups; all applications should be at priority 0.
-    //
     if ( wsSession.WindowGroupList(
         KPhoneApplicationWindowGroupPriority,
         wgList ) == KErrNone )
@@ -2458,9 +2461,7 @@ TInt CPhoneViewController::FindAppByWgIDL( TInt aAppWgID )
                 }
             }
         }
-
     CleanupStack::PopAndDestroy( wgList );
-
     return appExists;
     }
 
@@ -3368,7 +3369,7 @@ void CPhoneViewController::UpdateAudioPathOptions(
 
     // btaa menu options
     iMenuController->SetBTAccFlag( &btaaParam );
-
+	iToolbarController->SetBTAccFlag( &btaaParam );
     iAudioController->HandleIhfChange( &ihfParam );
 
     if ( iButtonsController )
@@ -3408,7 +3409,8 @@ void CPhoneViewController::UpdateAudioAvailabilityOptions(
 
     // btaa menu options
     iMenuController->SetBTAccAvailableFlag( &btAvailableParam );
-
+	iToolbarController->SetBTAccAvailableFlag( &btAvailableParam );
+	
     if ( iButtonsController )
         {
         iButtonsController->SetBTAccAvailableFlag( &btAvailableParam );
@@ -3841,42 +3843,26 @@ void CPhoneViewController::HandleTransitionEffect(
     {
     __LOGMETHODSTARTEND(EPhoneUIView,
         "CPhoneViewController::HandleTransitionEffect()" );
-
-   switch ( aType )
+    __PHONELOG1( EBasic, EPhoneUIView,
+        "CPhoneViewController::HandleTransitionEffect aType:(%d)", aType );
+    TInt useEffect(KErrNotFound);
+    switch ( aType )
         {
         case EPhoneTransEffectDialerCreate:
         case EPhoneTransEffectDialerOpen:
-            {
-            GfxTransEffect::BeginFullScreen(
-                KTouchDialerOpenEffect,
-                TRect(),
-                AknTransEffect::EParameterType,
-                AknTransEffect::GfxTransParam( KUidPhoneApplication,
-                        AknTransEffect::TParameter::EActivateExplicitCancel ) );
-            iEffectOngoing = ETrue;
+            useEffect = KTouchDialerOpenEffect;
             break;
-            }
         case EPhoneTransEffectDialerClose:
-            {
-            GfxTransEffect::BeginFullScreen(
-                KTouchDialerCloseEffect,
-                TRect(),
-                AknTransEffect::EParameterType,
-                AknTransEffect::GfxTransParam( KUidPhoneApplication,
-                        AknTransEffect::TParameter::EActivateExplicitCancel ) );
-            iEffectOngoing = ETrue;
+            useEffect = KTouchDialerCloseEffect;
             break;
-            }
         case EPhoneTransEffectAppStartFromDialer:
-            {
-            GfxTransEffect::BeginFullScreen(
-                AknTransEffect::EApplicationStart,
-                TRect(),
-                AknTransEffect::EParameterType,
-                AknTransEffect::GfxTransParam( aAppUidEffectParam,
-                    AknTransEffect::TParameter::EActivateExplicitCancel ) );
-            iEffectOngoing = ETrue;
-            }
+            useEffect = AknTransEffect::EApplicationStart;
+            break;
+        case EPhoneTransEffectCallUiAppear:
+            useEffect = KTouchCallUiOpenEffect;
+            break;
+        case EPhoneTransEffectCallUiDisappear:
+            useEffect = KTouchCallUiCloseEffect;
             break;
         case EPhoneTransEffectStop:
             {
@@ -3889,6 +3875,17 @@ void CPhoneViewController::HandleTransitionEffect(
             }
         default:
             break;
+        }
+    
+    if ( KErrNotFound < useEffect )
+        {
+        GfxTransEffect::BeginFullScreen(
+            useEffect,
+            TRect(),
+            AknTransEffect::EParameterType,
+            AknTransEffect::GfxTransParam( aAppUidEffectParam,
+                    AknTransEffect::TParameter::EActivateExplicitCancel ) );
+        iEffectOngoing = ETrue;
         }
     }
 
@@ -4117,33 +4114,66 @@ TBool CPhoneViewController::CanTransEffectBeUsed(
     TPhoneTransEffectType aType )
     {
     TBool okToUseEffect( EFalse );
-
-    TBool isForeground = iAppui->IsForeground();
-    // Check whether the idle is on foreground
-    TBool idleInFore = ForegroundApplicationWindowGroupId() ==  IdleWindowGroupId() ?
+    TBool isPhoneForeground = iAppui->IsForeground();
+    TBool isIdleInForeground = 
+            ForegroundApplicationWindowGroupId() == IdleWindowGroupId() ?
             ETrue : EFalse;
-
-    if ( isForeground && // Newer run effect if not at front
-         ( ( aType == EPhoneTransEffectDialerCreate && !iDialerActive ) ||
-           ( aType == EPhoneTransEffectDialerOpen && !iDialerActive &&
-             iBubbleWrapper->IsNumberEntryUsed() ) ||
-           ( aType == EPhoneTransEffectDialerClose && iDialerActive ) ) )
+    if ( isPhoneForeground && 
+         IsOkToUseThisTypeOfEffectInsidePhoneApp( aType ) )
         {
         okToUseEffect = ETrue;
         }
-    // In case transition is from idle to dialer show transition effects as well.
-    else if ( idleInFore && !iDialerActive &&
-              aType == EPhoneTransEffectDialerOpen )
+    /* In case transition is from idle to dialer or to incoming call 
+    show transition effects as well. */
+    else if ( isIdleInForeground && 
+              ( aType == EPhoneTransEffectDialerOpen ||
+                aType == EPhoneTransEffectCallUiAppear ) )
         {
         okToUseEffect = ETrue;
         }
-    else if ( isForeground && iDialerActive &&
-              aType == EPhoneTransEffectAppStartFromDialer )
+    /* isPhoneForeground/isIdleInForeground are false
+    when call is created from some other then phone app for example logs or from phonebook*/
+    else if ( !isPhoneForeground && 
+              !isIdleInForeground && 
+              ( aType == EPhoneTransEffectDialerOpen ||
+                aType == EPhoneTransEffectCallUiAppear ) )
         {
         okToUseEffect = ETrue;
         }
-
     return okToUseEffect;
+    }
+
+// -----------------------------------------------------------
+// CPhoneViewController::IsOkToUseThisTypeOfEffectInsidePhoneApp
+// -----------------------------------------------------------
+//
+TBool CPhoneViewController::IsOkToUseThisTypeOfEffectInsidePhoneApp(
+        TPhoneTransEffectType aType )
+    {
+    TBool okToUse(EFalse);
+    switch ( aType )
+        {
+        case EPhoneTransEffectDialerCreate:
+        case EPhoneTransEffectDialerOpen:
+            okToUse = !iDialerActive;
+            break;
+        case EPhoneTransEffectAppStartFromDialer:
+            okToUse = iDialerActive;
+            break;
+        /* No need to check dialer activity below because effects are 
+        common to callhandling/dialer */
+        case EPhoneTransEffectDialerClose:
+        case EPhoneTransEffectCallUiAppear:
+        case EPhoneTransEffectCallUiDisappear:
+            okToUse = ETrue;
+            break;
+        default:
+            break;
+        }
+    __PHONELOG1( EBasic, EPhoneUIView,
+                "CPhoneViewController::IsOkToUseThisTypeOfEffectInsidePhoneApp(%d)",
+                okToUse );
+    return okToUse;
     }
 
 // -----------------------------------------------------------
@@ -4202,11 +4232,18 @@ void CPhoneViewController::SetNeedToReturnToForegroundAppAfterCall(
     }
 
 // ---------------------------------------------------------------------------
-// CPhoneViewController::GetNeedToReturnToForegroundAppAfterCall
+// CPhoneViewController::GetNeedToReturnToForegroundAppAfterCallL
 // ---------------------------------------------------------------------------
 //
-TBool CPhoneViewController::GetNeedToReturnToForegroundAppAfterCall() const
+TBool CPhoneViewController::GetNeedToReturnToForegroundAppAfterCallL()
     {
+    // Check that previous app still exists. It might be for example
+    // add to contact - dialog that is allready destroyed or user has closed
+    // app using task swapper.
+    if( KErrNotFound == FindAppByWgIDL( iPrevForegroundAppWg ) )
+        {
+        iNeedToReturnToForegroundAppAfterCall = EFalse;
+        }
     return iNeedToReturnToForegroundAppAfterCall;
     }
 

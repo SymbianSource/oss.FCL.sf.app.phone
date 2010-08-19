@@ -212,6 +212,14 @@ EXPORT_C void CPhoneStateStartup::HandlePhoneStartupL()
     // Indicate that the phone is ready
     iPhoneReady = ETrue;
 
+    // Sim security status is available at this phase.
+    iStateMachine->SecurityMode()->Initialize();
+    if ( !IsSimOk() )
+        {
+        iCreateNote = CIdle::NewL( CActive::EPriorityHigh );
+        CreateAndShowNoteAfterIdle(); 
+        }
+    
     // Only go to idle state when Phone engine is also ready
     if ( iPEReady )
         {
@@ -276,12 +284,6 @@ TInt CPhoneStateStartup::DoShowNoteL( TAny* aAny )
 void CPhoneStateStartup::InitializationReadyL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::InitializationReady() ");
-    iStateMachine->SecurityMode()->Initialize();
-    if ( !IsSimOk() )
-        {
-        iCreateNote = CIdle::NewL( CActive::EPriorityHigh );
-        CreateAndShowNoteAfterIdle(); 
-        }
     // Go to idle state
     SetDefaultFlagsL();
     iCbaManager->UpdateCbaL( EPhoneEmptyCBA );

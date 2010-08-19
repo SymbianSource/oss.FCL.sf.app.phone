@@ -61,8 +61,14 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
         /**
         * Handles user selected UI commands.
         * @param aCommand - selected command
-        */    
+        */
         TBool HandleCommandL( TInt aCommand );  
+        
+        /**
+        * This function is called from displaycallsetup and 
+        * the purpose is to do state specific things for callsetup.
+        */
+        IMPORT_C virtual void DoStateSpecificCallSetUpDefinitionsL();
             
     protected:
 
@@ -148,13 +154,7 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
         * Handles received dialing message from Phone Engine.
         * @param aCallId - call id that received the event
         */ 
-        void HandleDiallingL( TInt aCallId );
-        
-        /**
-        * Sets up all call setup to display.
-        * @param aCallId - call id to set up
-        */ 
-        void DisplayCallSetupL( TInt aCallId );
+        void HandleDialingL( TInt aCallId );
         
         /**
         *  Handles received EPEMessageDisconnecting message from Phone Engine.

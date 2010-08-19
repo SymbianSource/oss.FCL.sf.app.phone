@@ -328,4 +328,5 @@ EXPORTS
 	?After@CPhoneTimer@@QAEXVTTimeIntervalMicroSeconds32@@VTCallBack@@@Z @ 327 NONAME ; void CPhoneTimer::After(class TTimeIntervalMicroSeconds32, class TCallBack)
 	?ContactMatcher@TPhoneCmdParamReconnectQuery@@QBEPAVCPhCntMatcher@@XZ @ 328 NONAME ; class CPhCntMatcher * TPhoneCmdParamReconnectQuery::ContactMatcher(void) const
 	?ConvertToNumeric@CPhoneQwertyHandler@@QAEHAAUTKeyEvent@@@Z @ 329 NONAME ; int CPhoneQwertyHandler::ConvertToNumeric(struct TKeyEvent &)
+	?DoVanityNumberConversion@PhoneVanityDialingUtils@@SAXAAVTDes16@@@Z @ 330 NONAME ; void PhoneVanityDialingUtils::DoVanityNumberConversion(class TDes16 &)
 

@@ -76,6 +76,34 @@ public:
     
     
     /**
+     * Gets SIM contact status of the contact
+     * @return  ETrue, if contact is a SIM contact, EFalse otherwise.
+     */
+    TBool IsSimContact();
+    
+    
+    /**
+     * Sets SIM contact status of the contact
+     * @param   aSim    Boolean value containing the status.
+     */
+    void SetSimContact(TBool aSim);
+    
+    
+    /**
+     * Gets Service Dialing Number status of the contact
+     * @return  ETrue, if contact is a SDN contact, EFalse otherwise.
+     */
+    TBool IsSdnContact();
+    
+    
+    /**
+     * Sets Service Dialing Number status of the contact
+     * @param   aSdn    Boolean value containing the status.
+     */
+    void SetSdnContact(TBool aSdn);
+    
+    
+    /**
      * Returns the loading status of the contact.
      * @return  ETrue, if contact data loading has completed, EFalse otherwise.
      */
@@ -86,7 +114,7 @@ public:
      * Sets loading status to complete.
      */
     void LoadingComplete();
-
+    
     
     /**
      * Deletes the thumbnail image of the contact.
@@ -139,19 +167,25 @@ private:
     
     /** Thumbnail bitmap. Owned. */
     CFbsBitmap* iThumbnail;
-
+    
     /** ETrue if this is a favourite contact. */
     TBool iFav;
-       
+    
+    /** ETrue if this is a normal SIM contact. */
+    TBool iSimContact;
+    
+    /** ETrue if this is a service number contact. */
+    TBool iSdnContact;
+    
     /** ETrue is asynchronous loading of contact data is complete.  */
     TBool iLoaded;
-       
+    
     /** ETrue if voice call is a possible action with this contact. */
     TBool iVoiceCallAvailable;
     
     /** ETrue if video call is a possible action with this contact. */
     TBool iVideoCallAvailable;
-
+    
     /** ETrue if SMS or MMS is a possible action with this contact. */
     TBool iUniEditorAvailable;
     };

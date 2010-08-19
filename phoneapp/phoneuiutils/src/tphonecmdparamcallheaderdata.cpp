@@ -44,6 +44,7 @@ EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneCmdParamCallHeaderData() :
     iThumbnail( NULL ),
     iCallerText( KNullDesC ),
     iParticipantListCLI( EPhoneParticipantCLIText ),
+    iHasThumbnail( EFalse ),
     iCipheringIndicatorAllowed( ETrue ),
     iContactLink( KNullDesC8 ),
     iRemotePhoneNumber( KNullDesC )

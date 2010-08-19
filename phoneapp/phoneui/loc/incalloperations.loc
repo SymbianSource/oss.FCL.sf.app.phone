@@ -541,6 +541,13 @@
 //
 #define qtn_incal_tooltip_handset "Activate handset"
 
+// d: Tooltip text for callhandling toolbar 'BT handsfree' button.
+// l: popup_preview_text_window_t1  
+// w:
+// r: 9.2
+//
+#define qtn_incal_tooltip_bt_handsfree "Activate BT handsfree"
+
 // d: Tooltip text for callhandling toolbar 'Mute' button.
 // l: popup_preview_text_window_t1  
 // w:

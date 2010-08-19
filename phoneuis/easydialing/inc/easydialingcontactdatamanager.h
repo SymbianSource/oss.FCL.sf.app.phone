@@ -20,8 +20,9 @@
 #define __EASYDIALINGCONTACTDATAMANAGER_H__
 
 #include <MPbk2ImageOperationObservers.h>
+#include <MPbk2StoreConfigurationObserver.h>
 #include <MVPbkSingleContactOperationObserver.h>
-#include <MVPbkContactStoreObserver.h>
+#include <MVPbkContactStoreListObserver.h>
 #include <MVPbkOperationObserver.h>
 #include <MVPbkContactViewBase.h>
 #include <TPbk2ImageManagerParams.h>
@@ -30,6 +31,7 @@
 #include "easydialingcontactdata.h"
 
 // FORWARD DECLARATIONS
+class CPbk2StoreConfiguration;
 class CVPbkContactManager;
 class MContactDataManagerObserver;
 class MVPbkFieldType;
@@ -45,15 +47,16 @@ class CEasyDialingContactDataManager :
         public CBase,
         public MPbk2ImageGetObserver,
         public MVPbkSingleContactOperationObserver,
-        public MVPbkContactStoreObserver,
+        public MVPbkContactStoreListObserver,
         public MVPbkOperationErrorObserver,
         public MVPbkOperationResultObserver<MVPbkContactViewBase*>,
+        public MPbk2StoreConfigurationObserver,
         public MPbkGlobalSettingObserver,
         public MVPbkContactViewObserver
         
     {
 public:
-        
+    
     /**
      * Contact name display order 
      */
@@ -62,19 +65,24 @@ public:
         EFirstnameLastname,
         ELastnameFirstname
         };
-        
-public:
+    
+public: // constructor and destructor
     
     /**
-    * Constructor.
+    * Two-phased constructor
     */
-    CEasyDialingContactDataManager(CVPbkContactManager* aContactManager);
-    
+    static CEasyDialingContactDataManager* NewL();
     
     /**
      * Destructor.
      */
     ~CEasyDialingContactDataManager();
+    
+private: // constructors
+    /**
+    * Constructor.
+    */
+    CEasyDialingContactDataManager();
     
     
     /**
@@ -82,11 +90,17 @@ public:
      */
     void ConstructL();
     
+public: // new methods
     /**
     * Sets the observer. Observer is notified when thumbnail loading is complete
     * @param aObserver
     */
     void SetObserver(MContactDataManagerObserver* aObserver);
+    
+    /**
+     * Gets a handle to the VPbk contact manager
+     */
+    CVPbkContactManager& ContactManager();
     
     /**
     * Sets the size of the thumbnails. If the loaded thumbnail is larger than
@@ -108,14 +122,39 @@ public:
     HBufC* GetThumbnailIdL( MVPbkContactLink* aContact, TBool aMatchThumbnail, TBool aFav );
     
     /**
+     * Gets internal index for a contact item with the given internal ID.
+     */
+    TInt IndexForId( const TDesC& aId ) const;
+    
+    /**
     * Gets the thumbnail for a contact item. If thumbnail is not loaded, starts
     * loading it.
-    * @param aContact Contact link
+    * @param aIndex Internal index for the contact, obtained with IndexForId
     * @param aThumbnail Outparam. Contact thumbnail. NULL if contact doesn't have thumbnail
-    * @param aFav Outparam. Favourite status
     * @return true if contact data has been loaded
     */
-    TBool GetThumbnailAndFav(const TDesC& aId, CFbsBitmap*& aThumbnail, TBool& aFav);
+    TBool GetThumbnail( TInt aIndex, CFbsBitmap*& aThumbnail );
+    
+    /**
+     * Checks if contact is a favorite contact
+     * @param   aIndex  Internal index fo the contact, obtained with IndexForId
+     * @return  ETrue if contact is a favorite contact
+     */
+    TBool IsFav( TInt aIndex ) const;
+    
+    /**
+     * Checks if contact is a SIM contact
+     * @param   aIndex  Internal index fo the contact, obtained with IndexForId
+     * @return  ETrue if contact is a SIM contact
+     */
+    TBool IsSimContact( TInt aIndex ) const;
+    
+    /**
+     * Checks if contact is a service number contact
+     * @param   aIndex  Internal index fo the contact, obtained with IndexForId
+     * @return  ETrue if contact is a service number contact
+     */
+    TBool IsSdnContact( TInt aIndex ) const;
     
     /**
     * Deletes all loaded thumbnails and cancel asynchronous operations.
@@ -201,6 +240,13 @@ public:
     TNameOrder NameOrder();
 
     /**
+     * Get URIs of the contact stores which are currently shown in Phonebook.
+     * @param   aUris   On return, contains heap descriptors identifying the contact
+     *                  stores which are active. Ownership of the descriptors is given.
+     */
+    void GetCurrentStoreUrisL( RPointerArray<TDesC>& aUris );
+    
+    /**
      * Pause the loading of contact data. This is used to make sure listbox is responsive
      * and smooth during panning and flicking.
      * @param aPause Pause on/off
@@ -219,6 +265,19 @@ public:
      * From MPbk2ImageGetObserver.
      */
     void Pbk2ImageGetFailed(MPbk2ImageOperation& aOperation, TInt aError);
+
+public:
+    
+    /**
+     * From MPbk2StoreConfigurationObserver
+     */
+    void ConfigurationChanged();
+
+    /**
+     * From MPbk2StoreConfigurationObserver
+     */
+    void ConfigurationChangedComplete();
+    
 
 public:
     
@@ -246,25 +305,27 @@ private:
 
 private:
     
-    
     /**
-     * From MVPbkContactStoreObserver.
+     * From MVPbkContactStoreListObserver.
      */
     void StoreReady( MVPbkContactStore& aContactStore );
-
-
+    
     /**
-     * From MVPbkContactStoreObserver.
+     * From MVPbkContactStoreListObserver.
      */
     void StoreUnavailable( MVPbkContactStore& aContactStore, TInt aReason );
     
-    
     /**
-     * From MVPbkContactStoreObserver.
+     * From MVPbkContactStoreListObserver.
      */
     void HandleStoreEventL( MVPbkContactStore& aContactStore, 
-            TVPbkContactStoreEvent aStoreEvent );
-
+                            TVPbkContactStoreEvent aStoreEvent );
+    
+    /**
+     * From MVPbkContactStoreListObserver.
+     */
+    void OpenComplete();
+    
 private:
     /**
      * From MVPbkOperationErrorObserver.
@@ -327,8 +388,15 @@ private:
     void InformObserver();
     
     void UpdateNameOrderL();
+    
+    void SetupFavStoreSearchedL();
+    
+    void SetStoreFlagsForContact( CEasyDialingContactData* aContactData ) const;
 
 private:
+    /** Phonebook store configuration. Owned. */
+    CPbk2StoreConfiguration* iPbkStoreConfiguration;
+    
     /** Array that contains all loaded contact data. Owned. */
     RPointerArray<CEasyDialingContactData> iContactDataArray;
 
@@ -350,7 +418,7 @@ private:
     /** Contact item for which a thumbnail is being loaded. Owned. */
     MVPbkStoreContact* iStoreContact;
     
-    /** Virtual phonebook contact manager. Not owned. */
+    /** Virtual phonebook contact manager. Owned. */
     CVPbkContactManager* iContactManager;
 
     /** Contact data manager observer. Not owned. */
@@ -362,9 +430,6 @@ private:
     /** Virtual phonebook operation handle. Owned. */
     MVPbkContactOperationBase* iContactOperation;
 
-    /** Default contact store. Not owned. */
-    MVPbkContactStore* iContactStore;
-    
     /** Variable which tells either to show or hide contact thumbnails. */
     TBool iContactThumbnailSetting;
     
@@ -376,6 +441,9 @@ private:
         
     /** Favourites view is ready to be used. */
     TBool iFavsViewReady;
+    
+    /** Contact store containing favourite contacts is configured to be searched. */
+    TBool iFavStoreSearched;
     
     /** Virtual phonebook operation handle for getting favourites. Owned. */
     MVPbkContactOperationBase* iFavsOperation;

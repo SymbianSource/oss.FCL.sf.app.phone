@@ -238,7 +238,7 @@ void CPhoneCallSetupAndWaiting::HandleIdleL( TInt aCallId )
         iStateMachine->ChangeState( EPhoneStateAlerting );            
         }
     
-    EndUiUpdate();        
+    EndUiUpdate();
     }
         
 // -----------------------------------------------------------
@@ -276,7 +276,7 @@ void CPhoneCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     CPhoneState::SetTouchPaneButtons( EPhoneWaitingCallButtons );
     SetToolbarDimming( EFalse );
     
-    CPhoneState::EndUiUpdate();
+    EndUiUpdate();
  
     if ( CPhoneState::IsNumberEntryUsedL() )
         {

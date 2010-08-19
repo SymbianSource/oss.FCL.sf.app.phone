@@ -361,7 +361,6 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::HandleConnectedL ()" );
-
     // Re-enable global notes
     TPhoneCmdParamBoolean globalNotifierParam;
     globalNotifierParam.SetBoolean( EFalse );
@@ -371,20 +370,13 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
         &globalNotifierParam );
     // Stop tone playing, if necessary
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
-
     BeginUiUpdateLC();
-    
     // Update single call
     UpdateSingleActiveCallL( aCallId );
-
     SetTouchPaneButtons( EPhoneIncallButtons );
     SetToolbarDimming( EFalse );
-            
     EndUiUpdate();
-
-    // Go to single state
     iCbaManager->UpdateCbaL( EPhoneCallHandlingInCallCBA );
-
     iStateMachine->ChangeState( EPhoneStateSingle );
     }
 
@@ -430,14 +422,10 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::HandleIdleL ()" );
-
+    BeginTransEffectLC( ENumberEntryClose );
     BeginUiUpdateLC();
-
-    // Remove call
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-    // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-    // Stop tone playing, if necessary
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
     
     TPhoneCmdParamBoolean globalNotifierParam;
@@ -445,7 +433,6 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
         &globalNotifierParam );
     
-
     SetDefaultFlagsL();
     
      if ( IsNumberEntryUsedL() )
@@ -454,10 +441,7 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
             {
             // Return phone to the background if send to background is needed.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
-
-            // Set Number Entry CBA
             iCbaManager->SetCbaL( EPhoneNumberAcqCBA );
             }
         else
@@ -475,14 +459,12 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
         }
     else
         {
-        // Display idle screen
         DisplayIdleScreenL();
         }
  
     DeleteTouchPaneButtons();
     EndUiUpdate();
-
-    // Go to idle state   
+    EndTransEffect();
     iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
     iStateMachine->ChangeState( EPhoneStateIdle );
     }

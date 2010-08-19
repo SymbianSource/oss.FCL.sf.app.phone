@@ -401,6 +401,9 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
                     KScreenSaverAllowScreenSaver,
                     EPhoneScreensaverNotAllowed );
     
+    IsNumberEntryUsedL() ? 
+        BeginTransEffectLC( ECallUiAppear ) :
+        BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
     
     // Hide the number entry if it exists
@@ -416,7 +419,7 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
     AllowShowingOfWaitingCallHeaderL( dialerParam );
     
     // Close fast swap window if it's displayed
-    CEikonEnv::Static()->DismissTaskList();
+    EikonEnv()->DismissTaskList();
 
     // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
@@ -427,6 +430,7 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
 
     EndUiUpdate();
+    EndTransEffect();
 
     // Go to incoming state
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
@@ -439,7 +443,7 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
 //
 void CPhoneTwoSingles::DisplayIncomingCallL( 
     TInt aCallId, 
-    const TPhoneCmdParamBoolean aCommandParam )
+    const TPhoneCmdParamBoolean /*aCommandParam*/ )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
          "CPhoneTwoSingles::DisplayIncomingCallL()"); 
@@ -451,11 +455,7 @@ void CPhoneTwoSingles::DisplayIncomingCallL(
 
     // Indicate that the Phone needs to be sent to the background if
     // an application other than the top application is in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( !TopAppIsDisplayedL() );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToReturnToForegroundAppStatus,
-        &booleanParam );
+    SetNeedToReturnToForegroundAppStatusL( !TopAppIsDisplayedL() );
 
     // Bring Phone app in the foreground
     TPhoneCmdParamInteger uidParam;

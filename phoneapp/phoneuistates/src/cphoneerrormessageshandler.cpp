@@ -358,6 +358,10 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 {
                 SendGlobalInfoNoteL( EPhoneNotePhoneOutOf3GCoverage );
                 }
+            else
+                {
+                SendGlobalWarningNoteL( EPhoneErrorInConnection );
+                }
              break;
             
         case ECCPErrorCCNormalCallClearing:
@@ -390,10 +394,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
             break;
             
         case ECCPErrorMovedPermanently:
-            if( IsVideoCall( aErrorInfo.iCallId ) )
-                {
-                SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue22 );
-                }
+            SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue22 );
             break;
             
         case ECCPErrorNoAnswerForVideo:
@@ -423,6 +424,10 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 {
                 SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue38 );
                 }
+            else
+                {
+                SendGlobalWarningNoteL( EPhoneErrorInConnection );
+                }
             break;
             
         case ECCPErrorCCRequestedFacilityNotSubscribed:
@@ -437,10 +442,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
             break;
 
         case ECCPErrorCCIncomingCallsBarredInCug:
-            if( IsVideoCall( aErrorInfo.iCallId ) )
-                {
-                SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue55 );
-                }
+            SendGlobalInfoNoteL( EPhoneNoteCallInfoCauseValue55 );
             break;
             
         case ECCPErrorCCIncompatibleDestination:
@@ -521,6 +523,10 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
             if( IsVideoCall( aErrorInfo.iCallId ) )
                 {
                 SendGlobalInfoNoteL( EPhoneNoteCallInfoServiceNotAvailable );
+                }
+            else
+                {
+                SendGlobalWarningNoteL( EPhoneErrorInConnection );
                 }
             break;
             

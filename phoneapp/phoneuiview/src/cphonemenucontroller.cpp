@@ -277,9 +277,11 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                 break;
                 
             case EPhoneNumberAcqCmdVideoCall:
-                if ( iServiceCodeFlag && 
-                     FeatureManager::FeatureSupported( 
-                         KFeatureIdVideocallMenuVisibility ))
+                if ( onScreenDialer && iNumberEntryEmpty )
+                    {
+                    menuPane->DeleteMenuItem( menuItemArray[ i ] ); 
+                    }
+                else if ( iServiceCodeFlag )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] );
                     }
@@ -353,7 +355,8 @@ void CPhoneMenuController::DynInitMenuPaneL( TPhoneCommandParam* aCommandParam )
                 break;
                 
             case EPhoneInCallCmdDtmfListQuery:
-                if ( ( iHoldFlag && !iAllowDtmfOptionsFlag ) || iHideVideoCallDTMFVisibility )
+                if ( ( iHoldFlag && !iAllowDtmfOptionsFlag ) || iHideVideoCallDTMFVisibility 
+					|| iHideVoipCallDTMFVisibility )  
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] );
                     }
@@ -1064,6 +1067,14 @@ void CPhoneMenuController::SetAllowDtmfOptionsFlag( TBool aMode )
     }
 
 // ---------------------------------------------------------
+// CPhoneMenuController::SetHideVideoCallDTMFVisibility 
+// ---------------------------------------------------------
+//
+void CPhoneMenuController::SetHideVoipCallDTMFVisibilityFlag( TBool aHideVoipCallDTMFVisibility )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneMenuController::SetHideVoipCallDTMFVisibilityFlag()" );
+    iHideVoipCallDTMFVisibility = aHideVoipCallDTMFVisibility;
+    }
 // CPhoneMenuController::SetHideVideoCallDTMFVisibility
 // ---------------------------------------------------------
 //

@@ -252,9 +252,6 @@ void CPhoneGeneralGsmMessagesHandler::HandleIncomingCallForwardedL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneGeneralGsmMessagesHandler::HandleIncomingCallForwardedL()" );
-    
-    iActiveState.SetDivertIndication( ETrue );
-    
     }
 
 // -----------------------------------------------------------

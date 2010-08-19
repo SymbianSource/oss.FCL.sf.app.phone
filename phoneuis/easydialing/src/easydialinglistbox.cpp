@@ -56,8 +56,6 @@ extern TRect ActionMenuIconBoundingBox(const TRect& aItemRect);
 
 // CONSTANTS
 static const TInt KListBoxMarginWidth = 2;
-static const TInt KMaxVisibleItemsPortrait = 3;
-static const TInt KMaxVisibleItemsLandscape = 2;
 
 // MACROS
 
@@ -384,8 +382,19 @@ void CEasyDialingListBox::SetMaxRect( TRect aMaxRect )
     maxViewLayout.LayoutRect( aMaxRect, AknLayoutScalable_Apps::dia3_list_pane( variety ) );
     TRect maxViewRect( maxViewLayout.Rect() );
     maxViewRect.Shrink( KListBoxMarginWidth, KListBoxMarginWidth ); // layout data doens't include any margins but we have added some
+
+    // Read list item size aid from layout data. Use it to determine how many
+    // items to show in listbox.
+    TAknLayoutRect listSizeAid;
+    listSizeAid.LayoutRect( aMaxRect, AknLayoutScalable_Apps::aid_size_list_single_double() );
+    TInt itemHeightAid = listSizeAid.Rect().Height();
     
-    TInt maxItemsShown = ( variety ? KMaxVisibleItemsLandscape : KMaxVisibleItemsPortrait );
+    TInt maxItemsShown = maxViewRect.Height() / itemHeightAid;
+    if ( maxViewRect.Height() % itemHeightAid > itemHeightAid / 2 )
+        {
+        maxItemsShown++;
+        }
+    
     TInt itemHeight = maxViewRect.Height() / maxItemsShown;
     TRAP_IGNORE( SetItemHeightL( itemHeight ) );
 

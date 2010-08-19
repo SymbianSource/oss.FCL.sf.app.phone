@@ -151,19 +151,6 @@ RESOURCE STATUS_PANE_APP_MODEL r_phoneui_status_pane
     }
 
 
-// ---------------------------------------------------------
-//
-//    r_phone_incall_muted_pane
-//
-// ---------------------------------------------------------
-//
-RESOURCE TBUF64 r_phone_incall_muted_pane
-    {
-    buf = qtn_incal_muted_pane;
-    }
-
-
-
 // ----------------------------------------------------------------
 //
 //    r_phoneui_idle_menubar
@@ -7593,6 +7580,17 @@ RESOURCE TBUF r_phoneui_tooltip_handset
 
 // ----------------------------------------------------------------
 //
+//    r_phoneui_tooltip_bt_handsfree
+//
+// ----------------------------------------------------------------
+//
+RESOURCE TBUF r_phoneui_tooltip_bt_handsfree
+    {
+    buf = qtn_incal_tooltip_bt_handsfree;
+    }
+
+// ----------------------------------------------------------------
+//
 //    r_phoneui_tooltip_mute
 //
 // ----------------------------------------------------------------
@@ -7638,6 +7636,10 @@ RESOURCE MENU_BAR r_phoneuidialer_numberacq_menubar
         MENU_TITLE
             {
             menu_pane = r_phoneuidialer_options_menu;
+            },
+        MENU_TITLE
+            {
+            menu_pane = r_phoneui_numberacq_options_call_menu;
             }
         };
     }
@@ -7693,12 +7695,6 @@ RESOURCE MENU_PANE r_phoneuidialer_options_menu
             {
             command = EPhoneNumberAcqCmdSendCommand;
             txt = text_nren_send_com;
-            },
-        MENU_ITEM
-            {
-            command = EPhoneNumberAcqCmdCall;
-            cascade = r_phoneui_numberacq_options_call_menu;
-            txt = text_number_call;
             },
         MENU_ITEM
             {

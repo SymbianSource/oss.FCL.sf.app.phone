@@ -204,8 +204,8 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
             &callHeaderParam );
 
-        CPhoneState::SetTouchPaneButtons( EPhoneTwoSinglesButtons );
-        CPhoneState::EndUiUpdate();
+        SetTouchPaneButtons( EPhoneTwoSinglesButtons );
+        EndUiUpdate();
               
         // Set Hold flag to view
         TPhoneCmdParamBoolean holdFlag;

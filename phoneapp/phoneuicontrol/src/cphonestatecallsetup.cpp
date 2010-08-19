@@ -87,11 +87,17 @@ EXPORT_C void CPhoneStateCallSetup::ConstructL()
     // Enable the volume display
     iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNaviPaneAudioVolume );   
     HandleAudioOutputChangedL();
-     
-    CPhonePubSubProxy::Instance()->ChangePropertyValue(
-                    KPSUidScreenSaver,
-                    KScreenSaverAllowScreenSaver,
-                    EPhoneScreensaverNotAllowed );
+
+    TPhoneCmdParamCallStateData callStateData;
+    callStateData.SetCallState( EPEStateDialing );
+    iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState, &callStateData );
+    if ( callStateData.CallId() > KErrNotFound && IsVideoCall( callStateData.CallId() ) )
+        {
+        CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                        KPSUidScreenSaver,
+                        KScreenSaverAllowScreenSaver,
+                        EPhoneScreensaverNotAllowed );
+        }
     }
 
 // -----------------------------------------------------------
@@ -245,9 +251,7 @@ EXPORT_C void CPhoneStateCallSetup::HandleCreateNumberEntryL(
     {
     __LOGMETHODSTARTEND(EPhoneControl,  
         "CPhoneStateCallSetup::HandleCreateNumberEntryL()" );
-    
     }
-
 
 // -----------------------------------------------------------
 // CPhoneStateCallSetup::UpdateInCallCbaL
@@ -608,8 +612,16 @@ void CPhoneStateCallSetup::HandleConnectedL( TInt aCallId )
 void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleIdleL()");
-    
-    BeginUiUpdateLC ();
+    if ( !NeedToReturnToForegroundAppL() &&
+         IsNumberEntryUsedL() )
+        {
+        BeginTransEffectLC( ECallUiDisappear );
+        }
+    else 
+        {
+        BeginTransEffectLC( ENumberEntryOpen );
+        }
+    BeginUiUpdateLC();
     
     // Disable the volume display
     iViewCommandHandle->ExecuteCommandL( EPhoneViewHideNaviPaneAudioVolume );
@@ -622,8 +634,21 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
       
     if ( IsNumberEntryUsedL() )
         {
-        // Show the number entry if it exists
-        SetNumberEntryVisibilityL(ETrue);    
+        if ( NeedToReturnToForegroundAppL() )
+            {
+            // Return phone to the background if send to background is needed.
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
+    
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
+    
+            // Set Number Entry CBA
+            iCbaManager->SetCbaL( EPhoneNumberAcqCBA );
+            }
+        else
+            {
+            // Show the number entry if it exists
+            SetNumberEntryVisibilityL(ETrue);
+            }
         }    
     else if ( NeedToReturnToForegroundAppL() )
         {
@@ -640,8 +665,7 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
         }
         
     EndUiUpdate();
-
-    // Go to idle state
+    EndTransEffect(); 
     // No need update cba
     iStateMachine->ChangeState( EPhoneStateIdle );
     }

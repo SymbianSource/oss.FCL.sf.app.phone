@@ -26,10 +26,10 @@
 #include "mphonesystemevents.h"
 #include "mphonemenuandcbaevents.h"
 #include "mphoneremotecontrolevents.h"
-#include "mphonedivertif.h"
 #include "mphoneneclearedhandler.h"
 #include "mphonenumberentryevents.h"
 #include "mphonelockinfo.h"
+#include "mphonestateproperties.h"
 
 // FORWARD DECLARATIONS
 
@@ -45,10 +45,10 @@ class MPhoneState :
     public MPhoneSystemEvents,
     public MPhoneMenuAndCbaEvents,
     public MPhoneRemoteControlEvents,
-    public MPhoneDivertIF,
     public MPhoneNEClearedHandler,
     public MPhoneNumberEntryEvents,
-    public MPhoneLockInfo
+    public MPhoneLockInfo,
+    public MPhoneStateProperties
     {
     public:
 

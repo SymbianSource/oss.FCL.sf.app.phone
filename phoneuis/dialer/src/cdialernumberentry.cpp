@@ -25,15 +25,16 @@
 #include <dialer.rsg>
 #include <eikimage.h>           // CEikImage
 #include <barsread.h>           // TResourceReader
+#include <featmgr.h>
 #include <eiklabel.h> 
 #include <aknappui.h>
 #include <AknUtils.h>
 #include <AknsDrawUtils.h>
 #include <applayout.cdl.h>
 #include <AknLayoutFont.h>
-#include <aknlayout2def.h>
+#include <AknLayout2Def.h>
 #include <AknPhoneNumberEditor.h>
-#include <aknlayout2scalabledef.h>
+#include <AknLayout2ScalableDef.h>
 #include <AknsBasicBackgroundControlContext.h>
 #include <AknsFrameBackgroundControlContext.h>
 #include <aknlayoutscalable_apps.cdl.h>
@@ -50,6 +51,8 @@
 const TInt KNumberEntryControlCount = 2; //  = number entry, label
 
 _LIT( KPhoneValidChars, "0123456789*#+pwPW" );
+_LIT( KPhoneVanityValidChars, "0123456789*#+pwABCDEFGHIJKLMNOPQRSTUVWXYZ" );
+
 const TInt KKeyCtrlA( 1 );
 const TInt KKeyCtrlC( 3 );
 const TInt KKeyCtrlV( 22 );
@@ -116,7 +119,9 @@ void CDialerNumberEntry::ConstructL()
     
     iAppUi = iEikonEnv->EikAppUi();
     __ASSERT_ALWAYS( iAppUi, DialerPanic( EDialerPanicNoApplicationInstance ) );
-     
+    
+    iLateFocuser = CIdle::NewL( CActive::EPriorityIdle );
+    
     ActivateL();
     DIALER_PRINT("numberentry::ConstructL>");
     }
@@ -138,6 +143,13 @@ CDialerNumberEntry::~CDialerNumberEntry()
     delete iEditor;
     delete iFrameContext;
     delete iLabel;
+    
+    if ( iLateFocuser ) 
+        {
+        iLateFocuser->Cancel();
+        }
+    delete iLateFocuser;
+    
     }
 
 
@@ -152,30 +164,72 @@ void CDialerNumberEntry::SetNumberEntryObserver(
     }
         
 // ---------------------------------------------------------------------------
-// CDialerNumberEntry::SetFocus
-// 
-// IsFocused() and iEditor->IsFocused() may return other values besides ETrue
-// and EFalse. This is why we need to check their return values against zero
-// and use the result in comparison against aFocus.
+// Delays the setting of focus or removes the focus
 // ---------------------------------------------------------------------------
 //
 void CDialerNumberEntry::SetFocus( TBool aFocus, TDrawNow aDrawNow )
     {
-    DIALER_PRINT("numberentry::SetFocus<");
+    DIALER_PRINT("numberentry::SetFocus<");  
     
-    if ( aFocus != ( IsFocused() ? ETrue : EFalse ) )
+    TBool vkbOpen = ( iEditor->AknEditorFlags() & EAknEditorFlagTouchInputModeOpened );
+    
+    iLateFocuser->Cancel(); 
+    if ( aFocus && !vkbOpen )
+        {
+        // The setting of focus needs to be delayed, because otherwise
+        // editors cursor is drawn first. Cursor can be seen clearly
+        // when going from landscape mode homescreen to dialer (when
+        // dialer's support for landscape mode has been removed)
+        // The reason behind this is that giving a focus to editor will cause 
+        // enabling of cursor in window server and the window server's
+        // render plugin will draw the cursor first, before the 
+        // dialer gets drawn. The delay in dialer drawing is caused by the
+        // screen rotation from landscape to portrait.
+        iLateFocuser->Start( TCallBack( SetLateFocus, this ) );
+        }
+    else 
+        {       
+        DoSetFocus( aFocus, aDrawNow );
+        }
+    DIALER_PRINT("numberentry::SetFocus>");
+    }
+    
+// ---------------------------------------------------------------------------
+// CDialerNumberEntry::SetLateFocus 
+// ---------------------------------------------------------------------------
+//
+TInt CDialerNumberEntry::SetLateFocus( TAny* aThis )
+    {  
+    DIALER_PRINT("numberentry::SetLateFocus<");
+    CDialerNumberEntry* self = static_cast<CDialerNumberEntry*>( aThis );
+
+    self->DoSetFocus( ETrue, ENoDrawNow );
+    
+    DIALER_PRINT("numberentry::SetLateFocus>");
+    return KErrNone;
+    }
+    
+// ---------------------------------------------------------------------------
+// Set the focuss
+// ---------------------------------------------------------------------------
+// 
+void CDialerNumberEntry::DoSetFocus( TBool aFocus, TDrawNow aDrawNow )
+    {
+    DIALER_PRINT("numberentry::DoSetFocus<");  
+    // IsFocused() and iEditor->IsFocused() may return other values besides ETrue
+    // and EFalse. This is why we need to check their return values against zero
+    // and use the result in comparison against aFocus.
+    if ( aFocus != (IsFocused() ? ETrue : EFalse) )
         {
         CCoeControl::SetFocus( aFocus, aDrawNow );
         }
     
-    if ( aFocus != ( iEditor->IsFocused() ? ETrue : EFalse ) )
+    if ( aFocus != (iEditor-> IsFocused() ? ETrue : EFalse ) )
         {
         iEditor->SetFocus( aFocus );
-        }
-    
-    DIALER_PRINT("numberentry::SetFocus>");
+        }   
+    DIALER_PRINT("numberentry::DoSetFocus>");  
     }
-
 
 // ---------------------------------------------------------------------------
 // CDialerNumberEntry::TextLength 
@@ -709,6 +763,8 @@ void CDialerNumberEntry::HandleEditorFormatting()
 void CDialerNumberEntry::StartVirtualKeyBoard( )
     {
     // To change focus to VKB, if not called VKB will not come visible
+    iLateFocuser->Cancel();
+    DoSetFocus( ETrue, ENoDrawNow );
     iEikonEnv->SyncNotifyFocusObserversOfChangeInFocus();
     iEditor->OpenVKB();
     }
@@ -893,22 +949,40 @@ void CDialerNumberEntry::SetOperationMode( TDialerOperationMode aMode )
 
 // -----------------------------------------------------------------------------
 // CDialerNumberEntry::Validate
-//
-// Copied from cphonekeys.
 // -----------------------------------------------------------------------------
 //
 TBool CDialerNumberEntry::Validate( const TDesC& aString )
     {
     DIALER_PRINT("numberentry::Validate");
-    TLex input( aString );
-    TPtrC valid( KPhoneValidChars );
-
-    while ( valid.Locate( input.Peek() ) != KErrNotFound )
+    
+    if ( aString.Length() == 0 )
         {
-        input.Inc();
+        return EFalse;
         }
     
-    return !input.Remainder().Length();
+    // check first character
+    TPtrC valid( KPhoneValidChars );
+    if ( valid.Locate( aString[0] ) == KErrNotFound )
+        {
+        return EFalse;
+        }
+    
+    // if vanitydialing feature is enabled, also capital A-Z are accepted after first character
+    if ( FeatureManager::FeatureSupported( KFeatureIdFfHomeScreenVanityDialing ) )
+        {
+        valid.Set( KPhoneVanityValidChars );
+        }
+    
+    // check rest of the string
+    for ( TInt i = 1; i < aString.Length(); i++ )
+        {
+        if ( valid.Locate( aString[i] ) == KErrNotFound )
+            {
+            return EFalse;
+            }
+        }
+    
+    return ETrue;
     }
 
 // End of File

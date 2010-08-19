@@ -52,9 +52,6 @@
 /// ROM drive.
 _LIT( KDialerResourceFile, "dialer.rsc" );
 
-// number entry, keypad area, easydialing, toolbar
-const TInt KContainedControlsInTelephonyMode = 4;
-
 
 // ========================= MEMBER FUNCTIONS ================================
 
@@ -96,6 +93,8 @@ EXPORT_C CDialer::~CDialer()
     delete iEasyDialer;
     delete iDialingExtensionObserver;
     delete iToolbar;
+    
+    iComponentControls.Close();
 
     UnLoadResources();
     DIALER_PRINT("CDialer::~CDialer>"); 
@@ -120,12 +119,19 @@ void CDialer::ConstructL(
     SetParent( const_cast<CCoeControl*>(&aContainer) );
 
     iNumberEntry = CDialerNumberEntry::NewL( *this );
+    iComponentControls.Append( iNumberEntry );
 
     iController = aController;
     
-    iKeypadArea = CDialerKeyPadContainer::NewL( *this, EModeEasyDialing );
-    
-    iToolbar = CDialerToolbarContainer::NewL( *this, iController );
+    // Keypad and toolbar are not used in small displays.
+    if ( ! FeatureManager::FeatureSupported(  KFeatureIdFfSmallScreenTouch ) ) 
+        {
+        iKeypadArea = CDialerKeyPadContainer::NewL( *this, EModeEasyDialing );
+        iComponentControls.Append( iKeypadArea );
+        
+        iToolbar = CDialerToolbarContainer::NewL( *this, iController );
+        iComponentControls.Append( iToolbar );
+        }
 
     // try to create easydialing plugin. If plugin is not present, iEasydialer gets value NULL.
     LoadEasyDialingPlugin();
@@ -149,6 +155,7 @@ void CDialer::ConstructL(
         {
         User::LeaveIfError( iPeninputServer.Connect() );
         iPeninputServer.AddPenUiActivationHandler( this, EPluginInputModeAll ); 
+        iVirtualKeyBoardOpen = iPeninputServer.IsVisible();
         }
     #endif
     DIALER_PRINT("CDialer::ConstructL>");
@@ -196,7 +203,10 @@ EXPORT_C void CDialer::SetControllerL( MPhoneDialerController* aController )
     if ( aController && iController != aController )
         {
         iController = aController;
-        iToolbar->SetContentProviderL( iController );
+        if ( iToolbar )
+            {
+            iToolbar->SetContentProviderL( iController );
+            }
         iNumberEntry->SetNumberEntryPromptTextL( iController->NumberEntryPromptTextL() );
         SizeChanged();
         UpdateToolbar();
@@ -235,7 +245,11 @@ EXPORT_C void CDialer::UpdateToolbar()
         iController->SetNumberEntryIsEmpty( !numAvailable );
         iToolbar->UpdateButtonStates();
         iToolbar->DrawDeferred();
-        iKeypadArea->DrawDeferred(); // needed to remove drawing problem from leftmost button column
+        
+        if ( iKeypadArea )
+            {
+            iKeypadArea->DrawDeferred(); // needed to remove drawing problem from leftmost button column
+            }
         }
     }
 
@@ -365,15 +379,13 @@ void CDialer::GetTextFromNumberEntry( TDes& aDes )
 void CDialer::RemoveNumberEntry()
     {
     ResetEditorToDefaultValues();
-    iVirtualKeyBoardOpen = EFalse;
     
     iIsUsed = EFalse;
 
     // easydialer change begins
     if (iEasyDialer)
         {
-        TRAP_IGNORE( iEasyDialer->HandleCommandL( EEasyDialingClosePopup );
-                     iEasyDialer->HandleCommandL( EEasyDialingVkbClosed ) );
+        TRAP_IGNORE( iEasyDialer->HandleCommandL( EEasyDialingClosePopup ); );
         iEasyDialer->Reset();
         }
     // easydialer change ends
@@ -398,14 +410,9 @@ TInt CDialer::ChangeEditorMode( TBool aDefaultMode )
 //
 void CDialer::OpenVkbL()
     {
-    iVirtualKeyBoardOpen = ETrue;
     UpdateEdwinState( EVirtualKeyboardEditor );
     
     iNumberEntry->HandleCommandL( EDialerCmdTouchInput );
-    if ( iEasyDialer )
-        {
-        iEasyDialer->HandleCommandL( EEasyDialingVkbOpened );
-        }
     }
 
 // ---------------------------------------------------------------------------
@@ -446,7 +453,10 @@ void CDialer::SetNumberEntryPromptText( const TDesC& aPromptText )
 //    
 void CDialer::EnableTactileFeedback( const TBool aEnable )
     {
-    iKeypadArea->EnableTactileFeedback( aEnable );
+    if ( iKeypadArea )
+        {
+        iKeypadArea->EnableTactileFeedback( aEnable );
+        }
     }
 
 // ---------------------------------------------------------
@@ -457,10 +467,6 @@ EXPORT_C void CDialer::HandleQwertyModeChange( TInt aMode )
     {
     iQwertyMode = aMode;
     UpdateNumberEntryConfiguration();
-    if ( iEasyDialer && aMode )
-        {
-        TRAP_IGNORE( iEasyDialer->HandleCommandL( EEasyDialingVkbClosed ) );
-        }
     }
 
 // ---------------------------------------------------------
@@ -509,34 +515,45 @@ void CDialer::SizeChanged()
     AknsUtils::RegisterControlPosition( this );
     TRect parentRect( Rect() );
        
-    // Method is called before containers are created.
-    if ( !iKeypadArea )
-        {
-        return;
-        }
-        
     TDialerVariety variety = ( Layout_Meta_Data::IsLandscapeOrientation() ?
         EDialerVarietyLandscape : EDialerVarietyPortrait );
     
+    
     // keypad area
-    TDialerOperationMode keypadOpMode = 
-            ( EasyDialingEnabled() ? EModeEasyDialing : EModeDialer );
-    iKeypadArea->SetOperationMode( keypadOpMode );
-    AknLayoutUtils::LayoutControl(
-        iKeypadArea, parentRect, 
-        AknLayoutScalable_Apps::dia3_keypad_num_pane( variety ).LayoutLine() );
+    if ( iKeypadArea ) 
+        {
+        TDialerOperationMode keypadOpMode = 
+                ( EasyDialingEnabled() ? EModeEasyDialing : EModeDialer );
+        
+        iKeypadArea->SetOperationMode( keypadOpMode );
+        AknLayoutUtils::LayoutControl(
+            iKeypadArea, parentRect, 
+            AknLayoutScalable_Apps::dia3_keypad_num_pane( variety ).LayoutLine() );
+        }
 
+    
     // toolbar
-    AknLayoutUtils::LayoutControl(
-        iToolbar, parentRect, 
-        AknLayoutScalable_Apps::dia3_keypad_fun_pane( variety ).LayoutLine() );
+    if ( iToolbar )
+        {
+        AknLayoutUtils::LayoutControl(
+            iToolbar, parentRect, 
+            AknLayoutScalable_Apps::dia3_keypad_fun_pane( variety ).LayoutLine() );
+        }
 
+    // Use hybrid keyboard mode if there is no visible virtual keypad.
+    iHybridKeyboardMode = !iKeypadArea;
+    
     // easy dial contacts list
     if ( iEasyDialer )
         {
         AknLayoutUtils::LayoutControl(
             iEasyDialer, parentRect, 
             AknLayoutScalable_Apps::dia3_listscroll_pane( variety ).LayoutLine() );
+        
+        iEasyDialer->SetKeyboardMode( 
+            iHybridKeyboardMode ?
+            CDialingExtensionInterface::EHybridQwerty :
+            CDialingExtensionInterface::EDefaultKeyboard );
         }
 
     // number entry
@@ -560,13 +577,7 @@ void CDialer::PositionChanged()
 //
 TInt CDialer::CountComponentControls() const
     {
-    TInt count( KContainedControlsInTelephonyMode );
-    
-    if ( !iEasyDialer )
-        {
-        count--;
-        }
-    return count;
+    return iComponentControls.Count();
     }
 
 // ---------------------------------------------------------------------------
@@ -577,9 +588,7 @@ TInt CDialer::CountComponentControls() const
 //
 CCoeControl* CDialer::ComponentControl( TInt aIndex ) const
     {
-    CCoeControl* currentControl(NULL);
-    currentControl = ComponentControlForDialerMode( aIndex );
-    return currentControl;
+    return iComponentControls[ aIndex ];
     } 
 
 // ---------------------------------------------------------------------------
@@ -652,12 +661,7 @@ void CDialer::PrepareForFocusGainL( )
         {
         // Clear editor flags and report
         // edwin state changed.
-        iVirtualKeyBoardOpen = EFalse;
         UpdateNumberEntryConfiguration();
-        if ( iEasyDialer )
-            {
-            iEasyDialer->HandleCommandL( EEasyDialingVkbClosed );
-            }
         }
     }
 
@@ -719,42 +723,6 @@ void CDialer::UnLoadResources()
     }
 
 // ---------------------------------------------------------------------------
-// CDialer::ComponentControlForDialerMode
-// 
-// Returns contained control by given index in ohonedialer mode.
-//  
-// ---------------------------------------------------------------------------
-//
-CCoeControl* CDialer::ComponentControlForDialerMode( const TInt aIndex ) const
-    {
-    CCoeControl* currentControl(NULL);
-    
-    switch ( aIndex )
-        {
-        case 0:
-            currentControl = iNumberEntry;
-            break;
-        case 1:
-            currentControl = iKeypadArea;
-            break;
-            
-        case 2:
-            currentControl = iToolbar;
-            break;
-        case 3:
-            currentControl = iEasyDialer;
-            break;
-            
-        default:
-            {
-            __ASSERT_DEBUG( EFalse, _L("CDialer::ComponentControl no such component defined"));
-            }
-        }
-
-    return currentControl;
-    } 
-
-// ---------------------------------------------------------------------------
 // CDialer::EdwinState
 // 
 // Returns edwin state of the editor.
@@ -796,18 +764,20 @@ void CDialer::UpdateEdwinState( TEditorType aType )
             TInt flags = EAknEditorFlagNoT9 | 
                          EAknEditorFlagLatinInputModesOnly |
                          EAknEditorFlagSelectionVisible;
-            edwinState->SetDefaultInputMode( EAknEditorTextInputMode );
-            edwinState->SetCurrentInputMode( EAknEditorTextInputMode );
+            
+            // Use numeric input mode if in hybrid mode and virtual keyboard
+            // is not open. This signals to AvKON that hybrid mode needs to
+            // be used.
+            TInt inputMode = ( iHybridKeyboardMode && !vkbOpen ) ?
+                EAknEditorNumericInputMode : EAknEditorTextInputMode;
+            edwinState->SetDefaultInputMode( inputMode );
+            edwinState->SetCurrentInputMode( inputMode );
             
             if ( EVirtualKeyboardEditor == aType || vkbOpen )
                 {
                 // Indicators would be shown after closing VKB unless disabled
                 // here.
                 flags = ( flags |= EAknEditorFlagNoEditIndicators );
-                }
-            else
-                {
-                iVirtualKeyBoardOpen = EFalse;
                 }
             
             edwinState->SetFlags( flags );
@@ -880,6 +850,8 @@ void CDialer::LoadEasyDialingPlugin()
             
             iDialingExtensionObserver = CDialingExtensionObserver::NewL( iEasyDialer, iNumberEntry, this );
             iEasyDialer->AddObserverL( iDialingExtensionObserver );
+            
+            iComponentControls.Append( iEasyDialer );
             } );
     
         if ( error )
@@ -948,7 +920,12 @@ void CDialer::LayoutNumberEntry( const TRect& aParent, TInt aVariety )
 void CDialer::OnPeninputUiDeactivated()
     {
     DIALER_PRINT( "CDialer::OnPeninputUiDeactivated" )
+    iVirtualKeyBoardOpen = EFalse;
     FocusChanged( EDrawNow );
+    if ( iEasyDialer )
+        {
+        TRAP_IGNORE( iEasyDialer->HandleCommandL( EEasyDialingVkbClosed ) );
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -960,5 +937,10 @@ void CDialer::OnPeninputUiDeactivated()
 void CDialer::OnPeninputUiActivated()
     {
     DIALER_PRINT( "CDialer::OnPeninputUiActivated" )
+    iVirtualKeyBoardOpen = ETrue;
+    if ( iEasyDialer )
+        {
+        TRAP_IGNORE( iEasyDialer->HandleCommandL( EEasyDialingVkbOpened ) );
+        }   
     }
 // End of File

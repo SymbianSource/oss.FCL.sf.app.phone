@@ -43,8 +43,7 @@ TPhoneCallHeaderParam::TPhoneCallHeaderParam(
         MPhoneStateMachine& aStateMachine ) 
         : iManagerUtility ( aManagerUtility ),
           iStateMachine ( aStateMachine ),
-          iCallHeaderType ( CBubbleManager::ENormal ),
-          iSetDivertIndication ( EFalse )
+          iCallHeaderType ( CBubbleManager::ENormal )
     {
     }
 
@@ -226,23 +225,13 @@ void TPhoneCallHeaderParam::SetCallerImage(
 //
 void TPhoneCallHeaderParam::SetBasicCallHeaderParamsL(
         const TInt aCallId, 
-        TPhoneCmdParamCallHeaderData* aCallHeaderData,
-        TBool aInitializing )
+        TPhoneCmdParamCallHeaderData* aCallHeaderData )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetBasicCallHeaderParamsL( ) ");
     // Set call header call state
-    if( aInitializing )
-        {
-        // fake state to initializing call this way we get correct bubble to screen.
-        aCallHeaderData->SetCallState( EPEStateDialing );
-        }
-    else
-        {
-        aCallHeaderData->SetCallState( 
-                iStateMachine.PhoneEngineInfo()->CallState( aCallId ) );
-        }
-    
-    // Set call header type.
+    aCallHeaderData->SetCallState( 
+            iStateMachine.PhoneEngineInfo()->CallState( aCallId ) );
+    // Set call header type
     aCallHeaderData->SetCallType( GetCallType( aCallId, aCallHeaderData ) );
     aCallHeaderData->SetCallFlag( CallHeaderType() );
     
@@ -498,7 +487,8 @@ void TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader(
     TPhoneCmdParamCallHeaderData* aCallHeaderData )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader( ) ");
-    if( iSetDivertIndication )
+    TBool forwarded = iStateMachine.PhoneEngineInfo()->CallForwarded( aCallId );
+    if ( forwarded )
         {
         aCallHeaderData->AddCallFlag( CBubbleManager::EDiverted );
         }
@@ -509,19 +499,6 @@ void TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader(
                 "TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader - CallALSLine() == CCCECallParameters::ECCELineTypeAux");
         aCallHeaderData->SetLine2( ETrue );    
         }        
-    }
-
-// ---------------------------------------------------------------------------
-// TPhoneCallHeaderParam::SetDivertIndication
-// ---------------------------------------------------------------------------
-//
-void TPhoneCallHeaderParam::SetDivertIndication( const TBool aDivertIndication )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetDivertIndication( ) ");
-    iSetDivertIndication = aDivertIndication;           
-    __PHONELOG1( EBasic, EPhoneControl, 
-                "TPhoneCallHeaderParam::SetDivertIndication() - iSetDivertIndication: %d ", 
-                iSetDivertIndication )
     }
 
 // ---------------------------------------------------------------------------
@@ -536,7 +513,7 @@ void TPhoneCallHeaderParam::SetIncomingCallHeaderParamsL(
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetIncomingCallHeaderParamsL( ) ");
     // Set basic params must be called before update is called.
-    SetBasicCallHeaderParamsL( aCallId, aCallHeaderData, EFalse );
+    SetBasicCallHeaderParamsL( aCallId, aCallHeaderData );
     
     // Set call header labels
     SetCallHeaderTexts( 
@@ -561,25 +538,10 @@ void TPhoneCallHeaderParam::SetOutgoingCallHeaderParamsL(
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetOutgoingCallHeaderParamsL( ) ");
     // Set basic params must be called before update is called.
-    SetBasicCallHeaderParamsL( aCallId, aCallHeaderData, EFalse );
+    SetBasicCallHeaderParamsL( aCallId, aCallHeaderData );
     // Set call header labels
     SetCallHeaderLabels( aCallHeaderData );
     SetCliParamatersL( aCallId, aCallHeaderData );
-    }
-
-// ---------------------------------------------------------------------------
-//  TPhoneCallHeaderParam::SetIniticalizingCallHeaderParamsL
-// ---------------------------------------------------------------------------
-//
-void TPhoneCallHeaderParam::SetIniticalizingCallHeaderParamsL(
-        const TInt aCallId,
-        TPhoneCmdParamCallHeaderData* aCallHeaderData )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetIniticalizingCallHeaderParamsL( ) ");
-    // Set basic params must be called before update is called.
-    SetBasicCallHeaderParamsL( aCallId, aCallHeaderData, ETrue );
-    // Set call header labels
-    SetCallHeaderLabels( aCallHeaderData );
     }
 
 // ---------------------------------------------------------------------------
@@ -635,7 +597,15 @@ void TPhoneCallHeaderParam::UpdateCallHeaderInfoL(
         else
             {
             aCallHeaderData->SetCNAPText( iStateMachine.PhoneEngineInfo()->
-                RemotePhoneNumber( aCallId ), CBubbleManager::ELeft );       
+                RemotePhoneNumber( aCallId ), CBubbleManager::ELeft );
+
+            // No contact name, use phonenumber when available.
+            if ( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ).Length() 
+                    && !ContactInfoAvailable( aCallId ) )
+                {
+                aCallHeaderData->SetParticipantListCLI(
+                        TPhoneCmdParamCallHeaderData::EPhoneParticipantCNAPText );
+                }
             }
         }
     else
@@ -675,6 +645,9 @@ void TPhoneCallHeaderParam::UpdateCallHeaderInfoL(
     SetCallerImage( 
             aCallId, 
             aCallHeaderData ); 
+    
+    // Update divert indication
+    SetDivertIndicatorToCallHeader( aCallId, aCallHeaderData );
     }
 
 // ---------------------------------------------------------------------------

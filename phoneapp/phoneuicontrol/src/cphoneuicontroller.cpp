@@ -71,7 +71,7 @@ void CPhoneUIController::ConstructL( CPhoneViewController& aViewController )
 
     // Create the key event forwarder
     iKeyEventForwarder = CPhoneKeyEventForwarder::NewL( 
-        CEikonEnv::Static()->EikAppUi()->ClientRect(), iStateMachine, &aViewController );
+        CEikonEnv::Static()->EikAppUi()->ClientRect(), iStateMachine, &aViewController ); // codescanner::eikonenvstatic
 
     TInt leaveCode( 0 );
     TInt retry( 0 );

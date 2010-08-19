@@ -37,6 +37,8 @@
 enum TPhoneTransEffectType
     {
     EPhoneTransEffectNone,
+    EPhoneTransEffectCallUiAppear,
+    EPhoneTransEffectCallUiDisappear,
     // These 3 effect types can be used only when dialer is
     // opened/closed when some other app than phone is visible 
     // on the foreground/in the background.

@@ -20,7 +20,6 @@
 #define CPHCNTCONTACTMATCHSTRATEGY_H
 
 #include <e32base.h>
-#include <cenrepnotifyhandler.h>
 #include <CVPbkPhoneNumberMatchStrategy.h>
 
 #include "mphcntcontactmatchstrategy.h"
@@ -29,7 +28,6 @@
 class CVPbkContactManager;
 class MVPbkContactFindObserver;
 class CVPbkPhoneNumberMatchStrategy;
-class CRepository;
 class CVPbkContactStoreUriArray;
 class CPhCntContactStoreUris;
 class CCntRawPhoneNumberExtractor;
@@ -43,7 +41,6 @@ class CCntRawPhoneNumberExtractor;
 NONSHARABLE_CLASS( CPhCntContactMatchStrategy ) :
     public CBase,
     public MPhCntContactMatchStrategy,
-    private MCenRepNotifyHandlerCallback,
     private MPhCntContactStoreEventObserver
     {
 public:
@@ -116,11 +113,6 @@ private:
     void ContactStoreAvailabilityChanged();
 
     /**
-     * Removes postfix from aNumber and starts the matching.
-     */
-    void MatchL( const TDesC& aNumber );
-
-    /**
      * Method to ease unit testing. Creates the actual instance of iMatchStrategy.
      */
     virtual TInt DoCreateMatchStrategy();
@@ -149,20 +141,6 @@ private: // data
      */
     CVPbkPhoneNumberMatchStrategy* iMatchStrategy;
 
-    /**
-     * Central repository instance, for getting
-     * number of numbers used with contact matching.
-     * Own.
-     */
-    CRepository* iCenRepSession;
-
-    /**
-     * For getting notifications of number of numbers
-     * used with contact matching changes.
-     * Own.
-     */
-    CCenRepNotifyHandler* iCenRepNotifyHandler;
-
      /**
       * Contact manager is needed with match strategy.
       * Not own.
@@ -187,11 +165,6 @@ private: // data
       * Own.
       */
     CVPbkContactStoreUriArray* iUriArray;
-
-    /**
-     * Number of digits used with matching.
-     */
-    TInt iNumberOfDigits;
 
     /**
      * Number extractor.

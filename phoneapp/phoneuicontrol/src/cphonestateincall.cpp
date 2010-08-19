@@ -306,49 +306,40 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
     __LOGMETHODSTARTEND(EPhoneControl,  
         "CPhoneStateInCall::HandleIdleL()" );
     __ASSERT_DEBUG( aCallId >= 0, Panic( EPhoneCtrlParameterNotInitialized ) );
-    // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-  
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewHideToolbar );
+    if (  IsNumberEntryUsedL() )
+        {
+        BeginTransEffectLC( ECallUiDisappear );
+        }
+    else 
+        {
+        BeginTransEffectLC( ENumberEntryClose );
+        }
     BeginUiUpdateLC();
     SetDefaultFlagsL();
+        
     if ( IsNumberEntryUsedL() )
         {
-        if ( NeedToReturnToForegroundAppL() )
-            {
-            // Return phone to the background if menu application is needed to foreground.
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-    
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
-    
-            // Set Number Entry CBA
-            iCbaManager->SetCbaL( EPhoneNumberAcqCBA );
+        // Show the number entry if it exists and update cba's.
+        SetNumberEntryVisibilityL( ETrue );
+        // Close dtmf dialer when call is disconnected.
+        if ( IsDTMFEditorVisibleL() )
+            {      
+            CloseDTMFEditorL();
+            // Display idle screen and update CBA's
+            DisplayIdleScreenL();
             }
-        else
-            {
-            // Show the number entry if it exists and update cba's.
-            SetNumberEntryVisibilityL( ETrue );
-            
-            // Close dtmf dialer when call is disconnected.
-            if ( IsDTMFEditorVisibleL() )
-                {      
-                CloseDTMFEditorL();
-                
-                // Display idle screen and update CBA's
-                DisplayIdleScreenL();
-                }
-            else if ( iOnScreenDialer && IsCustomizedDialerVisibleL() )
-                {            
-                CloseCustomizedDialerL();
-                // Display idle screen and update CBA's
-                DisplayIdleScreenL();
-                } 
-            }
-        }
+        else if ( iOnScreenDialer && IsCustomizedDialerVisibleL() )
+            {            
+            CloseCustomizedDialerL();
+            // Display idle screen and update CBA's
+            DisplayIdleScreenL();
+            } 
+        }            
     else
         {
-        // Close menu bar, if it is displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-        
         if ( !TopAppIsDisplayedL() || IsAutoLockOn() || NeedToReturnToForegroundAppL() )
             {        
             // Continue displaying current app but set up the 
@@ -362,16 +353,11 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
             }
         }
         
-    DeleteTouchPaneButtons();        
+    DeleteTouchPaneButtons();
     EndUiUpdate();
-    
-    // Display call termination note, if necessary
+    EndTransEffect();
     DisplayCallTerminationNoteL();
-
-    // Go to idle state
     iStateMachine->ChangeState( EPhoneStateIdle );
-
-    //Make sure that toolbar is not shown
     iViewCommandHandle->ExecuteCommandL( EPhoneViewHideToolbar );
     }
 
@@ -423,6 +409,26 @@ void CPhoneStateInCall::HandleAudioMuteChangedL()
         // Go to current state implementation
         UpdateInCallCbaL();
         }
+	TBool audioMute = iStateMachine->PhoneEngineInfo()->AudioMute();
+    TPhoneCmdParamCallStateData callStateData;
+    callStateData.SetCallState( EPEStateConnected );
+    iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState, &callStateData );
+    TInt call = callStateData.CallId();
+    if ( call != KErrNotFound  && iStateMachine->PhoneEngineInfo()->CallType( call ) == EPECallTypeVoIP
+            && audioMute )
+		{
+			  TPhoneCmdParamBoolean dtmfSendFlag;
+			  dtmfSendFlag.SetBoolean( ETrue );
+			  iViewCommandHandle->ExecuteCommandL( EPhoneViewSetVoipCallDTMFVisibilityFlag,
+																							   &dtmfSendFlag );
+		}
+    else
+		{           
+		 TPhoneCmdParamBoolean dtmfSendFlag;
+		  dtmfSendFlag.SetBoolean( EFalse );
+		  iViewCommandHandle->ExecuteCommandL( EPhoneViewSetVoipCallDTMFVisibilityFlag,
+																						   &dtmfSendFlag );
+		} 
     }
 
 // -----------------------------------------------------------
@@ -605,11 +611,13 @@ EXPORT_C TBool CPhoneStateInCall::HandleCommandL( TInt aCommand )
     switch( aCommand )
         {
         case EPhoneInCallCmdDialer:
+            BeginTransEffectLC( ECallUiDisappear );
             if ( !IsNumberEntryUsedL() )
                 {
                 CreateNumberEntryL();
                 }
-            SetNumberEntryVisibilityL(ETrue ); 
+            SetNumberEntryVisibilityL( ETrue ); 
+            EndTransEffect();
           break;
           
         case EPhoneCmdOptions:
@@ -843,8 +851,10 @@ EXPORT_C TBool CPhoneStateInCall::HandleCommandL( TInt aCommand )
        case EPhoneViewOpenCallHandling:
             if ( iOnScreenDialer && IsNumberEntryUsedL() )
                 {
+                BeginTransEffectLC( ECallUiAppear );
                 // Remove number entry from screen
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
+                EndTransEffect();
                 HandleNumberEntryClearedL();
                 }
             commandStatus = CPhoneState::HandleCommandL( aCommand );        
@@ -919,6 +929,7 @@ EXPORT_C void CPhoneStateInCall::LaunchNewCallQueryL()
     if ( iOnScreenDialer )
         {
         //In touch, just activate dialer
+        BeginTransEffectLC( ECallUiDisappear );
         if ( IsNumberEntryUsedL() )
             {
             SetNumberEntryVisibilityL(ETrue);   
@@ -928,6 +939,7 @@ EXPORT_C void CPhoneStateInCall::LaunchNewCallQueryL()
             CreateNumberEntryL();
             SetNumberEntryVisibilityL(ETrue); 
             }
+        EndTransEffect();
         }
     else
         {
@@ -1545,12 +1557,8 @@ void CPhoneStateInCall::HandleEndKeyPressL( TPhoneKeyEventMessages aMessage )
                 CloseDTMFEditorL();
                 }
             else
-                {
-                // Remove number entry from screen
-                iViewCommandHandle->ExecuteCommandL( 
-                    EPhoneViewRemoveNumberEntry );
-                // Do state-specific operation when number entry is cleared
-                HandleNumberEntryClearedL();         
+                {    
+                CloseClearNumberEntryAndLoadEffectL( ENumberEntryClose );
                 }
             }
 

@@ -86,12 +86,6 @@ NONSHARABLE_CLASS( CPhoneCallHeaderManager ) :  public CBase,
         */
         void DisplayHeaderForOutgoingCallL(
                 const TInt aCallId );
-        
-        /**
-        * Display initializing call header (phone number isn't initially
-        * displayed)
-        */
-        void DisplayHeaderForInitializingCallL( TInt aCallId );
        
         /**
         * Sets the call header type used in the call bubble.
@@ -105,14 +99,6 @@ NONSHARABLE_CLASS( CPhoneCallHeaderManager ) :  public CBase,
         */
         CBubbleManager::TPhoneCallTypeFlags CallHeaderType() const;
                 
-        /**
-        * Sets divert indication to call header if necessary
-        * @param aCallId - Call Id.
-        * @param aCallHeaderData - Call header where indication will be set
-        *                          if needed.
-        */
-        void SetDivertIndication( const TBool aDivertIndication );
-        
         /**
         * Checks if call is waiting, returns ETrue if call is waiting
         * otherwise EFalse.

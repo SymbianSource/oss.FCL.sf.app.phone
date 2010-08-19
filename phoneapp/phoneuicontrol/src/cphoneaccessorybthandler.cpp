@@ -22,6 +22,7 @@
 #include    <btengdomainpskeys.h>
 #include    <btengdomaincrkeys.h>
 #include    <mpeengineinfo.h>
+#include    <AknNotifyStd.h>
 
 #include    "cphoneaccessorybthandler.h"
 #include    "cphonecenrepproxy.h"
@@ -34,6 +35,8 @@
 #include    "phoneui.pan"
 #include    "phonerssbase.h"
 #include    "tphonecmdparamnote.h"
+#include    "tphonecmdparamglobalnote.h"
+
 
 // CONSTANTS
 
@@ -235,18 +238,18 @@ void CPhoneAccessoryBTHandler::ShowBTLoopbackL()
 //
 void CPhoneAccessoryBTHandler::ShowBTActivatedL()
     {
-    // Get localised text 
-    HBufC* buf = StringLoader::LoadLC( 
-            CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneInfoBTAccActivated ) );
-    
-    TPhoneCmdParamNote noteParam;
-    noteParam.SetType( EPhoneNoteConfirmation );
-    noteParam.SetText( *buf );
+ 
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    globalNoteParam.SetType( EAknGlobalInformationNote );
+    globalNoteParam.SetTone( EAvkonSIDNoSound );
 
+    globalNoteParam.SetTextResourceId( 
+        CPhoneMainResourceResolver::Instance()->
+        ResolveResourceID( EPhoneInfoBTAccActivated ) );
+		
     // Display note
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNote, &noteParam );
-    CleanupStack::PopAndDestroy( buf );
+    iViewCommandHandle->ExecuteCommandL( 
+        EPhoneViewShowGlobalNote, &globalNoteParam );   
     }
 
 // ---------------------------------------------------------

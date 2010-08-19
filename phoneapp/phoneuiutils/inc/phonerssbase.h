@@ -138,8 +138,6 @@ enum TPhoneRssBase
     EPhoneVideoCallIncoming,
     EPhoneVideoCallIncomingShort,
 
-    // "Muted"
-    EPhoneInCallMutedText,
     // "Call"
     EPhoneCall,
     // " Call %N"

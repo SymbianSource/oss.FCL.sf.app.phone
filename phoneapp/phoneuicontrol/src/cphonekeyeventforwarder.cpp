@@ -156,11 +156,18 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventL(
 
     ret = OfferKeyEventBeforeControlStackL( aKeyEvent, aType );
 
-    if ( !aKeyEvent.iRepeats )
+    if ( !aKeyEvent.iRepeats && aKeyEvent.iCode != EKeyEscape )
         {
         // Convert event. Use already converted iKeyPressedDown.
         TKeyEvent keyEvent = aKeyEvent;
-        keyEvent.iCode = iKeyPressedDown;
+        if ( keyEvent.iScanCode == EStdKeyApplication0 )
+            {
+            keyEvent.iCode = EKeyApplication0;
+            }
+        else
+            {
+            keyEvent.iCode = iKeyPressedDown;
+            }
         
         // Do not handle dtmf tone if the type is EEventKey but we are not
         // expecting key up event. This happens if the key up event has been
@@ -533,8 +540,8 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyDownBeforeControlStackL(
             EPhoneViewIsDisplayingMenuOrDialog ) == 
             EPhoneViewResponseSuccess ) || ( iMenu && iMenu->IsDisplayed() );
 
-    // Consume dialer simulated key events, pass others on
-    return ( IsKeySimulatedByTouchDialer( aKeyEvent ) ? EKeyWasConsumed : EKeyWasNotConsumed );
+
+    return ( EKeyWasNotConsumed );
     }
 
 // -----------------------------------------------------------
@@ -646,7 +653,7 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyUpBeforeControlStackL(
     iPreviousScanCode = iScanCode;
 
     // Consume dialer simulated key events, pass others on
-    return ( IsKeySimulatedByTouchDialer( aKeyEvent ) ? EKeyWasConsumed : EKeyWasNotConsumed );
+    return EKeyWasNotConsumed;
     }
 
 // ---------------------------------------------------------

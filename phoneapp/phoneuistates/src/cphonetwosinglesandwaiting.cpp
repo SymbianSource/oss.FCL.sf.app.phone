@@ -217,27 +217,21 @@ void CPhoneTwoSinglesAndWaiting::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSinglesAndWaiting::HandleIdleL()");
-     
-    BeginUiUpdateLC();    
-         
+    BeginUiUpdateLC();
     if ( !IsNumberEntryUsedL() )
         {
-        // Close menu bar, if number entry isnt open.
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );       
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose ); 
         }
-    
-    // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     
     if ( iRingingCallId == aCallId )
         {
-        StateTransitionToTwoSinglesL();    
+        StateTransitionToTwoSinglesL();
         }
     else
         {
         StateTransitionToSingleAndWaitingL();
         }
-
     EndUiUpdate();
     }
 
@@ -349,12 +343,7 @@ void CPhoneTwoSinglesAndWaiting::HandleConnectedConferenceL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewCreateConference, aCallId,
         &callHeaderParam );
         
-    // Clear the flag
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-         EPhoneViewSetNeedToReturnToForegroundAppStatus,
-         &booleanParam );
+    SetNeedToReturnToForegroundAppStatusL( EFalse );
         
     EndUiUpdate();
     // Go to Conference And Waiting state

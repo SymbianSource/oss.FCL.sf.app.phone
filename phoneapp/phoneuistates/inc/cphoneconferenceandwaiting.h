@@ -70,6 +70,12 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
         IMPORT_C virtual void HandleErrorL( 
             const TPEErrorInfo& aErrorInfo ); 
         
+        /**
+        * This function is called from displaycallsetup and 
+        * the purpose is to do state specific things for callsetup.
+        */
+        IMPORT_C virtual void DoStateSpecificCallSetUpDefinitionsL();
+        
     protected:
 
         /**
@@ -100,7 +106,7 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
                   
          void MakeStateTransitionToConferenceAndSingleL( TInt aCallId );
          
-         void HandleDiallingL( TInt aCallId );
+         void HandleDialingL( TInt aCallId );
          
          void HandleWentOneToOneL( TInt aCallId );
       

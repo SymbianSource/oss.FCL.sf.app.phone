@@ -65,6 +65,11 @@ class CPhoneSingleCall : public CPhoneGsmInCall
             
         IMPORT_C virtual TBool HandleCommandL( TInt aCommand );
 
+        /**
+        * This function is called from displaycallsetup and 
+        * the purpose is to do state specific things for callsetup.
+        */
+        IMPORT_C virtual void DoStateSpecificCallSetUpDefinitionsL();
 
     protected:
 
@@ -91,6 +96,7 @@ class CPhoneSingleCall : public CPhoneGsmInCall
         * @return   Call identifier.
         */
         IMPORT_C TInt CallId() const;
+        
     private:
     
     	void OpenVideoCallMenuBarL();
@@ -109,9 +115,7 @@ class CPhoneSingleCall : public CPhoneGsmInCall
 
         void CallFromNewCallQueryL();
         
-        void HandleDiallingL( TInt aCallId );
-                
-        void DisplayCallSetupL( TInt aCallId );
+        void HandleDialingL( TInt aCallId );
         
         void SetCallResumeL();
         

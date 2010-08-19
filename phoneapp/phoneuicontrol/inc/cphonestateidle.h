@@ -101,13 +101,18 @@ class CPhoneStateIdle : public CPhoneState
         IMPORT_C virtual void HandlePhoneFocusLostEventL();
         
         /**
+        * This function is called from displaycallsetup and 
+        * the purpose is to do state specific things for callsetup.
+        */
+        IMPORT_C virtual void DoStateSpecificCallSetUpDefinitionsL();
+		
+		/**
         * HandleError
         * Implements error handling framework
         * @param aErrorInfo: the error info
         */
         IMPORT_C virtual void HandleErrorL( 
                 const TPEErrorInfo& aErrorInfo );
-
     protected:
 
         /** 
@@ -124,12 +129,6 @@ class CPhoneStateIdle : public CPhoneState
         * @param aCallid call id
         */
         IMPORT_C void DisplayIncomingCallL( TInt aCallId );
-
-        /**
-        * Display Call Setup
-        * @param aCallid call id
-        */
-        IMPORT_C void DisplayCallSetupL( TInt aCallId );
 
         /**
         * By default EPOC constructor is private.
@@ -171,14 +170,6 @@ class CPhoneStateIdle : public CPhoneState
         * in number entry.
         */
         IMPORT_C virtual void OnlyHashInNumberEntryL();
-        
-        /*
-        * Checks if it's ok to use aType effect in this state.
-        *
-        * @param aType effect to be checked
-        * @return true if aType effect can be used
-        */
-        IMPORT_C virtual TBool CanTransEffectTypeBeUsed( TStateTransEffectType aType );
 
         /**
         * A message handling function for EPEMessageDialling
@@ -221,14 +212,14 @@ class CPhoneStateIdle : public CPhoneState
     protected:
         
         /**
-        * Sets iBubbleInitialized value.
+        * Sets iCallInitialized value.
         */
-        void SetBubbleInitialized( TBool aValue );
+        void SetCallInitialized( TBool aValue );
          
         /**
-        * Gets iBubbleInitialized value.
+        * Gets iCallInitialized value.
         */
-        TBool IsBubbleInitialized();
+        TBool IsCallInitialized();
         
         /**
         * Removes NE and sets idle to background, for more detailed
@@ -323,27 +314,6 @@ class CPhoneStateIdle : public CPhoneState
          TInt GetNumberAcqMenuIdL();
          
          /**
-          * Sets UI elements to correct state and launches
-          * call header to screen by calling DisplayCallSetupL.
-          */
-         void ShowCallHandlingViewL( TInt aCallId );
-         
-         /**
-          * Launches initializing call bubble.
-          */
-         void DisplayInitializingCallL( TInt aCallId );
-         
-         /**
-          * Updates existing call bubble.
-          */
-         TBool UpdateCallBubbleL( TInt aCallId );
-         
-         /**
-          * Handles initialized call error.
-          */
-         void HandleInitializingCallErrorL( TInt aCallId );
-         
-         /**
           * Changes state to aState and resets iBubbleInitialized
           * value to false.
           */
@@ -351,8 +321,8 @@ class CPhoneStateIdle : public CPhoneState
          
     private:
         
-         // Indicates call bubble is already initiliazed.
-         TBool iBubbleInitialized;
+         // True if call initiliazed.
+         TBool iCallInitialized;
     };
 
 #endif // CPHONESTATEIDLE

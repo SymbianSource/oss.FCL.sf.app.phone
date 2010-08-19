@@ -1545,7 +1545,7 @@ void CBubbleManager::BuildBubblesForTouch()
                     iBottomImageVariety = tiny ? 0 : 4;
                     
                     CBubblePlace::TPhoneBubblePlace place;
-                    place = cnapLength ? CBubblePlace::EBottomImageCnap :
+                    place = cnapLength ? CBubblePlace::EBottomCnap :
                                          CBubblePlace::EBottomImage;
                     
                     SetActivePlace( place,

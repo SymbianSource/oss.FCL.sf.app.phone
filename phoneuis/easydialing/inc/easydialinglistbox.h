@@ -149,7 +149,7 @@ public:
     
     /**
      * Return contact link of current item packaged in HBufC object. If no item is
-	 * selected in listbox returns NULL.
+     * selected in listbox returns NULL.
      * @return  Contact link. Ownership is transferred to the caller.
      */
     HBufC8* CurrentContactLinkL();

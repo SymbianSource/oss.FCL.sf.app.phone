@@ -28,7 +28,7 @@
 #include "BMTouchPaneInterface.h"
 #include "BMPanic.h"
 
-
+const TInt KDimmedTransparency = 77;
 const TInt KBubbleButtonText = 255;
 
 // ======== MEMBER FUNCTIONS ========
@@ -238,8 +238,8 @@ void CBubbleTouchPaneButton::Draw( const TRect& aRect ) const
     
     for ( TInt i=0; i < commandCount; i++ )    
         {
-        frameId = iIconProvider->GetButtonForCommandL( 
-                                   iCommands[i]);
+        TRAP_IGNORE( frameId = iIconProvider->GetButtonForCommandL( 
+                                   iCommands[i]));
 
         if ( iButtonPressed )
             {
@@ -350,7 +350,11 @@ void CBubbleTouchPaneButton::GetTextColors( TRgb& aPenColor ) const
    { 
    if ( IsDimmed() ) 
        {
-       aPenColor = iEikonEnv->ControlColor( EColorButtonTextDimmed, *this ); 
+       // Using parameter EColorButtonTextDimmed does not return valid 
+       // color for the text that is used in dimmed button. We have 
+       // to use default text and set it transparent.
+       aPenColor = iEikonEnv->ControlColor( EColorButtonText, *this );
+       aPenColor.SetAlpha( KDimmedTransparency );
        }
    else if ( iButtonPressed )
        {

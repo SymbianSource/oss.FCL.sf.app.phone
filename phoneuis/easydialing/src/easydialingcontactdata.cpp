@@ -26,7 +26,7 @@
 // ---------------------------------------------------------------------------
 //
 CEasyDialingContactData::CEasyDialingContactData(MVPbkContactLink* aContactLink)
-        : iContactLink(aContactLink), iThumbnail(NULL),iFav(EFalse), iLoaded(EFalse)
+        : iContactLink(aContactLink), iThumbnail(NULL), iFav(EFalse), iLoaded(EFalse)
     {
     }
 
@@ -64,10 +64,7 @@ CFbsBitmap* CEasyDialingContactData::Thumbnail()
 //
 void CEasyDialingContactData::SetThumbnail(CFbsBitmap* aThumbnail)
     {
-    if (iThumbnail)
-        {
-        delete iThumbnail;
-        }
+    delete iThumbnail;
     iThumbnail = aThumbnail;
     }
 
@@ -87,6 +84,42 @@ TBool CEasyDialingContactData::Fav()
 void CEasyDialingContactData::SetFav(TBool aFav)
     {
     iFav = aFav;
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactData::IsSimContact
+// ---------------------------------------------------------------------------
+//
+TBool CEasyDialingContactData::IsSimContact()
+    {
+    return iSimContact;
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactData::SetSimContact
+// ---------------------------------------------------------------------------
+//
+void CEasyDialingContactData::SetSimContact(TBool aSim)
+    {
+    iSimContact = aSim;
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactData::IsSdnContact
+// ---------------------------------------------------------------------------
+//
+TBool CEasyDialingContactData::IsSdnContact()
+    {
+    return iSdnContact;
+    }
+
+// ---------------------------------------------------------------------------
+// CEasyDialingContactData::SetSimContact
+// ---------------------------------------------------------------------------
+//
+void CEasyDialingContactData::SetSdnContact(TBool aSdn)
+    {
+    iSdnContact = aSdn;
     }
 
 // ---------------------------------------------------------------------------
@@ -179,7 +212,4 @@ void CEasyDialingContactData::SetUniEditorAvailable( TBool aVailable )
     iUniEditorAvailable = aVailable;
     }
 
-
-
-
-
+// end of file

@@ -32,7 +32,7 @@
 #include    <eikenv.h>
 #include    <AknsUtils.h>
 #include    <AknsDrawUtils.h>
-#include    <aknlayout2scalabledef.h>
+#include    <AknLayout2ScalableDef.h>
 #include    <layoutmetadata.cdl.h>
 
 

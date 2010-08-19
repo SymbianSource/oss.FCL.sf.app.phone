@@ -117,8 +117,7 @@ EXPORT_C CPhoneState::CPhoneState(
     MPhoneCustomization* aCustomization) :
     iStateMachine( aStateMachine ),
     iViewCommandHandle( aViewCommandHandle ),
-    iCustomization( aCustomization ),
-    iEnv( *CEikonEnv::Static() )
+    iCustomization( aCustomization )
     {
     // Need to get current SimState for inherited classis
     iPreviousSimState = SimState();
@@ -378,21 +377,18 @@ EXPORT_C void CPhoneState::HandlePhoneEngineMessageL(
             break;
 
         default:
-
             TBool handled( EFalse );
-
             handled = ForwardPEMessageToPhoneCustomizationL( aMessage, aCallId );
-
             if ( EFalse == handled )
                 {
-            	MPhoneMediatorMessage* mediatorMessage = CPhoneMediatorFactory::Instance()->MediatorMessage( aMessage, aCallId );
-            	if( mediatorMessage )
-    	        	{
-    	        	CleanupDeletePushL( mediatorMessage );
-	        		mediatorMessage->ExecuteL();
-	        		CleanupStack::PopAndDestroy( mediatorMessage );
-	        		mediatorMessage = NULL;
-    	        	}
+                MPhoneMediatorMessage* mediatorMessage = CPhoneMediatorFactory::Instance()->MediatorMessage( aMessage, aCallId );
+                if( mediatorMessage )
+                    {
+                    CleanupDeletePushL( mediatorMessage );
+                    mediatorMessage->ExecuteL();
+                    CleanupStack::PopAndDestroy( mediatorMessage );
+                    mediatorMessage = NULL;
+                    }
                 }
             break;
         }
@@ -475,7 +471,7 @@ EXPORT_C void CPhoneState::HandleAudioOutputChangedL()
     else if ( RouteParameters.iShowNote && audioOutput == EPELoudspeaker )
         {
         CAknKeySoundSystem* keySounds =
-               static_cast<CAknAppUi*>( iEnv.EikAppUi() )->KeySounds();
+               static_cast<CAknAppUi*>( EikonEnv()->EikAppUi() )->KeySounds();
         keySounds->PlaySound( EAvkonSIDIHFActive );
         }
     }
@@ -1165,6 +1161,26 @@ EXPORT_C TBool CPhoneState::IsDialingExtensionInFocusL() const
     }
 
 // -----------------------------------------------------------
+// CPhoneState::EikonEnv
+// -----------------------------------------------------------
+//
+EXPORT_C CEikonEnv* CPhoneState::EikonEnv() const
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::EikonEnv( ) ");
+    return iEnv;
+    }
+
+// -----------------------------------------------------------
+// CPhoneState::SetEikonEnv
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneState::SetEikonEnv( CEikonEnv* aEnv )
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::SetEikonEnv( ) ");
+    iEnv = aEnv;
+    }
+
+// -----------------------------------------------------------
 // CPhoneState::SendKeyEventL
 // -----------------------------------------------------------
 //
@@ -1553,10 +1569,7 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
             // this should be bypasses?
         case EPhoneDialerCallHandling:
         case EPhoneCmdBack:
-            // Remove number entry from screen
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-            // Do state-specific behaviour if number entry is cleared
-            HandleNumberEntryClearedL();
+            CloseClearNumberEntryAndLoadEffectL( ECallUiAppear );
             break;
 
         case EPhoneDialerCmdTouchInput:
@@ -1906,7 +1919,7 @@ void CPhoneState::ChangeAudioVolumeL( TInt aLevel, TBool aUpdateControl )
     else
         {
         CAknKeySoundSystem* keySounds =
-            static_cast<CAknAppUi*>( iEnv.EikAppUi() )
+            static_cast<CAknAppUi*>( EikonEnv()->EikAppUi() )
                 ->KeySounds();
 
         if ( aLevel < KPhoneVolumeMinValue )
@@ -1960,13 +1973,12 @@ EXPORT_C void CPhoneState::DialVoiceCallL()
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::DialVoiceCallL() ");
     __ASSERT_DEBUG( iStateMachine->PhoneEngineInfo(),
         Panic( EPhoneCtrlInvariant ) );
-
     // Disable global notes
     TPhoneCmdParamBoolean globalNotifierParam;
     globalNotifierParam.SetBoolean( ETrue );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
             &globalNotifierParam );
-   iStateMachine->PhoneEngineInfo()->SetCallTypeCommand( EPECallTypeCSVoice );
+    iStateMachine->PhoneEngineInfo()->SetCallTypeCommand( EPECallTypeCSVoice );
     iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageDial );
     }
 
@@ -2076,23 +2088,13 @@ EXPORT_C void CPhoneState::SetupIdleScreenInBackgroundL()
     // Don't remove reconnect query if it's shown
     if( !CPhoneReconnectQuery::InstanceL()->IsDisplayingQuery() )
         {
-        // Remove dialogs if necessary
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
         }
     // Return phone to the background
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-
-    // Set Idle app as the top app
+    // Set Idle app as the top app to PS key this way we know if need to 
+    // bring idle to fore in next phone acitvation event.
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetIdleTopApplication );
-
-	// Go to Homescreen when application, which was open when answered incoming call,
-	// is closed during active call    
-    if( TopAppIsDisplayedL() )
-        {
-        DisplayIdleScreenL();
-        }
-
-    // Set Empty CBA
     iCbaManager->SetCbaL( EPhoneEmptyCBA );
     }
 
@@ -2156,9 +2158,8 @@ EXPORT_C void CPhoneState::CallFromNumberEntryL()
         iStateMachine->PhoneEngineInfo()->SetPhoneNumber( *phoneNumber );
     
         if ( phoneNumber->Des().Length() < KPhoneValidPhoneNumberLength )
-            {        
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-            HandleNumberEntryClearedL();
+            {
+            CloseClearNumberEntryAndLoadEffectL( ECallUiAppear );
             }
     
         CleanupStack::PopAndDestroy( phoneNumber );        
@@ -2210,17 +2211,6 @@ EXPORT_C void CPhoneState::DisplayHeaderForOutgoingCallL(
     CallheaderManagerL()->DisplayHeaderForOutgoingCallL(aCallId);
     }
 
-
-// -----------------------------------------------------------
-// CPhoneState::DisplayHeaderForInitializingCallL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneState::DisplayHeaderForInitializingCallL( TInt aCallId )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::DisplayHeaderForInitializingCallL( ) ");
-    CallheaderManagerL()->DisplayHeaderForInitializingCallL( aCallId );
-    }
-	
 // -----------------------------------------------------------
 // CPhoneState::UpdateSingleActiveCallL
 // -----------------------------------------------------------
@@ -2228,10 +2218,8 @@ EXPORT_C void CPhoneState::DisplayHeaderForInitializingCallL( TInt aCallId )
 EXPORT_C void CPhoneState::UpdateSingleActiveCallL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::UpdateSingleActiveCallL( ) ");
-
     // Stop capturing keys
     CaptureKeysDuringCallNotificationL( EFalse );
-
     BeginUiUpdateLC();
 
     SetTouchPaneButtonEnabled( EPhoneInCallCmdHold );
@@ -3388,16 +3376,6 @@ EXPORT_C TBool CPhoneState::IsSimStateNotPresentWithSecurityModeEnabled()
     }
 
 // ---------------------------------------------------------
-// CPhoneState::SetDivertIndication
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneState::SetDivertIndication( const TBool aDivertIndication )
-    {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneState::SetDivertIndication()");
-    TRAP_IGNORE( CallheaderManagerL()->SetDivertIndication( aDivertIndication ) );
-    }
-
-// ---------------------------------------------------------
 // CPhoneState::StartAlsLineChangeTimerL
 // ---------------------------------------------------------
 //
@@ -3772,7 +3750,8 @@ EXPORT_C void CPhoneState::SetTouchPaneButtons( TInt aResourceId )
         if ( aResourceId == EPhoneIncallButtons &&
              FeatureManager::FeatureSupported( KFeatureIdFfEntryPointForVideoShare ) &&
              CPhonePubSubProxy::Instance()->Value
-                ( KPSUidCoreApplicationUIs, KCoreAppUIsVideoSharingIndicator ) )
+                ( KPSUidCoreApplicationUIs, KCoreAppUIsVideoSharingIndicator )
+                == ECoreAppUIsVideoSharingIndicatorOn )
             {
             aResourceId = EPhoneIncallVideoShareButtons;
             }
@@ -3890,46 +3869,8 @@ void CPhoneState::OpenVkbL()
 //
 EXPORT_C void CPhoneState::BeginUiUpdateLC()
     {
-
     iViewCommandHandle->ExecuteCommand( EPhoneViewBeginUpdate );
-
     TCleanupItem operation( UiUpdateCleanup, this );
-    CleanupStack::PushL( operation );
-    }
-
-// -----------------------------------------------------------
-// CPhoneState::BeginTransEffectLC
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneState::BeginTransEffectLC(  TStateTransEffectType aType )
-    {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneState::BeginTransEffectLC( ) ");
-    
-    // Check if this particular effect can be used in the current state.
-    if ( CanTransEffectTypeBeUsed( aType ) )
-        {
-        TPhoneCmdParamTransEffect effectParam;
-        switch ( aType )
-            {
-            case ENumberEntryOpen:
-                effectParam.SetType( EPhoneTransEffectDialerOpen );
-                break;
-            case ENumberEntryClose:
-                effectParam.SetType( EPhoneTransEffectDialerClose );
-                break;
-            case ENumberEntryCreate:
-                effectParam.SetType( EPhoneTransEffectDialerCreate );
-                break;
-            default:
-                effectParam.SetType( EPhoneTransEffectNone );
-            }
-
-        iViewCommandHandle->ExecuteCommand( EPhoneViewBeginTransEffect,  
-                                            &effectParam );
-        }
-
-    // Always put the cleanup item into stack as expected by the caller.
-    TCleanupItem operation( EffectCleanup, this );
     CleanupStack::PushL( operation );
     }
 
@@ -3939,7 +3880,44 @@ EXPORT_C void CPhoneState::BeginTransEffectLC(  TStateTransEffectType aType )
 //
 EXPORT_C void CPhoneState::EndUiUpdate()
     {
-    CleanupStack::PopAndDestroy(); // Call UiUpdateCleanup
+     CleanupStack::PopAndDestroy(); // Call UiUpdateCleanup
+    }
+	
+// -----------------------------------------------------------
+// CPhoneState::BeginTransEffectLC
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneState::BeginTransEffectLC( TStateTransEffectType aType )
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneState::BeginTransEffectLC( ) ");
+    TPhoneCmdParamTransEffect effectParam;
+    switch ( aType )
+        {
+        case ENumberEntryOpen:
+            effectParam.SetType( EPhoneTransEffectDialerOpen );
+            break;
+        case ENumberEntryClose:
+            effectParam.SetType( EPhoneTransEffectDialerClose );
+            break;
+        case ENumberEntryCreate:
+            effectParam.SetType( EPhoneTransEffectDialerCreate );
+            break;
+        case ECallUiAppear:
+            effectParam.SetType( EPhoneTransEffectCallUiAppear );
+            break;
+        case ECallUiDisappear:
+            effectParam.SetType( EPhoneTransEffectCallUiDisappear );
+            break;
+        default:
+            effectParam.SetType( EPhoneTransEffectNone );
+        }
+    effectParam.SetAppUid( KUidPhoneApplication );
+    iViewCommandHandle->ExecuteCommand( 
+            EPhoneViewBeginTransEffect, 
+            &effectParam );
+    // Always put the cleanup item into stack as expected by the caller.
+    TCleanupItem operation( EffectCleanup, this );
+    CleanupStack::PushL( operation );
     }
 
 // -----------------------------------------------------------
@@ -4034,11 +4012,10 @@ EXPORT_C void CPhoneState::CloseDTMFEditorL()
         {
         TPhoneCmdParamBoolean booleanParam;
         booleanParam.SetBoolean( EFalse );
-        // Disable dialer DTMF mode
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfDialerViewVisible,
-                                             &booleanParam );
-
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
+        iViewCommandHandle->ExecuteCommandL( 
+                EPhoneViewSetDtmfDialerViewVisible,
+                &booleanParam );
+        CloseClearNumberEntryAndLoadEffectL( ECallUiAppear );
         }
     else // Non-Touch
         {
@@ -4046,10 +4023,9 @@ EXPORT_C void CPhoneState::CloseDTMFEditorL()
         // because it should not be shown if user has pressed end key.
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveQuery );
+        // Do state-specific behaviour if number entry is cleared
+        HandleNumberEntryClearedL();
         }
-
-    // Do state-specific behaviour if number entry is cleared
-    HandleNumberEntryClearedL();
     }
 
 // -----------------------------------------------------------
@@ -4370,14 +4346,9 @@ CPhoneCallHeaderManager* CPhoneState::CallheaderManagerL()
 EXPORT_C void CPhoneState::CloseCustomizedDialerL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::CloseCustomizedDialerL( ) ");
-
     // Set dialer back to default mode.
     iViewCommandHandle->HandleCommandL( EPhoneViewHideCustomizedDialer );
-
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-
-    // Do state-specific behaviour if number entry is cleared
-    HandleNumberEntryClearedL();
+    CloseClearNumberEntryAndLoadEffectL( ENumberEntryClose );
     }
 
 // -----------------------------------------------------------------------------
@@ -4426,6 +4397,7 @@ void CPhoneState::ShowDtmfDialerL()
     booleanParam.SetBoolean( ETrue );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfDialerViewVisible,
                                          &booleanParam );
+    BeginTransEffectLC( ECallUiDisappear );
     if ( IsNumberEntryUsedL() )
         {
         // Store the number entry content to cache
@@ -4442,6 +4414,7 @@ void CPhoneState::ShowDtmfDialerL()
         // Create and display DTMF dialer
         NumberEntryManagerL()->CreateNumberEntryL();
         }
+    EndTransEffect();
 
     // Update CBA
     iCbaManager->UpdateInCallCbaL();
@@ -4509,7 +4482,7 @@ void CPhoneState::LoadResource( TDes& aData, const TInt aResource ) const
     __PHONELOG1( EBasic, EPhoneControl, "CPhoneState::LoadResource - aResource: %d", aResource );
     StringLoader::Load(  aData,
                          CPhoneMainResourceResolver::Instance()->ResolveResourceID( aResource ),
-                         &iEnv  );
+                         EikonEnv() );
     }
 
 // -----------------------------------------------------------
@@ -4698,16 +4671,6 @@ EXPORT_C void CPhoneState::OnlyHashInNumberEntryL()
     StartAlsLineChangeTimerL();
     }
 
-// ---------------------------------------------------------
-// CPhoneState::CanTransEffectTypeBeUsed
-// ---------------------------------------------------------
-//
-EXPORT_C TBool CPhoneState::CanTransEffectTypeBeUsed( TStateTransEffectType /*aType*/ )
-    {
-    // State dependant so return EFalse by default.
-    return EFalse;
-    }
-
 // -----------------------------------------------------------
 // CPhoneState::NumberEntryClearL
 // -----------------------------------------------------------
@@ -4783,6 +4746,21 @@ EXPORT_C void CPhoneState::SetToolbarButtonHandsetEnabled()
         {
         TPhoneCmdParamInteger integerParam;
         integerParam.SetInteger( EPhoneInCallCmdHandset );
+        iViewCommandHandle->ExecuteCommand(
+            EPhoneViewEnableToolbarButton, &integerParam );
+        }
+    }
+
+// ---------------------------------------------------------
+// CPhoneState::SetToolbarButtonBTHFEnabled
+// ---------------------------------------------------------
+//
+EXPORT_C void CPhoneState::SetToolbarButtonBTHFEnabled()
+    {
+    if ( FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
+        {
+        TPhoneCmdParamInteger integerParam;
+        integerParam.SetInteger( EPhoneInCallCmdBtHandsfree );
         iViewCommandHandle->ExecuteCommand(
             EPhoneViewEnableToolbarButton, &integerParam );
         }
@@ -4890,6 +4868,70 @@ void CPhoneState::SetLittleBubbleVisibilityL(
                break;
            }
         } 
+    }
+
+// -----------------------------------------------------------
+// CPhoneState::DisplayCallSetupL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneState::DisplayCallSetupL( TInt aCallId )
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneState::DisplayCallSetupL() ");
+    BeginTransEffectLC( ECallUiAppear );
+    BeginUiUpdateLC();
+    SetNumberEntryVisibilityL( EFalse );
+    CaptureKeysDuringCallNotificationL( ETrue );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
+    TPhoneCmdParamInteger uidParam;
+    uidParam.SetInteger( KUidPhoneApplication.iUid );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewBringAppToForeground,
+        &uidParam );
+    // Do state-specific operations.
+    DoStateSpecificCallSetUpDefinitionsL();
+    DisplayHeaderForOutgoingCallL(aCallId);
+    EndUiUpdate();
+    EndTransEffect();
+    iCbaManager->UpdateCbaL(EPhoneCallHandlingCallSetupCBA);
+    }
+
+// -----------------------------------------------------------
+// Sends command to viewcontroller to store the flag
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneState::SetNeedToReturnToForegroundAppStatusL( 
+    TBool aNeedToReturn )
+    {
+    TPhoneCmdParamBoolean booleanParam;
+    booleanParam.SetBoolean( aNeedToReturn );
+    iViewCommandHandle->ExecuteCommandL( 
+        EPhoneViewSetNeedToReturnToForegroundAppStatus,
+        &booleanParam );
+    }
+
+// -----------------------------------------------------------
+// CPhoneState::DoStateSpecificCallSetUpDefinitionsL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneState::DoStateSpecificCallSetUpDefinitionsL()
+    {
+    // do nothing
+    }
+
+// -----------------------------------------------------------
+// CPhoneState::CloseClearNumberEntryAndLoadEffect
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneState::CloseClearNumberEntryAndLoadEffectL( 
+        TStateTransEffectType aType )
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, 
+            "CPhoneState::CloseClearNumberEntryAndLoadEffectL() ");
+    BeginTransEffectLC( aType );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
+    EndTransEffect();
+    // Do state-specific operation when number entry is cleared
+    HandleNumberEntryClearedL();
     }
 
 //  End of File

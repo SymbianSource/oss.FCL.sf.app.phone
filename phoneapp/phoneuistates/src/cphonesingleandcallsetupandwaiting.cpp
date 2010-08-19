@@ -120,18 +120,17 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleKeyMessageL(
         {
         // send-key
         case EKeyYes:
-			if( IsNumberEntryVisibleL() )
-				{
-            	CPhoneState::CallFromNumberEntryL();    						
-				}
-			else
-				{
-				// Number entry is behind waiting call bubble
-				// We can't answer to waiting call in this state
-				// so display Not allowed -note.						
-                CPhoneState::SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed );
-				}
+            if( IsNumberEntryVisibleL() )
+                {
+                CPhoneState::CallFromNumberEntryL();
+                }
+            else
+                {
+                // Number entry is behind waiting call bubble
+                // We can't answer to waiting call in this state
+                // so display Not allowed -note.
+                CPhoneState::SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed );
+                }
             break;
             
         // end-key
@@ -174,7 +173,7 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleKeyMessageL(
             else
                 {
                 // handle end key
-                DisconnectOutgoingCallL();              
+                DisconnectOutgoingCallL();
                 }
             break;
             
@@ -597,7 +596,7 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToSingleAndAlertingL( TInt a
 // CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL
 // -----------------------------------------------------------
 //
-void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL( TInt aCallId )
+void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
 	    "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL()");
@@ -618,7 +617,7 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL( TInt aCallId 
 // CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL
 // -----------------------------------------------------------
 //
-void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL( TInt aCallId )
+void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
 	    "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL()");

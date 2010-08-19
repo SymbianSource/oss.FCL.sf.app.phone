@@ -106,7 +106,7 @@ void CVideoDTMFDialer::ConstructL(
 
 // Constructor
 CVideoDTMFDialer::CVideoDTMFDialer( ) :
-    iEikEnv( *CEikonEnv::Static() )
+    iEikEnv( *CEikonEnv::Static() ) // codescanner::performance::eikonenvstatic
     {
     // Empty    
     }

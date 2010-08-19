@@ -15,15 +15,16 @@
 *
 */
 
-
-
 #include <CVPbkPhoneNumberMatchStrategy.h>
 #include <MVPbkContactLinkArray.h>
 #include <CPbk2StoreConfiguration.h>
 #include <MVPbkContactStoreProperties.h>
 #include <MVPbkContactStore.h>
 #include <CVPbkContactStoreUriArray.h>
-
+#include <talogger.h>
+#include <telephonyvariant.hrh>
+#include <telinternalcrkeys.h>
+#include <centralrepository.h>
 
 #include "CPhCntMatcherImpl.h"
 #include "cphcntmatchcontact.h"
@@ -35,8 +36,28 @@
 #include "MPhoneCntPbkOwner.h"
 #include "cphcntvpbkcontactid.h"
 #include "cphcntcontactmatchstrategy.h"
-#include <talogger.h>
 
+// Local functions
+/**
+ * Gets contact selection strategy from localvariation flag.
+ */
+TPhCntContactSelectionStrategy::TAllowSeveralMatches 
+    GetContactSelectionStrategyL()
+    {
+    CRepository* repository = CRepository::NewLC( KCRUidTelVariation );
+    TInt variationFlag;
+    User::LeaveIfError( repository->Get( KTelVariationFlags, variationFlag ) );
+    CleanupStack::PopAndDestroy( repository );
+    
+    if( variationFlag & KTelephonyLVFlagShowContactWhenSeveralMatches ) 
+        {
+        return TPhCntContactSelectionStrategy::EAllowSeveralMatches;
+        }
+    else
+        {
+        return TPhCntContactSelectionStrategy::EAllowSingleMatch;
+        }
+    }
 
 
 // ---------------------------------------------------------------------------
@@ -191,12 +212,8 @@ TInt CPhCntMatcherImpl::GetContactL(
     TEFLOGSTRING( KTAOBJECT, "CNT CPhCntMatcherImpl::GetContactL" );
     // Try to find matching contact.
     const MVPbkContactLinkArray* linkArray = NULL;
-    delete iCSMatchStrategy;
-    iCSMatchStrategy = 0;
-    iCSMatchStrategy = iContactManager.CreateContactMatchStrategyL( *iMatchContact,
-        EFalse ); // don't remove duplicates
-    TInt err( iMatchContact->MatchContact( linkArray, aTelNumber,
-        *iCSMatchStrategy ) );
+    TInt err = MatchContactL( linkArray, aTelNumber, 
+        MPhCntContactManager::EDontRemoveDuplicates );
 
     CPhCntContact* match( NULL );
     TInt index( KErrNotFound );
@@ -204,18 +221,22 @@ TInt CPhCntMatcherImpl::GetContactL(
     // Apply exact match on additional stores first.
     // If match is found, don't care about other stores as
     // these come first.
-    if(  !err && ( linkArray->Count() > 1 ) )
-        {
-        index = MatchFromAdditionalStore( *linkArray );
-
-        // Single match on additonal stores
-        if ( index != KErrNotFound && index != KErrAlreadyExists )
+    if( !err )
+        {        
+        const CVPbkContactStoreUriArray& additionalStores = iContactManager.AdditionalContactStoreUris();
+        index = iContactSelectionStrategy.ApplyAdditonalStoreStrategy( *linkArray, additionalStores );  
+        
+        const TBool manyContactsFound = index == KManyContacts;
+        const TBool singleContactFound = 
+            index != KNoContact && index != KManyContacts;
+        
+        if ( singleContactFound )
             {
             FetchContact( match, linkArray->At( index ), aTelNumber );
             aMatch = match;
             return err;
             }
-        else if ( index == KErrAlreadyExists ) //Several matches on additional stores
+        else if ( manyContactsFound ) 
             {
             aMatch = match;
             return KErrNotFound;
@@ -224,30 +245,46 @@ TInt CPhCntMatcherImpl::GetContactL(
 
     if(  !err && ( linkArray->Count() > 1 ) )
         {
-        delete iCSMatchStrategy;
-        iCSMatchStrategy = 0;
-        iCSMatchStrategy = iContactManager.CreateContactMatchStrategyL(
-            *iMatchContact, ETrue ); //remove duplicates
-        err = iMatchContact->MatchContact( linkArray, aTelNumber,
-            *iCSMatchStrategy );
+        err = MatchContactL( linkArray, aTelNumber,
+            MPhCntContactManager::ERemoveDuplicates );
         }
     if ( !err )
         {
-        // If only one contact, no additional checks needed
-        if ( linkArray->Count() == 1 )
-            {
-            index = 0;
-            }
+        index = iContactSelectionStrategy.ApplyStrategy( *linkArray );        
         }
-
 
     // Finally fetch contact details
-    if ( index != KErrNotFound )
+    if ( index != KNoContact )
         {
         FetchContact( match, linkArray->At( index ), aTelNumber );
+        aMatch = match;
         }
+    else
+        {
+        err = KErrNotFound;
+        }
+    
+    TEFLOGSTRING2( KTAMESIN,"CNT CPhCntMatcherImpl::GetContactL,err: %d", err );    
+    return err;
+    }
 
-    aMatch = match;
+// ---------------------------------------------------------------------------
+// Matches contact
+// ---------------------------------------------------------------------------
+//
+TInt CPhCntMatcherImpl::MatchContactL( 
+    const MVPbkContactLinkArray*& aContactLinkArray, 
+    const TDesC& aTelNumber,
+    MPhCntContactManager::TDuplicateRemovalStrategy aRemoveDuplicatesStrategy )
+    {
+    delete iCSMatchStrategy;
+    iCSMatchStrategy = NULL;
+    iCSMatchStrategy = iContactManager.CreateContactMatchStrategyL( 
+        *iMatchContact,
+        aRemoveDuplicatesStrategy );
+    
+    const TInt err( iMatchContact->MatchContact( aContactLinkArray, aTelNumber,
+        *iCSMatchStrategy ) );
     return err;
     }
 
@@ -294,6 +331,9 @@ TInt CPhCntMatcherImpl::CreateMatcher()
 //
 void CPhCntMatcherImpl::ConstructL()
     {
+    const TPhCntContactSelectionStrategy::TAllowSeveralMatches strategy = 
+        GetContactSelectionStrategyL();
+    iContactSelectionStrategy.SetContactSelectionStrategy( strategy );    
     }
 
 // ---------------------------------------------------------------------------
@@ -321,39 +361,5 @@ TInt CPhCntMatcherImpl::FetchContact(
             }
         }
     return err;
-    }
-
-// --------------------------------------------------------------------------
-// CPhCntMatcherImpl::MatchFromAdditionalStore
-// --------------------------------------------------------------------------
-//
-TInt CPhCntMatcherImpl::MatchFromAdditionalStore(
-    const MVPbkContactLinkArray& linkArray ) const
-    {
-    TEFLOGSTRING( KTAOBJECT, "CNT CPhCntMatcherImpl::MatchFromAdditionalStore" );
-    TInt ret( KErrNotFound );
-    TInt found(0); // count of found contacts from additional stores.
-
-    for ( TInt i = 0; i < linkArray.Count(); i++ )
-        {
-        TVPbkContactStoreUriPtr uri =
-            linkArray.At( i ).ContactStore().StoreProperties().Uri();
-
-        // Compare if contact is from additional store.
-        if ( iContactManager.AdditionalContactStoreUris().IsIncluded( uri ) )
-            {
-            // Contact found from additional store.
-            found++;
-            ret = i;
-            }
-        }
-
-    if ( found > 1)
-        {
-        // Multiple matches from additional stores -> no match.
-        ret = KErrAlreadyExists;
-        }
-
-    return ret;
     }
 

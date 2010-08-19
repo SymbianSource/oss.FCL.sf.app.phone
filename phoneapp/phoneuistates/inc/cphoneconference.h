@@ -65,6 +65,12 @@ class CPhoneConference : public CPhoneGsmInCall
         virtual void HandleKeyMessageL(
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
+        
+        /**
+        * This function is called from displaycallsetup and 
+        * the purpose is to do state specific things for callsetup.
+        */
+        IMPORT_C virtual void DoStateSpecificCallSetUpDefinitionsL();
             
     protected:
 
@@ -102,8 +108,6 @@ class CPhoneConference : public CPhoneGsmInCall
         virtual void HandleConferenceIdleL();
                         
         virtual void MakeStateTransitionToTwoSinglesL();
-
-        virtual void DisplayCallSetupL( TInt aCallId );
         
         virtual TBool IsConferenceBubbleInSelectionMode() const;
         
@@ -143,7 +147,7 @@ class CPhoneConference : public CPhoneGsmInCall
         
         void MakeStateTransitionToIdleL();
         
-        void HandleDiallingL( TInt aCallId );
+        void HandleDialingL( TInt aCallId );
               
         void CallFromNewCallQueryL();
         

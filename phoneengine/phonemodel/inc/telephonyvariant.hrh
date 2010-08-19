@@ -35,6 +35,12 @@
 */
 #define KTelephonyLVFlagCoverHideSendEndKey 0x00000004
 
+/**
+* Shows contact name in Call UI even if there are several matches for the phone number.
+*
+*/
+#define KTelephonyLVFlagShowContactWhenSeveralMatches 0x00000008
+
 /** 
 * KTelephonyLVFlagScrollSoftKeys defines status of scroll softkeys. When the 
 * flag is set on in KTelephonyConfigFlags scroll softkeys are enabled. 

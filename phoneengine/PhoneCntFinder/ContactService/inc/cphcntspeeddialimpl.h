@@ -126,6 +126,8 @@ NONSHARABLE_CLASS( CPhCntSpeedDialImpl )
         
         void CopyNumberL( TDes& aAppendTo, const TDesC& aNumber );
         
+        void ParseNumber( TDes& aNumber );
+        
         /**
          * Setups the field info with new attributes.
          * @param aContact Contact information

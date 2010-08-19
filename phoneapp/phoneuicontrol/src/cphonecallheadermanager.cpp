@@ -223,38 +223,6 @@ void CPhoneCallHeaderManager::DisplayHeaderForOutgoingCallL( const TInt aCallId 
             &callHeaderParam );
     }
 
-
-// ---------------------------------------------------------------------------
-//  CPhoneCallHeaderManager::DisplayHeaderForInitializingCallL
-// ---------------------------------------------------------------------------
-//
-void CPhoneCallHeaderManager::DisplayHeaderForInitializingCallL( TInt aCallId )
-    {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneCallHeaderManager::DisplayHeaderForInitializingCallL() ");
-    __ASSERT_DEBUG( iStateMachine.PhoneEngineInfo(), Panic( EPhoneCtrlInvariant ) );
-    
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-    
-    iCallHeaderParam->SetIniticalizingCallHeaderParamsL( 
-            aCallId,
-            &callHeaderParam );
-            
-    if( iCustomization )
-        {
-        // to do modifications to call header parameters
-        // if VoIP call in question
-        iCustomization->ModifyCallHeaderTexts( aCallId, &callHeaderParam,
-            KNullDesC );
-        }
-    
-    // Display call header for outgoing call
-    iViewCommandHandle.ExecuteCommandL( 
-            EPhoneViewCreateCallHeader, 
-            aCallId, 
-            &callHeaderParam );
-    
-    }
-
 // ---------------------------------------------------------------------------
 //  CPhoneCallHeaderManager::IsWaitingCallL
 // ---------------------------------------------------------------------------
@@ -315,16 +283,6 @@ CBubbleManager::TPhoneCallTypeFlags CPhoneCallHeaderManager::CallHeaderType() co
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneCallHeaderManager::CallHeaderType() ");
     return iCallHeaderParam->CallHeaderType();            
-    }
-
-// ---------------------------------------------------------------------------
-//  CPhoneCallHeaderManager::SetDivertIndication
-// ---------------------------------------------------------------------------
-//
-void CPhoneCallHeaderManager::SetDivertIndication( const TBool aDivertIndication )
-    {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneCallHeaderManager::SetDivertIndication()");
-    iCallHeaderParam->SetDivertIndication( aDivertIndication );           
     }
 
 // ---------------------------------------------------------------------------

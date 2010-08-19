@@ -149,7 +149,7 @@ void CPhoneSingleAndWaiting::HandlePhoneEngineMessageL(
             break;
 
         case MEngineMonitor::EPEMessageDialing:
-            HandleDiallingL( aCallId );
+            HandleDialingL( aCallId );
             break;
             
         case MEngineMonitor::EPEMessageDisconnecting:
@@ -434,7 +434,6 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
 
         // Remove call
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-
         // Idle message came for waiting call
         if ( IsNumberEntryUsedL() )
             {
@@ -442,9 +441,7 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
                 {
                 // Return phone to the background if send to background is needed.
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
-
                 UpdateCbaL( EPhoneCallHandlingInCallCBA );
                 }
             else
@@ -465,13 +462,21 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
                 }
             }
         
+        if ( IsVideoCall( iSingleCallId ) )
+            {
+            TPhoneCmdParamInteger uidParam;
+            uidParam.SetInteger( KVtUiAppUidValue.iUid );
+
+            // Set video Phone as the top application
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetTopApplication,
+                &uidParam );
+            }
+        
         SetTouchPaneButtons( EPhoneIncallButtons );
         EndUiUpdate();
-
         // CBA updates in above if-else conditions
         iStateMachine->ChangeState( EPhoneStateSingle );
         }
-
     }
 
 // -----------------------------------------------------------
@@ -578,9 +583,7 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL() ");
-
     BeginUiUpdateLC();
-
     UpdateRemoteInfoDataL ( aCallId );
     // Show bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -606,19 +609,16 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
     if ( IsNumberEntryUsedL() && NeedToReturnToForegroundAppL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
-
         UpdateCbaL( EPhoneCallHandlingInCallCBA );
         }
     else
         {
-        // Set Two singles softkeys
+        // Set Two singles state softkeys
         UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
         }
-
+    
     SetTouchPaneButtons( EPhoneTwoSinglesButtons );
     EndUiUpdate();
-
-    // Go to two singles state
     // CBA updates in above if-else conditions
     iStateMachine->ChangeState( EPhoneStateTwoSingles );
     }
@@ -649,63 +649,30 @@ void CPhoneSingleAndWaiting::CallFromNewCallQueryL()
     }
 
 // -----------------------------------------------------------
-// CPhoneSingleAndWaiting::HandleDiallingL
+// CPhoneSingleAndWaiting::HandleDialingL
 // -----------------------------------------------------------
 //
-void CPhoneSingleAndWaiting::HandleDiallingL( TInt aCallId )
+void CPhoneSingleAndWaiting::HandleDialingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
-        "CPhoneSingleAndWaiting::HandleDiallingL() ");
-
-    BeginUiUpdateLC();
-
-    // Hide number entry if it exists
-    SetNumberEntryVisibilityL(EFalse);
-
+        "CPhoneSingleAndWaiting::HandleDialingL() ");
     // Display call setup
     DisplayCallSetupL( aCallId );
-
-    // Set Hold flag to view ( DTMF menu label have to present )
-    TPhoneCmdParamBoolean holdFlag;
-    holdFlag.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-
-    SetTouchPaneButtons( EPhoneCallSetupButtons );
-
-    EndUiUpdate();
-
-    // Update call setup CBAs
-    UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
-
     // Go to Single And Waiting And Call Setup state
     iStateMachine->ChangeState( EPhoneStateSingleAndCallSetupAndWaiting );
     }
 
 // -----------------------------------------------------------
-// CPhoneSingleAndWaiting::DisplayCallSetupL
+// CPhoneSingleAndWaiting::DoStateSpecificCallSetUpDefinitionsL
 // -----------------------------------------------------------
 //
-void CPhoneSingleAndWaiting::DisplayCallSetupL( TInt aCallId )
+EXPORT_C void CPhoneSingleAndWaiting::DoStateSpecificCallSetUpDefinitionsL()
     {
-    __LOGMETHODSTARTEND( EPhoneUIStates,
-        "CPhoneSingleAndWaiting::DisplayCallSetupL() ");
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-
-    // Remove dialogs if necessary
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-
-    // Capture keys when the phone is dialling
-    CaptureKeysDuringCallNotificationL( ETrue );
-
-    // Force telephony to the foreground
-    TPhoneCmdParamInteger uidParam;
-    uidParam.SetInteger( KUidPhoneApplication.iUid );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewBringAppToForeground,
-        &uidParam );
-
-    // Display call setup header
-    DisplayHeaderForOutgoingCallL( aCallId );
+    // Set Hold flag to view ( DTMF menu label have to present )
+    TPhoneCmdParamBoolean holdFlag;
+    holdFlag.SetBoolean( EFalse );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
+    SetTouchPaneButtons( EPhoneCallSetupButtons );
     }
 
 // -----------------------------------------------------------
@@ -744,7 +711,7 @@ EXPORT_C void CPhoneSingleAndWaiting::HandleErrorL( const TPEErrorInfo& aErrorIn
 // CPhoneSingleAndWaiting::HandleDisconnectingL
 // -----------------------------------------------------------
 //
-void CPhoneSingleAndWaiting::HandleDisconnectingL( TInt aCallId )
+void CPhoneSingleAndWaiting::HandleDisconnectingL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndWaiting::HandleDisconnectingL( ) ");
     }

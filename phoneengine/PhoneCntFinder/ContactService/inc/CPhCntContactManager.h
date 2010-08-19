@@ -106,7 +106,7 @@ public:
 	 */
     MPhCntContactMatchStrategy* CreateContactMatchStrategyL(
             MVPbkContactFindObserver& aObserver,
-            TBool aRemoveDuplicates );
+            TDuplicateRemovalStrategy aStrategy );
    
     /**
      * From MPhCntContactManager.

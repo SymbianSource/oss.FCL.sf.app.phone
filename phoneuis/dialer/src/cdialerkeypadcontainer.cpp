@@ -27,7 +27,7 @@
 #include <AknsSkinInstance.h>
 #include <AknsDrawUtils.h>
 #include <AknsConstants.h>
-#include <aknlayout2def.h>
+#include <AknLayout2Def.h>
 #include <aknlayoutscalable_apps.cdl.h>
 #include <layoutmetadata.cdl.h>
 #include <data_caging_path_literals.hrh> // for KDC_APP_RESOURCE_DIR

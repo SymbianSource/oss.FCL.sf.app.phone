@@ -459,14 +459,16 @@ void CPhoneConferenceAndSingle::UpdateInCallCbaL()
 void CPhoneConferenceAndSingle::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
-    	"CPhoneConferenceAndSingle::HandleIncomingL");
-    
+            "CPhoneConferenceAndSingle::HandleIncomingL");
+    IsNumberEntryUsedL() ? 
+        BeginTransEffectLC( ECallUiAppear ) :
+        BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();  
     
     // Hide the number entry if it exists
     if ( IsNumberEntryUsedL() )
         {
-        SetNumberEntryVisibilityL( EFalse );    
+        SetNumberEntryVisibilityL( EFalse );
         }
     
     TPhoneCmdParamBoolean dialerParam;
@@ -492,7 +494,7 @@ void CPhoneConferenceAndSingle::HandleIncomingL( TInt aCallId )
     DisplayIncomingCallL( aCallId, dialerParam  );
 
     EndUiUpdate();
-
+    EndTransEffect();
     TPhoneCmdParamBoolean conferenceAndSingleFlag;
     conferenceAndSingleFlag.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetConferenceAndSingleFlag, 

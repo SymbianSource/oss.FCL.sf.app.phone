@@ -17,8 +17,6 @@
 
 
 #include <CVPbkContactManager.h>
-#include <centralrepository.h>
-#include <telconfigcrkeys.h>
 #include <CVPbkContactStoreUriArray.h>
 #include <cntdb.h>  // KBestMatchingPhoneNumbers
 
@@ -27,10 +25,7 @@
 #include "CPhoneRawMatchNumberExtractor.h"
 
 
-// Digit count used to match CS number.
-const TInt KPhCntMatchMin = 7;
-const TInt KPhCntMatchMax = 11;
-const TInt KPhCntMatchDefault = KPhCntMatchMin;
+
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -55,29 +50,6 @@ CPhCntContactMatchStrategy::CPhCntContactMatchStrategy(
 //
 void CPhCntContactMatchStrategy::ConstructL()
     {
-    iCenRepSession = CRepository::NewL( KCRUidTelConfiguration );
-    iCenRepNotifyHandler = 
-        CCenRepNotifyHandler::NewL(
-            *this, 
-            *iCenRepSession, 
-            CCenRepNotifyHandler::EIntKey,
-            KTelMatchDigits );
-            
-    iCenRepNotifyHandler->StartListeningL();
-    
-    iNumberOfDigits = KPhCntMatchDefault;
-    TInt sdMatchValue = KErrNotFound;
-
-    // Find digit count to be used with matching.
-    if ( iCenRepSession->Get( KTelMatchDigits, sdMatchValue )
-         == KErrNone )
-        {
-        // If we can find a proper value from the cenrep, use it.
-        if ( sdMatchValue >= KPhCntMatchMin && sdMatchValue <= KPhCntMatchMax )
-            {
-            iNumberOfDigits = sdMatchValue;
-            }
-        }
     User::LeaveIfError( CreateContactMatchStrategy() );
     
     iNumberExtractor = new( ELeave )CCntRawPhoneNumberExtractor();
@@ -117,13 +89,6 @@ CPhCntContactMatchStrategy::~CPhCntContactMatchStrategy()
         {
         iNumberExtractor->Release();    
         }
-    
-    if( iCenRepNotifyHandler )
-        {
-        iCenRepNotifyHandler->StopListening();    
-        }
-    delete iCenRepNotifyHandler;
-    delete iCenRepSession;
     delete iMatchStrategy;
     delete iUriArray;
     }
@@ -137,14 +102,14 @@ void CPhCntContactMatchStrategy::FindMatchesL( const TDesC& aPhoneNumber )
     {
     if( iMatchStrategy )
         {
-        MatchL( aPhoneNumber );
+        DoMatchL( aPhoneNumber );
         }
     else
         {
         const TInt err( CreateContactMatchStrategy() );
         if( !err )
             {
-            MatchL( aPhoneNumber );
+            DoMatchL( aPhoneNumber );
             }
         else
             {
@@ -181,37 +146,6 @@ TInt CPhCntContactMatchStrategy::CreateContactMatchStrategy()
     }
 
 // ---------------------------------------------------------------------------
-// From base class MCenRepNotifyHandlerCallback
-// Notification from CenRep
-// ---------------------------------------------------------------------------
-//  
-void CPhCntContactMatchStrategy::HandleNotifyString( 
-    TUint32 aUid, 
-    const TDesC16& aValue )
-    {
-    if ( aUid == KTelMatchDigits )
-        {
-        TLex lexer( aValue );
-        TInt value;
-        const TInt err( lexer.Val( value ) );
-        
-        if( !err ) 
-            {
-            if ( value < KPhCntMatchMin || value > KPhCntMatchMax )
-                {
-                iNumberOfDigits = KPhCntMatchDefault;
-                }
-            else
-                {
-                iNumberOfDigits = value;
-                }
-            CreateContactMatchStrategy();
-            }
-     
-        }
-    }
-
-// ---------------------------------------------------------------------------
 // From base class MPhCntContactStoreEventObserver
 // Updates match strategy.
 // ---------------------------------------------------------------------------
@@ -221,20 +155,6 @@ void CPhCntContactMatchStrategy::ContactStoreAvailabilityChanged()
     delete iUriArray;
     iUriArray = NULL;
     CreateContactMatchStrategy();
-    }
-
-// ---------------------------------------------------------------------------
-// Removes extra characters from number and matches with raw number.
-// ---------------------------------------------------------------------------
-//         
-void CPhCntContactMatchStrategy::MatchL( 
-    const TDesC& aPhoneNumber )
-    {
-    HBufC* rawNumber = HBufC::NewLC( aPhoneNumber.Length() );
-    TPtr rawNumberPtr = rawNumber->Des();
-    iNumberExtractor->ExtractRawNumber( aPhoneNumber, rawNumberPtr );
-    DoMatchL( *rawNumber );
-    CleanupStack::PopAndDestroy( rawNumber );
     }
 
 // ---------------------------------------------------------------------------

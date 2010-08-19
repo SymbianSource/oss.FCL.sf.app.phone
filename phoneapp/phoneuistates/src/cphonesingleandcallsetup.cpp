@@ -291,55 +291,44 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
 void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetup::HandleIdleL()");
-    
     BeginUiUpdateLC();
- 
-    // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-
-    // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-
     // Find out do we have single or outgoing call left
     TPhoneCmdParamInteger activeCallCount;
     iViewCommandHandle->ExecuteCommandL(
-        EPhoneViewGetCountOfActiveCalls, &activeCallCount );
-        
+            EPhoneViewGetCountOfActiveCalls, &activeCallCount );
     if( activeCallCount.Integer() )
         {
         CheckIfRestoreNEContentAfterDtmfDialer();
- 
         if ( IsNumberEntryUsedL() )
             {
             // Show the number entry if it exists
             SetNumberEntryVisibilityL(ETrue);
-	        }
-	    else
-    	    {
-    	    // Set incall CBAs
-    	    UpdateCbaL( EPhoneCallHandlingInCallCBA );    
-    	    }
-	        
+            }
+        else
+            {
+            // Set incall CBAs
+            UpdateCbaL( EPhoneCallHandlingInCallCBA );    
+            }
         SetTouchPaneButtons( EPhoneIncallButtons );    
         // UnCapture keys callsetup fails
         CaptureKeysDuringCallNotificationL( EFalse );
         // Setup call was terminated
-        iStateMachine->ChangeState( EPhoneStateSingle );            
+        iStateMachine->ChangeState( EPhoneStateSingle );
         }
     else
         {
-    	// Display call termination note, if necessary
-    	DisplayCallTerminationNoteL();
-
+        // Display call termination note, if necessary
+        DisplayCallTerminationNoteL();
         // Single call was terminated
         SetTouchPaneButtons( EPhoneCallSetupButtons );
         SetToolbarDimming( ETrue );
-		SetToolbarButtonLoudspeakerEnabled();
+        SetToolbarButtonLoudspeakerEnabled();
         // Update call setup CBAs
         UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
-        iStateMachine->ChangeState( EPhoneStateCallSetup );            
+        iStateMachine->ChangeState( EPhoneStateCallSetup );
         }
-        
     EndUiUpdate();
     }
 

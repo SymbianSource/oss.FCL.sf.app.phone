@@ -36,7 +36,7 @@
 #include    <AknBidiTextUtils.h>
 #include    <featmgr.h>
 #include    <aknlayoutscalable_apps.cdl.h>
-#include    <aknlayout2scalabledef.h>
+#include    <AknLayout2ScalableDef.h>
 #include    <applayout.cdl.h>
 #include    <layoutmetadata.cdl.h>
 

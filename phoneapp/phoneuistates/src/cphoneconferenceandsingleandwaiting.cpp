@@ -198,31 +198,25 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndSingleAndWaiting::HandleIdleL()");
-             
-    BeginUiUpdateLC();    
-    // Set touch controls
+    BeginUiUpdateLC();
     SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
-       
 
     TPhoneCmdParamBoolean conferenceExistsForCallId;
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCallExistsInConference,
         aCallId, &conferenceExistsForCallId );
-    
     if( conferenceExistsForCallId.Boolean() )
         {
         // Remove conference member from conference bubble
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveFromConference, 
-            aCallId );            
+            aCallId );
         }
     else
         {
-        // Remove call 
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-
         TPhoneCmdParamBoolean conferenceBubbleExists;
         iViewCommandHandle->ExecuteCommandL( EPhoneViewGetIsConference, 
-            &conferenceBubbleExists );                            
+            &conferenceBubbleExists );
         if( !conferenceBubbleExists.Boolean() )
             {
             // Idle message came for conference member.
@@ -237,13 +231,13 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
             if( callStateData.CallId() >= 0 )
                 {
                 // We have Conference and Waiting calls left
-                MakeStateTransitionToConferenceAndWaitingL( aCallId );            
+                MakeStateTransitionToConferenceAndWaitingL( aCallId );
                 }
             else
                 {
                 // We have Conference and Single calls left
                 MakeStateTransitionToConferenceAndSingleL( aCallId );
-                }                
+                }
             }
         }
     EndUiUpdate();
@@ -465,7 +459,6 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
                 
                 // Go to Incoming state
                 iCbaManager->UpdateIncomingCbaL( callStateData.CallId() );
-
                 SetTouchPaneButtons( EPhoneIncomingCallButtons );
                 UpdateSilenceButtonDimming();
                 SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
@@ -487,7 +480,6 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
             UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
             SetTouchPaneButtons( EPhoneWaitingCallButtons );        
             SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
-
             iStateMachine->ChangeState( EPhoneStateWaitingInSingle );        
             }
             break;
@@ -495,7 +487,6 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
             {
             // Go to Two Singles And Waiting state
             UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
-
             SetTouchPaneButtons( EPhoneWaitingCallButtons );        
             iStateMachine->ChangeState( EPhoneStateTwoSinglesAndWaiting );
             }

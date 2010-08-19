@@ -802,9 +802,7 @@ void CPhoneCustomizationVoip::ModifyNumberAcquisitionMenuL(
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneCustomizationVoip::ModifyNumberAcquisitionMenuL");
     
-    if ( ( aResourceId == R_PHONEUI_NUMBERACQ_OPTIONS_CALL_MENU ||
-           aResourceId == R_PHONEUI_NUMBERACQ_OPTIONS_MENU ||
-           aResourceId == R_PHONEUIDIALER_OPTIONS_MENU ) &&
+    if ( aResourceId == R_PHONEUI_NUMBERACQ_OPTIONS_CALL_MENU &&
            VoIPSupportedL() )
         {
         InsertInternetCallMenuItemL( aResourceId, aMenuPane );
@@ -825,7 +823,7 @@ void CPhoneCustomizationVoip::ModifyNumberAcquisitionMenuL(
 // -----------------------------------------------------------
 //
 void CPhoneCustomizationVoip::InsertInternetCallMenuItemL( 
-        TInt aResourceId, CEikMenuPane& aMenuPane )
+        TInt /* aResourceId */, CEikMenuPane& aMenuPane )
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneCustomizationVoip::InsertInternetCallMenuItemL" );
@@ -855,35 +853,10 @@ void CPhoneCustomizationVoip::InsertInternetCallMenuItemL(
 
     TInt index(KErrNotFound);
 
-    if ( aResourceId == R_PHONEUI_NUMBERACQ_OPTIONS_CALL_MENU )
+    // If number entry is empty don't add internet call option 
+    if ( phoneNumber->Length() )
         {
-        if ( !CPhoneKeys::Validate( phoneNumber->Des() ) )
-            {        
-            if ( aMenuPane.MenuItemExists( EPhoneNumberAcqCmdCall, index ) )
-                {
-                aMenuPane.DeleteMenuItem( EPhoneNumberAcqCmdCall );
-                }
-            
-            if ( aMenuPane.MenuItemExists( EPhoneNumberAcqCmdVideoCall, index ) )
-                {
-                aMenuPane.DeleteMenuItem( EPhoneNumberAcqCmdVideoCall );
-                }
-            }
-        
         aMenuPane.AddMenuItemL( voipMenuItem->iData );
-        }
-    else if ( !aMenuPane.MenuItemExists( EPhoneNumberAcqCmdCall, index ) )
-        {
-        // Call menu is removed if user inserts anything that is not
-        // a valid cs number, so must add Internet call option here where
-        // we know that voip is however supported.
-    
-        // If number entry is empty don't add internet call option 
-        if ( phoneNumber->Length() )
-            {
-            // Internet call item must be on the top of the menu
-            aMenuPane.InsertMenuItemL( voipMenuItem->iData, 0 );
-            }
         }
     
     CleanupStack::PopAndDestroy( 3, &voipServices );

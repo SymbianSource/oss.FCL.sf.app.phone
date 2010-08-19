@@ -25,6 +25,7 @@
 #include <remconcoreapitargetobserver.h>
 #include <MProfileEngine.h>
 #include <bmbubblemanager.h>
+#include <eikenv.h>
 
 #include "mphonestate.h"
 #include "mphoneviewcommandhandle.h"
@@ -42,6 +43,8 @@ class CPhoneNumberEntryManager;
 enum TStateTransEffectType
     {
     ENoneType,
+    ECallUiAppear,
+    ECallUiDisappear,
     // These effect types can be used only when NE is opened/closed
     // when some other app than phone is visible on the foreground/
     // background.
@@ -232,15 +235,6 @@ class CPhoneState :
             TRemConCoreApiButtonAction aButtonAct);
 
         /**
-        * Setter for divert indication showing in bubble.
-        * @param aDivertIndication ETrue to show divert indication,
-        *          EFalse to not. Usually setting EFalse isn't necessary
-        *         as it's a default value in bubble creation.
-        */
-        IMPORT_C virtual void SetDivertIndication(
-            const TBool aDivertIndication );
-
-        /**
         * Handles Long hash key press
         */
         IMPORT_C void HandleLongHashL();
@@ -336,6 +330,24 @@ class CPhoneState :
         * @return boolean value indicating if dialer extension is in focus
         */
         IMPORT_C TBool IsDialingExtensionInFocusL() const;
+        
+        /**
+        * At moment does nothing in CPhoneState, only causes function call
+        * to inherinting classes.
+        */ 
+        IMPORT_C virtual void DoStateSpecificCallSetUpDefinitionsL();
+        
+        /**
+        * Getter for CEikonEnv to avoid use of static system calls
+        * @return CEikonEnv handle
+        */
+        IMPORT_C CEikonEnv* EikonEnv() const;
+        
+        /**
+        * Setter for CEikonEnv to avoid use of static system calls
+        * @param CEikonEnv handle
+        */
+        IMPORT_C virtual void SetEikonEnv( CEikonEnv* aEnv );
 
     public: // NumberEntry functions.
 
@@ -356,6 +368,11 @@ class CPhoneState :
         * @return boolean value indicating that number entry is visible
         */
         IMPORT_C TBool IsNumberEntryVisibleL();
+        
+        /**
+        * Close and and clear number entry.
+        */
+        IMPORT_C void CloseClearNumberEntryAndLoadEffectL( TStateTransEffectType aType );
 
     protected:
 
@@ -434,12 +451,6 @@ class CPhoneState :
         * @param aCallid call id
         */
         IMPORT_C void DisplayHeaderForOutgoingCallL( TInt aCallId );
-        
-        /**
-        * Display initializing call header (phone number isn't initially
-        * displayed)
-        */
-        IMPORT_C void DisplayHeaderForInitializingCallL( TInt aCallId );
 
         /**
         * Update Single Active Call
@@ -626,14 +637,6 @@ class CPhoneState :
         */
         IMPORT_C virtual void OnlyHashInNumberEntryL();
 
-        /*
-        * Checks if it's ok to use aType effect in this state.
-        *
-        * @param aType effect to be checked
-        * @return true if aType effect can be used
-        */
-        IMPORT_C virtual TBool CanTransEffectTypeBeUsed( TStateTransEffectType aType );
-
         /**
         * Informs view that UI is being updated (call bubble or number editor).
         * EndUiUpdate() must be called when update is done.
@@ -740,6 +743,20 @@ class CPhoneState :
         IMPORT_C TBool ForwardPEMessageToPhoneCustomizationL(
             const TInt aMessage,
             TInt aCallId );
+        
+        /**
+        * Sets up all call setup to display.
+        * @param aCallId - call id to set up
+        */ 
+         IMPORT_C void DisplayCallSetupL( TInt aCallId );
+         
+         /**
+          * Sets the flag wether the foreground application
+          * needs to be brought foreground after the phone
+          * goes idle 
+          */
+         IMPORT_C void SetNeedToReturnToForegroundAppStatusL( 
+             TBool aNeedToReturn );
 
     protected: // NumberEntry functions.
 
@@ -842,6 +859,11 @@ class CPhoneState :
          */
          IMPORT_C void SetToolbarButtonHandsetEnabled();
 
+         /**
+         * Sets Bluetooth handsfree button enabled.
+         */
+         IMPORT_C void SetToolbarButtonBTHFEnabled();  
+         
     protected:
 
        /**
@@ -1167,7 +1189,7 @@ class CPhoneState :
 
         // Internal variable for EikonEnv to avoid
         // use of static system calls
-        CEikonEnv& iEnv;
+        CEikonEnv* iEnv; // Not owned
 
         // Call header manager.
         CPhoneCallHeaderManager* iCallHeaderManager;

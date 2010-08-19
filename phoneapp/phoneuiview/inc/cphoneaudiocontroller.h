@@ -73,13 +73,7 @@ class CPhoneAudioController : public CBase, public MCoeControlObserver,
         * @param aCommandParam command parameter
         */
         void HandleIhfChange( TPhoneCommandParam* aCommandParam );
-        
-        /**
-        * Update control using the specified data
-        * @param aCommandParam command parameter
-        */
-        void HandleMuteChange( TPhoneCommandParam* aCommandParam );
-        
+   
         /**
         * Gets volume level from navi pane control.
         * @return Volume level.
@@ -133,14 +127,6 @@ class CPhoneAudioController : public CBase, public MCoeControlObserver,
         void PushL(CAknNavigationDecorator& aNew);
 
         /**
-        * Callback function. Called when navi pane should be updated 
-        * back to default.
-        * @param aAny pointer to instance of this class.
-        * @return KErrNone always.
-        */
-        static TInt DoUpdateNaviPaneToDefault( TAny* aAny );
-
-        /**
         * Get current volume decorator (Ihf or Ear) 
         * @return Current volume decorator
         */
@@ -157,12 +143,6 @@ class CPhoneAudioController : public CBase, public MCoeControlObserver,
         * @return Current Ihf or Ear volume level         
         */        
         TInt VolumeLevel(); 
-        
-        /**
-        * Select decorator based on current audio status
-        * @return Selected decorator (Ihf, Ear or Muted).         
-        */
-        CAknNavigationDecorator& SelectDecoratorL();         
 
         /**
         * Set volume level for given volume control
@@ -189,9 +169,6 @@ class CPhoneAudioController : public CBase, public MCoeControlObserver,
         
         // ETrue IHF is active
         TBool iIhfMode;
-
-        // ETrue if transfer to or from IHF pending
-        TBool iIhfTransferPending; 
         
         // Owned non-IHF volume control.
         CAknNavigationDecorator* iEarVolumeControl;
@@ -199,20 +176,9 @@ class CPhoneAudioController : public CBase, public MCoeControlObserver,
         // Non-IHF volume, from 1 to 10
         TInt iEarVolume; 
 
-        // Owned muted indicator
-        CAknNavigationDecorator* iMutedControl;
-        
-        // ETrue phone is muted
-        TBool iMuted;
-
-        // ETrue if timed control transfer to muted is pending
-        TBool iTimedMuteTransferPending; 
-
         // Pointer the current control that is in navi pane
         CAknNavigationDecorator* iOldControl;
-        
-        // Owned timer to update navi pane
-        CPhoneTimer* iNaviPaneUpdateTimer;
+ 
         
         /**
          * ETrue if Telephony is the foreground application,

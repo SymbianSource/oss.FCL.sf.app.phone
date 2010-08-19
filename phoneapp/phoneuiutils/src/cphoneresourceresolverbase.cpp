@@ -47,7 +47,7 @@
 // -----------------------------------------------------------------------------
 //
 EXPORT_C CPhoneResourceResolverBase::CPhoneResourceResolverBase():
-    iEnv( *CEikonEnv::Static() )
+    iEnv( *CEikonEnv::Static() ) // codescanner::performance::eikonenvstatic
     {
     if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) )
         {
@@ -1078,10 +1078,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
 
         case EPhoneDisconnectingNetworkNote:
             retVal = R_PHONE_DISCONNECTING_NETWORK_WAIT_NOTE;
-            break;
-
-        case EPhoneInCallMutedText:
-            retVal = R_PHONE_INCALL_MUTED_PANE;
             break;
 
         case EPhoneInCallNumberText:

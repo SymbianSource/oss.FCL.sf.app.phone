@@ -114,9 +114,13 @@ RESOURCE MENU_PANE r_easydialing_menu
                 },
         MENU_ITEM
                 {
-                command = EEasyDialingVoiceCall;
-                cascade = r_easydialing_options_call_menu;
-                txt = text_number_call;
+                command = EEasyDialingVoiceCall; 
+                txt =   qtn_call_sub_voice;
+                },
+        MENU_ITEM
+                {
+                command = EEasyDialingVideoCall; 
+                txt =  qtn_call_sub_video;
                 },
         MENU_ITEM
                 {
@@ -141,30 +145,6 @@ RESOURCE MENU_PANE r_easydialing_menu
         };
     }
 
-
-// ---------------------------------------------------------
-//   
-//    r_easydialing_options_call_menu
-//    Number Acquisition view options call menu pane.
-//
-// ---------------------------------------------------------
-//
-RESOURCE MENU_PANE r_easydialing_options_call_menu
-    {
-    items=
-        {
-        MENU_ITEM
-            {
-            command = EEasyDialingVoiceCall; 
-            txt =   qtn_call_sub_voice;
-            },
-        MENU_ITEM
-            {
-            command = EEasyDialingVideoCall; 
-            txt =  qtn_call_sub_video;
-            }
-        };
-    }
 
 //----------------------------------------------------------------------------
 // r_easydialing_options_on_off_menu_item

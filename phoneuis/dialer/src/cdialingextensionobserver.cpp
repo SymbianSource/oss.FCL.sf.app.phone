@@ -154,7 +154,7 @@ void CDialingExtensionObserver::UpdateCba()
     {
     if ( !iEikonEnvironment )
         {
-        iEikonEnvironment = CEikonEnv::Static();
+        iEikonEnvironment = CEikonEnv::Static(); // codescanner::performance::eikonenvstatic
         }
     
     if( iEikonEnvironment && iEikonEnvironment->EikAppUi() )

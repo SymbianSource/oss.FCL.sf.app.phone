@@ -23,7 +23,7 @@
 #include <aknbutton.h>
 #include <AknsUtils.h>
 #include <AknsDrawUtils.h>
-#include <aknlayout2def.h>
+#include <AknLayout2Def.h>
 #include <AknsSkinInstance.h>
 #include <AknsControlContext.h>
 #include <aknlayoutscalable_apps.cdl.h>
