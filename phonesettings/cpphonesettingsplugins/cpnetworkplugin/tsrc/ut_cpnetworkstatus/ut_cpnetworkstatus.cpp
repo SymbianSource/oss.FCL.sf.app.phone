@@ -73,34 +73,34 @@ void ut_CpNetworkStatus::cleanup()
  */
 void ut_CpNetworkStatus::t_statusText()
 {
-    EXPECT( QtMobility::QSystemNetworkInfo::networkStatus ).with ( QSystemNetworkInfo::WcdmaMode );
-    EXPECT( QtMobility::QSystemNetworkInfo::networkStatus ).with ( QSystemNetworkInfo::GsmMode );
-    EXPECT( QtMobility::QSystemDeviceInfo::simStatus );
-    EXPECT( QtMobility::QSystemDeviceInfo::currentProfile );
-    EXPECT( QtMobility::QSystemNetworkInfo::networkName );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkStatus ).with ( QSystemNetworkInfo::WcdmaMode );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkStatus ).with ( QSystemNetworkInfo::GsmMode );
+    EXPECT( QtMobility::QSystemDeviceInfo, simStatus );
+    EXPECT( QtMobility::QSystemDeviceInfo, currentProfile );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkName );
     m_networkStatus->statusText();
     QVERIFY(verify());
     
-    EXPECT( QtMobility::QSystemNetworkInfo::networkStatus ).with ( QSystemNetworkInfo::WcdmaMode );
-    EXPECT( QtMobility::QSystemNetworkInfo::networkStatus ).with ( QSystemNetworkInfo::GsmMode );
-    EXPECT( QtMobility::QSystemDeviceInfo::simStatus );
-    EXPECT( QtMobility::QSystemDeviceInfo::currentProfile );
-    EXPECT( QtMobility::QSystemNetworkInfo::networkName );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkStatus ).with ( QSystemNetworkInfo::WcdmaMode );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkStatus ).with ( QSystemNetworkInfo::GsmMode );
+    EXPECT( QtMobility::QSystemDeviceInfo, simStatus );
+    EXPECT( QtMobility::QSystemDeviceInfo, currentProfile );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkName );
     QT_TRAP_THROWING(SmcDefaultValue<QString>::SetL(QString("")));
     m_networkStatus->statusText();
     QVERIFY(verify());
     
-    EXPECT( QtMobility::QSystemDeviceInfo::simStatus );
-    EXPECT( QtMobility::QSystemNetworkInfo::networkName ).times(0);
+    EXPECT( QtMobility::QSystemDeviceInfo, simStatus );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkName ).times(0);
     QT_TRAP_THROWING(SmcDefaultValue< QSystemDeviceInfo::SimStatus >::SetL(QSystemDeviceInfo::SimNotAvailable ));
     m_networkStatus->statusText();
     QVERIFY(verify());
     
-    EXPECT( QtMobility::QSystemDeviceInfo::simStatus );
-    EXPECT( QtMobility::QSystemDeviceInfo::currentProfile );
-    EXPECT( QtMobility::QSystemNetworkInfo::networkStatus ).with ( QSystemNetworkInfo::WcdmaMode );
-    EXPECT( QtMobility::QSystemNetworkInfo::networkStatus ).with ( QSystemNetworkInfo::GsmMode );
-    EXPECT( QtMobility::QSystemNetworkInfo::networkName ).times(0);
+    EXPECT( QtMobility::QSystemDeviceInfo, simStatus );
+    EXPECT( QtMobility::QSystemDeviceInfo, currentProfile );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkStatus ).with ( QSystemNetworkInfo::WcdmaMode );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkStatus ).with ( QSystemNetworkInfo::GsmMode );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkName ).times(0);
     QT_TRAP_THROWING(SmcDefaultValue< QSystemDeviceInfo::SimStatus >::SetL(QSystemDeviceInfo::SingleSimAvailable ));
     QT_TRAP_THROWING(SmcDefaultValue< QSystemNetworkInfo::NetworkStatus >::SetL(QSystemNetworkInfo::NoNetworkAvailable));
     m_networkStatus->statusText();
@@ -112,22 +112,22 @@ void ut_CpNetworkStatus::t_statusText()
  */
 void ut_CpNetworkStatus::t_statusIcon()
 {
-    EXPECT( QtMobility::QSystemNetworkInfo::networkStatus ).with ( QSystemNetworkInfo::WcdmaMode );
-    EXPECT( QtMobility::QSystemNetworkInfo::networkStatus ).with ( QSystemNetworkInfo::GsmMode );
-    EXPECT( QtMobility::QSystemDeviceInfo::simStatus );
-    EXPECT( QtMobility::QSystemDeviceInfo::currentProfile );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkStatus ).with ( QSystemNetworkInfo::WcdmaMode );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkStatus ).with ( QSystemNetworkInfo::GsmMode );
+    EXPECT( QtMobility::QSystemDeviceInfo, simStatus );
+    EXPECT( QtMobility::QSystemDeviceInfo, currentProfile );
     m_networkStatus->statusIcon();
     QVERIFY(verify());
     
-    EXPECT( QtMobility::QSystemDeviceInfo::simStatus );
+    EXPECT( QtMobility::QSystemDeviceInfo, simStatus );
     QT_TRAP_THROWING(SmcDefaultValue< QSystemDeviceInfo::SimStatus >::SetL(QSystemDeviceInfo::SimNotAvailable ));
     m_networkStatus->statusIcon();
     QVERIFY(verify());
     
-    EXPECT( QtMobility::QSystemDeviceInfo::simStatus );
-    EXPECT( QtMobility::QSystemDeviceInfo::currentProfile );
-    EXPECT( QtMobility::QSystemNetworkInfo::networkStatus ).with ( QSystemNetworkInfo::WcdmaMode );
-    EXPECT( QtMobility::QSystemNetworkInfo::networkStatus ).with ( QSystemNetworkInfo::GsmMode );
+    EXPECT( QtMobility::QSystemDeviceInfo, simStatus );
+    EXPECT( QtMobility::QSystemDeviceInfo, currentProfile );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkStatus ).with ( QSystemNetworkInfo::WcdmaMode );
+    EXPECT( QtMobility::QSystemNetworkInfo, networkStatus ).with ( QSystemNetworkInfo::GsmMode );
     QT_TRAP_THROWING(SmcDefaultValue< QSystemDeviceInfo::SimStatus >::SetL(QSystemDeviceInfo::SingleSimAvailable ));
     QT_TRAP_THROWING(SmcDefaultValue< QSystemNetworkInfo::NetworkStatus >::SetL(QSystemNetworkInfo::NoNetworkAvailable));
     m_networkStatus->statusIcon();

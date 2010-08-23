@@ -51,4 +51,6 @@ EXPORTS
 	_ZThn4_NK12CPEAudioData16GetAudioMuteSyncERi @ 50 NONAME
 	_ZThn4_NK12CPEAudioData18GetAudioVolumeSyncERi @ 51 NONAME
 	_ZThn68_N15CPEGsmAudioData15HandleDTMFEventEN16MCCEDtmfObserver13TCCEDtmfEventEi5TChar @ 52 NONAME
+	_ZTI15CPEAudioFactory @ 53 NONAME
+	_ZTV15CPEAudioFactory @ 54 NONAME
 

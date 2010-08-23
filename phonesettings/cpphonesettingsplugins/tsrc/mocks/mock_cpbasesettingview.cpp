@@ -16,7 +16,7 @@
 */
 #include <QDebug>
 #include <smcmockclassincludes.h>
-#include <cpbasesettingview.h>
+#include "cpbasesettingview.h"
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -41,27 +41,6 @@ CpBaseSettingView::CpBaseSettingView(
 CpBaseSettingView::~CpBaseSettingView(  )
     {
     
-    }
-
-
-// -----------------------------------------------------------------------------
-// CpBaseSettingView::returnValueDelivered
-// -----------------------------------------------------------------------------
-//
-void CpBaseSettingView::returnValueDelivered( 
-        const QVariant & returnValue )
-    {
-    //SMC_MOCK_METHOD1( void, const QVariant &, returnValue )
-    }
-
-
-// -----------------------------------------------------------------------------
-// CpBaseSettingView::aboutToClose
-// -----------------------------------------------------------------------------
-//
-void CpBaseSettingView::aboutToClose(  )
-    {
-    SMC_MOCK_METHOD0( void )
     }
 
 

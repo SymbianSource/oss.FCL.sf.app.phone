@@ -63,7 +63,8 @@ private:
             const QString& service,
             const QString& interface, 
             const QString& operation,
-            const QList<QVariant>& arguments);
+            const QList<QVariant>& arguments,
+            const bool foreground);
 };
 
 #endif // PHONEAPPLAUNCHER_H

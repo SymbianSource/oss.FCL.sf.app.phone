@@ -140,7 +140,7 @@ void CSPVideoCall::NotifyCallStateChangedWithInband(
 // CSPVideoCall::ConnectionReady
 // ---------------------------------------------------------------------------
 //
-void CSPVideoCall::ConnectionReady( TName aDataPortName )
+void CSPVideoCall::ConnectionReady( TName& aDataPortName )
     {
     CSPLOGSTRING3(CSPINT, "CSPVideoCall::ConnectionReady \
         state = %d, next state: %d", iCallState, iNextCallState);
@@ -303,7 +303,7 @@ void CSPVideoCall::ConstructL( const CCCECallParameters& aParams )
         }    
         
     // Filter out illegal requests    
-     if ( !CCPCall::ECallTypeVideo == iParams->CallType() )
+     if ( !(CCPCall::ECallTypeVideo == iParams->CallType()) )
         {
         CSPLOGSTRING(CSPERROR, "CSPVideoCall::ConstructL() error invalid call type");
         User::Leave( KErrArgument );

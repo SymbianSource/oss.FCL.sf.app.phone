@@ -102,14 +102,14 @@ class CSPEtelCallWaitingRequester
         * @param aPhone mobile phone reference needed for reading cw setting
         *
         */
-        CSPEtelCallWaitingRequester::CSPEtelCallWaitingRequester(RMobilePhone& aPhone);
+        CSPEtelCallWaitingRequester(RMobilePhone& aPhone);
                               
         /**
         * Constructs the requester.
         *
         * @param aPhone phone reference
         */
-        void CSPEtelCallWaitingRequester::ConstructL();
+        void ConstructL();
         
         /**
         * Starts monitoring call waiting setting.

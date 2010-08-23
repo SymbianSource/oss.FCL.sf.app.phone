@@ -124,7 +124,7 @@ void UT_PhoneMessageController::t_openSoftRejectEditorDefaultText()
 {
     const QString KDefaultSoftRejectText = 
         hbTrId("txt_phone_setlabel_soft_reject_val_default_text");
-    EXPECT(PhoneAppLauncher::launchMessaging)
+    EXPECT(PhoneAppLauncher, launchMessaging)
         .with(KNumber, KName, KDefaultSoftRejectText);
     
     TPhoneCmdParamSfiData sfiParam;
@@ -138,12 +138,12 @@ void UT_PhoneMessageController::t_openSoftRejectEditorDefaultText()
 
 void UT_PhoneMessageController::t_openSoftRejectEditorUserDefinedText()
 {
-    EXPECT(PhoneAppLauncher::launchMessaging)
+    EXPECT(PhoneAppLauncher, launchMessaging)
         .with(KNumber, KName, KUserDefinedSoftRejectText);
-    EXPECT(CPhoneCenRepProxy::GetInt)
+    EXPECT(CPhoneCenRepProxy, GetInt)
         .with(KCRUidTelephonySettings, KSettingsSoftRejectDefaultInUse, 0)
         .willOnce(invoke(enableUserDefinedSoftRejectText));
-    EXPECT(CPhoneCenRepProxy::GetString)
+    EXPECT(CPhoneCenRepProxy, GetString)
         .with(KCRUidTelephonySettings, KSettingsSoftRejectText, KNullDesC())
         .willOnce(invoke(setUserDefinedSoftRejectText));
     

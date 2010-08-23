@@ -12,8 +12,10 @@ bool m_clearActiveCallCalled;
 bool m_enableCallIndCalled;
 bool m_disableCallIndCalled;
 
-PhoneIndicatorController::PhoneIndicatorController(QObject *parent):
-QObject(parent)
+PhoneIndicatorController::PhoneIndicatorController(
+    PhoneVisibilityHandler& visibilityHandler, QObject *parent)
+    :
+    QObject(parent)
 {
     m_setActiveCallCalled = false;
     m_clearActiveCallCalled = false;

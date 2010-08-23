@@ -66,3 +66,5 @@ LIBRARY             ecom.lib
 LIBRARY             engineinfo.lib
 LIBRARY             serviceprovidersettings.lib
 LIBRARY             symbianmock.lib
+
+EPOCALLOWDLLDATA

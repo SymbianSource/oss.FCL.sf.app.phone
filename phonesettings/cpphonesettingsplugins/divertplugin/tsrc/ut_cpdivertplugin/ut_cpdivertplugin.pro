@@ -58,6 +58,9 @@ SOURCES += ../../src/cpdivertplugin.cpp \
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_psetcalldivertingwrapper.cpp \
+           ../../../tsrc/mocks/mock_psetcallwaitingwrapper.cpp \
+           ../../../tsrc/mocks/mock_psetcliwrapper.cpp \
+           ../../../tsrc/mocks/mock_psetnetworkwrapper.cpp \
            ../../../tsrc/mocks/mock_sssettingswrapper.cpp \
            ../../../tsrc/mocks/mock_cpplugincommon.cpp \
            ../../../tsrc/mocks/mock_psuinotes.cpp \

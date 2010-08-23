@@ -61,21 +61,21 @@ void UT_InfoWidgetEngine::init()
     SmcDefaultValue<QString>::SetL("");
     SmcDefaultValue<const QString & >::SetL("");
     
-    EXPECT(InfoWidgetNetworkHandler::isOnline)
+    EXPECT(InfoWidgetNetworkHandler, isOnline)
         .returns(true);    
     
-    EXPECT(InfoWidgetNetworkHandler::serviceProviderName)
+    EXPECT(InfoWidgetNetworkHandler, serviceProviderName)
         .returns(KSpnName);
-    EXPECT(InfoWidgetNetworkHandler::serviceProviderNameDisplayRequired)
+    EXPECT(InfoWidgetNetworkHandler, serviceProviderNameDisplayRequired)
         .returns(true);
 
-    EXPECT(InfoWidgetNetworkHandler::mcnName).returns(KMcnName);
-    EXPECT(InfoWidgetNetworkHandler::mcnIndicatorType)
+    EXPECT(InfoWidgetNetworkHandler, mcnName).returns(KMcnName);
+    EXPECT(InfoWidgetNetworkHandler, mcnIndicatorType)
         .returns(KMcnIndicatorType);
 
-    EXPECT(InfoWidgetNetworkHandler::homeZoneIndicatorType)
+    EXPECT(InfoWidgetNetworkHandler, homeZoneIndicatorType)
         .returns(KHomeZoneIndicatorType);
-    EXPECT(InfoWidgetNetworkHandler::homeZoneTextTag)
+    EXPECT(InfoWidgetNetworkHandler, homeZoneTextTag)
         .returns(KHomeZoneTextTag);
     
     m_infoWidgetEngine = new InfoWidgetEngine();
@@ -114,21 +114,21 @@ void UT_InfoWidgetEngine::t_modelData()
 void UT_InfoWidgetEngine::t_updateNetworkDataToModel()
 {
     // Test: network status is online
-    EXPECT(InfoWidgetNetworkHandler::isOnline)
+    EXPECT(InfoWidgetNetworkHandler, isOnline)
         .returns(true);    
     
-    EXPECT(InfoWidgetNetworkHandler::serviceProviderName)
+    EXPECT(InfoWidgetNetworkHandler, serviceProviderName)
         .returns(KSpnName);
-    EXPECT(InfoWidgetNetworkHandler::serviceProviderNameDisplayRequired)
+    EXPECT(InfoWidgetNetworkHandler, serviceProviderNameDisplayRequired)
         .returns(true);
 
-    EXPECT(InfoWidgetNetworkHandler::mcnName).returns(KMcnName);
-    EXPECT(InfoWidgetNetworkHandler::mcnIndicatorType)
+    EXPECT(InfoWidgetNetworkHandler, mcnName).returns(KMcnName);
+    EXPECT(InfoWidgetNetworkHandler, mcnIndicatorType)
         .returns(KMcnIndicatorType);
 
-    EXPECT(InfoWidgetNetworkHandler::homeZoneIndicatorType)
+    EXPECT(InfoWidgetNetworkHandler, homeZoneIndicatorType)
         .returns(KHomeZoneIndicatorType);
-    EXPECT(InfoWidgetNetworkHandler::homeZoneTextTag)
+    EXPECT(InfoWidgetNetworkHandler, homeZoneTextTag)
         .returns(KHomeZoneTextTag);
     
     QSignalSpy spy(m_infoWidgetEngine, SIGNAL(modelChanged()));
@@ -142,14 +142,14 @@ void UT_InfoWidgetEngine::t_updateNetworkDataToModel()
     QVERIFY(verify());
     
     // Test: network status is offline
-    EXPECT(InfoWidgetNetworkHandler::isOnline)
+    EXPECT(InfoWidgetNetworkHandler, isOnline)
           .returns(false);    
-    EXPECT(InfoWidgetNetworkHandler::serviceProviderName).times(0);
-    EXPECT(InfoWidgetNetworkHandler::serviceProviderNameDisplayRequired).times(0);
-    EXPECT(InfoWidgetNetworkHandler::mcnName).times(0);
-    EXPECT(InfoWidgetNetworkHandler::mcnIndicatorType).times(0);
-    EXPECT(InfoWidgetNetworkHandler::homeZoneIndicatorType).times(0);
-    EXPECT(InfoWidgetNetworkHandler::homeZoneTextTag).times(0);
+    EXPECT(InfoWidgetNetworkHandler, serviceProviderName).times(0);
+    EXPECT(InfoWidgetNetworkHandler, serviceProviderNameDisplayRequired).times(0);
+    EXPECT(InfoWidgetNetworkHandler, mcnName).times(0);
+    EXPECT(InfoWidgetNetworkHandler, mcnIndicatorType).times(0);
+    EXPECT(InfoWidgetNetworkHandler, homeZoneIndicatorType).times(0);
+    EXPECT(InfoWidgetNetworkHandler, homeZoneTextTag).times(0);
       
     m_infoWidgetEngine->updateNetworkDataToModel();
     QCOMPARE(spy.count(), KExpectedNumOfSignalEmissions);
@@ -170,7 +170,7 @@ void UT_InfoWidgetEngine::t_updateNetworkDataToModel()
  */
 void UT_InfoWidgetEngine::t_updateSatDataToModel()
 {
-    EXPECT(InfoWidgetSatHandler::satDisplayText)
+    EXPECT(InfoWidgetSatHandler, satDisplayText)
         .returns(QString(""));
     
     m_infoWidgetEngine->updateSatDataToModel();
@@ -230,16 +230,16 @@ void UT_InfoWidgetEngine::t_handlePreferencesChanged()
     // Test 1: Mcn ON; SAT OFF   
     testOptions |= InfoWidgetPreferences::DisplayMcn; 
     testOptions &= ~InfoWidgetPreferences::DisplaySatText;
-    EXPECT(InfoWidgetNetworkHandler::enableMcn); 
-    EXPECT(InfoWidgetSatHandler::connect).with(false);
+    EXPECT(InfoWidgetNetworkHandler, enableMcn); 
+    EXPECT(InfoWidgetSatHandler, connect).with(false);
     m_infoWidgetEngine->handlePreferencesChanged(testOptions); 
     QVERIFY(verify());    
     
     // Test 2: Mcn OFF; SAT ON   
     testOptions &= ~InfoWidgetPreferences::DisplayMcn; 
     testOptions |= InfoWidgetPreferences::DisplaySatText;
-    EXPECT(InfoWidgetNetworkHandler::disableMcn); 
-    EXPECT(InfoWidgetSatHandler::connect).with(true);
+    EXPECT(InfoWidgetNetworkHandler, disableMcn); 
+    EXPECT(InfoWidgetSatHandler, connect).with(true);
     m_infoWidgetEngine->handlePreferencesChanged(testOptions); 
     QVERIFY(verify());    
 

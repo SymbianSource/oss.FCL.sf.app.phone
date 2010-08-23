@@ -127,10 +127,10 @@ void UT_InfoWidgetLayoutManager::t_currentWidgetRoles()
     QGraphicsWidget widget;
     
     bool loaded = true;
-    EXPECT(HbDocumentLoader::load)
+    EXPECT(HbDocumentLoader, load)
             .with(KInfoWidgetDocmlFile, loaded)
             .returns(&objectList);
-    EXPECT(HbDocumentLoader::findWidget).times(KNumOfInfoDisplayRoles).returns(&widget);
+    EXPECT(HbDocumentLoader, findWidget).times(KNumOfInfoDisplayRoles).returns(&widget);
     
     QGraphicsWidget *activeWidget = m_layoutManager->layoutInfoDisplay();
     
@@ -156,13 +156,13 @@ void UT_InfoWidgetLayoutManager::t_currentWidgetRoles()
             InfoWidgetLayoutManager::RoleSatTextIcon));
     }
     
-    EXPECT(HbDocumentLoader::load)
+    EXPECT(HbDocumentLoader, load)
                 .with(KSettingsDialogDocmlFile, loaded)
                 .returns(&objectList);
-    EXPECT(HbDocumentLoader::findWidget).times(KNumOfSettingsDisplayRoles).returns(&widget);
+    EXPECT(HbDocumentLoader, findWidget).times(KNumOfSettingsDisplayRoles).returns(&widget);
     
     QObject action;
-    EXPECT(HbDocumentLoader::findObject).times(2).returns(&action);
+    EXPECT(HbDocumentLoader, findObject).times(2).returns(&action);
     
     activeWidget = m_layoutManager->layoutSettingsDialog();
     
@@ -181,11 +181,11 @@ void UT_InfoWidgetLayoutManager::t_currentWidgetRoles()
 void UT_InfoWidgetLayoutManager::t_rowHeight()
 {
     bool b = false;
-    EXPECT(HbStyle::parameter).returns(b);
+    EXPECT(HbStyle, parameter).returns(b);
     m_layoutManager->layoutRowHeight();
     
     b = true;
-    EXPECT(HbStyle::parameter).returns(b);
+    EXPECT(HbStyle, parameter).returns(b);
     m_layoutManager->layoutRowHeight();
     
     QVERIFY(verify()); 
@@ -201,10 +201,10 @@ void UT_InfoWidgetLayoutManager::t_layoutInfoDisplay()
     QGraphicsWidget widget;
         
     bool loaded = true;
-    EXPECT(HbDocumentLoader::load)
+    EXPECT(HbDocumentLoader, load)
             .with(KInfoWidgetDocmlFile, loaded)
             .returns(&objectList);
-    EXPECT(HbDocumentLoader::findWidget).times(KNumOfInfoDisplayRoles).returns(&widget);
+    EXPECT(HbDocumentLoader, findWidget).times(KNumOfInfoDisplayRoles).returns(&widget);
     
     QVERIFY(m_layoutManager->layoutInfoDisplay());
 }
@@ -219,12 +219,12 @@ void UT_InfoWidgetLayoutManager::t_layoutSettingsDialog()
     QGraphicsWidget widget;
         
     bool loaded = true;
-    EXPECT(HbDocumentLoader::load)
+    EXPECT(HbDocumentLoader, load)
             .with(KSettingsDialogDocmlFile, loaded)
             .returns(&objectList);
-    EXPECT(HbDocumentLoader::findWidget).times(KNumOfSettingsDisplayRoles).returns(&widget);
+    EXPECT(HbDocumentLoader, findWidget).times(KNumOfSettingsDisplayRoles).returns(&widget);
     QObject action;
-    EXPECT(HbDocumentLoader::findObject).times(2).returns(&action);
+    EXPECT(HbDocumentLoader, findObject).times(2).returns(&action);
     
     QVERIFY(m_layoutManager->layoutSettingsDialog());
 }
@@ -282,12 +282,12 @@ void UT_InfoWidgetLayoutManager::t_loadWidgets()
     QObjectList objectList;
     QGraphicsWidget widget;
     bool loaded = true;
-    EXPECT(HbDocumentLoader::load)
+    EXPECT(HbDocumentLoader, load)
             .with(KSettingsDialogDocmlFile, loaded)
             .returns(&objectList);
     QObject action;
-    EXPECT(HbDocumentLoader::findObject).times(2).returns(&action);
-    EXPECT(HbDocumentLoader::findWidget).times(KNumOfSettingsDisplayRoles).returns(&widget);
+    EXPECT(HbDocumentLoader, findObject).times(2).returns(&action);
+    EXPECT(HbDocumentLoader, findWidget).times(KNumOfSettingsDisplayRoles).returns(&widget);
     bool loadResult = m_layoutManager->loadWidgets(InfoWidgetLayoutManager::SettingsDialog);
 
     QVERIFY(loadResult);
@@ -353,8 +353,8 @@ void UT_InfoWidgetLayoutManager::t_loadObject()
     QObject *cancelAction = new QObject; 
 
     // Test: 
-    EXPECT(HbDocumentLoader::findObject).with(QString("sd:cancelAction")).returns(cancelAction);
-    EXPECT(HbDocumentLoader::findObject).with(QString("sd:okAction")).returns(okAction);
+    EXPECT(HbDocumentLoader, findObject).with(QString("sd:cancelAction")).returns(cancelAction);
+    EXPECT(HbDocumentLoader, findObject).with(QString("sd:okAction")).returns(okAction);
     
     foreach(currentRole, objectRoles) {
         currentObject = m_layoutManager->loadObject(*m_documentLoader,

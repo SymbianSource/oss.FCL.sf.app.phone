@@ -171,23 +171,24 @@ _LIT(KTfLogFile,"CSPLOG.TXT");
 #elif CSP_LOGGING_METHOD == 2    // RDebug
 
 #define CSPLOGTEXT(Type,AAA)                { \
-                                            if((CSPLOGMASK()&(Type))==(Type)) RDebug::Print(AAA); \
+                                            if((CSPLOGMASK()&(Type))==(Type)) \
+                                                    { RDebug::Print(AAA); } \
                                             }
 #define CSPLOGSTRING(Type,AAA)              { \
                                             if((CSPLOGMASK()&(Type))== \
-                                            (Type)) RDebug::Print(_L(AAA)); \
+                                            (Type)) { RDebug::Print(_L(AAA)); } \
                                             }
 #define CSPLOGSTRING2(Type,AAA,BBB)         { \
                                             if((CSPLOGMASK()&(Type))== \
-                                            (Type)) RDebug::Print(_L(AAA),BBB); \
+                                            (Type)) { RDebug::Print(_L(AAA),BBB); } \
                                             }
 #define CSPLOGSTRING3(Type,AAA,BBB,CCC)     { \
                                             if((CSPLOGMASK()&(Type))== \
-                                            (Type)) RDebug::Print(_L(AAA),BBB,CCC); \
+                                            (Type)) { RDebug::Print(_L(AAA),BBB,CCC); } \
                                             }
 #define CSPLOGSTRING4(Type,AAA,BBB,CCC,DDD) { \
                                             if((CSPLOGMASK()&(Type))== \
-                                            (Type)) RDebug::Print(_L(AAA),BBB,CCC,DDD); \
+                                            (Type)) { RDebug::Print(_L(AAA),BBB,CCC,DDD); } \
                                             }
 
 #else   // CSP_LOGGING_METHOD == 0 or invalid

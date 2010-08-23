@@ -38,7 +38,7 @@ class MCSPUUSMessageObserver
         * @since S60 3.2
         * @param aMessage
         */    
-        virtual void UUSMessageReceived( TDesC& aMessage ) = 0;
+        virtual void UUSMessageReceived( const TDesC& aMessage ) = 0;
     };
 
 #endif // MCSPUUSMESSAGEOBSERVER_H

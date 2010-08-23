@@ -10,6 +10,8 @@
 
 #include <QObject>
 
+class PhoneVisibilityHandler;
+
 extern bool m_setActiveCallCalled;
 extern bool m_clearActiveCallCalled;
 extern bool m_enableCallIndCalled;
@@ -19,7 +21,9 @@ class PhoneIndicatorController : public QObject
     {
     Q_OBJECT
 public:
-    PhoneIndicatorController(QObject *parent);
+    PhoneIndicatorController(
+        PhoneVisibilityHandler& visibilityHandler,
+        QObject *parent = 0);
     virtual ~PhoneIndicatorController();
     
     void setActiveCallData();

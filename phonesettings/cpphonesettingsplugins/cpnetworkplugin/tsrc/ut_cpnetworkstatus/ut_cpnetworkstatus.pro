@@ -22,6 +22,7 @@ DEPENDPATH += . ../../src/
 INCLUDEPATH += .
 INCLUDEPATH +=../../../inc 
 INCLUDEPATH +=../../../cptelephonyutils/inc
+INCLUDEPATH += ../../../tsrc/common
 DEFINES += BUILD_NETWORKPLUGIN BUILD_CPTELEPHONYUTILS QT_BUILD_SYSINFO_LIB QT_MAKEDLL
 MOBILITY += systeminfo
 

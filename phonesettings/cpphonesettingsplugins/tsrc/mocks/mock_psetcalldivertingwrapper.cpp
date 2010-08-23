@@ -18,6 +18,13 @@
 #include <smcmockclassincludes.h>
 #include "psetcalldivertingwrapper.h"
 
+class PSetCallDivertingWrapperPrivate {
+public:
+    PSetCallDivertingWrapperPrivate() {}
+    ~PSetCallDivertingWrapperPrivate() {}
+};
+
+
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------

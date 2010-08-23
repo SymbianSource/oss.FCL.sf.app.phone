@@ -20,6 +20,7 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += . ../../src/
 INCLUDEPATH += . ../../inc/
+INCLUDEPATH += ../../../tsrc/common
 DEFINES += BUILD_CPTELEPHONYUTILS 
     
 QT -= gui

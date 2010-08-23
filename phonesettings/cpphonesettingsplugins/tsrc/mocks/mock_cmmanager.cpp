@@ -429,7 +429,6 @@ void RCmManager::SupportedBearersL(
 //
 HBufC * RCmManager::GetUncategorizedIconL( ) const
     {
-    //SMC_MOCK_METHOD0( CGulIcon * )
+    SMC_MOCK_METHOD0( HBufC * )
     }
-
 

@@ -67,6 +67,7 @@ public slots:
         PSetNetworkWrapper::NetworkInfo& currentInfo,
         PSetNetworkWrapper::RegistrationStatus& status);
     void finishedManualSelectiondialog(HbAction* action);
+    void chageVisbilityOfManualNetworkSelection(bool visible);
 
 protected:     
     HbDataFormModelItem *createNetworkModeItem();

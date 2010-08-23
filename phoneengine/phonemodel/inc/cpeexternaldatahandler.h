@@ -26,12 +26,12 @@
 #include "cpeprofilesettingmonitor.h"
 #include "mpeexternaldatahandler.h"
 #include "cpeaccessorymodemonitor.h"
-#include "penetworkhandler.h"
 #include <e32base.h>
 
 // FORWARD DECLARATIONS
 class MPEDataStore;
 class MPEPhoneModelInternal;
+class PeNetworkHandler;
 
 // DATA TYPES
 // None

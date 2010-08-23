@@ -113,8 +113,8 @@ void UT_UriSchemeHandlerService::t_viewUnsupportedScheme()
 {
     QString unknownUri("mailto:alice@wonderland");
     
-    EXPECT(TelUriSchemeParser::isSupportedUriScheme).returns(false);
-    EXPECT(CPECallControlIFMock::HandleDialServiceCall).times(0);
+    EXPECT(TelUriSchemeParser, isSupportedUriScheme).returns(false);
+    EXPECT(CPECallControlIFMock, HandleDialServiceCall).times(0);
     
     bool handled = m_uriHandlerService->view(unknownUri);
     
@@ -125,11 +125,11 @@ void UT_UriSchemeHandlerService::t_viewUnsupportedScheme()
 
 void UT_UriSchemeHandlerService::t_viewSupportedSchemeCapabilityCheckFails()
 {
-    EXPECT(TelUriSchemeParser::isSupportedUriScheme).returns(true);
+    EXPECT(TelUriSchemeParser, isSupportedUriScheme).returns(true);
     QSet<int> invalidCapabilities;
     invalidCapabilities.insert(ECapabilityNetworkServices);
-    EXPECT(XQRequestInfo::clientCapabilities).returns(invalidCapabilities);
-    EXPECT(CPECallControlIFMock::HandleDialServiceCall).times(0);
+    EXPECT(XQRequestInfo, clientCapabilities).returns(invalidCapabilities);
+    EXPECT(CPECallControlIFMock, HandleDialServiceCall).times(0);
     
     bool handled = m_uriHandlerService->view(KTelUriWithGlobalNumber);
     
@@ -140,13 +140,13 @@ void UT_UriSchemeHandlerService::t_viewSupportedSchemeCapabilityCheckFails()
 
 void UT_UriSchemeHandlerService::t_viewSupportedSchemeParsingFails()
 {
-    EXPECT(TelUriSchemeParser::isSupportedUriScheme).returns(true);
+    EXPECT(TelUriSchemeParser, isSupportedUriScheme).returns(true);
     QSet<int> validCapabilities;
     validCapabilities.insert(ECapabilityNetworkServices);
     validCapabilities.insert(ECapabilityNetworkControl);
-    EXPECT(XQRequestInfo::clientCapabilities).returns(validCapabilities);
-    EXPECT(TelUriSchemeParser::parseUri).returns(false);
-    EXPECT(CPECallControlIFMock::HandleDialServiceCall).times(0);
+    EXPECT(XQRequestInfo, clientCapabilities).returns(validCapabilities);
+    EXPECT(TelUriSchemeParser, parseUri).returns(false);
+    EXPECT(CPECallControlIFMock, HandleDialServiceCall).times(0);
     
     bool handled = m_uriHandlerService->view(KTelUriWithGlobalNumber);
     
@@ -157,15 +157,15 @@ void UT_UriSchemeHandlerService::t_viewSupportedSchemeParsingFails()
 
 void UT_UriSchemeHandlerService::t_viewSupportedUriUserCancelsCall()
 {
-    EXPECT(TelUriSchemeParser::isSupportedUriScheme).returns(true);
+    EXPECT(TelUriSchemeParser, isSupportedUriScheme).returns(true);
     QSet<int> validCapabilities;
     validCapabilities.insert(ECapabilityNetworkServices);
     validCapabilities.insert(ECapabilityNetworkControl);
-    EXPECT(XQRequestInfo::clientCapabilities).returns(validCapabilities);
-    EXPECT(TelUriSchemeParser::parseUri).returns(true);
-    EXPECT(HbDeviceMessageBox::setTimeout).with(0);
-    EXPECT(HbDeviceMessageBox::isAcceptAction).returns(false);
-    EXPECT(CPECallControlIFMock::HandleDialServiceCall).times(0);
+    EXPECT(XQRequestInfo, clientCapabilities).returns(validCapabilities);
+    EXPECT(TelUriSchemeParser, parseUri).returns(true);
+    EXPECT(HbDeviceMessageBox, setTimeout).with(0);
+    EXPECT(HbDeviceMessageBox, isAcceptAction).returns(false);
+    EXPECT(CPECallControlIFMock, HandleDialServiceCall).times(0);
     
     bool handled = m_uriHandlerService->view(KTelUriWithGlobalNumber);
     
@@ -176,21 +176,21 @@ void UT_UriSchemeHandlerService::t_viewSupportedUriUserCancelsCall()
 
 void UT_UriSchemeHandlerService::t_viewSupportedUriUserAcceptsCall()
 {
-    EXPECT(TelUriSchemeParser::isSupportedUriScheme).returns(true);
+    EXPECT(TelUriSchemeParser, isSupportedUriScheme).returns(true);
     QSet<int> validCapabilities;
     validCapabilities.insert(ECapabilityNetworkServices);
     validCapabilities.insert(ECapabilityNetworkControl);
-    EXPECT(XQRequestInfo::clientCapabilities).returns(validCapabilities);
-    EXPECT(TelUriSchemeParser::parseUri)
+    EXPECT(XQRequestInfo, clientCapabilities).returns(validCapabilities);
+    EXPECT(TelUriSchemeParser, parseUri)
         .willOnce(invoke(setPhoneNumber))
         .returns(true);
-    EXPECT(HbDeviceMessageBox::setTimeout).with(0);
-    EXPECT(HbDeviceMessageBox::isAcceptAction).returns(true);
+    EXPECT(HbDeviceMessageBox, setTimeout).with(0);
+    EXPECT(HbDeviceMessageBox, isAcceptAction).returns(true);
     
     _LIT(KExpectedDialString, "+358401234567890");
-    EXPECT(CPECallSettersIFMock::SetPhoneNumber).with(KExpectedDialString());
-    EXPECT(CPECallSettersIFMock::SetCallTypeCommand).with(EPECallTypeCSVoice);
-    EXPECT(CPECallControlIFMock::HandleDialServiceCall).returns(KErrNone);
+    EXPECT(CPECallSettersIFMock, SetPhoneNumber).with(KExpectedDialString());
+    EXPECT(CPECallSettersIFMock, SetCallTypeCommand).with(EPECallTypeCSVoice);
+    EXPECT(CPECallControlIFMock, HandleDialServiceCall).returns(KErrNone);
     
     bool handled = m_uriHandlerService->view(KTelUriWithGlobalNumber);
     
@@ -201,21 +201,21 @@ void UT_UriSchemeHandlerService::t_viewSupportedUriUserAcceptsCall()
 
 void UT_UriSchemeHandlerService::t_viewSupportedUriCallRequestFails()
 {
-    EXPECT(TelUriSchemeParser::isSupportedUriScheme).returns(true);
+    EXPECT(TelUriSchemeParser, isSupportedUriScheme).returns(true);
     QSet<int> validCapabilities;
     validCapabilities.insert(ECapabilityNetworkServices);
     validCapabilities.insert(ECapabilityNetworkControl);
-    EXPECT(XQRequestInfo::clientCapabilities).returns(validCapabilities);
-    EXPECT(TelUriSchemeParser::parseUri)
+    EXPECT(XQRequestInfo, clientCapabilities).returns(validCapabilities);
+    EXPECT(TelUriSchemeParser, parseUri)
         .willOnce(invoke(setPhoneNumber))
         .returns(true);
-    EXPECT(HbDeviceMessageBox::setTimeout).with(0);
-    EXPECT(HbDeviceMessageBox::isAcceptAction).returns(true);
+    EXPECT(HbDeviceMessageBox, setTimeout).with(0);
+    EXPECT(HbDeviceMessageBox, isAcceptAction).returns(true);
     
     _LIT(KExpectedDialString, "+358401234567890");
-    EXPECT(CPECallSettersIFMock::SetPhoneNumber).with(KExpectedDialString());
-    EXPECT(CPECallSettersIFMock::SetCallTypeCommand).with(EPECallTypeCSVoice);
-    EXPECT(CPECallControlIFMock::HandleDialServiceCall).returns(KErrNoMemory);
+    EXPECT(CPECallSettersIFMock, SetPhoneNumber).with(KExpectedDialString());
+    EXPECT(CPECallSettersIFMock, SetCallTypeCommand).with(EPECallTypeCSVoice);
+    EXPECT(CPECallControlIFMock, HandleDialServiceCall).returns(KErrNoMemory);
     
     bool handled = m_uriHandlerService->view(KTelUriWithGlobalNumber);
     

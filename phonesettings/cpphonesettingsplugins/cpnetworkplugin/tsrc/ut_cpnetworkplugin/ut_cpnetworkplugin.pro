@@ -22,6 +22,7 @@ DEPENDPATH += . ../../src/
 INCLUDEPATH += .
 INCLUDEPATH +=../../../inc 
 INCLUDEPATH +=../../../cptelephonyutils/inc
+INCLUDEPATH += ../../../tsrc/common
 DEFINES += BUILD_CPTELEPHONYUTILS
 
 QT -= gui

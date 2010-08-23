@@ -75,7 +75,7 @@ void UT_CpPluginCommon::t_memleak()
  */
 void UT_CpPluginCommon::t_showCallDuration()
 {
-    EXPECT(XQSettingsManager::readItemValue).
+    EXPECT(XQSettingsManager, readItemValue).
         returns(QVariant(23324));
     
     mWrapper->showCallDuration();
@@ -99,18 +99,18 @@ void UT_CpPluginCommon::t_readSoftRejectText()
 {
     QString text="";
     bool userDefined=true;
-    EXPECT(XQSettingsManager::readItemValue).
+    EXPECT(XQSettingsManager, readItemValue).
             returns(QVariant(true));
     
-    EXPECT(XQSettingsManager::readItemValue).
+    EXPECT(XQSettingsManager, readItemValue).
             returns(QVariant("text"));
     
     mWrapper->readSoftRejectText(text, userDefined);
     
     userDefined=false;
-    EXPECT(XQSettingsManager::readItemValue).
+    EXPECT(XQSettingsManager, readItemValue).
                     returns(QVariant(false));
-    EXPECT(XQSettingsManager::readItemValue).
+    EXPECT(XQSettingsManager, readItemValue).
             returns(QVariant("text"));
     mWrapper->readSoftRejectText(text, userDefined);
     
@@ -135,7 +135,7 @@ void UT_CpPluginCommon::t_writeSoftRejectText()
  */
 void UT_CpPluginCommon::t_numberGroupingSupported()
 {
-    EXPECT(XQSettingsManager::readItemValue).
+    EXPECT(XQSettingsManager, readItemValue).
             returns(QVariant(true));
     
     mWrapper->numberGroupingSupported();
@@ -148,10 +148,10 @@ void UT_CpPluginCommon::t_numberGroupingSupported()
 
 void UT_CpPluginCommon::t_voipSupported()
 {
-    EXPECT(XQSysInfo::isSupported).with(
+    EXPECT(XQSysInfo, isSupported).with(
             KFeatureIdCommonVoip).returns(false);
     QCOMPARE( Tools::voipSupported(), false );
-    EXPECT(XQSysInfo::isSupported).with(
+    EXPECT(XQSysInfo, isSupported).with(
             KFeatureIdCommonVoip).returns(true);
     QCOMPARE( Tools::voipSupported(), true );
     
@@ -163,10 +163,10 @@ void UT_CpPluginCommon::t_voipSupported()
  */
 void UT_CpPluginCommon::t_videoSupported()
 {
-    EXPECT(XQSysInfo::isSupported).with(
+    EXPECT(XQSysInfo, isSupported).with(
             KFeatureIdCsVideoTelephony).returns(true);
     QCOMPARE( Tools::videoSupported(), true );
-    EXPECT(XQSysInfo::isSupported).with(
+    EXPECT(XQSysInfo, isSupported).with(
             KFeatureIdCsVideoTelephony).returns(false);
     QCOMPARE( Tools::videoSupported(), false );
     
@@ -236,21 +236,21 @@ void UT_CpPluginCommon::t_errorCodeTextMapping()
     Tools::errorCodeTextMapping(KErrGsmSSUnknownAlphabet, text);
     QCOMPARE( text, QString("txt_phone_info_invalid_phone_number"));
     
-    EXPECT(XQSysInfo::isSupported).returns(false);
+    EXPECT(XQSysInfo, isSupported).returns(false);
     Tools::errorCodeTextMapping(KErrGsmOfflineOpNotAllowed, text);
     QCOMPARE( text, QString(
             "txt_phone_info_request_not_completed"));
     QVERIFY( verify() );
     
-    EXPECT(XQSysInfo::isSupported).returns(true);
-    EXPECT(XQSettingsManager::readItemValue).returns(QVariant(EBTSapConnected));
+    EXPECT(XQSysInfo, isSupported).returns(true);
+    EXPECT(XQSettingsManager, readItemValue).returns(QVariant(EBTSapConnected));
     Tools::errorCodeTextMapping(KErrGsmOfflineOpNotAllowed, text);
     QCOMPARE( text, QString(
             "Operation not possible in SIM access profile mode"));
     QVERIFY( verify() );
     
-    EXPECT(XQSysInfo::isSupported).returns(true);
-    EXPECT(XQSettingsManager::readItemValue).returns(QVariant(EBTSapNotConnected));
+    EXPECT(XQSysInfo, isSupported).returns(true);
+    EXPECT(XQSettingsManager, readItemValue).returns(QVariant(EBTSapNotConnected));
     Tools::errorCodeTextMapping(KErrGsmOfflineOpNotAllowed, text);
     QCOMPARE( text, QString(
             "Operation not possible in Off-line mode"));
@@ -268,7 +268,7 @@ void UT_CpPluginCommon::t_errorCodeTextMapping()
  */
 void UT_CpPluginCommon::t_readVtVideoSending()
 {
-    EXPECT(XQSettingsManager::readItemValue).
+    EXPECT(XQSettingsManager, readItemValue).
             returns(QVariant(1));
     mWrapper->readVtVideoSending();
     QVERIFY( verify() );
@@ -279,7 +279,7 @@ void UT_CpPluginCommon::t_readVtVideoSending()
  */
 void UT_CpPluginCommon::t_writeVtVideoSending()
 {
-    EXPECT(XQSettingsManager::writeItemValue);//.
+    EXPECT(XQSettingsManager, writeItemValue);//.
             //times(2);
     int i=0;
     mWrapper->writeVtVideoSending(i);
@@ -291,7 +291,7 @@ void UT_CpPluginCommon::t_writeVtVideoSending()
  */
 void UT_CpPluginCommon::t_isFeatureCallWaitingDistiquishNotProvisionedEnabled()
 {
-    EXPECT(XQSettingsManager::readItemValue).
+    EXPECT(XQSettingsManager, readItemValue).
                 returns(QVariant(1));
     mWrapper->isFeatureCallWaitingDistiquishNotProvisionedEnabled();
     QVERIFY( verify() );
@@ -302,16 +302,10 @@ void UT_CpPluginCommon::t_isFeatureCallWaitingDistiquishNotProvisionedEnabled()
  */
 void UT_CpPluginCommon::t_isPhoneOffline()
 {
-    EXPECT(QtMobility::QSystemDeviceInfo::currentProfile)
-        .returns(QSystemDeviceInfo::NormalProfile);
-    bool isOffline = mWrapper->isPhoneOffline();
-    QCOMPARE(isOffline, false);
-    QVERIFY(verify());
-    
-    EXPECT(QtMobility::QSystemDeviceInfo::currentProfile)
-        .returns(QSystemDeviceInfo::OfflineProfile);
-    isOffline = mWrapper->isPhoneOffline();
-    QCOMPARE(isOffline, true);
+    EXPECT(XQSettingsManager, readItemValue).
+                returns(QVariant(1));
+     mWrapper->isPhoneOffline();
+
     QVERIFY(verify());
 }
 
@@ -320,7 +314,7 @@ void UT_CpPluginCommon::t_isPhoneOffline()
  */
 void UT_CpPluginCommon::t_isOngoingCall()
 {
-    EXPECT(XQSettingsManager::readItemValue).
+    EXPECT(XQSettingsManager, readItemValue).
                     returns(QVariant(1));
     mWrapper->isOngoingCall();
     QVERIFY( verify() );

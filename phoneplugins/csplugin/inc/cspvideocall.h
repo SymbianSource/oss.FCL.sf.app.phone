@@ -76,7 +76,7 @@ class CSPVideoCall : public CSPCall
         * Informs about ready data connection.
         * @aPortName name of data port
         */
-        void ConnectionReady( TName aDataPortName );
+        void ConnectionReady( TName& aDataPortName );
         
         /**
         * Error occurred when establishing connection.

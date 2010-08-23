@@ -30,7 +30,7 @@ class QSignalMapper;
 class HbToolBar;
 class HbVolumeSliderPopup;
 class Dialpad;
-class XqKeyCapture;
+class XQKeyCapture;
 class DialpadKeyHandler;
 
 #ifdef BUILD_PHONEUIQTVIEW
@@ -391,7 +391,7 @@ private:
     HbAction            *m_backAction;
     Dialpad             *m_dialpad;
     QSignalMapper       *m_menuSignalMapper;
-    XqKeyCapture        *m_keyCapture;
+    XQKeyCapture        *m_keyCapture;
     QSystemNetworkInfo  *m_networkInfo;
     QList<Qt::Key>      m_keyCaptures;
     DialpadKeyHandler   *m_dialpadKeyHandler;

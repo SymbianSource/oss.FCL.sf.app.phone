@@ -363,36 +363,14 @@ void InfoWidget::marqueeNext(  )
     }
 
 
-
 // -----------------------------------------------------------------------------
-// InfoWidget::mousePressEvent
-// -----------------------------------------------------------------------------
-//
-void InfoWidget::mousePressEvent( 
-        QGraphicsSceneMouseEvent * event )
-    {
-    SMC_MOCK_METHOD1( void, QGraphicsSceneMouseEvent *, event )
-    }
-
-
-// -----------------------------------------------------------------------------
-// InfoWidget::mouseReleaseEvent
+// InfoWidget::gestureEvent
 // -----------------------------------------------------------------------------
 //
-void InfoWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-    {
-    SMC_MOCK_METHOD1( void, QGraphicsSceneMouseEvent *, event )    
-    }
-
-
-// -----------------------------------------------------------------------------
-// InfoWidget::mouseMoveEvent
-// -----------------------------------------------------------------------------
-//
-void InfoWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-    {
-    SMC_MOCK_METHOD1( void, QGraphicsSceneMouseEvent *, event )
-    }
+void InfoWidget::gestureEvent(QGestureEvent *event)
+{
+    SMC_MOCK_METHOD1( void, QGestureEvent *, event )
+}
 
 
 // -----------------------------------------------------------------------------
@@ -446,7 +424,7 @@ void InfoWidget::initializeCheckBoxStates(  )
     SMC_MOCK_METHOD0( void )
     }
 
-
+/*
 // -----------------------------------------------------------------------------
 // InfoWidget::installTranslator
 // -----------------------------------------------------------------------------
@@ -466,5 +444,5 @@ void InfoWidget::removeTranslators(  )
     {
     SMC_MOCK_METHOD0( void )
     }
-
+*/
 

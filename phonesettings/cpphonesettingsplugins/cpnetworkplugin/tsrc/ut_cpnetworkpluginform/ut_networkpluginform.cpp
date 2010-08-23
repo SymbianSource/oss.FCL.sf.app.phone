@@ -79,6 +79,37 @@ void UT_CpNetworkPluginForm::init()
 
 
 /*!
+  UT_CpNetworkPluginForm::cleanup
+ */
+void UT_CpNetworkPluginForm::cleanup()
+{
+    reset();
+    delete m_networkPluginForm;
+    m_networkPluginForm = NULL;
+    delete m_networkWrapper;
+    m_networkWrapper = NULL;
+}
+
+
+/*!
+  UT_CpNetworkPluginForm::updateNetworkSelectionMode
+ */
+void UT_CpNetworkPluginForm::updateNetworkSelectionMode(
+    PSetNetworkWrapper::NetworkSelectionMode& mode)
+{
+    mode = m_NetworkSelectionMode;
+}
+
+/*!
+  UT_CpNetworkPluginForm::t_memleak
+ */
+void UT_CpNetworkPluginForm::t_memleak()
+{
+    
+}
+
+
+/*!
   UT_CpNetworkPluginForm::t_networkModeStateChanged
  */
 void UT_CpNetworkPluginForm::t_networkModeStateChanged()
@@ -93,7 +124,7 @@ void UT_CpNetworkPluginForm::t_networkModeStateChanged()
     m_networkPluginForm->networkModeStateChanged(2);
     
     expect("CpSettingsWrapper::isPhoneOffline").returns(false);
-        m_networkPluginForm->networkModeStateChanged(3);
+    m_networkPluginForm->networkModeStateChanged(3);
     
     expect("CpSettingsWrapper::isPhoneOffline").returns(true);
     m_networkPluginForm->networkModeStateChanged(0);
@@ -303,32 +334,17 @@ void UT_CpNetworkPluginForm::t_primaryIconForNetwork()
 }
 
 /*!
-  UT_CpNetworkPluginForm::cleanup
+  UT_CpNetworkPluginForm::t_chageVisbilityOfManualNetworkSelection
  */
-void UT_CpNetworkPluginForm::cleanup()
+void UT_CpNetworkPluginForm::t_chageVisbilityOfManualNetworkSelection()
 {
-    reset();
-    delete m_networkPluginForm;
-    m_networkPluginForm = NULL;
-    delete m_networkWrapper;
-    m_networkWrapper = NULL;
-}
-
-/*!
-  UT_CpNetworkPluginForm::t_memleak
- */
-void UT_CpNetworkPluginForm::t_memleak()
-{
+    m_networkPluginForm->chageVisbilityOfManualNetworkSelection(false);
+        
+    m_networkPluginForm->chageVisbilityOfManualNetworkSelection(false);
+        
+    m_networkPluginForm->chageVisbilityOfManualNetworkSelection(true);
     
-}
-
-/*!
-  UT_CpNetworkPluginForm::updateNetworkSelectionMode
- */
-void UT_CpNetworkPluginForm::updateNetworkSelectionMode(
-    PSetNetworkWrapper::NetworkSelectionMode& mode)
-{
-    mode = m_NetworkSelectionMode;
+    m_networkPluginForm->chageVisbilityOfManualNetworkSelection(true);
 }
 
 

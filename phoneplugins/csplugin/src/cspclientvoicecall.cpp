@@ -176,7 +176,7 @@ void CSPClientVoiceCall::OpenCallHandleL()
 // Update call info including remote party name and number data  
 // ---------------------------------------------------------------------------
 //    
-void CSPClientVoiceCall::UpdateCallInfoImpl( RMobileCall::TMobileCallInfoV7 aCallInfo )
+void CSPClientVoiceCall::UpdateCallInfoImpl( const RMobileCall::TMobileCallInfoV7& aCallInfo )
     {
     CSPLOGSTRING(CSPINT, "CSPClientVoiceCall::UpdateCallInfoImpl <");    
 

@@ -17,9 +17,9 @@
 
 #include <devicelockaccessapi.h>
 #include <xqservicerequest.h>
-#include <logsservices.h>
 #include <xqappmgr.h>
 #include <xqrequestinfo.h>
+#include <xqaiwdecl.h>
 
 #include "phoneapplauncher.h"
 #include "qtphonelog.h"
@@ -58,7 +58,8 @@ void PhoneAppLauncher::launchMessaging(
         "com.nokia.services.hbserviceprovider",
         "conversationview",
         "send(QString,QString,QString)",
-        arguments);
+        arguments,
+        true);
 }
 
 /*!
@@ -71,7 +72,8 @@ void PhoneAppLauncher::launchContacts()
         "com.nokia.services.phonebookappservices",
         "Launch",
         "launch()",
-        arguments);
+        arguments,
+        true);
 }
 
 /*!
@@ -83,16 +85,17 @@ void PhoneAppLauncher::launchLogs(
         const QString &dialpadText)
 {
     QVariantMap map;
-    map.insert("view_index", QVariant(activatedView));
-    map.insert("show_dialpad", QVariant(showDialpad));
-    map.insert("dialpad_text", QVariant(dialpadText));
+    map.insert(XQLOGS_VIEW_INDEX, QVariant(activatedView));
+    map.insert(XQLOGS_SHOW_DIALPAD, QVariant(showDialpad));
+    map.insert(XQLOGS_DIALPAD_TEXT, QVariant(dialpadText));
     QList<QVariant> args;
     args.append(QVariant(map));
     sendServiceRequest(
         "logs",
-        "com.nokia.symbian.ILogsView",
-        "show(QVariantMap)",
-        args);
+        XQI_LOGS_VIEW,
+        XQOP_LOGS_SHOW,
+        args,
+        false);
 }
 
 /*!
@@ -102,7 +105,8 @@ void PhoneAppLauncher::sendServiceRequest(
         const QString &service, 
         const QString &interface,
         const QString &operation,
-        const QList<QVariant> &arguments)
+        const QList<QVariant> &arguments, 
+        const bool foreground)
 {
     int err = -1;
     TRAP_IGNORE(
@@ -124,9 +128,13 @@ void PhoneAppLauncher::sendServiceRequest(
             PHONE_TRACE1("service not found");
             return;
         }
-        XQRequestInfo info;
-        info.setForeground(true);
-        request->setInfo(info);
+
+        if (foreground) {
+            XQRequestInfo info;
+            info.setForeground(true);
+            request->setInfo(info);
+        }
+        
         request->setArguments(arguments);
         QVariant retValue(-1);
         if (!request->send(retValue)) {

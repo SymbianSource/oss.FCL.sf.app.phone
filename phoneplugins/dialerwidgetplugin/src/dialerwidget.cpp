@@ -35,8 +35,8 @@
 #include <xqservicerequest.h>
 #include <xqcallinfo.h>
 #include <xqpublishandsubscribeutils.h>
-#include <logsservices.h>
 #include <xqrequestinfo.h>
+#include <xqaiwdecl.h>
 #endif
 
 namespace
@@ -103,24 +103,22 @@ void DialerWidget::startDialer()
     } else {
         PHONE_DEBUG("no calls, open Dialer");
         service = "logs";
-        interface = "com.nokia.symbian.ILogsView";
-        operation = "show(QVariantMap)";
+        interface = XQI_LOGS_VIEW;
+        operation = XQOP_LOGS_SHOW;
         QVariantMap map;
-        map.insert("view_index", QVariant(int(LogsServices::ViewAll)));
-        map.insert("show_dialpad", QVariant(true));
-        map.insert("dialpad_text", QVariant(QString()));
+        map.insert(XQLOGS_VIEW_INDEX, QVariant(int(XQService::LogsViewAll)));
+        map.insert(XQLOGS_SHOW_DIALPAD, QVariant(true));
+        map.insert(XQLOGS_DIALPAD_TEXT, QVariant(QString()));
         args.append(QVariant(map));
     }
 
     XQApplicationManager appManager;
     QScopedPointer<XQAiwRequest> request(appManager.create(service, interface, operation, false));
     if (request == NULL) {
+        PHONE_TRACE1("service not found");
         return;
     }
     request->setArguments(args);
-    XQRequestInfo info;
-    info.setForeground(true);
-    request->setInfo(info);
     bool ret = request->send();
     PHONE_TRACE2("request sent successfully:", ret);
 #endif

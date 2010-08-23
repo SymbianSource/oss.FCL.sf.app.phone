@@ -99,7 +99,7 @@ void UT_InfoWidgetNetworkHandler::init()
 
     // Ownership is transferred to InfoWidgetNetworkHandler
     CMyNWSession *session= new (ELeave)CMyNWSession(); 
-    EXPECT(CreateL).returns(session);;
+    expect("CreateL").returns(session);
     m_networkHandler =  new InfoWidgetNetworkHandler();
 
     m_networkHandler->m_nwInfo.iViagTextTag.Copy(KHomeZoneTextTag.utf16());
@@ -120,7 +120,7 @@ void UT_InfoWidgetNetworkHandler::cleanup()
     reset();
     
     QVariant i(1);
-    EXPECT(XQSettingsManager::readItemValue).returns(i);  
+    EXPECT(XQSettingsManager, readItemValue).returns(i);  
     delete m_networkHandler;
     m_networkHandler = 0;
     
@@ -133,7 +133,7 @@ void UT_InfoWidgetNetworkHandler::cleanup()
 void UT_InfoWidgetNetworkHandler::t_homeZoneTextTag()
 {
     QVariant i(1);
-    EXPECT(XQSettingsManager::readItemValue).returns(i);
+    EXPECT(XQSettingsManager, readItemValue).returns(i);
     
     QVERIFY(m_networkHandler->homeZoneTextTag() == KHomeZoneTextTag);
 }
@@ -390,8 +390,8 @@ void UT_InfoWidgetNetworkHandler::t_serviceProviderNameDisplayRequired()
 void UT_InfoWidgetNetworkHandler::t_createLeave()
 {
     QVariant i(1);
-    EXPECT(XQSettingsManager::readItemValue).returns(i);
-    EXPECT(CreateL)
+    EXPECT(XQSettingsManager, readItemValue).returns(i);
+    expect("CreateL")
             .willOnce(invokeWithoutArguments(this, &doLeaveL));
     
     EXPECT_EXCEPTION(InfoWidgetNetworkHandler * p = new InfoWidgetNetworkHandler(););

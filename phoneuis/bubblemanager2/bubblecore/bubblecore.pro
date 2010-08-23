@@ -48,4 +48,5 @@ DEFINES += BUILD_BUBBLEMANAGER
 
 # Input
 include(src/bubblecore.pri)
+include(xml/bubbledocml.pri)
 RESOURCES += bubblecore.qrc

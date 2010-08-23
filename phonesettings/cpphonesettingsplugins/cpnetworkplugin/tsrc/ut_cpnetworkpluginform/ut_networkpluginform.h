@@ -55,11 +55,13 @@ public:
 private slots:
 
     void init();
+    void cleanup();
 
+    void t_memleak();
+    
     void t_networkModeStateChanged();
     void t_operatorSelectionStateChanged();
     void t_networkAccessModeGot();
-    
     void t_availableNetworksGot();
     void t_networkReqestFailed();
     void t_userCancel();
@@ -67,10 +69,7 @@ private slots:
     void t_handleRequestingSelectedNetwork();
     void t_handleNetworkChanged();
     void t_primaryIconForNetwork();
-    
-    void cleanup();
-    
-    void t_memleak();
+    void t_chageVisbilityOfManualNetworkSelection();
 
 private:
     CpNetworkPluginForm *m_networkPluginForm;

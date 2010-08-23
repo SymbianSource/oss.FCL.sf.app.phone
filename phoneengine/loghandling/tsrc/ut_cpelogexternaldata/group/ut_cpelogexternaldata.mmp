@@ -61,3 +61,5 @@ LIBRARY             flogger.lib // For logging
 LIBRARY             cce.lib
 LIBRARY             bafl.lib                // Descriptor arrays
 LIBRARY             symbianmock.lib
+
+EPOCALLOWDLLDATA

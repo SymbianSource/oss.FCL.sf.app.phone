@@ -45,9 +45,12 @@ symbian: {
 
 HEADERS += ut_mockintegrity.h
 
-HEADERS += ../../callsplugin/src/cpcallsplugin.h                \
+HEADERS += ../../callsplugin/src/*.h                            \
+           ../../barringplugin/inc/*.h                          \
+           ../../cpnetworkplugin/src/*.h                        \
            ../../cptelephonyutils/inc/cpplugincommon.h          \
            ../../cptelephonyutils/inc/cpphonelocalisation.h     \
+           ../../telephonyplugin/src/cptelephonypluginview.h    \
            /epoc32/include/platform/mw/psetwrapper.h            \
            /epoc32/include/platform/mw/psuinotes.h              \
            /epoc32/include/platform/mw/psetcliwrapper.h         \
@@ -62,5 +65,3 @@ HEADERS += ../../callsplugin/src/cpcallsplugin.h                \
            /epoc32/include/mw/qsysteminfo.h
 
 SOURCES += *.cpp
-
-  

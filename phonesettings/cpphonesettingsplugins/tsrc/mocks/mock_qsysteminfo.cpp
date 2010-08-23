@@ -240,6 +240,26 @@ QSystemDeviceInfo::PowerState QSystemDeviceInfo::currentPowerState(  )
 
 
 // -----------------------------------------------------------------------------
+// QSystemDeviceInfo::connectNotify
+// -----------------------------------------------------------------------------
+//
+void QSystemDeviceInfo::connectNotify(const char *signal)
+{
+    SMC_MOCK_METHOD1( void, const char *, signal )
+}
+
+
+// -----------------------------------------------------------------------------
+// QSystemDeviceInfo::disconnectNotify
+// -----------------------------------------------------------------------------
+//
+void QSystemDeviceInfo::disconnectNotify(const char *signal)
+{
+    SMC_MOCK_METHOD1( void, const char *, signal )
+}
+
+
+// -----------------------------------------------------------------------------
 // QSystemInfo::QSystemInfo
 // -----------------------------------------------------------------------------
 //
@@ -312,6 +332,26 @@ bool QSystemInfo::hasFeatureSupported(
     {
     SMC_MOCK_METHOD1( bool, QSystemInfo::Feature, feature )
     }
+
+
+// -----------------------------------------------------------------------------
+// QSystemInfo::connectNotify
+// -----------------------------------------------------------------------------
+//
+void QSystemInfo::connectNotify(const char *signal)
+{
+    SMC_MOCK_METHOD1( void, const char *, signal )
+}
+
+
+// -----------------------------------------------------------------------------
+// QSystemInfo::disconnectNotify
+// -----------------------------------------------------------------------------
+//
+void QSystemInfo::disconnectNotify(const char *signal)
+{
+    SMC_MOCK_METHOD1( void, const char *, signal )
+}
 
 
 // -----------------------------------------------------------------------------

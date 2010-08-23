@@ -60,8 +60,7 @@
 #include <hbstringutil.h>
 #include <AknSgcc.h>
 #include <AknCapServerClient.h>
-#include <logsservices.h>
-
+#include <xqaiwdecl.h>
 
 
 //CONSTANTS
@@ -1278,7 +1277,7 @@ void PhoneUIQtViewAdapter::openLogs(TPhoneCommandParam *commandParam)
     if (phoneVisible) { 
         // Activate logs dialer only if telephone is on the top.
         m_appLauncher->launchLogs(
-                LogsServices::ViewAll,
+                XQService::LogsViewAll,
                 true,
                 QString::fromUtf16(
                     entryContent->String()->Ptr(),

@@ -54,10 +54,30 @@ const TInt KCSServiceId = 1;
 // CSProvider::CSProvider
 // ---------------------------------------------------------------------------
 //
-CSProvider::CSProvider(): iImplementationUid( KCSPImplementationUid )
+CSProvider::CSProvider(): iImplementationUid( KCSPImplementationUid ),
+        iCCPObserver( NULL ),
+        iSsObserver( NULL ),
+        iDTMFProvider( NULL ),
+        iIncomingVoiceCallMonitor( NULL ),
+        iIncomingDataCallMonitor( NULL ),
+        iIncomingAuxCallMonitor( NULL ),
+        iCallArray( NULL ),
+        iServiceHandler( NULL ),
+        iInitialized( EFalse ),
+        iCallAddedHandler( NULL ),
+        iServiceId( 0 ),
+        iAudioHandler( NULL ),
+        iCwRequester( NULL ),
+        iSsMonitor( NULL ),
+        iCipheringStatusMonitor( NULL ),
+        iSsSettingsHandler( NULL ),
+        iSimStatusListener( NULL ),
+        iCallCommandHandler( NULL ),
+        iRemoteAlertingToneListener( NULL ),
+        iConferenceStatusMonitor( NULL ),
+        iConferenceCall( NULL )
     {
     CSPLOGSTRING(CSPOBJECT, "CSProvider::CSProvider");
-    iInitialized = EFalse;
     }
 
 // ---------------------------------------------------------------------------
@@ -139,7 +159,7 @@ void CSProvider::NotifySsEvent(
                     RMmCustomAPI::TSsInfo& aSsInfo )
     {
     CSPLOGSTRING(CSPINT, "CSProvider::NotifySsEvent <");
-    TBuf<10> addr;
+    const TDesC& addr = KNullDesC;
     
     switch( aSsTypeAndMode.iSsType )
         {
@@ -645,7 +665,7 @@ TBool CSProvider::GetCSInfo( CSInfo& aCSInfo )
 // CSProvider::IncomingCallArrived
 // ---------------------------------------------------------------------------
 //
-void CSProvider::IncomingCallArrived( RMobileLine& aLine, TName aCallName,
+void CSProvider::IncomingCallArrived( RMobileLine& aLine, const TName& aCallName,
                                       RCSPLineContainer::TCSPLineId aLineId )
     {
     RMobileLine::TLineInfo lineInfo;
@@ -946,7 +966,9 @@ void CSProvider::CreateEtelConnectionsL()
 // Helper method.
 // ---------------------------------------------------------------------------
 //
-void CSProvider::HandleDivertOrBarring(TDesC& addr, RMmCustomAPI::TSsTypeAndMode& aSsTypeAndMode)
+void CSProvider::HandleDivertOrBarring(
+        const TDesC& addr,
+        RMmCustomAPI::TSsTypeAndMode& aSsTypeAndMode )
     {
     CSPLOGSTRING(CSPINT, "CSProvider::HandleDivertOrBarring <");
     switch ( aSsTypeAndMode.iSsType )

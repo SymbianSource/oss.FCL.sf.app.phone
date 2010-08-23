@@ -257,7 +257,7 @@ class CSProvider : public CConvergedCallProvider,
         * @param aCallName the name of call
         * @param aLineId line identifier for the call
         */    
-        void IncomingCallArrived( RMobileLine& aLine, TName aCallName,
+        void IncomingCallArrived( RMobileLine& aLine, const TName& aCallName,
                                   RCSPLineContainer::TCSPLineId aLineId );
         
 // from base class MCSPCommonInfo
@@ -435,8 +435,9 @@ class CSProvider : public CConvergedCallProvider,
         * @param aAddr address
         * @param aSsTypeAndMode ss type and mode struct
         */
-        void HandleDivertOrBarring(TDesC& addr, 
-                         RMmCustomAPI::TSsTypeAndMode& aSsTypeAndMode);
+        void HandleDivertOrBarring(
+                const TDesC& addr, 
+                RMmCustomAPI::TSsTypeAndMode& aSsTypeAndMode );
         
         /**
         * Handles SIM status

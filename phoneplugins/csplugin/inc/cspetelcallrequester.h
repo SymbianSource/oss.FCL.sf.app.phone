@@ -102,7 +102,7 @@ class CSPEtelCallRequester
         */         
         TInt MakeDialRequest( 
             const TDesC8& aCallParams, 
-            TDesC& aRemoteParty );
+            const TDesC& aRemoteParty );
 
         /**
         * Makes a dial request without FDN check.
@@ -113,7 +113,7 @@ class CSPEtelCallRequester
         */         
         TInt MakeDialNoFdnCheckRequest( 
             const TDesC8& aCallParams, 
-            TDesC& aRemoteParty );
+            const TDesC& aRemoteParty );
             
         
         /**
@@ -150,7 +150,7 @@ class CSPEtelCallRequester
         * Cancel dial (applies both emergency and normal calls)
         * @return result of cancel (system wide error code)
         */
-        TInt CSPEtelCallRequester::DialCancel();
+        TInt DialCancel();
         
     protected: // From CActive
         /**
@@ -200,3 +200,4 @@ class CSPEtelCallRequester
     };
 
 #endif // CSPETELCALLREQUESTER_H
+

@@ -115,7 +115,7 @@ class CSPClientVideoCall : public CSPVideoCall
         /**
         * Update call info.  
         */
-        void UpdateCallInfoImpl( RMobileCall::TMobileCallInfoV7 aCallInfo ); 
+        void UpdateCallInfoImpl( const RMobileCall::TMobileCallInfoV7& aCallInfo ); 
         
     private: // Data
         

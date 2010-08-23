@@ -266,7 +266,7 @@ void UT_CPELogEvent::T_CPELogEvent_SaveL2L(  )
     _LIT( KVoipAddress, "remotecontact@domain.com" );
 
     iMockContext->ExpectCallL( "CPELogInfo::CallState" ).
-        ReturnsL( EPEStateIdle ).
+        ReturnsL<TPEState>( EPEStateIdle ).
         TimesL( 2 );
     
     iMockContext->ExpectCallL( "CPELogHandling::LogStringDelivery" ).
@@ -371,7 +371,7 @@ void UT_CPELogEvent::T_CPELogEvent_SaveL4L(  )
     _LIT( KVoipAddress, "remotecontact@domain.com" );
 
     iMockContext->ExpectCallL( "CPELogInfo::CallState" ).
-        ReturnsL( EPEStateIdle );
+        ReturnsL<TPEState>( EPEStateIdle );
     
     iMockContext->ExpectCallL( "CPELogHandling::LogStringDelivery" ).
         ReturnsL( test );
@@ -413,7 +413,7 @@ void UT_CPELogEvent::T_CPELogEvent_SaveL4L(  )
         TimesL( 4 );
     
     iMockContext->ExpectCallL( "CPELogInfo::CallState" ).
-        ReturnsL( EPEStateIdle ).
+        ReturnsL<TPEState>( EPEStateIdle ).
         TimesL( 2 );
     
     iMockContext->ExpectCallL( "CPELogInfo::MissedCall" ).
@@ -434,7 +434,7 @@ void UT_CPELogEvent::T_CPELogEvent_SaveL5L(  )
     _LIT( KMyName, "Tester" );
 
     iMockContext->ExpectCallL( "CPELogInfo::CallState" ).
-        ReturnsL( EPEStateIdle );
+        ReturnsL<TPEState>( EPEStateIdle );
     
     iMockContext->ExpectCallL( "CPELogHandling::LogStringDelivery" ).
         ReturnsL( test );

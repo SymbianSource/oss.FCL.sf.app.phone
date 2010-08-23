@@ -45,5 +45,11 @@ HEADERS += ../../src/cptelephonypluginview.h
 SOURCES += ../../src/cptelephonypluginview.cpp 
 
 # mocks needed for testing
-SOURCES += ../../../tsrc/mocks/mock_cppluginloader.cpp
+HEADERS += /epoc32/include/platform/mw/cpitemdatahelper.h
+HEADERS += /epoc32/include/platform/mw/cpsettingformitemdata.h
+HEADERS += cpbasesettingview.h
 
+SOURCES += ../../../tsrc/mocks/mock_cppluginloader.cpp
+SOURCES += ../../../tsrc/mocks/mock_cpbasesettingview.cpp
+SOURCES += ../../../tsrc/mocks/mock_cpitemdatahelper.cpp
+SOURCES += ../../../tsrc/mocks/mock_cpsettingformitemdata.cpp

@@ -295,17 +295,3 @@ XQApplicationManager::ServiceStatus XQApplicationManager::status(
     {
    // SMC_MOCK_METHOD1( XQApplicationManager::ServiceStatus, const XQAiwInterfaceDescriptor &, implementation )
     }
-
-const QMetaObject *XQApplicationManager::metaObject() const
-{
-    return QObject::d_ptr->metaObject ? QObject::d_ptr->metaObject : NULL;
-}
-
-void *XQApplicationManager::qt_metacast(const char *_clname)
-{
-}
-
-int XQApplicationManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
-{
-    return 0;
-}

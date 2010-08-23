@@ -355,7 +355,8 @@ QIcon & HbIcon::qicon(  ) const
 bool HbIcon::addBadge( 
         Qt::Alignment alignment,
         const HbIcon & badge,
-        int z )
+        int z,
+        Qt::AspectRatioMode aspectRatio)
     {
    /*
     SMC_MOCK_METHOD3( bool, Qt::Alignment, alignment, 

@@ -33,7 +33,9 @@ symbian: {
     LIBS += -lxqservice
     LIBS += -lxqserviceutil
     LIBS += -lcpframework
-    
+    LIBS += -lphonesettings
+    LIBS += -ltstaskmonitorclient
+
     BLD_INF_RULES.prj_exports +=  \
      "./rom/networkhandlingstarter.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(networkhandlingstarter.iby)"
      

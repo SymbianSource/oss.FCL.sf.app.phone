@@ -14,10 +14,6 @@
 # Description: Project file for building unit test component
 #
 
-
-
-
-
 CONFIG += qtestlib hb
 TEMPLATE = app
 TARGET = 
@@ -25,6 +21,8 @@ DEPENDPATH += . ../../src/
 INCLUDEPATH += .
 INCLUDEPATH += ../../../inc
 INCLUDEPATH += ../../../cptelephonyutils/inc
+INCLUDEPATH += ../../../tsrc/common
+
 DEFINES += BUILD_CPTELEPHONYUTILS BUILD_BARRINGPLUGIN \
            BUILD_PSETWRAPPER BUILD_SSSETTINGSWRAPPER BUILD_PSUINOTES
 DEFINES += QT_NO_DEBUG_STREAM
@@ -54,18 +52,22 @@ HEADERS += ../../inc/cpbarringplugin.h \
            ../../../cptelephonyutils/inc/cpplugincommon.h \
            /epoc32/include/platform/mw/psetwrapper.h \
            /epoc32/include/platform/mw/psuinotes.h \
-           /epoc32/include/platform/mw/psetcliwrapper.h \
-           /epoc32/include/platform/mw/sssettingswrapper.h \
-           /epoc32/include/platform/mw/psetcallwaitingwrapper.h \
+           /epoc32/include/platform/mw/psetcallbarringwrapper.h \
            /epoc32/include/platform/mw/psetcalldivertingwrapper.h \
+           /epoc32/include/platform/mw/psetcallwaitingwrapper.h \
+           /epoc32/include/platform/mw/psetcliwrapper.h \
            /epoc32/include/platform/mw/psetnetworkwrapper.h \
-           /epoc32/include/platform/mw/psetcallbarringwrapper.h
+           #/epoc32/include/platform/mw/sssettingswrapper.h \
 
 SOURCES += ../../src/cpbarringplugingroup.cpp
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cpbarringplugin.cpp
 SOURCES += ../../../tsrc/mocks/mock_psetcallbarringwrapper.cpp
+SOURCES += ../../../tsrc/mocks/mock_psetcalldivertingwrapper.cpp
+SOURCES += ../../../tsrc/mocks/mock_psetcallwaitingwrapper.cpp
+SOURCES += ../../../tsrc/mocks/mock_psetcliwrapper.cpp
+SOURCES += ../../../tsrc/mocks/mock_psetnetworkwrapper.cpp
 SOURCES += ../../../tsrc/mocks/mock_psetwrapper.cpp
 SOURCES += ../../../tsrc/mocks/mock_psuinotes.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpplugincommon.cpp

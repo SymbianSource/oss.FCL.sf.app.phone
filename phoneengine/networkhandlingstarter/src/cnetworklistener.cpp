@@ -18,6 +18,9 @@
 #include <cnwsession.h>
 #include <BTSapDomainPSKeys.h>
 #include <startupdomainpskeys.h>
+#include <PsetContainer.h>
+#include <PsetNetwork.h>
+#include <PsetSAObserver.h>
 
 #include "cnetworklistener.h"
 #include "mnetworklistenerobserver.h"
@@ -27,6 +30,7 @@
 
 // 1-minute timeout before showing soft notification
 const TInt KNetworkLostTimeout = 60*1000000;
+const TInt KSimRefreshAsynronationTimeout = 1000000;
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -54,6 +58,14 @@ void CNetworkListener::ConstructL()
     iSession = CreateL(*this, iInfo);
     iTimer = CPeriodic::NewL(CActive::EPriorityStandard);
     QT_TRYCATCH_LEAVING(iDeviceInfo = new QSystemDeviceInfo())
+    
+    iContainer = CPsetContainer::NewL();
+    iRefreshHandler = iContainer->CreateRefreshHandlerL();
+    iRefreshHandler->NotifyFileChangeL(
+            *this,
+            KCsp1Ef,
+            EFileChangeNotification );
+    iSettingsEngine = iContainer->CreateNetworkObjectL(*this);
     
     DPRINT << ": OUT";
 }
@@ -84,6 +96,9 @@ CNetworkListener::~CNetworkListener()
     delete iSession;
     delete iTimer;
     delete iDeviceInfo;
+    delete iSettingsEngine;
+    delete iRefreshHandler;
+    delete iContainer;    
     
     DPRINT << ": OUT";
 }
@@ -245,6 +260,164 @@ TBool CNetworkListener::IsSimOk() const
     DPRINT << ": OUT";
     
     return simState == ESimUsable && err == KErrNone;
+}
+
+/*!
+    CNetworkListener::AllowRefresh
+ */
+TBool CNetworkListener::AllowRefresh(
+                const TSatRefreshType aType,
+                const TSatElementaryFiles aFiles )
+{
+    DPRINT << "aType: " << aType;
+    DPRINT << "aFiles: " << aFiles;
+    
+    TBool allowRefresh = ETrue;
+    if ( iSettingsEngine->IsCallActive() == CPsetSAObserver::EPSetCallActive )
+        {
+        allowRefresh = EFalse;
+        }
+
+    DPRINT << ": OUT allowRefresh " << allowRefresh;
+    
+    return allowRefresh;
+}
+
+/*!
+    CNetworkListener::Refresh
+ */
+void CNetworkListener::Refresh(
+                const TSatRefreshType aType,
+                const TSatElementaryFiles aFiles )
+{
+    DPRINT << ": IN";
+    
+    if ((aType != EFileChangeNotification) ||
+        ((aType == EFileChangeNotification) &&
+        (aFiles & KCsp1Ef)))
+        {
+        MPsetNetworkSelect::TSelectMode mode;
+        iSettingsEngine->GetNetworkSelectMode(mode);
+        DPRINT << "mode " << mode;
+        if (mode == MPsetNetworkSelect::ENetSelectModeManual) {
+            TPSetChangedCspSetting changedCspSettings;
+            TPSetChangedCspSetting newValues;
+            TInt err = iRefreshHandler->ChangedCspSettings(changedCspSettings, newValues);
+            if ((changedCspSettings & EPSetNetSelSup) && 
+                !(newValues & EPSetNetSelSup) &&
+                (err == KErrNone)) {
+                DPRINT << "Network selection not supported ";
+                // Network selection mode can't change during SIM refresh,
+                // start 1 second timer.
+                iTimer->Cancel();
+                iTimer->Start(KSimRefreshAsynronationTimeout,
+                              KSimRefreshAsynronationTimeout,
+                              TCallBack( NWSimRefreshCallBack, this ));
+            }
+        }
+    }
+    
+    DPRINT << ": OUT";
+}
+
+/*!
+    CNetworkListener::HandleNetworkInfoReceivedL
+ */
+void CNetworkListener::HandleNetworkInfoReceivedL( 
+        const CNetworkInfoArray* /*aInfoArray*/, const TInt /*aResult*/ )
+{
+    DPRINT;
+}
+
+/*!
+    CNetworkListener::HandleCurrentNetworkInfoL
+ */
+void CNetworkListener::HandleCurrentNetworkInfoL( 
+        const MPsetNetworkSelect::TCurrentNetworkInfo& /*aCurrentInfo*/, 
+        const TInt /*aResult*/ )
+{
+    DPRINT;
+}
+
+/*!
+    CNetworkListener::HandleNetworkChangedL
+ */
+void CNetworkListener::HandleNetworkChangedL( 
+        const MPsetNetworkSelect::TNetworkInfo& /*aCurrentInfo*/,
+        const MPsetNetworkSelect::TCurrentNetworkStatus /*aStatus*/, 
+        const TInt /*aResult*/ )
+{
+    /**
+    *  DEPRECATED.
+    */
+}
+
+/*!
+    CNetworkListener::HandleNetworkChangedL
+ */
+void CNetworkListener::HandleNetworkChangedL( 
+        const MPsetNetworkSelect::TNetworkInfo& /*aCurrentInfo*/,
+        const RMobilePhone::TMobilePhoneRegistrationStatus& /*aStatus*/, 
+        const TInt /*aResult*/ )
+{
+    DPRINT;
+}
+
+/*!
+    CNetworkListener::HandleSearchingNetworksL
+ */
+void CNetworkListener::HandleSearchingNetworksL( TServiceRequest /*aRequest*/ )
+{
+    DPRINT;
+}
+
+/*!
+    CNetworkListener::HandleRequestingSelectedNetworkL
+ */
+void CNetworkListener::HandleRequestingSelectedNetworkL( TBool /*aOngoing*/ )
+{
+    DPRINT; 
+}
+
+/*!
+    CNetworkListener::HandleCallActivatedL
+ */
+void CNetworkListener::HandleCallActivatedL()
+{
+    DPRINT;
+}
+
+/*!
+    CNetworkListener::HandleNetworkErrorL
+ */
+void CNetworkListener::HandleNetworkErrorL( 
+        const MPsetNetworkInfoObserver::TServiceRequest /*aRequest*/,
+        const TInt /*aError*/ )
+{
+    DPRINT;
+}
+
+/*!
+    CNetworkListener::NWSimRefreshCallBack.
+ */
+TInt CNetworkListener::NWSimRefreshCallBack(TAny* aParam)
+{
+    DPRINT << ": IN";
+    
+    CNetworkListener* self = 
+        reinterpret_cast< CNetworkListener* >( aParam );
+    
+    if ( self ) {
+        self->iTimer->Cancel();
+        //Change the network mode to Automatic.
+        MPsetNetworkSelect::TNetworkInfo info;
+        info.iMode = MPsetNetworkSelect::ENetSelectModeAutomatic;
+        DPRINT << ": set network mode to automatic";
+        TRAP_IGNORE(self->iSettingsEngine->SelectNetworkL(info));
+    }
+    
+    DPRINT << ": OUT";
+    return KErrNone;
 }
 
 // End of file

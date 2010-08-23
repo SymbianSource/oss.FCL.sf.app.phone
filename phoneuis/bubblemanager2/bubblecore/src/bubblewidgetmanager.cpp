@@ -51,15 +51,15 @@ BubbleWidgetManager::BubbleWidgetManager(
 {
     // .docml mappings
     mFileNames.insert(SingleCallView,
-                      QLatin1String(":/xml/bubble_layout_1.docml"));
+                      QLatin1String(":/bubble_layout_1.docml"));
     mFileNames.insert(TwoCallsView,
-                      QLatin1String(":/xml/bubble_layout_2.docml"));
+                      QLatin1String(":/bubble_layout_2.docml"));
     mFileNames.insert(ThreeCallsView,
-                      QLatin1String(":/xml/bubble_layout_3.docml"));
+                      QLatin1String(":/bubble_layout_3.docml"));
     mFileNames.insert(ConferenceView,
-                      QLatin1String(":/xml/bubble_layout_4.docml"));
+                      QLatin1String(":/bubble_layout_4.docml"));
     mFileNames.insert(MutedOverlay,
-                      QLatin1String(":/xml/bubble_layout_5.docml"));
+                      QLatin1String(":/bubble_layout_5.docml"));
 
     mOrientationName.insert(Qt::Vertical, QLatin1String("portrait"));
     mOrientationName.insert(Qt::Horizontal, QLatin1String("landscape"));

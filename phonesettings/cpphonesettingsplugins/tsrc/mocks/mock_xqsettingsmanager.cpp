@@ -49,7 +49,7 @@ QVariant XQSettingsManager::readItemValue(
         const XQSettingsKey & key,
         XQSettingsManager::Type type )
     {
-    SMC_MOCK_METHOD2( QVariant, XQSettingsKey &, key, XQSettingsManager::Type, type )
+    SMC_MOCK_METHOD2( QVariant, const XQSettingsKey &, key, XQSettingsManager::Type, type )
     }
 
 
@@ -61,7 +61,7 @@ bool XQSettingsManager::writeItemValue(
         const XQSettingsKey & key,
         const QVariant & value )
     {
-    SMC_MOCK_METHOD2( bool, XQSettingsKey &, key, QVariant &, value )
+    SMC_MOCK_METHOD2( bool, const XQSettingsKey &, key, const QVariant &, value )
     }
 
 

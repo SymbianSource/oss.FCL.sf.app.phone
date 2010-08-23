@@ -575,8 +575,6 @@ TBool CPhoneCustomizationVoip::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageTransferring:
             {
             iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveGlobalNote );
-            CPhoneState* phoneState = 
-                static_cast< CPhoneState* >( iStateMachine.State() );    
             SendGlobalInfoNoteL( EPhoneInCallTransferred );
             break; 
             }

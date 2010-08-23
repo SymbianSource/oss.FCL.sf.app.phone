@@ -16,9 +16,9 @@
 */
 
 #include <QtGui/QApplication.h>
+#include <QGraphicsLinearLayout>
 #include <hbaction.h>
 #include <hbmenu.h>
-#include <hbmenuitem.h>
 #include <hbpushbutton.h>
 #include <hbslider.h>
 #include <profile.hrh>
@@ -55,11 +55,9 @@ void t_phoneringingtoneplayer::createMenu()
     connect(optionsMenu->addAction(tr("EProfileRingingTypeAscending"))->action(), SIGNAL(triggered()), this, SLOT(PlayRingingtoneAscending()));  
     connect(optionsMenu->addAction(tr("EProfileRingingTypeRingingOnce"))->action(), SIGNAL(triggered()), this, SLOT(PlayRingingtoneOnce()));  
     connect(optionsMenu->addAction(tr("Stop ringingtone"))->action(), SIGNAL(triggered()), this, SLOT(StopRingingtone())); */
-    connect(optionsMenu->addAction(tr("sample.mp3"))->action(), SIGNAL(triggered()), this, SLOT(SampleMP3()));
-    connect(optionsMenu->addAction(tr("nokiatune.aac"))->action(), SIGNAL(triggered()), this, SLOT(Nokiatuneaac()));
+    connect(optionsMenu->addAction(tr("sample.mp3")), SIGNAL(triggered()), this, SLOT(SampleMP3()));
+    connect(optionsMenu->addAction(tr("nokiatune.aac")), SIGNAL(triggered()), this, SLOT(Nokiatuneaac()));
     //connect(optionsMenu->addAction(tr("Quit"))->action(), SIGNAL(triggered()), qApp, SLOT(quit()));
-    
-    
 }
 
 void t_phoneringingtoneplayer::createContent()

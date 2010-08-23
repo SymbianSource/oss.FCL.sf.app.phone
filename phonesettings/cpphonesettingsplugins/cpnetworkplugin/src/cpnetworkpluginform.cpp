@@ -42,7 +42,8 @@ CpNetworkPluginForm::CpNetworkPluginForm(QGraphicsItem *parent) :
     m_pSetWrapper(NULL),
     m_cpSettingsWrapper(NULL),
     mCellularSettings(),
-    m_dialog(NULL)
+    m_dialog(NULL),
+    m_NetworkOperatorSelectionItemData(NULL)
 {
     DPRINT << ": IN";
     
@@ -51,9 +52,7 @@ CpNetworkPluginForm::CpNetworkPluginForm(QGraphicsItem *parent) :
     QScopedPointer<PSetWrapper> pSetWrapperGuard(new PSetWrapper);
     m_psetNetworkWrapper = &pSetWrapperGuard->networkWrapper();
     mCellularSettings = QSharedPointer<CellularDataSettings>(new CellularDataSettings);
-    connectToNetworkWrapper(*m_psetNetworkWrapper);
-    connectToPhoneNotes(*PsUiNotes::instance());
-    
+        
     QScopedPointer<HbDataFormModel> model(new HbDataFormModel);
     QScopedPointer<CpSettingsWrapper> cpSettingsWrapperGuard(new CpSettingsWrapper);
 
@@ -70,6 +69,9 @@ CpNetworkPluginForm::CpNetworkPluginForm(QGraphicsItem *parent) :
     setModel(model.take());
     m_pSetWrapper = pSetWrapperGuard.take();
     m_cpSettingsWrapper = cpSettingsWrapperGuard.take();
+    
+    connectToNetworkWrapper(*m_psetNetworkWrapper);
+    connectToPhoneNotes(*PsUiNotes::instance());
 
     DPRINT << ": OUT";
 }
@@ -886,6 +888,13 @@ void CpNetworkPluginForm::connectToNetworkWrapper(PSetNetworkWrapper &wrapper)
         SLOT(handleNetworkChanged(
             PSetNetworkWrapper::NetworkInfo&, 
             PSetNetworkWrapper::RegistrationStatus&)));
+    
+    QObject::connect(
+        &wrapper, 
+        SIGNAL(chageVisbilityOfManualNetworkSelection(bool)),
+        this, 
+        SLOT(chageVisbilityOfManualNetworkSelection(bool)));
+    
 }
 
 
@@ -925,6 +934,31 @@ void CpNetworkPluginForm::searchAvailableNetworks()
     m_psetNetworkWrapper->cancelRequest();
     manualOperatorSelection();
         
+    DPRINT << ": OUT";
+}
+
+/*!
+  CpNetworkPluginForm::chageVisbilityOfManualNetworkSelection
+  */
+void CpNetworkPluginForm::chageVisbilityOfManualNetworkSelection(bool visible)
+{
+    DPRINT << ": IN : visible " << visible;
+    
+    HbDataFormModel* formModel = qobject_cast<HbDataFormModel*>(model());
+    if (formModel) {
+        if (visible && !m_NetworkOperatorSelectionItemData) {
+            formModel->appendDataFormItem(createOperatorSelectionItem());
+        } else if (!visible && m_NetworkOperatorSelectionItemData) {
+            removeConnection(
+                m_NetworkOperatorSelectionItemData, 
+                SIGNAL(valueChanged(QPersistentModelIndex, QVariant)),
+                this, 
+                SLOT(operatorSelectionStateChanged()));
+            formModel->removeItem(m_NetworkOperatorSelectionItemData);
+            m_NetworkOperatorSelectionItemData = NULL;
+        }
+    }
+    
     DPRINT << ": OUT";
 }
 

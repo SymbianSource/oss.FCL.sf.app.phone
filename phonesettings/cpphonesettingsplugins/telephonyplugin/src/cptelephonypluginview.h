@@ -25,6 +25,7 @@
 
 class HbDataFormModelItem;
 class CpSettingFormItemData;
+class CpPluginInterface;
 
 // Class declaration 
 class CpTelephonyPluginView : public CpBaseSettingView
@@ -43,6 +44,7 @@ private:
     
 private: // Data
     CpItemDataHelper *m_helper;
+    QList<CpPluginInterface*> m_plugins;
 };
 
 #endif /* CPTELEPHONYPLUGINVIEW_H_ */

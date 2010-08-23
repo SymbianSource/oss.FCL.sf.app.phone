@@ -80,8 +80,8 @@ void UT_CpNetworkPlugin::t_createSettingFormItemData()
     CpNetworkPlugin* p = (CpNetworkPlugin*)qt_plugin_instance();
     QList<CpSettingFormItemData*> list;
     
-    EXPECT(CpNetworkStatus::statusText);
-    EXPECT(CpNetworkStatus::statusIcon);
+    EXPECT(CpNetworkStatus, statusText);
+    EXPECT(CpNetworkStatus, statusIcon);
     list.append(p->createSettingFormItemData(itemDataHelper));
     qDeleteAll(list);
     
@@ -97,7 +97,7 @@ void UT_CpNetworkPlugin::t_createSettingView()
     CpNetworkPlugin* p = (CpNetworkPlugin*)qt_plugin_instance();
     QVariant hint;
     
-    EXPECT(CpNetworkStatus::statusText);
+    EXPECT(CpNetworkStatus, statusText);
     CpBaseSettingView *view = p->createSettingView(hint);
     delete view;
     

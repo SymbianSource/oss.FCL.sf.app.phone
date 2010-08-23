@@ -45,6 +45,7 @@ SOURCES += ../../src/networkhandlingstarter.cpp
 
 # mocks needed for testing
 HEADERS += ../../inc/networkhandlingstarter_p.h
-SOURCES += ../mocks/mock_networkhandlingstarter_p.cpp
+SOURCES += ../mocks/mock_networkhandlingstarter_p.cpp \
+           ../mocks/mock_tstasksettings.cpp
 
 

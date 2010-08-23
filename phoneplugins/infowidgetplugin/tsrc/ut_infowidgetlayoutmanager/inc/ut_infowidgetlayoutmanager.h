@@ -19,6 +19,7 @@
 #define UT_INFOWIDGETLAYOUTMANAGER_H
 
 #include <QtTest/QtTest>
+#include <QGraphicsWidget>
 #include <mockservice.h>
 
 class InfoWidgetLayoutManager;

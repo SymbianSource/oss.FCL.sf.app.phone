@@ -43,7 +43,7 @@ class MCSPIncomingCallObserver
         * @param aCallName the name of the call
         */    
         virtual void IncomingCallArrived( RMobileLine& aLine, 
-                                  TName aCallName,
+                                  const TName& aCallName,
                                   RCSPLineContainer::TCSPLineId aLineId ) = 0;
 
 

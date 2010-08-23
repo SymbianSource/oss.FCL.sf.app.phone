@@ -192,3 +192,12 @@ void CpNetworkPluginForm::finishedManualSelectiondialog(
     }
 
 
+// -----------------------------------------------------------------------------
+// CpNetworkPluginForm::chageVisbilityOfManualNetworkSelection
+// -----------------------------------------------------------------------------
+//
+void CpNetworkPluginForm::chageVisbilityOfManualNetworkSelection( 
+        bool visible )
+    {
+    SMC_MOCK_METHOD1( void, bool, visible )
+    }

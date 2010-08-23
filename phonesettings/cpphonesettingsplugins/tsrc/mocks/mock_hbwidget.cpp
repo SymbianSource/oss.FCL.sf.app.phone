@@ -314,19 +314,6 @@ HbStyle::Primitive HbWidget::focusHighlight(
 // -----------------------------------------------------------------------------
 //
 void HbWidget::setBackgroundItem( 
-        HbStyle::Primitive ,
-        int  )
-    {
-  //  SMC_MOCK_METHOD2( void, HbStyle::Primitive, type, 
-    //    int, zValue )
-    }
-
-
-// -----------------------------------------------------------------------------
-// HbWidget::setBackgroundItem
-// -----------------------------------------------------------------------------
-//
-void HbWidget::setBackgroundItem( 
         QGraphicsItem * ,
         int  )
     {

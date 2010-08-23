@@ -90,7 +90,7 @@ void ut_cphoneringingtonecontroller::SetupL(  )
 void ut_cphoneringingtonecontroller::Teardown(  )
     {
     delete CPhoneCenRepProxy::Instance();
-    UserSvr::DllFreeTls(KUidCenRepProxySingleton);
+    UserSvr::DllFreeTls(KUidCenRepProxySingleton.iUid);
     
     delete iRingingtoneplayer; 
     iRingingtoneplayer = NULL;

@@ -48,6 +48,10 @@ symbian {
     LIBS += -lakncapserverclient
     LIBS += -lxqsettingsmanager
     LIBS += -llogsengine
+    LIBS += -lapgrfx
+    LIBS += -lavkon
+    LIBS += -lws32
+    LIBS += -lcone
     
     TARGET.CAPABILITY = ALL -TCB
     DEFINES += FT_SYMBIAN_INTEGRATION

@@ -125,7 +125,7 @@ NONSHARABLE_CLASS(CSPCallAddedHandler): public CBase,
         * @param aLineId line identifier
         */
         void CallAdded( RMobileLine& aLine, 
-                        TName aCallName,
+                        const TName& aCallName,
                         RCSPLineContainer::TCSPLineId aLineId );
 
     private: // data

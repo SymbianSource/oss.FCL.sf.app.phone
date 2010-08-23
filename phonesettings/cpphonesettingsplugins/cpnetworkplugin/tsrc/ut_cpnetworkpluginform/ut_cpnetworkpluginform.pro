@@ -59,6 +59,9 @@ HEADERS += ../../src/cpnetworkplugin.h \
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cpnetworkplugin.cpp \
            ../../../tsrc/mocks/mock_psetwrapper.cpp \
+           ../../../tsrc/mocks/mock_psetcalldivertingwrapper.cpp \
+           ../../../tsrc/mocks/mock_psetcallwaitingwrapper.cpp \
+           ../../../tsrc/mocks/mock_psetcliwrapper.cpp \
            ../../../tsrc/mocks/mock_psetnetworkwrapper.cpp \
            ../../../tsrc/mocks/mock_cpplugincommon.cpp \
            ../../../tsrc/mocks/mock_psuinotes.cpp \

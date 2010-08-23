@@ -14,6 +14,8 @@
  * Description:  
  *
  */
+
+#include <tstasksettings.h>
 #include <networkhandlingstarter.h>
 #include <networkhandlingstarterlogging.h>
 #include <networkhandlingstarter_p.h>
@@ -51,6 +53,10 @@ void NetworkHandlingStarter::start()
     if(!m_privateImpl) {
         m_privateImpl = new NetworkHandlingStarterPrivate();
     }
+
+    // Networkhandlingstarter to be invisible in taskswitcher 
+    TsTaskSettings taskSettings;
+    taskSettings.setVisibility(false);
 }
 
 // End of File.

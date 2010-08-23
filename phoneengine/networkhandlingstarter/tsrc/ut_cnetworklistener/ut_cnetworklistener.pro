@@ -32,8 +32,12 @@ QT += testlib
 symbian: {
   CONFIG += no_icon
   INCLUDEPATH += $$MW_LAYER_SYSTEMINCLUDE
+  INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
   LIBS += -lmocklib \
-          -lsymbianmock
+          -lsymbianmock \
+          -letel \
+          -letelmm \
+          -lcustomapi
 }
 
 # test code
@@ -49,3 +53,7 @@ HEADERS += /epoc32/include/mw/qsysteminfo.h
 SOURCES += ../mocks/mock_cnwsession.cpp
 SOURCES += ../mocks/mock_centralrepository.cpp
 SOURCES += ../mocks/mock_qsysteminfo.cpp
+SOURCES += ../mocks/mock_psetcontainer.cpp
+SOURCES += ../mocks/mock_cpsetrefreshhandler.cpp
+HEADERS += ../mocks/mock_cpsetrefreshhandler.h
+SOURCES += ../mocks/mock_psetnetwork.cpp

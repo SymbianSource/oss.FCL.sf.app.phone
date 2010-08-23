@@ -30,7 +30,7 @@
 #include <ctsydomaincrkeys.h>
 #include <xqaiwrequest.h>
 #include <xqappmgr.h>
-#include <logsservices.h>
+#include <xqaiwdecl.h>
 #endif
 
 namespace PhoneIndicatorControllerKeys{
@@ -278,16 +278,16 @@ void PhoneIndicatorController::handleInteraction(QString type,QVariantMap data)
         QString operation;
         QVariantHash hash;
         QVariantMap map;
-        int interaction = data.value("interaction").toInt();                
+        int interaction = data.value("interaction").toInt();
         
         switch(interaction){
             case OpenMissedCallView:
                 service = "logs";
-                interface = "com.nokia.symbian.ILogsView";
-                operation = "show(QVariantMap)";
-                map.insert("view_index",QVariant((int)LogsServices::ViewMissed));
-                map.insert("show_dialpad",QVariant(false));
-                map.insert("dialpad_text", QVariant(QString()));
+                interface = XQI_LOGS_VIEW;
+                operation = XQOP_LOGS_SHOW;
+                map.insert(XQLOGS_VIEW_INDEX , QVariant((int)XQService::LogsViewAll));
+                map.insert(XQLOGS_SHOW_DIALPAD, QVariant(false));
+                map.insert(XQLOGS_DIALPAD_TEXT, QVariant(QString()));
                 args.append(QVariant(map));
                 break;
             case OpenCallUi:            

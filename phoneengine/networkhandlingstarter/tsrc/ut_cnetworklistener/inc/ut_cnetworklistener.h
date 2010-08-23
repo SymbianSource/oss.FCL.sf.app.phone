@@ -21,8 +21,11 @@
 #include <QtTest/QtTest>
 #include <mockservice.h>
 #include <mnetworklistenerobserver.h>
+#include <mock_cpsetrefreshhandler.h>
 
 class CNetworkListener;
+class CPSetRefreshHandler;
+class CPsetNetwork;
 
 class ut_cnetworklistener : public QObject, public MockService, public MNetworkListenerObserver
 {
@@ -46,11 +49,24 @@ private slots:
     void t_HandleNetworkMessage();
     void t_HandleNetworkError();
     void t_NWLostDelayCallBack();
-
+    void t_NWSimRefreshCallBack();
+    void t_AllowRefresh();
+    void t_Refresh();
+    void t_HandleNetworkInfoReceivedL();
+    void t_HandleCurrentNetworkInfoL();
+    void t_HandleNetworkChangedL_1();
+    void t_HandleNetworkChangedL_2();
+    void t_HandleSearchingNetworksL();
+    void t_HandleRequestingSelectedNetworkL();
+    void t_HandleCallActivatedL();
+    void t_HandleNetworkErrorL();
     
 private:
     
     CNetworkListener *m_networkListener;
+    CPSetRefreshHandler *m_refreshHandler;
+    CPsetNetwork* m_settingsEngine;
+    
 
 };
 

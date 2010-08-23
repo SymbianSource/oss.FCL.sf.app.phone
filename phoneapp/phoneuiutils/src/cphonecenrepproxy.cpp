@@ -417,7 +417,7 @@ void CPhoneCenRepProxy::CancelAllNotifies()
     const TInt count = iObserverArray->Count();
     for ( TInt i = count-1; i >=0; i-- )
         {
-        const TCenRepObserverTag& observerTag = iObserverArray->At( i );
+        iObserverArray->At( i );
         iObserverArray->Delete( i );
         }
     }

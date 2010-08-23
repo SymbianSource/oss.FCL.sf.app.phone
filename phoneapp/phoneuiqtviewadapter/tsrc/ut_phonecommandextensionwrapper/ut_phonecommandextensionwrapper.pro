@@ -22,6 +22,7 @@ DEPENDPATH += .
 INCLUDEPATH += .
 CONFIG += hb
 CONFIG += qtestlib
+DEFINES += BUILD_XQPLUGINS_DLL
 
 symbian {
 
@@ -36,6 +37,7 @@ symbian {
                    ../../../../inc \
                    ../../../phoneui2/srcdata
 
+	HEADERS += /epoc32/include/mw/xqpluginloader.h
 
     TARGET.CAPABILITY = ALL -TCB
     DEFINES += FT_SYMBIAN_INTEGRATION

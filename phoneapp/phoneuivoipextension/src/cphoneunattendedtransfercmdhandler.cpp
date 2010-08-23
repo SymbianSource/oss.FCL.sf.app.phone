@@ -206,9 +206,6 @@ void CPhoneUnattendedTransferCmdHandler::CloseTransferDialerL()
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneUnattendedTransferCmdHandler::CloseTransferDialerL" )
-    
-    CPhoneState* phoneState = 
-        static_cast< CPhoneState* >( iStateMachine.State() );
     }
 
 

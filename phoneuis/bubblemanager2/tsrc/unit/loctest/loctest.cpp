@@ -23,7 +23,8 @@
 #include <hbaction.h>
 #include <hbtoolbar.h>
 #include <hbview.h>
-#include <private/hbtextmeasurementutility_p.h> // hb "configure --developer" required
+#include <restricted/hbtextmeasurementutility_r.h> // hb "configure --developer" required
+#include <restricted/hbfeaturemanager_r.h>
 #include <hbdeviceprofile.h>
 
 #include "bubbletest.h"
@@ -40,9 +41,7 @@ private slots:
     void cleanupTestCase();
 
     void testPortraitStrings();
-
     void changeOrientation();
-
     void testLandscapeStrings();
 
 private:
@@ -73,6 +72,10 @@ void LocTest::initTestCase()
     mainWindow->currentView()->setToolBar(toolBar);
 
     mainWindow->show();
+
+    HbFeatureManager::instance()->setFeatureStatus(
+        HbFeatureManager::TextMeasurement, true);
+
     QTest::qWait( 3000 );
 }
 
@@ -86,8 +89,7 @@ void LocTest::testPortraitStrings()
 {
     view->setTitle( "Measuring portrait" );
 
-    // In portrait all text fields have same width, only font
-    // is different between label and cli field.
+    // texts fields are measured according to most narrow situation
 
     // create test bubble
     bubbleManager->startChanges();
@@ -100,12 +102,26 @@ void LocTest::testPortraitStrings()
     action2.setSoftKeyRole(QAction::NegativeSoftKey);
     bubbleManager->addAction( bubbleId, &action2 );
     bubbleManager->setCallObjectFromTheme(bubbleId);
+    bubbleManager->setCallFlag(bubbleId,BubbleManagerIF::NoCiphering,true);
     bubbleManager->endChanges();
 
     QTest::qWait( WAIT_TIME );
 
     // measure label texts
+
+    // First line texts with ciphering indicator
+    bubbleManager->startChanges();
+    bubbleManager->setState( bubbleId, BubbleManager::Outgoing );
+    bubbleManager->endChanges();
+
     testLabel(bubbleId,"txt_phone_other_calling");
+
+    testLabel(bubbleId,"txt_phone_other_attempting");
+
+    // Second line texts, no indicators -> full width
+    bubbleManager->startChanges();
+    bubbleManager->setState( bubbleId, BubbleManager::Incoming );
+    bubbleManager->endChanges();
 
     testLabel(bubbleId,"txt_phone_other_incoming_call");
 
@@ -115,18 +131,31 @@ void LocTest::testPortraitStrings()
 
     testLabel(bubbleId,"txt_phone_other_disconnected");
 
-    testLabel(bubbleId,"txt_phone_other_attempting");
+    testLabel(bubbleId,"txt_phone_other_incoming_video_call");
 
-    // measure cli texts
+    testLabel(bubbleId,"txt_phone_other_incoming_l1_call");
+
+    // First line CLI texts with ciphering indicator
     testCli(bubbleId,"txt_phone_other_conference_call");
-
-    testCli(bubbleId,"txt_phone_other_unknown_number");
 
     testCli(bubbleId,"txt_phone_other_remote_sim");
 
+    testCli(bubbleId,"txt_phone_other_emergency_call");
+
+    // First line CLI texts with ciphering and divert indicators
+    bubbleManager->startChanges();
+    bubbleManager->setCallFlag( bubbleId, BubbleManager::Diverted, true );
+    bubbleManager->endChanges();
+
+    testCli(bubbleId,"txt_phone_other_unknown_number");
+
     testCli(bubbleId,"txt_phone_other_private_number");
 
-    testCli(bubbleId,"txt_phone_other_emergency_call");
+    testCli(bubbleId,"txt_phone_other_payphone");
+
+    bubbleManager->startChanges();
+    bubbleManager->setCallFlag( bubbleId, BubbleManager::Diverted, false );
+    bubbleManager->endChanges();
 
     // write results
     QTest::qWait( WAIT_TIME );
@@ -146,8 +175,8 @@ void LocTest::testPortraitStrings()
 void LocTest::changeOrientation()
 {
     view->setTitle( "Changing orientation" );
-    mainWindow->setOrientation(Qt::Horizontal);
     mainWindow->resize(640,360);
+    mainWindow->setOrientation(Qt::Horizontal);
     QTest::qWait(3000);
 }
 
@@ -155,56 +184,72 @@ void LocTest::testLandscapeStrings()
 {
     view->setTitle( "Measuring landscape" );
 
-    // In landscape text field width depends on call situation,
-    // measure according to most narrow case.
+    // texts fields are measured according to most narrow situation
 
     // create test bubble
     bubbleManager->startChanges();
     int bubbleId = bubbleManager->createCallHeader();
-    bubbleManager->setState( bubbleId, BubbleManager::OnHold );
+    bubbleManager->setState( bubbleId, BubbleManager::Incoming );
     HbAction action1("End call", this);
     action1.setSoftKeyRole(QAction::PositiveSoftKey);
     bubbleManager->addAction( bubbleId, &action1 );
     bubbleManager->setCallObjectFromTheme(bubbleId);
+    bubbleManager->setCallFlag( bubbleId, BubbleManager::NoCiphering, true );
     bubbleManager->endChanges();
 
+    // Single call "only" texts
 
-    // only in single call texts
+    // Second line texts, no indicators -> full width
     testLabel(bubbleId,"txt_phone_other_incoming_call");
 
+    testLabel(bubbleId,"txt_phone_other_incoming_video_call");
+
+    testLabel(bubbleId,"txt_phone_other_incoming_l1_call");
+
+    bubbleManager->startChanges();
+    bubbleManager->setState( bubbleId, BubbleManager::Outgoing );
+    bubbleManager->endChanges();
+
+    // First line texts, with ciphering indicator
     testLabel(bubbleId,"txt_phone_other_attempting");
+
+    testLabel(bubbleId,"txt_phone_other_calling");
+
+    bubbleManager->startChanges();
+    bubbleManager->setState( bubbleId, BubbleManager::Active );
+    bubbleManager->endChanges();
 
     testCli(bubbleId,"txt_phone_other_emergency_call");
 
-    // multicall
+    // Add another call
     bubbleManager->startChanges();
     int bubbleId2 = bubbleManager->createCallHeader();
-    bubbleManager->setState( bubbleId2, BubbleManager::OnHold );
-    int bubbleId3 = bubbleManager->createCallHeader();
-    bubbleManager->setState( bubbleId3, BubbleManager::Waiting );
-    HbAction action2("Replace", this);
-    action2.setSoftKeyRole(QAction::PositiveSoftKey);
-    bubbleManager->addAction( bubbleId3, &action1 );
-    bubbleManager->setCallObjectFromTheme(bubbleId3);
+    bubbleManager->setState( bubbleId, BubbleManager::OnHold );
+    bubbleManager->setState( bubbleId2, BubbleManager::Active );
+    bubbleManager->setCallObjectFromTheme(bubbleId2);
     bubbleManager->endChanges();
 
-    // measure label texts
-    testLabel(bubbleId2,"txt_phone_other_calling");
+    testLabel(bubbleId,"txt_phone_other_on_hold");
 
-    testLabel(bubbleId2,"txt_phone_other_waiting");
+    testLabel(bubbleId,"txt_phone_other_disconnected");
 
-    testLabel(bubbleId2,"txt_phone_other_on_hold");
+    testCli(bubbleId,"txt_phone_other_conference_call");
 
-    testLabel(bubbleId2,"txt_phone_other_disconnected");
+    testCli(bubbleId,"txt_phone_other_remote_sim");
 
-    // measure cli texts
-    testCli(bubbleId2,"txt_phone_other_conference_call");
+    // Add ciphering indicator
+    bubbleManager->startChanges();
+    bubbleManager->setState( bubbleId, BubbleManager::Waiting );
+    bubbleManager->setCallFlag( bubbleId, BubbleManager::Diverted, true );
+    bubbleManager->endChanges();
 
-    testCli(bubbleId3,"txt_phone_other_unknown_number");
+    testCli(bubbleId,"txt_phone_other_unknown_number");
 
-    testCli(bubbleId3,"txt_phone_other_remote_sim");
+    testCli(bubbleId,"txt_phone_other_private_number");
 
-    testCli(bubbleId3,"txt_phone_other_private_number");
+    testCli(bubbleId,"txt_phone_other_payphone");
+
+    testLabel(bubbleId,"txt_phone_other_waiting");
 
     // write results
     QTest::qWait( WAIT_TIME );
@@ -218,7 +263,6 @@ void LocTest::testLandscapeStrings()
     bubbleManager->startChanges();
     bubbleManager->removeCallHeader( bubbleId );
     bubbleManager->removeCallHeader( bubbleId2 );
-    bubbleManager->removeCallHeader( bubbleId3 );
     bubbleManager->endChanges();
     QTest::qWait( WAIT_TIME );
 }

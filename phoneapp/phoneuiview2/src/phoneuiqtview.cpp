@@ -61,7 +61,7 @@ PhoneUIQtView::PhoneUIQtView (HbMainWindow &window, QGraphicsItem *parent) :
     setTitle(networkName);
 
     // Capturing long press of end key
-    m_keyCapture = new XqKeyCapture();
+    m_keyCapture = new XQKeyCapture();
     
     // Dialpad
     m_dialpad = new Dialpad(m_window);
@@ -189,17 +189,19 @@ void PhoneUIQtView::clearBubbleCommands (int bubbleId)
 
     if (mapper) {
         QList<HbAction *> *actions = m_bubbleActionMap.value(bubbleId);
+        if (actions) {
+            foreach (HbAction *action, *actions ) {
+                mapper->removeMappings(action);
+            }
 
-        foreach (HbAction *action, *actions ) {
-            mapper->removeMappings(action);
-            delete action;
+            qDeleteAll(*actions);
+            actions->clear();
+            delete actions;
         }
-
-        actions->clear();
+        
         m_bubbleMap.remove(bubbleId);
         m_bubbleActionMap.remove(bubbleId);
         delete mapper;
-        delete actions;
     }
 
 }

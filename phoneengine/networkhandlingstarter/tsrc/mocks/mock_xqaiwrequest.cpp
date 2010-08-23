@@ -287,16 +287,32 @@ bool XQAiwRequest::sendExecute(  )
     SMC_MOCK_METHOD0( bool )
     }
 
-const QMetaObject *XQAiwRequest::metaObject() const
+
+// -----------------------------------------------------------------------------
+// XQAiwRequest::handleAsyncResponse
+// -----------------------------------------------------------------------------
+//
+void XQAiwRequest::handleAsyncResponse(const QVariant& value)
 {
-    return QObject::d_ptr->metaObject ? QObject::d_ptr->metaObject : NULL;
+    SMC_MOCK_METHOD1( void, const QVariant &, value )
 }
 
-void *XQAiwRequest::qt_metacast(const char *_clname)
+
+// -----------------------------------------------------------------------------
+// XQAiwRequest::sendFromAction
+// -----------------------------------------------------------------------------
+//
+void XQAiwRequest::sendFromAction(bool checked)
 {
+    SMC_MOCK_METHOD1( void, bool, checked )
 }
 
-int XQAiwRequest::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+
+// -----------------------------------------------------------------------------
+// XQAiwRequest::handleAsyncError
+// -----------------------------------------------------------------------------
+//
+void XQAiwRequest::handleAsyncError(int err)
 {
-    return 0;
+    SMC_MOCK_METHOD1( void, int, err )
 }

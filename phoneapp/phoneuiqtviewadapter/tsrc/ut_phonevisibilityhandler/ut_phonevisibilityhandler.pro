@@ -30,7 +30,7 @@ symbian {
     INCLUDEPATH += \epoc32\include\platform\mw \
                    \epoc32\include\platform \
                    \epoc32\include\platform\app \
-	                 \epoc32\include\mw \
+	               \epoc32\include\mw \
                    \sf\app\phone\inc \
                    ../../../phoneuiutils/inc/ \
                    ../../../phonemediatorcenter/inc/ \
@@ -40,7 +40,10 @@ symbian {
                    ../../../phoneui2/srcdata
 
     LIBS += -ltelephonyservice
-        
+    LIBS += -lapgrfx
+    LIBS += -lws32
+    LIBS += -lcone
+
     TARGET.CAPABILITY = ALL -TCB
     DEFINES += FT_SYMBIAN_INTEGRATION
 }

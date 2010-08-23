@@ -63,7 +63,7 @@ void UT_CpCallsPluginGroup::init()
     CPsetContainer cont;
     PSetCallWaitingWrapper waitingWrapper(cont);
     
-    EXPECT(PSetWrapper::callWaitingWrapper).returns(&waitingWrapper);
+    EXPECT(PSetWrapper, callWaitingWrapper).returns(&waitingWrapper);
     
     static bool b=0;//CenrepKeyValueOff;
     if (b==0) {
@@ -71,7 +71,7 @@ void UT_CpCallsPluginGroup::init()
     } else {
         b=0;
     }
-    EXPECT(CpSettingsWrapper::showCallDuration).returns(b);
+    EXPECT(CpSettingsWrapper, showCallDuration).returns(b);
     
     static int i=0;//No Errors
     if (i==0) {
@@ -79,14 +79,13 @@ void UT_CpCallsPluginGroup::init()
     } else {
         i=0;
     }
-    EXPECT(SsSettingsWrapper::get).returns(i); 
+    EXPECT(SsSettingsWrapper, get).returns(i); 
     
-    EXPECT(CpSettingsWrapper::readSoftRejectText);
+    EXPECT(CpSettingsWrapper, readSoftRejectText);
 
     if (qstrcmp(QTest::currentTestFunction(), 
         "t_handleCallWaitingGetStatusDistinguishEnabled") == 0) {
-        EXPECT(
-            CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled)
+        EXPECT(CpSettingsWrapper, isFeatureCallWaitingDistiquishNotProvisionedEnabled)
             .returns(true);
     }
     
@@ -102,18 +101,18 @@ void UT_CpCallsPluginGroup::t_showCallDurationStateChanged()
     bool bOngoing=true;
     bool bDuration=true;
     
-    EXPECT(CpSettingsWrapper::isOngoingCall).returns(bOngoing);
-    EXPECT(CpSettingsWrapper::showCallDuration).returns(bDuration);
-    EXPECT(PsUiNotes::showGlobalNote);
+    EXPECT(CpSettingsWrapper, isOngoingCall).returns(bOngoing);
+    EXPECT(CpSettingsWrapper, showCallDuration).returns(bDuration);
+    EXPECT(PsUiNotes, showGlobalNote);
     m_callspluginGroup->showCallDurationStateChanged();
     
     bDuration = false;
-    EXPECT(CpSettingsWrapper::isOngoingCall).returns(bOngoing);
-    EXPECT(CpSettingsWrapper::showCallDuration).returns(bDuration);
+    EXPECT(CpSettingsWrapper, isOngoingCall).returns(bOngoing);
+    EXPECT(CpSettingsWrapper, showCallDuration).returns(bDuration);
     m_callspluginGroup->showCallDurationStateChanged();
     
     bOngoing = false;
-    EXPECT(CpSettingsWrapper::isOngoingCall).returns(bOngoing);
+    EXPECT(CpSettingsWrapper, isOngoingCall).returns(bOngoing);
     m_callspluginGroup->showCallDurationStateChanged();
     
     QVERIFY(verify());
@@ -127,19 +126,19 @@ void UT_CpCallsPluginGroup::t_callWaitingCurrentIndexChanged()
     QList<unsigned char> basicServiceGroupIds;
 
     // check status case
-    EXPECT(PSetCallWaitingWrapper::getCallWaitingStatus);
+    EXPECT(PSetCallWaitingWrapper, getCallWaitingStatus);
     m_callspluginGroup->callWaitingCurrentIndexChanged();
 
     // active case
     m_callspluginGroup->handleCallWaitingGetStatus(
         PSetCallWaitingWrapper::StatusActive, basicServiceGroupIds);
-    EXPECT(PSetCallWaitingWrapper::setCallWaiting);
+    EXPECT(PSetCallWaitingWrapper, setCallWaiting);
     m_callspluginGroup->callWaitingCurrentIndexChanged();
 
     // deactive case
     m_callspluginGroup->handleCallWaitingGetStatus(
         PSetCallWaitingWrapper::StatusDisabled, basicServiceGroupIds);
-    EXPECT(PSetCallWaitingWrapper::setCallWaiting);
+    EXPECT(PSetCallWaitingWrapper, setCallWaiting);
     m_callspluginGroup->callWaitingCurrentIndexChanged();
 
     QVERIFY(verify());
@@ -150,14 +149,14 @@ void UT_CpCallsPluginGroup::t_callWaitingCurrentIndexChanged()
  */
 void UT_CpCallsPluginGroup::t_cliCurrentIndexChanged()
 {
-    EXPECT(SsSettingsWrapper::set);
+    EXPECT(SsSettingsWrapper, set);
     m_callspluginGroup->cliCurrentIndexChanged(1);
     
     QVERIFY(verify());
     reset();
     
     //Do nothing, index is out of range
-    EXPECT(PSetCallWaitingWrapper::setCallWaiting).times(0);
+    EXPECT(PSetCallWaitingWrapper, setCallWaiting).times(0);
     m_callspluginGroup->cliCurrentIndexChanged(-1);
     
     QVERIFY(verify());
@@ -168,23 +167,23 @@ void UT_CpCallsPluginGroup::t_cliCurrentIndexChanged()
  */
 void UT_CpCallsPluginGroup::t_handleCallWaitingChanged()
 {
-    EXPECT(PsUiNotes::cancelNote);
-    EXPECT(PsUiNotes::showNotificationDialog);
+    EXPECT(PsUiNotes, cancelNote);
+    EXPECT(PsUiNotes, showNotificationDialog);
     m_callspluginGroup->handleCallWaitingChanged(
         PSetCallWaitingWrapper::ActivateCallWaiting , 0);
     
-    EXPECT(PsUiNotes::cancelNote);
-    EXPECT(PsUiNotes::showNotificationDialog);
+    EXPECT(PsUiNotes, cancelNote);
+    EXPECT(PsUiNotes, showNotificationDialog);
     m_callspluginGroup->handleCallWaitingChanged(
         PSetCallWaitingWrapper::DeactivateCallWaiting, 0);
     
-    EXPECT(PsUiNotes::cancelNote);
-    EXPECT(PsUiNotes::showNotificationDialog);
+    EXPECT(PsUiNotes, cancelNote);
+    EXPECT(PsUiNotes, showNotificationDialog);
     m_callspluginGroup->handleCallWaitingChanged(
         PSetCallWaitingWrapper::CheckCallWaitingStatus, 0);
     
-    EXPECT(PsUiNotes::cancelNote);
-    EXPECT(PsUiNotes::showNotificationDialog);
+    EXPECT(PsUiNotes, cancelNote);
+    EXPECT(PsUiNotes, showNotificationDialog);
     m_callspluginGroup->handleCallWaitingChanged(
         PSetCallWaitingWrapper::DeactivateCallWaiting , -1);
     
@@ -196,21 +195,21 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingChanged()
  */
 void UT_CpCallsPluginGroup::t_handleCallWaitingRequesting()
 {
-    EXPECT(PsUiNotes::cancelNote);
+    EXPECT(PsUiNotes, cancelNote);
     m_callspluginGroup->handleCallWaitingRequesting( false, true ); 
     
-    EXPECT(PsUiNotes::showGlobalProgressNote);
+    EXPECT(PsUiNotes, showGlobalProgressNote);
     m_callspluginGroup->handleCallWaitingRequesting( true, false );
     
-    EXPECT(PsUiNotes::cancelNote);
-    EXPECT(PsUiNotes::showGlobalProgressNote);
+    EXPECT(PsUiNotes, cancelNote);
+    EXPECT(PsUiNotes, showGlobalProgressNote);
 //    m_callspluginGroup->handleCallWaitingRequesting( true, true );
 
 //    QVERIFY(verify());
     reset();
     
-    EXPECT(PsUiNotes::cancelNote).times(0);
-    EXPECT(PsUiNotes::showGlobalProgressNote).times(0);
+    EXPECT(PsUiNotes, cancelNote).times(0);
+    EXPECT(PsUiNotes, showGlobalProgressNote).times(0);
     m_callspluginGroup->handleCallWaitingRequesting( false, false );
     
     QVERIFY(verify());
@@ -221,8 +220,8 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingRequesting()
  */
 void UT_CpCallsPluginGroup::t_handleCallWaitingError()
 {
-    EXPECT(PsUiNotes::cancelNote);
-    EXPECT(PsUiNotes::showGlobalErrorNote);
+    EXPECT(PsUiNotes, cancelNote);
+    EXPECT(PsUiNotes, showGlobalErrorNote);
     m_callspluginGroup->handleCallWaitingError( -1 );
     
     QVERIFY(verify());
@@ -234,7 +233,7 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingError()
 void UT_CpCallsPluginGroup::t_softRejectTextChanged()
 {
     int iRet=0;
-    EXPECT(CpSettingsWrapper::writeSoftRejectText).returns(iRet);
+    EXPECT(CpSettingsWrapper, writeSoftRejectText).returns(iRet);
     m_callspluginGroup->softRejectTextChanged();
     
     QVERIFY(verify());
@@ -247,11 +246,11 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingGetStatus()
 {
     QList<unsigned char> basicServiceGroupIds;
     
-    EXPECT(PsUiNotes::cancelNote);
+    EXPECT(PsUiNotes, cancelNote);
     m_callspluginGroup->handleCallWaitingGetStatus(
         PSetCallWaitingWrapper::StatusNotProvisioned, basicServiceGroupIds);
     
-    EXPECT(PsUiNotes::cancelNote);
+    EXPECT(PsUiNotes, cancelNote);
     m_callspluginGroup->handleCallWaitingGetStatus(
         PSetCallWaitingWrapper::StatusActive, basicServiceGroupIds);
     QVERIFY(verify());
@@ -264,8 +263,8 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingGetStatusDistinguishEnabled()
 {
     QList<unsigned char> basicServiceGroupIds;
     
-    EXPECT(PsUiNotes::cancelNote);
-    EXPECT(PsUiNotes::showNotificationDialog);
+    EXPECT(PsUiNotes, cancelNote);
+    EXPECT(PsUiNotes, showNotificationDialog);
     m_callspluginGroup->handleCallWaitingGetStatus(
         PSetCallWaitingWrapper::StatusNotProvisioned, basicServiceGroupIds);
     
@@ -277,7 +276,7 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingGetStatusDistinguishEnabled()
  */
 void UT_CpCallsPluginGroup::t_ownVideoInReceivedCallStateChanged()
 {
-    EXPECT(CpSettingsWrapper::writeVtVideoSending).times(3);
+    EXPECT(CpSettingsWrapper, writeVtVideoSending).times(3);
     m_callspluginGroup->ownVideoInReceivedCallStateChanged(0);
     m_callspluginGroup->ownVideoInReceivedCallStateChanged(1);
     m_callspluginGroup->ownVideoInReceivedCallStateChanged(2);

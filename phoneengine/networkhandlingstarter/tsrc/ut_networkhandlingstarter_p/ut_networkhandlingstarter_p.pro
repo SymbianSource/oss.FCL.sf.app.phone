@@ -23,6 +23,7 @@ INCLUDEPATH += ./inc
 INCLUDEPATH += ../../inc
 INCLUDEPATH += ../common
 DEFINES += QT_NO_DEBUG_STREAM BUILD_NETWORKHANDLINGSTARTER
+DEFINES += XQ_BUILD_XQSERVICE_LIB
 
 QT -= gui
 QT += testlib
@@ -52,7 +53,8 @@ SOURCES += ../mocks/mock_hbmainwindow.cpp
 SOURCES += ../mocks/mock_qgraphicsview.cpp
 SOURCES += ../mocks/mock_qabstractscrollarea.cpp
 SOURCES += ../mocks/mock_qframe.cpp
+HEADERS += /epoc32/include/mw/xqappmgr.h
 SOURCES += ../mocks/mock_xqappmgr.cpp
+HEADERS += /epoc32/include/mw/xqaiwrequest.h
 SOURCES += ../mocks/mock_xqaiwrequest.cpp
 SOURCES += ../mocks/mock_hbtranslator.cpp
-

@@ -1,8 +1,7 @@
-/* 
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+/** Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
+* under the terms of the License "Eclipse Public License v1.0"
 * which accompanies this distribution, and is available
 * at the URL "http://www.eclipse.org/legal/epl-v10.html".
 *
@@ -16,66 +15,58 @@
 */
 #include <QDebug>
 #include <smcmockclassincludes.h>
-#include "psetcallwaitingwrapper.h"
-
-class PSetCallWaitingWrapperPrivate {
-public:
-    PSetCallWaitingWrapperPrivate() {}
-    ~PSetCallWaitingWrapperPrivate() {}
-};
+#include "tstasksettings.h"
 
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
-// PSetCallWaitingWrapper::PSetCallWaitingWrapper
+// TsTaskSettings::TsTaskSettings
 // -----------------------------------------------------------------------------
 //
-PSetCallWaitingWrapper::PSetCallWaitingWrapper( 
-        CPsetContainer & psetContainer,
-        QObject * parent ) : QObject( parent )
+TsTaskSettings::TsTaskSettings(  )
     {
-    Q_UNUSED(psetContainer);
+    
     }
 
 
 // -----------------------------------------------------------------------------
-// PSetCallWaitingWrapper::~PSetCallWaitingWrapper
+// TsTaskSettings::~TsTaskSettings
 // -----------------------------------------------------------------------------
 //
-PSetCallWaitingWrapper::~PSetCallWaitingWrapper(  )
+TsTaskSettings::~TsTaskSettings(  )
     {
-
+    
     }
 
 
 // -----------------------------------------------------------------------------
-// PSetCallWaitingWrapper::setCallWaiting
+// TsTaskSettings::registerScreenshot
 // -----------------------------------------------------------------------------
 //
-void PSetCallWaitingWrapper::setCallWaiting( 
-        PsCallWaitingCommand aSetting,
-        int aBasicServiceGroup )
+bool TsTaskSettings::registerScreenshot( 
+        const QPixmap & screenshot )
     {
-    SMC_MOCK_METHOD2( void, PsCallWaitingCommand, aSetting, 
-        int, aBasicServiceGroup )
+    SMC_MOCK_METHOD1( bool, const QPixmap &, screenshot )
     }
 
 
 // -----------------------------------------------------------------------------
-// PSetCallWaitingWrapper::getCallWaitingStatus
+// TsTaskSettings::unregisterScreenshot
 // -----------------------------------------------------------------------------
 //
-void PSetCallWaitingWrapper::getCallWaitingStatus(  )
+bool TsTaskSettings::unregisterScreenshot(  )
     {
-    SMC_MOCK_METHOD0( void )
+    SMC_MOCK_METHOD0( bool )
     }
 
 
 // -----------------------------------------------------------------------------
-// PSetCallWaitingWrapper::cancelProcess
+// TsTaskSettings::setVisibility
 // -----------------------------------------------------------------------------
 //
-void PSetCallWaitingWrapper::cancelProcess(  )
+bool TsTaskSettings::setVisibility( bool Visibility )
     {
-    SMC_MOCK_METHOD0( void )
+    SMC_MOCK_METHOD0( bool )
     }
+
+

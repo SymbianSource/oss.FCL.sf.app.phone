@@ -64,3 +64,4 @@ SOURCES += ../mocks/mock_qgraphicslinearlayout.cpp
 SOURCES += ../mocks/mock_qgraphicslayout.cpp
 SOURCES += ../mocks/mock_hbframedrawer.cpp
 SOURCES += ../mocks/mock_hbframeitem.cpp
+SOURCES += ../mocks/mock_rsatservice.cpp

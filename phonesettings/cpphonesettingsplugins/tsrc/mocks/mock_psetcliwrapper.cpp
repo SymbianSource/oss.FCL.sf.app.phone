@@ -17,7 +17,12 @@
 #include <QDebug>
 #include <smcmockclassincludes.h>
 #include "psetcliwrapper.h"
-#include "psetcliwrapper_p.h"
+
+class PSetCliWrapperPrivate {
+public:
+    PSetCliWrapperPrivate() {}
+    ~PSetCliWrapperPrivate() {}
+};
 
 // ============================ MEMBER FUNCTIONS ===============================
 

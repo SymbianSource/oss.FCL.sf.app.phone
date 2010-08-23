@@ -271,7 +271,11 @@ bool CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled()
 
 bool CpSettingsWrapper::isPhoneOffline() const
 {
-    return QSystemDeviceInfo::OfflineProfile == m_deviceInfo->currentProfile();
+    bool networkConnectionAllowed = readCenrepValue(KCRUidCoreApplicationUIs.iUid,
+                                KCoreAppUIsNetworkConnectionAllowed).toBool();
+    // 0 = Offline Mode, 1 = Online Mode
+    DPRINT << "networkConnectionAllowed: " << networkConnectionAllowed;
+    return !networkConnectionAllowed;
 }
 
 bool CpSettingsWrapper::isOngoingCall() const

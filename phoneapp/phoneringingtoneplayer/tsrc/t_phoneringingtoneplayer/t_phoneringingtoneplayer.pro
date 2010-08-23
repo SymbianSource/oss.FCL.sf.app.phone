@@ -25,8 +25,10 @@ symbian {
                    /epoc32/include/platform \
                    ../../../phoneuiutils/inc \
                    ../../../phoneuiview2/src \
-                   ../../../phoneuiqtviewadapter/src \
+                   ../../../phoneuiqtviewadapter/inc \
                    ../../inc \
+                   ../../../phonemediatorcenter/inc
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 
     LIBS += -lphoneringingtoneplayer \
             -lphoneuiutils

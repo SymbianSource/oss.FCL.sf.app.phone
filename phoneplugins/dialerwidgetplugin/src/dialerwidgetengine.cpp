@@ -18,7 +18,6 @@
 #include "dialerwidgetengine.h"
 
 #include <logsdomaincrkeys.h>
-#include <logsservices.h>
 
 DialerWidgetEngine::DialerWidgetEngine():
     m_missedCalls(-1)

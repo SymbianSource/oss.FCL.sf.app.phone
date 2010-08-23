@@ -19,6 +19,8 @@
 #include "phoneservices.h"
 #include "dialservice.h"
 #include "dtmfservice.h"
+#include "dialservicedepricated.h"
+#include "dtmfservicedepricated.h"
 #include "urischemehandlerservice.h"
 
 bool g_dialServiceConstructed;
@@ -104,41 +106,113 @@ int DialService::dial(const QString& number, int contactId)
     return 0;
 }
 
-void DialService::dialVideo(const QString& number)
+int DialService::dialVideo(const QString& number)
 {
     Q_UNUSED(number)
 }
 
-void DialService::dialVideo(const QString& number, int contactId)
+int DialService::dialVideo(const QString& number, int contactId)
 {
     Q_UNUSED(number)
     Q_UNUSED(contactId)
 }
 
-void DialService::dialVoip(const QString& address)
+int DialService::dialVoip(const QString& address)
 {
     Q_UNUSED(address)
 }
 
-void DialService::dialVoip(const QString& address, int contactId)
+int DialService::dialVoip(const QString& address, int contactId)
 {
     Q_UNUSED(address)
     Q_UNUSED(contactId)
 }
 
-void DialService::dialVoipService(const QString& address, int serviceId)
+int DialService::dialVoipService(const QString& address, int serviceId)
 {
     Q_UNUSED(address)
     Q_UNUSED(serviceId)
 }
 
-void DialService::dialVoipService(
+int DialService::dialVoipService(
         const QString& address, int serviceId, int contactId)
 {
     Q_UNUSED(address)
     Q_UNUSED(serviceId)
     Q_UNUSED(contactId)
 }
+
+DialServiceDepricated::DialServiceDepricated(MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent) : 
+    XQServiceProvider(QLatin1String("com.nokia.symbian.ICallDial"), parent), m_call (call), m_parameters (parameters)
+{
+}
+
+DialServiceDepricated::~DialServiceDepricated()
+{
+}
+
+int DialServiceDepricated::dial(const QString& number)
+{
+    Q_UNUSED(number)
+}
+
+int DialServiceDepricated::dial(const QString& number, int contactId)
+{
+    Q_UNUSED(number)
+    Q_UNUSED(contactId)
+}
+
+void DialServiceDepricated::dialVideo(const QString& number)
+{
+    Q_UNUSED(number)
+}
+
+void DialServiceDepricated::dialVideo(const QString& number, int contactId)
+{
+    Q_UNUSED(number)
+    Q_UNUSED(contactId)
+}
+
+void DialServiceDepricated::dialVoip(const QString& address)
+{
+    Q_UNUSED(address)
+}
+
+void DialServiceDepricated::dialVoip(const QString& address, int contactId)
+{
+    Q_UNUSED(address)
+    Q_UNUSED(contactId)
+}
+
+void DialServiceDepricated::dialVoipService(const QString& address, int serviceId)
+{
+    Q_UNUSED(address)
+    Q_UNUSED(serviceId)
+}
+
+void DialServiceDepricated::dialVoipService(
+        const QString& address, int serviceId, int contactId)
+{
+    Q_UNUSED(address)
+    Q_UNUSED(serviceId)
+    Q_UNUSED(contactId)
+}
+
+QString DialServiceDepricated::modifyPhoneNumber(const QString &number)
+{
+    return number;
+}
+
+QString DialServiceDepricated::simplified(const QString &number)
+{
+    return number;
+}
+
+QString DialServiceDepricated::japanPrefixModifications(const QString &number)
+{    
+    return number;
+}
+
 
 DTMFService::DTMFService(MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent) : 
     XQServiceProvider(QLatin1String("com.nokia.symbian.IDtmfPlay"), parent), m_call (call), m_parameters (parameters)
@@ -152,14 +226,41 @@ DTMFService::~DTMFService()
 {
 }
 
-void DTMFService::playDTMFTone(const QChar& keyToPlay)
+int DTMFService::playDTMFTone(const QChar& keyToPlay)
 {
     Q_UNUSED(keyToPlay)
 }
 
-void DTMFService::stopDTMFPlay()
+int DTMFService::stopDTMFPlay()
 {
 }
+
+DTMFServiceDepricated::DTMFServiceDepricated(
+    MPECallControlIF &call, 
+    MPECallSettersIF &parameters, 
+    QObject* parent) 
+    : 
+    XQServiceProvider(
+        QLatin1String("com.nokia.symbian.IDtmfPlay"), parent), 
+    m_call(call), 
+    m_parameters(parameters)
+{
+    
+}
+
+DTMFServiceDepricated::~DTMFServiceDepricated()
+{
+}
+
+void DTMFServiceDepricated::playDTMFTone(const QChar& /*keyToPlay*/)
+{
+}
+
+void DTMFServiceDepricated::stopDTMFPlay()
+{
+
+}
+
 
 UriSchemeHandlerService::UriSchemeHandlerService(
     MPECallControlIF &call, MPECallSettersIF &parameters, QObject* parent)

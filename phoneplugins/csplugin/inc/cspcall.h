@@ -166,7 +166,7 @@ class CSPCall : public CBase,
         * From MCSPUUSMessageObserver
         * UUS message received notification. 
         */
-        void UUSMessageReceived( TDesC& aMessage );        
+        void UUSMessageReceived( const TDesC& aMessage );        
         
 // from base class MCCPCSCall
 
@@ -476,8 +476,7 @@ class CSPCall : public CBase,
         * @param aEtelState an ETel state
         * @return corresponding CCP state
         */
-        MCCPCallObserver::TCCPCallState 
-            CSPCall::CCPStateFromETelState(
+        MCCPCallObserver::TCCPCallState CCPStateFromETelState(
                 RMobileCall::TMobileCallStatus aEtelState );
                 
         /**
@@ -523,12 +522,12 @@ class CSPCall : public CBase,
         /**
          * Implementation for UpdateCallInfo().       
          */
-        virtual void UpdateCallInfoImpl( RMobileCall::TMobileCallInfoV7 aCallInfo );
+        virtual void UpdateCallInfoImpl( const RMobileCall::TMobileCallInfoV7& aCallInfo );
         
         /**
          * Set call origin to CCCECallParameters.       
          */
-        virtual void UpdateCallOrigin( RMobileCall::TMobileCallInfoV7 aCallInfo );
+        virtual void UpdateCallOrigin( const RMobileCall::TMobileCallInfoV7& aCallInfo );
         
         /**
         * Reads information from cenrep.
@@ -556,7 +555,7 @@ class CSPCall : public CBase,
         *       ETrue for calls added by ETel status monitor  
         */
         void UpdateCallNameNumberInfo(
-                RMobileCall::TMobileCallInfoV3& aCallInfo, 
+                const RMobileCall::TMobileCallInfoV3& aCallInfo, 
                 TBool aCallAddedByMonitor ); 
 
         /**
@@ -781,7 +780,7 @@ class CSPCall : public CBase,
            * Allocate CallInfo into heap since it could be
            * too big fit to stack.
            */
-          RMobileCall::TMobileCallInfoV3 iEtelCallInfo;
+          RMobileCall::TMobileCallInfoV7 iEtelCallInfo;
           
           friend class UT_CSPCall;
           friend class MT_CConvergedCallProvider;

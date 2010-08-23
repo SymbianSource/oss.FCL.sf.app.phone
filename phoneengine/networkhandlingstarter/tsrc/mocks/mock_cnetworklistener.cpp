@@ -1,8 +1,7 @@
-/*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+/** Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
+* under the terms of the License "Eclipse Public License v1.0"
 * which accompanies this distribution, and is available
 * at the URL "http://www.eclipse.org/legal/epl-v10.html".
 *
@@ -102,6 +101,144 @@ TInt CNetworkListener::NWLostDelayCallBack(
         TAny * aParam )
     {
     //SMC_MOCK_METHOD1( TInt, TAny *, aParam )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CNetworkListener::NWSimRefreshCallBack
+// -----------------------------------------------------------------------------
+//
+TInt CNetworkListener::NWSimRefreshCallBack( 
+        TAny * aParam )
+    {
+    //SMC_MOCK_METHOD1( TInt, TAny *, aParam )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CNetworkListener::AllowRefresh
+// -----------------------------------------------------------------------------
+//
+TBool CNetworkListener::AllowRefresh( 
+        const TSatRefreshType aType,
+        const TSatElementaryFiles aFiles )
+    {
+    SMC_MOCK_METHOD2( TBool, const TSatRefreshType, aType, 
+        const TSatElementaryFiles, aFiles )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CNetworkListener::Refresh
+// -----------------------------------------------------------------------------
+//
+void CNetworkListener::Refresh( 
+        const TSatRefreshType aType,
+        const TSatElementaryFiles aFiles )
+    {
+    SMC_MOCK_METHOD2( void, const TSatRefreshType, aType, 
+        const TSatElementaryFiles, aFiles )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CNetworkListener::HandleNetworkInfoReceivedL
+// -----------------------------------------------------------------------------
+//
+void CNetworkListener::HandleNetworkInfoReceivedL( 
+        const CNetworkInfoArray * aInfoArray,
+        const TInt aResult )
+    {
+    SMC_MOCK_METHOD2( void, const CNetworkInfoArray *, aInfoArray, 
+        const TInt, aResult )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CNetworkListener::HandleCurrentNetworkInfoL
+// -----------------------------------------------------------------------------
+//
+void CNetworkListener::HandleCurrentNetworkInfoL( 
+        const MPsetNetworkSelect::TCurrentNetworkInfo & aCurrentInfo,
+        const TInt aResult )
+    {
+    SMC_MOCK_METHOD2( void, const MPsetNetworkSelect::TCurrentNetworkInfo &, aCurrentInfo, 
+        const TInt, aResult )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CNetworkListener::HandleNetworkChangedL
+// -----------------------------------------------------------------------------
+//
+void CNetworkListener::HandleNetworkChangedL( 
+        const MPsetNetworkSelect::TNetworkInfo & aCurrentInfo,
+        const MPsetNetworkSelect::TCurrentNetworkStatus aStatus,
+        const TInt aResult )
+    {
+    SMC_MOCK_METHOD3( void, const MPsetNetworkSelect::TNetworkInfo &, aCurrentInfo, 
+        const MPsetNetworkSelect::TCurrentNetworkStatus, aStatus, 
+        const TInt, aResult )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CNetworkListener::HandleNetworkChangedL
+// -----------------------------------------------------------------------------
+//
+void CNetworkListener::HandleNetworkChangedL( 
+        const MPsetNetworkSelect::TNetworkInfo & aCurrentInfo,
+        const RMobilePhone::TMobilePhoneRegistrationStatus & aStatus,
+        const TInt aResult )
+    {
+    SMC_MOCK_METHOD3( void, const MPsetNetworkSelect::TNetworkInfo &, aCurrentInfo, 
+        const RMobilePhone::TMobilePhoneRegistrationStatus &, aStatus, 
+        const TInt, aResult )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CNetworkListener::HandleSearchingNetworksL
+// -----------------------------------------------------------------------------
+//
+void CNetworkListener::HandleSearchingNetworksL( 
+        TServiceRequest aRequest )
+    {
+    SMC_MOCK_METHOD1( void, TServiceRequest, aRequest )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CNetworkListener::HandleRequestingSelectedNetworkL
+// -----------------------------------------------------------------------------
+//
+void CNetworkListener::HandleRequestingSelectedNetworkL( 
+        TBool aOngoing )
+    {
+    SMC_MOCK_METHOD1( void, TBool, aOngoing )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CNetworkListener::HandleCallActivatedL
+// -----------------------------------------------------------------------------
+//
+void CNetworkListener::HandleCallActivatedL(  )
+    {
+    SMC_MOCK_METHOD0( void )
+    }
+
+
+// -----------------------------------------------------------------------------
+// CNetworkListener::HandleNetworkErrorL
+// -----------------------------------------------------------------------------
+//
+void CNetworkListener::HandleNetworkErrorL( 
+        const MPsetNetworkInfoObserver::TServiceRequest aRequest,
+        const TInt aError )
+    {
+    SMC_MOCK_METHOD2( void, const MPsetNetworkInfoObserver::TServiceRequest, aRequest, 
+        const TInt, aError )
     }
 
 

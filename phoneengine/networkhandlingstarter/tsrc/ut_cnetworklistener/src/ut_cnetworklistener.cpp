@@ -20,6 +20,8 @@
 #include <networkhandlingproxy.h>
 #include <cnwsession.h>
 #include <nwhandlingengine.h>
+#include <mock_cpsetrefreshhandler.h>
+#include <psetnetwork.h> 
 
 TNWInfo* PoiterNWInfo;
 
@@ -30,6 +32,25 @@ CNWSession* CreateL( MNWMessageObserver& /*aMessage*/, TNWInfo& aTNWInfo )
     aTNWInfo.iRegistrationStatus = ENWRegistrationDenied;
     CNWSession* nullPointer(NULL);
     return nullPointer;
+}
+
+TPSetChangedCspSetting g_changedCspSettings;
+TPSetChangedCspSetting g_newValues;
+
+
+void ChangedCspSettings( 
+        TPSetChangedCspSetting & aChangedCspSettings,
+        TPSetChangedCspSetting & aNewValues )
+{
+    aChangedCspSettings = g_changedCspSettings;
+    aNewValues = g_newValues;
+}
+
+MPsetNetworkSelect::TSelectMode g_mode;
+void GetNetworkSelectMode( 
+        MPsetNetworkSelect::TSelectMode & aMode )
+{
+    aMode = g_mode;
 }
 
 /*!
@@ -55,6 +76,12 @@ void ut_cnetworklistener::init()
 {
     initialize();
     
+    m_refreshHandler = CPSetRefreshHandlerMock::NewL();
+    QT_TRAP_THROWING(SmcDefaultValue<CPSetRefreshHandler *>::SetL(m_refreshHandler));
+    RMobilePhone *phone(NULL); 
+    MPsetNetworkInfoObserver *observer(NULL);
+    m_settingsEngine = CPsetNetwork::NewL(*phone, *observer);
+    QT_TRAP_THROWING(SmcDefaultValue<CPsetNetwork *>::SetL(m_settingsEngine));
     m_networkListener = CNetworkListener::NewL(*this);
     
     QT_TRAP_THROWING(SmcDefaultValue<QSystemDeviceInfo::Profile>::SetL(
@@ -69,7 +96,15 @@ void ut_cnetworklistener::init()
 void ut_cnetworklistener::cleanup()
 {
     delete m_networkListener;
-    m_networkListener = 0;
+    m_networkListener = NULL;
+    
+    SmcDefaultValue<CPSetRefreshHandler *>::Reset();
+    // CNetworkListener delete m_refreshHandler object
+    m_refreshHandler = NULL;
+    
+    SmcDefaultValue<CPsetNetwork *>::Reset();
+    // CNetworkListener delete m_settingsEngine object
+    m_settingsEngine = NULL;
     
     SmcDefaultValue<QSystemDeviceInfo::Profile>::Reset();
     
@@ -146,9 +181,133 @@ void ut_cnetworklistener::t_NWLostDelayCallBack()
     TAny* pointer(NULL); 
     m_networkListener->NWLostDelayCallBack(pointer);
     
-    CNetworkListener* networklistener = CNetworkListener::NewL(*this);
-    m_networkListener->NWLostDelayCallBack( networklistener );
-    delete networklistener;
+    m_networkListener->NWLostDelayCallBack(m_networkListener);
+}
+
+/*!
+  ut_cnetworklistener::t_NWSimRefreshCallBack
+ */
+void ut_cnetworklistener::t_NWSimRefreshCallBack()
+{
+    TAny* pointer(NULL); 
+    m_networkListener->NWSimRefreshCallBack(pointer);
+    
+    m_networkListener->NWSimRefreshCallBack(m_networkListener);
+}
+
+/*!
+  ut_cnetworklistener::t_AllowRefresh
+ */
+void ut_cnetworklistener::t_AllowRefresh()
+{
+    TSatRefreshType type;
+    TSatElementaryFiles files;
+    m_networkListener->AllowRefresh(type, files);
+}
+
+/*!
+  ut_cnetworklistener::t_Refresh
+ */
+void ut_cnetworklistener::t_Refresh()
+{
+    TSatRefreshType type(ESimInitFileChangeNotification);
+    TSatElementaryFiles files;
+    g_mode = MPsetNetworkSelect::ENetSelectModeManual;
+    g_changedCspSettings = EPSetNetSelSup;
+    g_newValues = EPSetALS;
+    expect("CPsetNetwork::GetNetworkSelectMode").willOnce(invoke(GetNetworkSelectMode)).returns(KErrNone);
+    expect("CPSetRefreshHandlerMock::ChangedCspSettings").willOnce(invoke(ChangedCspSettings)).returns(KErrNone);
+    m_networkListener->Refresh(type, files);
+    QVERIFY(verify());
+    
+    g_newValues = EPSetNetSelSup;
+    expect("CPsetNetwork::GetNetworkSelectMode").willOnce(invoke(GetNetworkSelectMode)).returns(KErrNone);
+    expect("CPSetRefreshHandlerMock::ChangedCspSettings").willOnce(invoke(ChangedCspSettings)).returns(KErrNone);
+    m_networkListener->Refresh(type, files);
+    QVERIFY(verify());
+    
+    g_mode = MPsetNetworkSelect::ENetSelectModeAutomatic;
+    expect("CPsetNetwork::GetNetworkSelectMode").willOnce(invoke(GetNetworkSelectMode)).returns(KErrNone);
+    m_networkListener->Refresh(type, files);
+    QVERIFY(verify());
+}
+
+/*!
+  ut_cnetworklistener::t_HandleNetworkInfoReceivedL
+ */
+void ut_cnetworklistener::t_HandleNetworkInfoReceivedL()
+{
+    CNetworkInfoArray* infoArray;
+    TInt result;
+    m_networkListener->HandleNetworkInfoReceivedL(infoArray, result);
+}
+
+/*!
+  ut_cnetworklistener::t_HandleCurrentNetworkInfoL
+ */
+void ut_cnetworklistener::t_HandleCurrentNetworkInfoL()
+{
+    MPsetNetworkSelect::TCurrentNetworkInfo currentInfo;
+    TInt result;
+    m_networkListener->HandleCurrentNetworkInfoL(currentInfo, result);
+}
+
+/*!
+  ut_cnetworklistener::t_HandleNetworkChangedL
+ */
+void ut_cnetworklistener::t_HandleNetworkChangedL_1()
+{
+    MPsetNetworkSelect::TNetworkInfo currentInfo;
+    MPsetNetworkSelect::TCurrentNetworkStatus status;
+    TInt result;
+    m_networkListener->HandleNetworkChangedL(currentInfo, status, result);
+}
+
+/*!
+  ut_cnetworklistener::t_HandleNetworkChangedL
+ */
+void ut_cnetworklistener::t_HandleNetworkChangedL_2()
+{
+    MPsetNetworkSelect::TNetworkInfo currentInfo;
+    RMobilePhone::TMobilePhoneRegistrationStatus status;
+    TInt result;
+    m_networkListener->HandleNetworkChangedL(currentInfo, status, result);
+}
+
+/*!
+  ut_cnetworklistener::t_HandleSearchingNetworksL
+ */
+void ut_cnetworklistener::t_HandleSearchingNetworksL()
+{
+    MPsetNetworkInfoObserver::TServiceRequest request;
+    m_networkListener->HandleSearchingNetworksL(request);
+}
+
+/*!
+  ut_cnetworklistener::t_HandleRequestingSelectedNetworkL
+ */
+void ut_cnetworklistener::t_HandleRequestingSelectedNetworkL()
+{
+    TBool ongoing;
+    m_networkListener->HandleRequestingSelectedNetworkL(ongoing);
+}
+
+/*!
+  ut_cnetworklistener::t_HandleCallActivatedL
+ */
+void ut_cnetworklistener::t_HandleCallActivatedL()
+{
+    m_networkListener->HandleCallActivatedL();
+}
+
+/*!
+  ut_cnetworklistener::t_HandleNetworkErrorL
+ */
+void ut_cnetworklistener::t_HandleNetworkErrorL()
+{
+    MPsetNetworkInfoObserver::TServiceRequest request;
+    TInt error;
+    m_networkListener->HandleNetworkErrorL(request, error);
 }
 
 QTEST_MAIN_S60(ut_cnetworklistener)

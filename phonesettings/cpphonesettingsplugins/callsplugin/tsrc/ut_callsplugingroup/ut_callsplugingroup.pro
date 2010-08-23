@@ -14,10 +14,6 @@
 # Description: Project file for building unit test component
 #
 
-
-
-
-
 CONFIG += qtestlib hb
 TEMPLATE = app
 TARGET = 
@@ -26,7 +22,7 @@ INCLUDEPATH += .
 INCLUDEPATH += ../../../inc
 INCLUDEPATH += ../../../cptelephonyutils/inc
 INCLUDEPATH += /sf/mw/phonesrv/cellular/telephonysettings/xqbindings/psetwrapper/src
-
+INCLUDEPATH += ../../../tsrc/common
 
 DEFINES += BUILD_CALLSPLUGIN BUILD_CPTELEPHONYUTILS \
            BUILD_PSETWRAPPER BUILD_SSSETTINGSWRAPPER BUILD_PSUINOTES
@@ -72,6 +68,4 @@ SOURCES += ../../../tsrc/mocks/mock_cpcallsplugin.cpp \
            ../../../tsrc/mocks/mock_psetcliwrapper.cpp \
            ../../../tsrc/mocks/mock_psetnetworkwrapper.cpp \
            ../../../tsrc/mocks/mock_psetwrapper.cpp \
-           ../../../tsrc/mocks/mock_sssettingswrapper.cpp \
-           ../../../tsrc/mocks/mock_psetcliwrapper_p.cpp \
-           ../../../tsrc/mocks/mock_psetcallwaitingwrapper_p.cpp
+           ../../../tsrc/mocks/mock_sssettingswrapper.cpp

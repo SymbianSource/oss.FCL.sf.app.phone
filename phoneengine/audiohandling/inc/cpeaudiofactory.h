@@ -52,7 +52,7 @@ class MMdaAudioToneObserver;
 *  @since Series60_5.0
 */  
 
-NONSHARABLE_CLASS( CPEAudioFactory ) : public CBase
+class CPEAudioFactory : public CBase
     {
     public: 
         

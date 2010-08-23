@@ -241,21 +241,21 @@ TBool CPhoneRingingToneController::CoverUIPlayVideoRingingToneL(
     //__LOGMETHODSTARTEND( EPhoneControl, "CPhoneRingingToneController::CoverUIPlayVideoRingingToneL()" );
 
     TBool showVideo( EFalse );
-
+    /*
     RBuf8 data;
     CleanupClosePushL( data );
     data.CreateL( aRingingTone.FileName().Length() );
     data.Copy( aRingingTone.FileName() );
-    /*TInt err = iMediatorSender->IssueCommand( 
+    TInt err = iMediatorSender->IssueCommand( 
     	EPhoneCmdCoverUiShowMultimediaRingingTone, 
 	    data );
     if ( err == KErrNone )
         {
         showVideo = ETrue;
         iActiveCoverUICommand = ETrue;
-        }*/
+        }
     CleanupStack::PopAndDestroy(); //data 
-
+    */
     return showVideo;
     }
 

@@ -72,7 +72,7 @@ CSPCallAddedHandler::~CSPCallAddedHandler( )
 // ---------------------------------------------------------------------------
 //
 void CSPCallAddedHandler::CallAdded( RMobileLine& aLine, 
-                        TName aCallName,
+                        const TName& aCallName,
                         RCSPLineContainer::TCSPLineId aLineId )
     {
     CSPLOGSTRING2(CSPINT, 

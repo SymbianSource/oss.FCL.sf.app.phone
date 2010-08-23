@@ -57,7 +57,7 @@ CSPEtelCallRequester::~CSPEtelCallRequester( )
 //
 TInt CSPEtelCallRequester::MakeDialRequest( 
             const TDesC8& aCallParams, 
-            TDesC& aRecipient )
+            const TDesC& aRecipient )
     {
     CSPLOGSTRING(CSPINT, "CSPEtelCallRequester::MakeDialRequest" );
     iRequestType = ERequestTypeDial;
@@ -81,7 +81,7 @@ TInt CSPEtelCallRequester::MakeDialRequest(
 //
 TInt CSPEtelCallRequester::MakeDialNoFdnCheckRequest( 
             const TDesC8& aCallParams, 
-            TDesC& aRecipient )
+            const TDesC& aRecipient )
     {
     CSPLOGSTRING(CSPINT, "CSPEtelCallRequester::MakeDialNoFdnCheckRequest" );
     iRequestType = ERequestTypeDial;

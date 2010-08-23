@@ -135,7 +135,7 @@ void UT_InfoWidget::t_sizePolicy()
  */
 void UT_InfoWidget::t_setSpnDisplay()
 {
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplaySpn, KPreferenceOn);
     
     m_infoWidget->setSpnDisplay(KPreferenceOn);
@@ -148,7 +148,7 @@ void UT_InfoWidget::t_setSpnDisplay()
  */
 void UT_InfoWidget::t_setMcnDisplay()
 {
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplayMcn, KPreferenceOn);
     
     m_infoWidget->setMcnDisplay(KPreferenceOn);
@@ -161,7 +161,7 @@ void UT_InfoWidget::t_setMcnDisplay()
  */
 void UT_InfoWidget::t_setSatDisplay()
 {
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplaySatText, KPreferenceOn);
     
     m_infoWidget->setSatDisplay(KPreferenceOn);
@@ -208,35 +208,35 @@ void UT_InfoWidget::t_updateInfoDisplay()
     const InfoWidgetEngine::ModelData& modelDataConstRef(modelData); 
     
     // Test 1: text data has been initialized to model (in UT_InfoWidget::UT_InfoWidget())
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole).returns(InfoWidgetLayoutManager::InfoDisplay);
-    EXPECT(InfoWidgetEngine::modelData).returns(modelDataConstRef);
+    EXPECT(InfoWidgetLayoutManager, currentDisplayRole).returns(InfoWidgetLayoutManager::InfoDisplay);
+    EXPECT(InfoWidgetEngine, modelData).returns(modelDataConstRef);
 
-    EXPECT(InfoWidgetLayoutManager::getWidget)
+    EXPECT(InfoWidgetLayoutManager, getWidget)
         .with(InfoWidgetLayoutManager::RoleSpnMarqueeItem)
         .returns(pointerSpnMarqueeItem);
-    EXPECT(HbMarqueeItem::setText);
-    EXPECT(HbMarqueeItem::setTextColor);
-    EXPECT(QGraphicsWidget::adjustSize); 
-    EXPECT(InfoWidgetLayoutManager::textFitsToRect)
+    EXPECT(HbMarqueeItem, setText);
+    EXPECT(HbMarqueeItem, setTextColor);
+    EXPECT(QGraphicsWidget, adjustSize); 
+    EXPECT(InfoWidgetLayoutManager, textFitsToRect)
         .returns(false);
 
-    EXPECT(InfoWidgetLayoutManager::getWidget)
+    EXPECT(InfoWidgetLayoutManager, getWidget)
         .with(InfoWidgetLayoutManager::RoleMcnMarqueeItem)
         .returns(pointerSpnMarqueeItem);
-    EXPECT(HbMarqueeItem::setText);
-    EXPECT(HbMarqueeItem::setTextColor);
-    EXPECT(QGraphicsWidget::adjustSize); 
-    EXPECT(InfoWidgetLayoutManager::textFitsToRect)
+    EXPECT(HbMarqueeItem, setText);
+    EXPECT(HbMarqueeItem, setTextColor);
+    EXPECT(QGraphicsWidget, adjustSize); 
+    EXPECT(InfoWidgetLayoutManager, textFitsToRect)
         .returns(false);
 
-    EXPECT(InfoWidgetLayoutManager::getWidget)
+    EXPECT(InfoWidgetLayoutManager, getWidget)
         .with(InfoWidgetLayoutManager::RoleSatMarqueeItem)
         .returns(pointerSatMarqueeItem);
     
-    EXPECT(HbMarqueeItem::setText);
-    EXPECT(HbMarqueeItem::setTextColor);
-    EXPECT(QGraphicsWidget::adjustSize); 
-    EXPECT(InfoWidgetLayoutManager::textFitsToRect)
+    EXPECT(HbMarqueeItem, setText);
+    EXPECT(HbMarqueeItem, setTextColor);
+    EXPECT(QGraphicsWidget, adjustSize); 
+    EXPECT(InfoWidgetLayoutManager, textFitsToRect)
         .returns(false);
  
     m_infoWidget->updateInfoDisplay();
@@ -245,37 +245,37 @@ void UT_InfoWidget::t_updateInfoDisplay()
     QVERIFY(verify());
     
     // Test 2: empty data, verify items are not appended to m_animatingItems
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole).returns(InfoWidgetLayoutManager::InfoDisplay);
-    EXPECT(InfoWidgetEngine::modelData).returns(modelDataConstRef);
+    EXPECT(InfoWidgetLayoutManager, currentDisplayRole).returns(InfoWidgetLayoutManager::InfoDisplay);
+    EXPECT(InfoWidgetEngine, modelData).returns(modelDataConstRef);
 
     m_modelData.setServiceProviderName("testspn");
     m_modelData.setMcnName("testmcn");
     m_modelData.setSatDisplayText("testsat");
-    EXPECT(InfoWidgetLayoutManager::getWidget)
+    EXPECT(InfoWidgetLayoutManager, getWidget)
         .with(InfoWidgetLayoutManager::RoleSpnMarqueeItem)
         .returns(pointerSpnMarqueeItem);
-    EXPECT(HbMarqueeItem::setText);
-    EXPECT(HbMarqueeItem::setTextColor);
-    EXPECT(QGraphicsWidget::adjustSize); 
-    EXPECT(InfoWidgetLayoutManager::textFitsToRect)
+    EXPECT(HbMarqueeItem, setText);
+    EXPECT(HbMarqueeItem, setTextColor);
+    EXPECT(QGraphicsWidget, adjustSize); 
+    EXPECT(InfoWidgetLayoutManager, textFitsToRect)
         .returns(true);
     
-    EXPECT(InfoWidgetLayoutManager::getWidget)
+    EXPECT(InfoWidgetLayoutManager, getWidget)
         .with(InfoWidgetLayoutManager::RoleMcnMarqueeItem)
         .returns(pointerSpnMarqueeItem);
-    EXPECT(HbMarqueeItem::setText);
-    EXPECT(HbMarqueeItem::setTextColor);
-    EXPECT(QGraphicsWidget::adjustSize); 
-    EXPECT(InfoWidgetLayoutManager::textFitsToRect)
+    EXPECT(HbMarqueeItem, setText);
+    EXPECT(HbMarqueeItem, setTextColor);
+    EXPECT(QGraphicsWidget, adjustSize); 
+    EXPECT(InfoWidgetLayoutManager, textFitsToRect)
         .returns(true);
 
-    EXPECT(InfoWidgetLayoutManager::getWidget)
+    EXPECT(InfoWidgetLayoutManager, getWidget)
         .with(InfoWidgetLayoutManager::RoleSatMarqueeItem)
         .returns(pointerSatMarqueeItem);
-    EXPECT(HbMarqueeItem::setText);
-    EXPECT(HbMarqueeItem::setTextColor);
-    EXPECT(QGraphicsWidget::adjustSize); 
-    EXPECT(InfoWidgetLayoutManager::textFitsToRect)
+    EXPECT(HbMarqueeItem, setText);
+    EXPECT(HbMarqueeItem, setTextColor);
+    EXPECT(QGraphicsWidget, adjustSize); 
+    EXPECT(InfoWidgetLayoutManager, textFitsToRect)
         .returns(true);
 
     m_infoWidget->updateInfoDisplay();
@@ -296,30 +296,30 @@ void UT_InfoWidget::t_updateInfoDisplay()
  */
 void UT_InfoWidget::t_readPersistentPreferences()
 {    
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplayHomeZone, QString(""));
 
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplayMcn, QString(""));
     
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplayActiveLine, QString(""));
     
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplaySatText, QString(""));
 
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplaySpn, QString(""));
     
-    EXPECT(InfoWidgetPreferences::validate);
+    EXPECT(InfoWidgetPreferences, validate);
 
     m_infoWidget->readPersistentPreferences();
     
     QVERIFY(verify());
     
     // one visible item initially
-    EXPECT(InfoWidgetPreferences::validate).returns(true);
-    EXPECT(InfoWidgetPreferences::storePreferences);
+    EXPECT(InfoWidgetPreferences, validate).returns(true);
+    EXPECT(InfoWidgetPreferences, storePreferences);
     
     m_infoWidget->readPersistentPreferences();
     
@@ -336,13 +336,13 @@ void UT_InfoWidget::t_onInitialize()
     // Test onInitialize sequence where 
     // meta-object properties have been 
     // initialized 
-    EXPECT(InfoWidgetPreferences::validate)
+    EXPECT(InfoWidgetPreferences, validate)
         .returns(true);
-    EXPECT(InfoWidgetPreferences::storePreferences)
+    EXPECT(InfoWidgetPreferences, storePreferences)
         .returns(true);
-    EXPECT(InfoWidgetLayoutManager::contentWidget)
+    EXPECT(InfoWidgetLayoutManager, contentWidget)
         .returns(contentWidget);
-    EXPECT(InfoWidgetLayoutManager::layoutInfoDisplay)
+    EXPECT(InfoWidgetLayoutManager, layoutInfoDisplay)
         .returns(contentWidget);
       
     m_infoWidget->onInitialize();
@@ -350,11 +350,11 @@ void UT_InfoWidget::t_onInitialize()
     // Test onInitialize sequence where 
     // meta-object properties are 
     // uninitialized 
-    EXPECT(InfoWidgetPreferences::validate)
+    EXPECT(InfoWidgetPreferences, validate)
         .returns(false);
-    EXPECT(InfoWidgetLayoutManager::contentWidget)
+    EXPECT(InfoWidgetLayoutManager, contentWidget)
         .returns(contentWidget);
-    EXPECT(InfoWidgetLayoutManager::layoutInfoDisplay)
+    EXPECT(InfoWidgetLayoutManager, layoutInfoDisplay)
         .returns(contentWidget);
     m_infoWidget->onInitialize();
 }
@@ -374,15 +374,15 @@ void UT_InfoWidget::t_onShow()
 {
     
     m_infoWidget->m_animationState = InfoWidget::AnimationIdle; 
-    EXPECT(InfoWidgetEngine::resume);
+    EXPECT(InfoWidgetEngine, resume);
     m_infoWidget->onShow();
     
     m_infoWidget->m_animationState = InfoWidget::AnimationOngoing;
-    EXPECT(InfoWidgetEngine::resume);
+    EXPECT(InfoWidgetEngine, resume);
     m_infoWidget->onShow();
     
     m_infoWidget->m_animationState = InfoWidget::AnimationStarting;
-    EXPECT(InfoWidgetEngine::resume);
+    EXPECT(InfoWidgetEngine, resume);
     m_infoWidget->onShow(); 
 
 }
@@ -400,11 +400,11 @@ void UT_InfoWidget::t_onHide()
  */
 void UT_InfoWidget::t_readModel()
 {
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
+    EXPECT(InfoWidgetLayoutManager, currentDisplayRole)
         .returns(InfoWidgetLayoutManager::InfoDisplay);
     m_infoWidget->readModel();
     
-    EXPECT(InfoWidgetLayoutManager::currentDisplayRole)
+    EXPECT(InfoWidgetLayoutManager, currentDisplayRole)
         .returns(InfoWidgetLayoutManager::SettingsDialog);
     m_infoWidget->readModel();
     
@@ -424,13 +424,13 @@ void UT_InfoWidget::t_handleModelError()
 void UT_InfoWidget::t_spnDisplaySettingChanged()
 {
     // user enables home zone setting
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplaySpn, KPreferenceOn);
     int setting(Qt::Checked);
     m_infoWidget->spnDisplaySettingChanged(setting);
     
     // user disables home zone setting
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplaySpn, KPreferenceOff);
     setting = Qt::Unchecked;
     m_infoWidget->spnDisplaySettingChanged(setting);
@@ -441,13 +441,13 @@ void UT_InfoWidget::t_spnDisplaySettingChanged()
 void UT_InfoWidget::t_mcnDisplaySettingChanged()
 {
     // user enables MCN setting
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplayMcn, KPreferenceOn);
     int setting(Qt::Checked);
     m_infoWidget->mcnDisplaySettingChanged(setting);
     
     // user disables MCN setting
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplayMcn, KPreferenceOff);
     setting = Qt::Unchecked;
     m_infoWidget->mcnDisplaySettingChanged(setting);
@@ -458,13 +458,13 @@ void UT_InfoWidget::t_mcnDisplaySettingChanged()
 void UT_InfoWidget::t_satDisplaySettingChanged()
 {
     // user enables SAT setting
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplaySatText, KPreferenceOn);
     int setting(Qt::Checked);
     m_infoWidget->satDisplaySettingChanged(setting);
     
     // user disables SAT setting
-    EXPECT(InfoWidgetPreferences::setPreference)
+    EXPECT(InfoWidgetPreferences, setPreference)
         .with(InfoWidgetPreferences::DisplaySatText, KPreferenceOff);
     setting = Qt::Unchecked;
     m_infoWidget->satDisplaySettingChanged(setting);
@@ -474,13 +474,13 @@ void UT_InfoWidget::t_satDisplaySettingChanged()
 
 void UT_InfoWidget::t_settingsEditingFinished()
 {
-    EXPECT(InfoWidgetPreferences::validate)
+    EXPECT(InfoWidgetPreferences, validate)
         .returns(true);
-    EXPECT(InfoWidgetPreferences::storePreferences)
+    EXPECT(InfoWidgetPreferences, storePreferences)
         .returns(false);
 
     QGraphicsWidget *contentWidget = NULL; 
-    EXPECT(InfoWidgetLayoutManager::contentWidget)
+    EXPECT(InfoWidgetLayoutManager, contentWidget)
         .returns(contentWidget);
 
     m_infoWidget->settingsEditingFinished(); 
@@ -489,13 +489,13 @@ void UT_InfoWidget::t_settingsEditingFinished()
 void UT_InfoWidget::t_updateItemsVisibility()
 {
     // all items visible
-    EXPECT(InfoWidgetPreferences::preference)
+    EXPECT(InfoWidgetPreferences, preference)
         .with(InfoWidgetPreferences::DisplaySpn)
         .returns(KPreferenceOn);
-    EXPECT(InfoWidgetPreferences::preference)
+    EXPECT(InfoWidgetPreferences, preference)
         .with(InfoWidgetPreferences::DisplayMcn)
         .returns(KPreferenceOn);
-    EXPECT(InfoWidgetPreferences::preference)
+    EXPECT(InfoWidgetPreferences, preference)
         .with(InfoWidgetPreferences::DisplaySatText)
         .returns(KPreferenceOn);
     
@@ -507,7 +507,7 @@ void UT_InfoWidget::t_updateItemsVisibility()
 void UT_InfoWidget::t_layoutInfoDisplay()
 {
     QGraphicsWidget *contentWidget = NULL; 
-    EXPECT(InfoWidgetLayoutManager::layoutInfoDisplay)
+    EXPECT(InfoWidgetLayoutManager, layoutInfoDisplay)
         .returns(contentWidget);
     m_infoWidget->layoutInfoDisplay();
     
@@ -517,7 +517,7 @@ void UT_InfoWidget::t_layoutInfoDisplay()
 void UT_InfoWidget::t_layoutSettingsDialog()
 {
     QGraphicsWidget *contentWidget = NULL; 
-    EXPECT(InfoWidgetLayoutManager::layoutSettingsDialog)
+    EXPECT(InfoWidgetLayoutManager, layoutSettingsDialog)
         .returns(contentWidget);
     m_infoWidget->layoutSettingsDialog();
     
@@ -527,17 +527,17 @@ void UT_InfoWidget::t_layoutSettingsDialog()
 void UT_InfoWidget::t_initializeSettingsDialogItems()
 {
     QGraphicsWidget spnCheckBox;
-    EXPECT(InfoWidgetLayoutManager::getWidget)
+    EXPECT(InfoWidgetLayoutManager, getWidget)
         .with(InfoWidgetLayoutManager::RoleSpnCheckBox)
         .returns(&spnCheckBox);
 
     QGraphicsWidget mcnCheckBox;
-    EXPECT(InfoWidgetLayoutManager::getWidget)
+    EXPECT(InfoWidgetLayoutManager, getWidget)
         .with(InfoWidgetLayoutManager::RoleMcnCheckBox)
         .returns(&mcnCheckBox);
     
     QGraphicsWidget satTextCheckBox;
-    EXPECT(InfoWidgetLayoutManager::getWidget)
+    EXPECT(InfoWidgetLayoutManager, getWidget)
         .with(InfoWidgetLayoutManager::RoleSatTextCheckBox)
         .returns(&satTextCheckBox);
     
@@ -565,7 +565,7 @@ void UT_InfoWidget::t_changeEvent()
      * Not work from commmand prompt.
      */
     HbEvent event(HbEvent::ThemeChanged);
-    EXPECT(HbWidget::changeEvent).with(&event);
+    EXPECT(HbWidget, changeEvent).with(&event);
     m_infoWidget->changeEvent(&event);
     QVERIFY(verify());
 }
@@ -587,7 +587,7 @@ void UT_InfoWidget::t_sizeHint()
     QVERIFY(KDefaultSizeInfoDisplay == m_infoWidget->sizeHint(
             sizeHint, constraint));
 
-    EXPECT(InfoWidgetLayoutManager::layoutInfoDisplay)
+    EXPECT(InfoWidgetLayoutManager, layoutInfoDisplay)
         .returns(contentWidget.data());
     // Test: size after onInitialize is called 
     // and current display is InfoDisplay 
@@ -597,9 +597,9 @@ void UT_InfoWidget::t_sizeHint()
     
     contentWidget.reset(new QGraphicsWidget);
     contentWidget->setMinimumSize(KMinimumSize); 
-    EXPECT(InfoWidgetLayoutManager::contentWidget)
+    EXPECT(InfoWidgetLayoutManager, contentWidget)
         .returns(contentWidget.data());
-    EXPECT(InfoWidgetPreferences::visibleItemCount).
+    EXPECT(InfoWidgetPreferences, visibleItemCount).
             returns(1);
     
     // No strict verification.
@@ -660,11 +660,11 @@ void UT_InfoWidget::t_stopMarquees()
     m_infoWidget->m_animatingItems.append(&satMarqueeItem); 
  
     // Test 1: 
-    EXPECT(HbMarqueeItem::isAnimating).
+    EXPECT(HbMarqueeItem, isAnimating).
             returns(false);
-    EXPECT(HbMarqueeItem::isAnimating).
+    EXPECT(HbMarqueeItem, isAnimating).
             returns(false);
-    EXPECT(HbMarqueeItem::isAnimating).
+    EXPECT(HbMarqueeItem, isAnimating).
             returns(false);
     m_infoWidget->m_animationState = InfoWidget::AnimationOngoing; 
     m_infoWidget->stopMarquees();
@@ -680,11 +680,11 @@ void UT_InfoWidget::t_stopMarquees()
     m_infoWidget->m_animatingItems.append(&mcnMarqueeItem);
     m_infoWidget->m_animatingItems.append(&satMarqueeItem); 
     
-    EXPECT(HbMarqueeItem::isAnimating).
+    EXPECT(HbMarqueeItem, isAnimating).
             returns(true);
-    EXPECT(HbMarqueeItem::isAnimating).
+    EXPECT(HbMarqueeItem, isAnimating).
             returns(true);
-    EXPECT(HbMarqueeItem::isAnimating).
+    EXPECT(HbMarqueeItem, isAnimating).
             returns(true);
 
     m_infoWidget->m_animationState = InfoWidget::AnimationOngoing; 
@@ -719,19 +719,19 @@ void UT_InfoWidget::t_marqueeNext()
  
     // Test 1: verify loop functionality
     m_infoWidget->m_animatingItem = &spnMarqueeItem;
-    EXPECT(HbMarqueeItem::isAnimating).
+    EXPECT(HbMarqueeItem, isAnimating).
             returns(false);
     m_infoWidget->marqueeNext();
     QVERIFY(m_infoWidget->m_animatingItem == &mcnMarqueeItem); 
 
     // Test 2: verify loop functionality
-    EXPECT(HbMarqueeItem::isAnimating).
+    EXPECT(HbMarqueeItem, isAnimating).
             returns(false);
     m_infoWidget->marqueeNext();
     QVERIFY(m_infoWidget->m_animatingItem == &satMarqueeItem); 
 
     // Test 3: verify loop functionality, loop to begin
-    EXPECT(HbMarqueeItem::isAnimating).
+    EXPECT(HbMarqueeItem, isAnimating).
             returns(false);
     m_infoWidget->marqueeNext();
     QVERIFY(m_infoWidget->m_animatingItem == &spnMarqueeItem); 

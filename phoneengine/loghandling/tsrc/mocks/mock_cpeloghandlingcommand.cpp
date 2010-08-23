@@ -116,7 +116,7 @@ TInt CPELogHandlingCommand::ChangeEvent
         const CLogEvent& aLogEvent
         )
     { 
-    SMC_MOCK_METHOD1( TInt, CLogEvent& , aLogEvent)     
+    SMC_MOCK_METHOD1( TInt, const CLogEvent& , aLogEvent)     
     }
 
 // -----------------------------------------------------------------------------

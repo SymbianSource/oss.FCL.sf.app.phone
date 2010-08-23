@@ -1011,8 +1011,8 @@ TBool CSPCall::IsCallForwarded( ) const
     CSPLOGSTRING(CSPREQIN, "CSPCall::IsCallForwarded <");
     TBool ret( EFalse );
     TInt err( KErrNone );
-    RMobileCall::TMobileCallInfoV3Pckg pck( iEtelCallInfo );
-    err = iCall.GetMobileCallInfo( pck );
+    RMobileCall::TMobileCallInfoV7Pckg pck( iEtelCallInfo );
+    err = GetMobileCallInfo( pck );
     if (err == KErrNone )
         {
         ret = iEtelCallInfo.iForwarded;
@@ -1231,12 +1231,28 @@ CSPCall::CSPCall( RMobileLine& aLine,
                     iLine( aLine ),
                     iMobileOriginated( aMobileOriginated ),
                     iName( aName ), 
+                    iParams( NULL ),
+                    iCallState( MCCPCallObserver::ECCPStateIdle ),
+                    iCapsFlags( 0 ),
+                    iCallStatusMonitor( NULL ),
+                    iCallEventMonitor( NULL ),
+                    iCallInfoMonitor( NULL ),
+                    iRequester( NULL ),
+                    iDialCompletionCode( KErrNone ),
                     iCommonInfo( aCommonInfo ),
                     iTerminationErrorNotified( EFalse ),
                     iIsEmergencyCall( aIsEmergencyCall),
-                    iFdnCheck(ETrue),
-                    iAudioStatus( ECSPCallAudioStatusInactive ) 
-                    
+                    iTransferProvider( NULL ),
+                    iForwardProvider( NULL ),
+                    iAudioHandler( NULL ),
+                    iFdnCheck( ETrue ),
+                    iCallCapsMonitor( NULL ),
+                    iUUIMonitor( NULL ),
+                    iUUIMessageSender( NULL ),
+                    iSkypeId( NULL ),
+                    iAudioStatus( ECSPCallAudioStatusInactive ),
+                    iDontReportTerm( EFalse ),
+                    iUserToUserInformation( NULL )
     {
     CSPLOGSTRING(CSPOBJECT, "CSPCall::CSPCall");
     }
@@ -1301,11 +1317,9 @@ void CSPCall::OpenCallHandleL()
 void CSPCall::UpdateCallInfo()
     {
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallInfo <");
-    RMobileCall::TMobileCallInfoV7 callInfo;
-    RMobileCall::TMobileCallInfoV7Pckg pck( callInfo );
-    TInt err = iCall.GetMobileCallInfo( pck );
-    
-    UpdateCallInfoImpl( callInfo );
+    RMobileCall::TMobileCallInfoV7Pckg pck( iEtelCallInfo );
+    TInt err = GetMobileCallInfo( pck );
+    UpdateCallInfoImpl( iEtelCallInfo );
 
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallInfo >");
     }
@@ -1315,7 +1329,7 @@ void CSPCall::UpdateCallInfo()
 // Implementation for UpdateCallInfo().
 // ---------------------------------------------------------------------------
 //    
-void CSPCall::UpdateCallInfoImpl( RMobileCall::TMobileCallInfoV7 aCallInfo )
+void CSPCall::UpdateCallInfoImpl( const RMobileCall::TMobileCallInfoV7& aCallInfo )
     {
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallInfoImpl <");
 
@@ -1339,7 +1353,7 @@ void CSPCall::UpdateCallInfoImpl( RMobileCall::TMobileCallInfoV7 aCallInfo )
 // Set call origin to CCCECallParameters.
 // ---------------------------------------------------------------------------
 //    
-void CSPCall::UpdateCallOrigin( RMobileCall::TMobileCallInfoV7 aCallInfo )
+void CSPCall::UpdateCallOrigin( const RMobileCall::TMobileCallInfoV7& aCallInfo )
     {
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallOrigin <");
 
@@ -1389,7 +1403,7 @@ void CSPCall::NotifyRemotePartyNumberChanged()
     // TSY does not send notification so number must be fetched.
     if ( IsMobileOriginated() )
         {
-        RMobileCall::TMobileCallInfoV3Pckg callInfoPckg( iEtelCallInfo );
+        RMobileCall::TMobileCallInfoV7Pckg callInfoPckg( iEtelCallInfo );
         GetMobileCallInfo( callInfoPckg );
         if ( iEtelCallInfo.iRemoteParty.iRemoteNumber.iTelNumber.Length() )
             {
@@ -1762,8 +1776,8 @@ TInt CSPCall::ExitCodeError() const
     CSPLOGSTRING2(CSPINT, "CSPCall::ExitCodeError < this: %x", 
                     this );
     TInt callError;
-    RMobileCall::TMobileCallInfoV3Pckg pck( iEtelCallInfo );
-    TInt getErr = iCall.GetMobileCallInfo( pck );
+    RMobileCall::TMobileCallInfoV7Pckg pck( iEtelCallInfo );
+    TInt getErr = GetMobileCallInfo( pck );
     // Is there value in higher 16 bits
     if ( KErrNone == getErr && (iEtelCallInfo.iExitCode & 0xFFFF0000) ) 
         {
@@ -1807,7 +1821,7 @@ TInt CSPCall::ExitCodeError() const
 // CSPCall::UUSMessageReceived
 // ---------------------------------------------------------------------------
 //
- void CSPCall::UUSMessageReceived( TDesC& aMessage )
+ void CSPCall::UUSMessageReceived( const TDesC& aMessage )
     {      
     CSPLOGSTRING(CSPREQIN, "CSPCall::UUSMessageReceived");
     TCSPSkypeIdParser parser;
@@ -1861,7 +1875,7 @@ void CSPCall::DontReportTerminationError()
 // ---------------------------------------------------------------------------
 //    
 void CSPCall::UpdateCallNameNumberInfo(
-        RMobileCall::TMobileCallInfoV3& aCallInfo, 
+        const RMobileCall::TMobileCallInfoV3& aCallInfo, 
         TBool aCallAddedByMonitor )
     {
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallNameNumberInfo <");

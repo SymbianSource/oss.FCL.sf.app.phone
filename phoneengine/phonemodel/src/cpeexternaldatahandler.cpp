@@ -18,6 +18,7 @@
 
 
 // INCLUDE FILES
+#include "penetworkhandler.h"
 #include "cpeexternaldatahandler.h"
 #include "mpephonemodelinternal.h"
 #include <accessoriescrkeys.h>

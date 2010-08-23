@@ -154,7 +154,7 @@ TInt CPELogInfo::CallId() const
 //
 void CPELogInfo::SetPhoneNumber( const TPEPhoneNumber& aPhoneNumber )
     {
-    SMC_MOCK_METHOD1( void, TPEPhoneNumber&, aPhoneNumber )	
+    SMC_MOCK_METHOD1( void, const TPEPhoneNumber&, aPhoneNumber )	
     }
 
 
@@ -174,7 +174,7 @@ const TPEPhoneNumber& CPELogInfo::PhoneNumber() const
 //
 void CPELogInfo::SetName( const TPEContactName& aName )
     {
-    SMC_MOCK_METHOD1( void, TPEContactName&, aName )	
+    SMC_MOCK_METHOD1( void, const TPEContactName&, aName )	
     }
 
 
@@ -373,7 +373,7 @@ TUint32 CPELogInfo::ServiceId() const
 //
 void CPELogInfo::SetVoipAddress( const TPEPhoneNumber& aVoipAddress )
     {
-    SMC_MOCK_METHOD1( void, TPEPhoneNumber&, aVoipAddress )
+    SMC_MOCK_METHOD1( void, const TPEPhoneNumber&, aVoipAddress )
     }
 
 
@@ -393,7 +393,7 @@ const TPEPhoneNumber& CPELogInfo::VoipAddress() const
 //
 void CPELogInfo::SetMyAddress( const TPEPhoneNumber& aMyAddress )
     {
-    SMC_MOCK_METHOD1( void, TPEPhoneNumber&, aMyAddress )
+    SMC_MOCK_METHOD1( void, const TPEPhoneNumber&, aMyAddress )
     }
 
 

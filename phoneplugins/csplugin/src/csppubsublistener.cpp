@@ -96,7 +96,7 @@ CSPPubSubListener* CSPPubSubListener::NewL( const TUid aUid,
         CSPPubSubListener( aUid, aKey, aObserver );
     CleanupStack::PushL( self );
     self->ConstructL();
-    CleanupStack::Pop();
+    CleanupStack::Pop( self );
     return self;
     }
 

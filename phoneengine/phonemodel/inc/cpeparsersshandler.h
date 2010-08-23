@@ -239,22 +239,22 @@ NONSHARABLE_CLASS( CPEParserSSHandler ) : public CPhoneGsmSsHandler,
         /**
         * Create call barring observer
         */
-        void CPEParserSSHandler::CreateCBObsL();
+        void CreateCBObsL();
     
         /**
         * Create call cli observer
         */
-        void CPEParserSSHandler::CreateCliObsL();          
+        void CreateCliObsL();          
         
         /**
         * Create call divert observer
         */
-        void CPEParserSSHandler::CreateCFObsL();
+        void CreateCFObsL();
 
         /**
         * Create call waiting observer
         */
-        void CPEParserSSHandler::CreateCWObsL();
+        void CreateCWObsL();
 
         /**
         * if ConnectSsToEngine leaves, this is called
