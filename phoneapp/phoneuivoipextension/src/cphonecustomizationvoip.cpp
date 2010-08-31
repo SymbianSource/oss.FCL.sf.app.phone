@@ -22,14 +22,10 @@
 #include <spentry.h>
 #include <spproperty.h>
 #include <mpeengineinfo.h>
-#include <bmbubblemanager.h>
-#include <phoneui.rsg>
+#include "phoneresourceids.h"
 #include <avkon.rsg>
-#include <phoneuivoip.rsg>
 #include <StringLoader.h>
 #include <featmgr.h>
-#include <centralrepository.h>
-#include <easydialingcrkeys.h>
 
 #include "cphonecustomizationvoip.h"
 #include "tphonecmdparaminteger.h"
@@ -37,7 +33,6 @@
 #include "tphonecmdparamstring.h"
 #include "cphonemainresourceresolver.h"
 #include "mphonestatemachine.h"
-#include "mphonesecuritymodeobserver.h"
 #include "cphonelogger.h"
 #include "cphonecenrepproxy.h"
 #include "phoneui.pan"
@@ -58,10 +53,8 @@
 #include "cphoneunattendedtransfercmdhandler.h"
 #include "tphonecmdparampointer.h"
 #include "cphonenewcallcmdhandler.h"
-#include "cphonevcchandler.h"
 #include "cphonecallforwardqueryhandler.h"
 #include "cphonekeys.h"
-#include "phoneui.hrh"
 
 // CONSTANTS
 const TInt KMaxLengthForSIPURIFirstLine = 15;
@@ -97,7 +90,6 @@ CPhoneCustomizationVoip::~CPhoneCustomizationVoip()
     delete iPhoneViewCustomization;
     delete iTransferCmdHandler;
     delete iNewCallCmdHandler;
-	delete iVccHandler;
     }
 
 
@@ -132,12 +124,7 @@ void CPhoneCustomizationVoip::ConstructL()
         
     iNewCallCmdHandler = CPhoneNewCallCmdHandler::NewL( 
         iStateMachine, iViewCommandHandle );
-		
-    if ( FeatureManager::FeatureSupported( KFeatureIdFfVoiceCallContinuity ) )
-        {
-        iVccHandler = CPhoneVccHandler::NewL( iStateMachine, iViewCommandHandle );
-        }
-    
+        
     iCallForwardHandler = CPhoneCallForwardQueryHandler::NewL( 
         iStateMachine, iViewCommandHandle );
     }
@@ -201,7 +188,7 @@ void CPhoneCustomizationVoip::CustomizeMenuPaneL(
     TInt menuItemCount = menuPane->NumberOfItemsInPane();
     for ( TInt i( 0 ); i < menuItemCount; i++ )
         {
-        menuItemArray.Append( menuPane->MenuItemCommandId( i ) );
+        menuItemArray.AppendL( menuPane->MenuItemCommandId( i ) );
         }
 
     // Menu items to be deleted 
@@ -211,7 +198,7 @@ void CPhoneCustomizationVoip::CustomizeMenuPaneL(
             {
             case EPhoneDialerCmdTouchInput:
                 {
-                if ( !VoIPSupportedL() || iStateMachine.SecurityMode()->IsSecurityMode() )
+                if ( !AllowAlphaNumericMode() )
                     {
                     menuPane->DeleteMenuItem( menuItemArray[ i ] ); 
                     }
@@ -236,7 +223,7 @@ void CPhoneCustomizationVoip::CustomizeMenuPaneL(
             case EPhoneInCallCmdNewCall:
                 {
                 if ( !FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) &&
-                     VoIPSupportedL() &&
+                     AllowAlphaNumericMode() &&
                      R_PHONEUI_NEW_CALL_MENU_VOIP != aResourceId )
                     {
                         
@@ -267,7 +254,7 @@ void CPhoneCustomizationVoip::CustomizeMenuPaneL(
 
     // Added HO menu items if needed
     AddHandoverMenuItemIfNeededL( aResourceId, *aMenuPane );
-	
+    
     if ( iViewCommandHandle.HandleCommandL( 
             EPhoneViewGetNumberEntryIsVisibleStatus ) != 
             EPhoneViewResponseSuccess )
@@ -294,7 +281,7 @@ void CPhoneCustomizationVoip::CustomizeMenuPaneL(
 //
 void CPhoneCustomizationVoip::ModifyCallHeaderTexts( TInt aCallId, 
         TPhoneCmdParamCallHeaderData* aCommandParam,
-        const TDesC& /*aInCallNumberText*/ ) 
+        const TDesC& aInCallNumberText ) 
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneCustomizationVoip::ModifyCallHeaderTexts" );
@@ -307,53 +294,50 @@ void CPhoneCustomizationVoip::ModifyCallHeaderTexts( TInt aCallId,
             engineInfo.RemoteName( aCallId ).Length() ||
             engineInfo.RemoteCompanyName( aCallId ).Length();
         
-        if ( EPEStateRinging == aCommandParam->CallState() &&
-            !contactInfoAvailable )
+        if ( !contactInfoAvailable )
             {
-            if ( KNullDesC() != engineInfo.RemotePartyName( aCallId ) )
+            if ( EPEStateRinging == aCommandParam->CallState() )
                 {
-                // Telephone UI specification, 4.2.1 Call identification:
-                // display name is used as the CLI if available.
-                aCommandParam->SetCLIText( 
-                    engineInfo.RemotePartyName( aCallId ), 
-                    CBubbleManager::ERight );
-                // use line reserved for CNAP to show SIP URI
-                aCommandParam->SetCNAPText( 
-                    engineInfo.RemotePhoneNumber( aCallId ),
-                    CBubbleManager::ERight );
-                }
-            else if( KNullDesC() != engineInfo.RemotePhoneNumber( aCallId ) )
-                {
-                // Fit address to two rows if it doesnt fit to one
-                TBuf<KMaxLengthForSIPURI> sipURI;
-                TBuf<KMaxLengthForSIPURI> sipURIDomainPart;
-                HandleURIFittingToCallBubble( 
-                    aCommandParam->CLIText(),
-                    sipURI,
-                    sipURIDomainPart );
-                
-                aCommandParam->SetCLIText( sipURI, CBubbleManager::ERight );
-                aCommandParam->SetCNAPText( 
-                    sipURIDomainPart,
-                    CBubbleManager::ERight );
+                if ( KNullDesC() != engineInfo.RemotePartyName( aCallId ) )
+                    {
+                    // Telephone UI specification, 4.2.1 Call identification:
+                    // display name is used as the CLI if available.
+                    aCommandParam->SetCLIText( 
+                        engineInfo.RemotePartyName( aCallId ), 
+                        TPhoneCmdParamCallHeaderData::ERight );
+                    // use line reserved for CNAP to show SIP URI
+                    aCommandParam->SetCNAPText( 
+                        engineInfo.RemotePhoneNumber( aCallId ), 
+                        TPhoneCmdParamCallHeaderData::ERight
+                       );
+                    }
+                else
+                    {
+                    TBuf<KMaxLengthForSIPURI> sipURI;
+                    TBuf<KMaxLengthForSIPURI> sipURIDomainPart;
+                    HandleURIFittingToCallBubble( 
+                        aCommandParam->CLIText(),
+                        sipURI,
+                        sipURIDomainPart );
+                    
+                    aCommandParam->SetCLIText( sipURI, TPhoneCmdParamCallHeaderData::ERight );
+                    aCommandParam->SetCNAPText( sipURIDomainPart,
+                        TPhoneCmdParamCallHeaderData::ERight );
+                    }
                 }
             else
                 {
-                // No address or display name specified
-                // Do nothing
+                if ( KNullDesC() == engineInfo.RemotePartyName( aCallId ) )
+                    {
+                    // Display name not available, set incall number text as a
+                    // CLI text. Text could be 'Call 1', 'Call 2', ...
+                    aCommandParam->SetCLIText( aInCallNumberText,
+                        TPhoneCmdParamCallHeaderData::ERight );
+                    aCommandParam->SetCNAPText( 
+                        aCommandParam->CNAPText(),
+                        TPhoneCmdParamCallHeaderData::ERight );
+                    }
                 }
-            }
-        else
-            {
-            // Change clipping direction
-            aCommandParam->SetCLIText( 
-                aCommandParam->CLIText(), 
-                CBubbleManager::ERight );
-            
-            // Change clipping direction
-            aCommandParam->SetCNAPText( 
-                aCommandParam->CNAPText(), 
-                CBubbleManager::ERight );
             }
         }
     }
@@ -387,19 +371,11 @@ TBool CPhoneCustomizationVoip::HandleCommandL( TInt aCommand )
             handled = ETrue;
             }
             break;
-        case EPhoneCmdUnattendedTransferCallBackCancel:
-            if ( NeedToRestoreKeyLock() )
-                 {
-                 SetKeyLockEnabledL( ETrue );
-                 SetNeedToRestoreKeyLock( EFalse );
-                 }
-            // intended fall-through
         case EPhoneInCallCmdUnattendedTransfer:
         case EPhoneCmdTransferDialerOk:
         case EPhoneCmdTransferDialerExit:
         case EPhoneCmdTransferDialerSearch:
         case EPhoneCmdTransferDialerContactFetch:
-        case EPhoneCmdUnattendedTransferCallBackOk:
             // intended fall-through
             iTransferCmdHandler->HandleCommandL( aCommand );
             handled = ETrue;
@@ -427,25 +403,14 @@ TBool CPhoneCustomizationVoip::HandleCommandL( TInt aCommand )
             break;
             
         case EPhoneCmdHandoverToGsm:
-            iVccHandler->StartManualHandoverL( EPhoneVoIPWaitHandoverFromWlan );
             handled = ETrue;
             break;
 
         
         case EPhoneCmdHandoverToWlan:
-            iVccHandler->StartManualHandoverL( EPhoneVoIPWaitHandoverFromGsm );
             handled = ETrue;
             break;
             
-       case EPhoneCmdRejectUnattendedTransfer:
-            if ( NeedToRestoreKeyLock() )
-                {
-                SetKeyLockEnabledL( ETrue );
-                SetNeedToRestoreKeyLock( EFalse );
-                } 
-            handled = ETrue;
-            break;
-			
         default:
             {
             RArray<CTelMenuExtension::TCallInfo> array;
@@ -478,11 +443,6 @@ TBool CPhoneCustomizationVoip::AllowAlphaNumericMode()
     
     TBool alphaModeSupported( EFalse );
     TRAP_IGNORE( alphaModeSupported = VoIPSupportedL() );
-
-    if ( !alphaModeSupported )
-        {
-        alphaModeSupported = EasyDialingEnabled();
-        }
     
     return alphaModeSupported;
     }
@@ -497,7 +457,7 @@ TInt CPhoneCustomizationVoip::CustomizeSoftKeys()
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneCustomizationVoip::CustomizeSoftKeys" );
-	
+    
     return CPhoneMainResourceResolver::Instance()->
         ResolveResourceID( EPhoneVoIPNumberAcqInternetSoftkey );
     }
@@ -512,7 +472,7 @@ TInt CPhoneCustomizationVoip::CustomizeCallHeaderText()
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneCustomizationVoip::CustomizeCallHeaderText" );
-	
+    
     return EPhoneVoIPPrivateAddress;
     }
 
@@ -615,11 +575,6 @@ TBool CPhoneCustomizationVoip::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageTransferring:
             {
             iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveGlobalNote );
-            break;
-            }
-        case MEngineMonitor::EPEMessageTransferDone:
-            {
-            iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveGlobalNote );
             SendGlobalInfoNoteL( EPhoneInCallTransferred );
             break; 
             }
@@ -628,30 +583,6 @@ TBool CPhoneCustomizationVoip::HandlePhoneEngineMessageL(
             SendGlobalErrorNoteL( EPhoneRemoteForwarding );
             break; 
             }
-        case MEngineMonitor::EPEMessageTransferCallBackRequest:
-            {
-            if ( iStateMachine.State()->IsKeyLockOn()  )
-                {
-                SetNeedToRestoreKeyLock( ETrue );
-                SetKeyLockEnabledL( EFalse );      
-                }
-            iTransferCmdHandler->LaunchCallBackQueryL();
-            break;
-            }
-		case MEngineMonitor::EPEMessageIdle:
-            {
-            TPhoneCmdParamInteger activeCallCount;
-            iViewCommandHandle.ExecuteCommandL(
-                    EPhoneViewGetCountOfActiveCalls, &activeCallCount );
-            
-            if ( ENoActiveCalls == activeCallCount.Integer() 
-                 && NeedToRestoreKeyLock() )
-                {
-                SetKeyLockEnabledL( ETrue );
-                SetNeedToRestoreKeyLock( EFalse );
-                }
-			break;
-			}
         default:
             handled = EFalse;
             break;
@@ -677,42 +608,11 @@ void CPhoneCustomizationVoip::HandleDialL( const TDesC& aNumber )
 // CPhoneCustomizationVoip::CustomizeTouchPaneButtons
 // -----------------------------------------------------------
 //
-void CPhoneCustomizationVoip::CustomizeTouchPaneButtons(
-        MBubbleTouchPaneInterface& aTouchPane )
+void CPhoneCustomizationVoip::CustomizeTouchPaneButtons()
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneCustomizationVoip::CustomizeTouchPaneButtons" );
-    
-    TRAPD( err, CustomizeTouchPaneUsingExtensionL( aTouchPane ) );
-    
-    if ( KErrNone != err )
-        {
-        // Extension plugin didn't handle touch pane dimming.
-        TInt buttonCount = aTouchPane.NumberOfButtonsInPane();
-            
-        for ( TInt i=0; i < buttonCount; i++ )    
-            {
-            TInt commandId = aTouchPane.ButtonCommandId( i );
-        
-            switch ( commandId )
-                {              
-                case EPhoneInCallCmdCreateConference:
-                case EPhoneInCallCmdJoin:
-                    {
-                    if ( !IsFeatureSupported( EFeatureConference ) )
-                        {
-                        // Conference not supported -> set item dimmed
-                        aTouchPane.SetButtonDimmed( commandId, ETrue );
-                        }               
-                    break;  
-                    }
-                default:
-                    break;                    
-                } // switch
-            } // for    
-        }
     }
-
 
 // -----------------------------------------------------------
 // CPhoneCustomizationVoip::VoIPSupportedL
@@ -733,30 +633,6 @@ TBool CPhoneCustomizationVoip::VoIPSupportedL()
     return voipSupported;   
     }
 
-// -----------------------------------------------------------
-// CPhoneCustomizationVoip::EasyDialingEnabled
-// -----------------------------------------------------------
-//
-TBool CPhoneCustomizationVoip::EasyDialingEnabled()
-    {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension,
-            "CPhoneCustomizationVoip::EasyDialingEnabled" );
-
-    TBool easyDialingEnabled( EFalse );
-    if ( FeatureManager::FeatureSupported( KFeatureIdProductIncludesHomeScreenEasyDialing ) )
-        {
-        TInt easyDialingSetting;
-        TInt err = CPhoneCenRepProxy::Instance()->GetInt(
-                KCRUidEasyDialSettings,
-                KEasyDialing,
-                easyDialingSetting);
-        if ( !err && easyDialingSetting )
-            {
-            easyDialingEnabled = ETrue;
-            }
-        }
-    return easyDialingEnabled;
-    }
 
 // -----------------------------------------------------------
 // CPhoneCustomizationVoip::ModifyInCallMenuL
@@ -802,7 +678,9 @@ void CPhoneCustomizationVoip::ModifyNumberAcquisitionMenuL(
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneCustomizationVoip::ModifyNumberAcquisitionMenuL");
     
-    if ( aResourceId == R_PHONEUI_NUMBERACQ_OPTIONS_CALL_MENU &&
+    if ( ( aResourceId == R_PHONEUI_NUMBERACQ_OPTIONS_CALL_MENU ||
+           aResourceId == R_PHONEUI_NUMBERACQ_OPTIONS_MENU ||
+           aResourceId == R_PHONEUIDIALER_OPTIONS_MENU ) &&
            VoIPSupportedL() )
         {
         InsertInternetCallMenuItemL( aResourceId, aMenuPane );
@@ -823,7 +701,7 @@ void CPhoneCustomizationVoip::ModifyNumberAcquisitionMenuL(
 // -----------------------------------------------------------
 //
 void CPhoneCustomizationVoip::InsertInternetCallMenuItemL( 
-        TInt /* aResourceId */, CEikMenuPane& aMenuPane )
+        TInt aResourceId, CEikMenuPane& aMenuPane )
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneCustomizationVoip::InsertInternetCallMenuItemL" );
@@ -851,12 +729,36 @@ void CPhoneCustomizationVoip::InsertInternetCallMenuItemL(
 
     HBufC* phoneNumber = PhoneNumberFromEntryLC();
 
-    TInt index(KErrNotFound);
-
-    // If number entry is empty don't add internet call option 
-    if ( phoneNumber->Length() )
+    if ( aResourceId == R_PHONEUI_NUMBERACQ_OPTIONS_CALL_MENU )
         {
+        if ( !CPhoneKeys::Validate( phoneNumber->Des() ) )
+            {
+            TInt index(KErrNotFound);
+            if ( aMenuPane.MenuItemExists( EPhoneNumberAcqCmdCall, index ) )
+                {
+                aMenuPane.DeleteMenuItem( EPhoneNumberAcqCmdCall );
+                }
+            
+            if ( aMenuPane.MenuItemExists( EPhoneNumberAcqCmdVideoCall, index ) )
+                {
+                aMenuPane.DeleteMenuItem( EPhoneNumberAcqCmdVideoCall );
+                }
+            }
+        
         aMenuPane.AddMenuItemL( voipMenuItem->iData );
+        }
+    else if ( iStateMachine.PhoneEngineInfo()->PhoneNumberIsServiceCode() )
+        {
+        // When user writes string recognized as service code (eg.*#31# -> clir off)
+        // call menu is not visible. Internet call must still be possible so 
+        // internet call option is added here to the menu.
+        
+        // If number entry is empty don't add internet call option 
+        if ( phoneNumber->Length() )
+            {
+            // Internet call item must be on the top of the menu
+            aMenuPane.InsertMenuItemL( voipMenuItem->iData, 0 );
+            }
         }
     
     CleanupStack::PopAndDestroy( 3, &voipServices );
@@ -868,43 +770,11 @@ void CPhoneCustomizationVoip::InsertInternetCallMenuItemL(
 // -----------------------------------------------------------
 //
 void CPhoneCustomizationVoip::InsertTextInputModeChangeMenuItemL( 
-        CEikMenuPane& aMenuPane )
+        CEikMenuPane& /*aMenuPane*/ )
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneCustomizationVoip::InsertTextInputModeChangeMenuItemL" );
-    
-    TInt modeChangeOptionIndex = KErrNotFound;
-    if ( aMenuPane.MenuItemExists( 
-             EPhoneNumberAcqCmdToggleNeAlphaMode, modeChangeOptionIndex ) ||
-         aMenuPane.MenuItemExists( 
-             EPhoneNumberAcqCmdToggleNeNumericMode, modeChangeOptionIndex ) )
-        {
-        __PHONELOG( EBasic, PhoneUIVoIPExtension,
-            "InsertTextInputModeChangeMenuItemL, MENU ITEM ALREADY EXISTS" );
-        __ASSERT_DEBUG( EFalse, Panic( EPhoneCtrlInvariant ) );
-        }
-    
-    CEikMenuPaneItem* menuItem = NULL;
-    TBool numberEntryInNumericMode = iViewCommandHandle.HandleCommandL( 
-        EPhoneViewIsNumberEntryNumericMode ) == EPhoneViewResponseSuccess;
-    if ( numberEntryInNumericMode )
-        {
-        menuItem = CreateMenuPaneItemLC( 
-            EPhoneNumberAcqCmdToggleNeAlphaMode,
-            R_PHONEUI_NUMBERACQ_OPTIONS_MENU_ITEM_ALPHA_MODE );
-        }
-    else
-        {
-        menuItem = CreateMenuPaneItemLC( 
-            EPhoneNumberAcqCmdToggleNeNumericMode,
-            R_PHONEUI_NUMBERACQ_OPTIONS_MENU_ITEM_NUMERIC_MODE );
-        }
-    
-    // alpha/numeric mode option is always second item in number entry menu
-    const TInt KTextInputModeChangeMenuItemIndex = 1;
-    aMenuPane.InsertMenuItemL( 
-        menuItem->iData, KTextInputModeChangeMenuItemIndex );
-    CleanupStack::PopAndDestroy( menuItem );
+
     }
 
 
@@ -996,7 +866,7 @@ void CPhoneCustomizationVoip::GetActiveCallArrayL(
 
         if( callInfo.iCallState != CTelMenuExtension::ENone )
             {
-            aArray.Append( callInfo );                                   
+            aArray.AppendL( callInfo );                                   
             }
 
         }
@@ -1140,16 +1010,7 @@ TBool CPhoneCustomizationVoip::CheckFeatureSupportByCallTypeL(
         if( array[i].iCallState == CTelMenuExtension::EOutgoing ||
             array[i].iCallState == CTelMenuExtension::EActive ||
             array[i].iCallState == CTelMenuExtension::EOnHold )
-            {              
-            if( aFeature == EFeatureTransfer &&
-                array[i].iCallState == CTelMenuExtension::EOutgoing &&
-                array[i].iCallType == CTelMenuExtension::EPsVoice  )
-                {
-                // If there is outgoing VoIP call then transfer is not supported
-                supported = EFalse;
-                break;
-                }
-            
+            {
             if( firstCallType == CTelMenuExtension::EUninitialized )
                 {
                 // Memorize first found call type
@@ -1169,35 +1030,6 @@ TBool CPhoneCustomizationVoip::CheckFeatureSupportByCallTypeL(
 
     return supported;
     }
-
-
-// -----------------------------------------------------------
-// CPhoneCustomizationVoip::CustomizeTouchPaneUsingExtensionL
-// -----------------------------------------------------------
-//
-void CPhoneCustomizationVoip::CustomizeTouchPaneUsingExtensionL(
-        MBubbleTouchPaneInterface& aTouchPane )
-    {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-        "CPhoneCustomizationVoip::CustomizeTouchPaneUsingExtensionL" );
-    
-    RArray<CTelMenuExtension::TCallInfo> array;
-    CleanupClosePushL( array );
-    
-    GetActiveCallArrayL( array );
-
-    // Use extensions for touch pane buttons dimming 
-    iExtensionHandler->CustomizeTouchPaneButtonsL(
-            ServiceIdForActivestCallL( array ),
-            array,
-            aTouchPane );
-    
-    __PHONELOG( EBasic, PhoneUIVoIPExtension,
-        "CPhoneCustomizationVoip::ModifyInCallMenuL() plugin exists" );
-    
-    CleanupStack::PopAndDestroy( &array );    
-    }
-
 
 // -----------------------------------------------------------
 // CPhoneCustomizationVoip::LaunchEnablingServiceNoteL
@@ -1230,8 +1062,9 @@ void CPhoneCustomizationVoip::LaunchEnablingServiceNoteL()
     queryParam.SetDataText( &noteText );  
     queryParam.SetDefaultCba( R_AVKON_SOFTKEYS_CANCEL );
     
-    const TInt KEnableServiceTimeOutInSecs = 60;
-    queryParam.SetTimeOut( KEnableServiceTimeOutInSecs );
+    const TInt KEnableServiceTimeOutInMilliSecs = 60000;
+    queryParam.SetTimeOut( KEnableServiceTimeOutInMilliSecs );
+
     // configure custom command mappings for user responses
     queryParam.SetCbaCommandMapping( 
         EAknSoftkeyCancel, EPhoneCmdCancelServiceEnabling );
@@ -1256,10 +1089,10 @@ void CPhoneCustomizationVoip::SendGlobalErrorNoteL( TInt aResourceId )
     
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
     
-	CPhoneState* phoneState = 
-        static_cast< CPhoneState* >( iStateMachine.State() ); 		
-			
-    phoneState->SendGlobalErrorNoteL( aResourceId );		
+    CPhoneState* phoneState = 
+        static_cast< CPhoneState* >( iStateMachine.State() );       
+            
+    phoneState->SendGlobalErrorNoteL( aResourceId );        
     }
 
 
@@ -1433,31 +1266,13 @@ CEikMenuPaneItem* CPhoneCustomizationVoip::CreateMenuPaneItemLC(
 // CPhoneCustomizationVoip::AddHandoverMenuItemIfNeededL
 // -----------------------------------------------------------
 //
-void CPhoneCustomizationVoip::AddHandoverMenuItemIfNeededL( TInt aResourceId,
-        CEikMenuPane& aMenuPane )
+void CPhoneCustomizationVoip::AddHandoverMenuItemIfNeededL( TInt /*aResourceId*/,
+        CEikMenuPane& /*aMenuPane*/ )
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneCustomizationVoip::AddHandoverMenuItemIfNeededL" );
-    
-    // Menu items to be added
-    if ( iVccHandler && VoIPSupportedL() &&
-        ( aResourceId == R_PHONEUI_CALLHANDLING_INCALL_OPTIONS_MENU ||
-          aResourceId == R_PHONEUI_CALLWAITING_OPTIONS_MENU ||
-          aResourceId == R_PHONEUI_ACTIVEANDHELDCALL_OPTIONS_MENU ||
-          aResourceId == R_PHONEUI_ACTIVEANDHELDCONFCALL_OPTIONS_MENU ||
-          aResourceId == R_PHONEUI_CALLACTIVEHELDANDWAITING_OPTIONS_MENU 
-        ))
-        {        
-        RArray<CTelMenuExtension::TCallInfo> array;
-        CleanupClosePushL( array );
-        GetActiveCallArrayL( array );
-        
-        iVccHandler->AddHandoverMenuItemL( array, aResourceId, aMenuPane );
-        CleanupStack::PopAndDestroy( &array );   
-        }
     }
-
-
+    
 // -----------------------------------------------------------
 // CPhoneCustomizationVoip::GetVoIPServiceIdsL
 // -----------------------------------------------------------
@@ -1523,7 +1338,6 @@ void CPhoneCustomizationVoip::GetVoipServiceNameL( TServiceId aServiceId, TDes& 
     CleanupStack::PopAndDestroy( 2, settingsApi );
     }
 
-
 // -----------------------------------------------------------
 // CPhoneCustomizationVoip::PhoneNumberFromEntryLC
 // -----------------------------------------------------------
@@ -1540,52 +1354,6 @@ HBufC* CPhoneCustomizationVoip::PhoneNumberFromEntryLC() const
         &stringParam );
     
     return phoneNumber;
-    }
-
-// ---------------------------------------------------------------------------
-// CPhoneCustomizationVoip::SetKeyLockEnabledL
-// ---------------------------------------------------------------------------
-//
-void CPhoneCustomizationVoip::SetKeyLockEnabledL( TBool aEnabled )
-    {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-        "CPhoneCustomizationVoip::CPhoneCustomizationVoip::SetKeyLockEnabledL" );
-    if ( aEnabled )
-        {
-        iViewCommandHandle.ExecuteCommandL(
-                                  EPhoneViewEnableKeyLock );
-        }
-    else
-        {
-        iViewCommandHandle.ExecuteCommandL(
-                              EPhoneViewDisableKeyLockWithoutNote );
-        }           
-    }
-
-// ---------------------------------------------------------------------------
-// CPhoneCustomizationVoip::SetNeedToRestoreKeyLock
-// ---------------------------------------------------------------------------
-//
-void CPhoneCustomizationVoip::SetNeedToRestoreKeyLock( TBool aRestore )
-    {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-          "CPhoneCustomizationVoip::CPhoneCustomizationVoip::SetNeedToRestoreKeyLock" );
-    __PHONELOG1( EBasic, PhoneUIVoIPExtension, 
-               "CPhoneCustomizationVoip::AwrNeedToRestoreKeyLock:%d", aRestore );
-    iNeedToRestoreKeyLock = aRestore;
-    }
-
-// -----------------------------------------------------------
-// CPhoneCustomizationVoip::NeedToRestoreKeyLock
-// -----------------------------------------------------------
-//
-TBool CPhoneCustomizationVoip::NeedToRestoreKeyLock() const
-    {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-          "CPhoneCustomizationVoip::CPhoneCustomizationVoip::NeedToRestoreKeyLock" );
-    __PHONELOG1( EBasic, PhoneUIVoIPExtension, 
-            "CPhoneCustomizationVoip::NeedToRestoreKeyLock:%d", iNeedToRestoreKeyLock );
-    return iNeedToRestoreKeyLock;
     }
 
 // End of File

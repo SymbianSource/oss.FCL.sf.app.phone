@@ -38,10 +38,9 @@
 #include    <PSVariables.h>
 #include    <ctsydomainpskeys.h>
 #include    <mccecall.h>
-#include    <PsetSAObserver.h>
+#include    <psetsaobserver.h>
 #include    <cccecallparameters.h>
 #include    <centralrepository.h>
-#include    <telconfigcrkeys.h>
 
 // EXTERNAL DATA STRUCTURES
 // None
@@ -50,6 +49,18 @@
 // None
 
 // CONSTANTS
+/******************************************************************************
+* Telephony Configuration API
+* Keys under this category are used in defining telephony configuration.
+******************************************************************************/
+const TUid KCRUidTelConfiguration = {0x102828B8};
+
+/**
+* Amount of digits to be used in contact matching.
+* This allows a customer to variate the amount of digits to be matched.
+*/
+const TUint32 KTelMatchDigits                               = 0x00000001;
+
 const TInt KPEMatchDefault = 7;
 
 // MACROS
@@ -450,7 +461,7 @@ void CPECallHandling::SendMessage(
             CCPCall::TCallType callType = connectedCall.Parameters().CallType();
  
             if ( EPEStateConnected == call->GetCallState() )
-                {                
+                {
                 if ( callType == CCPCall::ECallTypePS ) 
                     {
                     TEFLOGSTRING( KTAMESINT, 
@@ -466,7 +477,6 @@ void CPECallHandling::SendMessage(
                     iCallOpenParams->SetCallType( CCPCall::ECallTypeCSVoice );
                     iModel.DataStore()->SetServiceIdCommand( 1 );
                     iModel.DataStore()->SetCallType( EPECallTypeCSVoice, aCallId ); 
-                    
                     if ( UpdateColpNumber( aCallId, connectedCall ))
                         {
                         iModel.SendMessage( MEngineMonitor::EPEMessageColpNumberAvailable, aCallId );
@@ -675,7 +685,6 @@ EXPORT_C TInt CPECallHandling::DialCall(
                 {
                 // Dial request passed on successfully: forward new call id
                 aCallId = callData->GetCallId();
-                iModel.SendMessage( MEngineMonitor::EPEMessageInitiatedMoCall, aCallId );
                 }
             }
         }
@@ -838,7 +847,10 @@ EXPORT_C TInt  CPECallHandling::HangUp(
 
     else if ( CallIdCheck::IsConference( aCallId ) )
         {
-        errorCode = ReleaseConference();
+        if( iConferenceCall )
+            {
+            errorCode = iConferenceCall->HangUp();
+            }
         }
     return errorCode;
     }
@@ -857,7 +869,12 @@ EXPORT_C TInt CPECallHandling::TerminateAllConnections()
     
     RejectCall(); // Rejects ringing call if one exists.
 
-    ReleaseConference(); // Release conference call if exists
+    if ( iConferenceCall )
+        {
+        TEFLOGSTRING( KTAMESOUT, 
+            "CALL CPECallHandling::TerminateAllConnections: Hanging Up conference call" );
+        iConferenceCall->HangUp();
+        }
             
     // Hangup normal Voice Calls
     for( TInt callId = 0; callId < KPEMaximumNumberOfVoiceCalls; callId++ )
@@ -877,28 +894,6 @@ EXPORT_C TInt CPECallHandling::TerminateAllConnections()
         }
     //Terminate all ringing data calls, connected data calls and packet data connections
     return iVideoCallHandling->TerminateAllConnections();
-    }
-
-// -----------------------------------------------------------------------------
-// CPECallHandling::UpdatePhoneIdentity
-// Method updates phone identity
-// -----------------------------------------------------------------------------
-//
-EXPORT_C TInt CPECallHandling::UpdatePhoneIdentity(
-    MEngineMonitor::TPEMessagesFromPhoneEngine /*aMessage*/ )
-    {
-    TInt retValue( KErrNone ); 
-    CSInfo csinfo;
-    retValue = iConvergedCallEngine.GetCSInfo( csinfo );
-    
-    TPEPhoneIdentityParameters phoneIdentityParameters;
-    
-    phoneIdentityParameters.iSerialNumber = csinfo.iSerialNumber;
-        
-    iModel.DataStore()->SetPhoneIdentityParameters( phoneIdentityParameters );
-
-    SendMessage( MEngineMonitor::EPEMessageShowIMEI );
-    return retValue;
     }
 
 // -----------------------------------------------------------------------------
@@ -1913,8 +1908,10 @@ EXPORT_C void CPECallHandling::DialEmergencyCall( const TPEPhoneNumber& aEmergen
     SendMessage( MEngineMonitor::EPEMessageInitiatedEmergencyCall );
     TEFLOGSTRING( KTAINT, "CALL CPECallHandling::DialEmergencyCall start emergency dialing" );
     CPESingleCall* callData = iCallArrayOwner->GetCallObject( KPEEmergencyCallId );
-    // coverity[dereference]
-    callData->DialEmergency( aEmergencyNumber );   
+    if ( callData )
+        {
+        callData->DialEmergency( aEmergencyNumber );   
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -1960,16 +1957,7 @@ void CPECallHandling::CreateConferenceCallL(
     TEFLOGSTRING( KTAINT, "CALL CPECallHandling::CreateConferenceCallL end" );
     }
 
-// -----------------------------------------------------------------------------
-// CPECallHandling::GetLifeTime
-// -----------------------------------------------------------------------------
-//
-EXPORT_C TBool CPECallHandling::GetLifeTime( TDes8& aLifeTimeInfo )
-    {
-    TEFLOGSTRING( KTAINT, "CALL CPECallHandling::GetLifeTime" );
-    return iConvergedCallEngine.GetLifeTime( aLifeTimeInfo );
-    }
-    
+
 // -----------------------------------------------------------------------------
 // CPECallHandling::UpdateSaSetting
 // -----------------------------------------------------------------------------
@@ -2377,19 +2365,13 @@ void CPECallHandling::HandleAutoResume()
     else
         {
         CPESingleCall* callData = iCallArrayOwner->CallPointerByState( EPEStateHeld );
-        if ( callData )
+        // Check that no actice and held call, if waiting call gets idle
+        CPESingleCall* connectedCallData = iCallArrayOwner->CallPointerByState( EPEStateConnected );
+        if( callData && ( iModel.DataStore()->ResumeHeldCall( callData->GetCallId() ) )
+                    && !connectedCallData )
             {
-            // Checks to be done in case waiting call gets idle state:
-            // Check that no active and held calls case
-            // Check that no dialling/connecting and held calls case
-            if ( iModel.DataStore()->ResumeHeldCall( callData->GetCallId() ) &&
-                 !IsCallInState( EPEStateConnected ) &&
-                 !IsCallInState( EPEStateConnecting ) &&
-                 !IsCallInState( EPEStateDialing ) )
-                {
-                TEFLOGSTRING( KTAINT, "CALL CPECallHandling::HandleAutoResume single" );
-                callData->Resume();
-                }
+            TEFLOGSTRING( KTAINT, "CALL CPECallHandling::HandleAutoResume single" );
+            callData->Resume();
             }
         }
     }
@@ -2424,17 +2406,16 @@ void  CPECallHandling::SetCallOrigin( const TInt aCallId, const MCCECall& aCall 
     if ( callType == CCPCall::ECallTypeCSVoice || callType == CCPCall::ECallTypeVideo )
         {
         const CCCECallParameters& params = static_cast<const CCCECallParameters&>( parameters );
-        
-        // do not overwrite if it's client call, which CCE is not aware of 
-        if ( iModel.DataStore()->CallOrigin( aCallId ) == EPECallOriginPhone )
-            {                                                
-            if ( params.Origin() == CCCECallParameters::ECCECallOriginSAT )
-                {
-                iModel.DataStore()->SetCallOrigin( EPECallOriginSAT, aCallId );
-                }
-            }                    
+                                                    
+        if ( params.Origin() == CCCECallParameters::ECCECallOriginSAT )
+            {
+            iModel.DataStore()->SetCallOrigin( EPECallOriginSAT, aCallId );
+            iModel.DataStore()->SetRemoteName( params.AlphaId(), aCallId );
+            iModel.DataStore()->SetRemotePhoneNumber( KNullDesC(), aCallId );
+            }                 
         }                
     }
+
 
 // -----------------------------------------------------------------------------
 // CPECallHandling::UpdateColpNumber
@@ -2483,21 +2464,6 @@ TBool CPECallHandling::UpdateColpNumber( TInt aCallId, const MCCECall& aCall ) c
     
     return updateDone;
     }
-        
-// -----------------------------------------------------------------------------
-// CPECallHandling::ReleaseConference
-// Release conference call
-// -----------------------------------------------------------------------------
-//
-EXPORT_C TInt CPECallHandling::ReleaseConference()
-    {
-    TInt errorCode( ECCPErrorNotFound );
-    
-    if ( iConferenceCall )
-        {            
-        errorCode = iConferenceCall->HangUp();
-        }
-    return errorCode;
-    }
+       
 
 //  End of File 

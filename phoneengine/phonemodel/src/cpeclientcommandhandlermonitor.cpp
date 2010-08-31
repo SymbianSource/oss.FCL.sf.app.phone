@@ -24,7 +24,7 @@
 #include "mpecallhandling.h"
 #include "mpephonemodelinternal.h"
 #include <mpedatastore.h>
-#include <RPhCltServer.h>
+#include <rphcltserver.h>
 #include <talogger.h>
 #include <telephonyvariant.hrh>
 
@@ -442,10 +442,10 @@ TInt CPEClientCommandHandlerMonitor::HangUp( TPEState aState )
     TEFLOGSTRING2( KTAINT, "CPEClientCommandHandlerMonitor::HangUp aState=%d", aState); 
     TInt ret( ECCPErrorNotFound ); 
   
-    TPEState conferenceState = iModel.DataStore()->ConferenceCallState();
+    TPEState conferenceState = iCallHandling.GetCallState( KPEConferenceCallID ); 
     if ( conferenceState == aState ) 
         { 
-        ret = iCallHandling.ReleaseConference(); 
+        ret = iCallHandling.HangUp( KPEConferenceCallID, ETPEHangUpDefault ); 
         } 
     else 
         { 

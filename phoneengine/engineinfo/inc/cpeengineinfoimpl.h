@@ -36,62 +36,59 @@
 // DATA TYPES
 NONSHARABLE_STRUCT( TPECallCommandInfo )                  // For Mobile Originated Call Commands
     {
-	TChar iKeyCode;                         // pressed key code
-	TInt iAudioMute;                        // state of microphone ( 0 = false, 1 = true )
-	TInt iAudioVolume;                      // Audio volume
-	TPEAudioOutput iAudioOutput;            // audio output path
-	TBool iShowNote;                        // Status of call audio route info note.
-	TInt iCallId;                           // Calls ID
-	TPEDtmfString iDtmfString;              // Dtmf string to be sent.
-	TPEPhoneNumber iPhoneNumber;            // Dialed Phonenumber, set by client
-	TPECallType iCallType;                  // Type of the attempted call
-	TUint32 iServiceId;                     // ServiceId	
-	TPECallOrigin iCallOrigin;              // Origin of the attempted call (Phone, client or SAT)
-	RMobileCall::TMobileCallIdRestriction iIdRestrict; // Call Id restriction setting to be used for this call
-	TPEPhoneNumber iEmergencyNumber;        // For checking is this number emergency number.
-	TPEUserToUserInfo iUserToUserInfo;      // User to user information.
-	TPEPhoneNumber iSwitchToNumber;         // Dialed Phonenumber, set by client
-	TPEPhoneNumber iTransferToAddress;      // Unattended transfer target address	
+    TChar iKeyCode;                         // pressed key code
+    TInt iAudioMute;                        // state of microphone ( 0 = false, 1 = true )
+    TInt iAudioVolume;                      // Audio volume
+    TPEAudioOutput iAudioOutput;            // audio output path
+    TBool iShowNote;                        // Status of call audio route info note.
+    TInt iCallId;                           // Calls ID
+    TPEDtmfString iDtmfString;              // Dtmf string to be sent.
+    TPEPhoneNumber iPhoneNumber;            // Dialed Phonenumber, set by client
+    TPECallType iCallType;                  // Type of the attempted call
+    TUint32 iServiceId;                     // ServiceId    
+    TPECallOrigin iCallOrigin;              // Origin of the attempted call (Phone, client or SAT)
+    RMobileCall::TMobileCallIdRestriction iIdRestrict; // Call Id restriction setting to be used for this call
+    TPEPhoneNumber iEmergencyNumber;        // For checking is this number emergency number.
+    TPEUserToUserInfo iUserToUserInfo;      // User to user information.
+    TPEPhoneNumber iSwitchToNumber;         // Dialed Phonenumber, set by client
+    TPEPhoneNumber iTransferToAddress;      // Unattended transfer target address   
     TInt iForwardToAddressIndex;            // Array index for a address to be forwarded
-    TBool iTransferDial;                    // Flag which indicates utransfer dial
     };
 
 NONSHARABLE_STRUCT( TPEBasicInfo )                         // Contains information of the phone related variables 
     {
-	TBool iAudioMute;                       // state of microphone.					
-	TBool iTwoDigitSupportStatus;           // Two Digit support status
-	TBool iALSLineSupport;                  // ALS line support.				
-	TInt iAudioOutputPreference;            // Audio output preference (private/public) - TODO: change type to enum when available
-	TInt iAudioVolume;                      // Audio volume					
-	TInt iKeypadVolume;                     // Keypad volume					
-	TInt iLastCallDuration;                 // Call duration (seconds)					
-	TInt iPersonalToneStatus;               // Personal tone status					
-	TInt iProfileId;                        // the id number of the profile					
-	TInt iRingingVolume;                    // Current ringing volume					
-	TBool iTextToSpeech;                    // Current text-to-speech setting
-	TBool iPhoneNumberIsServiceCode;        // flag indicating if the phone number is a service code
-	TNWNetworkRegistrationStatus iNetworkRegistrationStatus;					
+    TBool iAudioMute;                       // state of microphone.                 
+    TBool iTwoDigitSupportStatus;           // Two Digit support status
+    TBool iALSLineSupport;                  // ALS line support.                
+    TInt iAudioOutputPreference;            // Audio output preference (private/public) - TODO: change type to enum when available
+    TInt iAudioVolume;                      // Audio volume                 
+    TInt iKeypadVolume;                     // Keypad volume                    
+    TInt iLastCallDuration;                 // Call duration (seconds)                  
+    TInt iPersonalToneStatus;               // Personal tone status                 
+    TInt iProfileId;                        // the id number of the profile                 
+    TInt iRingingVolume;                    // Current ringing volume                   
+    TBool iTextToSpeech;                    // Current text-to-speech setting
+    TBool iPhoneNumberIsServiceCode;        // flag indicating if the phone number is a service code
+    TNWNetworkRegistrationStatus iNetworkRegistrationStatus;                    
     CCCECallParameters::TCCELineType iALSLine;        // includes active als line.                  
-	TPEContactFileName iRingingToneName1;   // Current ringingtone name					
-	TPEContactFileName iRingingToneName2;
-	TPEContactFileName iVideoCallRingingTone; // Video call ringingtone name									
-	TPEDtmfString iDtmfString;              // Dtmf string.					
-	TPEErrorInfo iErrorInfo;                // possible error code					
-	TPELifeTimeData iLifeTimeData;					
-	TPEPhoneIdentityParameters iPhoneIdentityParameters; // the phone identity parameters					
-	TPEProfileName iProfileName;            // the name of the profile					
-	TProfileRingingType iRingingType;       // Includes current ringing type 					
-	TPEVoiceMailBoxNumberInfo iVMBXNumbers; // Voice mail box numbers
-	TPEPhoneAudioRouteParameters iPhoneAudioRouteParameters; // the phone audio route parameters
-	TCCPTone iInbandTone;                   // Inband tone needed to play in a call state transition or error
-	TPEActiveForwardInfo iActiveForward;    // active forward information.
-	TPEBarringInfo iBarringInfo;            // includes call barring information.
-	TPESimState iSimState;
-	TPESSCommandInfo iSSCommandInfo;        // Contains information of the Suplementary Services command.
+    TPEContactFileName iRingingToneName1;   // Current ringingtone name                 
+    TPEContactFileName iRingingToneName2;
+    TPEContactFileName iVideoCallRingingTone; // Video call ringingtone name                                    
+    TPEDtmfString iDtmfString;              // Dtmf string.                 
+    TPEErrorInfo iErrorInfo;                // possible error code                  
+    TPEProfileName iProfileName;            // the name of the profile                  
+    TProfileRingingType iRingingType;       // Includes current ringing type                    
+    TPEVoiceMailBoxNumberInfo iVMBXNumbers; // Voice mail box numbers
+    TPEPhoneAudioRouteParameters iPhoneAudioRouteParameters; // the phone audio route parameters
+    TCCPTone iInbandTone;                   // Inband tone needed to play in a call state transition or error
+    TPEActiveForwardInfo iActiveForward;    // active forward information.
+    TPEBarringInfo iBarringInfo;            // includes call barring information.
+    TPESimState iSimState;
+    TPESSCommandInfo iSSCommandInfo;        // Contains information of the Suplementary Services command.
     TBool iSecureSpecified;                 // Secure specified status
-	TName iDataPortName;                    // the name of data port currently on-loan
+    TName iDataPortName;                    // the name of data port currently on-loan
     TBool iSwitchToOngoing;                 // Switch to operation status
-    TPEPhoneNumber iCallBackAddress;        // Address of the transfer originator used for calling back
+    TBool iOutgoingBarringActivated;        // Outgoing barring activated 
     };
 
 NONSHARABLE_STRUCT( TPEConferenceCallInfo ) // Contains conference call related variables 
@@ -254,7 +251,7 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         * @return TBool the secure status (on/off)
         */
         TBool IsSecureCall( const TInt aCallId ) const;
-		
+        
         /**
         * Gets dtmf postfix
         * @param aCallId is the call identification number.
@@ -281,22 +278,10 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         const TCCPTone& InbandTone() const;
 
         /**
-        * Gets lifetimer data
-        * @return lifetime data (TDes8&)
-        */
-        const TPELifeTimeData& LifeTimerData() const;
-
-        /**
         * Gets network registration status
         * @return TNWNetworkRegistrationStatus Network registration status
         */
         const TNWNetworkRegistrationStatus& NetworkRegistrationStatus() const;
-
-        /**
-        * Gets phone identity parameters from TPEBasicInfo-structure
-        * @param aPhoneIdentityParameters is the phone identity parameters. 
-        */
-        const TPEPhoneIdentityParameters& PhoneIdentityParameters() const;
 
         /**
         * Gets phone number
@@ -620,33 +605,16 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          
          /**
          * Checks if given state can be found.
-		 * @param aCallState state to be checked.
+         * @param aCallState state to be checked.
          */
           TBool CheckIfCallStateExists( const TPEState& aCallState );
           
           /**
-          * From base class MPEEngineInfo
-          * @see MPEEngineInfo::SetTransferDial          
+          * Sets the protocol spesific error code
+          * @param aError is the error code from protocol.
+          * @return None.
           */
-          void SetIsTransferDial( TBool aTransferDial );
-          
-          /**
-          * From base class MPEEngineInfo
-          * @see MPEEngineInfo::IsTransferDial         
-          */
-          TBool IsTransferDial() const;
-          
-          /**
-          * From base class MPEEngineInfo
-          * @see MPEEngineInfo::SetCallBackAddress   
-          */
-          void SetCallBackAddress( const TDesC& aAddress );
-          
-          /**
-          * From base class MPEEngineInfo
-          * @see MPEEngineInfo::CallBackAddress
-          */
-          const TDesC& CallBackAddress() const;
+           void SetProtocolError( TInt aError ); 
 
     // Functions from MPEDataStore (reading values)
     public:
@@ -951,12 +919,6 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * @see MPEDataStore::CallIndex
          */
         TInt CallIndex( TInt aCallId ) const;
-        
-        /**
-         * From base class MPEDataStore
-         * @see MPEDataStore::DoCallBackRequest     
-         */
-        TBool DoCallBackRequest( TInt aCallId ) const;
 
     // Functions from MPEDataStore (setting values)
     public:
@@ -1199,12 +1161,6 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         void SetKeypadVolume( const TInt aKeypadVolume );
 
         /**
-        * Sets lifetimer data of the phone to TPEBasicInfo-structure
-        * @param aLifeTimerData lifetime data (TDesc8&).
-        */
-        void SetLifeTimerData( TCCPLifeTimeDataPckg& aPckg );
-
-        /**
         * Sets a logging indicator to TPECallInfo-tructure
         * @param aLoggingIndicator, Continuous logging indicator.
         * @param aCallId, the call identification number.
@@ -1241,13 +1197,6 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         * @param aPersonalTone is personal tone status (EFalse/ETrue).
         */
         void SetPersonalToneStatus( const TInt& aPersonalToneStatus );
-
-        /**
-        * Sets phone number to TPECallCommandInfo-structure
-        * @param aPhoneIdentityParameters is the phone identity parameters
-        */
-        void SetPhoneIdentityParameters( 
-            const TPEPhoneIdentityParameters& aPhoneIdentityParameters );
         
         /**
         * Sets phone number parsing result
@@ -1537,8 +1486,8 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * @see MPEDataStore::UserToUserInformation
          * @since S60 5.0
          */
-		void SetUserToUserInformation( const TPEUserToUserInfo& aUUI );
-		
+        void SetUserToUserInformation( const TPEUserToUserInfo& aUUI );
+        
         /**
          * Sets remote party name given by network to TPECallInfo structure.
          * @param aName Remote party name.
@@ -1561,13 +1510,44 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * @see MPEDataStore::SetCallOrigin          
          */
         void SetCallOrigin( TPECallOrigin aOrigin, TInt aCallId );
+      
+        /**
+        * Sets call Phonebook contact identifier.
+        * @param aContactId is the contact identifier for a call
+        */
+        void SetContactId2( const TInt aContactId );
+
+        /**
+         * Returns Phonebook contact identifier.
+         */
+        TInt ContactId2() const;
         
         /**
-         * From base class MPEDataStore
-         * @see MPEDataStore::SetDoCallBackRequest        
-         */
-        void SetDoCallBackRequest( TBool aDoCallBack, TInt aCallId );
-                
+        * Sets the protocol spesific error code
+        * @param aError is the error code from protocol.
+        * @return None.
+        */
+        void SetProtocolError( TInt aError, TInt aCallId ); 
+ 
+        /**
+        * Returns the protocol spesific error code
+        * @return Error code.
+        */
+        TInt ProtocolError( TInt aCallId ); 
+        
+        /**
+        * Returns flag if the outgoing barring is activated.
+        * @return ETrue if barring activated.
+        */
+        TBool IsOutgoingCallBarringActivated();
+        
+        /**
+        * Sets the flag if the outgoing barring is activated.
+        * @return ETrue if barring activated.
+        */
+        void SetOutgoingCallBarringActivated( 
+                TBool aActivated );
+          
     private:
           /**
         * C++ default constructor.
@@ -1599,13 +1579,17 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         TFixedArray<TBool, KPEMaxAudioOutputs> iAvailableAudioOutputs;
 
         // Contains the group id's which are active for ringtone
-    	RArray< TContactItemId > iAlertForGroup;
+        RArray< TContactItemId > iAlertForGroup;
 
         /**
          * CCE call dial parameters
          */
         CCCECallParameters *iCallParams;
 
+        /**
+         * Phonebook contact identifier.
+         */
+        TInt iContactId;
     };
 
 

@@ -26,7 +26,7 @@
 
 // CONSTANTS
 
-_LIT( KPhoneTelDevModeLoadedLib, "TelephonyDeviceMode.dll" );
+_LIT( KPhoneTelDevModeLoadedLib, "telephonydevicemode.dll" );
 const TInt KPhoneTelDevModeOrdinal = 1;
 
 // ============================ MEMBER FUNCTIONS ===============================

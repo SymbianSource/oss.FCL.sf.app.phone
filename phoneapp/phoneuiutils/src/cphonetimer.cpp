@@ -20,6 +20,7 @@
 // INCLUDE FILES
 #include "cphonetimer.h"
 #include "phoneui.pan"
+#include "phonelogger.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -30,6 +31,7 @@
 CPhoneTimer::CPhoneTimer( TInt aPriority ) :
     CTimer( aPriority)
     {
+    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneTimer::CPhoneTimer() ");
     CActiveScheduler::Add( this );
     }
 
@@ -39,6 +41,7 @@ CPhoneTimer::CPhoneTimer( TInt aPriority ) :
 //
 void CPhoneTimer::ConstructL()
     {
+    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneTimer::ConstructL() ");
     CTimer::ConstructL();
     }
 
@@ -48,6 +51,7 @@ void CPhoneTimer::ConstructL()
 //
 EXPORT_C CPhoneTimer* CPhoneTimer::NewL( TInt aPriority )
     {
+    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneTimer::NewL() ");
     CPhoneTimer* self = new (ELeave) CPhoneTimer( aPriority );
     
     CleanupStack::PushL( self );
@@ -63,6 +67,7 @@ EXPORT_C CPhoneTimer* CPhoneTimer::NewL( TInt aPriority )
 //
 EXPORT_C CPhoneTimer::~CPhoneTimer()
     {
+    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneTimer::~CPhoneTimer() ");
     Cancel();    
     }
 
@@ -72,6 +77,10 @@ EXPORT_C CPhoneTimer::~CPhoneTimer()
 //
 void CPhoneTimer::RunL()
     {
+    __PHONELOG1( EBasic, EPhoneUIUtils, 
+        "CPhoneTimer::RunL iStatus(%d)", 
+        iStatus.Int() );
+    
     if ( iStatus != KErrNone )
         {
         //error code is ignored, as CPeriodic. 
@@ -80,10 +89,14 @@ void CPhoneTimer::RunL()
    
     if ( !iTimerObserver )
         {
+        __PHONELOG( EBasic, EPhoneUIUtils, 
+            "CPhoneTimer::RunL CallBack" );
         iCallBack.CallBack();
         }
     else
         {
+        __PHONELOG( EBasic, EPhoneUIUtils, 
+            "CPhoneTimer::RunL HandleTimeOutL" );
         iTimerObserver->HandleTimeOutL();
         }
     }
@@ -96,6 +109,7 @@ EXPORT_C void CPhoneTimer::After(
     TTimeIntervalMicroSeconds32 anInterval, 
     TCallBack aCallBack )
     {
+    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneTimer::After() ");
     
     if ( IsActive() )
         {
@@ -115,6 +129,7 @@ EXPORT_C void CPhoneTimer::After(
     TTimeIntervalMicroSeconds32 anInterval, 
     MPhoneTimer* aObserver )
     {
+    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneTimer::After() ");
     
     __ASSERT_DEBUG( aObserver, Panic( EPhoneUtilsParameterNotInitialized ) );
     
@@ -132,6 +147,7 @@ EXPORT_C void CPhoneTimer::After(
 //
 EXPORT_C void CPhoneTimer::CancelTimer()
     {
+    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneTimer::CancelTimer() ");
     Cancel();
     }
 
@@ -141,6 +157,7 @@ EXPORT_C void CPhoneTimer::CancelTimer()
 //
 void CPhoneTimer::DoCancel()
     {
+    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneTimer::DoCancel() ");
     iTimerObserver = NULL;
     CTimer::DoCancel();
     }

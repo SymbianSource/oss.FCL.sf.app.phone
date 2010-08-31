@@ -1,5 +1,0 @@
--c8,8 qgn_indi_org_arrow_right.svg
--c8,8 qgn_indi_org_arrow_left.svg
--c8,8 qgn_indi_org_arrow_down.svg
--c8,8 qgn_prop_nrtyp_sim_contact.svg
--c8,8 qgn_prop_nrtyp_sdn.svg

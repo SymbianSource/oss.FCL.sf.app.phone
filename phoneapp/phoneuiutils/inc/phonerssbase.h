@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -37,6 +37,7 @@ enum TPhoneRssBase
     EPhoneExitEmergencyModeQuery,
     EPhoneIncomingCallLabel,
     EPhoneIncomingCallLabelShort,
+    EPhoneIncomingCallKeysLocked,
     EPhoneOutgoingVideoCallLabel,
     EPhoneOutgoingVideoCallLabelShort,
     EPhoneOutgoingCallLabel,
@@ -58,7 +59,6 @@ enum TPhoneRssBase
     EPhoneInformationConfirmationNote,
     EPhoneSecurityInformationNote,
     EPhoneRequestingNote,
-    EPhonePhoneImeiString,
     EPhonePhoneBtDevAddress,
     EPhoneInformationRemoteCreateConferenceNote,
     EPhoneInformationRemotePutOnHoldNote,
@@ -124,7 +124,6 @@ enum TPhoneRssBase
     EPhoneCLIWithheld,
     EPhoneWaitingText,
     EPhoneIdleTimeFormat,
-    EPhoneLifeTimeFormat,
     EPhoneInCallDisconnected,
     EPhoneCallInProgress,
     EPhoneEmergencyCallsOnly,
@@ -138,10 +137,10 @@ enum TPhoneRssBase
     EPhoneVideoCallIncoming,
     EPhoneVideoCallIncomingShort,
 
-    // "Call"
-    EPhoneCall,
-    // " Call %N"
-    EPhoneInCallNumberText,
+    // "Muted"
+    EPhoneInCallMutedText,
+    // "Unknown call"
+    EPhoneCallCLIUnknown,
     /** "Transferring" -information note. */
     EPhoneInCallWaitTransfer,
     EPhoneInCallTransferred,
@@ -165,9 +164,6 @@ enum TPhoneRssBase
     EPhoneDtmfWaitCharacterConfirmationQueryText,
 
     EPhoneDtmfFetchTitle,
-    EPhoneDtmfSpeedDialNumberQuery,
-    EPhoneDtmfSpeedDialNotAssigned,
-    EPhoneDtmfInvalidSpeedDial,
 
     // ALS
     EPhoneAlsLineChangeConfirmationQuery,
@@ -301,7 +297,6 @@ enum TPhoneRssBase
 
     // the user has typed something into the edit-box (with content)
     EPhoneSendDtmfNormalEditBoxCBA,
-    EPhoneDtmfSpeedDialNormalEditBoxCBA,
 
     EPhoneCallHandlingCallWaitingCBA,
     EPhoneCallHandlingNewCallFindCBA,
@@ -357,7 +352,6 @@ enum TPhoneRssBase
     EPhoneNoteTTYNoAudioControl, //300
     EPhoneInfoClirChange,
     EPhoneInfoCugInUse,
-    EPhoneSIMInvalidUICC,
 
     //the "DTMF number" list query
     EPhoneDtmfNumberListQuery,
@@ -368,7 +362,6 @@ enum TPhoneRssBase
 
     // Touch buttons
     EPhoneIncallButtons,
-    EPhoneIncallVideoShareButtons,
     EPhoneTwoSinglesButtons,
     EPhoneConferenceButtons,
     EPhoneParticipantListButtons,
@@ -388,8 +381,9 @@ enum TPhoneRssBase
     EPhoneNoteVideoCallOnlyPossibleUnder3GCoverage, // cause 50
     EPhoneNoteUnableToMakeVideoCallNotSupportedByOtherPhone, // cause 57,88 
     EPhoneNoteCalledNumberHasBarredIncomingCalls, // cause 21
-
-    EPhoneEasyDialingCba, // the CBA resource id is asked from Easydialing plugin
+    
+    EPhoneIncallHeldButtons,
+    EPhoneAttemptingEmergencyText,
 
     // Last
     EPhoneRssBaseLast

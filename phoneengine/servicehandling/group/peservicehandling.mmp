@@ -37,6 +37,8 @@ SYSTEMINCLUDE   ../../inc       // PhoneEngine private headers
 SYSTEMINCLUDE   ../../../inc    // Telephony internal headers
 
 LIBRARY                 euser.lib
-LIBRARY                 cch.lib	
+// <-- QT PHONE START -->
+//LIBRARY                 cch.lib   
+// <-- QT PHONE END -->
 LIBRARY                 flogger.lib     // for logging
 

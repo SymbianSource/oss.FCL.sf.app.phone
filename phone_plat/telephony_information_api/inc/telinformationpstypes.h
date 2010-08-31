@@ -21,7 +21,7 @@
 
 // INCLUDES
 #include <cntdef.h>
-#include <PhCltTypes.h>
+#include <phclttypes.h>
 
 // CONSTANTS
 

@@ -18,7 +18,7 @@
 
 
 // INCLUDES
-#include <talogger.h>
+#include "talogger.h"
 #include "cpeaudioroutingmonitor.h"
 #include "cpeaudiodata.h"
 
@@ -91,7 +91,7 @@ void CPEAudioRoutingMonitor::AvailableOutputsChanged(
     iOwner.SendMessage( MEngineMonitor::EPEMessageAvailableAudioOutputsChanged, 
                         aTelephonyAudioRouting );
     }
-		
+        
 // -----------------------------------------------------------------------------
 // CPEAudioRoutingMonitor::OutputChanged
 // Output mode changed event received.
@@ -104,7 +104,7 @@ void CPEAudioRoutingMonitor::OutputChanged(
     iOwner.SendMessage( MEngineMonitor::EPEMessageAudioOutputChanged, 
                         aTelephonyAudioRouting.Output() );
     }
-		
+        
 // -----------------------------------------------------------------------------
 // CPEAudioRoutingMonitor::SetOutputComplete
 // OutputComplete mode changed event received.

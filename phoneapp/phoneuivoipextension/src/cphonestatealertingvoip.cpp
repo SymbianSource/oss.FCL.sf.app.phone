@@ -17,7 +17,6 @@
 
 
 // INCLUDES
-#include <bmbubblemanager.h>
 #include <mpeengineinfo.h>
 
 #include "cphonestatealertingvoip.h"
@@ -94,8 +93,8 @@ void CPhoneStateAlertingVoIP::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnected:
-        	HandleConnectedL( aCallId );
-        	break;
+            HandleConnectedL( aCallId );
+            break;
         
         default:
             CPhoneAlerting::HandlePhoneEngineMessageL( 
@@ -109,16 +108,16 @@ void CPhoneStateAlertingVoIP::HandlePhoneEngineMessageL(
 // -----------------------------------------------------------
 //
 void CPhoneStateAlertingVoIP::HandleConnectedL( TInt aCallId )
-	{
+    {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneStateAlertingVoIP::HandleConnectedL() ");
 
-	if( iStateMachine->PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP )
-		{
-		SetCallHeaderType( CBubbleManager::EVoIPCall );			
-		}
+    if( iStateMachine->PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP )
+        {
+        SetCallHeaderType( EPECallTypeVoIP );
+        }
 
-	CPhoneAlerting::HandleConnectedL( aCallId );		
-	}
+    CPhoneAlerting::HandleConnectedL( aCallId );        
+    }
 
 // End of File

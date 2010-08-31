@@ -22,7 +22,7 @@
 #include <pepanic.pan>
 #include <telinternalpskeys.h>
 #include <cphcltdialdata.h>
-#include <PhCltTypes.h>
+#include <phclttypes.h>
 #include <talogger.h>
 
 // ================= MEMBER FUNCTIONS ==========================================
@@ -35,6 +35,7 @@
 //
 CPEEngineInfoImpl::CPEEngineInfoImpl()
     : iCurrentCalls( KPEMaximumNumberOfCalls )
+    ,iContactId( KErrNotFound )
     {
     iCallCommandInfo.iPhoneNumber = KNullDesC;
     iCallCommandInfo.iCallId = 0;
@@ -44,12 +45,6 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iCallCommandInfo.iDtmfString = KNullDesC;
     iCallCommandInfo.iCallType = EPECallTypeUninitialized;
     iCallCommandInfo.iServiceId = 0;
-    iCallCommandInfo.iIdRestrict = RMobileCall::EIdRestrictDefault;
-    iCallCommandInfo.iEmergencyNumber = KNullDesC;     
-    iCallCommandInfo.iTransferToAddress = KNullDesC;
-    iCallCommandInfo.iForwardToAddressIndex = ECCPErrorNotFound;
-    iCallCommandInfo.iTransferDial = EFalse;
-    
     iBasicInfo.iAudioOutputPreference = EPSAudioPrivate;
     iBasicInfo.iALSLine = CCCECallParameters::ECCELineTypePrimary;
     iBasicInfo.iALSLineSupport = EFalse;
@@ -62,10 +57,6 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iBasicInfo.iErrorInfo.iCallId = KPECallIdNotUsed;
     iBasicInfo.iProfileId = ECCPErrorNotFound;
     iBasicInfo.iProfileName = KNullDesC;
-    iBasicInfo.iPhoneIdentityParameters.iManufacturer = KNullDesC;
-    iBasicInfo.iPhoneIdentityParameters.iModel = KNullDesC;
-    iBasicInfo.iPhoneIdentityParameters.iRevision = KNullDesC;
-    iBasicInfo.iPhoneIdentityParameters.iSerialNumber = KNullDesC;
     iBasicInfo.iLastCallDuration = KPENumberInitValue;
     iBasicInfo.iVMBXNumbers.iVMBXL1 = KNullDesC;
     iBasicInfo.iVMBXNumbers.iVMBXL2 = KNullDesC;
@@ -73,9 +64,14 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iBasicInfo.iTextToSpeech = EFalse;
     iBasicInfo.iPhoneNumberIsServiceCode = EFalse;
     iBasicInfo.iTwoDigitSupportStatus = EFalse;
-    iBasicInfo.iLifeTimeData.iHours = 0;
-    iBasicInfo.iLifeTimeData.iMinutes = 0;
+
     iBasicInfo.iNetworkRegistrationStatus = ENWStatusRegistrationUnknown;
+
+    iCallCommandInfo.iIdRestrict = RMobileCall::EIdRestrictDefault;
+    iCallCommandInfo.iEmergencyNumber = KNullDesC;
+    
+    iCallCommandInfo.iTransferToAddress = KNullDesC;
+    iCallCommandInfo.iForwardToAddressIndex = ECCPErrorNotFound;
     iBasicInfo.iActiveForward.iActiveType = RMobilePhone::ECFUnconditionalActive;
     iBasicInfo.iActiveForward.iServiceGroup =  RMobilePhone::EServiceUnspecified;
     iBasicInfo.iBarringInfo.iGroupCount = KPENumberInitValue;
@@ -97,8 +93,10 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iBasicInfo.iSecureSpecified = ETrue; 
     iBasicInfo.iDataPortName = KNullDesC;
     iBasicInfo.iSwitchToOngoing = EFalse;
-    iBasicInfo.iCallBackAddress = KNullDesC;
     iConferenceCallInfo.iConferenceCallState = EPEStateConferenceIdle;
+    iBasicInfo.iOutgoingBarringActivated = EFalse;
+    //TODO remove after profile information is available
+    iBasicInfo.iRingingVolume = 10;
     }
 
 // -----------------------------------------------------------------------------
@@ -564,17 +562,6 @@ const TInt& CPEEngineInfoImpl::KeypadVolume() const
     }
 
 // -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::LifeTimerData
-// Gets lifetimerdata from the TPEBasicInfo structure.
-// (other items were commented in a header).
-// -----------------------------------------------------------------------------
-//
-const TPELifeTimeData& CPEEngineInfoImpl::LifeTimerData() const
-    {
-    return iBasicInfo.iLifeTimeData;
-    }
-
-// -----------------------------------------------------------------------------
 // CPEEngineInfoImpl::LoggingIndicator
 // Get logging indicator from TPECallInfo.
 // (other items were commented in a header).
@@ -625,16 +612,6 @@ const TBool& CPEEngineInfoImpl::PersonalToneStatus() const
     }
 
 // -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::PhoneIdentityParameters
-// Gets the phone identity parameters from the TPEBasicInfo structure
-// -----------------------------------------------------------------------------
-//
-const TPEPhoneIdentityParameters& CPEEngineInfoImpl::PhoneIdentityParameters() const
-    {
-    return iBasicInfo.iPhoneIdentityParameters;
-    }
-
-// -----------------------------------------------------------------------------
 // CPEEngineInfoImpl::PhoneNumber
 // Return the phone number from the TPECallCommandInfo structure.
 // -----------------------------------------------------------------------------
@@ -660,74 +637,10 @@ const TBool& CPEEngineInfoImpl::PhoneNumberIsServiceCode() const
 // -----------------------------------------------------------------------------
 //
 const TPECallOrigin& CPEEngineInfoImpl::CallOriginCommand() const
-	{
-	return iCallCommandInfo.iCallOrigin;
-	}
-
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::SetTransferDial
-// Sets flag indicating unattended transfer dial
-// -----------------------------------------------------------------------------
-//
-void CPEEngineInfoImpl::SetIsTransferDial( TBool aTransferDial )
     {
-    iCallCommandInfo.iTransferDial = aTransferDial;
+    return iCallCommandInfo.iCallOrigin;
     }
-
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::IsTransferDial
-// Gets flag indicating unattended transfer dial
-// -----------------------------------------------------------------------------
-//
-TBool CPEEngineInfoImpl::IsTransferDial() const
-    {
-    return iCallCommandInfo.iTransferDial;
-    }
-        
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::SetDoCallBackRequest
-// Sets flag indicating if unattended transfer call back request is needed
-// -----------------------------------------------------------------------------
-//
-void CPEEngineInfoImpl::SetDoCallBackRequest( TBool aDoCallBack, TInt aCallId )
-    {
-    __ASSERT_DEBUG( iCurrentCalls.Count() > aCallId, Panic( EPEPanicCallIndexOutOfRange ) );
-    iCurrentCalls[ aCallId ]->SetDoCallBackRequest( aDoCallBack );
-    }
-
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::DoCallBackRequest
-// Gets flag indicating if unattended transfer call back request is needed
-// -----------------------------------------------------------------------------
-//
-TBool CPEEngineInfoImpl::DoCallBackRequest( TInt aCallId) const
-    {
-    __ASSERT_DEBUG( iCurrentCalls.Count() > aCallId, Panic( EPEPanicCallIndexOutOfRange ) );
-    return iCurrentCalls[ aCallId ]->DoCallBackRequest();            
-    }
-
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::SetCallBackAddress
-// Sets address used for calling back to transfer originator
-// in case when transfer call has been failed
-// -----------------------------------------------------------------------------
-//
-void CPEEngineInfoImpl::SetCallBackAddress( const TDesC& aAddress )
-    {
-    iBasicInfo.iCallBackAddress = aAddress;
-    }
-
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::CallBackAddress
-// Gets address used for calling back to transfer originator
-// in case when transfer call has been failed
-// -----------------------------------------------------------------------------
-//
-const TDesC& CPEEngineInfoImpl::CallBackAddress() const
-    {
-    return iBasicInfo.iCallBackAddress;
-    }
-        	
+            
 // CPEEngineInfoImpl::ProfileId
 // Gets the profile id from the TPEBasicInfo structure.
 // -----------------------------------------------------------------------------
@@ -1339,7 +1252,7 @@ void CPEEngineInfoImpl::SetCallDuration(
     {
     iBasicInfo.iLastCallDuration = aCallDuration; 
     }
-	
+    
 // -----------------------------------------------------------------------------
 // CPEEngineInfoImpl::SetDtmfPostFix
 // Sets dtmf postfix value to TPEBasicInfo-structure
@@ -1400,18 +1313,6 @@ void CPEEngineInfoImpl::SetKeypadVolume(
     }
 
 // -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::SetLifeTimerData
-// Sets lifetimer data of the phone to TPELifeTimeData-structure
-// -----------------------------------------------------------------------------
-//
-void CPEEngineInfoImpl::SetLifeTimerData( 
-        TCCPLifeTimeDataPckg& aPckg )
-    {
-    iBasicInfo.iLifeTimeData.iHours = aPckg().iHours;
-    iBasicInfo.iLifeTimeData.iMinutes = aPckg().iMinutes;
-    }
-
-// -----------------------------------------------------------------------------
 // CPEEngineInfoImpl::SetNetworkRegistrationStatus
 // Sets network registration status to TPEBasicInfo-structure
 // -----------------------------------------------------------------------------
@@ -1439,17 +1340,6 @@ void CPEEngineInfoImpl::SetPersonalToneStatus(
     }
 
 // -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::SetPhoneIdentityParameters
-// Sets phone number to TPECallCommandInfo-structure
-// -----------------------------------------------------------------------------
-//
-void CPEEngineInfoImpl::SetPhoneIdentityParameters(
-        const TPEPhoneIdentityParameters& aPhoneIdentityParameters ) 
-    { 
-    iBasicInfo.iPhoneIdentityParameters = aPhoneIdentityParameters; 
-    }
-
-// -----------------------------------------------------------------------------
 // CPEEngineInfoImpl::SetPhoneNumberIsServiceCode
 // Sets phone number parsing result
 // -----------------------------------------------------------------------------
@@ -1466,9 +1356,9 @@ void CPEEngineInfoImpl::SetPhoneNumberIsServiceCode(
 // -----------------------------------------------------------------------------
 //
 void CPEEngineInfoImpl::SetCallOriginCommand( const TPECallOrigin& aOrigin )
-	{
-	iCallCommandInfo.iCallOrigin = aOrigin;
-	}
+    {
+    iCallCommandInfo.iCallOrigin = aOrigin;
+    }
 
 // -----------------------------------------------------------------------------
 // CPEEngineInfoImpl::SetProfileId
@@ -2678,6 +2568,76 @@ TBool CPEEngineInfoImpl::CheckIfCallStateExists( const TPEState& aCallState )
           }
       }
     return stateExists;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::SetContactId
+// -----------------------------------------------------------------------------
+//
+void CPEEngineInfoImpl::SetContactId2( const TInt aContactId )
+{
+    TEFLOGSTRING2( KTAINT, 
+        "PE CPEEngineInfo::SetContactId: aContactId: %d", aContactId );
+    iContactId = aContactId;    
+}
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::ContactId
+// -----------------------------------------------------------------------------
+//
+TInt CPEEngineInfoImpl::ContactId2 () const
+    {
+    TEFLOGSTRING2( KTAINT, "ContactId: %d", iContactId );
+    return iContactId;      
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::SetProtocolError
+// Sets the protocol spesific error code
+// -----------------------------------------------------------------------------
+//
+void CPEEngineInfoImpl::SetProtocolError( TInt aError, TInt aCallId )
+    {
+    if ( 0<=aCallId && aCallId<iCurrentCalls.Count() )
+        {
+        iCurrentCalls[ aCallId ]->SetProtocolError( aError );
+        }
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::ProtocolError
+// Returns the protocol spesific error code
+// -----------------------------------------------------------------------------
+//
+TInt CPEEngineInfoImpl::ProtocolError( TInt aCallId )
+    {
+    TInt ret( KErrNotFound );
+    
+    if ( 0<=aCallId && aCallId<iCurrentCalls.Count() )
+        {
+        ret = iCurrentCalls[ aCallId ]->ProtocolError();
+        }
+    
+    return ret;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::IsOutgoingCallBarringActivated
+// -----------------------------------------------------------------------------
+//
+TBool CPEEngineInfoImpl::IsOutgoingCallBarringActivated()
+    {
+    return iBasicInfo.iOutgoingBarringActivated;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::SetOutgoingCallBarringActivated
+// -----------------------------------------------------------------------------
+//
+void CPEEngineInfoImpl::SetOutgoingCallBarringActivated( 
+        TBool aActivated )
+    {
+    iBasicInfo.iOutgoingBarringActivated = aActivated;
     }
 
 // End of File

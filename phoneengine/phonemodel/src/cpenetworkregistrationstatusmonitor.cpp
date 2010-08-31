@@ -22,7 +22,7 @@
 #include "mpephonemodelinternal.h"
 #include <e32property.h>
 #include <mpedatastore.h>
-#include <NetworkHandlingDomainPSKeys.h>
+#include <networkhandlingdomainpskeys.h>
 #include <talogger.h>
 
 

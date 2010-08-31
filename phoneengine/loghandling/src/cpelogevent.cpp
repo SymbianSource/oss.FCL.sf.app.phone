@@ -21,7 +21,6 @@
 #include "cpeloginfo.h"
 #include "cpeloghandling.h"
 #include "cpeloghandlingcommand.h"
-#include <PbkFields.hrh>
 #include <talogger.h>
 #include <logcli.h>
 #include <LogsApiConsts.h>
@@ -307,25 +306,25 @@ void CPELogEvent::SetPhoneNumberId()
     switch ( iLogInfo->PhoneNumberId() )
         {
         case EPEMobileNumber:
-            subject.AppendNum( EPbkFieldIdPhoneNumberMobile );
+            subject.AppendNum( EPEUnknownNumber );
             break;
         case EPETelephoneNumber:
-            subject.AppendNum( EPbkFieldIdPhoneNumberGeneral );
+            subject.AppendNum( EPEUnknownNumber );
             break;
         case EPEPager:
-            subject.AppendNum( EPbkFieldIdPagerNumber );
+            subject.AppendNum( EPEUnknownNumber );
             break;
         case EPEFaxNumber:
-            subject.AppendNum( EPbkFieldIdFaxNumber );
+            subject.AppendNum( EPEUnknownNumber );
             break; 
         case EPEAssistantNumber:
-            subject.AppendNum( EPbkFieldIdAssistantNumber);
+            subject.AppendNum( EPEUnknownNumber);
             break;
         case EPECarNumber:
-            subject.AppendNum( EPbkFieldIdCarNumber);
+            subject.AppendNum( EPEUnknownNumber);
             break;
         default:
-            subject.AppendNum( EPbkFieldIdNone );
+            subject.AppendNum( EPEUnknownNumber );
             break;
         }
 
@@ -658,12 +657,7 @@ void CPELogEvent::SetRemoteParty( CLogEvent& aEvent,
     {
     if ( KNullDesC() != aLogInfo.Name() )
         {
-        // This if clause fixes ou1cimx1#320365 Wrong address shown in received log entry
-        if ( aLogInfo.EventType() != CPELogInfo::EPEVoIPEvent ||
-             KNullDesC() == aEvent.RemoteParty() )
-            {
-            aEvent.SetRemoteParty( aLogInfo.Name() );
-            }
+        aEvent.SetRemoteParty( aLogInfo.Name() );
         }
     }
 
@@ -675,24 +669,18 @@ void CPELogEvent::SetRemoteParty( CLogEvent& aEvent,
 void CPELogEvent::SetRemoteContact( CLogEvent& aEvent, 
         const CPELogInfo& aLogInfo )
     {
-    if ( KNullDesC() != aLogInfo.PhoneNumber() )      
+    if ( KNullDesC() != aLogInfo.PhoneNumber() )
         {
-        if ( aLogInfo.EventType() != CPELogInfo::EPEVoIPEvent ||
-             ( KNullDesC() == aEvent.Number() &&
-               KErrNotFound == iEvent->Data().Find( KLogsDataFldTag_URL ) ) )
-            {
-            aEvent.SetNumber( aLogInfo.PhoneNumber() );
-            }
+        aEvent.SetNumber( aLogInfo.PhoneNumber() );
         }
     
-    else if ( KNullDesC() != aLogInfo.VoipAddress() &&
-              KNullDesC() == aEvent.Number())
+    if ( KNullDesC() != aLogInfo.VoipAddress() )
         {
         TRAPD( error, SetDataFieldL( KLogsDataFldTag_URL, aLogInfo.VoipAddress() ) );
         if ( error )
             {
             TEFLOGSTRING2( KTAERROR, 
-                "LOG CPELogEvent::SetRemoteContact()>SetDataFieldL(), error=%d", error )
+                "LOG CPELogEvent::SetLogEvent()>SetDataFieldL(), error=%d", error )
             }
         }
     }

@@ -26,4 +26,5 @@ PRJ_EXPORTS
 ../inc/telmenuextension.h     APP_LAYER_PLATFORM_EXPORT_PATH(telmenuextension.h)
 ../inc/teltouchpaneextension.h     APP_LAYER_PLATFORM_EXPORT_PATH(teltouchpaneextension.h)
 ../inc/telmenuextension.inl     APP_LAYER_PLATFORM_EXPORT_PATH(telmenuextension.inl)
+../inc/xqteluicommandextension.h   APP_LAYER_PLATFORM_EXPORT_PATH(xqteluicommandextension.h)
 

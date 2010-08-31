@@ -72,12 +72,12 @@ CPhoneContinueEmergencyCallCommand::~CPhoneContinueEmergencyCallCommand()
 // ---------------------------------------------------------
 //
 void CPhoneContinueEmergencyCallCommand::ExecuteLD()
-	{
+    {
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, 
         "CPhoneContinueEmergencyCallCommand::ExecuteL( ) ");
     iEngineMessageSender.SendPhoneEngineMessage( 
         MPEPhoneModel::EPEMessageContinueEmergencyCallInitialization );
     delete this;
-	}
+    }
 
 //  End of File  

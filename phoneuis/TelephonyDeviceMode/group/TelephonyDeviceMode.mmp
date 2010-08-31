@@ -27,11 +27,11 @@ TARGETTYPE      DLL
 UID             0x1000008d 0x1020299B
 
 SOURCEPATH      ../src
-SOURCE          CTelDMHandlerImpl.cpp
-SOURCE          CTelDMGripHandler.cpp
-SOURCE			CTelDMCallStateListener.cpp
-SOURCE			CTelDMCommandHandler.cpp
-SOURCE 			CTelDMAudioAccessoryListener.cpp
+SOURCE          cteldmhandlerimpl.cpp
+SOURCE          cteldmgriphandler.cpp
+SOURCE          cteldmcallstatelistener.cpp
+SOURCE          cteldmcommandhandler.cpp
+SOURCE          cteldmaudioaccessorylistener.cpp
     
 USERINCLUDE     ../inc
 APP_LAYER_SYSTEMINCLUDE

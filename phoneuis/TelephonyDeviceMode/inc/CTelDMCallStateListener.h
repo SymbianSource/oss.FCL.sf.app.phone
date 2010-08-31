@@ -53,8 +53,8 @@ NONSHARABLE_CLASS( CTelDMCallStateListener ) : public CActive
    
     public:
    
-   		void AddObserverL( MTelDMCallStateObserver& aCallStateObserver );
-   		
+        void AddObserverL( MTelDMCallStateObserver& aCallStateObserver );
+        
     private: // from CActive
    
         /**
@@ -92,11 +92,11 @@ NONSHARABLE_CLASS( CTelDMCallStateListener ) : public CActive
     private:
         // Owned Publish & Subscribe instance.
         RProperty iProperty;
-		
-		// Call state
-		TInt iCallState;
-		
-		// Call State Change Observer array.
+        
+        // Call state
+        TInt iCallState;
+        
+        // Call State Change Observer array.
         RPointerArray< MTelDMCallStateObserver > iObserverArray;
     };
  

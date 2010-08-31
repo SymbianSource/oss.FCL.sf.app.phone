@@ -12,12 +12,12 @@
 * Contributors:
 *
 * Description: 
-* 		Class that does processing for Phone Engine messages that are common
-*		for all VoIP states. Most of the GSM states are intressed of these 
-*		messages but due to the class architecture they don't have any single
-*		state class to be put into. This class exists to minimize duplicate
-*		code so that not every VoIP class need to implement these same handlings
-*		for the same messages.
+*       Class that does processing for Phone Engine messages that are common
+*       for all VoIP states. Most of the GSM states are intressed of these 
+*       messages but due to the class architecture they don't have any single
+*       state class to be put into. This class exists to minimize duplicate
+*       code so that not every VoIP class need to implement these same handlings
+*       for the same messages.
 *
 */
 
@@ -95,10 +95,10 @@ NONSHARABLE_CLASS( CPhoneVoIPErrorMessagesHandler ): public CPhoneErrorMessagesH
             TUint32 aServiceId );
         
     protected:
-   		
+        
         CPhoneVoIPErrorMessagesHandler( 
-        	MPhoneViewCommandHandle* aViewCommandHandle,
-        	MPhoneStateMachine* aPhoneStateMachine );
+            MPhoneViewCommandHandle* aViewCommandHandle,
+            MPhoneStateMachine* aPhoneStateMachine );
             
         void ConstructL();
 

@@ -53,9 +53,9 @@ EXPORT_C CPhonePubSubProxy* CPhonePubSubProxy::Instance()
         {
         TRAPD( err, instance = CPhonePubSubProxy::NewL() );
         if ( err )
-	        {
-	        Panic( EPhoneUtilsCouldNotCreateSingleton );	
-	        }
+            {
+            Panic( EPhoneUtilsCouldNotCreateSingleton );    
+            }
         }
     return instance;
     }
@@ -170,7 +170,7 @@ EXPORT_C void CPhonePubSubProxy::NotifyChangeL(
     {
     __ASSERT_DEBUG( aObserver, Panic( EPhoneUtilsParameterNotInitialized ) );
     __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhonePubSubProxy::NotifyChangeL() ");
-    
+
     // make sure this a new item in iObserverArray
     TBool requestIssued = EFalse;
     TBool sameRequestIssuedByObserver = EFalse;
@@ -291,7 +291,7 @@ void CPhonePubSubProxy::CancelAllObserverNotifies(
     {
     TInt count = iObserverArray->Count();
 
-    // Remove the observer and its subscriptions
+    // Remove the observer
     TBool observerRemoved = EFalse;
     for( TInt i = count - 1; i >= 0 && !observerRemoved; i-- ) 
         {

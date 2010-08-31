@@ -23,9 +23,7 @@
 //  INCLUDES
 #include    <e32base.h>
 
-// FORWARD DECLARATIONS
-class CCoUtlInterface;
-
+ 
 // CLASS DECLARATION
 
 /**
@@ -74,9 +72,6 @@ class CPEGprsTermination
         void DoCancel();
 
     private:
-
-        // Owned GPRS termination instance.
-        CCoUtlInterface* iInterface;
 
     };
 

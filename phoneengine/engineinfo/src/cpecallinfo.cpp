@@ -106,7 +106,7 @@ void CPECallInfo::Reset( TBool aIsConference )
     iDtmfPostFix = KNullDesC;
     iForwardAddressChoices = NULL;
     iCallIndex = KPEInvalidCallIndex;
-    iDoCallBackRequest = EFalse;
+    iProtocolError = KErrNotFound;
     }
 
 // ---------------------------------------------------------------------------
@@ -650,24 +650,23 @@ TPECallOrigin CPECallInfo::CallOrigin() const
     {
     return iCallOrigin;
     }
-
-// ---------------------------------------------------------------------------
-// Sets flag indicating if unattended transfer call back request is needed
-// ---------------------------------------------------------------------------
-//
-void CPECallInfo::SetDoCallBackRequest( TBool aDoCallBack )
-    {
-    iDoCallBackRequest = aDoCallBack;
-    }
-
-// ---------------------------------------------------------------------------
-// Gets flag indicating if unattended transfer call back request is needed 
-// ---------------------------------------------------------------------------
-//
-TBool CPECallInfo::DoCallBackRequest() const
-    {
-    return iDoCallBackRequest;
-    }
     
-   
+// ---------------------------------------------------------------------------
+// Sets the protocol error of a call.
+// ---------------------------------------------------------------------------
+//
+void CPECallInfo::SetProtocolError( TInt aError )
+    {
+    iProtocolError = aError;
+    }
+
+// ---------------------------------------------------------------------------
+// Returns protocol error of a call.
+// ---------------------------------------------------------------------------
+//
+TInt CPECallInfo::ProtocolError() const
+    {
+    return iProtocolError;
+    }
+
 // End of File

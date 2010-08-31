@@ -78,8 +78,8 @@ class CPhoneResourceResolverGSM : public CPhoneResourceResolverBase
         
     protected: // Data
 
-		CEikonEnv& iEnv;
-	};
+        CEikonEnv& iEnv;
+    };
 
 #endif      // CPHONERESOURCERESOLVERGSM_H   
             

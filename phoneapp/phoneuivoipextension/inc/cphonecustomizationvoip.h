@@ -20,7 +20,7 @@
 #define C_CPHONECUSTOMIZATIONVOIP_H
 
 // INCLUDES
-#include <settingsinternalcrkeys.h> 
+#include <settingsinternalcrkeys.h>
 #include <telmenuextension.h>
 #include <spdefinitions.h>
 #include "mphonecustomization.h"
@@ -37,7 +37,6 @@ class CPhoneUnattendedTransferCmdHandler;
 class CPhoneNewCallCmdHandler;
 class CEikMenuPaneItem;
 class CCoeEnv;
-class CPhoneVccHandler;
 class CPhoneCallForwardQueryHandler;
 
 // CONSTANTS
@@ -77,9 +76,9 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         static CPhoneCustomizationVoip* NewL( 
             MPhoneStateMachine& aStateMachine,
             MPhoneViewCommandHandle& aViewCommandHandle );
-    	
+        
 // from base class MPhoneCustomization  
-    	
+        
         /**
         * From MPhoneCustomization.
         * Customizes menu bar.
@@ -169,7 +168,6 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         void HandleDialL( const TDesC& aNumber );
 
 // from base class MPhoneButtonCustomization
-        
         /**
         * From MPhoneButtonCustomization.
         * Customizes touch pane buttons.
@@ -177,8 +175,7 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         *                   bubble touch pane buttons.
         */
         void CustomizeTouchPaneButtons(
-                        MBubbleTouchPaneInterface& aTouchPane );
-        
+                        /*MBubbleTouchPaneInterface& aTouchPane*/ );
     protected:
 
         CPhoneCustomizationVoip( 
@@ -205,25 +202,20 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         * @param aServiceName On return, contains the service name
         */
         void GetVoipServiceNameL( TServiceId aServiceId, TDes& aServiceName ) const;
-    	
+        
         /**
-         * EasyDialing enabled check
-         */
-        TBool EasyDialingEnabled();
-
-        /**
-    	* Modifies menu when there is active call.
-    	* @param aResourceId Menu resource id.
-    	* @param aMenuPane Menu pane
-    	*/
+        * Modifies menu when there is active call.
+        * @param aResourceId Menu resource id.
+        * @param aMenuPane Menu pane
+        */
         void ModifyInCallMenuL( TInt aResourceId, CEikMenuPane& aMenuPane );
         
         /**
-    	 * Modifies menu when there is dialer/number entry shown.
-    	 * 
-    	 * @param   aResourceId     Menu pane resource identifier.
+         * Modifies menu when there is dialer/number entry shown.
+         * 
+         * @param   aResourceId     Menu pane resource identifier.
          * @param   aMenuPane       Menu pane.
-    	 */
+         */
         void ModifyNumberAcquisitionMenuL( 
             TInt aResourceId, CEikMenuPane& aMenuPane );
         
@@ -245,18 +237,18 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         void InsertTextInputModeChangeMenuItemL( CEikMenuPane& aMenuPane );
         
         /**
-    	* Resolves active calls from phoneengine.
-    	* @param aArray Active call array.
-    	*/
+        * Resolves active calls from phoneengine.
+        * @param aArray Active call array.
+        */
         void GetActiveCallArrayL( 
                 RArray<CTelMenuExtension::TCallInfo>& aArray );
         
         /**
-    	* Resolves most active call.
-    	* This is used to determine which plug-in customizes menu pane 
-    	* and handles command.
-    	* @param aArray Active call array.
-    	*/
+        * Resolves most active call.
+        * This is used to determine which plug-in customizes menu pane 
+        * and handles command.
+        * @param aArray Active call array.
+        */
         TInt ResolveMostActiveCallL( 
                 const RArray<CTelMenuExtension::TCallInfo>& aArray );
 
@@ -288,16 +280,7 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         */  
         TBool CheckFeatureSupportByCallTypeL( 
                 TFeature aFeature );
-        
-        /**
-        * Customizes touch pane buttons by extension.
-        * @leave KErrNotFound if extension not found.
-        * @param aTouchPane Interface to add and dimm
-        *                   bubble touch pane buttons.
-        */
-        void CustomizeTouchPaneUsingExtensionL(
-                        MBubbleTouchPaneInterface& aTouchPane );
-        
+
         /**
         * Shows "Enabling %U service" wait note 
         */
@@ -370,28 +353,9 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         * @return  Phone number
         */
         HBufC* PhoneNumberFromEntryLC() const;
-		
-		/**
-         * Enables or disables key lock.
-         * @param aEnabled ETrue if keylock is enabled,
-         * EFalse if disabled.
-         */
-        void SetKeyLockEnabledL( TBool aEnabled );
-
-		/**
-		* Keylock was on before and needs to be restored.
-		* @param aRestore ETrue if keylock needs to be restored.
-		*/
-	    void SetNeedToRestoreKeyLock( TBool aRestore );
-		
-		/* Check if keylock was on before and needs to be restored.
-		 * @return ETrue if keylock needs to be restored.
-		 */
-	    TBool NeedToRestoreKeyLock() const;
-	    
         
     private: // Data
-		        
+                
         /** 
          * Control environment.
          */
@@ -429,21 +393,10 @@ NONSHARABLE_CLASS( CPhoneCustomizationVoip ): public CBase,
         CPhoneNewCallCmdHandler* iNewCallCmdHandler;
         
         /**
-         * Pointer to VCC handler
-         */
-        CPhoneVccHandler* iVccHandler; 
-
-        /**
          * Call forward handler.
          */
         CPhoneCallForwardQueryHandler* iCallForwardHandler;
         
-        /**
-         * Boolean flag. ETrue if keylock was on before and
-         * needs to be restored.
-         */
-        TBool iNeedToRestoreKeyLock;
-		
     };
 
 #endif // C_CPHONECUSTOMIZATIONVOIP_H

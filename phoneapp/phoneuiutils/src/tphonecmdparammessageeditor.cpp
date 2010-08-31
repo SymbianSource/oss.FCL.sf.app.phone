@@ -42,8 +42,8 @@ EXPORT_C TPhoneCmdParamMessageEditor::TPhoneCmdParamMessageEditor() :
 EXPORT_C void TPhoneCmdParamMessageEditor::SetMessageData( 
    CMessageData* aMessageData )
    {
-   	__ASSERT_DEBUG( aMessageData,
-   		Panic( EPhoneUtilsParameterNotInitialized ) );
+    __ASSERT_DEBUG( aMessageData,
+        Panic( EPhoneUtilsParameterNotInitialized ) );
    iMessageData = aMessageData;
    }
 
@@ -54,7 +54,7 @@ EXPORT_C void TPhoneCmdParamMessageEditor::SetMessageData(
 //
 EXPORT_C CMessageData* TPhoneCmdParamMessageEditor::MessageData() const
    {
-   	__ASSERT_DEBUG( iMessageData, Panic( EPhoneUtilsInvariant ) );
+    __ASSERT_DEBUG( iMessageData, Panic( EPhoneUtilsInvariant ) );
    return iMessageData;
    }
 

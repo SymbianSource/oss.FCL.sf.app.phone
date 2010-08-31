@@ -853,7 +853,7 @@ RESOURCE MENU_PANE r_phoneuidialer_numberentry_not_empty_transfer_options_menu
         MENU_ITEM 
             {
             command = EPhoneCmdTransferDialerOk; 
-            txt = qtn_dialer_options_send_uatransfer_req;
+            txt = text_softkey_accept;
             }, 
         MENU_ITEM 
             {
@@ -909,7 +909,7 @@ RESOURCE CBA r_phoneui_transfer_dialer_softkeys_options_cancel
 //
 RESOURCE TBUF r_voip_dialer_tooltip_accept
     {
-    buf = qtn_dialer_options_send_uatransfer_req;
+    buf = text_softkey_accept;
     } 
 
 // -----------------------------------------------------------------------------
@@ -1217,7 +1217,7 @@ RESOURCE AVKON_LIST_QUERY r_phone_voip_multiple_choices_list_query
             control = AVKON_LIST_QUERY_CONTROL
                 {
                 listtype = EAknCtSinglePopupMenuListBox;
-	              heading = qtn_voip_rel2_popup_title_forward_call_to;
+                  heading = qtn_voip_rel2_popup_title_forward_call_to;
                 listbox = AVKON_LIST_QUERY_LIST
                     {
                     };
@@ -1368,17 +1368,6 @@ RESOURCE TBUF r_phone_voip_creating_conn_failed_permanently
 
 //-----------------------------------------------------------------------------
 //
-//    r_voip_dialer_unatt_transfer_input_field_text "Address:"
-//
-// -----------------------------------------------------------------------------
-// 
-RESOURCE TBUF r_voip_dialer_unatt_transfer_input_field_text
-    {
-    buf = qtn_dialer_unatt_transfer_input_field_text;
-    }
-
-//-----------------------------------------------------------------------------
-//
 //    r_phoneui_numberacq_options_menu_item_xsp
 //    "%U call"
 //   
@@ -1390,28 +1379,6 @@ RESOURCE TBUF r_voip_dialer_unatt_transfer_input_field_text
 RESOURCE TBUF r_phoneui_numberacq_options_call_menu_item_xsp
     {
     buf = qtn_call_sub_voip_with_name;
-    }
-
-//-----------------------------------------------------------------------------
-//
-//    r_voip_transfer_call_back "Call back to\n%U"
-//
-// -----------------------------------------------------------------------------
-// 
-RESOURCE TBUF r_voip_transfer_call_back
-    {
-    buf = qtn_voip_transfer_call_back;
-    }
-
-//-----------------------------------------------------------------------------
-//
-//    r_voip_transfer_call_back_header "Call back request:"
-//
-// -----------------------------------------------------------------------------
-// 
-RESOURCE TBUF r_voip_transfer_call_back_header
-    {
-    buf = qtn_voip_transfer_call_back_header;
     }
     
 // End of File

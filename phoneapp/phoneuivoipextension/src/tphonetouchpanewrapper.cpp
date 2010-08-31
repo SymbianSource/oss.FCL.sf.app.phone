@@ -28,9 +28,7 @@
 // might leave.
 // -----------------------------------------------------------------------------
 //
-TPhTouchPaneWrapper::TPhTouchPaneWrapper( 
-        MBubbleTouchPaneInterface& aTouchPane ) :
-        iTouchPane( aTouchPane )    
+TPhTouchPaneWrapper::TPhTouchPaneWrapper()
     {
     }
 
@@ -40,9 +38,9 @@ TPhTouchPaneWrapper::TPhTouchPaneWrapper(
 // ---------------------------------------------------------
 //
 TInt TPhTouchPaneWrapper::NumberOfButtonsInPane() const
-   	{
-   	return iTouchPane.NumberOfButtonsInPane();
-   	}
+    {
+    return KErrNotSupported;
+    }
 
 // ---------------------------------------------------------
 // TPhTouchPaneWrapper::ButtonCommandId
@@ -50,21 +48,18 @@ TInt TPhTouchPaneWrapper::NumberOfButtonsInPane() const
 // ---------------------------------------------------------
 //
 TInt TPhTouchPaneWrapper::ButtonCommandId( 
-        TInt aButtonIndex ) const
+        TInt /*aButtonIndex*/ ) const
     {
-   	return iTouchPane.ButtonCommandId( aButtonIndex );
-   	}
+    return KErrNotSupported;
+    }
 
 // ---------------------------------------------------------
 // TPhTouchPaneWrapper::SetButtonDimmed
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-void TPhTouchPaneWrapper::SetButtonDimmed( TInt aCommand, TBool aDimmed )
+void TPhTouchPaneWrapper::SetButtonDimmed( TInt /*aCommand*/, TBool /*aDimmed*/ )
    {
-   iTouchPane.SetButtonDimmed( aCommand, aDimmed );   
    }
-
-
 
 //  End of File

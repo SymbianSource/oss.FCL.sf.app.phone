@@ -29,8 +29,7 @@
 // -----------------------------------------------------------------------------
 //
 EXPORT_C TPhoneCmdParamTransEffect::TPhoneCmdParamTransEffect():
-    iType( EPhoneTransEffectNone ),
-    iAppUid( KNullUid )
+    iType( EPhoneTransEffectNone )
     {
     }
 
@@ -45,16 +44,7 @@ EXPORT_C void TPhoneCmdParamTransEffect::SetType( TPhoneTransEffectType aType )
    iType = aType;   
    }
 
-// ---------------------------------------------------------
-// TPhoneCmdParamTransEffect::SetAppUid
-// Sets applicaiton uid.
-// ---------------------------------------------------------
-//
-EXPORT_C void TPhoneCmdParamTransEffect::SetAppUid( const TUid& aAppUid )
-   {
-   iAppUid = aAppUid;
-   }
-
+ 
 // ---------------------------------------------------------
 // TPhoneCmdParamTransEffect::Type
 // Returns the note type
@@ -66,14 +56,4 @@ EXPORT_C TPhoneTransEffectType TPhoneCmdParamTransEffect::Type() const
    return iType;
    }
   
-// ---------------------------------------------------------
-// TPhoneCmdParamTransEffect::AppUid
-// Returns application uid
-// ---------------------------------------------------------
-//
-EXPORT_C TUid TPhoneCmdParamTransEffect::AppUid() const
-   {
-   return iAppUid;
-   }
-
 //  End of File  

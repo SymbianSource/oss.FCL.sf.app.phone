@@ -20,7 +20,6 @@
 #define C_PESERVICEHANDLING_H
 
 #include <e32base.h>
-#include <cch.h>
 #include "mpeservicehandling.h"
 
 class  MPEPhoneModelInternal;
@@ -33,29 +32,28 @@ class  MPEPhoneModelInternal;
  *  @since S60 v5.0
  */
 NONSHARABLE_CLASS( CPEServiceHandling ): public CBase,
-                                         public MCchServiceStatusObserver,
                                          public MPEServiceHandling
     {
 
-	public: // Constructors and destructor
+    public: // Constructors and destructor
 
-	    /**
-	     * Two-phased constructor.
-	     */
-	    IMPORT_C static CPEServiceHandling* NewL( MPEPhoneModelInternal& aModel );
+        /**
+         * Two-phased constructor.
+         */
+        IMPORT_C static CPEServiceHandling* NewL( MPEPhoneModelInternal& aModel );
 
-	    /**
-	     * Two-phased constructor.
-	     */
-	    IMPORT_C static CPEServiceHandling* NewLC( MPEPhoneModelInternal& aModel );
+        /**
+         * Two-phased constructor.
+         */
+        IMPORT_C static CPEServiceHandling* NewLC( MPEPhoneModelInternal& aModel );
 
-	    /**
-	     * Destructors.
-	     */
-	    IMPORT_C virtual ~CPEServiceHandling();
+        /**
+         * Destructors.
+         */
+        IMPORT_C virtual ~CPEServiceHandling();
 
-	public: // from MPEServiceHandling
-	
+    public: // from MPEServiceHandling
+    
         /**
          * From MPEServiceHandling.
          * Enables service defined by the given identifier.
@@ -65,35 +63,22 @@ NONSHARABLE_CLASS( CPEServiceHandling ): public CBase,
          * 
          * @since   S60 5.0
          * @param   aServiceId      Identifier of the service.
-         */	                                    
-	    void EnableServiceL( TInt aServiceId );
-	   
+         */                                     
+        void EnableServiceL( TInt aServiceId );
+       
         /**
          * From MPEServiceHandling.
          * Cancel current service.
          */ 
-	    void CancelServiceEnabling() const;
-	    
+        void CancelServiceEnabling() const;
+        
         /**
          * From MPEServiceHandling.
          * Disable service.
          */ 
         void DisableService() const;
     
-    public: // from MCchServiceStatusObserver
-        
-        /**
-         * From MCchServiceStatusObserver.
-         * Signaled when service status or error changes.
-         *
-         * @param   aServiceId      Identifier of the service.
-         * @param   aType           Service type.
-         * @param   aServiceStatus  Service status.
-         */
-        void ServiceStatusChanged( TInt aServiceId, 
-                                   const TCCHSubserviceType aType,
-                                   const TCchServiceStatus& aServiceStatus );
-	private: // Constructors
+    private: // Constructors
 
         /**
          * C++ default constructor.
@@ -104,44 +89,19 @@ NONSHARABLE_CLASS( CPEServiceHandling ): public CBase,
          * By default Symbian 2nd phase constructor is private.
          */
         void ConstructL();
-	    
-    private: // functions
-    
+               
+    private: // data
+        
         /**
-         * Enable service, if not already enabled.
-         *
-         * @param  aState       Service state.
-         * @param  aService     Service.
-         * @return Error code.
+         * PhoneModel.
+         * Not own.
          */
-        TInt EnableServiceIfNeeded( const TCCHSubserviceState& aState, 
-                                    CCchService& aService );
+        MPEPhoneModelInternal& iModel;
+        
         /**
-        * Sends ServiceHandlingError message to PhoneEngine and saves 
-        * errorcode to member variable.
-        * 
-        * @param  aErrorCode, Cch errorcode.
-        */	    
-        void SendErrorMessage( TInt aErrorCode );
-       
-	private: // data
-	    
-	    /**
-	     * CCH client.
-	     * Own.
-	     */
-	    CCch* iCchClient;
-
-	    /**
-	     * PhoneModel.
-	     * Not own.
-	     */
-	    MPEPhoneModelInternal& iModel;
-	    
-	    /**
-	     * Current service identifier.
-	     */
-	    TInt iCurrentServiceId;
+         * Current service identifier.
+         */
+        TInt iCurrentServiceId;
     };
 
 #endif // C_PESERVICEHANDLING_H

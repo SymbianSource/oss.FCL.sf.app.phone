@@ -117,18 +117,18 @@ TInt CPECallAudioRoutingHandler::HandleAudioRoutingCallInit( TBool aVideoCall )
     else
         {
         if ( iAnyVideoCall )
-        	{
-        	if ( iAnswerToHandset )
-        	    {
-        	    newOutput = CTelephonyAudioRouting::EHandset;
-        	    }
+            {
+            if ( iAnswerToHandset )
+                {
+                newOutput = CTelephonyAudioRouting::EHandset;
+                }
             else
                 {
                 newOutput = CTelephonyAudioRouting::ELoudspeaker;        
-                }        	    
+                }               
             }
         else
-        	{
+            {
             newOutput = iOwner.RoutePreference();
             } 
         }
@@ -165,73 +165,73 @@ TInt CPECallAudioRoutingHandler::HandleAudioRoutingAvailableChanged()
     switch ( curOutput )
         {
         case CTelephonyAudioRouting::ENotActive:
-   			// None
+            // None
              break;
- 		case CTelephonyAudioRouting::EHandset:
- 		case CTelephonyAudioRouting::ELoudspeaker:
- 			// Wired audio accessory connected during call
- 			if ( iOwner.IsWiredAvailable() )
- 				{
- 				newOutput = CTelephonyAudioRouting::EWiredAudioAccessory;
-  				}
- 			// BT comes available during call	
- 			else if ( iOwner.IsBTAvailable() )
- 				{
- 		        newOutput = CTelephonyAudioRouting::EBTAudioAccessory;
-  				}
-			else if ( iOwner.IsTTYAvailable() ) 				
-				{
- 				newOutput = CTelephonyAudioRouting::ETTY;
-  				}
-  			else
-  			    {
-  			    // No changes
-  			    }	
- 		    break;
- 		case CTelephonyAudioRouting::EWiredAudioAccessory:
- 			if ( iOwner.IsBTAvailable() )
-  			    {
- 				// Not allowed direct from wired to BTA
- 				// or BTA comes available during wired, No changes
- 				}
- 			if ( iOwner.IsWiredAvailable() )
-				{
- 			    // No changes
-				}
-		    else if ( iAnyVideoCall )
- 			    {
- 			    newOutput = CTelephonyAudioRouting::ELoudspeaker;
- 			    }
-            else 			    
-				{
-				// Wired detach
-            	newOutput = iOwner.RoutePreference();
-				}	
-         	break;
-		case CTelephonyAudioRouting::EBTAudioAccessory:
- 			if ( iOwner.IsWiredAvailable() )
- 				{
- 				newOutput = CTelephonyAudioRouting::EWiredAudioAccessory;
-   				}
-  			else if ( iOwner.IsBTAvailable() )	
-  				{
-  			    // No changes
-  				}
-			else
-				{
- 				newOutput = iOwner.RoutePreference();
- 				}		    
-   		    break;
+        case CTelephonyAudioRouting::EHandset:
+        case CTelephonyAudioRouting::ELoudspeaker:
+            // Wired audio accessory connected during call
+            if ( iOwner.IsWiredAvailable() )
+                {
+                newOutput = CTelephonyAudioRouting::EWiredAudioAccessory;
+                }
+            // BT comes available during call   
+            else if ( iOwner.IsBTAvailable() )
+                {
+                newOutput = CTelephonyAudioRouting::EBTAudioAccessory;
+                }
+            else if ( iOwner.IsTTYAvailable() )                 
+                {
+                newOutput = CTelephonyAudioRouting::ETTY;
+                }
+            else
+                {
+                // No changes
+                }   
+            break;
+        case CTelephonyAudioRouting::EWiredAudioAccessory:
+            if ( iOwner.IsBTAvailable() )
+                {
+                // Not allowed direct from wired to BTA
+                // or BTA comes available during wired, No changes
+                }
+            if ( iOwner.IsWiredAvailable() )
+                {
+                // No changes
+                }
+            else if ( iAnyVideoCall )
+                {
+                newOutput = CTelephonyAudioRouting::ELoudspeaker;
+                }
+            else                
+                {
+                // Wired detach
+                newOutput = iOwner.RoutePreference();
+                }   
+            break;
+        case CTelephonyAudioRouting::EBTAudioAccessory:
+            if ( iOwner.IsWiredAvailable() )
+                {
+                newOutput = CTelephonyAudioRouting::EWiredAudioAccessory;
+                }
+            else if ( iOwner.IsBTAvailable() )  
+                {
+                // No changes
+                }
+            else
+                {
+                newOutput = iOwner.RoutePreference();
+                }           
+            break;
         case CTelephonyAudioRouting::ETTY:
-        	if ( iOwner.IsTTYAvailable()  )
- 				{
-  			    // No changes
-   				}
- 			else
-				{
- 				newOutput = iOwner.RoutePreference();
- 				}
-        	break;
+            if ( iOwner.IsTTYAvailable()  )
+                {
+                // No changes
+                }
+            else
+                {
+                newOutput = iOwner.RoutePreference();
+                }
+            break;
        default:
             break;     
         }
@@ -263,8 +263,8 @@ TInt CPECallAudioRoutingHandler::HandleAudioRoutePreferenceChanged()
     CTelephonyAudioRouting::TAudioOutput newOutput = curOutput;
     
     if ( !iAnyVideoCall &&
-       	 curOutput != CTelephonyAudioRouting::EWiredAudioAccessory &&
-       	 curOutput != CTelephonyAudioRouting::EBTAudioAccessory )
+         curOutput != CTelephonyAudioRouting::EWiredAudioAccessory &&
+         curOutput != CTelephonyAudioRouting::EBTAudioAccessory )
         {
         newOutput = iOwner.RoutePreference();
         }

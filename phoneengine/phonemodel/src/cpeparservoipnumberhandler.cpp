@@ -98,6 +98,9 @@ void CPEParserVoipNumberHandler::ProcessDialToVoipNumberL(
           &aDtmfPostfix );
 
     TPEPhoneNumber phoneNumber;
+    
+    // Check if phone is locked
+    iOwner.CheckIfPhoneIsLockedL();
   
     if ( aNumber.Length() == 0 )
         {
@@ -108,7 +111,7 @@ void CPEParserVoipNumberHandler::ProcessDialToVoipNumberL(
     
     TPECallType processType = iDataStore.CallTypeCommand();
  
-    // Remove possible + or w chartes.		
+    // Remove possible + or w chartes.      
     TPEPhoneNumber postfix = FilterPostfix( aDtmfPostfix );
     if( postfix.Length() )
         {
@@ -123,8 +126,11 @@ void CPEParserVoipNumberHandler::ProcessDialToVoipNumberL(
   
     // Temporary hack for enabling client calls with service id 3
     // Proper solution to be done to CallUi and AIW dial data
+        
+
     TUint32 serviceId = iDataStore.ServiceIdCommand();
     iServiceHandling.EnableServiceL( serviceId );
+
     }
 
 // -----------------------------------------------------------------------------
@@ -174,12 +180,6 @@ TInt CPEParserVoipNumberHandler::ContinueVoipDial() const
     TBool clientCall = ( iDataStore.CallOriginCommand() != EPECallOriginPhone );
     // DialCall method will set call origin as unknow
     TInt errorCode = iCallHandling.DialCall( phoneNumber, callId );
-    
-    if ( iDataStore.IsTransferDial() )
-        {
-        iDataStore.SetDoCallBackRequest( ETrue, callId );   
-        iDataStore.SetIsTransferDial( EFalse );
-        }
     
     // Set dtmf string to dataStore
     iDataStore.SetDtmfPostFix( iDtmfString, callId );

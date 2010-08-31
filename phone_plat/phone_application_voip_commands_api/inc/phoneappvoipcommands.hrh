@@ -74,10 +74,6 @@ enum
     EPhoneCmdServiceEnablingTimedOut,
     EPhoneCmdHandoverToWlan,
     EPhoneCmdHandoverToGsm,
-    /** Command id for unattended transfer callback ok. */
-    EPhoneCmdUnattendedTransferCallBackOk,
-    /** Command id for unattended transfer callback cancel. */
-    EPhoneCmdUnattendedTransferCallBackCancel,
     // Last VoIP command, not used in menu nor soft key.
     // Add new VoIP commands before this.  
     EPhoneCmdVoIPLast

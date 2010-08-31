@@ -29,18 +29,18 @@ const TInt KPhoneDescriptorSize = 200;
 
 // DATA TYPES
 class TCallIdAndCommandParam
-	{
-	public:
-		TInt iCallId;
-		TPhoneCommandParam iCommandParam;	
-	};
-	
+    {
+    public:
+        TInt iCallId;
+        TPhoneCommandParam iCommandParam;   
+    };
+    
 class TCallIdAndTDesC
-	{
-	public:
-		TInt iCallId;
-		TBuf<KPhoneDescriptorSize> iMessage;		
-	};
+    {
+    public:
+        TInt iCallId;
+        TBuf<KPhoneDescriptorSize> iMessage;        
+    };
 
 typedef TPckgBuf<TInt> TCallIdPackage;
 typedef TPckgBuf<TPhoneCommandParam> TCommandParamPackage;

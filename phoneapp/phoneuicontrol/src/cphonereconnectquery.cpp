@@ -17,9 +17,7 @@
 
 
 // INCLUDE FILES
-#include <mcauireconnectqueryobserver.h>
 #include <mpeengineinfo.h>
-
 #include "cphonereconnectquery.h"
 #include "phoneconstants.h"
 #include "phonelogger.h"
@@ -28,8 +26,6 @@
 #include "cphonestatehandle.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparaminteger.h"
-#include "tphonecmdparammessageeditor.h"
-#include "tphonecmdparamreconnectquery.h"
 #include "cphonemainresourceresolver.h"
 
 // ================= MEMBER FUNCTIONS =======================
@@ -107,17 +103,6 @@ EXPORT_C void CPhoneReconnectQuery::ShowReconnectQueryL( TBool aShowVideo )
 void CPhoneReconnectQuery::HandleTimeOutL()
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneReconnectQuery::HandleTimeOutL( ) ");
-
-    TPhoneCmdParamReconnectQuery reconQueryParam( *this );
-    // Recipient number to CallUIs reconnect query in case message selected
-    TPtrC phoneNumber( CPhoneStateHandle::Instance()->StateMachine()->
-        PhoneEngineInfo()->PhoneNumber() );
-    reconQueryParam.SetPhoneNumber( phoneNumber );
-    reconQueryParam.SetIncludeVideoOption( iIncludeVideo );
-    // Display reconnect query
-    CPhoneStateHandle::Instance()->ViewCommandHandle()->
-        ExecuteCommandL( EPhoneViewShowQuery, &reconQueryParam );
-    iDisplayingQuery = ETrue;
     }
 
 // -----------------------------------------------------------
@@ -155,7 +140,7 @@ void CPhoneReconnectQuery::OptionSelected(
             // CallUi launches message editor
             break;
 
-		default:
+        default:
             // Do nothing
             break;
         }
@@ -172,7 +157,7 @@ void CPhoneReconnectQuery::ShowNumberEntryL()
     TPhoneCmdParamBoolean booleanParam;
     booleanParam.SetBoolean( ETrue );
     CPhoneStateHandle::Instance()->ViewCommandHandle()->
-    	ExecuteCommandL( EPhoneViewSetNumberEntryVisible, &booleanParam );
+        ExecuteCommandL( EPhoneViewSetNumberEntryVisible, &booleanParam );
 
     // Set Number Entry CBA
     TPhoneCmdParamInteger integerParam;

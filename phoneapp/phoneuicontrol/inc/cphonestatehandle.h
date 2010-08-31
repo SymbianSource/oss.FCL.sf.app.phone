@@ -67,7 +67,7 @@ class CPhoneStateHandle : public CCoeStatic
         * Returns the state machine
         * @return State machine
         */
-        MPhoneStateMachine* StateMachine();
+        IMPORT_C MPhoneStateMachine* StateMachine();
         
         /**
         * Returns the view command handle

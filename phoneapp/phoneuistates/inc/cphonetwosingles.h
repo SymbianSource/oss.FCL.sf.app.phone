@@ -83,8 +83,6 @@ class CPhoneTwoSingles : public CPhoneGsmInCall
         */ 
         IMPORT_C virtual void HandleNumberEntryClearedL();
         
-        IMPORT_C virtual void OpenMenuBarL();
-        
         IMPORT_C virtual void HandleConnectedConferenceL( TInt aCallId );
         
         IMPORT_C virtual void UpdateInCallCbaL();

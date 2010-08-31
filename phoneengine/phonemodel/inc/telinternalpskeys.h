@@ -60,14 +60,14 @@ enum TPSTelVTAppState
 * Telephony Audio Preference API UID 
 *****************************************************************************/
 const TUid KPSUidTelAudioPreference = {0x102029A4};
-	
+    
 /**
 * Indicates the in call audio routing
 * preference to the phone (public/private)
 * This key has two special values, see EPSTelAudioOutput.
 * 
 * @type RProperty::EInt
-*/			
+*/          
 const TUint32 KTelAudioOutput = 0x00000001;
 enum EPSTelAudioOutput
     {
@@ -123,7 +123,6 @@ enum {
 * @type RProperty::EInt
 */
 const TUint32 KTelGenCmdLaunchLogApp = 0x00000001;
-
 
 #endif      // TELINTERNALPSKEYS_H
 

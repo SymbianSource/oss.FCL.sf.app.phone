@@ -19,7 +19,10 @@
 #include <platform_paths.hrh>
 
 // Capability assignment.
-CAPABILITY CAP_APPLICATION MultiMediaDD NetworkControl PowerMgmt DRM DiskAdmin
+// <-- QT PHONE START --> 
+CAPABILITY CAP_GENERAL_DLL
+//CAPABILITY CAP_APPLICATION MultiMediaDD NetworkControl PowerMgmt DRM DiskAdmin
+// <-- QT PHONE END --> 
 
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
@@ -47,23 +50,26 @@ SOURCE          cphonestatemachine.cpp
 SOURCE          cphonestatestartup.cpp
 SOURCE          cphonesystemeventhandler.cpp
 SOURCE          cphoneuicontroller.cpp
-SOURCE          cphonekeyeventforwarder.cpp
 SOURCE          cphoneaccessorybthandler.cpp
 SOURCE          tphonecallheaderparam.cpp
 SOURCE          cphonecallheadermanager.cpp 
 SOURCE          cphonenumberentrymanager.cpp
-SOURCE          cphonecbamanager.cpp
-SOURCE          cphonesecuritymodeobserver.cpp
+SOURCE          cphonecbamanager.cpp 
 
 /* Languages */
 LANG SC
 
+
 USERINCLUDE     ../inc
-USERINCLUDE     ../../phoneuiview/inc
+// <-- QT PHONE START --> 
+USERINCLUDE     ../../phoneuiqtviewadapter/inc
+//USERINCLUDE     ../../phoneuiview/inc
+// <-- QT PHONE END --> 
 USERINCLUDE     ../../phoneuiutils/inc
-USERINCLUDE     ../../phoneui/srcdata
+USERINCLUDE     ../../phoneui2/srcdata
 USERINCLUDE     ../../phoneuistates/inc
 USERINCLUDE     ../../phonemediatorcenter/inc
+USERINCLUDE     ../../phoneuiutils/inc
 
 APP_LAYER_SYSTEMINCLUDE         // Application layer domain APIs
 SYSTEMINCLUDE   ../../../inc    // Telephony internal headers
@@ -75,13 +81,14 @@ LIBRARY         efsrv.lib
 LIBRARY         engineinfo.lib
 LIBRARY         ws32.lib 
 LIBRARY         fbscli.lib
-LIBRARY         commonengine.lib //StringLoader 
+// <-- QT PHONE START --> 
+LIBRARY         phonestringloader.lib
+//LIBRARY         commonengine.lib //StringLoader 
+// <-- QT PHONE END --> 
 LIBRARY         featmgr.lib // FeatureManager
 LIBRARY         connmon.lib // RConnectionMonitor
 LIBRARY         avkon.lib // AknTextUtils
-LIBRARY         ProfileEngine.lib
 LIBRARY         hal.lib
-LIBRARY         eikcoctl.lib 
 
 // RemCon
 LIBRARY         remconcoreapi.lib
@@ -89,7 +96,6 @@ LIBRARY         remconinterfacebase.lib
 LIBRARY         phonecmdhandler.lib
 // Soft reject
 LIBRARY         eikcore.lib // CCharFormatLayer, CParaFormatLayer
-LIBRARY         sendui.lib // CMessageData
 
 // Profiles
 LIBRARY         profileeng.lib
@@ -103,5 +109,3 @@ LIBRARY         serviceprovidersettings.lib
 LIBRARY         starterclient.lib
 
 LIBRARY         phonemediatorcenter.lib
-
-LIBRARY         peninputclient.lib

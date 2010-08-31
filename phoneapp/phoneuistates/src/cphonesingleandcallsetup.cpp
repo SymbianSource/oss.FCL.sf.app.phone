@@ -142,7 +142,7 @@ void CPhoneSingleAndCallSetup::HandleKeyMessageL(
                 {
                 // Show not allowed note
                 CPhoneState::SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed );
+                    EPhoneNoteTextNotAllowed, ETrue );
                 }
             break;
 
@@ -220,7 +220,7 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
     CaptureKeysDuringCallNotificationL( EFalse );
 
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
+    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
@@ -237,6 +237,8 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
     holdFlag.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
 
+    SetTouchPaneButtons( EPhoneCallSetupAndSingleButtons );
+    
     // Go to alerting state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateAlertingInSingle );
@@ -264,7 +266,7 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
     CaptureKeysDuringCallNotificationL( EFalse );
     
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
+    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
@@ -291,16 +293,21 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
 void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetup::HandleIdleL()");
+    
     BeginUiUpdateLC();
+ 
+    // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
+
     // Find out do we have single or outgoing call left
     TPhoneCmdParamInteger activeCallCount;
     iViewCommandHandle->ExecuteCommandL(
-            EPhoneViewGetCountOfActiveCalls, &activeCallCount );
+        EPhoneViewGetCountOfActiveCalls, &activeCallCount );
+        
     if( activeCallCount.Integer() )
         {
         CheckIfRestoreNEContentAfterDtmfDialer();
+ 
         if ( IsNumberEntryUsedL() )
             {
             // Show the number entry if it exists
@@ -311,24 +318,26 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
             // Set incall CBAs
             UpdateCbaL( EPhoneCallHandlingInCallCBA );    
             }
+            
         SetTouchPaneButtons( EPhoneIncallButtons );    
         // UnCapture keys callsetup fails
         CaptureKeysDuringCallNotificationL( EFalse );
         // Setup call was terminated
-        iStateMachine->ChangeState( EPhoneStateSingle );
+        iStateMachine->ChangeState( EPhoneStateSingle );            
         }
     else
         {
         // Display call termination note, if necessary
         DisplayCallTerminationNoteL();
+
         // Single call was terminated
         SetTouchPaneButtons( EPhoneCallSetupButtons );
-        SetToolbarDimming( ETrue );
         SetToolbarButtonLoudspeakerEnabled();
         // Update call setup CBAs
         UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
-        iStateMachine->ChangeState( EPhoneStateCallSetup );
+        iStateMachine->ChangeState( EPhoneStateCallSetup );            
         }
+        
     EndUiUpdate();
     }
 

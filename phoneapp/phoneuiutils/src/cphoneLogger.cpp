@@ -64,7 +64,7 @@ EXPORT_C
 CPhoneLogger::~CPhoneLogger()
     {
 #if (PHONEUI_LOGGING_OUTPUT == RDEBUG_LOGGING || PHONEUI_LOGGING_OUTPUT == FILE_LOGGING)
-	iPool.Close();
+    iPool.Close();
 #endif
     }
 
@@ -77,7 +77,7 @@ TBool CPhoneLogger::CheckLogLevel(
     TPhoneUILoggingLevel aLevel, 
     TPhoneUILoggingComponent aLoggingComponent )
     {
-		__ASSERT_DEBUG( aLoggingComponent < iLogLevelArray.Count(),
+        __ASSERT_DEBUG( aLoggingComponent < iLogLevelArray.Count(),
         Panic( EPhoneUtilsIndexOutOfBounds ) );
         
     return ( aLevel <= iLogLevelArray[aLoggingComponent] );
@@ -500,36 +500,36 @@ EXPORT_C CPhoneMethodLogger::CPhoneMethodLogger(
     iLoggingComponent = aLoggingComponent;
     iString = aString;
     TBuf<KMaxLogLineLength> str;
-	switch( iLoggingComponent )
-		{
-		case EPhoneControl:
-			str.Append( KPhoneUIControl );
-			break;
-		
-		case EPhonePhoneapp:
-			str.Append( KPhoneUI );
-			break;
-			
-		case EPhoneUIView:
-			str.Append( KPhoneUIView );
-			break;
-			
-		case EPhoneUIStates:
-			str.Append( KPhoneUIStates );
-			break;
-			
-		case EPhoneUIUtils:
-			str.Append( KPhoneUIUtils );
-			break;
+    switch( iLoggingComponent )
+        {
+        case EPhoneControl:
+            str.Append( KPhoneUIControl );
+            break;
+        
+        case EPhonePhoneapp:
+            str.Append( KPhoneUI );
+            break;
+            
+        case EPhoneUIView:
+            str.Append( KPhoneUIView );
+            break;
+            
+        case EPhoneUIStates:
+            str.Append( KPhoneUIStates );
+            break;
+            
+        case EPhoneUIUtils:
+            str.Append( KPhoneUIUtils );
+            break;
 
-		case EPhoneMediatorCenter:
-			str.Append( KPhoneMediatorCenter );
-			break;
-						
-		default:
-			break;
-		}
-		
+        case EPhoneMediatorCenter:
+            str.Append( KPhoneMediatorCenter );
+            break;
+                        
+        default:
+            break;
+        }
+        
     str.Append( iString );
     str.Append( KLessThan );
     
@@ -545,35 +545,35 @@ EXPORT_C CPhoneMethodLogger::CPhoneMethodLogger(
 EXPORT_C CPhoneMethodLogger::~CPhoneMethodLogger()
     {
     TBuf<KMaxLogLineLength> str;
-	switch( iLoggingComponent )
-		{
-		case EPhoneControl:
-			str.Append( KPhoneUIControl );
-			break;
-		
-		case EPhonePhoneapp:
-			str.Append( KPhoneUI );
-			break;
-			
-		case EPhoneUIView:
-			str.Append( KPhoneUIView );
-			break;
-			
-		case EPhoneUIStates:
-			str.Append( KPhoneUIStates );
-			break;
-			
-		case EPhoneUIUtils:
-			str.Append( KPhoneUIUtils );
-			break;
+    switch( iLoggingComponent )
+        {
+        case EPhoneControl:
+            str.Append( KPhoneUIControl );
+            break;
+        
+        case EPhonePhoneapp:
+            str.Append( KPhoneUI );
+            break;
+            
+        case EPhoneUIView:
+            str.Append( KPhoneUIView );
+            break;
+            
+        case EPhoneUIStates:
+            str.Append( KPhoneUIStates );
+            break;
+            
+        case EPhoneUIUtils:
+            str.Append( KPhoneUIUtils );
+            break;
 
-		case EPhoneMediatorCenter:
-			str.Append( KPhoneMediatorCenter );
-			break;
-			
-		default:
-			break;
-		}
+        case EPhoneMediatorCenter:
+            str.Append( KPhoneMediatorCenter );
+            break;
+            
+        default:
+            break;
+        }
     str.Append( iString );
     str.Append( KGreaterThan );
 

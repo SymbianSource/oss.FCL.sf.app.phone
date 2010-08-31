@@ -28,7 +28,7 @@
 #include <e32property.h>
 #include <gsmerror.h>
 #include <mpedatastore.h>
-#include <NetworkHandlingDomainPSKeys.h>
+#include <networkhandlingdomainpskeys.h>
 #include <pepanic.pan>
 #include <pevirtualengine.h>
 #include <talogger.h>
@@ -183,15 +183,15 @@ TInt CPEVideoCallHandling::CallTerminatedError( const TInt aCallId )
             aCallId );
     
     TInt errorCode( KErrNone );    
-	CPESingleCall* dataCall = iCallArrayOwner.GetCallObject( aCallId );
-	if ( dataCall )
-	    {
-	    dataCall->GetErrorCode( errorCode );
-	    }
-	
-	TEFLOGSTRING2( KTAINT, 
-	            "VID CPEVideoCallHandling::CallTerminatedError, errorCode: %d",
-	            errorCode );
+    CPESingleCall* dataCall = iCallArrayOwner.GetCallObject( aCallId );
+    if ( dataCall )
+        {
+        dataCall->GetErrorCode( errorCode );
+        }
+    
+    TEFLOGSTRING2( KTAINT, 
+                "VID CPEVideoCallHandling::CallTerminatedError, errorCode: %d",
+                errorCode );
     return errorCode;
     }
 
@@ -309,7 +309,7 @@ void CPEVideoCallHandling::InitCall( MCCECall& aCall )
     {
     TEFLOGSTRING( KTAINT, "CALL CPEVideoCallHandling::InitCall" );
     CPESingleCall* callData( NULL );
-	  TRAP_IGNORE( callData = iCallArrayOwner.CreateDataCallL( *this ) );
+      TRAP_IGNORE( callData = iCallArrayOwner.CreateDataCallL( *this ) );
 
     if ( callData )
         {
@@ -319,7 +319,7 @@ void CPEVideoCallHandling::InitCall( MCCECall& aCall )
         iModel.DataStore()->SetCallSecureStatus( callData->IsSecureCall(), callData->GetCallId() );
         iModel.DataStore()->SetSecureSpecified( callData->SecureSpecified() );
         
-    	const CCCPCallParameters& callParameters = aCall.Parameters();
+        const CCCPCallParameters& callParameters = aCall.Parameters();
         switch ( callParameters.CallType() )
             {
             case CCPCall::ECallTypeCSVoice:
@@ -343,9 +343,9 @@ void CPEVideoCallHandling::InitCall( MCCECall& aCall )
             }
         }
     else
-    	{
-    	Panic( EPEPanicNoFreeCalls );
-    	}
+        {
+        Panic( EPEPanicNoFreeCalls );
+        }
     }
  
 // -----------------------------------------------------------------------------
@@ -381,18 +381,18 @@ void CPEVideoCallHandling::NotifySystemCallStateChanged(
         TInt aCallId )
     {
     TEFLOGSTRING2( KTAINT, "VID CPEVideoCallHandling::NotifySystemCallStateChanged %d", aCallId );
-	// this needs to be checked because this function is called for all data calls
-	if ( IsMultimedia( aCallId ) )
+    // this needs to be checked because this function is called for all data calls
+    if ( IsMultimedia( aCallId ) )
         {
-	    if ( aMessage == MEngineMonitor::EPEMessageIncoming ||
-	       aMessage == MEngineMonitor::EPEMessageDialing )
-	        {
+        if ( aMessage == MEngineMonitor::EPEMessageIncoming ||
+           aMessage == MEngineMonitor::EPEMessageDialing )
+            {
             TInt updateError = RProperty::Set( KPSUidCtsyCallInformation, 
                 KCTsyCallType, EPSCTsyCallTypeH324Multimedia );
             TEFLOGSTRING2( updateError?KTAERROR:KTAMESOUT, 
                 "VID CPEVideoCallHandling::NotifySystemCallStateChanged request RProperty::Set, EPSCTsyCallTypeH324Multimedia, updateError: ",
                 updateError );
-	        }
+            }
         }
     }
 
@@ -427,29 +427,29 @@ void CPEVideoCallHandling::SendMessage(
                 if( ( restoreValue & ( conn::EBURRestoreFull | conn::EBURRestorePartial ) ) )
                     {
                     // First phase VT and restore: Check if there is a arriving VT 
-            	    // call and Restore ongoing.
-            	    TEFLOGSTRING( KTAINT, 
+                    // call and Restore ongoing.
+                    TEFLOGSTRING( KTAINT, 
                         "VID CPEVideoCallHandling::SendMessage > HangUp restore active " );
-               	    iRestoreCauseVTCallReject = ETrue;
-               	    if( videoCall )
-               	        {
-               	        videoCall->HangUp();
-               	        }
-               	    aMessage = MEngineMonitor::EPEMessageDoNotSendMe;
+                    iRestoreCauseVTCallReject = ETrue;
+                    if( videoCall )
+                        {
+                        videoCall->HangUp();
+                        }
+                    aMessage = MEngineMonitor::EPEMessageDoNotSendMe;
                     }
                 break;
                 }
             case MEngineMonitor::EPEMessageDisconnecting:
                 {
                 if( iRestoreCauseVTCallReject )
-	                {
-	            	// Second phase VT and restore: Check if there is a rejected arriving VT call 
-	                // and Restore ongoing, then don't notify observers.
-	                iRestoreCauseVTCallReject = EFalse;
-	                TEFLOGSTRING( KTAINT, 
-				        "VID CPEVideoCallHandling::SendMessage Second phase Restore and VT call" );
-	                aMessage = MEngineMonitor::EPEMessageDoNotSendMe;
-	                }
+                    {
+                    // Second phase VT and restore: Check if there is a rejected arriving VT call 
+                    // and Restore ongoing, then don't notify observers.
+                    iRestoreCauseVTCallReject = EFalse;
+                    TEFLOGSTRING( KTAINT, 
+                        "VID CPEVideoCallHandling::SendMessage Second phase Restore and VT call" );
+                    aMessage = MEngineMonitor::EPEMessageDoNotSendMe;
+                    }
                 break;
                 }
             case MEngineMonitor::EPEMessageIdle:
@@ -457,12 +457,12 @@ void CPEVideoCallHandling::SendMessage(
                 iRestoreCauseVTCallReject = EFalse;
                 // Check reject video cace, if there is connect VT call don't disconnect
                 if( !connectedVideoCall )
-	                {
-	                if ( CallTerminatedError( aCallId ) == KErrGsmCCIncompatibleDestination )
-	                    {
-	                    error = KErrGsmCCIncompatibleDestination;
-	                    }
-	                }
+                    {
+                    if ( CallTerminatedError( aCallId ) == KErrGsmCCIncompatibleDestination )
+                        {
+                        error = KErrGsmCCIncompatibleDestination;
+                        }
+                    }
                 break;
                 }
             default:
@@ -521,18 +521,18 @@ TBool CPEVideoCallHandling::IsPhoneNumberAvailable( const TInt aCallId )
     TBool phoneNumberAvailable ( EFalse );
         
     if ( iDataStore.CallDirection( aCallId ) == RMobileCall::EMobileOriginated )
-	    {
-	    phoneNumberAvailable = ETrue;	
-	    }
+        {
+        phoneNumberAvailable = ETrue;   
+        }
     else
-	    {
-	    RMobileCall::TMobileCallRemoteIdentityStatus remoteIdentity;
-	    remoteIdentity = iDataStore.RemoteIdentity( aCallId );
-	    TEFLOGSTRING2( KTAINT, 
-	        "VID CPEVideoCallHandling::IsPhoneNumberAvailable, remoteIdentity: %d", 
-	        remoteIdentity);
-	    phoneNumberAvailable = ( remoteIdentity == RMobileCall::ERemoteIdentityAvailable ); 	
-	    }
+        {
+        RMobileCall::TMobileCallRemoteIdentityStatus remoteIdentity;
+        remoteIdentity = iDataStore.RemoteIdentity( aCallId );
+        TEFLOGSTRING2( KTAINT, 
+            "VID CPEVideoCallHandling::IsPhoneNumberAvailable, remoteIdentity: %d", 
+            remoteIdentity);
+        phoneNumberAvailable = ( remoteIdentity == RMobileCall::ERemoteIdentityAvailable );     
+        }
     TEFLOGSTRING2( KTAINT, 
         "VID CPEVideoCallHandling::IsPhoneNumberAvailable, isAvailable: %d", 
         phoneNumberAvailable );
@@ -632,21 +632,21 @@ CPESingleCall* CPEVideoCallHandling::OpenNewCallL( const TPEPhoneNumber& aNumber
                                                           *iCallOpenParams, 
                                                           *callData ) ) );
     if ( errorCode == KErrNone )
-    	{
-    	callData->SetCall( *cceCall );
-    	iModel.DataStore()->SetServiceId( callData->GetCallId(), cceCall->ServiceId() );
-    	iModel.DataStore()->SetCallSecureStatus( callData->IsSecureCall(), callData->GetCallId() );
+        {
+        callData->SetCall( *cceCall );
+        iModel.DataStore()->SetServiceId( callData->GetCallId(), cceCall->ServiceId() );
+        iModel.DataStore()->SetCallSecureStatus( callData->IsSecureCall(), callData->GetCallId() );
         iModel.DataStore()->SetSecureSpecified( callData->SecureSpecified() );
-    	}
+        }
     else
-    	{
-    	// Open new call failed
-    	ReleaseCallObject( callData->GetCallId() );
-		TEFLOGSTRING2( KTAERROR, 
-		        "VID CPEVideoCallHandling::DIALCALL ! OPENNEWCALL FAILED: MAY NOT PROCEED! %d", 
-		        errorCode );
-	    User::Leave( errorCode );
-    	}
+        {
+        // Open new call failed
+        ReleaseCallObject( callData->GetCallId() );
+        TEFLOGSTRING2( KTAERROR, 
+                "VID CPEVideoCallHandling::DIALCALL ! OPENNEWCALL FAILED: MAY NOT PROCEED! %d", 
+                errorCode );
+        User::Leave( errorCode );
+        }
     return callData;
     }
 

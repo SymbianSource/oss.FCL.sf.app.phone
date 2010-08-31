@@ -20,7 +20,7 @@
 #define CPEPARSEREMERGENCYNUMBERHANDLER_H
 
 //  INCLUDES
-#include <CPhoneGsmEmergencyNumberHandler.h>
+#include <cphonegsmemergencynumberhandler.h>
 #include <pevirtualengine.h>
 
 // CONSTANTS

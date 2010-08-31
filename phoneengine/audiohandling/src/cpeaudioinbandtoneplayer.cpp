@@ -22,12 +22,12 @@
 #include    "cpeaudioinbandtoneplayer.h"
 #include    "cpeaudiofactory.h"
 #include    "cpeaudiotoneutility.h"
-#include    <AudioPreference.h> 
+#include    <AudioPreference.h>
 #include    <barsc.h> 
 #include    <barsread.h>
 #include    <data_caging_path_literals.hrh> 
-#include    <defaultbeep.rsg>           
-#include    <featmgr.h>
+#include    <defaultbeep.rsg> 
+#include    <featdiscovery.h>
 #include    <pepanic.pan>
 #include    <talogger.h>    
 
@@ -149,9 +149,10 @@ void CPEAudioInbandTonePlayer::ConstructL(
     HBufC8* resourceRadioPath = resourceFile.AllocReadL( R_NET_RADIO_NOT_AVAILABLE );
     HBufC8* resourceRingGoing = resourceFile.AllocReadL( R_NET_RING_GOING );
     
-    HBufC8* resourceCallWaiting;
     
-    if ( FeatureManager::FeatureSupported( KFeatureIdFfAlternativeCallWaitingTone ) )
+    HBufC8* resourceCallWaiting;
+
+    if ( CFeatureDiscovery::IsFeatureSupportedL( KFeatureIdFfAlternativeCallWaitingTone ) )
         {
         resourceCallWaiting = resourceFile.AllocReadL( R_NET_CALL_WAITING_ALTERNATIVE_TONE );
         }
@@ -159,7 +160,8 @@ void CPEAudioInbandTonePlayer::ConstructL(
         {
         resourceCallWaiting = resourceFile.AllocReadL( R_NET_CALL_WAITING );
         }  
-        
+    
+    
     HBufC8* dataCallTone = resourceFile.AllocReadL( R_DATA_CALL_TONE );
     HBufC8* noSoundSequence = resourceFile.AllocReadL( R_NO_SOUND_SEQUENCE );
     HBufC8* beepSequence = resourceFile.AllocReadL( R_BEEP_SEQUENCE );
@@ -364,7 +366,7 @@ void CPEAudioInbandTonePlayer::PlayInbandTone(
             TEFLOGSTRING2( KTAINT, "AUD CPEAudioInbandTonePlayer::PlayInbandTone: No InbandTone defined to play with: %d", aTone );
             __ASSERT_DEBUG( EFalse, Panic( EPEPanicNotCompleted ) );
             break;
-    	}
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -425,7 +427,7 @@ void CPEAudioInbandTonePlayer::PlayCurrentTone()
                     break;
                 case ECCPToneRadioPathNotAvailable:
                     iCurrent->SetRepeats( 
-						KPhoneInbandToneRepeatOnce, 
+                        KPhoneInbandToneRepeatOnce, 
                         TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
                     iCurrent->SetPriority(
                         KAudioPriorityNetMsg,
@@ -465,7 +467,7 @@ void CPEAudioInbandTonePlayer::PlayCurrentTone()
                     break;
                 case ECCPCallWaiting:
                     iCurrent->SetRepeats( 
-                   		KPhoneInbandToneNoRepeat, 
+                        KPhoneInbandToneNoRepeat, 
                         TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
                     iCurrent->SetPriority(
                         KAudioPriorityNetMsg,
@@ -493,7 +495,7 @@ void CPEAudioInbandTonePlayer::PlayCurrentTone()
                     if ( iRingingType == EProfileRingingTypeRingingOnce )
                         {
                         iCurrent->SetRepeats( 
-                        	KPhoneInbandToneNoRepeat, 
+                            KPhoneInbandToneNoRepeat, 
                             TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
                         }
                     break;
@@ -506,8 +508,8 @@ void CPEAudioInbandTonePlayer::PlayCurrentTone()
                         KAudioPriorityPhoneCall,
                         static_cast < TMdaPriorityPreference > ( KAudioPrefIncomingCall ) );
                     iCurrent->SetRepeats( 
-						KPhoneInbandToneNoRepeat, 
-                    	TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
+                        KPhoneInbandToneNoRepeat, 
+                        TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
                     iCurrent->SetVolumeRamp( TTimeIntervalMicroSeconds( KPhoneInbandToneZero ) );
                     break;
                 default:

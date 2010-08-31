@@ -61,9 +61,6 @@ NONSHARABLE_CLASS( CPhoneCbaManager ) :  public CBase
 
         /**
         * Set CBA
-        * If the given CBA resource ID equals EPhoneEasyDialingCba, then get the actual resource
-        * ID from the Dialer Extension View by executing command EPhoneViewGetEasyDialingCbaId
-        * via the Phone View Command Handle.
         */
         IMPORT_C void SetCbaL( TInt aResource );
         
@@ -103,12 +100,6 @@ NONSHARABLE_CLASS( CPhoneCbaManager ) :  public CBase
         * @return Resource id of CBA
         */
         TInt GetIncomingCallSilenceCBA( const TBool aSoftRejectActivated ); 
-        
-        /**
-        * Get cba resource when number entry is visible
-        * @return Resource id of CBA
-        */
-        TInt GetNumberEntryCbaIdL();
         
     private:
     

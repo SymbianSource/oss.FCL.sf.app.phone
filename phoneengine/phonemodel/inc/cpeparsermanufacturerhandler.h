@@ -21,7 +21,7 @@
 #define CPEPARSERMANUFACTURERHANDLER_H
 
 //INCLUDES
-#include <CPhoneGsmManufacturerHandler.h>
+#include <cphonegsmmanufacturerhandler.h>
 #include <pevirtualengine.h>
 
 // CONSTANTS
@@ -81,27 +81,6 @@ NONSHARABLE_CLASS( CPEParserManufacturerHandler ) : public CPhoneGsmManufacturer
         */
         void ProcessDebugL( const TDesC& aCode );
     
-    private:
-    
-        /**
-        * Gets phone model and sw version
-        * @param aSwVersion sw version
-        * return Error Code
-        */
-        TInt GetSwVersionAndPhoneModelL( TDes& aSwVersion );
-        
-        /**
-        * Add phone model to sw version
-        * @param aSwVersion sw version
-        */
-        void AppendPhoneModelL( TDes& aSwVersion );
-        
-        /**
-        * Remove needless line from string
-        * @param aSwVersion sw version
-        */
-        void RemoveLinesAfterThreeLines( TDes& aSwVersion );
-        
     private:    
         //MPEPhoneModelInternal is used to send message to the phone application
         MPEPhoneModelInternal& iModel;

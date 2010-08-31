@@ -23,10 +23,10 @@
 #include    <PSVariables.h>
 #include    <ctsydomainpskeys.h>
 
-#include    "CTelDMCommandHandler.h"
-#include	"CTelDMCallStateListener.h"
-#include	"MTelDMAccessory.h"
-#include	"CTelDMDebug.h"
+#include    "cteldmcommandhandler.h"
+#include    "cteldmcallstatelistener.h"
+#include    "mteldmaccessory.h"
+#include    "cteldmdebug.h"
 #include     <coreapplicationuisdomainpskeys.h>
 
 // MODULE DATA STRUCTURES
@@ -39,12 +39,12 @@
 // -----------------------------------------------------------------------------
 //  
 CTelDMCommandHandler* CTelDMCommandHandler::NewL( 
-									MPhoneDeviceModeObserver& aCallHandler, 
-        							MTelDMAccessory& aAccessory ) 
+                                    MPhoneDeviceModeObserver& aCallHandler, 
+                                    MTelDMAccessory& aAccessory ) 
     {
     CTelDMCommandHandler* self =
         new ( ELeave ) CTelDMCommandHandler( aCallHandler, 
-        										aAccessory );
+                                                aAccessory );
     CleanupStack::PushL( self );
     self->ConstructL();
     CleanupStack::Pop( self );
@@ -58,8 +58,8 @@ CTelDMCommandHandler* CTelDMCommandHandler::NewL(
 // -----------------------------------------------------------------------------
 //
 CTelDMCommandHandler::CTelDMCommandHandler( 
-									MPhoneDeviceModeObserver& aCallHandler, 
-        							MTelDMAccessory& aAccessory ):
+                                    MPhoneDeviceModeObserver& aCallHandler, 
+                                    MTelDMAccessory& aAccessory ):
     iCallHandler( aCallHandler ),
     iAccessory ( aAccessory ),
     iGripOpen ( EFalse ),
@@ -84,7 +84,7 @@ CTelDMCommandHandler::~CTelDMCommandHandler()
 //    
 void CTelDMCommandHandler::ConstructL()
     { 
-    User::LeaveIfError( iKeyLock.Connect() );                		      
+    User::LeaveIfError( iKeyLock.Connect() );                             
     }
 
 // -----------------------------------------------------------------------------
@@ -93,49 +93,49 @@ void CTelDMCommandHandler::ConstructL()
 // -----------------------------------------------------------------------------
 //    
 void CTelDMCommandHandler::CallStateChangedL( TInt aCallState )
-	{
-	FLOG( _L( "CTelDMCommandHandler::CallStateChanged<" ) )
-	FTRACE( FPrint( _L( "CTelDMCommandHandler::CallStateChangedL.aCallState=%d"), 
-    															aCallState ))
-    iCallState = aCallState;															
+    {
+    FLOG( _L( "CTelDMCommandHandler::CallStateChanged<" ) )
+    FTRACE( FPrint( _L( "CTelDMCommandHandler::CallStateChangedL.aCallState=%d"), 
+                                                                aCallState ))
+    iCallState = aCallState;                                                            
     switch( aCallState )
         {  
         // Arriving call                    
         case EPSCTsyCallStateRinging: 
-        	FLOG( _L( "CTelDMCommandHandler::CallStateChanged.Ringing" ) )
+            FLOG( _L( "CTelDMCommandHandler::CallStateChanged.Ringing" ) )
             RProperty::Set( KPSUidCoreApplicationUIs,
                             KCoreAppUIsSoftReject,
                             ECoreAppUIsSoftRejectUninitialized );
-			iGripOpenOnRingingState = iGripOpen;
-			break;
-		// Answered
+            iGripOpenOnRingingState = iGripOpen;
+            break;
+        // Answered
         case EPSCTsyCallStateConnected:  
-        	{	
-        	FLOG( _L( "CTelDMCommandHandler::CallStateChanged.Connected" ) )
-        	if ( iGripOpenOnRingingState )
-        		{
-        		OfferKeyLock();	
-        		}
-        	
-        	// Clear the flag.
-        	iGripOpenOnRingingState = EFalse;
-        	}
-        	break;
+            {   
+            FLOG( _L( "CTelDMCommandHandler::CallStateChanged.Connected" ) )
+            if ( iGripOpenOnRingingState )
+                {
+                OfferKeyLock(); 
+                }
+            
+            // Clear the flag.
+            iGripOpenOnRingingState = EFalse;
+            }
+            break;
         // Disconnected 
-       	case EPSCTsyCallStateNone:
-       		{
-       		FLOG( _L( "CTelDMCommandHandler::CallStateChanged.None" ) )
-       		if ( iGripOpenOnRingingState )
-        		{
-        		OfferKeyLock();	
-        		}    		
-       		}
-       		break; 
+        case EPSCTsyCallStateNone:
+            {
+            FLOG( _L( "CTelDMCommandHandler::CallStateChanged.None" ) )
+            if ( iGripOpenOnRingingState )
+                {
+                OfferKeyLock(); 
+                }           
+            }
+            break; 
         default:
             break;
         }     
-   	FLOG( _L( "CTelDMCommandHandler::CallStateChanged>" ) )  
-	}
+    FLOG( _L( "CTelDMCommandHandler::CallStateChanged>" ) )  
+    }
 // -----------------------------------------------------------------------------
 // CTelDMCommandHandler::HandleEvent
 // 
@@ -147,27 +147,27 @@ void CTelDMCommandHandler::HandleCommand( TCommands aCommand )
     switch( aCommand )
         {                      
         case EGripOpen:
-        	{
-        	FLOG( _L( "CTelDMCommandHandler::HandleCommand.Open" ) ) 
-        	iGripOpen = ETrue;
-        	if ( !IsSoftRejectOngoing() )
-        	    {
-        	    iCallHandler.Answer();
-        	    }
-        	}
-			break;
-		// Do not end calls if accessory is connected. 
+            {
+            FLOG( _L( "CTelDMCommandHandler::HandleCommand.Open" ) ) 
+            iGripOpen = ETrue;
+            if ( !IsSoftRejectOngoing() )
+                {
+                iCallHandler.Answer();
+                }
+            }
+            break;
+        // Do not end calls if accessory is connected. 
         case EGripClose:
-        	{
-        	FLOG( _L( "CTelDMCommandHandler::HandleCommand.Close" ) ) 
-        	iGripOpen = EFalse;
-        	EndCalls();
-        	break;
-        	}
+            {
+            FLOG( _L( "CTelDMCommandHandler::HandleCommand.Close" ) ) 
+            iGripOpen = EFalse;
+            EndCalls();
+            break;
+            }
         default:
             break;
         }  
-   	FLOG( _L( "CTelDMCommandHandler::HandleCommand>" ) )      
+    FLOG( _L( "CTelDMCommandHandler::HandleCommand>" ) )      
     }
     
 // -----------------------------------------------------------------------------
@@ -177,24 +177,24 @@ void CTelDMCommandHandler::HandleCommand( TCommands aCommand )
 //    
 void CTelDMCommandHandler::EndCalls()
 
-	{
-	if ( IsEmergencyCall() )
-	    {
-	    // None
-	    }
-	else if ( iAccessory.IsAccessoryAttached()  &&
-		      !iAccessory.IsAnyActiveAccessory() &&
-		      iCallState == EPSCTsyCallStateConnected )
-		{
-		FLOG( _L( "CTelDMCommandHandler::EndCalls#1" ) )
-		iCallHandler.EndVoiceCalls();
-		}
-	else if ( !iAccessory.IsAccessoryAttached() )
-		{
-		FLOG( _L( "CTelDMCommandHandler::EndCalls#2" ) )
-		iCallHandler.EndVoiceCalls();
-		}
-	}
+    {
+    if ( IsEmergencyCall() )
+        {
+        // None
+        }
+    else if ( iAccessory.IsAccessoryAttached()  &&
+              !iAccessory.IsAnyActiveAccessory() &&
+              iCallState == EPSCTsyCallStateConnected )
+        {
+        FLOG( _L( "CTelDMCommandHandler::EndCalls#1" ) )
+        iCallHandler.EndVoiceCalls();
+        }
+    else if ( !iAccessory.IsAccessoryAttached() )
+        {
+        FLOG( _L( "CTelDMCommandHandler::EndCalls#2" ) )
+        iCallHandler.EndVoiceCalls();
+        }
+    }
 // -----------------------------------------------------------------------------
 // CTelDMCommandHandler::OfferKeyLock
 //
@@ -204,17 +204,17 @@ void CTelDMCommandHandler::OfferKeyLock()
 
     {
     //- AudioAccessory attached (BT headset, Wired headset etc.)
-	//- Arriving call and grip open.  
-	//- Call terminated or answered  
-	//-> KeyLock query is shown if not locked   	
+    //- Arriving call and grip open.  
+    //- Call terminated or answered  
+    //-> KeyLock query is shown if not locked       
     if ( iAccessory.IsAccessoryAttached() && 
-        							   !iGripOpen && 
-        							   !iKeyLock.IsKeyLockEnabled() )
-		{
-		FLOG( _L( "CTelDMCommandHandler::CallStateChanged -lock?" ) ) 
-		//Lock keypad ?
-		iKeyLock.OfferKeyLock();
-		}  
+                                       !iGripOpen && 
+                                       !iKeyLock.IsKeyLockEnabled() )
+        {
+        FLOG( _L( "CTelDMCommandHandler::CallStateChanged -lock?" ) ) 
+        //Lock keypad ?
+        iKeyLock.OfferKeyLock();
+        }  
     }
 
 // ---------------------------------------------------------

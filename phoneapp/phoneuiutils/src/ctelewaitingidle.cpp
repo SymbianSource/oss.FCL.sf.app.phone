@@ -93,7 +93,7 @@ void CTeleWaitingIdle::RunL()
         //error code is ignored, as CPeriodic. 
         return;
         }
-   	StartWaitingIdleL();
+    StartWaitingIdleL();
     }
 
 // -----------------------------------------------------------------------------
@@ -104,7 +104,7 @@ void CTeleWaitingIdle::RunL()
 void CTeleWaitingIdle::StartWaitingIdleL()
     {
 //    Phone_PRINT("WI.StartWaitingIdle >");
-  	TInt state(0);
+    TInt state(0);
 
     User::LeaveIfError( 
         iProperty.Get( 
@@ -134,7 +134,7 @@ void CTeleWaitingIdle::StartWaitingIdleL()
             {        
             iProperty.Subscribe( iStatus );
             SetActive();
-            }    	
+            }       
         }
     }
     

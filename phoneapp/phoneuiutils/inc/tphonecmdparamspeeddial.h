@@ -90,7 +90,7 @@ class TPhoneCmdParamSpeedDial : public TPhoneUICommandParam
         /**
         * Returns the speed dial location.
         * @return values from 1 to 9 for succesfull location.
-        *		  Values below 0 indicate unsuccesfull location fetch.
+        *         Values below 0 indicate unsuccesfull location fetch.
         */
         IMPORT_C TInt Location();
 
@@ -98,7 +98,7 @@ class TPhoneCmdParamSpeedDial : public TPhoneUICommandParam
         * Sets the serviceId
         * @param aServiceId The serviceId user has selected for speeddial
         */
-        IMPORT_C void SetServiceId( TUint aServiceId );	
+        IMPORT_C void SetServiceId( TUint aServiceId ); 
 
         /**
         * Returns the serviceId

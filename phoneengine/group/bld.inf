@@ -15,13 +15,12 @@
 *
 */
 
-
-#include "../PhoneCntFinder/Group/bld.inf"
+      
 #include "../audiohandling/group/bld.inf"
 #include "../callhandling/group/bld.inf"
-#include "../contacthandling/group/bld.inf"
+#include "../contacthandling2/group/bld.inf"
 #include "../loghandling/group/bld.inf"
 #include "../engineinfo/group/bld.inf"
-#include "../phonemodel/group/bld.inf"
 #include "../servicehandling/group/bld.inf"
+
 // End of File

@@ -68,12 +68,7 @@ NONSHARABLE_CLASS( CPhoneVccHandler ): public CBase,
             RArray<CTelMenuExtension::TCallInfo>& aArray, 
             TInt aResourceId,
             CEikMenuPane& aMenuPane );
-       
-        /**
-        * CancelHandoverNoteTimer if running
-        */ 
-        void CancelHandoverNoteTimerL();
-        
+         
     protected:
 
         CPhoneVccHandler( 
@@ -89,6 +84,11 @@ NONSHARABLE_CLASS( CPhoneVccHandler ): public CBase,
         */        
         void StartHandoverNoteTimerL();
        
+        /**
+        * CancelHandoverNoteTimer if running
+        */ 
+        void CancelHandoverNoteTimerL();
+        
         /**
         * Callback function for launching Handover wait note
         * This is called when HO note timer timeout is
@@ -108,7 +108,7 @@ NONSHARABLE_CLASS( CPhoneVccHandler ): public CBase,
         */
         void HandoverInProgressNoteL( TInt aCommand );
 
-// From MVccPsPropertyListenerObserver        
+        // From MVccPsPropertyListenerObserver        
         /**
         *  Gets called when PS key is changed
         * @param aKeyId 
@@ -128,7 +128,7 @@ NONSHARABLE_CLASS( CPhoneVccHandler ): public CBase,
          TInt GetVccServiceIdL();
          
     private: // Data
-		        
+                
         /** 
          * Interface for setting and getting active state
          */
@@ -157,14 +157,8 @@ NONSHARABLE_CLASS( CPhoneVccHandler ): public CBase,
         // Handover not allowed if multicall
         TBool iNoHoIfMultiCall;
         
-        // Listens for the hand-over status commands
-        CVccUiPsPropertyListener* iPropListener;
-        
-        // Listens for the hand-over request commands
-        CVccUiPsPropertyListener* iPropListenerReq;
-         
-        // Status of Handover failure
-        TBool iHOFailure;
+        // Listens for the hand-over commands
+        CVccUiPsPropertyListener* iPropListener; 
         };
 
 #endif // C_CPHONEVCCHANDLER_H

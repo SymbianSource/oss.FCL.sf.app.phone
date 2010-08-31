@@ -70,7 +70,7 @@ NONSHARABLE_CLASS( CPEDeviceModeHandler ) : public CBase, public MPhoneDeviceMod
         /**
         * Constructor.
         */
-		CPEDeviceModeHandler(           
+        CPEDeviceModeHandler(           
             MPECallHandling& aCallHandling,
             CPEMessageHandler& aMessageHandler );
 

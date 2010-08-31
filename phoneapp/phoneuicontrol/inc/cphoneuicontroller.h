@@ -38,9 +38,7 @@ class MPhoneStateMachine;
 class CPhoneStateHandle;
 class CPEPhoneModel;
 class CPhoneRemoteControlHandler;
-class CPhoneKeyEventForwarder;
-class CPhoneSecurityModeObserver;
-class CPhoneViewController;
+
 
 class CPhoneUIController : 
     public CBase, 
@@ -54,7 +52,8 @@ class CPhoneUIController :
         /**
         * Two-phased constructor.
         */
-        IMPORT_C static CPhoneUIController* NewL( CPhoneViewController& aViewCommandHandle );
+        IMPORT_C static CPhoneUIController* NewL( 
+            MPhoneViewCommandHandle* aViewCommandHandle );
         
         /**
         * Destructor.
@@ -83,26 +82,6 @@ class CPhoneUIController :
         IMPORT_C TKeyResponse HandleKeyEventL(
             const TKeyEvent& aKeyEvent,
             TEventCode aEventCode );
-
-        /**
-        * From CAknAppUi, initialise a menupane (dynamic).
-        *
-        * @param aResourceId It is the resource id for the pane.
-        * @param aMenuPane It is the menu pane corresponding to the resource.
-        */
-        IMPORT_C void DynInitMenuPaneL( 
-            TInt aResourceId, 
-            CEikMenuPane* aMenuPane );
-
-        /**
-        * From CAknAppUi, initialise a menubar (dynamic).
-        *
-        * @param aResourceId It is the resource id for the bar.
-        * @param aMenuBar It is the menu bar corresponding to the resource.
-        */
-        IMPORT_C void DynInitMenuBarL( 
-            TInt aResourceId, 
-            CEikMenuBar* aMenuBar );
 
         /**
         * From CEikAppUi. For Idle indicator
@@ -159,6 +138,12 @@ class CPhoneUIController :
         */
         IMPORT_C TBool ProcessCommandL( TInt aCommand );
 
+        /**
+        * Handles keylock events
+        * @param aCommand It is the code of the command to be handled.
+        */
+        IMPORT_C void HandleKeyLockEnabled( TBool aKeylockEnabled );
+        
     private:
         
         /**
@@ -169,12 +154,12 @@ class CPhoneUIController :
         /**
         * By default EPOC constructor is private.
         */
-        void ConstructL( CPhoneViewController& aController );
+        void ConstructL( MPhoneViewCommandHandle* aViewCommandHandle );
         
         /**
         * Creates correct protocol DLL depending of the variation.
         */
-        void CreateProtocolDllL( CPhoneViewController& aController );
+        void CreateProtocolDllL( MPhoneViewCommandHandle* aViewCommandHandle );
         /**
         * CallBack for Phone Number Editor
         */
@@ -184,11 +169,6 @@ class CPhoneUIController :
         * Handles the CallBack for Phone Number Editor
         */
         void DoHandlePhoneNumberEditorCallBack();
-        
-		/**
-        * Handles the construction of Remote Controller Handler.
-        */
-        void ConstructRemoteControlHandlerL();
         
     private:    // Data
 
@@ -232,17 +212,6 @@ class CPhoneUIController :
         */
         MPhoneStateMachine* iStateMachine;  // NOT OWNED
         
-        /**
-        * iKeyEventForwarder
-        */
-        CPhoneKeyEventForwarder* iKeyEventForwarder;
-
-		/**
-		 * Security mode observer.
-		 * Own.
-		 */
-		CPhoneSecurityModeObserver* iSecurityModeObserver;
-		
     };
 
 #endif      // CPHONEUICONTROLLER_H   

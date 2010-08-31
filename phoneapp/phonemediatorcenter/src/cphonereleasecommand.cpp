@@ -72,12 +72,12 @@ CPhoneReleaseCommand::~CPhoneReleaseCommand()
 // ---------------------------------------------------------
 //
 void CPhoneReleaseCommand::ExecuteLD()
-	{
+    {
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, 
         "CPhoneReleaseCommand::ExecuteL( ) ");
     iEngineMessageSender.SendPhoneEngineMessage( 
         MPEPhoneModel::EPEMessageRelease );
     delete this;
-	}
+    }
 
 //  End of File  

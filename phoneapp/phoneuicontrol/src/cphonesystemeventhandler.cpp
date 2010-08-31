@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -22,9 +22,6 @@
 #include <UikonInternalPSKeys.h>
 #include <startupdomainpskeys.h>
 #include <hwrmdomainpskeys.h>
-#include <oem/simlockuikeys.h>
-#include <featmgr.h>
-#include <coreapplicationuisdomainpskeys.h>
 
 #include "cphonesystemeventhandler.h"
 #include "mphonestate.h"
@@ -90,13 +87,6 @@ void CPhoneSystemEventHandler::ConstructL()
         KPSUidStartup,
         KStartupSimSecurityStatus,
         this );
-    
-    // Set up notifications for autolock state changes.
-    CPhonePubSubProxy::Instance()->NotifyChangeL(
-    	KPSUidCoreApplicationUIs,
-    	KCoreAppUIsAutolockStatus,
-    	this );
-    
 
     if ( CPhoneCenRepProxy::Instance()->IsTelephonyFeatureSupported(
             KTelephonyLVFlagSwivelInDevice ))
@@ -105,24 +95,6 @@ void CPhoneSystemEventHandler::ConstructL()
         CPhonePubSubProxy::Instance()->NotifyChangeL(
             KPSUidHWRM,
             KHWRMGripStatus,
-            this );
-        }
-    
-    if ( FeatureManager::FeatureSupported( KFeatureIdFfSimlockUi ) )
-       {
-        //Set up notifications for Sim Lock Dialogs values.
-        CPhonePubSubProxy::Instance()->NotifyChangeL(
-            KSimLockProperty,
-            ESimLockActiveStatus,
-            this );
-       }
-
-    if ( FeatureManager::FeatureSupported( KFeatureIdFfEntryPointForVideoShare ) )
-        {
-        // Set up notifications for Video Share (un)availability
-        CPhonePubSubProxy::Instance()->NotifyChangeL(
-            KPSUidCoreApplicationUIs,
-            KCoreAppUIsVideoSharingIndicator,
             this );
         }
     }
@@ -135,28 +107,6 @@ void CPhoneSystemEventHandler::ConstructL()
 //
 CPhoneSystemEventHandler::~CPhoneSystemEventHandler()
     {
-    }
-
-// ---------------------------------------------------------
-// CPhoneSystemEventHandler::DynInitMenuPaneL
-// ---------------------------------------------------------
-//
-void CPhoneSystemEventHandler::DynInitMenuPaneL(
-    TInt aResourceId,
-    CEikMenuPane* aMenuPane )
-    {
-    iStateMachine->State()->DynInitMenuPaneL( aResourceId, aMenuPane );
-    }
-
-// ---------------------------------------------------------
-// CPhoneSystemEventHandler::DynInitMenuBarL
-// ---------------------------------------------------------
-//
-void CPhoneSystemEventHandler::DynInitMenuBarL(
-    TInt aResourceId,
-    CEikMenuBar* aMenuBar )
-    {
-    iStateMachine->State()->DynInitMenuBarL( aResourceId, aMenuBar );
     }
 
 // ---------------------------------------------------------
@@ -203,6 +153,15 @@ void CPhoneSystemEventHandler::HandleIdleForegroundEventL()
     iStateMachine->State()->HandleIdleForegroundEventL();
     }
 
+// ---------------------------------------------------------
+// CPhoneSystemEventHandler::HandleKeyLockEnabled
+// ---------------------------------------------------------
+//
+void CPhoneSystemEventHandler::HandleKeyLockEnabled( TBool aKeylockEnabled )
+    {
+    iStateMachine->State()->HandleKeyLockEnabled( aKeylockEnabled );
+    }
+
 // -----------------------------------------------------------
 // CPhoneSystemEventHandler::HandleEnvironmentChangeL
 // -----------------------------------------------------------
@@ -230,7 +189,7 @@ void CPhoneSystemEventHandler::HandlePropertyChangedL(
     const TUint aKey,
     const TInt aValue )
     {
-    iStateMachine->HandlePropertyChangedL( aCategory, aKey, aValue );
+    iStateMachine->State()->HandlePropertyChangedL( aCategory, aKey, aValue );
     }
 
 // -----------------------------------------------------------

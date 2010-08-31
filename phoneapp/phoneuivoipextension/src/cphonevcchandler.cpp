@@ -16,9 +16,7 @@
 */
 
 // INCLUDES
-#include <phoneui.rsg>
-#include <avkon.rsg>
-#include <phoneuivoip.rsg>
+#include "phoneresourceids.h"
 #include <StringLoader.h>
 #include <avkon.rsg>
 #include <mpeengineinfo.h>
@@ -56,8 +54,7 @@ CPhoneVccHandler::CPhoneVccHandler(
     MPhoneStateMachine& aStateMachine,
     MPhoneViewCommandHandle& aViewCommandHandle ) : 
     iStateMachine( aStateMachine ),
-    iViewCommandHandle( aViewCommandHandle ), iVccHoReady( ETrue ),
-    iHOFailure ( EFalse )
+    iViewCommandHandle( aViewCommandHandle ), iVccHoReady( ETrue )
     {
     }
 
@@ -69,7 +66,6 @@ CPhoneVccHandler::CPhoneVccHandler(
 CPhoneVccHandler::~CPhoneVccHandler()
     {
     delete iPropListener;
-    delete iPropListenerReq;
     TRAPD( err, CancelHandoverNoteTimerL() );
     if ( err != KErrNone )
         {
@@ -88,11 +84,6 @@ void CPhoneVccHandler::ConstructL()
     iPropListener = CVccUiPsPropertyListener::NewL( KVccPropKeyHoStatus );
     iPropListener->AddObserverL( *this );
     iPropListener->Start();
-
-    iPropListenerReq = CVccUiPsPropertyListener::NewL( KVccPropKeyHoRequest );
-    iPropListenerReq->AddObserverL( *this );
-    iPropListenerReq->Start();
- 	
     }
 
 // -----------------------------------------------------------
@@ -281,15 +272,7 @@ void CPhoneVccHandler::RemoveHandoverNoteL()
         
     if ( iVccHoReady && !iHandoverNoteTimer )
         {
-        iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveGlobalNote );
-        if ( iHOFailure )
-            {
-            iHOFailure = EFalse;
-            CPhoneState* phoneState = 
-            static_cast< CPhoneState* >( iStateMachine.State() ); 
-            phoneState->SendGlobalInfoNoteL( EPhoneVoIPHandoverFail );
-            
-            }
+        iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveGlobalNote );            
         } 
     }
     
@@ -299,27 +282,21 @@ void CPhoneVccHandler::RemoveHandoverNoteL()
 //
 void CPhoneVccHandler::HandoverInProgressNoteL( TInt aCommand )
     {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-            "CPhoneVccHandler::HandoverInProgressNoteL()");
-    
-    TPhoneCmdParamGlobalNote globalNoteParam;  
+     TPhoneCmdParamGlobalNote globalNoteParam;  
           
-    // Check notification tone user setting
-    TInt tone = GetHoNotifToneModeL();
+// Check notification tone user setting
+     TInt tone = GetHoNotifToneModeL();
     
-    __PHONELOG1( EBasic, EPhoneControl,
-                "CPhoneVccHandler::HandoverInProgressNoteL - tone: %d", tone );
-    
-      if ( tone == 1 )
-           {
-           globalNoteParam.SetTone( EAvkonSIDDefaultSound );
-           }
-       else
-           {
-           globalNoteParam.SetTone( EAvkonSIDNoSound );
-           }
+//      if ( tone == 1 )
+//           {
+//           globalNoteParam.SetTone( EAvkonSIDConfirmationTone );
+//           }
+//       else
+//           {
+//           globalNoteParam.SetTone( EAvkonSIDNoSound );
+//           }
 
-     globalNoteParam.SetType( EAknGlobalWaitNote );
+     globalNoteParam.SetType( EPhoneNotificationDialog );
      globalNoteParam.SetSoftkeys( R_AVKON_SOFTKEYS_EMPTY );
      globalNoteParam.SetTextResourceId( 
                  CPhoneMainResourceResolver::Instance()->
@@ -337,7 +314,7 @@ void CPhoneVccHandler::HandoverInProgressNoteL( TInt aCommand )
 // -----------------------------------------------------------------------------
 //
 void CPhoneVccHandler::VccPropertyChangedL( const TUint aKeyId,
-                                    const TInt aValue )	
+                                    const TInt aValue ) 
     {            
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneVccHandler::VccPropertyChangedL() ");
@@ -345,61 +322,25 @@ void CPhoneVccHandler::VccPropertyChangedL( const TUint aKeyId,
     __PHONELOG1( EBasic, EPhoneControl,
             "CPhoneVccHandler::VccPropertyChangedL - key: %d", aValue );
 
-    if( aKeyId == KVccPropKeyHoRequest )
-        {
-        switch( aValue )
-            {
-            case  EVccAutomaticStartPsToCsHoRequest:
-                {
-                __PHONELOG( EBasic, PhoneUIVoIPExtension,
-                    "CPhoneVccHandler::VccPropertyChangedL VccPropertyChangedL -- EVccAutomaticStartPsToCsHoRequest" );
-                // Do not show if already started since the wait note is 
-                // already visible
-                if ( iVccHoReady && !iHandoverNoteTimer )
-                    {
-                    iVccHoReady = EFalse;
-                    HandoverInProgressNoteL( EPhoneVoIPWaitHandoverFromWlan );
-                    }
-                }
-                break;
-            case EVccAutomaticStartCsToPsHoRequest:
-                {
-                __PHONELOG( EBasic, PhoneUIVoIPExtension,
-                    "CPhoneVccHandler::VccPropertyChangedL VccPropertyChangedL -- EVccAutomaticStartCsToPsHoRequest" );
-                // Do not show if already started since the wait note is 
-                // already visible
-                if ( iVccHoReady && !iHandoverNoteTimer )
-                    {
-                    iVccHoReady = EFalse;
-                    HandoverInProgressNoteL( EPhoneVoIPWaitHandoverFromGsm );
-                    }
-                }                
-                break;
-            default:
-                // none
-                break;
-            }
-        }
     
     if( aKeyId == KVccPropKeyHoStatus )
-  		{
-  		switch( aValue )
-  			{				
-  			case EVccCsToPsHoFailure:
-  			case EVccPsToCsHoFailure:
-  			    {
-  			    __PHONELOG( EBasic, PhoneUIVoIPExtension,
+        {
+        switch( aValue )
+            {               
+            case EVccCsToPsHoFailure:
+            case EVccPsToCsHoFailure:
+                {
+                __PHONELOG( EBasic, PhoneUIVoIPExtension,
                     "CPhoneVccHandler::VccPropertyChangedL VccPropertyChangedL -- HO fail" );
                 // Remove handover note if handover is in progress
                 if( !iVccHoReady )
                     {
                     iVccHoReady = ETrue;
-                    iHOFailure = ETrue;
-                    if ( !iHandoverNoteTimer )
-                        {
-                        RemoveHandoverNoteL();
-                        }
-                     }
+                    CPhoneState* phoneState = 
+                               static_cast< CPhoneState* >( iStateMachine.State() ); 
+                    CancelHandoverNoteTimerL();
+                    phoneState->SendGlobalInfoNoteL( EPhoneVoIPHandoverFail );
+                    }
                  }
                 break;
             case EVccCsToPsHoSuccessful:
@@ -409,15 +350,15 @@ void CPhoneVccHandler::VccPropertyChangedL( const TUint aKeyId,
                     "CPhoneVccHandler::VccPropertyChangedL VccPropertyChangedL -- HO Success" );   
                 iVccHoReady = ETrue;
                 RemoveHandoverNoteL();
-  			    }
-  				break;
+                }
+                break;
             case EVccCsToPsHoStarted:
                 {
                 __PHONELOG( EBasic, PhoneUIVoIPExtension,
                     "CPhoneVccHandler::VccPropertyChangedL VccPropertyChangedL -- CsToPsHoStarted" );
-                // Do not show if already started since the wait note is 
+                // Do not show if manually started since the wait note is 
                 // already visible
-                if ( iVccHoReady && !iHandoverNoteTimer )
+                if ( iVccHoReady )
                     {
                     iVccHoReady = EFalse;
                     HandoverInProgressNoteL( EPhoneVoIPWaitHandoverFromGsm );
@@ -428,9 +369,9 @@ void CPhoneVccHandler::VccPropertyChangedL( const TUint aKeyId,
                 {
                 __PHONELOG( EBasic, PhoneUIVoIPExtension,
                     "CPhoneVccHandler::VccPropertyChangedL VccPropertyChangedL -- PsToCsHoStarted" );
-                // Do not show if already started since the wait note is 
+                // Do not show if manually started since the wait note is 
                 // already visible
-                if ( iVccHoReady && !iHandoverNoteTimer )
+                if ( iVccHoReady )
                     {
                     iVccHoReady = EFalse;
                     HandoverInProgressNoteL( EPhoneVoIPWaitHandoverFromWlan);
@@ -458,14 +399,6 @@ void CPhoneVccHandler::VccPropertyChangedL( const TUint aKeyId,
                 iVccHoAllowedToWlan = ETrue;
                 iNoHoIfMultiCall = EFalse;
                 iVccUnavailable = EFalse;
-                if( !iVccHoReady )
-                    {
-                    iVccHoReady = ETrue;
-                    if ( !iHandoverNoteTimer )
-                        {
-                        RemoveHandoverNoteL();
-                        }
-                     }
                 break;
                 }
             case EVccCsToPsNotAllowed:
@@ -521,13 +454,13 @@ void CPhoneVccHandler::VccPropertyChangedL( const TUint aKeyId,
                 break;
                 }
                     
-  			default:
+            default:
 
                 __PHONELOG( EBasic, PhoneUIVoIPExtension,
                         "CPhoneVccHandler::VccPropertyChangedL VccPropertyChangedL -- default" );
-        		break;
-  			}		
-  		}
+                break;
+            }       
+        }
     }
 // ---------------------------------------------------------------------------
 // Gets HO notification tone setting value
@@ -535,9 +468,6 @@ void CPhoneVccHandler::VccPropertyChangedL( const TUint aKeyId,
 //
 TInt CPhoneVccHandler::GetHoNotifToneModeL()
     {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-            "CPhoneVccHandler::GetHoNotifToneModeL() ");
-    
     // Find out VCC service id
      CSPProperty* property = CSPProperty::NewLC();
     
@@ -551,9 +481,6 @@ TInt CPhoneVccHandler::GetHoNotifToneModeL()
     
     TInt voipId;
     TInt error = property->GetValue( voipId );
-    
-    __PHONELOG1( EBasic, EPhoneControl,
-        "CPhoneVccHandler::GetHoNotifToneModeL - voipId: %d", voipId ); 
     
     // Find and get the HO notification tone property
     TInt tone = 0;

@@ -53,6 +53,10 @@ class CPhoneTwoSinglesAndWaiting : public CPhoneTwoSingles
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
 
+        virtual void HandleKeyEventL( 
+            const TKeyEvent& aKeyEvent,
+            TEventCode aEventCode );
+        
         /**
         * A message handling function for Phone Engine messages
         * @param aMessage Message from Phone Engine
@@ -68,7 +72,13 @@ class CPhoneTwoSinglesAndWaiting : public CPhoneTwoSingles
         * @param aErrorInfo: the error info
         */
         IMPORT_C virtual void HandleErrorL( 
-            const TPEErrorInfo& aErrorInfo ); 
+            const TPEErrorInfo& aErrorInfo );
+
+        /**
+        * Handles user selected UI commands.
+        * @param aCommand - selected command
+        */    
+        TBool HandleCommandL( TInt aCommand );
         
     protected:
 
@@ -84,11 +94,6 @@ class CPhoneTwoSinglesAndWaiting : public CPhoneTwoSingles
         * ConstructL()
         */
         virtual void ConstructL();
-            
-        /**
-        * Open menu bar
-        */
-        virtual void OpenMenuBarL();
         
         virtual void HandleConnectedConferenceL( TInt aCallId );
         
@@ -106,6 +111,11 @@ class CPhoneTwoSinglesAndWaiting : public CPhoneTwoSingles
         * Handle state-specific behaviour when number entry is cleared
         */ 
         void HandleNumberEntryClearedL();
+        
+        /**
+        *  Handles received EPhoneCmdUpdateUiControls command.
+        */
+        void UpdateUiControlsL();
         
         // call id of ringing call
         TInt iRingingCallId;

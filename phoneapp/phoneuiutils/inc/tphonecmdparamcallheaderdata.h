@@ -23,9 +23,9 @@
 //  INCLUDES
 
 #include <w32std.h>
+#include <cntdef.h>
 #include "tphonecommandparam.h"
 #include "phoneconstants.h"
-#include "bmbubblemanager.h"
 
 // DATA TYPES
 
@@ -44,6 +44,12 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
             EPhoneParticipantCLIText,
             EPhoneParticipantCNAPText,                
             };
+
+        enum TPhoneTextClippingDirection
+            {
+            ERight,
+            ELeft
+            };
            
     public:  
         
@@ -52,6 +58,10 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         */
         IMPORT_C TPhoneCmdParamCallHeaderData();
 
+        /**
+        * destructor.
+        */
+        IMPORT_C ~TPhoneCmdParamCallHeaderData();
     public: 
         
         /**
@@ -96,7 +106,7 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         * @param aDirection Clipping direction of the CLI text.
         */
         IMPORT_C void SetCLIText( const TDesC& aCLIText, 
-                                  CBubbleManager::TPhoneClippingDirection aDirection );
+                                  TPhoneTextClippingDirection aDirection );
 
         /**
         * Sets the call header CNAP text
@@ -104,20 +114,19 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         * @param aDirection Clipping direction of the CNAP text.
         */
         IMPORT_C void SetCNAPText( const TDesC& aCNAPText,
-                CBubbleManager::TPhoneClippingDirection aDirection );
+                                   TPhoneTextClippingDirection aDirection );
 
         /**
         * Sets the call header picture
         * @param aPicture is the picture data
         */
         IMPORT_C void SetPicture( const TDesC& aPicture );
-        
+
         /**
-        * Sets the call flag
+        * Sets the call header diverted status.
         * @param call flag
         */
-        IMPORT_C void SetCallFlag( 
-            CBubbleManager::TPhoneCallTypeFlags aCallFlag );
+        IMPORT_C void SetDiverted( TBool aDiverted );
             
         /**
         * Sets the call header line2 status.
@@ -125,13 +134,6 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         */
         IMPORT_C void SetLine2( TBool aLine2 );
             
-        /**
-        * Adds the call flag
-        * @param call flag
-        */
-        IMPORT_C void AddCallFlag( 
-            CBubbleManager::TPhoneCallTypeFlags aCallFlag );
-
         /**
         * Returns the call header label text
         * @return Returns the label
@@ -178,13 +180,13 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
          * Returns the clipping direction of the CLI text.
          * @return  Clipping direction of the CLI text.
          */
-        IMPORT_C CBubbleManager::TPhoneClippingDirection CLITextClippingDirection() const;
+        IMPORT_C TPhoneTextClippingDirection CLITextClippingDirection() const;
 
         /**
          * Returns the clipping direction of the CNAP text.
          * @return  Clipping direction of the CNAP text.
          */
-        IMPORT_C CBubbleManager::TPhoneClippingDirection CNAPTextClippingDirection() const;
+        IMPORT_C TPhoneTextClippingDirection CNAPTextClippingDirection() const;
         
         /**
         * Returns the call header CNAP text.
@@ -199,10 +201,10 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         IMPORT_C const TDesC& Picture() const;
         
         /**
-        * Returns the call flag
-        * @return Returns the call flag
+        * Returns call diverted status.
+        * @return Returns ETrue if diverted call.
         */
-        IMPORT_C TUint32 CallFlag() const;
+        IMPORT_C TBool Diverted() const;
         
         /**
         * Returns the call header line 2 active.
@@ -313,12 +315,12 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         /**
         * Call header label text
         */
-        TBuf<KPhoneCallHeaderLabelMaxLength> iLabelText;
+        HBufC *iLabelText;
 
         /**
         * Call header short label text
         */
-    	TBuf<KPhoneCallHeaderLabelMaxLength> iShortLabelText;
+        HBufC *iShortLabelText;
 
         /**
         * Call header call state
@@ -343,32 +345,28 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
         /**
         * Call header CLI Text
         */
-        TBuf<KCntMaxTextFieldLength> iCLIText;
+        HBufC *iCLIText;
 
         /**
          * Clipping direction of the CLI text.
          */
-        CBubbleManager::TPhoneClippingDirection iCLITextClippingDirection;
-        
+        TPhoneTextClippingDirection iCLITextClippingDirection;
+       
         /**
          * Clipping direction of the CLI text.
          */
-        CBubbleManager::TPhoneClippingDirection iCNAPTextClippingDirection;
+//        CBubbleManager::TPhoneClippingDirection iCNAPTextClippingDirection;
+        TPhoneTextClippingDirection iCNAPTextClippingDirection;
         
         /**
         * Call header CNAP Text
         */
-        TBuf<KCntMaxTextFieldLength> iCNAPText;
+        HBufC *iCNAPText;
 
         /**
         * Call header picture data
         */
         TPtrC iPicture;
-        
-        /**
-        * Call flag
-        */
-        TUint32     iCallFlag;
         
         TBool iLine2;
         
@@ -413,6 +411,11 @@ class TPhoneCmdParamCallHeaderData : public TPhoneUICommandParam
          * Remote phone number
          */
         TPtrC iRemotePhoneNumber;
+
+        /**
+         * Call divert status.
+         */
+        TBool iDiverted;        
     };
 
 #endif // __TPHONECMDPARAMCALLHEADERDATA_H   

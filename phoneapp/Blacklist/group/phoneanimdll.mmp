@@ -31,8 +31,8 @@ SOURCEPATH      ../src
 USERINCLUDE     ../inc
 APP_LAYER_SYSTEMINCLUDE
 
-SOURCE          CPhoneAnimDll.cpp
-SOURCE          CPhoneBlacklistAnim.cpp
+SOURCE          cphoneanimdll.cpp
+SOURCE          cphoneblacklistanim.cpp
 
 LIBRARY         euser.lib 
 LIBRARY         etel.lib 

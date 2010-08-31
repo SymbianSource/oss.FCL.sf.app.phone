@@ -71,8 +71,8 @@ class MPhoneUIStateMachineFactory
         * @return an instance of class upcasted to CPhoneErrorMessagesHandler class
         */
         virtual CPhoneErrorMessagesHandler* CreatePhoneErrorMessagesHandlerL(
-        	MPhoneViewCommandHandle* aViewCommandHandle,
-        	MPhoneStateMachine* aStateMachine ) = 0;
+            MPhoneViewCommandHandle* aViewCommandHandle,
+            MPhoneStateMachine* aStateMachine ) = 0;
     };
 
 #endif      // __MPHONEUISTATEMACHINEFACTORY_H

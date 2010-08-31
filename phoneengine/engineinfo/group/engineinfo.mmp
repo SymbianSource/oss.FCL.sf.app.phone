@@ -20,9 +20,9 @@
 TARGET          engineinfo.dll
 TARGETTYPE      dll
 UID             0x1000008D 0x10207904
-VENDORID		    VID_DEFAULT
+VENDORID            VID_DEFAULT
 
-CAPABILITY	    CAP_GENERAL_DLL
+CAPABILITY      CAP_GENERAL_DLL
 
 SOURCEPATH      ../src
 SOURCE          cpecallinfo.cpp

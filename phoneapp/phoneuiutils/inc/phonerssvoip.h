@@ -89,8 +89,6 @@ enum TPhoneRssVoIP
     EPhoneVoIPCallsNotSupported,
     EPhoneVoIPNotAvailableWhenConnecting,
     EPhoneVoIPDefectiveSettings,
-    EPhoneVoIPTransferCallBackHeader,
-    EPhoneVoIPTransferCallBackText,
     // Last
     EPhoneVoIPLast
     };

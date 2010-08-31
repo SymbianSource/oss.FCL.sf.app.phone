@@ -42,6 +42,26 @@ const TUint32 KTelPhoneUid = 0x00000001;
 
 const TUint32 KTelDisplayInfo =  0x00000002; 
 
+/*****************************************************************************
+* Telephony Car Mode API
+* This can be used for setting and requesting
+* Car Mode status.
+*****************************************************************************/
+const TUid KPSUidTelCarMode = {0x102029A8};
+
+/**
+* Indicates the car mode setting
+* This key has two special values, see EPSCarModeSetting.
+* 
+* @type RProperty::EInt
+*/          
+const TUint32 KTelCarMode = 0x00000001;
+enum EPSTelCarModeSetting
+    {
+    EPSCarModeOff = 0,
+    EPSCarModeOn    
+    };
+
 #endif      // TELINFORMATIONPSKEYS_H
 
 // End of file

@@ -20,7 +20,7 @@
 #define AUDIODATAPROXY_H
 
 //  INCLUDES
-#include "MPEAudioData.h"
+#include "mpeaudiodata.h"
 
 // CONSTANTS
 // None.

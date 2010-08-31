@@ -138,8 +138,8 @@ TPESimState CPESimStateMonitor::SimState() const
 //
 void CPESimStateMonitor::StartMonitoring()
     {
-	iProperty.Subscribe( iStatus );
-	SetActive();
+    iProperty.Subscribe( iStatus );
+    SetActive();
     }
 
 // -----------------------------------------------------------------------------

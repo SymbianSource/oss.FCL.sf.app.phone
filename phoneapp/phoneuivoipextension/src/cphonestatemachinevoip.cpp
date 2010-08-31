@@ -102,7 +102,7 @@ MPhoneState* CPhoneStateMachineVoIP::State()
             // Possible that derived class has been deleted iState,
             // so this delete statement may be useless.
             delete iState;
-            iState = NULL;	            		
+            iState = NULL;                      
             }
 
         // State transition need to be made - construct new state and
@@ -111,7 +111,7 @@ MPhoneState* CPhoneStateMachineVoIP::State()
             {
             case EPhoneStateCallSetup:
                 TRAP( err, iState = CPhoneStateCallSetupVoIP::NewL( 
-                	*this, *iViewCommandHandle, *iVoipCustomization ) );
+                    *this, *iViewCommandHandle, *iVoipCustomization ) );
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
@@ -120,7 +120,7 @@ MPhoneState* CPhoneStateMachineVoIP::State()
                 if( iIdleState == NULL )
                     {
                     TRAP( err, iIdleState = CPhoneStateIdleVoIP::NewL( 
-                    	*this, *iViewCommandHandle, *iVoipCustomization ) );
+                        *this, *iViewCommandHandle, *iVoipCustomization ) );
                     __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                     }
                 iState = iIdleState;
@@ -129,21 +129,21 @@ MPhoneState* CPhoneStateMachineVoIP::State()
 
             case EPhoneStateIncoming:
                 TRAP( err, iState = CPhoneStateIncomingVoIP::NewL( 
-                	*this, *iViewCommandHandle, *iVoipCustomization ) );
+                    *this, *iViewCommandHandle, *iVoipCustomization ) );
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;                     
 
             case EPhoneStateSingle:
                 TRAP( err, iState = CPhoneStateSingleVoIP::NewL( 
-                	*this, *iViewCommandHandle, *iVoipCustomization ));
+                    *this, *iViewCommandHandle, *iVoipCustomization ));
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
 
             case EPhoneStateAlerting:
                 TRAP( err, iState = CPhoneStateAlertingVoIP::NewL(
-                	*this, *iViewCommandHandle, *iVoipCustomization ));
+                    *this, *iViewCommandHandle, *iVoipCustomization ));
                 __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
                 madeStateTransition = ETrue;
                 break;
@@ -157,10 +157,6 @@ MPhoneState* CPhoneStateMachineVoIP::State()
     if ( madeStateTransition )
         {
         iOldStateId = iNewStateId;
-        
-        // Needs to be set or any attempts to access eikon env handle
-        // will fail
-        iState->SetEikonEnv( EikonEnv() );
         }
 
     return iState;

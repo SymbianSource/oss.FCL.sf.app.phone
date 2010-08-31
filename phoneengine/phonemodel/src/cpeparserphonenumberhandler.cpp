@@ -69,6 +69,9 @@ void CPEParserPhoneNumberHandler::ProcessDialToNumberL(
         &aNumber, 
         &aDtmfPostfix );
     
+    // Check if phone is locked
+    iOwner.CheckIfPhoneIsLockedL();
+    
     if ( aNumber.Length() == 0 )
         {
         User::Leave( ECCPErrorInvalidPhoneNumber );
@@ -89,7 +92,7 @@ void CPEParserPhoneNumberHandler::ProcessDialToNumberL(
     if( processType != EPECallTypeVideo )
         {
         // TSY not accept phone number that include + or w chartes.
-        TPEPhoneNumber postfix = FilterPostfix( aDtmfPostfix );
+        TPEPhoneNumber postfix = FilterPostfixL( aDtmfPostfix );
         if( postfix.Length() )
             {
             phoneNumber.Append( postfix );
@@ -163,7 +166,7 @@ void CPEParserPhoneNumberHandler::ProcessDialToNumberL(
 // CPEParserPhoneNumberHandler::FilterPostfix
 // -----------------------------------------------------------------------------
 // 
-TPtrC CPEParserPhoneNumberHandler::FilterPostfix( TPtrC aPostfix )
+TPtrC CPEParserPhoneNumberHandler::FilterPostfixL( TPtrC aPostfix )
     {
     TLex input( aPostfix );
     TInt stripStart = KErrNotFound;
@@ -171,14 +174,18 @@ TPtrC CPEParserPhoneNumberHandler::FilterPostfix( TPtrC aPostfix )
     for ( TInt i = 0; i != postfixLength; i ++ )
         {
         TChar ch( input.Peek() );
-        if ( ch == KDtmfWait ||
-             ch == KDtmfPlus )
+        if (ch == KDtmfPlus)
+            {
+            User::Leave ( ECCPErrorInvalidPhoneNumber );
+            }
+        else if ( ch == KDtmfWait )
             {
             if ( i < stripStart || stripStart == KErrNotFound )
                 {
                 stripStart = i;
                 }
             }
+        input.Inc();
         }
     if ( stripStart != KErrNotFound )
         {
@@ -199,7 +206,7 @@ TBool CPEParserPhoneNumberHandler::IsPhoneOffline()
     TBool isPhoneOffline( EFalse );
 
     if( FeatureManager::FeatureSupported( KFeatureIdOfflineMode )
-        && ( iDataStore.ProfileId() == EProfileOffLineId ) )
+        && ( EFalse == iOwner.IsNetworkConnectionAllowed() ) )
         {
         isPhoneOffline = ETrue;
         }
@@ -214,9 +221,8 @@ TBool CPEParserPhoneNumberHandler::IsPhoneOffline()
         {
         isPhoneOffline = ETrue;
         }
-    
+
     return isPhoneOffline;
     }
-
     
 //  End of File

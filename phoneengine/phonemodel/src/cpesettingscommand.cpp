@@ -17,10 +17,10 @@
 
 
 // INCLUDES
-#include "CPESettingsCommand.h"
-#include "MPEPhoneModelInternal.h"
+#include "cpesettingscommand.h"
+#include "mpephonemodelinternal.h"
 #include <mpedatastore.h>
-#include <TALogger.h>
+#include <talogger.h>
 
 
 // LOCAL CONSTANTS

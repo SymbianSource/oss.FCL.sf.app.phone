@@ -20,8 +20,6 @@
 #define TPHONECALLHEADERPARAM_H
 
 //INCLUDES
-#include    <bmbubblemanager.h>
-
 #include    "mpeengineinfo.h"
 #include    "tphonecmdparamcallheaderdata.h"
 
@@ -70,7 +68,6 @@ class TPhoneCallHeaderParam
         void SetOutgoingCallHeaderParamsL(
                 const TInt aCallId,
                 TPhoneCmdParamCallHeaderData* aCallHeaderData );
-				
         /**
         * Updates call header info. 
         * NOTE: This method is used when state receives
@@ -87,25 +84,34 @@ class TPhoneCallHeaderParam
                 const TBool aWaitingCall,
                 const TBool aVideoCall,
                 TPhoneCmdParamCallHeaderData* aCallHeaderData );
-        
+
         /**
         * Sets the call header type used in the call bubble.
         * @param aCallHeaderType, call header type.
         */    
         void SetCallHeaderType( 
-                const CBubbleManager::TPhoneCallTypeFlags aCallHeaderType );
+                TInt aCallHeaderType );
         /**
         * Returns the set call header type. Used for constructing right type
         * of call bubble.
         */
-        CBubbleManager::TPhoneCallTypeFlags CallHeaderType() const;
+        TInt CallHeaderType() const;
+            
+        /**
+        * Setter for divert indication showing in bubble.
+        * @param aDivertIndication ETrue to show divert indication,
+        *        EFalse to not. Usually setting EFalse isn't necessary
+        *        as it's a default value in bubble creation.
+        */
+        void SetDivertIndication( const TBool aDivertIndication );
         
         /**
         * Return remote info data
+        * @return True if secondary CLI is used
         * @param aCallid call id
         * @param aData the returned remote info data
         */
-        void GetRemoteInfoDataL( 
+        TBool GetRemoteInfoDataL( 
                 const TInt aCallId,
                 TDes& aData ) const;           
     
@@ -164,7 +170,7 @@ class TPhoneCallHeaderParam
         void GetCNAPText( 
                const TInt aCallId,
                TDes& aData, 
-               CBubbleManager::TPhoneClippingDirection& aDirection ) const;
+               TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection& aDirection ) const;
         
         /**
         * Check if contact is available(RemoteName or RemoteCompanyName),
@@ -213,24 +219,6 @@ class TPhoneCallHeaderParam
                 TPhoneCmdParamCallHeaderData* aCallHeaderData );  
         
         /**
-        * Check if call is private or payphone number. If call is 
-        * Private/PayPhone call then IsCallPrivateOrPayPhone will 
-        * set SetIdentitySpecificCallHeaderData parameters.
-        * 
-        * @param aCallId Call id.
-        * @return ETrue if call is private or payphone number.
-        */
-        TBool IsCallPrivateOrPayPhone( const TInt aCallId, TDes& aData ) const;
-        
-        /**
-        * Sets identity specific call header text.
-        * 
-        * @param aCallId Call id.
-        * @param aData Identity  specific call header text data.
-        */
-        void SetIdentitySpecificCallHeaderData( const TInt aCallId, TDes& aData ) const;
-        
-        /**
         * Concludes does the engine have information of the
         * phone number. This information is then send to the view.
         * @param aNumberLength - phone number's length
@@ -239,19 +227,14 @@ class TPhoneCallHeaderParam
         void SetPhoneNumberAvailabilityL( 
                 const TInt aNumberLength,
                 const TBool aContactInfoAvailable );
-        
-        /**
-        * Set call header labels.
-        * @param aCallHeaderData - call header params.
-        */
-        void SetCallHeaderLabels( 
-               TPhoneCmdParamCallHeaderData* aCallHeaderData );
-        
+                
     private:
         
         MPhoneCallHeaderManagerUtility& iManagerUtility;
         MPhoneStateMachine& iStateMachine;
-        CBubbleManager::TPhoneCallTypeFlags iCallHeaderType;
+        TInt iCallHeaderType;
+        TBool iSetDivertIndication;
+            
     };
 
 #endif // TPHONECALLHEADERPARAM_H

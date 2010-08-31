@@ -113,12 +113,6 @@ void CPhoneRemoteControlHandler::MrccatoCommand(
         {
         case ERemConCoreApiButtonClick:
             {
-            // Cancel the button repeat timer
-            if( iButtonRepeatTimer->IsActive() ) 
-                {
-                iButtonRepeatTimer->Cancel();
-                }
-
             // Pass the remote control operation to the current state
             TRAP_IGNORE( handled = 
                 iStateMachine->State()->

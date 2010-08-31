@@ -50,10 +50,10 @@
 #include <coreapplicationuisdomainpskeys.h>
 #include <cpeclientinformation.h>
 #include <cpegsmaudiodata.h>
-#include <CPhoneGsmHandlerContainer.h>
-#include <CPhoneGsmOptionContainerBase.h>
-#include <CPhoneGsmParserBase.h>
-#include <CPhoneGsmParserResult.h>
+#include <cphonegsmhandlercontainer.h>
+#include <cphonegsmoptioncontainerbase.h>
+#include <cphonegsmparserbase.h>
+#include <cphonegsmparserresult.h>
 #include <featmgr.h>
 #include <mccecall.h>
 #include <mpeaudiodata.h>
@@ -63,8 +63,8 @@
 #include <mpeloghandling.h>
 #include <pathinfo.h>
 #include <pepanic.pan>
-#include <PhCltTypes.h>
-#include <PhoneGsmParser.h>
+#include <phclttypes.h>
+#include <phonegsmparser.h>
 #include <ProfileEngineDomainConstants.h>
 #include <talogger.h>
 #include <w32std.h>
@@ -76,9 +76,9 @@
 // None.
 
 // CONSTANTS
-// Prefix change off. See settingsinternalcrkeys.h
+// Prefix change off. See SettingsInternalCRKeys.h
 const TInt KPEPrefixChangeOff = 0;
-// Prefix change on. See settingsinternalcrkeys.h
+// Prefix change on. See SettingsInternalCRKeys.h
 const TInt KPEPrefixChangeOn = 1;
 // International prefix
 _LIT( KPEIntPrefix, "+" );
@@ -162,7 +162,6 @@ CPEMessageHandler::CPEMessageHandler(
             iExternalDataHandler( aExternalDataHandler ),
             iSimStateMonitor( aSimStateMonitor ),
             iFsSession( aFsSession ),
-			iSwitchToVidCalReconFlag( EFalse ),
             iServiceHandling( aServiceHandling ),
             iDataStore( *aModel.DataStore() )
     {
@@ -404,19 +403,6 @@ TInt CPEMessageHandler::HandleReleaseCall( TPEHangUpOptions aAutoResumeOption )
     }
 
 // -----------------------------------------------------------------------------
-// CPEMessageHandler::HandleReleaseConference
-// Handles release message from phone application
-// Method calls HangUp method from the CallHandling subsystem.
-// -----------------------------------------------------------------------------
-//
-TInt CPEMessageHandler::HandleReleaseConference()
-    {
-    
-    return iCallHandling.ReleaseConference(); 
- 
-    }
-
-// -----------------------------------------------------------------------------
 // CPEMessageHandler::HandleSendDtmf
 // Handles send dtmf message from phone application
 // Method fetches dtmf string from the CPEEngineInfo class and then
@@ -467,12 +453,6 @@ TInt CPEMessageHandler::HandleSendDtmf()
         
         dtmfString = KNullDesC;
         }    
-    else if ( dtmfString[ 0 ] == KPEDtmfPlusChar ) // speed-dial substitution
-        {
-        TEFLOGSTRING( KTAMESINT, "PE CPEMessageHandler::HandleSendDtmf(), Processing +" );
-        HandlePlusSignInDtmf( dtmfString );
-        dtmfString = KNullDesC;
-        }
     else if ( dtmfString[ 0 ] == KPEDtmfPauseCharLowercase || 
               dtmfString[ 0 ] == KPEDtmfPauseCharUppercase ) // soft pause
         {
@@ -547,147 +527,6 @@ TInt CPEMessageHandler::CallBackHandleSendDtmf( TAny* aAny )
     delete self->iAsyncCallBack;
     self->iAsyncCallBack = NULL;
     return self->HandleSendDtmf();  
-    }
-
-// -----------------------------------------------------------------------------
-// CPEMessageHandler::HandlePlusSignInDtmf
-// Handles plus (+) sign in a DTMF string.
-// -----------------------------------------------------------------------------
-//
-void CPEMessageHandler::HandlePlusSignInDtmf(const TPEDtmfString& aDtmfString )
-    {
-    TEFLOGSTRING2( KTAMESINT, "PE CPEMessageHandler::HandlePlusSignInDtmf(), aDtmfString: %S", &aDtmfString ); 
-          
-    // Find the SD index after the plus sign
-    TPtrC validManualDTMFChars( KPEValidSpeedDialChars );
-    TInt index = ECCPErrorNotFound;
-    for ( index = 1 ; index < aDtmfString.Length() ; index++ )
-        {
-        if ( validManualDTMFChars.Locate( aDtmfString[index] ) == ECCPErrorNotFound )
-            {
-            TEFLOGSTRING( KTAMESINT, "PE CPEMessageHandler::HandlePlusSignInDtmf(), Not Found" ); 
-            break; 
-            }
-        }
-    TPESpeedDialSubstituionStatus sdStatus = EPEDtmfSpeedDialOk;
-    
-    // Empty string after the plus sign
-    if ( index == 1 )
-        {
-        if ( aDtmfString.Length() > 1 )
-            {
-            // pw+ after the plus sign.
-            sdStatus = EPEDtmfSpeedDialInvalidSpeedDial;
-            }
-        else
-            {
-            // string ended with the plus sign.
-            sdStatus = EPEDtmfSpeedDialPromptUser;
-            }
-        // Clear DTMF string.
-        iDataStore.SetDtmfString( KNullDesC() );
-        }
-    // Else if the SD location ends the DTMF string, move the index to the
-    // last character instead of one over.
-    else if ( index == aDtmfString.Length() )
-        {
-        index--;
-        }
-    
-    // Check that the index is valid
-    TInt sdIndex = ECCPErrorNotFound; 
-    if ( sdStatus == EPEDtmfSpeedDialOk )
-        {
-        TLex lexer( aDtmfString.Mid( 1, index ) );
-        // convert it to a number
-        if ( lexer.Val(sdIndex) == ECCPErrorNone )
-            {
-            // Is it out of range
-            if ( sdIndex < KPESpeedDialIndexMin  ||
-                sdIndex > KPESpeedDialIndexMax )
-                {
-                sdStatus = EPEDtmfSpeedDialInvalidSpeedDial;
-                }
-            }
-        else
-            {
-            sdStatus = EPEDtmfSpeedDialInvalidSpeedDial;
-            }
-        }
-    
-    // Fetch the SD location
-    TPEPhoneNumber speedDialLocationString;
-    if ( sdStatus == EPEDtmfSpeedDialOk )
-        {
-        TEFLOGSTRING2( KTAMESINT, "PE CPEMessageHandler::HandlePlusSignInDtmf(), SD location %i", sdIndex ); 
-        if ( iContactHandling.GetSpeedDialLocation( 
-            sdIndex, speedDialLocationString ) == ECCPErrorNone )
-            {
-            // Is content found
-            if ( speedDialLocationString.Length() == 0)
-                {
-                sdStatus = EPEDtmfSpeedDialNotAssigned;
-                }
-            else if ( speedDialLocationString[0] == KPEDtmfPlusChar)  
-                {
-                // plus char must be removed from dtmf string before sending
-                RemovePlusPrefix( speedDialLocationString );
-                }
-            }
-        else
-            {
-            sdStatus = EPEDtmfSpeedDialInvalidSpeedDial;
-            }
-        }
-    
-    // Now interpret the sdStatus to the next action
-    switch ( sdStatus )
-        {
-        case EPEDtmfSpeedDialOk:
-            {
-            TEFLOGSTRING2( KTAMESINT, "PE CPEMessageHandler::HandlePlusSignInDtmf(), SD result: %S", &speedDialLocationString ); 
-            // Take the SD location string and use that as new DTMF string
-            iDataStore.SetDtmfStringCommand( speedDialLocationString );
-            
-            // Do recursion asyncronously                        
-            TCallBack callBack( CallBackHandleSendDtmf, this );
-            delete iAsyncCallBack;
-            iAsyncCallBack = NULL;
-            // Function does not allow to leave.
-            iAsyncCallBack = new CAsyncCallBack( callBack, CActive::EPriorityStandard );
-            if ( iAsyncCallBack )
-                {
-                iAsyncCallBack->CallBack();
-                }
-            else
-                {
-                iModel.SendMessage( MEngineMonitor::EPEMessageDTMFSendingAborted );
-                }
-            }
-            break;
-        case EPEDtmfSpeedDialPromptUser:
-            // Speed dial location not given.
-            iDataStore.SetDtmfString( KNullDesC() );
-            iModel.SendMessage( MEngineMonitor::EPEMessagePromptSpeedDial );
-            break;
-        case EPEDtmfSpeedDialNotAssigned:
-            // Speed dial location valid but not assigned
-            iDataStore.SetDtmfString( KNullDesC() );
-            iDataStore.SetDtmfStringCommand( KNullDesC() );
-            iModel.SendMessage( MEngineMonitor::EPEMessageDTMFSendingAborted);
-            iModel.SendMessage( MEngineMonitor::EPEMessageSpeedDialNotAssigned );
-            break;
-        case EPEDtmfSpeedDialInvalidSpeedDial:
-            // Speed dial location invalid
-            iDataStore.SetDtmfString( KNullDesC() );
-            iDataStore.SetDtmfStringCommand( KNullDesC() );
-            iModel.SendMessage( MEngineMonitor::EPEMessageDTMFSendingAborted);
-            iModel.SendMessage( MEngineMonitor::EPEMessageInvalidSpeedDial );
-            break;
-        default:
-            Panic( EPEPanicInvalidState );
-            break;
-        } // end switch
     }
 
 // -----------------------------------------------------------------------------
@@ -1096,34 +935,6 @@ TBool CPEMessageHandler::RemoveInvalidChars(
     return returnValue;
     }
 
-
-// -----------------------------------------------------------------------------
-// CPEMessageHandler::HandleGetLifeTimerData
-// Reads lifetimerdata from custom api and stores it to engine info
-// -----------------------------------------------------------------------------
-//
-TInt CPEMessageHandler::HandleGetLifeTimerData() const
-    {
-    TCCPLifeTimeData lifeTimeData; 
-    TCCPLifeTimeDataPckg pckg( lifeTimeData );
-
-    if ( iCallHandling.GetLifeTime( pckg ) )
-        {
-        TEFLOGSTRING2( 
-            KTAGENERAL, 
-            "PE: CPEMessageHandler::HandleGetLifeTimerData, iHours = %d", 
-            lifeTimeData.iHours);
-        TEFLOGSTRING2( 
-            KTAGENERAL, 
-            "PE: CPEMessageHandler::HandleGetLifeTimerData, iMinutes = %d", 
-            lifeTimeData.iMinutes);
-            
-        iDataStore.SetLifeTimerData( pckg );
-        }
-    
-    return ECCPErrorNone;
-    }
-    
 // -----------------------------------------------------------------------------
 // CPEMessageHandler::CallbackSendMessageStoppedDTMF
 // -----------------------------------------------------------------------------
@@ -1332,7 +1143,8 @@ TInt CPEMessageHandler::UpdateClientInfo(
         "PE CPEMessageHandler::UpdateClientInfo, allowmatch: %d", 
         clientInformation.AllowMatch() );
     
-    if ( clientInformation.AllowMatch() && ( aCallId != KPEEmergencyCallId ) )
+    if ( EPECallOriginSAT != iDataStore.CallOrigin(aCallId) && 
+       ( aCallId != KPEEmergencyCallId ) )
         {
         TEFLOGSTRING2( 
             KTAINT, 
@@ -1355,10 +1167,6 @@ TInt CPEMessageHandler::UpdateClientInfo(
             KTAINT, 
             "PE CPEMessageHandler::UpdateClientInfo > MPEContactHandling::FindContactInfoSync( EPEFindWithPhoneNumber ), error code: %d", 
             errorCode );
-        }
-    else if ( clientInformation.Name().Length() )
-        {
-        iDataStore.SetRemoteName( clientInformation.Name(), aCallId );
         }
     
     // Calls have to log also without a contact (ECCPErrorNotFound).
@@ -1390,52 +1198,52 @@ void CPEMessageHandler::CheckAndHideIdentity(
         iDataStore.SetRemotePhoneNumberType( EPEEmergencyNumber, aCallId );
         }
     else if( iDataStore.CallDirection( aCallId ) != RMobileCall::EMobileOriginated )
-		{
-		switch( tempIdentity )
-			{
-			case RMobileCall::ERemoteIdentitySuppressed:
-				{
-				// It is neccessary to perform an additional check for available
-				// remote party phone number to comply with Italian operator
-				// requirement: "If CLIR is active but network still provides
-				// the device with a phone number, it should not be blocked
-				// but passed to a client when requested."
-				if( iDataStore.RemotePhoneNumber( aCallId ).Length() == 0 )
-					{
-					HideIdentification( EPEPrivateNumber, aCallId );
-					}
-				else
-				    {
-				    // Align remote identity with remote phone number availability.
-				    iDataStore.SetRemoteIdentity( RMobileCall::ERemoteIdentityAvailable, aCallId );
-				    }
-				break;
-				}
-			case RMobileCall::ERemoteIdentityAvailableNoCliRejectedByUser:
-				{
-				HideIdentification( EPEPrivateNumber, aCallId );
-				break;
-				}
-			case RMobileCall::ERemoteIdentityUnknown:
-			case RMobileCall::ERemoteIdentityAvailableNoCliInteractionWithOtherService:
-			case RMobileCall::ERemoteIdentityUnavailableNoCliInteractionWithOtherService:
-			case RMobileCall::ERemoteIdentityAvailableNoCliCoinOrPayphone:
-			case RMobileCall::ERemoteIdentityUnavailableNoCliCoinOrPayphone:
-			case RMobileCall::ERemoteIdentityAvailableNoCliUnavailable:
-				{
-				HideIdentification( EPEUnknownNumber, aCallId );
-				break;
-				}
-			case RMobileCall::ERemoteIdentityAvailable:
-			default:
-				{
-				TEFLOGSTRING( KTAINT,
-					"PE CPEMessageHandler::CheckAndHideIdentity, CLI available" );
-				break;
-				}
-			}
-		}
-	}
+        {
+        switch( tempIdentity )
+            {
+            case RMobileCall::ERemoteIdentitySuppressed:
+                {
+                // It is neccessary to perform an additional check for available
+                // remote party phone number to comply with Italian operator
+                // requirement: "If CLIR is active but network still provides
+                // the device with a phone number, it should not be blocked
+                // but passed to a client when requested."
+                if( iDataStore.RemotePhoneNumber( aCallId ).Length() == 0 )
+                    {
+                    HideIdentification( EPEPrivateNumber, aCallId );
+                    }
+                else
+                    {
+                    // Align remote identity with remote phone number availability.
+                    iDataStore.SetRemoteIdentity( RMobileCall::ERemoteIdentityAvailable, aCallId );
+                    }
+                break;
+                }
+            case RMobileCall::ERemoteIdentityAvailableNoCliRejectedByUser:
+                {
+                HideIdentification( EPEPrivateNumber, aCallId );
+                break;
+                }
+            case RMobileCall::ERemoteIdentityUnknown:
+            case RMobileCall::ERemoteIdentityAvailableNoCliInteractionWithOtherService:
+            case RMobileCall::ERemoteIdentityUnavailableNoCliInteractionWithOtherService:
+            case RMobileCall::ERemoteIdentityAvailableNoCliCoinOrPayphone:
+            case RMobileCall::ERemoteIdentityUnavailableNoCliCoinOrPayphone:
+            case RMobileCall::ERemoteIdentityAvailableNoCliUnavailable:
+                {
+                HideIdentification( EPEUnknownNumber, aCallId );
+                break;
+                }
+            case RMobileCall::ERemoteIdentityAvailable:
+            default:
+                {
+                TEFLOGSTRING( KTAINT,
+                    "PE CPEMessageHandler::CheckAndHideIdentity, CLI available" );
+                break;
+                }
+            }
+        }
+    }
     
 // -----------------------------------------------------------------------------
 // CPEMessageHandler::FindCallInfo
@@ -1737,23 +1545,19 @@ TInt CPEMessageHandler::HandleConnectedState(
                 {
 
                 dtmfString = iDataStore.DtmfPostFix( aCallId );
-				
+                
                 if ( dtmfString.Length() > 0 )
                     {
                     iDataStore.SetDtmfStringCommand( dtmfString );
                     errorCode = HandleSendDtmf();
                     }
                 }
-            // Reset unattended transfer callback flag
-            iDataStore.SetDoCallBackRequest( EFalse, aCallId );
-            
+
             iDataStore.SetErrorCode( errorCode );
-            }  
-		}
+            }
+        }
     // For Sat call ( normal or emergency )    
     iClientServices->CallRequestMonitor()->SendRespond( ECCPErrorNone );
-    
-    
     
     // Reset Phonenumber from engine info, this is necessary so that call number
     // logging works OK (see CPEMessageHandler::SetPhoneNumberForCallLogging).  
@@ -1869,9 +1673,10 @@ TInt CPEMessageHandler::HandleDialCallL(
         {
         HandleClientCallData();
         }
-    else
+    else 
         {
-        ResetClientCallData();
+        iDataStore.SetCallOriginCommand(EPECallOriginPhone);
+		ResetClientCallData();
         }
         
     //Get number of calls
@@ -1880,17 +1685,8 @@ TInt CPEMessageHandler::HandleDialCallL(
     // Check the phone number for prefix change and change the prefix if needed
     CheckPrefix();
 
-    if( iSwitchToVidCalReconFlag )
-        {
-        phoneNumber = iDataStore.SwitchToNumberCommand();
-		// Clear flag to match the previous set operation in HandleSwitchToVideoOrVoice() function.
-        iSwitchToVidCalReconFlag = EFalse;
-        }
-    else
-        {
-        phoneNumber = iDataStore.PhoneNumber();
-        }
-    
+    phoneNumber = iDataStore.PhoneNumber();
+  
     __ASSERT_ALWAYS( !( phoneNumber == KNullDesC ), User::Leave( ECCPErrorInvalidPhoneNumber ));
     
     // Number parser operations
@@ -1997,11 +1793,6 @@ void CPEMessageHandler::HandleDialingStateL(
     {
     TEFLOGSTRING( KTAINT, "PE CPEMessageHandler::HandleDialingStateL <");
     
-    if( iCallHandling.GetNumberOfCalls() == 1 )
-        {
-        // Check volume levels - zero level needs to be reset to default value
-        iGsmAudioData.SetDefaultVolume();
-        }
     // Save call direction to engine info.
     iDataStore.SetCallDirection( RMobileCall::EMobileOriginated, aCallId );
     
@@ -2056,11 +1847,7 @@ void CPEMessageHandler::HandleIncomingCallL(
         iGsmAudioData.PlayInbandTone();
         iWaitingCallId = aCallId;
         }
-    else if( numberOfCalls == 1 )
-        {
-        // Check volume levels - zero level needs to be reset to default value
-        iGsmAudioData.SetDefaultVolume();
-        }
+
     if( AutomaticAnswer( aCallId ) )
         {
         TEFLOGSTRING( KTAINT, 
@@ -2086,16 +1873,10 @@ TInt CPEMessageHandler::HandleDisconnecting
 
     iAutomaticAnswerTimer->Cancel();
 
-    // Prevent playing inband tone when phone is in silent mode and 
-    // audio output is not defined (call is  not connected).
-    if ( ( iDataStore.RingingType() != EProfileRingingTypeSilent ) || 
-         ( iDataStore.AudioOutput() != EPENotActive ) )
-        {
-        TEFLOGSTRING( KTAMESOUT, 
+    TEFLOGSTRING( KTAMESOUT, 
         "PE CPEMessageHandler::HandleDisconnecting > iGsmAudioData.PlayInbandTone()");
-        iGsmAudioData.PlayInbandTone();
-        }
-
+    iGsmAudioData.PlayInbandTone();
+    
     return ECCPErrorNone;
     }
 
@@ -2225,11 +2006,6 @@ TInt CPEMessageHandler::HandleVoiceCallIdleState(
         TEFLOGSTRING2( KTAMESINT, 
             "CPEMessageHandler::HandleVoiceCallIdleState: numberOfCalls = %d", 
             numberOfCalls );
-        }
-    
-    if ( iDataStore.DoCallBackRequest( aCallId ) )
-        {
-        iModel.SendMessage( MEngineMonitor::EPEMessageTransferCallBackRequest, aCallId );
         }
     
     iDataStore.ResetCallInfo( aCallId );    
@@ -2628,7 +2404,7 @@ void CPEMessageHandler::HandleATDialingStarted( const TBool aSucceed ) const
 // Checks if emergency call is allowed. 
 // -----------------------------------------------------------------------------
 //
-TBool CPEMessageHandler::IsEmergencyAllowed() const
+TBool CPEMessageHandler::IsNetworkConnectionAllowed() const
     {
     TBool networkConnectionAllowed( EFalse );
     //It is safe to ignore error code here: a default value of EFalse is used if the get fails
@@ -2735,7 +2511,6 @@ TInt CPEMessageHandler::HandleSwitchToVideoOrVoice( const TInt aCallId )
             iDataStore.SetSwitchToNumberCommand( iDataStore.WholeOutgoingPhoneNumber( aCallId ) );  
             // Clear phonenumber to prevent using the wrong number in MO video call.
             iDataStore.SetPhoneNumber( KNullDesC() );
-            iSwitchToVidCalReconFlag = ETrue;
             }
         else
             {
@@ -2764,8 +2539,6 @@ TInt CPEMessageHandler::ContinueSwitchToCall( const TInt aCallId )
     TInt errorCode( ECCPErrorNone );
   
     TPEPhoneNumber phoneNumber = iDataStore.SwitchToNumberCommand();
-    RemovePreAndPostFix( phoneNumber );
-    
     TEFLOGSTRING2( KTAINT, 
         "PE CPEMessageHandler::ContinueSwitchToCall, phoneNumber : %S", 
         &phoneNumber );
@@ -2900,6 +2673,26 @@ TInt CPEMessageHandler::HandleReplaceActive()
     }
 
 // -----------------------------------------------------------------------------
+// CPEMessageHandler::CheckIfPhoneIsLockedL
+// -----------------------------------------------------------------------------
+//
+void CPEMessageHandler::CheckIfPhoneIsLockedL()
+    {
+    // Check if phone is locked
+    TInt  keyLockStatus( EAutolockStatusUninitialized );
+    TInt err = RProperty::Get( KPSUidCoreApplicationUIs, KCoreAppUIsAutolockStatus, keyLockStatus );
+    const TBool phoneIsLocked = ( keyLockStatus > EAutolockOff );
+
+    if ( phoneIsLocked && err == KErrNone )
+        {
+        // New call is not possible if device lock is on 
+        TEFLOGSTRING2( KTAERROR,
+            "PE CPEMessageHandler::CheckIfPhoneIsLockedL, keyLockStatus : %d", keyLockStatus );
+        User::Leave( ECCPErrorAuthenticationFailed );
+        }
+    }
+
+// -----------------------------------------------------------------------------
 // CPEMessageHandler::IsActiveVideo
 // Checks if there are any connected video calls
 // -----------------------------------------------------------------------------
@@ -2932,7 +2725,7 @@ TInt CPEMessageHandler::HandleServiceEnabled()
 // CPEMessageHandler::HandleRemotePartyInfoChanged
 // -----------------------------------------------------------------------------
 //
-void CPEMessageHandler::HandleRemotePartyInfoChanged( const TInt aCallId )
+void CPEMessageHandler::HandleRemotePartyInfoChanged( const TInt /*aCallId*/ )
     {        
     UpdateRemotePartyInfo(); 
         
@@ -2969,8 +2762,6 @@ TInt CPEMessageHandler::HandleUnattendedTransfer()
     TInt errorCode = iCallHandling.DoUnattendedTransfer( 
             iDataStore.TransferTargetCommand() );
      
-    iDataStore.SetErrorCode( errorCode );
-    
     return errorCode;
     }
 
@@ -3066,4 +2857,21 @@ TInt CPEMessageHandler::AddSIMRejectedMoCsCallToLog( const TInt aCallId )
         }
     return errorCode;
     }
-//  End of File  
+
+// -----------------------------------------------------------------------------
+// CPEMessageHandler::HandleDialCall
+// Handles dial message from dial service
+// 
+// -----------------------------------------------------------------------------
+// 
+TInt CPEMessageHandler::HandleDialServiceCall(
+    const TBool /*aClientCall*/ )
+    {
+    TEFLOGSTRING( KTAINT, "PE CPEMessageHandler::HandleDialCall" );
+    TInt errorCode( ECCPErrorNone );
+    //TODO 
+    iModel.HandleInternalMessage( MPEPhoneModel::EPEMessageDialServiceCall );
+    return errorCode;
+    }
+
+//  End of File

@@ -1,2 +1,0 @@
--c8,8  qgn_indi_dialer_voicemail
--c8,8  qgn_indi_dialer_internet

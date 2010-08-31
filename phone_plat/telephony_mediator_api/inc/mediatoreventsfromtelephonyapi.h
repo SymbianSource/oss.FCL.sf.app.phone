@@ -78,15 +78,15 @@ enum TCallType
 
 // Call Data Parameter is sent with EPhoneEventCallData
 class TTelephonyCallDataParam
-	{
-	public:
-		TInt iCallId;
-		TBuf<KCntMaxTextFieldLength> iCLIText;
-		TCallState iCallState;
-		TCallType iCallType;
-		TBuf<KMaxPhoneNumberLength> iRemotePhoneNumber;
-	};
-	
+    {
+    public:
+        TInt iCallId;
+        TBuf<KCntMaxTextFieldLength> iCLIText;
+        TCallState iCallState;
+        TCallType iCallType;
+        TBuf<KMaxPhoneNumberLength> iRemotePhoneNumber;
+    };
+    
 // Mediator package
 typedef TPckgBuf<TTelephonyCallDataParam> TTelephonyCallDataParamPackage;
 

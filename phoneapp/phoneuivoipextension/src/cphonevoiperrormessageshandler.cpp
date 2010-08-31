@@ -20,16 +20,11 @@
 #include <ccpdefs.h>
 #include <mpeengineinfo.h>
 #include <StringLoader.h>
-
-#include <ccherror.h>
-
 #include <spsettings.h>
 #include <spentry.h>
-
 #include <telephonydomainpskeys.h>
 #include <UikonInternalPSKeys.h>
 #include <aknnotedialog.h>
-
 #include "cphonevoiperrormessageshandler.h"
 #include "cphonemainerrormessageshandler.h"
 #include "cphoneerrormessageshandler.h"
@@ -299,8 +294,8 @@ void CPhoneVoIPErrorMessagesHandler::HandleHoldErrorNotesL(
         }
      
     globalNoteParam.SetText( *text );
-    globalNoteParam.SetType( EAknGlobalConfirmationNote );
-    globalNoteParam.SetTone( EAvkonSIDInformationTone );
+    globalNoteParam.SetType( EPhoneMessageBoxInformation );
+
             
     iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam );
@@ -375,64 +370,12 @@ void CPhoneVoIPErrorMessagesHandler::GetRemoteInfoDataL(
 // -----------------------------------------------------------
 //
 void CPhoneVoIPErrorMessagesHandler::ShowRegistrationErrorNotesL( 
-    TInt aErrorCode )
+    TInt /*aErrorCode*/ )
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
               "CPhoneVoIPErrorMessagesHandler::ShowRegistrationErrorNotesL()" );
     // Dismiss service enabling wait note
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalWaitNote );
-    
-    switch ( aErrorCode )
-        {
-        case KCCHErrorAccessPointNotDefined:
-            {
-            TUint32 serviceId = 
-                iStateMachine->PhoneEngineInfo()->ServiceIdCommand();
-            ShowErrorNoteWithServiceNameL( EPhoneVoIPNoConnectionsDefined,
-                serviceId );
-            break;
-            }
-        case KCCHErrorBandwidthInsufficient:   
-            {
-            TUint32 serviceId = 
-                iStateMachine->PhoneEngineInfo()->ServiceIdCommand();
-            ShowErrorNoteWithServiceNameL( EPhoneVoIPCallsNotSupported,
-                serviceId );
-            break;
-            }
-        case KCCHErrorInvalidSettings:
-            {
-            TUint32 serviceId = 
-                iStateMachine->PhoneEngineInfo()->ServiceIdCommand();
-            ShowErrorNoteWithServiceNameL( EPhoneVoIPDefectiveSettings,
-                serviceId );
-            break;
-            }
-        case KCCHErrorAuthenticationFailed:
-            {
-            SendGlobalErrorNoteL( EPhoneVoIPAuthenticationFailed );
-            break;
-            }
-        case KCCHErrorInvalidIap:
-        case KCCHErrorNetworkLost:
-        case KCCHErrorServiceNotResponding:
-            {
-            TUint32 serviceId = 
-                iStateMachine->PhoneEngineInfo()->ServiceIdCommand();
-            ShowErrorNoteWithServiceNameL( EPhoneVoIPNoConnectionsAvailable,
-                serviceId );
-            break;
-            }
-        case KCCHErrorLoginFailed: 
-        default:
-            {
-            TUint32 serviceId = 
-               iStateMachine->PhoneEngineInfo()->ServiceIdCommand();
-            ShowErrorNoteWithServiceNameL( EPhoneVoIPServiceUnavailable,
-               serviceId );
-            break;
-            }
-        }
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalWaitNote );    
     }
 
 // ---------------------------------------------------------
@@ -458,12 +401,11 @@ void CPhoneVoIPErrorMessagesHandler::SendGlobalErrorNoteWithTextL(
             &globalNotifierParam );
             
         TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetType( EAknGlobalErrorNote );
+        globalNoteParam.SetType( EPhoneMessageBoxInformation );
         globalNoteParam.SetTextResourceId( 
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
         globalNoteParam.SetText( aText );
-        globalNoteParam.SetTone( CAknNoteDialog::EErrorTone );
 
         iViewCommandHandle->ExecuteCommandL(  
             EPhoneViewShowGlobalNote, &globalNoteParam );

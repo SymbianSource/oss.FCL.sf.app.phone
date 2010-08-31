@@ -30,7 +30,6 @@
 #include "cphonelogger.h"
 #include "phoneui.pan"
 #include "cphonecustomizationvoip.h"
-#include "tphonecmdparamspeeddial.h"
 #include "cphonecenrepproxy.h"
 #include "cphonestateutilsvoip.h"
 #include "cphonestatemachinevoip.h"
@@ -124,12 +123,12 @@ TBool CPhoneStateIdleVoIP::HandleCommandL( TInt aCommand )
     TBool commandStatus( ETrue );
 
     switch( aCommand )
-        {     	
+        {       
         case EPhoneNumberAcqCmdInternetCall:
             {
             StateUtils().SelectServiceAndDialL();
             }
-        	break;
+            break;
 
         default:
             commandStatus = CPhoneIdle::HandleCommandL( aCommand );
@@ -151,14 +150,10 @@ void CPhoneStateIdleVoIP::HandleSendCommandL()
     
     HBufC* phoneNumber = PhoneNumberFromEntryLC();
      
-    if ( !IsSimOk() || IsEmergencyNumber( *phoneNumber ) || IsDialingExtensionInFocusL() )
+    if ( !IsSimOk() || IsEmergencyNumber( *phoneNumber ) )
         {
         CPhoneIdle::HandleSendCommandL();         
         }  
-    else if ( IsSpeedDialNumber( *phoneNumber ) )
-        {
-        SpeedDialL( (*phoneNumber)[0], EDialMethodSendCommand );
-        }
     else
         {
         TUint serviceId( 0 );
@@ -190,16 +185,16 @@ void CPhoneStateIdleVoIP::HandleSendCommandL()
 // -----------------------------------------------------------
 //
 void CPhoneStateIdleVoIP::HandleDialingL( TInt aCallId )
-	{
+    {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, "CPhoneStateIdleVoIP::HandleDialingL( ) ");
 
-	if( iStateMachine->PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP )
-		{
-		SetCallHeaderType( CBubbleManager::EVoIPCall );			
-		}
+    if( iStateMachine->PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP )
+        {
+        SetCallHeaderType( EPECallTypeVoIP );       
+        }
 
-	CPhoneIdle::HandleDialingL( aCallId );
-	}
+    CPhoneIdle::HandleDialingL( aCallId );
+    }
 
 
 // -----------------------------------------------------------

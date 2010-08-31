@@ -83,11 +83,6 @@ class CPhoneAlerting : public CPhoneGsmInCall
         IMPORT_C virtual void HandleKeyMessageL(
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
-
-        /**
-        * Open menu bar
-        */
-        IMPORT_C virtual void OpenMenuBarL();
         
        /**
         * Handles user selected UI commands.

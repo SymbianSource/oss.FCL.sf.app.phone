@@ -86,18 +86,23 @@ EXPORT_C void CPESupplementaryServicesMonitor::BarringEventOccurred(
         aBarringEvent );
      switch( aBarringEvent )
         {       
-        case ECCESsIncomingCallBarred:	/** Incoming call is barred. (DoCoMo) */
-		case ECCESsAnonymousCallBarred:	/** Anonymous call barring. */
-		case ECCESsOutgoingCallBarred: 	/** Outgoing call barring */
-		    iOwner.SendMessage( MEngineMonitor::EPEMessageCallBarred, KPECallIdNotUsed );
+        case ECCESsIncomingCallBarred:  /** Incoming call is barred. (DoCoMo) */
+        case ECCESsAnonymousCallBarred: /** Anonymous call barring. */
+        case ECCESsOutgoingCallBarred:  /** Outgoing call barring */
+            iOwner.SendMessage( MEngineMonitor::EPEMessageCallBarred, KPECallIdNotUsed );
+            if ( aBarringEvent == ECCESsOutgoingCallBarred )
+                {
+                iOwner.SendMessage( MEngineMonitor::EPEMessageOutgoingCallBarred, 
+                                    KPECallIdNotUsed );
+                }
             break;
             
         default:
             break;
         }
     }
-	
-		
+    
+        
 // -----------------------------------------------------------------------------
 // CPESupplementaryServicesMonitor::CLIEventOccurred
 // -----------------------------------------------------------------------------
@@ -108,27 +113,27 @@ EXPORT_C void CPESupplementaryServicesMonitor::CLIEventOccurred(
  
     switch( aCallLineEvent )
         {
-        case ECCESsTempClirSuppressUnsuccessful:	/** Temporary CLIR suppression was unsuccessful */
-        	iOwner.SendMessage( MEngineMonitor::EPEMessageTempClirSuppressUnsuccessful, KPECallIdNotUsed );
-        	break;
-        	
-        case ECCESsTempClirActivationUnsuccessful:	/** Temporary CLIR activation was unsuccessful*/
+        case ECCESsTempClirSuppressUnsuccessful:    /** Temporary CLIR suppression was unsuccessful */
+            iOwner.SendMessage( MEngineMonitor::EPEMessageTempClirSuppressUnsuccessful, KPECallIdNotUsed );
+            break;
+            
+        case ECCESsTempClirActivationUnsuccessful:  /** Temporary CLIR activation was unsuccessful*/
             iOwner.SendMessage( MEngineMonitor::EPEMessageTempClirActivationUnsuccessful, KPECallIdNotUsed );
             break;
             
         default:
-        	break;
+            break;
         }
 
     }
-						  
+                          
 // -----------------------------------------------------------------------------
 // CPESupplementaryServicesMonitor::CallForwardEventOccurred
 // -----------------------------------------------------------------------------
 //
 EXPORT_C void CPESupplementaryServicesMonitor::CallForwardEventOccurred( 
-						const MCCESsObserver::TCCESsCallForwardEvent aCallForwardEvent,
-						const TDesC& /*aRemoteAddress*/ )
+                        const MCCESsObserver::TCCESsCallForwardEvent aCallForwardEvent,
+                        const TDesC& /*aRemoteAddress*/ )
     {  
     TEFLOGSTRING2( 
         KTAMESIN, 
@@ -137,35 +142,35 @@ EXPORT_C void CPESupplementaryServicesMonitor::CallForwardEventOccurred(
     switch( aCallForwardEvent )
         {
         case ECCESsIncCallIsForw:   /** Incoming call is forwarded */
-        	iOwner.SendMessage( MEngineMonitor::EPEMessageIncCallIsForw, KPECallIdNotUsed );
-        	break;
-        	
-        case ECCESsIncCallForwToC:	/** Incoming call was forwarded because of user own settings. */
-        	iOwner.SendMessage( MEngineMonitor::EPEMessageIncCallForwToC, KPECallIdNotUsed );
-        	break;
-        	
-        case ECCESsOutCallForwToC:	/** outgoing call was forwarded because of user own settings. */
+            iOwner.SendMessage( MEngineMonitor::EPEMessageIncCallIsForw, KPECallIdNotUsed );
+            break;
+            
+        case ECCESsIncCallForwToC:  /** Incoming call was forwarded because of user own settings. */
+            iOwner.SendMessage( MEngineMonitor::EPEMessageIncCallForwToC, KPECallIdNotUsed );
+            break;
+            
+        case ECCESsOutCallForwToC:  /** outgoing call was forwarded because of user own settings. */
             iOwner.SendMessage( MEngineMonitor::EPEMessageOutCallForwToC, KPECallIdNotUsed );
             break;
         
         case ECCESsForwardUnconditionalModeActive:
-        	iOwner.SendMessage( MEngineMonitor::EPEMessageForwardUnconditionalModeActive, KPECallIdNotUsed );
-        	break;
-        	
+            iOwner.SendMessage( MEngineMonitor::EPEMessageForwardUnconditionalModeActive, KPECallIdNotUsed );
+            break;
+            
         case ECCESsForwardConditionallyModeActive:
-        	iOwner.SendMessage( MEngineMonitor::EPEMessageForwardConditionallyModeActive, KPECallIdNotUsed );
-        	break;
-        	
+            iOwner.SendMessage( MEngineMonitor::EPEMessageForwardConditionallyModeActive, KPECallIdNotUsed );
+            break;
+            
         case ESsCallWaiting:
-        	iOwner.SendMessage( MEngineMonitor::EPEMessageCallWaiting, KPECallIdNotUsed );
-        	TEFLOGSTRING( KTAINT, "CPESupplementaryServicesMonitor::CallForwardEventOccurred -> ECCESsCallWaiting" );
-        	break;
+            iOwner.SendMessage( MEngineMonitor::EPEMessageCallWaiting, KPECallIdNotUsed );
+            TEFLOGSTRING( KTAINT, "CPESupplementaryServicesMonitor::CallForwardEventOccurred -> ECCESsCallWaiting" );
+            break;
             
         default:
             break;        
         }       
     }
-								  
+                                  
 // -----------------------------------------------------------------------------
 // CPESupplementaryServicesMonitor::CallCugEventOccurred
 // -----------------------------------------------------------------------------

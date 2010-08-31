@@ -17,9 +17,5 @@
 
 
 PRJ_TESTMMPFILES
-#include "../../../phoneapp/phoneui/tsrc/public/basic/3dringingtoneinterface_tests/group/bld.inf"
-#include "../../../phoneuis/dialer/tsrc/public/basic/group/bld.inf"
-#include "../../../phoneuis/sfiutils/tsrc/public/basic/group/bld.inf"
-
 
  // End of File

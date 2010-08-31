@@ -28,7 +28,6 @@
 #include    <UiklafInternalCRKeys.h>
 #include    <ProfileEngineDomainCRKeys.h>
 #include    <DRMHelperServerInternalCRKeys.h>
-#include    <AknFepInternalCRKeys.h>
 #include    <AvkonInternalCRKeys.h>
 #include    <btengdomaincrkeys.h> 
 #include    <utf.h>
@@ -146,19 +145,6 @@ void CPhoneCenRepProxy::ConstructL()
     
     User::LeaveIfError( GetTelephonyVariantData() );
     User::LeaveIfError( GetPhoneUIVariantData() );
-
-    iCenRepAccessoryEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidAccessorySettings );
-    iCenRepNetworkEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidNetworkSettings );
-    iCenRepThemesEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidThemes );
-    iCenRepLanguageEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidAknFep );
-    iCenRepQwertyEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidAvkon );
-    iCenRepKDRMHelperEventHandler = CPhoneCenRepEventHandler::NewL( 
-        KCRUidDRMHelperServer );
     }
 
 // ---------------------------------------------------------
@@ -431,7 +417,7 @@ void CPhoneCenRepProxy::CancelAllNotifies()
     const TInt count = iObserverArray->Count();
     for ( TInt i = count-1; i >=0; i-- )
         {
-        const TCenRepObserverTag& observerTag = iObserverArray->At( i );
+        iObserverArray->At( i );
         iObserverArray->Delete( i );
         }
     }

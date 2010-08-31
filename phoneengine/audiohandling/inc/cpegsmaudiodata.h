@@ -64,7 +64,7 @@ class CPEGsmAudioData : public CPEAudioData,
         */
         IMPORT_C static CPEGsmAudioData* NewL( MPEPhoneModelInternal& aPhoneModel,
                                                RFs& aFsSession );                                  
-		   
+           
                                                
         /**
         * Two-phased constructor for testing purposes
@@ -99,7 +99,7 @@ class CPEGsmAudioData : public CPEAudioData,
         * Plays the given dtmf tone
         * @since Series60_2.7
         * @param  aTone, dtmf tone to be played
-		* @param  aVolume, dtmf tones volume
+        * @param  aVolume, dtmf tones volume
         * @return None.  
         */
         IMPORT_C void PlayDtmfTone( const TChar& aTone ) const; 
@@ -130,7 +130,7 @@ class CPEGsmAudioData : public CPEAudioData,
 
     protected:  // From CPEAudioData
         
-        void DoHandleVolumeChange( TInt aVolume );
+        void DoHandleVolumeChange( TInt aVolume, TBool aSendMsg=EFalse );
     
     private:
         /**

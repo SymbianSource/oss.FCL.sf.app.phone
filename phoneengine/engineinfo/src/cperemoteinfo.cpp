@@ -334,10 +334,10 @@ void CPERemoteInfo::SetPredefinedDtmfStrings(
         TRAPD( err, iPredefinedDtmfStrings = new ( ELeave ) CDesCArrayFlat( count ) );
         
         if( err != KErrNone )
-    	    {
-    	    TEFLOGSTRING2( KTAINT, "CPERemoteInfo::SetPredefinedDtmfStrings, err: %d", err );
-    		return;
-    	    }
+            {
+            TEFLOGSTRING2( KTAINT, "CPERemoteInfo::SetPredefinedDtmfStrings, err: %d", err );
+            return;
+            }
          
         for ( TInt i = 0; i < count; i++ )
             {

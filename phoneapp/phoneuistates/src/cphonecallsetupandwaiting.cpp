@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -20,7 +20,6 @@
 #include <pevirtualengine.h>
 #include <StringLoader.h>
 #include <MediatorDomainUIDs.h>
-#include <videotelcontrolmediatorapi.h>
 
 #include "cphonecallsetupandwaiting.h"
 #include "tphonecmdparamboolean.h"
@@ -44,10 +43,10 @@
 // C++ default constructor can NOT contain any code, that
 // might leave.
 //
-CPhoneCallSetupAndWaiting::CPhoneCallSetupAndWaiting( 
-    MPhoneStateMachine* aStateMachine, 
+CPhoneCallSetupAndWaiting::CPhoneCallSetupAndWaiting(
+    MPhoneStateMachine* aStateMachine,
     MPhoneViewCommandHandle* aViewCommandHandle,
-    MPhoneCustomization* aPhoneCustomization ) : 
+    MPhoneCustomization* aPhoneCustomization ) :
     CPhoneGsmInCall( aStateMachine, aViewCommandHandle, aPhoneCustomization )
     {
     }
@@ -79,18 +78,18 @@ void CPhoneCallSetupAndWaiting::ConstructL()
 // (other items were commented in a header).
 // -----------------------------------------------------------
 //
-CPhoneCallSetupAndWaiting* CPhoneCallSetupAndWaiting::NewL( 
-    MPhoneStateMachine* aStateMachine, 
+CPhoneCallSetupAndWaiting* CPhoneCallSetupAndWaiting::NewL(
+    MPhoneStateMachine* aStateMachine,
     MPhoneViewCommandHandle* aViewCommandHandle,
     MPhoneCustomization* aPhoneCustomization )
     {
-    CPhoneCallSetupAndWaiting* self = new( ELeave ) CPhoneCallSetupAndWaiting( 
+    CPhoneCallSetupAndWaiting* self = new( ELeave ) CPhoneCallSetupAndWaiting(
         aStateMachine, aViewCommandHandle, aPhoneCustomization );
-    
+
     CleanupStack::PushL( self );
     self->ConstructL();
     CleanupStack::Pop( self );
-    
+
     return self;
     }
 
@@ -98,11 +97,11 @@ CPhoneCallSetupAndWaiting* CPhoneCallSetupAndWaiting::NewL(
 // CPhoneCallSetupAndWaiting::HandlePhoneEngineMessageL
 // -----------------------------------------------------------
 //
-void CPhoneCallSetupAndWaiting::HandlePhoneEngineMessageL( 
-    const TInt aMessage, 
+void CPhoneCallSetupAndWaiting::HandlePhoneEngineMessageL(
+    const TInt aMessage,
     TInt aCallId )
     {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
+    __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneCallSetupAndWaiting::HandlePhoneEngineMessageL()");
     switch ( aMessage )
         {
@@ -113,64 +112,11 @@ void CPhoneCallSetupAndWaiting::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageConnected:
             HandleConnectedL( aCallId );
             break;
-            
+
         default:
             CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
             break;
         }
-    }
-
-// -----------------------------------------------------------
-// CPhoneCallSetupAndWaiting::HandleErrorL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneCallSetupAndWaiting::HandleErrorL( 
-        const TPEErrorInfo& aErrorInfo )
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneCallSetupAndWaiting::HandleErrorL()");
-    
-    if( aErrorInfo.iErrorCode == ECCPErrorCCUserAlertingNoAnswer )
-        {
-        // Should not shown "No Answer" note
-        __PHONELOG1( EBasic, EPhoneUIStates,
-       "PhoneUIStates: CPhoneCallSetupAndWaiting::HandleErrorL - aErrorInfo.iErrorCode =%d ",
-            aErrorInfo.iErrorCode);
-        }
-    else
-        {
-        CPhoneState::HandleErrorL( aErrorInfo );
-        }
-    }
-
-// -----------------------------------------------------------
-// CPhoneCallSetupAndWaiting::OpenMenuBarL
-// -----------------------------------------------------------
-//
-void CPhoneCallSetupAndWaiting::OpenMenuBarL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneCallSetupAndWaiting::OpenMenuBarL()");
-    TInt resourceId;
-
-    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
-        {
-        resourceId = EPhoneDtmfDialerMenubar;
-        }
-    else if ( IsNumberEntryVisibleL() )
-        {
-        resourceId = EPhoneAlertingAndWaitingCallMenuBarWithNumberEntry;
-        }
-    else
-        {
-        resourceId = EPhoneAlertingAndWaitingCallMenuBar;
-        }
-
-    TPhoneCmdParamInteger integerParam;
-    integerParam.SetInteger( 
-        CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( resourceId ) );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
-        &integerParam );
     }
 
 // -----------------------------------------------------------
@@ -179,77 +125,67 @@ void CPhoneCallSetupAndWaiting::OpenMenuBarL()
 //
 void CPhoneCallSetupAndWaiting::HandleIdleL( TInt aCallId )
     {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
+    __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneCallSetupAndWaiting::HandleIdleL()");
-        
-    BeginUiUpdateLC();
-            
-    // Remove call 
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
 
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
+    BeginUiUpdateLC();
+
+    // Remove call
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
 
     // Find out do we have waiting or outgoing call left
     TPhoneCmdParamCallStateData callStateData;
     callStateData.SetCallState( EPEStateRinging );
-    iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState, 
+    iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
         &callStateData );
-        
+
     if( callStateData.CallId() > KErrNotFound )
         {
-        // Idle message came for callSetup
 
-        if ( iOnScreenDialer && IsDTMFEditorVisibleL()  )
-            {
-            CloseDTMFEditorL();
-            }
-                
         // Display ringing bubble
         TPhoneCmdParamCallHeaderData callHeaderParam;
         callHeaderParam.SetCallState( EPEStateRinging );
-         
+
         SetCallHeaderTextsForCallComingInL( callStateData.CallId(), EFalse, &callHeaderParam );
-        
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, 
-            callStateData.CallId(), 
+
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble,
+            callStateData.CallId(),
             &callHeaderParam );
-        
+
         // Show incoming call buttons
-        SetTouchPaneButtons( EPhoneIncomingCallButtons ); 
-        SetTouchPaneButtonEnabled( EPhoneCallComingCmdSilent );
-        
-        // Bring up callhandling view       
-        BringIncomingToForegroundL();   
-        
+        SetTouchPaneButtons( EPhoneIncomingCallButtons );
+
+        // Bring up callhandling view
+        BringIncomingToForegroundL();
+
         // state changes to Incoming
         iCbaManager->UpdateIncomingCbaL( callStateData.CallId() );
-        UpdateSilenceButtonDimming();
         SetRingingTonePlaybackL( callStateData.CallId() );
-        iStateMachine->ChangeState( EPhoneStateIncoming );    
-        }    
-    
+        SetBackButtonActive(EFalse);
+        iStateMachine->ChangeState( EPhoneStateIncoming );
+        }
+
     else
         {
         // Show call setup buttons
         CPhoneState::SetTouchPaneButtons( EPhoneCallSetupButtons );
         // Waiting call was terminated
         UpdateCbaL( EPhoneCallHandlingInCallCBA );
-        iStateMachine->ChangeState( EPhoneStateAlerting );            
+        iStateMachine->ChangeState( EPhoneStateAlerting );
         }
-    
+
     EndUiUpdate();
     }
-        
+
 // -----------------------------------------------------------
 // CPhoneCallSetupAndWaiting::UpdateInCallCbaL
 // -----------------------------------------------------------
 //
 void CPhoneCallSetupAndWaiting::UpdateInCallCbaL()
     {
-    __LOGMETHODSTARTEND( EPhoneControl, 
+    __LOGMETHODSTARTEND( EPhoneControl,
         "CPhoneCallSetupAndWaiting::UpdateInCallCbaL() ");
-        
+
     UpdateCbaL( EPhoneCallHandlingIncomingRejectCBA );
     }
 
@@ -261,23 +197,19 @@ void CPhoneCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneCallSetupAndWaiting::HandleConnectedL() ");
 
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
-    
     CPhoneState::BeginUiUpdateLC();
 
     // Update bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
     callHeaderParam.SetCallState( EPEStateConnected );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId,
         &callHeaderParam );
-      
-    // Update Touch buttons    
+
+    // Update Touch buttons
     CPhoneState::SetTouchPaneButtons( EPhoneWaitingCallButtons );
-    SetToolbarDimming( EFalse );
-    
-    EndUiUpdate();
- 
+
+    CPhoneState::EndUiUpdate();
+
     if ( CPhoneState::IsNumberEntryUsedL() )
         {
         // Show number entry
@@ -285,10 +217,10 @@ void CPhoneCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
         booleanParam.SetBoolean( ETrue );
         iViewCommandHandle->ExecuteCommandL( EPhoneViewSetNumberEntryVisible, &booleanParam );
         }
- 
-    // Go to Single And Waiting state 
-    UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );   
-    iStateMachine->ChangeState( EPhoneStateWaitingInSingle );        
+
+    // Go to Single And Waiting state
+    UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
+    iStateMachine->ChangeState( EPhoneStateWaitingInSingle );
     }
-    
+
 // End of File

@@ -137,7 +137,7 @@ CCFActionPlugIn::TExecutionTime CSilenceActionPlugIn::ExecuteL(
             }
         }
         
-	LOG_1( _L("CSilenceActionPlugIn::ExecuteL: END") );
+    LOG_1( _L("CSilenceActionPlugIn::ExecuteL: END") );
     return time;
     }
 

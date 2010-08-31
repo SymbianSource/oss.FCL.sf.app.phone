@@ -61,14 +61,8 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
         /**
         * Handles user selected UI commands.
         * @param aCommand - selected command
-        */
+        */    
         TBool HandleCommandL( TInt aCommand );  
-        
-        /**
-        * This function is called from displaycallsetup and 
-        * the purpose is to do state specific things for callsetup.
-        */
-        IMPORT_C virtual void DoStateSpecificCallSetUpDefinitionsL();
             
     protected:
 
@@ -102,10 +96,9 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
 
-        /**
-        * Opens menu bar.
-        */    
-        virtual void OpenMenuBarL();
+        virtual void HandleKeyEventL( 
+            const TKeyEvent& aKeyEvent,
+            TEventCode aEventCode );
         
         /**
         * Sets correct in call CBAs.
@@ -115,16 +108,16 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
             
      private:
      
-     	/**
-     	* Unholds the call.
-     	* @param aCallId - call id to unhold
-     	*/
+        /**
+        * Unholds the call.
+        * @param aCallId - call id to unhold
+        */
         void HandleUnholdL( TInt aCallId );
      
-     	/**
-     	* Performs a state transition to Two Singles.
-     	* @param aCallId - call id that got connected
-     	*/
+        /**
+        * Performs a state transition to Two Singles.
+        * @param aCallId - call id that got connected
+        */
         void MakeStateTransitionToTwoSinglesL( TInt aCallId );
         
         /**
@@ -146,21 +139,27 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
         void HandleConnectedL( TInt aCallId );
         
         /**
-        * Fetches phone number from new call quoery and dials that number.
-        */ 
-        void CallFromNewCallQueryL();
-        
-        /**
         * Handles received dialing message from Phone Engine.
         * @param aCallId - call id that received the event
         */ 
-        void HandleDialingL( TInt aCallId );
+        void HandleDiallingL( TInt aCallId );
+        
+        /**
+        * Sets up all call setup to display.
+        * @param aCallId - call id to set up
+        */ 
+        void DisplayCallSetupL( TInt aCallId );
         
         /**
         *  Handles received EPEMessageDisconnecting message from Phone Engine.
         * @param aCallId: the call id of the call
         */
         void HandleDisconnectingL( TInt aCallId );
+
+        /**
+        *  Handles received EPhoneCmdUpdateUiControls command.
+        */
+        void UpdateUiControlsL();
         
     private: //Data
             

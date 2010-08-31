@@ -18,6 +18,7 @@
 
 // INCLUDES
 #include <featmgr.h>
+#include <telephonyvariant.hrh>
 #include "cphoneincoming.h"
 #include "phonerssbase.h"
 #include "phonelogger.h"
@@ -27,7 +28,8 @@
 #include "tphonecmdparamboolean.h"
 #include "phoneui.hrh"
 #include "mphonestatemachine.h"
-#include "mphonesecuritymodeobserver.h"
+#include "mphonestorage.h"
+#include "cphonecenrepproxy.h"
 #include "tphonecmdparamcallstatedata.h"
 
 // ================= MEMBER FUNCTIONS =======================
@@ -117,22 +119,12 @@ EXPORT_C void CPhoneIncoming::HandlePhoneEngineMessageL(
             break;
             
         case MEngineMonitor::EPEMessageRemoteHeld:
-                SendGlobalInfoNoteL( EPhoneInformationRemotePutOnHoldNote );
+                SendGlobalInfoNoteL( EPhoneInformationRemotePutOnHoldNote, ETrue );
             break;
         
         case MEngineMonitor::EPEMessageRemoteResumed:
-                SendGlobalInfoNoteL( EPhoneInformationConnectedNote );
+                SendGlobalInfoNoteL( EPhoneInformationConnectedNote, ETrue );
             break;
-		
-		case MEngineMonitor::EPEMessageShowVersion:
-			{
-			if ( iStateMachine->SecurityMode()->IsSecurityMode() )
-				{
-				// Do nothing if security mode is enabled.
-				return;
-				}
-			}
-		// Fall through
 
         // fall through.
         case MEngineMonitor::EPEMessageIssuingSSRequest:
@@ -199,16 +191,7 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCallIdByState, &callState );
     TInt connectedCall = callState.CallId(); 
     
-    IsNumberEntryUsedL() ? 
-        BeginTransEffectLC( ECallUiAppear ) :
-        BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
-    
-    // Hide the number entry if it exists
-    if ( IsNumberEntryUsedL() )
-        {
-        SetNumberEntryVisibilityL( EFalse );    
-        }
     
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
@@ -216,7 +199,7 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     AllowShowingOfWaitingCallHeaderL( dialerParam );
       
     // Close fast swap window if it's displayed
-    EikonEnv()->DismissTaskList();
+    CEikonEnv::Static()->DismissTaskList();
     
     // If the 1st incoming call became Connected, this is waiting call
     // If the 1st incoming call went just Idle, this is a normal call
@@ -234,15 +217,39 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
         dialerParam.SetBoolean( EFalse );
         }
     
-    SetToolbarDimming( EFalse );
     // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
+    
+    SetTouchPaneButtons( EPhoneWaitingCallButtons );
 
+    if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
+            && !CPhoneCenRepProxy::Instance()->
+            IsTelephonyFeatureSupported( KTelephonyLVFlagAllowUnlockOnIncoming ) 
+            && ( IsKeyLockOn() || IsAutoLockOn() ) )
+        {
+        DisableCallUIL();
+        }
+    else
+        {
+        // if keys have been locked, disable keylock without information note
+        if ( IsKeyLockOn() )
+            {
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewDisableKeyLockWithoutNote );
+            }
+        }
+        
+    if( CPhoneCenRepProxy::Instance()->
+            IsTelephonyFeatureSupported( KTelephonyLVFlagDisableCallControlHardKeysWhileLocked ) 
+            && ( IsKeyLockOn() || IsAutoLockOn() ) )
+        {
+        DisableHWKeysL();
+        }
+        
     EndUiUpdate();
-    EndTransEffect();
 
     if ( connectedCall > KErrNotFound )
         {
+        // Go to incoming state
         iCbaManager->UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
         iStateMachine->ChangeState( EPhoneStateWaitingInSingle );   
         }
@@ -258,23 +265,28 @@ void CPhoneIncoming::DisplayIncomingCallL(
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneIncoming::DisplayIncomingCallL()");
- 
-    // Close menu bar, if it is displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
-    // Remove any phone dialogs if they are displayed
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-
-    // if keys have been locked, disable keylock without information note
-    if ( IsKeyLockOn() )
+    // Cannot delete active note, e.g. New call query, 
+    // but show waiting note with or without caller name
+    if ( IsAnyQueryActiveL() || 
+        ( aCommandParam.Boolean() && iOnScreenDialer ) )
         {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewDisableKeyLockWithoutNote );
+        CallWaitingNoteL( aCallId );        
+        }
+    else
+        {
+        // Remove any phone dialogs if they are displayed
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
         }
     
     // Indicate that the Phone needs to be sent to the background if
     // an application other than the top application is in the foreground
-    SetNeedToReturnToForegroundAppStatusL( !TopAppIsDisplayedL() );
-    
+    TPhoneCmdParamBoolean booleanParam;
+    booleanParam.SetBoolean( !TopAppIsDisplayedL() );
+    iViewCommandHandle->ExecuteCommandL( 
+        EPhoneViewSetNeedToSendToBackgroundStatus,
+        &booleanParam );
+
     // Bring Phone app in the foreground
     TPhoneCmdParamInteger uidParam;
     uidParam.SetInteger( KUidPhoneApplication.iUid );
@@ -285,7 +297,7 @@ void CPhoneIncoming::DisplayIncomingCallL(
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetTopApplication,
         &uidParam );
 
-    DisplayHeaderForCallComingInL( aCallId, aCommandParam.Boolean() ); //waiting call 
+    DisplayHeaderForCallComingInL( aCallId, ETrue ); //waiting call 
     }    
 
 // -----------------------------------------------------------
@@ -297,20 +309,7 @@ void CPhoneIncoming::AllowShowingOfWaitingCallHeaderL(
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneIncoming::AllowShowingOfWaitingCallHeaderL() ");
 
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewAllowWaitingCallHeader, 
-        &aCommandParam );
-    
-    // Non-touch :Hide number entry if it exists on 
-    // Touch : an internal operation ongoing 
-    // -> do not hide dialer
-    if ( !iOnScreenDialer )
-        {   
-        SetNumberEntryVisibilityL(EFalse);
-        }
-    // If param is true and number entry is open only then
-    // hide number entry.
-    else if ( aCommandParam.Boolean() && IsNumberEntryUsedL() )
+    if ( aCommandParam.Boolean() && IsNumberEntryUsedL() )
         {
         SetNumberEntryVisibilityL(EFalse);
         }

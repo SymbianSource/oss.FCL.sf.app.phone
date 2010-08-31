@@ -100,7 +100,7 @@ void CPhoneGeneralGsmMessagesHandler::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageCallBarred:
-            SendGlobalInfoNoteL( EPhoneActiveBarrings );
+            SendGlobalInfoNoteL( EPhoneActiveBarrings, ETrue );
             break;
         
         case MEngineMonitor::EPEMessageIncCallIsForw:
@@ -108,29 +108,19 @@ void CPhoneGeneralGsmMessagesHandler::HandlePhoneEngineMessageL(
             break;
             
         case MEngineMonitor::EPEMessageIncCallForwToC:
-            SendGlobalInfoNoteL( EPhoneMtCallDiverting );
+            SendGlobalInfoNoteL( EPhoneMtCallDiverting, ETrue );
             break;
             
         case MEngineMonitor::EPEMessageOutCallForwToC:
-            SendGlobalInfoNoteL( EPhoneDiverting );
+            SendGlobalInfoNoteL( EPhoneDiverting, ETrue );
             break;
 
-        case MEngineMonitor::EPEMessageShowVersion:
-            HandleShowVersionL();
-            break;
-            
         case MEngineMonitor::EPEMessageIssuedSSRequest:
             {
             __PHONELOG(
                 EBasic, 
                 EPhoneUIStates,
                 "CPhoneGeneralGsmMessagesHandler::EPEMessageIssuedSSRequest" );
-
-            TPhoneCmdParamBoolean booleanParam;
-            booleanParam.SetBoolean( EFalse );
-            iViewCommandHandle.ExecuteCommandL( 
-                EPhoneViewSetBlockingDialogStatus, 
-                &booleanParam );
             break;
             }
             
@@ -165,47 +155,26 @@ void CPhoneGeneralGsmMessagesHandler::HandlePhoneEngineMessageL(
                 EPhoneViewSetGlobalNotifiersDisabled,
                 &globalNotifierParam );
             
-            TPhoneCmdParamBoolean booleanParam;
-            booleanParam.SetBoolean( ETrue );
-            iViewCommandHandle.ExecuteCommandL( 
-                EPhoneViewSetBlockingDialogStatus, 
-                &booleanParam );
-            
             // Get active call count
             TPhoneCmdParamInteger activeCallCount;
             iViewCommandHandle.ExecuteCommandL(
                 EPhoneViewGetCountOfActiveCalls, &activeCallCount );
             
-            if( !activeCallCount.Integer() )
-                {
-                __PHONELOG(
-                    EBasic, 
-                    EPhoneUIStates,
-                    "CPhoneGeneralGsmMessagesHandler::EPEMessageIssuingSSRequest no active call" );
-                // Ensure that the dialer is activated to display local notes and dialogs properly.
-                TPhoneCmdParamAppInfo param;
-                param.SetAppUid( KUidPhoneApplication );
-                param.SetViewUid( KUidViewId );
-                param.SetCustomMessageId( TUid::Uid( KTouchDiallerViewCommand ) );
-                iViewCommandHandle.ExecuteCommandL( 
-                    EPhoneViewActivateAppViewWithCustomMessage, 
-                    &param );
-                }
             // Remove phoneumber query
             iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveQuery );
             break;
             }
 
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
-            SendGlobalErrorNoteL( EPhoneSSNotifCLIRSupprReject );
+            SendGlobalErrorNoteL( EPhoneSSNotifCLIRSupprReject, ETrue );
             break;
             
         case MEngineMonitor::EPEMessageForwardUnconditionalModeActive:
-            SendGlobalInfoNoteL( EPhoneAllIncomingCallsDiverted );
+            SendGlobalInfoNoteL( EPhoneAllIncomingCallsDiverted, ETrue );
             break;
             
         case MEngineMonitor::EPEMessageForwardConditionallyModeActive:
-            SendGlobalInfoNoteL( EPhoneActiveDiverts );
+            SendGlobalInfoNoteL( EPhoneActiveDiverts, ETrue );
             break;
 
         default:
@@ -217,7 +186,8 @@ void CPhoneGeneralGsmMessagesHandler::HandlePhoneEngineMessageL(
 // CPhoneGeneralGsmMessagesHandler::SendGlobalInfoNoteL
 // ---------------------------------------------------------
 //
-void CPhoneGeneralGsmMessagesHandler::SendGlobalInfoNoteL( TInt aResourceId )
+void CPhoneGeneralGsmMessagesHandler::SendGlobalInfoNoteL( 
+        TInt aResourceId, TBool aNotificationDialog )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneGeneralGsmMessagesHandler::SendGlobalInfoNoteL()" );
@@ -232,12 +202,14 @@ void CPhoneGeneralGsmMessagesHandler::SendGlobalInfoNoteL( TInt aResourceId )
             &globalNotifierParam );
             
         TPhoneCmdParamGlobalNote globalNoteParam;
+        PhoneNotificationType type = aNotificationDialog ? 
+                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+        globalNoteParam.SetType( type );
       
-        globalNoteParam.SetType( EAknGlobalInformationNote );
         globalNoteParam.SetTextResourceId( 
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
-        globalNoteParam.SetTone( EAvkonSIDInformationTone );
+        globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
         iViewCommandHandle.ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam );    
@@ -252,83 +224,17 @@ void CPhoneGeneralGsmMessagesHandler::HandleIncomingCallForwardedL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneGeneralGsmMessagesHandler::HandleIncomingCallForwardedL()" );
-    }
-
-// -----------------------------------------------------------
-// CPhoneGeneralGsmMessagesHandler::HandleShowVersionL
-// -----------------------------------------------------------
-//
-void CPhoneGeneralGsmMessagesHandler::HandleShowVersionL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneGeneralGsmMessagesHandler::HandleShowVersionL()" );
-    if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer )  )  
-        {
-        iViewCommandHandle.ExecuteCommandL( EPhoneViewClearNumberEntryContent );       
-        }
-    else
-        {
-        // Remove number entry from screen
-        iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveNumberEntry );        
-        } 
-
-
-#ifdef __SYNCML_DM
-    // Launch DM UI 
-    RWsSession sess = CCoeEnv::Static()->WsSession();
-    RApaLsSession apaLsSession;        
-  
-    TApaTaskList appList( sess );
-    TApaTask bring = appList.FindApp( KDeviceManagerUid );
-
-    if ( bring.Exists() )
-        {
-        bring.BringToForeground();
-        }
-    else
-        {
-        if( !apaLsSession.Handle() )
-            {
-            User::LeaveIfError(apaLsSession.Connect());
-            }
-        CleanupClosePushL( apaLsSession );
-        TThreadId thread;
-        User::LeaveIfError( apaLsSession.StartDocument(KNullDesC, KDeviceManagerUid, thread) );
-        CleanupStack::PopAndDestroy( &apaLsSession );  
-        }
-
-    // Stop dtmf tone. Long key press case key up event go to 
-    // device manager application.
-    iStateMachine.SendPhoneEngineMessage(
-        MPEPhoneModel::EPEMessageEndDTMF );
     
-#else    
-    // Fetch version number
-    TPEPhoneIdentityParameters phoneIdentityParameters = iStateMachine.
-        PhoneEngineInfo()->PhoneIdentityParameters();
-
-    // Add it to the resource string
-    HBufC* buf = HBufC::NewLC( KSysUtilVersionTextLength );
-    buf->Des().Format( phoneIdentityParameters.iRevision );
-        
-    TPhoneCmdParamNote noteParam;
-    noteParam.SetType( EPhoneNoteCustom );
-    noteParam.SetResourceId( CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( EPhoneInformationWaitNote ) );
-    noteParam.SetText( *buf );
+    iActiveState.SetDivertIndication( ETrue );
     
-    // Display note
-    iViewCommandHandle.ExecuteCommandL( EPhoneViewShowNote, &noteParam );
-    
-    CleanupStack::PopAndDestroy( buf );
-#endif
     }
 
 // ---------------------------------------------------------
 //  CPhoneGeneralGsmMessagesHandler::SendGlobalErrorNoteL
 // ---------------------------------------------------------
 //
-void CPhoneGeneralGsmMessagesHandler::SendGlobalErrorNoteL( TInt aResourceId )
+void CPhoneGeneralGsmMessagesHandler::SendGlobalErrorNoteL( 
+        TInt aResourceId, TBool aNotificationDialog )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneGeneralGsmMessagesHandler::SendGlobalErrorNoteL()" );
@@ -344,12 +250,14 @@ void CPhoneGeneralGsmMessagesHandler::SendGlobalErrorNoteL( TInt aResourceId )
             &globalNotifierParam );
             
         TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetType( EAknGlobalErrorNote );
+        PhoneNotificationType type = aNotificationDialog ? 
+                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+        globalNoteParam.SetType( type );
         globalNoteParam.SetTextResourceId( 
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
-        globalNoteParam.SetTone( CAknNoteDialog::EErrorTone );
-
+        globalNoteParam.SetNotificationDialog( aNotificationDialog );
+        
         iViewCommandHandle.ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam );
         }

@@ -98,7 +98,7 @@ NONSHARABLE_CLASS( CPEActiveStarter ) : public CActive
         */
         CPEActiveStarter( MPEActiveStarter* aPEActiveStarter );
         
-    private:	//Data
+    private:    //Data
 
         // protocol specific active starter pointer
         MPEActiveStarter* iActiveStarter;

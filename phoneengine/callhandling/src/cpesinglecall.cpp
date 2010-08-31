@@ -44,7 +44,7 @@ CPESingleCall::~CPESingleCall()
 CPESingleCall::CPESingleCall( 
         MPEMessageSender& aOwner
         ) : CPESingleCallObserver( aOwner ),
-		    iMissedCall( EFalse)
+            iMissedCall( EFalse)
     {
     TEFLOGSTRING( KTAOBJECT, "CALL CPESingleCall::CPESingleCall start." );
     TEFLOGSTRING( KTAOBJECT, "CALL CPESingleCall::CPESingleCall complete." );
@@ -167,7 +167,7 @@ void CPESingleCall::DisableFDNCheck()
     
     //iCall->NoFDNCheck();
     }
-		
+        
 // -----------------------------------------------------------------------------
 // CPESingleCall::Hold
 // creates hold request to the CPECallCommand object

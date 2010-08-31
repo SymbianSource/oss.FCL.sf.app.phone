@@ -22,9 +22,9 @@
 
 //  INCLUDES
 #include <e32base.h>
-#include <CPhCltCommandHandler.h>
-#include <CPhCltCallNotify.h>
-#include <RPhCltServer.h>
+#include <cphcltcommandhandler.h>
+#include <cphcltcallnotify.h>
+#include <rphcltserver.h>
 #include <pevirtualengine.h>
 #include <mphcltcomhandrequestobserver.h>
 

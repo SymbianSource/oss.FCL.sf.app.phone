@@ -23,6 +23,7 @@
 #include <mpedatastore.h>
 #include <MProfileExtraTones.h>
 #include <talogger.h>
+#include <ProfileEngineInternalCRKeys.h>
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -63,7 +64,8 @@ CPEProfileSettingMonitor::~CPEProfileSettingMonitor( )
 //
 CPEProfileSettingMonitor::CPEProfileSettingMonitor(
         MPEPhoneModelInternal& aModel
-        ) : iModel( aModel )
+        ) : CPECenRepMonitor( KProEngSilenceMode ), 
+            iModel( aModel )
     {
     }
 
@@ -78,7 +80,8 @@ void CPEProfileSettingMonitor::ConstructL()
     iProfileEngine = CreateProfileEngineL();
     
     // Retrieve current profile settings    
-    GetProfileSettingsL();
+
+    BaseConstructL( KCRUidProfileEngine );
     
     iModel.SendMessage( MEngineMonitor::EPEMessageProfileChanged ); 
     
@@ -121,23 +124,33 @@ void CPEProfileSettingMonitor::GetProfileSettingsL()
     const TProfileToneSettings& toneSettings = activeTones.ToneSettings();  
     
     // Get ringing type and volume and keypad volume
-    TProfileRingingType ringingType = toneSettings.iRingingType;    
-    iModel.DataStore()->SetRingingType( static_cast<TProfileRingingType>( ringingType ) );
+    TProfileRingingType ringingType = toneSettings.iRingingType;
+    
+    TInt silentVolume(0);
+    if ( KErrNone == Get(silentVolume) && silentVolume )
+        {
+        iModel.DataStore()->SetRingingType(EProfileRingingTypeSilent);
+        }
+    else 
+        {
+        iModel.DataStore()->SetRingingType( static_cast<TProfileRingingType>( ringingType ) );
+        }
+    
     iModel.DataStore()->SetRingingVolume( toneSettings.iRingingVolume );
     iModel.DataStore()->SetTextToSpeech( toneSettings.iTextToSpeech );
                   
     TProfileKeypadVolume keypadVolume = toneSettings.iKeypadVolume;
-    	
+        
     if ( keypadVolume < EProfileKeypadVolumeOff 
         || keypadVolume > EProfileKeypadVolumeLevel3 )
-	    {
+        {
         // Value is out of range - use default
-		keypadVolume = EProfileKeypadVolumeLevel2; // default value
-	    }
-	
-	const TInt KKeypadVolume[4] = {0, 2, 5, 10}; // Previous PE settings
-	TInt volume = KKeypadVolume[ keypadVolume ];
-	iModel.DataStore()->SetKeypadVolume( volume );
+        keypadVolume = EProfileKeypadVolumeLevel2; // default value
+        }
+    
+    const TInt KKeypadVolume[4] = {0, 2, 5, 10}; // Previous PE settings
+    TInt volume = KKeypadVolume[ keypadVolume ];
+    iModel.DataStore()->SetKeypadVolume( volume );
 
     //  Get alert for group Ids
     iModel.DataStore()->SetAlertForGroup( activeProfile->AlertForL() );
@@ -145,8 +158,21 @@ void CPEProfileSettingMonitor::GetProfileSettingsL()
     // Pop( activeProfile ) does not recognize ActiveProfileLC created 
     // item because of casting. However, functionality and cleanup works OK.
     CleanupStack::Pop(); // activeProfile
-	activeProfile->Release();
-	__UHEAP_MARKEND;
+    activeProfile->Release();
+    __UHEAP_MARKEND;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEProfileSettingMonitor::UpdateL
+// Callback function - implements virtual function from CPECenRepMonitor
+// This is called whenever cr settings change
+// -----------------------------------------------------------------------------
+//
+void CPEProfileSettingMonitor::UpdateL()
+    {
+    TEFLOGSTRING( KTAINT, "PE CPEProfileSettingMonitor::UpdateL" );
+    GetProfileSettingsL();
+    iModel.SendMessage( MEngineMonitor::EPEMessageProfileChanged );
     }
 
 // -----------------------------------------------------------------------------
