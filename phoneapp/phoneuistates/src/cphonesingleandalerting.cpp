@@ -102,15 +102,20 @@ void CPhoneSingleAndAlerting::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnected:
+            {
             HandleConnectedL( aCallId );
             break;
-            
+            }
         case MEngineMonitor::EPEMessageIdle:
+            {
             HandleIdleL( aCallId );
+            }
             break;
-            
+           
         default:
+            {
             CPhoneAlerting::HandlePhoneEngineMessageL( aMessage, aCallId );
+            }
             break;
         }
     }
@@ -138,7 +143,7 @@ void CPhoneSingleAndAlerting::HandleKeyMessageL(
                 {
                 // Show not allowed note
                 CPhoneState::SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed, ETrue );
+                    EPhoneNoteTextNotAllowed );
                 }
             break;
 
@@ -187,12 +192,9 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         EPhoneViewGetCallIdByState, &callStateData );
         
     if( callStateData.CallId() == aCallId )
-        {    
-        // Keep Phone in the foreground
-        TPhoneCmdParamBoolean booleanParam;
-        booleanParam.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
+        {        
+        // Close menu bar, if it is displayed
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
         CPhoneState::BeginUiUpdateLC();
             
@@ -202,8 +204,8 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
             &callHeaderParam );
 
-        CPhoneState::SetTouchPaneButtons( EPhoneTwoSinglesButtons );
-        CPhoneState::EndUiUpdate();
+        SetTouchPaneButtons( EPhoneTwoSinglesButtons );
+        EndUiUpdate();
               
         // Set Hold flag to view
         TPhoneCmdParamBoolean holdFlag;
@@ -212,7 +214,7 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         
         
         // Set Two singles softkeys
-        UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
+	    UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
         
         // Go to two singles state
         iStateMachine->ChangeState( EPhoneStateTwoSingles );
@@ -243,6 +245,9 @@ void CPhoneSingleAndAlerting::HandleIdleL( TInt aCallId )
     
     // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
+
+    // Close menu bar, if it is displayed
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     if ( !TopAppIsDisplayedL() )
         {
@@ -277,13 +282,40 @@ void CPhoneSingleAndAlerting::HandleIdleL( TInt aCallId )
     }
 
 // -----------------------------------------------------------
+// CPhoneSingleAndAlerting::OpenMenuBarL
+// -----------------------------------------------------------
+//
+void CPhoneSingleAndAlerting::OpenMenuBarL()
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, 
+        "CPhoneSingleAndAlerting::OpenMenuBarL()");
+    TInt resourceId;
+
+    if ( IsNumberEntryVisibleL() )
+        {
+        resourceId = EPhoneAlertingAndHeldCallMenuBarWithNumberEntry;
+        }
+    else
+        {
+        resourceId = EPhoneAlertingAndHeldCallMenuBar;
+        }
+
+    TPhoneCmdParamInteger integerParam;
+    integerParam.SetInteger( 
+        CPhoneMainResourceResolver::Instance()->
+        ResolveResourceID( resourceId ) );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
+        &integerParam );
+    }
+
+// -----------------------------------------------------------
 // CPhoneSingleAndAlerting::UpdateInCallCbaL
 // -----------------------------------------------------------
 //
 void CPhoneSingleAndAlerting::UpdateInCallCbaL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneSingleAndAlerting::UpdateInCallCbaL() ");
-    UpdateCbaL( EPhoneCallHandlingInCallCBA );
+ 	UpdateCbaL( EPhoneCallHandlingInCallCBA );
     }
     
         

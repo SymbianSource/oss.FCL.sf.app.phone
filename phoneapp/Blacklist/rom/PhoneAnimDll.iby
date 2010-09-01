@@ -19,8 +19,8 @@
 #ifndef __PHONEANIMDLL_IBY__
 #define __PHONEANIMDLL_IBY__
 
-file=ABI_DIR\BUILD_DIR\phoneanimdll.dll         SHARED_LIB_DIR\phoneanimdll.dll
+file=ABI_DIR\BUILD_DIR\PhoneAnimDll.dll         SHARED_LIB_DIR\PhoneAnimDll.dll
 
-data=ZSYSTEM\install\phoneanimdll_stub.sis       System\Install\phoneanimdll_stub.sis
+data=ZSYSTEM\install\PhoneAnimDll_stub.sis       System\Install\PhoneAnimDll_stub.sis
 
 #endif

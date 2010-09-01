@@ -22,10 +22,10 @@
 #define CPEPARSERSSHANDLER_H
 
 //  INCLUDES
-#include <cphonegsmsshandler.h>
+#include <CPhoneGsmSsHandler.h>
 #include <pevirtualengine.h>
 #include <nwdefs.h>
-#include <mpsetrequestobs.h>
+#include <MPsetRequestObs.h>
 
 // FORWARD DECLARATIONS
 class CPEMessageHandler;
@@ -39,12 +39,6 @@ class CPsuiWaitingObs;
 class CPsuiBarringObs;
 class CPsuiDivertObs;
 class CPsuiCliObserver;
-
-class PSetCallDivertingWrapper;
-class PSetCallWaitingWrapper;
-class PSetWrapper;
-class PsUiDivertNoteHandler;
-class PsUiWaitingNoteHandler;
 
 // CLASS DECLARATION
 
@@ -239,22 +233,22 @@ NONSHARABLE_CLASS( CPEParserSSHandler ) : public CPhoneGsmSsHandler,
         /**
         * Create call barring observer
         */
-        void CreateCBObsL();
+        void CPEParserSSHandler::CreateCBObsL();
     
         /**
         * Create call cli observer
         */
-        void CreateCliObsL();          
+        void CPEParserSSHandler::CreateCliObsL();          
         
         /**
         * Create call divert observer
         */
-        void CreateCFObsL();
+        void CPEParserSSHandler::CreateCFObsL();
 
         /**
         * Create call waiting observer
         */
-        void CreateCWObsL();
+        void CPEParserSSHandler::CreateCWObsL();
 
         /**
         * if ConnectSsToEngine leaves, this is called
@@ -283,34 +277,23 @@ NONSHARABLE_CLASS( CPEParserSSHandler ) : public CPhoneGsmSsHandler,
         CPsetContainer* iSettings;
         // Owned phone settings ui container.
         CPsuiContainer* iObsContainer;
-       
+        // Owned call waiting.
+        CPsetCallWaiting* iWaiting;
+        // Owned waiting observer.
+        CPsuiWaitingObs* iCwObserver;
         // Owned call barring.
         CPsetCallBarring* iBarring;
         // Owned call barring observer.
-        CPsuiBarringObs* iCbObserver;    
-    
+        CPsuiBarringObs* iCbObserver;
+        // Owned call diverting.
+        CPsetCallDiverting* iDivert;
+        // Owned call diverting observer.
+        CPsuiDivertObs* iCfObserver;
         // Owned calling line identity.
         CPsetCli* iCli;
         // Owned calling line identity observer.
         CPsuiCliObserver* iCliObserver;
-        
-        
-        // Call diverting. Not own.
-        CPsetCallDiverting* iDivert;  
-        // Call divert wrapper. Not own
-        PSetCallDivertingWrapper* iCallDivertingWrapper;
-        // Call diverting note handler, Own
-        PsUiDivertNoteHandler* iCallDivertingHandler;
-      
-        // Owned call waiting. Now Own
-        CPsetCallWaiting* iWaiting;
-        // Call divert wrapper. Not own
-        PSetCallWaitingWrapper* iCallWaitingWrapper;
-        // Call diverting note handler, Own
-        PsUiWaitingNoteHandler* iCallWaitingHandler;
 
-        // Setting wrappers. Own. 
-        PSetWrapper *iPsetWrapper;  
     };
 
 #endif      // CPEPARSERSSHANDLER_H

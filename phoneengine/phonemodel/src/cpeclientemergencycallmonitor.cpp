@@ -22,7 +22,7 @@
 #include "cpemessagehandler.h"
 #include "mpephonemodelinternal.h"
 #include "pevirtualengine.h"
-#include <cphcltcallnotify.h>
+#include <CPhCltCallNotify.h>
 #include <mpedatastore.h>
 #include <talogger.h>
 

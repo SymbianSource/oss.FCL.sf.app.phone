@@ -44,9 +44,9 @@ EXPORT_C CPhoneMediatorFactory* CPhoneMediatorFactory::Instance()
         {
         TRAPD( err, instance = CPhoneMediatorFactory::NewL() );
         if ( err )
-            {
-            Panic( EPhoneMediatorCenterCouldNotCreateSingleton );   
-            }
+	        {
+	        Panic( EPhoneMediatorCenterCouldNotCreateSingleton );	
+	        }
         }
     return instance;
     }
@@ -100,43 +100,43 @@ CPhoneMediatorFactory* CPhoneMediatorFactory::NewL()
 // -----------------------------------------------------------------------------
 //
 EXPORT_C CPhoneMediatorSender* CPhoneMediatorFactory::Sender()
-    {
+	{
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, "CPhoneMediatorFactory::Sender( ) ");
     return CPhoneMediatorSender::Instance();
-    }
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorFactory::CommandListener
 // -----------------------------------------------------------------------------
 //
 EXPORT_C CPhoneMediatorCommandListener* CPhoneMediatorFactory::CommandListener( 
-    MPhoneMenuAndCbaEvents* aMenuAndCbaEventHandler, 
-    MPhoneEngineMessageSender* aMessageSender,
-    MPEEngineInfo* aEngineInfo )
-    {
+	MPhoneMenuAndCbaEvents* aMenuAndCbaEventHandler, 
+	MPhoneEngineMessageSender* aMessageSender,
+	MPEEngineInfo* aEngineInfo )
+	{
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, "CPhoneMediatorFactory::CommandListener( ) ");
     
     if( aEngineInfo && !iEngineInfo )
-        {
-        iEngineInfo = aEngineInfo;          
-        }
+	    {
+		iEngineInfo = aEngineInfo;	    	
+	    }
     
-    if( aMenuAndCbaEventHandler && aMessageSender )
-        {
-        iMenuAndCbaEvents = aMenuAndCbaEventHandler;
-        iMessageSender = aMessageSender;
-        CPhoneMediatorCommandListener::Instance()->Initialize( aMenuAndCbaEventHandler,
-            aMessageSender, aEngineInfo );
-        }
-    else
-        {
-        // Sanity checks
-        __ASSERT_DEBUG( iMenuAndCbaEvents, Panic( EPhoneMediatorCenterParameterNotInitialized ) );
-        __ASSERT_DEBUG( iMessageSender, Panic( EPhoneMediatorCenterParameterNotInitialized ) );
-        __ASSERT_DEBUG( iEngineInfo, Panic( EPhoneMediatorCenterParameterNotInitialized ) );
-        }
-    return CPhoneMediatorCommandListener::Instance();
-    }
+	if( aMenuAndCbaEventHandler && aMessageSender )
+		{
+		iMenuAndCbaEvents = aMenuAndCbaEventHandler;
+		iMessageSender = aMessageSender;
+		CPhoneMediatorCommandListener::Instance()->Initialize( aMenuAndCbaEventHandler,
+			aMessageSender, aEngineInfo );
+		}
+	else
+		{
+		// Sanity checks
+		__ASSERT_DEBUG( iMenuAndCbaEvents, Panic( EPhoneMediatorCenterParameterNotInitialized ) );
+		__ASSERT_DEBUG( iMessageSender, Panic( EPhoneMediatorCenterParameterNotInitialized ) );
+		__ASSERT_DEBUG( iEngineInfo, Panic( EPhoneMediatorCenterParameterNotInitialized ) );
+		}
+	return CPhoneMediatorCommandListener::Instance();
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorFactory::MediatorMessage
@@ -144,21 +144,21 @@ EXPORT_C CPhoneMediatorCommandListener* CPhoneMediatorFactory::CommandListener(
 //
 EXPORT_C MPhoneMediatorMessage* CPhoneMediatorFactory::MediatorMessage(
     const TInt aMessage, TInt aCallId )
-    {
+	{
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, "CPhoneMediatorFactory::MediatorMessage( ) ");
-    __ASSERT_DEBUG( iEngineInfo, Panic( EPhoneMediatorCenterParameterNotInitialized ) );
+	__ASSERT_DEBUG( iEngineInfo, Panic( EPhoneMediatorCenterParameterNotInitialized ) );
 
-    CPhoneMediatorMessageFactory* messageFactory = NULL;
+	CPhoneMediatorMessageFactory* messageFactory = NULL;
     MPhoneMediatorMessage* message = NULL;
     
-    TRAPD( error, messageFactory = CPhoneMediatorMessageFactory::NewL( *iEngineInfo ) );
-    if( error == KErrNone )
-        {
-        TRAP_IGNORE( message = messageFactory->CreateMessageL( aMessage, aCallId ) );
-        delete messageFactory;
-        }
+	TRAPD( error, messageFactory = CPhoneMediatorMessageFactory::NewL( *iEngineInfo ) );
+	if( error == KErrNone )
+		{
+		TRAP_IGNORE( message = messageFactory->CreateMessageL( aMessage, aCallId ) );
+		delete messageFactory;
+		}
 
-    return message;
-    }
+	return message;
+	}
 
 // End of File

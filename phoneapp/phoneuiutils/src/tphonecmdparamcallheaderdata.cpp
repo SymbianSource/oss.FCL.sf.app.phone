@@ -31,36 +31,25 @@
 //
 EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneCmdParamCallHeaderData() :
     TPhoneCommandParam(),
-    iLabelText( NULL ),
-    iShortLabelText( NULL ),
+    iLabelText( KNullDesC ),
+    iShortLabelText( KNullDesC ),
     iCallState( 0 ),
     iNumberType( 0 ),
     iCiphering( EFalse ),
-    iCLIText( NULL ),
-    iCNAPText( NULL ),
+    iCLIText( KNullDesC ),
+    iCNAPText( KNullDesC ),
     iPicture( KNullDesC ),
+    iCallFlag( CBubbleManager::ENormal ),
     iLine2 ( EFalse ),
     iThumbnail( NULL ),
     iCallerText( KNullDesC ),
     iParticipantListCLI( EPhoneParticipantCLIText ),
+    iHasThumbnail( EFalse ),
     iCipheringIndicatorAllowed( ETrue ),
     iContactLink( KNullDesC8 ),
     iRemotePhoneNumber( KNullDesC )
-    ,iDiverted( EFalse )
     {
     iParamId = EPhoneParamIdCallHeaderData;
-    }
-
-// ---------------------------------------------------------
-// TPhoneCmdParamCallHeaderData::~TPhoneCmdParamCallHeaderData
-// ---------------------------------------------------------
-//
-EXPORT_C TPhoneCmdParamCallHeaderData::~TPhoneCmdParamCallHeaderData()
-    {
-    delete iLabelText;
-    delete iShortLabelText;
-    delete iCLIText;
-    delete iCNAPText;
     }
 
 // ---------------------------------------------------------
@@ -71,10 +60,9 @@ EXPORT_C TPhoneCmdParamCallHeaderData::~TPhoneCmdParamCallHeaderData()
 //
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetLabelText( 
    const TDesC& aLabelText )
-    {
-    delete iLabelText;
-    iLabelText = aLabelText.Alloc();
-    }
+	{
+	iLabelText = aLabelText;
+	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamCallHeaderData::SetShortLabelText
@@ -85,8 +73,7 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetLabelText(
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetShortLabelText( 
    const TDesC& aShortLabelText )
     {
-    delete iShortLabelText;
-    iShortLabelText = aShortLabelText.Alloc();
+	iShortLabelText = aShortLabelText;
     }
 
 // ---------------------------------------------------------
@@ -142,10 +129,9 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetCiphering(
 //
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetCLIText( 
    const TDesC& aCLIText,
-   TPhoneTextClippingDirection aDirection )
+   CBubbleManager::TPhoneClippingDirection aDirection )
    {
-   delete iCLIText;
-   iCLIText = aCLIText.Alloc();
+   iCLIText = aCLIText;
    iCLITextClippingDirection = aDirection; 
    }
 
@@ -157,10 +143,9 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetCLIText(
 //
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetCNAPText( 
    const TDesC& aCNAPText,
-   TPhoneTextClippingDirection aDirection )
+   CBubbleManager::TPhoneClippingDirection aDirection )
    {
-   delete iCNAPText;
-   iCNAPText = aCNAPText.Alloc();
+   iCNAPText = aCNAPText;
    iCNAPTextClippingDirection = aDirection; 
    }
 
@@ -182,16 +167,28 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetPicture(
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C void TPhoneCmdParamCallHeaderData::SetDiverted(
-    TBool aDiverted )
+EXPORT_C void TPhoneCmdParamCallHeaderData::SetCallFlag(
+    const CBubbleManager::TPhoneCallTypeFlags aCallFlag )
     {
-    iDiverted = aDiverted;        
+    iCallFlag = aCallFlag;        
+    }
+
+// ---------------------------------------------------------
+// TPhoneCmdParamCallHeaderData::AddCallFlag
+// Adds the call flag
+// (other items were commented in a header).
+// ---------------------------------------------------------
+//
+EXPORT_C void TPhoneCmdParamCallHeaderData::AddCallFlag(
+    const CBubbleManager::TPhoneCallTypeFlags aCallFlag )
+    {
+    iCallFlag |= aCallFlag;
     }
 
 // ---------------------------------------------------------
 // TPhoneCmdParamCallHeaderData::SetLine2
 // ---------------------------------------------------------
-//  
+//	
 EXPORT_C void TPhoneCmdParamCallHeaderData::SetLine2(
     TBool aLine2 )
    {
@@ -206,7 +203,7 @@ EXPORT_C void TPhoneCmdParamCallHeaderData::SetLine2(
 //
 EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::LabelText() const
    {
-   return iLabelText ? *iLabelText : KNullDesC();
+   return iLabelText;
    }
 
 // ---------------------------------------------------------
@@ -217,7 +214,7 @@ EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::LabelText() const
 //
 EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::ShortLabelText() const
    {
-   return iShortLabelText ? *iShortLabelText : KNullDesC();
+   return iShortLabelText;
    }
 
 // ---------------------------------------------------------
@@ -272,7 +269,7 @@ EXPORT_C TBool TPhoneCmdParamCallHeaderData::Ciphering() const
 //
 EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::CLIText() const
    {
-   return iCLIText ? *iCLIText : KNullDesC();
+   return iCLIText;
    }
 
 // ---------------------------------------------------------
@@ -281,7 +278,7 @@ EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::CLIText() const
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection 
+EXPORT_C CBubbleManager::TPhoneClippingDirection 
 TPhoneCmdParamCallHeaderData::CLITextClippingDirection() const
     {
     return iCLITextClippingDirection;
@@ -293,7 +290,7 @@ TPhoneCmdParamCallHeaderData::CLITextClippingDirection() const
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection 
+EXPORT_C CBubbleManager::TPhoneClippingDirection 
 TPhoneCmdParamCallHeaderData::CNAPTextClippingDirection() const
     {
     return iCNAPTextClippingDirection;
@@ -307,7 +304,7 @@ TPhoneCmdParamCallHeaderData::CNAPTextClippingDirection() const
 //
 EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::CNAPText() const
    {
-   return iCNAPText ? *iCNAPText : KNullDesC();
+   return iCNAPText;
    }
 
 // ---------------------------------------------------------
@@ -327,9 +324,10 @@ EXPORT_C const TDesC& TPhoneCmdParamCallHeaderData::Picture() const
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C TBool TPhoneCmdParamCallHeaderData::Diverted() const
+EXPORT_C TUint32
+    TPhoneCmdParamCallHeaderData::CallFlag() const
     {
-    return iDiverted;        
+    return iCallFlag;        
     }
 
 // ---------------------------------------------------------

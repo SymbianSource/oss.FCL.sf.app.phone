@@ -43,6 +43,16 @@ CPEParserMiscHandler::~CPEParserMiscHandler()
     }
 
 // -----------------------------------------------------------------------------
+// CPEParserMiscHandler::ProcessShowIMEIL
+// Process IMEI display
+// -----------------------------------------------------------------------------
+//
+void CPEParserMiscHandler::ProcessShowIMEIL()
+    {
+    iCallHandling.UpdatePhoneIdentity( MEngineMonitor::EPEMessageShowIMEI );
+    }
+
+// -----------------------------------------------------------------------------
 // CPEParserMiscHandler::ProcessUssdL
 // Process USSD request
 // -----------------------------------------------------------------------------

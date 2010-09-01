@@ -1,0 +1,906 @@
+/*
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  
+*     This file contains all the resources for call handling the module.
+*
+*/
+
+
+NAME    CLGI
+
+#include    <bldvariant.hrh>
+#include    <data_caging_paths_strings.hrh>
+#include    <eikon.rh>
+#include    <avkon.hrh>
+#include    <avkon.rh>
+#include    <avkon.loc>
+#include    <uikon.hrh>
+#include    <bmtouchpane.rh>
+#include    <appinfo.rh>
+
+#include    "phoneui.rh"
+#include    "phoneui.hrh"
+#include    <phone.loc>
+#include    <phoneappcommands.hrh>
+#include    <incallmenuandsoftkeys.loc>
+#include    <incalloperations.loc>
+
+//  RESOURCE DEFINITIONS 
+
+RESOURCE RSS_SIGNATURE 
+    {
+    } 
+
+RESOURCE TBUF 
+    { 
+    buf = "CLGI";
+    }
+    
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_mute_toggle_button
+//    Mute / Unmute toggle button.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_mute_toggle_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdMute,
+        EPhoneInCallCmdUnmute    
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE  // mute
+                {
+                txt = qtn_incal_button_mute_mic\
+                      <0x0001>\
+                      qtn_incal_button_mute_mic_landscape;
+                },
+            AVKON_BUTTON_STATE  // unmute
+                {
+                txt = qtn_incal_button_unmute_mic\
+                      <0x0001>\
+                      qtn_incal_button_unmute_mic_landscape;
+                }
+            };                
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_end_active_call_button
+//    End call active button.
+//
+// -----------------------------------------------------------------------------
+//          
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_end_active_call_button
+    {
+    commands = 
+        {
+        EPhoneCmdEnd
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_end_active_call\
+                      <0x0001>\
+                      qtn_incal_button_end_active_call_landscape;
+                }
+            };                
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_end_call_button
+//    End call button.
+//
+// -----------------------------------------------------------------------------
+//          
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_end_call_button
+    {
+    commands = 
+        {
+        EPhoneCmdEnd
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_end_call\
+                      <0x0001>\
+                      qtn_incal_button_end_call_landscape;
+                }
+            };                
+        };
+    }
+    
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_end_all_calls_button
+//    End all calls toggle button.
+//
+// -----------------------------------------------------------------------------
+//          
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_end_all_calls_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdEndAllCalls
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_end_all_calls\
+                      <0x0001>\
+                      qtn_incal_button_end_all_calls_landscape;
+                }
+            };                
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_answer_call_button
+//    Answer call button.
+//
+// -----------------------------------------------------------------------------
+//          
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_answer_call_button
+    {
+    commands = 
+        {
+        EPhoneCallComingCmdAnswer
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_answer\
+                      <0x0001>\
+                      qtn_incal_button_answer_landscape;
+                }
+            };                
+        };
+    }
+    
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_reject_call_button
+//    Reject call button.
+//
+// -----------------------------------------------------------------------------
+//          
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_reject_call_button
+    {
+    commands = 
+        {
+        EPhoneCallComingCmdReject
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_reject\
+                <0x0001>\
+                qtn_incal_button_reject_landscape;
+                }
+            };                
+        };
+    }        
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_end_outgoing_call_button
+//    End ongoing call button.
+//
+// -----------------------------------------------------------------------------
+//          
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_end_outgoing_call_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdEndThisOutgoingCall
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_end_call\
+                      <0x0001>\
+                      qtn_incal_button_end_call_landscape;
+                }
+            };                
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_hold_toggle_button
+//    Hold / Unhold toggle button.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_hold_toggle_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdHold,
+        EPhoneInCallCmdUnhold    
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_hold\
+                      <0x0001>\
+                      qtn_incal_button_hold_landscape;
+                },
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_unhold\
+                      <0x0001>\
+                      qtn_incal_button_unhold_landscape;
+                }
+            };                
+        };
+    } 
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_ihf_toggle_button
+//    Loudspeaker / Handset toggle button
+//
+// -----------------------------------------------------------------------------
+//    
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_ihf_toggle_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdActivateIhf,
+        EPhoneInCallCmdDeactivateIhf    
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_loudspeaker\
+                      <0x0001>\
+                      qtn_incal_button_loudspeaker_landscape;
+                },
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_handset\
+                      <0x0001>\
+                      qtn_incal_button_handset_landscape;
+                }
+            };                
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_bt_toggle_button
+//    BT accessory / Handset toggle button
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_bt_toggle_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdHandset,
+        EPhoneInCallCmdBtHandsfree    
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_handset\
+                      <0x0001>\
+                      qtn_incal_button_handset_landscape;
+                },
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_bluetooth\
+                      <0x0001>\
+                      qtn_incal_button_bluetooth_landscape;
+                }
+            };                
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_swap_calls_button
+//    Swap calls button
+//
+// -----------------------------------------------------------------------------
+// 
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_swap_calls_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdSwap    
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_swap\
+                      <0x0001>\
+                      qtn_incal_button_swap_landscape;
+                }
+            };                
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_go_to_idle_button
+//    Go to idle button
+//
+// -----------------------------------------------------------------------------
+// 
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_go_to_idle_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdGoToIdle    
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_go_idle\
+                      <0x0001>\
+                      qtn_incal_button_go_idle_landscape;
+                }
+            };                
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_conference_button
+//    Create conference button
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_conference_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdCreateConference    
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_conference\
+                      <0x0001>\
+                      qtn_incal_button_conference_landscape;
+                }
+            };                
+        };
+    }    
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_participants_button
+//    Conference participants
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_participants_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdParticipants    
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_participants\
+                      <0x0001>\
+                      qtn_incal_button_participants_landscape;
+                }
+            };                
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_drop_participant_button
+//    Conference drop participant button
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_drop_participant_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdDrop    
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_drop\
+                      <0x0001>\
+                      qtn_incal_button_drop_landscape;
+                }
+            };                
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_go_to_private_button
+//    Conference go to private button
+//
+// -----------------------------------------------------------------------------
+//   
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_go_to_private_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdPrivate    
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_private\
+                      <0x0001>\
+                      qtn_incal_button_private_landscape;
+                }
+            };                
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_join_button
+//    Conference join button
+//
+// -----------------------------------------------------------------------------
+//   
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_join_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdJoin    
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_join\
+                      <0x0001>\
+                      qtn_incal_button_join_landscape;
+                }
+            };                
+        };
+    }
+    
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_voice_to_video_toggle_button
+//    Switch to video button.
+//
+// -----------------------------------------------------------------------------
+//          
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_voice_to_video_toggle_button
+    {
+    commands = 
+        {
+        EPhoneInCallCmdSwitchToVideo,
+        EPhoneInCallCmdSwitchToVoice
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE  // voice to video
+                {
+                txt = qtn_incal_button_voice_to_video\
+                      <0x0001>\
+                      qtn_incal_button_voice_to_video_landscape;
+                },
+            AVKON_BUTTON_STATE  // video to voice
+                {
+                txt = qtn_incal_button_video_to_voice\
+                      <0x0001>\
+                      qtn_incal_button_video_to_voice_landscape;
+                }                
+            };                
+        };    
+    }      
+     
+// -----------------------------------------------------------------------------
+//
+//    r_phoneui_video_share_button
+//    Video share button
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_video_share_button
+    {
+    commands =
+        {
+        EPhoneInCallCmdShareLiveVideo
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_share_video\
+                      <0x0001>\
+                      qtn_incal_button_share_video_landscape;
+                }
+            };
+        };
+    }
+
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_incall_buttons
+//    Touch buttons shown in incall situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_incall_buttons
+    {
+    buttons =
+        {
+        r_phoneui_hold_toggle_button,   // Top right
+        r_phoneui_end_call_button       // Botton right
+        
+        // ALTERNATIVE BUTTONS FOR REPLACE, TOTAL MAX.4 BUTTONS                                  
+        // r_phoneui_go_to_idle_button
+        // r_phoneui_voice_to_video_toggle_button
+        };
+    }
+
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_two_singles_buttons
+//    Touch buttons shown in incall situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_two_singles_buttons
+    {
+    buttons =
+        {
+        r_phoneui_conference_button,        // Top right
+        r_phoneui_end_active_call_button    // Botton right
+        
+        // ALTERNATIVE BUTTONS FOR REPLACE, TOTAL MAX.4 BUTTONS
+        // r_phoneui_swap_calls_button,
+        // r_phoneui_go_to_idle_button
+        // r_phoneui_end_all_calls_button
+        };
+    }    
+
+// ----------------------------------------------------------------
+//
+//    r_phoneui_incall_video_share_buttons
+//    Touch buttons shown in incall situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_incall_video_share_buttons
+    {
+    buttons =
+        {
+        r_phoneui_video_share_button,
+        r_phoneui_end_call_button
+        
+        // ALTERNATIVE BUTTONS FOR REPLACE, TOTAL MAX.4 BUTTONS
+        // r_phoneui_go_to_idle_button
+        // r_phoneui_voice_to_video_toggle_button
+        };
+    }
+
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_conference_buttons
+//    Touch buttons shown in incall situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_conference_buttons
+    {
+    buttons =
+        {
+        r_phoneui_participants_button,      // Top right
+        r_phoneui_end_call_button           // Botton right
+        
+        // ALTERNATIVE BUTTONS FOR REPLACE, TOTAL MAX.4 BUTTONS
+        // r_phoneui_hold_toggle_button,
+        // r_phoneui_go_to_idle_button
+        };
+    }
+    
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_participant_list_buttons
+//    Touch buttons shown in incall situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_participant_list_buttons
+    {
+    buttons =
+        {
+        r_phoneui_go_to_private_button,
+        r_phoneui_drop_participant_button
+        };
+    }            
+
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_conference_and_single_buttons
+//    Touch buttons shown in incall situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_conference_and_single_buttons
+    {
+    buttons =
+        {
+        r_phoneui_join_button,              // Top right
+        r_phoneui_end_active_call_button    // Botton right
+        
+        // ALTERNATIVE BUTTONS FOR REPLACE, TOTAL MAX.4 BUTTONS
+        // r_phoneui_swap_calls_button, 
+        // r_phoneui_end_all_calls_button
+        };
+    }
+
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_conference_and_held_single_buttons
+//    Touch buttons shown in incall situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_conference_and_held_single_buttons
+    {
+    buttons =
+        {
+        r_phoneui_join_button,              // Top right
+        r_phoneui_end_active_call_button    // Botton right
+        
+        // ALTERNATIVE BUTTONS FOR REPLACE, TOTAL MAX.4 BUTTONS
+        // r_phoneui_swap_calls_button,
+        // r_phoneui_end_all_calls_button
+        };
+    }
+    
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_emergency_call_buttons
+//    Touch buttons shown in incall situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_emergency_call_buttons
+    {
+    buttons =
+        {
+        r_phoneui_ihf_toggle_button,
+        r_phoneui_end_call_button
+        };
+    }
+    
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_incoming_call_buttons
+//    Touch buttons shown in incoming call situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_incoming_call_buttons
+    {
+    buttons =
+        {
+        r_phoneui_answer_call_button,
+        r_phoneui_reject_call_button
+        };
+    }
+    
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_call_setup_buttons
+//    Touch buttons shown in call setup situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_call_setup_buttons
+    {
+    buttons =
+        {
+        r_phoneui_hold_toggle_button,
+        r_phoneui_end_outgoing_call_button
+        };
+    }
+
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_call_setup_and_single_buttons
+//    Touch buttons shown in call setup and single situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_call_setup_and_single_buttons
+    {
+    buttons =
+        {
+        r_phoneui_ihf_toggle_button,
+        r_phoneui_end_outgoing_call_button
+        };
+    }            
+
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_waiting_call_buttons
+//    Touch buttons shown in call waiting call situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_waiting_call_buttons
+    {
+    buttons =
+        {
+        r_phoneui_answer_call_button,
+        r_phoneui_end_active_call_button
+        };
+    } 
+    
+// ----------------------------------------------------------------
+//   
+//    r_conference_participant_list_softkeys
+//    Touch buttons shown in incall situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE CBA r_conference_participant_list_softkeys
+    {
+    buttons =
+        {
+        CBA_BUTTON
+            {
+            id = EPhoneCmdOptions;
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON
+            {
+            id = EAknSoftkeyCancel;
+            txt = text_softkey_back;
+            }      
+        };
+    }         
+
+// -----------------------------------------------------------------------------
+//   
+//    r_phoneui_silence_call_button
+//    Silent call button.
+//
+// -----------------------------------------------------------------------------
+//          
+RESOURCE BUBBLE_TOUCH_PANE_BUTTON r_phoneui_silence_call_button
+    {
+    commands = 
+        {
+        EPhoneCallComingCmdSilent
+        };
+    button = AVKON_BUTTON
+        {
+        states =
+            {
+            AVKON_BUTTON_STATE
+                {
+                txt = qtn_incal_button_silence\
+                      <0x0001>\
+                      qtn_incal_button_silence_landscape;
+                }
+            };                
+        };
+    }
+
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_incoming_call_silence_buttons
+//    Touch buttons shown in incoming call situation.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE BUBBLE_TOUCH_PANE r_phoneui_incoming_call_silence_buttons
+    {
+    buttons =
+        {
+        r_phoneui_answer_call_button,
+        r_phoneui_silence_call_button
+        };
+    }  
+
+// ----------------------------------------------------------------
+//   
+//    r_phoneui_touch_button_config
+//    Congigurable buttons. Button set is selected via CenRep.
+//
+// ----------------------------------------------------------------
+//
+RESOURCE PHONE_TOUCH_BUTTON_CONFIGURATIONS r_phoneui_touch_button_config
+    {
+    configurations =
+        {
+        PHONE_TOUCH_BUTTON_CONFIGURATION        
+            {
+            button_set_id = EPhoneConfigIncomingCallButtons;
+            button_sets = 
+                {
+                r_phoneui_incoming_call_buttons, 
+                r_phoneui_incoming_call_silence_buttons
+                };
+            }    
+        };
+    } 
+
+//##########################################################
+// End of File

@@ -163,11 +163,12 @@ class TPhoneCmdParamQuery : public TPhoneUICommandParam
         IMPORT_C void SetCommandParamId( TPhoneCommandParam::TPhoneParamId aParamId );
 
         /**
-        * Sets the timeout in milliseconds.
+        * Sets the timeout.
         * Query will destroyed after this time 
         * @param aTimeOut is integer value
         */
         IMPORT_C void SetTimeOut( TInt aTimeOut );
+
 
         /**
         * Gets the timeout of global query.

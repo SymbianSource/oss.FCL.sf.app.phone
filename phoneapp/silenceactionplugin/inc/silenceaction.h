@@ -21,8 +21,8 @@
 #define C_SILENCEPLUGIN_H
 
 #include <e32base.h>
-#include <rphcltserver.h>
-#include <cphcltcommandhandler.h>
+#include <RPhCltServer.h>
+#include <CPhCltCommandHandler.h>
 
 #include "msilenceactionobserver.h"
 

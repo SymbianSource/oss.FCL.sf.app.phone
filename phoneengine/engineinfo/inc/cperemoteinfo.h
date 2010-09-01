@@ -260,49 +260,49 @@ private: // data
     /**
      * Call id association
      */
-    TInt iCallId;
+	TInt iCallId;
 
     /**
      * Contact link or id
      * Own.
      */
-    CPhCntContactId* iContactId;
+	CPhCntContactId* iContactId;
 
-    /**
-     * Contact link
-     * Own.
-     */
-    HBufC8* iContactLink;
-    
+	/**
+	 * Contact link
+	 * Own.
+	 */
+	HBufC8* iContactLink;
+	
     /**
      * Remote end phone number
      */
-    TPEPhoneNumber iPhoneNumber;
+	TPEPhoneNumber iPhoneNumber;
 
     /**
      * Remote end phone number if the mobile originated call was forwarded
      */
-    TPEPhoneNumber iColpNumber;
+	TPEPhoneNumber iColpNumber;
 
     /**
      * First name + Last name
      */
-    TPEContactName iName;
+	TPEContactName iName;
 
     /**
      * Remote end company name
      */
-    TPEContactCompany iCompanyName;
+	TPEContactCompany iCompanyName;
 
     /**
      * Remote end personal or group ringing tone
      */
-    TPEContactFileName iPersonalRingingTone;
+	TPEContactFileName iPersonalRingingTone;
 
     /**
      * Remote end phone number type
      */
-    TPEPhoneNumberIdType iPhoneNumberType;
+	TPEPhoneNumberIdType iPhoneNumberType;
 
     /**
      * Remote end Text To Speech text
@@ -313,7 +313,7 @@ private: // data
      * Array for caller group ids
      * Own.
      */
-    RArray< TContactItemId > iGroupId;
+	RArray< TContactItemId > iGroupId;
 
     /**
      * Caller text

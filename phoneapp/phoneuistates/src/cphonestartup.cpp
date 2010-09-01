@@ -20,6 +20,8 @@
 #include "cphonestartup.h"
 #include "phonerssbase.h"
 #include "phonelogger.h"
+#include "mphonestatemachine.h"
+#include "mphonesecuritymodeobserver.h"
 #include "cphonegeneralgsmmessageshandler.h"
 
 // ================= MEMBER FUNCTIONS =======================
@@ -93,13 +95,23 @@ void CPhoneStartup::HandlePhoneEngineMessageL(
         {
         case MEngineMonitor::EPEMessageRemoteHeld:
             CPhoneState::SendGlobalInfoNoteL( 
-                EPhoneInformationRemotePutOnHoldNote, ETrue );
+                EPhoneInformationRemotePutOnHoldNote );
             break;
         
         case MEngineMonitor::EPEMessageRemoteResumed:
             CPhoneState::SendGlobalInfoNoteL( 
-                EPhoneInformationConnectedNote, ETrue );
+                EPhoneInformationConnectedNote );
             break;
+		
+		case MEngineMonitor::EPEMessageShowVersion:
+			{
+			if ( iStateMachine->SecurityMode()->IsSecurityMode() )
+				{
+				// Do nothing if security mode is enabled.
+				return;
+				}
+			}
+		// Fall through
 
         case MEngineMonitor::EPEMessageIssuingSSRequest: // fall through
         case MEngineMonitor::EPEMessageCallBarred: // fall through
@@ -110,16 +122,16 @@ void CPhoneStartup::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageOutCallForwToC: // fall through
         case MEngineMonitor::EPEMessageForwardUnconditionalModeActive: // fall through
         case MEngineMonitor::EPEMessageForwardConditionallyModeActive:
-            {
-            CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
-                CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
-                                                       *iViewCommandHandle,
-                                                       *this );
-            CleanupStack::PushL( gsmMsgHandler );
-            gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
-            CleanupStack::PopAndDestroy( gsmMsgHandler );
-            }
-            break;
+			{
+			CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
+				CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
+													   *iViewCommandHandle,
+													   *this );
+			CleanupStack::PushL( gsmMsgHandler );
+			gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
+			CleanupStack::PopAndDestroy( gsmMsgHandler );
+			}
+			break;
 
         default:
             CPhoneStateStartup::HandlePhoneEngineMessageL( 

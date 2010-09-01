@@ -30,7 +30,8 @@ class MPhoneState;
 class MPEPhoneModel;
 class MPEEngineInfo;
 class CSpdiaControl;
-class MPhoneStorage;
+class MPhoneSecurityMessageHandler;
+class MPhoneSecurityModeObserver;
 
 /**
 *  Describes the interface for setting and getting active state
@@ -86,11 +87,46 @@ class MPhoneStateMachine : public MPhoneEngineMessageSender
         * @param aCallId
         */    
         virtual void SetCallId( TInt aCallId ) = 0;
+    
+        /**
+         * Getter for security mode observer interface.
+         * 
+         * @return Pointer to security mode interface.
+         */
+        virtual MPhoneSecurityModeObserver* SecurityMode() = 0;
+        
+		/**
+		 * Sets security mode observer. Doesn't transfer ownership.
+		 *
+		 * @param aObserver Pointer to observer instance.
+		 */
+		virtual void SetSecurityModeObserver( MPhoneSecurityModeObserver* aObserver ) = 0;
+		
+		/**
+		 * Set security message handler for security message observations.
+		 * 
+		 * @param aHandler Pointer to handler instance. 
+		 */
+		virtual void SetSecurityMessageHandler( MPhoneSecurityMessageHandler* aHandler ) = 0;
+		
+        /**
+         * Handle phone engine message.
+         * 
+         * @param aMessage Message
+         * @param aCallId Call id
+         */
+        virtual void HandlePhoneEngineMessageL(const TInt aMessage, 
+        	TInt aCallId ) = 0;
         
         /**
-        * Phone's Storage
-        */
-        virtual MPhoneStorage* PhoneStorage() = 0;        
+         * This function is called when there is property value change.
+         * @param aCategory Category of the property
+         * @param aKey Property key that is changed
+         * @param aValue New property value
+         */
+        virtual void HandlePropertyChangedL(const TUid& aCategory,
+        	const TUint aKey,
+        	const TInt aValue ) = 0;
 
     };
 

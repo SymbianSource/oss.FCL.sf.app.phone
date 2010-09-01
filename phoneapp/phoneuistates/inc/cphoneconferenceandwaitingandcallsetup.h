@@ -64,6 +64,13 @@ class CPhoneConferenceAndWaitingAndCallSetup : public CPhoneConference
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
      
+        /**
+        * HandleError
+        * Implements error handling framework
+        * @param aErrorInfo: the error info
+        */
+        IMPORT_C virtual void HandleErrorL( 
+            const TPEErrorInfo& aErrorInfo ); 
 
     protected:
 
@@ -78,7 +85,9 @@ class CPhoneConferenceAndWaitingAndCallSetup : public CPhoneConference
         /**
         * ConstructL()
         */
-        virtual void ConstructL();   
+        virtual void ConstructL();
+        
+        virtual void OpenMenuBarL();        
 
         virtual void UpdateInCallCbaL();
         
@@ -89,19 +98,19 @@ class CPhoneConferenceAndWaitingAndCallSetup : public CPhoneConference
         
      private:
 
-        void HandleConnectingL( TInt aCallId );
-        
-        void HandleConnectedL( TInt aCallId );
-        
-        void UpdateConnectingCbaL();
-        
+		void HandleConnectingL( TInt aCallId );
+		
+		void HandleConnectedL( TInt aCallId );
+		
+		void UpdateConnectingCbaL();
+		
      private:
          
          /**
          * Status of ConferenceAndWaitingAndCallSetup alerting
          */
          TBool iAlerting;
-        
+		
     };
 
 #endif // CPHONECONFERENCEANDWAITINGANDCALLSETUP_H

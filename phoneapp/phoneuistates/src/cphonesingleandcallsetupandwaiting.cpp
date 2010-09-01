@@ -122,15 +122,14 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleKeyMessageL(
         case EKeyYes:
             if( IsNumberEntryVisibleL() )
                 {
-                CPhoneState::CallFromNumberEntryL();                            
+                CPhoneState::CallFromNumberEntryL();
                 }
             else
                 {
                 // Number entry is behind waiting call bubble
                 // We can't answer to waiting call in this state
-                // so display Not allowed -note.                        
-                CPhoneState::SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed, ETrue );
+                // so display Not allowed -note.
+                CPhoneState::SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed );
                 }
             break;
             
@@ -149,11 +148,18 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleKeyMessageL(
                 
                 if ( CPhoneState::IsNumberEntryUsedL() )
                     {
-                    // Remove number entry from screen
-                    iViewCommandHandle->ExecuteCommandL( 
-                        EPhoneViewRemoveNumberEntry );
-                    // Do state-specific operation when number entry is cleared
-                    HandleNumberEntryClearedL();
+                    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
+                        {
+                        CloseDTMFEditorL();
+                        } 
+                    else
+                        {
+                        // Remove number entry from screen
+                        iViewCommandHandle->ExecuteCommandL( 
+                            EPhoneViewRemoveNumberEntry );
+                        // Do state-specific operation when number entry is cleared
+                        HandleNumberEntryClearedL();
+                        }
                     }
                 if ( !TopAppIsDisplayedL() )
                     {
@@ -167,7 +173,7 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleKeyMessageL(
             else
                 {
                 // handle end key
-                DisconnectOutgoingCallL();              
+                DisconnectOutgoingCallL();
                 }
             break;
             
@@ -190,25 +196,35 @@ void CPhoneSingleAndCallSetupAndWaiting::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnecting:
+            {
             iAlerting = ETrue;
             HandleConnectingL( aCallId );
+            }
             break;
         
         case MEngineMonitor::EPEMessageConnected:
+            {
             HandleConnectedL( aCallId );
+            }
             break;
         
         case MEngineMonitor::EPEMessageIdle:
+            {
             HandleIdleL( aCallId );
+            }
             break;
                     
         case MEngineMonitor::EPEMessageRemoteBusy:
+            {
             // If call setup failed then stop capturing keys.
+            // Flow through to default branch.
             CaptureKeysDuringCallNotificationL( EFalse );
-            CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
-            break;
+            }
+           
         default:
+            {
             CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
+            }
             break;
         }
     }
@@ -238,6 +254,7 @@ TBool CPhoneSingleAndCallSetupAndWaiting::HandleCommandL( TInt aCommand )
             
         case EPhoneDtmfDialerCancel:
             {
+            CloseDTMFEditorL();
             }
             break;    
             
@@ -247,6 +264,58 @@ TBool CPhoneSingleAndCallSetupAndWaiting::HandleCommandL( TInt aCommand )
         }
 
     return commandStatus;
+    }
+
+// -----------------------------------------------------------
+// CPhoneSingleAndCallSetupAndWaiting::HandleErrorL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneSingleAndCallSetupAndWaiting::HandleErrorL( 
+        const TPEErrorInfo& aErrorInfo )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetupAndWaiting::HandleErrorL()");
+    
+    if( aErrorInfo.iErrorCode == ECCPErrorCCUserAlertingNoAnswer )
+        {
+        // Should not shown "No Answer" note
+        __PHONELOG1( EBasic, EPhoneUIStates,
+       "PhoneUIStates: CPhoneSingleAndCallSetupAndWaiting::HandleErrorL - aErrorInfo.iErrorCode =%d ",
+            aErrorInfo.iErrorCode);
+        }
+    else
+        {
+        CPhoneState::HandleErrorL( aErrorInfo );
+        }
+    }
+
+// -----------------------------------------------------------
+// CPhoneSingleAndCallSetupAndWaiting::OpenMenuBarL
+// -----------------------------------------------------------
+//
+void CPhoneSingleAndCallSetupAndWaiting::OpenMenuBarL()
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetupAndWaiting::OpenMenuBarL() ");
+    TInt resourceId;
+
+    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
+        {
+        resourceId = EPhoneDtmfDialerMenubar;
+        }
+    else if ( IsNumberEntryVisibleL() )
+        {
+        resourceId = EPhoneAlertingHeldAndWaitingCallMenuBarWithNumberEntry;
+        }
+    else
+        {
+        resourceId = EPhoneAlertingHeldAndWaitingCallMenuBar;
+        }
+
+    TPhoneCmdParamInteger integerParam;
+    integerParam.SetInteger( 
+        CPhoneMainResourceResolver::Instance()->
+        ResolveResourceID( resourceId ) );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
+        &integerParam );
     }
 
 // -----------------------------------------------------------
@@ -346,7 +415,7 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleConnectingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetupAndWaiting::HandleConnectingL() ");
     
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() )
+    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
@@ -387,11 +456,9 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleAndCallSetupAndWaiting::HandleConnectedL()");
-    // Keep Phone in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
+  
+    // Close menu bar, if it is displayed
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     // Show bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -404,7 +471,7 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     CaptureKeysDuringCallNotificationL( EFalse );
     
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() )
+    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
@@ -431,6 +498,9 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToCallSetupAndWaitingL( TInt
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetupAndWaiting::StateChangeToCallSetupAndWaitingL() ");
     // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
+        
+    // Close menu bar, if it is displayed
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     
     // Reset Hold flag to view
     TPhoneCmdParamBoolean holdFlag;
@@ -440,6 +510,7 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToCallSetupAndWaitingL( TInt
     BeginUiUpdateLC();
     
     SetTouchPaneButtons( EPhoneCallSetupButtons );
+    SetToolbarDimming( ETrue );
     SetToolbarButtonLoudspeakerEnabled();
     
     EndUiUpdate();
@@ -468,6 +539,9 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToSingleAndWaitingL( TInt aC
         booleanParam.SetBoolean( ETrue );
         iViewCommandHandle->ExecuteCommandL( EPhoneViewSetNumberEntryVisible, &booleanParam );
         }
+
+    // Close menu bar, if it is displayed
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     
         // Set Hold flag to view
     TPhoneCmdParamBoolean holdFlag;
@@ -494,8 +568,11 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToSingleAndAlertingL( TInt a
     // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
 
+    // Close menu bar, if it is displayed
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
+
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() )
+    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
@@ -510,8 +587,8 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToSingleAndAlertingL( TInt a
     SetTouchPaneButtons( EPhoneCallSetupButtons );
     
     EndUiUpdate();
-    // Go to Single And Alerting state
-    UpdateCbaL( EPhoneCallHandlingInCallCBA );
+	// Go to Single And Alerting state
+	UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateAlertingInSingle );        
     }
 
@@ -522,10 +599,11 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToSingleAndAlertingL( TInt a
 void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL()");
+	    "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL()");
 
     BeginUiUpdateLC();
     
+    SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
     SetTouchPaneButtons( EPhoneTwoSinglesButtons );
     
     EndUiUpdate();
@@ -542,11 +620,12 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL( TInt /*aCallI
 void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL()");
+	    "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL()");
 
     BeginUiUpdateLC();
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
+    SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
     
     EndUiUpdate();
 

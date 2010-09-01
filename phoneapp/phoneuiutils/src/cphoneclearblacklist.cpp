@@ -47,9 +47,9 @@ EXPORT_C CPhoneClearBlacklist* CPhoneClearBlacklist::CreateL( RWsSession& aWsSes
     if ( !instance )
         {
         instance = new (ELeave) CPhoneClearBlacklist();
-        CleanupStack::PushL( instance );
-        instance->ConstructL( aWsSession, aDevice );
-        CleanupStack::Pop( instance );
+    	CleanupStack::PushL( instance );
+    	instance->ConstructL( aWsSession, aDevice );
+    	CleanupStack::Pop( instance );
         }
     return instance;
     }
@@ -138,7 +138,7 @@ EXPORT_C void CPhoneClearBlacklist::ClearBlackListNow()
 //
 EXPORT_C void CPhoneClearBlacklist::ClearBlackListOnNextKey()
     {
-    __LOGMETHODSTARTEND( EPhoneUIUtils, "CPhoneClearBlacklist::ClearBlackListOnNextKey( ) ");
+	__LOGMETHODSTARTEND( EPhoneUIUtils, "CPhoneClearBlacklist::ClearBlackListOnNextKey( ) ");
     iAnim->ClearBlackListOnNextKey();
     }
 

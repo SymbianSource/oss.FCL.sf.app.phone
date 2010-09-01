@@ -13,13 +13,14 @@ EXPORTS
 	?PlayDtmfTone@CPEGsmAudioData@@QBEXABVTChar@@@Z @ 12 NONAME ; void CPEGsmAudioData::PlayDtmfTone(class TChar const &) const
 	?CreateAudioToneUtilityL@CPEAudioFactory@@UAEPAVCPEAudioToneUtility@@AAVMMdaAudioToneObserver@@@Z @ 13 NONAME ; class CPEAudioToneUtility * CPEAudioFactory::CreateAudioToneUtilityL(class MMdaAudioToneObserver &)
 	?CallAudioRoutePreferenceChanged@CPEAudioData@@UAEHXZ @ 14 NONAME ; int CPEAudioData::CallAudioRoutePreferenceChanged(void)
-	?HandleCallEnding@CPEAudioData@@UAEXXZ @ 15 NONAME ; void CPEAudioData::HandleCallEnding(void)
-	?NewLC@CPEAudioFactory@@SAPAV1@XZ @ 16 NONAME ; class CPEAudioFactory * CPEAudioFactory::NewLC(void)
-	?StartUp@CPEAudioData@@UAEXXZ @ 17 NONAME ; void CPEAudioData::StartUp(void)
-	?GetAudioMuteSync@CPEAudioData@@UBEXAAH@Z @ 18 NONAME ; void CPEAudioData::GetAudioMuteSync(int &) const
-	?NewL@CPEGsmAudioData@@SAPAV1@AAVMPEPhoneModelInternal@@AAVRFs@@@Z @ 19 NONAME ; class CPEGsmAudioData * CPEGsmAudioData::NewL(class MPEPhoneModelInternal &, class RFs &)
-	?StopDtmfTonePlay@CPEGsmAudioData@@UAEXXZ @ 20 NONAME ; void CPEGsmAudioData::StopDtmfTonePlay(void)
-	?NewL@CPEGsmAudioData@@SAPAV1@AAVMPEPhoneModelInternal@@AAVRFs@@AAVCPEAudioFactory@@@Z @ 21 NONAME ; class CPEGsmAudioData * CPEGsmAudioData::NewL(class MPEPhoneModelInternal &, class RFs &, class CPEAudioFactory &)
-	?SetAudioVolumeSync@CPEAudioData@@UAEXH@Z @ 22 NONAME ; void CPEAudioData::SetAudioVolumeSync(int)
-	?PlayInbandTone@CPEGsmAudioData@@QAEXXZ @ 23 NONAME ; void CPEGsmAudioData::PlayInbandTone(void)
+	?SetDefaultVolume@CPEAudioData@@QAEXXZ @ 15 NONAME ; void CPEAudioData::SetDefaultVolume(void)
+	?HandleCallEnding@CPEAudioData@@UAEXXZ @ 16 NONAME ; void CPEAudioData::HandleCallEnding(void)
+	?NewLC@CPEAudioFactory@@SAPAV1@XZ @ 17 NONAME ; class CPEAudioFactory * CPEAudioFactory::NewLC(void)
+	?StartUp@CPEAudioData@@UAEXXZ @ 18 NONAME ; void CPEAudioData::StartUp(void)
+	?GetAudioMuteSync@CPEAudioData@@UBEXAAH@Z @ 19 NONAME ; void CPEAudioData::GetAudioMuteSync(int &) const
+	?NewL@CPEGsmAudioData@@SAPAV1@AAVMPEPhoneModelInternal@@AAVRFs@@@Z @ 20 NONAME ; class CPEGsmAudioData * CPEGsmAudioData::NewL(class MPEPhoneModelInternal &, class RFs &)
+	?StopDtmfTonePlay@CPEGsmAudioData@@UAEXXZ @ 21 NONAME ; void CPEGsmAudioData::StopDtmfTonePlay(void)
+	?NewL@CPEGsmAudioData@@SAPAV1@AAVMPEPhoneModelInternal@@AAVRFs@@AAVCPEAudioFactory@@@Z @ 22 NONAME ; class CPEGsmAudioData * CPEGsmAudioData::NewL(class MPEPhoneModelInternal &, class RFs &, class CPEAudioFactory &)
+	?SetAudioVolumeSync@CPEAudioData@@UAEXH@Z @ 23 NONAME ; void CPEAudioData::SetAudioVolumeSync(int)
+	?PlayInbandTone@CPEGsmAudioData@@QAEXXZ @ 24 NONAME ; void CPEGsmAudioData::PlayInbandTone(void)
 

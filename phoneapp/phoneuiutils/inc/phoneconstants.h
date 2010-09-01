@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -46,7 +46,9 @@ const TUid KUidPhoneApplication = { 0x100058B3 };   // Phone application
 const TUid KPhoneUidAppPhonebook = { 0x101F4CCE };  // PhoneBook
 const TUid KPhoneUidAppPhoneInfo = { 0x101fc0ef };  // Phone Info
 const TUid KPhoneUidAppFTD = { 0x100058F2 };        // Field Test Display
+const TUid KDeviceManagerUid = {0x101F6DE5};        // Device manager application  
 const TUid KUidStartupApplication = { 0x100058F4 }; // Startup application
+const TUid KUidSpdia = { 0x1000590A };              // Speeddial application.
 const TUid KVtUiAppUidValue = { 0x101F8681 };       // Video Telephony application
 
 // Contants below define which view will be activated. 
@@ -60,6 +62,9 @@ const TUid KPhoneUidViewPhoneInfo = { 1 };
 const TUid KPhoneUidViewLogLastDial = { 1 };        // Last dialled view ID of Log application
 const TUid KPhoneUidLogStm = { 0x01002982 };        // Id for stm for Log application
 _LIT8( KPhoneStmLoadMagicString, "outside" );       // Message for activating view of an application
+
+// SimLock Ui UID to launch the SimLock App
+const TUid KSimLockUIApplicationUid= {0x2000B0FA};
 
 // Used in CPhoneKeyEventHandler
 // Seconds in microseconds
@@ -156,10 +161,20 @@ const TInt KClockWindowIdle = 2;
 
 // Used in CPhoneKeys
 // The character to be used as the 'wait' character, by DTMF code.
-const TUint KPhoneDtmfWaitCharacter  = 'w';
+const TUint KPhoneDtmfWaitCharacter = 'w';
+const TUint KPhoneDtmfWaitCharacterUpper = 'W';
 
 // The character to be used as the 'soft pause' character, by DTMF code.
 const TUint KPhoneDtmfPauseCharacter = 'p';
+const TUint KPhoneDtmfPauseCharacterUpper = 'P';
+
+// The character to be used as the 'speed-dial' character, by DTMF code.
+const TUint KPhoneDtmfSpeedDialCharacter = '+';
+
+const TUint KPhoneDtmfPlusCharacter = 135;  // Bluetooth SU-8W '+'
+
+// The length of the speed dial prefix, used to prevent buffer overflow
+const TUint KPhoneDtmfSpeedDialPrefixLength = 1;
 
 // Following, are the standard DTMF characters...
 const TInt KPhoneDtmfHashCharacter    = '#';
@@ -215,7 +230,6 @@ const TInt KMaxAppendLength = 64;
 // From CPhoneNoteUtilities
 const TInt KPhoneNoteSoftkeysUseDefault = 0;
 const TInt KPhoneNoteGraphicNone = -1;
-const TInt KPhoneNoteNoTimeout = -1;
 
 // State machine ordinal number
 static const TInt KPhoneUiStateMachineOrdinal = 1;
@@ -229,7 +243,7 @@ _LIT( KPhoneLogFileName, "PhoneUI.log" );
 
 // Paths to CentRep
 _LIT( KGSMProtocol, "phoneuistates.dll" );
-_LIT( KVoIPExtension, "phoneuivoipextension.dll" );
+_LIT( KVoIPExtension, "PhoneUIVoIPExtension.dll" );
 
 // Literals for formatting log messages
 _LIT( KPEDefaultMsgToPhoneUI,   "PE ----> PHONEUI <%S> message from PE. CallId: %d.");
@@ -300,6 +314,12 @@ const TInt KEmergencyCallId = 7;
 
 // Conference call id
 const TInt KConferenceCallId = 8;
+
+// LifeTimer const
+const TInt KPhoneLifeTimerHoursLength 	= 6;
+const TInt KPhoneLifeTimerMinutesLength = 2;
+const TInt KTimerTextLength				= 64;
+const TInt KTimerMinuteSeparator		= 2;
 
 //AudioVolume const
 // CONSTANTS
@@ -417,7 +437,7 @@ const TInt KEventIfVersionBuild = 0;
 const TInt KPhoneUiMediatorIfTimeout = 10000;
 
 // Name of Call UI dll which is loaded polymorficly in CPhoneQueryController
-_LIT( KPhoneCaUiLoadedLib, "cauiengine.dll" );
+_LIT( KPhoneCaUiLoadedLib, "CaUiEngine.dll" );
 
 // CPhoneTextQuery constants
 const TInt KLeftCbaId = 0;
@@ -476,8 +496,6 @@ const TInt KPhoneMaxParamLength = 10;
 // Video call setup failed query timeout
 const TInt KPhoneVideoCallSetupFailedQueryTimeout = 5; 
 
-// Key event value for long press
-const TInt EEventLongPress = 1100;
 
 #endif  // PHONECONSTANTS_H
 

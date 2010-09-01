@@ -111,7 +111,7 @@ NONSHARABLE_CLASS( CTelDMGripHandler ) : public CActive
         * @param aValue the value associated with the central repository ID
         * @return
         */
-        TInt GetInt( 
+        TInt CTelDMGripHandler::GetInt( 
             const TUid& aUid, 
             const TUint aId,
             TInt& aValue ) const;

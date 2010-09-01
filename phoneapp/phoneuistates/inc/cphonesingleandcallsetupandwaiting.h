@@ -64,7 +64,14 @@ class CPhoneSingleAndCallSetupAndWaiting : public CPhoneGsmInCall
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
 
-            
+        /**
+        * HandleError
+        * Implements error handling framework
+        * @param aErrorInfo: the error info
+        */
+        IMPORT_C virtual void HandleErrorL( 
+            const TPEErrorInfo& aErrorInfo ); 
+
     protected:
 
         /**
@@ -79,6 +86,11 @@ class CPhoneSingleAndCallSetupAndWaiting : public CPhoneGsmInCall
         * ConstructL()
         */
         virtual void ConstructL();
+        
+        /**
+        * Open menu bar
+        */
+        virtual void OpenMenuBarL();
         
         virtual void UpdateInCallCbaL();
             

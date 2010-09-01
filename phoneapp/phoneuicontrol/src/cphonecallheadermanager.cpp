@@ -269,7 +269,7 @@ TBool CPhoneCallHeaderManager::IsVideoCall( const TInt aCallId ) const
 // ---------------------------------------------------------------------------
 //
 void CPhoneCallHeaderManager::SetCallHeaderType( 
-    TInt aCallHeaderType )
+    const CBubbleManager::TPhoneCallTypeFlags aCallHeaderType )
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneCallHeaderManager::SetCallHeaderType() ");
     iCallHeaderParam->SetCallHeaderType( aCallHeaderType ); 
@@ -279,20 +279,10 @@ void CPhoneCallHeaderManager::SetCallHeaderType(
 //  CPhoneCallHeaderManager::~CPhoneCallHeaderManager
 // ---------------------------------------------------------------------------
 //
-TInt CPhoneCallHeaderManager::CallHeaderType() const
+CBubbleManager::TPhoneCallTypeFlags CPhoneCallHeaderManager::CallHeaderType() const
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneCallHeaderManager::CallHeaderType() ");
     return iCallHeaderParam->CallHeaderType();            
-    }
-
-// ---------------------------------------------------------------------------
-//  CPhoneCallHeaderManager::SetDivertIndication
-// ---------------------------------------------------------------------------
-//
-void CPhoneCallHeaderManager::SetDivertIndication( const TBool aDivertIndication )
-    {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneCallHeaderManager::SetDivertIndication()");
-    iCallHeaderParam->SetDivertIndication( aDivertIndication );           
     }
 
 // ---------------------------------------------------------------------------
@@ -300,13 +290,32 @@ void CPhoneCallHeaderManager::SetDivertIndication( const TBool aDivertIndication
 // ---------------------------------------------------------------------------
 //
 void CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL( 
-        const TInt /*aNumberLength*/,
-        const TBool /*aContactInfoAvailable*/ )
+        const TInt aNumberLength,
+        const TBool aContactInfoAvailable )
     {
     __LOGMETHODSTARTEND( 
             EPhoneControl, 
             "CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL() ");
-     
+    TPhoneCmdParamBoolean phoneNumberAvailable;
+    if( aNumberLength || aContactInfoAvailable )
+        {
+        // Phone number is available straight or via contact info
+        // so switch to video/voice call is possible
+        __PHONELOG( EBasic, 
+                EPhoneControl, 
+                "CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL - Phonenumber is available" );
+        phoneNumberAvailable.SetBoolean( ETrue );
+        }
+    else
+        {
+        __PHONELOG( EBasic, 
+                EPhoneControl, 
+                "CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL - Phonenumber is not available" );
+        phoneNumberAvailable.SetBoolean( EFalse );              
+        }
+    iViewCommandHandle.ExecuteCommandL( 
+            EPhoneViewSetPhoneNumberAvailableInPhoneEngine, 
+            &phoneNumberAvailable );        
     }
 
 // -----------------------------------------------------------
@@ -332,5 +341,25 @@ void CPhoneCallHeaderManager::LoadCallHeaderTexts(
             aCallHeaderData->SetShortLabelText( shortLabelText );        
             }
         }
+    }
+
+// -----------------------------------------------------------
+// CPhoneCallHeaderManager::GetInCallNumberTextL
+// -----------------------------------------------------------
+//
+void CPhoneCallHeaderManager::GetInCallNumberTextL( 
+        TInt aCallId, 
+        TDes& aData ) const
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneCallHeaderManager::GetInCallNumberTextL( ) ");    
+    // Display "Call n", n = callId-8 for video and callId+1 for voice call
+    HBufC* tmp = StringLoader::LoadL( 
+        CPhoneMainResourceResolver::Instance()->
+        ResolveResourceID( EPhoneInCallNumberText ), 
+        aCallId + ( IsVideoCall( aCallId ) ? -8 : 1 ), 
+        CCoeEnv::Static() );
+    
+    aData = *tmp;
+    delete tmp;
     }
 

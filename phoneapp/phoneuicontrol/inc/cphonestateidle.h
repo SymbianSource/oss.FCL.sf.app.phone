@@ -22,6 +22,7 @@
 
 // INCLUDES
 #include "cphonestate.h"
+#include "tphonecmdparamspeeddial.h"
 
 // FORWARD DECLARATIONS
 
@@ -45,23 +46,6 @@ class CPhoneStateIdle : public CPhoneState
         EDialMethodSendCommand      = 2,
         /** Dial is initiated by one key dialing. */
         EDialMethodOneKeyDialing    = 3
-
-        };
-    
-    /**
-    * Phone number types
-    *
-    * EPhoneNumberTypeNotFound - phone number's type was not found
-    * EPhoneNumberTypeCS - CS call can be made to the phone number
-    * EPhoneNumberTypeVideo - video call can be made to the phone number
-    * EPhoneNumberTypeVoip - VoIP call can be made to the address.
-    */
-    enum TPhoneNumberType
-        {
-        EPhoneNumberTypeNotFound = -1,
-        EPhoneNumberTypeCS = 0,
-        EPhoneNumberTypeVideo,
-        EPhoneNumberTypeVoip
         };
     
         /**
@@ -95,7 +79,7 @@ class CPhoneStateIdle : public CPhoneState
         */
         IMPORT_C virtual void HandlePhoneEngineMessageL(
             const TInt aMessage, 
-            TInt aCallId );       
+            TInt aCallId );
             
         IMPORT_C virtual TBool HandleCommandL( TInt aCommand );
         
@@ -115,7 +99,20 @@ class CPhoneStateIdle : public CPhoneState
         * Indicates when the Phone app has lost focus.
         */
         IMPORT_C virtual void HandlePhoneFocusLostEventL();
-
+        
+        /**
+        * This function is called from displaycallsetup and 
+        * the purpose is to do state specific things for callsetup.
+        */
+        IMPORT_C virtual void DoStateSpecificCallSetUpDefinitionsL();
+		
+		/**
+        * HandleError
+        * Implements error handling framework
+        * @param aErrorInfo: the error info
+        */
+        IMPORT_C virtual void HandleErrorL( 
+                const TPEErrorInfo& aErrorInfo );
     protected:
 
         /** 
@@ -132,12 +129,6 @@ class CPhoneStateIdle : public CPhoneState
         * @param aCallid call id
         */
         IMPORT_C void DisplayIncomingCallL( TInt aCallId );
-
-        /**
-        * Display Call Setup
-        * @param aCallid call id
-        */
-        IMPORT_C void DisplayCallSetupL( TInt aCallId );
 
         /**
         * By default EPOC constructor is private.
@@ -187,12 +178,57 @@ class CPhoneStateIdle : public CPhoneState
         IMPORT_C virtual void HandleDialingL( TInt aCallId );
 
         /**
+        * This is called when Speed Dial dialog is cancelled or user didn't give
+        * a valid number.
+        * @param aDigit: entered digit
+        */
+        IMPORT_C void SpeedDialCanceledL( const TUint& aDigit );
+        
+        /**
+        * Handle long key press of a number.
+        */
+        IMPORT_C void HandleNumberLongKeyPressL();
+        
+        /**
+        * Tests whether given number is speed dial number.
+        * @param    aNumber    A number to test.
+        * @return   ETrue if given number is speed dial number.
+        */
+        IMPORT_C TBool IsSpeedDialNumber( const TDesC& aNumber ) const;
+        
+        /**
+        * Handles speed dialing.
+        * @param aDigit             Entered digit.
+        * @param aDialMethod        Dial initiation method.
+        */
+        IMPORT_C void SpeedDialL( const TUint& aDigit, 
+            TDialInitiationMethod aDialMethod );
+
+        /**
         * Handles send command.
         */
         IMPORT_C virtual void HandleSendCommandL();
         
+    protected:
+        
+        /**
+        * Sets iCallInitialized value.
+        */
+        void SetCallInitialized( TBool aValue );
+         
+        /**
+        * Gets iCallInitialized value.
+        */
+        TBool IsCallInitialized();
+        
+        /**
+        * Removes NE and sets idle to background, for more detailed
+        * information check comments from implementation.
+        */
+        void RemoveNumberEntryAndSetIdleToBackgroundIfNeededL();
+        
     private: // New functions
-
+        
         /**
         * A message handling function for EPEMessageIncoming
         * @param aCallId: the call id of the call
@@ -210,6 +246,11 @@ class CPhoneStateIdle : public CPhoneState
         * @param aCallId: the call id of the call
         */
         void HandleIdleL( TInt aCallId );
+
+        /**
+        * Launches application.
+        */
+        void LaunchApplicationL();
 
         /**
         * Send Exit command
@@ -241,16 +282,47 @@ class CPhoneStateIdle : public CPhoneState
         */
         TBool RestoreOngoing();
         
+        /**
+        * Handles back command. 
+        */
+        void HandleBackCommandL();
 
-        void HandleVoiceCallCommandL();
+        /**
+         * Checks for application launching configurations from 
+         * central repository.
+         * @param aCode key code.
+         * @return ETrue if configuration found.
+         */        
+         TBool CheckAppLaunchingL( const TKeyCode aCode );
+
+         /**
+          * Returns phone number for specified speed dial location.
+          * @param  aDigit Speed dial digit.
+          * @param  aDigit On return contains speed dial parameters.
+          * @return Phone number
+          */   
+         HBufC* NumberForSpeedDialLocationL( const TUint& aDigit,
+             TPhoneCmdParamSpeedDial& aSpeedDialParam ) const;
+
+         void HandleVoiceCallCommandL( TBool aSendKey );
+
+         /**
+          * Returns options menu id when number entry is visible.
+          * If easydialing is in focus, id is asked from it.
+          * @return Menu resource id.
+          */   
+         TInt GetNumberAcqMenuIdL();
+         
+         /**
+          * Changes state to aState and resets iBubbleInitialized
+          * value to false.
+          */
+         void ChangeTo( TInt aState );
          
     private:
-    
-        // Owned profile engine
-        MProfileEngine* iEngine;
-        // indicates that incomming call is arrived.
-        TBool iIncommingCall;
-  
+        
+         // True if call initiliazed.
+         TBool iCallInitialized;
     };
 
 #endif // CPHONESTATEIDLE

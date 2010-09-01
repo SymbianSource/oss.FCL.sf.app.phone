@@ -114,11 +114,11 @@ EXPORT_C TPhoneCmdParamQuery& TPhoneCmdParamQuery::operator=(
 // ---------------------------------------------------------
 //
 EXPORT_C void TPhoneCmdParamQuery::SetQueryResourceId( TInt aDialogResourceId )
-    {
-    __ASSERT_DEBUG( aDialogResourceId, 
-        Panic( EPhoneUtilsParameterNotInitialized ) );
-    iDialogResourceId = aDialogResourceId;   
-    }
+	{
+   	__ASSERT_DEBUG( aDialogResourceId, 
+   		Panic( EPhoneUtilsParameterNotInitialized ) );
+   	iDialogResourceId = aDialogResourceId;   
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamQuery::QueryResourceId
@@ -127,9 +127,9 @@ EXPORT_C void TPhoneCmdParamQuery::SetQueryResourceId( TInt aDialogResourceId )
 // ---------------------------------------------------------
 //
 EXPORT_C TInt TPhoneCmdParamQuery::QueryResourceId() const
-    {   
-    return iDialogResourceId;
-    }
+	{	
+   	return iDialogResourceId;
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamQuery::SetQueryPrompt
@@ -204,10 +204,10 @@ EXPORT_C TInt TPhoneCmdParamQuery::ContentCba() const
 // ---------------------------------------------------------
 //
 EXPORT_C void TPhoneCmdParamQuery::SetDataText( TDes* aDataText )
-    {
-    __ASSERT_DEBUG( aDataText, Panic( EPhoneUtilsParameterNotInitialized ) );
-    iDataText = aDataText;   
-    }
+   	{
+   	__ASSERT_DEBUG( aDataText, Panic( EPhoneUtilsParameterNotInitialized ) );
+   	iDataText = aDataText;   
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamQuery::DataText
@@ -216,9 +216,10 @@ EXPORT_C void TPhoneCmdParamQuery::SetDataText( TDes* aDataText )
 // ---------------------------------------------------------
 //
 EXPORT_C TDes* TPhoneCmdParamQuery::DataText() const
-    {
-    return iDataText;
-    }
+   	{
+   	__ASSERT_DEBUG( iDataText, Panic( EPhoneUtilsInvariant ) );
+   	return iDataText;
+   	}
    
 // ---------------------------------------------------------
 // TPhoneCmdParamQuery::SetQueryType

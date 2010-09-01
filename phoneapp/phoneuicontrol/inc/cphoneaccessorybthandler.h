@@ -22,9 +22,9 @@
 // INCLUDES
 #include <e32base.h>
 #include <pevirtualengine.h> 
-#include <mphoneneclearedhandler.h>
-#include <mphonestatemachine.h>
-#include <mphoneviewcommandhandle.h>
+#include "mphoneneclearedhandler.h"
+#include "mphonestatemachine.h"
+#include "mphoneviewcommandhandle.h"
 
 // CLASS DECLARATION
  
@@ -51,6 +51,11 @@ NONSHARABLE_CLASS( CPhoneAccessoryBTHandler ) : public CBase
         */
         ~CPhoneAccessoryBTHandler();
 
+
+        /**
+         * Sets BT debug mode on.
+         */
+        void SetBTDebugModeL();
 
         /**
         * Set the BT handsfree mode

@@ -32,7 +32,6 @@
 #include <TProfileToneSettings.h>
 #include <MProfileChangeObserver.h>
 #include <CProfileChangeNotifyHandler.h>
-#include "cpecenrepmonitor.h"
 
 // FORWARD DECLARATIONS
 class MPEPhoneModelInternal;
@@ -47,7 +46,7 @@ class MPEPhoneModelInternal;
 *  @lib Phoneenginebase.lib
 *  @since Series60_4.0
 */
-NONSHARABLE_CLASS( CPEProfileSettingMonitor ) : public CPECenRepMonitor, public MProfileChangeObserver
+NONSHARABLE_CLASS( CPEProfileSettingMonitor ) : public CBase, public MProfileChangeObserver
 {
 public:
     static CPEProfileSettingMonitor* NewL( MPEPhoneModelInternal& aModel );
@@ -58,8 +57,6 @@ protected:
     CPEProfileSettingMonitor( MPEPhoneModelInternal& aModel );
     void ConstructL();
     void GetProfileSettingsL();
-    // From CPECenRepMonitor
-    void UpdateL();
 private: // Not owned by this object
     MPEPhoneModelInternal& iModel; 
 private: // Owned by this object

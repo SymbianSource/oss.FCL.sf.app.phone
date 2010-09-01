@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  This file contains the header file of the CPhoneGsmMiscHandler 
-*                class
+*		 		 class
 *
 */
 
@@ -21,7 +21,7 @@
 #define CPEPARSERMISCHANDLER_H
 
 //INCLUDES
-#include "cphonegsmmischandler.h"
+#include "CPhoneGsmMiscHandler.h"
 #include <pevirtualengine.h>
 
 // CONSTANTS
@@ -63,6 +63,11 @@ NONSHARABLE_CLASS( CPEParserMiscHandler )
         ~CPEParserMiscHandler();
 
     public: // Functions from base classes
+
+        /**
+        * Process IMEI display
+        */
+        void ProcessShowIMEIL();
 
         /**
         * Process USSD request

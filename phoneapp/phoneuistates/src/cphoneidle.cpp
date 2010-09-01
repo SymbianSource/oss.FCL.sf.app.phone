@@ -22,6 +22,8 @@
 #include "phonelogger.h"
 #include "cphonegeneralgsmmessageshandler.h"
 #include "tphonecmdparamboolean.h"
+#include "mphonesecuritymodeobserver.h"
+#include "mphonestatemachine.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -93,12 +95,12 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
         {
         case MEngineMonitor::EPEMessageRemoteHeld:
             CPhoneState::SendGlobalInfoNoteL( 
-                EPhoneInformationRemotePutOnHoldNote, ETrue );
+                EPhoneInformationRemotePutOnHoldNote );
             break;
         
         case MEngineMonitor::EPEMessageRemoteResumed:
             CPhoneState::SendGlobalInfoNoteL( 
-                EPhoneInformationConnectedNote, ETrue );
+                EPhoneInformationConnectedNote );
             break;
             
         case MEngineMonitor::EPEMessageAudioOutputChanged:
@@ -106,12 +108,12 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
             break;
 
         case MEngineMonitor::EPEMessageIssuedSSRequest: // fall through 
-            // Note that after the sending of SS 
-            // strings the view stays in Dialer.
+        	// Note that after the sending of SS 
+			// strings the view stays in Dialer.
             if ( !iOnScreenDialer )  
-                {
-                SetupIdleScreenInBackgroundL();
-                }
+        		{
+            	SetupIdleScreenInBackgroundL();
+        		}
         case MEngineMonitor::EPEMessageIssuingSSRequest: // fall through
         case MEngineMonitor::EPEMessageCallBarred: // fall through
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
@@ -120,22 +122,51 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageOutCallForwToC: // fall through
         case MEngineMonitor::EPEMessageForwardUnconditionalModeActive: // fall through
         case MEngineMonitor::EPEMessageForwardConditionallyModeActive:
-            {
-            CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
-                CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
-                                                       *iViewCommandHandle,
-                                                       *this );
-            CleanupStack::PushL( gsmMsgHandler );
-            gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
-            CleanupStack::PopAndDestroy( gsmMsgHandler );
-            }
-            break;
-
+			{
+			CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
+				CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
+													   *iViewCommandHandle,
+													   *this );
+			CleanupStack::PushL( gsmMsgHandler );
+			gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
+			CleanupStack::PopAndDestroy( gsmMsgHandler );
+			}
+			break;
+		
+		case MEngineMonitor::EPEMessageShowVersion:
+			{
+			if ( !iStateMachine->SecurityMode()->IsSecurityMode() )
+				{
+				CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
+				CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
+													   *iViewCommandHandle,
+													   *this );
+				CleanupStack::PushL( gsmMsgHandler );
+				gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
+				CleanupStack::PopAndDestroy( gsmMsgHandler );
+				}
+			}
+			break;
+		
         default:
             CPhoneStateIdle::HandlePhoneEngineMessageL( 
                 aMessage, aCallId );
             break;
         }
+
+#ifndef __SYNCML_DM
+      switch ( aMessage )
+        {
+        case MEngineMonitor::EPEMessageShowVersion:
+            if ( !iOnScreenDialer )
+                {
+                HandleNumberEntryClearedL();
+                }
+            break;
+        default:    
+            break;
+        }
+#endif        
     }
 
 // -----------------------------------------------------------
@@ -146,7 +177,18 @@ EXPORT_C void CPhoneIdle::HandleErrorL( const TPEErrorInfo& aErrorInfo )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneIdle::HandleErrorL() ");
     
-    CPhoneState::HandleErrorL( aErrorInfo );
+    TPhoneCmdParamBoolean blockingDialogStatus;
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetBlockingDialogStatus, 
+        &blockingDialogStatus );
+
+    if( blockingDialogStatus.Boolean() )
+        {
+        blockingDialogStatus.SetBoolean( EFalse );
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetBlockingDialogStatus, 
+            &blockingDialogStatus );
+        }
+    
+    CPhoneStateIdle::HandleErrorL( aErrorInfo );
     }
 
 // End of File

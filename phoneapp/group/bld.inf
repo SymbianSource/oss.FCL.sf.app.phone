@@ -16,13 +16,15 @@
 */
 
 
-#include "../blacklist/group/bld.inf"
+
+#include "../phoneuiutils/group/bld.inf"
+#include "../Blacklist/group/bld.inf"
+#include "../phoneui/group/bld.inf"
 #include "../phoneuicontrol/group/bld.inf"
 #include "../phoneuistates/group/bld.inf"
-#include "../phoneuiutils/group/bld.inf"
+#include "../phoneuiview/group/bld.inf"
+#include "../phoneuivoipextension/group/bld.inf"
 #include "../silenceactionplugin/group/bld.inf"
 #include "../phonemediatorcenter/group/bld.inf"
-#include "../phoneringingtoneplayer/group/bld.inf"
-#include "../phoneuivoipextension/group/bld.inf"
 
 // End of File

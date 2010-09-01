@@ -65,6 +65,12 @@ class CPhoneConference : public CPhoneGsmInCall
         virtual void HandleKeyMessageL(
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
+        
+        /**
+        * This function is called from displaycallsetup and 
+        * the purpose is to do state specific things for callsetup.
+        */
+        IMPORT_C virtual void DoStateSpecificCallSetUpDefinitionsL();
             
     protected:
 
@@ -86,6 +92,8 @@ class CPhoneConference : public CPhoneGsmInCall
             TEventCode aEventCode );
             
         virtual void HandleNumberEntryClearedL();
+        
+        virtual void OpenMenuBarL();
 
         virtual void HandleIdleL( TInt aCallId );
         
@@ -100,29 +108,48 @@ class CPhoneConference : public CPhoneGsmInCall
         virtual void HandleConferenceIdleL();
                         
         virtual void MakeStateTransitionToTwoSinglesL();
-
-        virtual void DisplayCallSetupL( TInt aCallId );
+        
+        virtual TBool IsConferenceBubbleInSelectionMode() const;
         
         virtual void UpdateInCallCbaL();
+        
+        void CloseSelectionListL();
+        
+        virtual void SetHoldFlagL();
+        
+        virtual void DefineAndSetHoldFlagL();
+  
+        virtual void HandleCreateNumberEntryL( 
+			const TKeyEvent& aKeyEvent,
+            TEventCode aEventCode );
 
         void UpdateConferenceSecurityStatusL( TInt aCallId );
-        
+		
+        virtual void DisconnectCallL();
         
      private:
+              
+        void OpenParticipantsListL();
      
         void HandleHeldConferenceL( TInt aCallId );
          
         void HandleConnectedConferenceL();
 
         void ToggleHoldL();
+
+        void OpenDropParticipantSelectionL();
         
         void DropSelectedParticipantL();
+        
+        void OpenPrivateSelectionL();
         
         void PrivateSelectedParticipantL();
         
         void MakeStateTransitionToIdleL();
         
-        void HandleDiallingL( TInt aCallId );
+        void HandleDialingL( TInt aCallId );
+              
+        void CallFromNewCallQueryL();
         
         void HandleWentOneToOneL( TInt aCallId );
         

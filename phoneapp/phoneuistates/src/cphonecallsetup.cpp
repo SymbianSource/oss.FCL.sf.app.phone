@@ -18,6 +18,7 @@
 
 // INCLUDES
 #include <MediatorDomainUIDs.h>
+#include <videotelcontrolmediatorapi.h>
 #include "cphonecallsetup.h"
 #include "mphonestatemachine.h"
 #include "tphonecmdparamboolean.h"
@@ -30,6 +31,7 @@
 #include "cphonegeneralgsmmessageshandler.h"
 #include "cphonemediatorfactory.h"
 #include "cphonemediatorsender.h"
+#include "mphonesecuritymodeobserver.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -102,7 +104,15 @@ EXPORT_C void CPhoneCallSetup::HandlePhoneEngineMessageL(
             HandleConnectingL( aCallId );
             break;
 
-        // fall through.    
+        case MEngineMonitor::EPEMessageShowVersion:
+            {
+            if ( iStateMachine->SecurityMode()->IsSecurityMode() )
+                {
+                // Do nothing if security mode is enabled.
+                return;
+                }
+            }
+        // Fall through
         case MEngineMonitor::EPEMessageIssuingSSRequest:
         case MEngineMonitor::EPEMessageCallBarred:
         case MEngineMonitor::EPEMessageIssuedSSRequest:
@@ -147,11 +157,11 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
     // set when the CDMA network receives the call, not (like in GSM) when
     // when the remote party receives the call. So, in CDMA, the user
     // should still be able to cancel the MO call before the call is connected.
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneCallSetup::HandleConnectingL()");
-    
+    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneCallSetup::HandleConnectingL()");
     BeginUiUpdateLC();
     UpdateRemoteInfoDataL ( aCallId );
+    
+    SetNeedToReturnToForegroundAppStatusL( EFalse );
     
     // Re-enable global notes
     TPhoneCmdParamBoolean globalNotifierParam;
@@ -159,12 +169,6 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
 
-    // Home screen to foreground after call
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( ETrue );
-    iViewCommandHandle->ExecuteCommand( EPhoneViewHsToForegroundAfterCall,
-        &booleanParam );
-    
     // Stop capturing keys
     CaptureKeysDuringCallNotificationL( EFalse );
     
@@ -173,13 +177,19 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
 
+    // Remove the number entry if it isn't DTMF dialer
+    if ( !iOnScreenDialer ||
+         !IsNumberEntryVisibleL() ||
+         !IsDTMFEditorVisibleL() )
+        {
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
+        }
+
     SetToolbarButtonLoudspeakerEnabled();
 
     EndUiUpdate();
     
-    // Go to alerting state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
-
     iStateMachine->ChangeState( EPhoneStateAlerting );
     }
 

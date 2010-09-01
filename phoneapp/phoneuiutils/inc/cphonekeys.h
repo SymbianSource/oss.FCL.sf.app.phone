@@ -73,7 +73,7 @@ class CPhoneKeys: public CBase
         * Checks if keyevent is "*" key or following via taps of
         */    
         IMPORT_C static TBool IsExtraChar(
-            TInt aChar ); 
+        	TInt aChar ); 
         
         /**
         * Validates number entry string.

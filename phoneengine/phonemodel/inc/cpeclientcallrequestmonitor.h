@@ -22,7 +22,7 @@
 
 //INCLUDES
 #include <e32base.h>
-#include <rphcltserver.h>
+#include <RPhCltServer.h>
 #include "mpeclientcallrequestmonitor.h"
 #include <mphcltdialrequestobserver.h>
 
@@ -116,7 +116,7 @@ NONSHARABLE_CLASS( CPEClientCallRequestMonitor )
         */
         void ConstructL();
     
-    private:    //Data
+    private:	//Data
         // MPEPhoneModelInternal is used to send message to the phone application
         MPEPhoneModelInternal& iModel;
         //  Notifies call request from the client/server interface.

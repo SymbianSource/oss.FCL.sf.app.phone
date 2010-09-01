@@ -16,8 +16,10 @@
 */
 
 
+
 // INCLUDE FILES
 #include "cpegprstermination.h"
+#include <ccoutlinterface.h>
 #include <talogger.h>
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -41,6 +43,7 @@ CPEGprsTermination::~CPEGprsTermination()
     {
     TEFLOGSTRING( KTAOBJECT, "cpecall: CPEGprsTermination::~CPEGprsTermination" );
     Cancel();
+    delete iInterface;
     }
 
 // -----------------------------------------------------------------------------
@@ -50,6 +53,15 @@ CPEGprsTermination::~CPEGprsTermination()
 void CPEGprsTermination::StartL()
     {
     TEFLOGSTRING( KTAINT, "cpecall: CPEGprsTermination::StartL" );
+
+    Cancel();
+    delete iInterface;
+    iInterface = NULL;
+
+    iInterface = CCoUtlInterface::NewL();
+    TEFLOGSTRING( KTAREQOUT, "cpecall: CPEGprsTermination::StartL CCoUtlInterface::Terminate()" );
+    iInterface->Terminate( iStatus );
+    SetActive();
     }
 
 // -----------------------------------------------------------------------------
@@ -59,7 +71,19 @@ void CPEGprsTermination::StartL()
 TBool CPEGprsTermination::IsTerminating() const
     {
     TEFLOGSTRING( KTAINT, "cpecall: CPEGprsTermination::IsTerminating" );
-    return EFalse;
+    if ( !iInterface )
+        {
+        return EFalse;
+        }
+    else
+        {
+        CCoUtlInterface::TState current = 
+            iInterface->CurrentState();
+            
+        return 
+            ( current != CCoUtlInterface::EIdle ) &&
+            ( current != CCoUtlInterface::EConfirm );
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -69,6 +93,8 @@ TBool CPEGprsTermination::IsTerminating() const
 void CPEGprsTermination::RunL()
     {
     TEFLOGSTRING2( KTAREQEND, "cpecall: CPEGprsTermination::RunL status: %d", iStatus.Int() );
+    delete iInterface;
+    iInterface = NULL;
     }
 
 // -----------------------------------------------------------------------------
@@ -78,6 +104,10 @@ void CPEGprsTermination::RunL()
 void CPEGprsTermination::DoCancel()
     {
     TEFLOGSTRING( KTAREQEND, "cpecall: CPEGprsTermination::DoCancel" );
+    if( iInterface )
+        {
+        iInterface->Cancel();
+        }
     }
 
 //  End of File  

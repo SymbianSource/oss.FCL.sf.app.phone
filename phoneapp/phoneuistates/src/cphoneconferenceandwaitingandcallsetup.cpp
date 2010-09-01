@@ -54,6 +54,16 @@ CPhoneConferenceAndWaitingAndCallSetup::CPhoneConferenceAndWaitingAndCallSetup(
 //
 CPhoneConferenceAndWaitingAndCallSetup::~CPhoneConferenceAndWaitingAndCallSetup()
     {
+    // Need to check iViewCommandHandle validity here to not
+    // trigger a high/can panic error in a Codescanner run.
+    // coverity[var_compare_op]
+    if ( iViewCommandHandle )
+        {
+        TPhoneCmdParamBoolean dtmfSendFlag;
+        dtmfSendFlag.SetBoolean( EFalse );
+        TRAP_IGNORE( iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
+            &dtmfSendFlag ) );        
+        }
     }
 
 // -----------------------------------------------------------
@@ -104,25 +114,35 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnecting:
+            {
             iAlerting = ETrue;
             HandleConnectingL( aCallId );
+            }
             break;
             
         case MEngineMonitor::EPEMessageConnected:
+            {
             HandleConnectedL( aCallId );
+            }
             break;
         
         case MEngineMonitor::EPEMessageConferenceIdle:
+            {
             HandleConferenceIdleL();
+            }
             break;
 
         case MEngineMonitor::EPEMessageIdle:
+            {
             HandleIdleL( aCallId );
+            }
             break;
 
         default:
+            {
             CPhoneConference::HandlePhoneEngineMessageL( aMessage, 
                 aCallId );
+            }
             break;
         }
     }
@@ -141,6 +161,7 @@ TBool CPhoneConferenceAndWaitingAndCallSetup::HandleCommandL( TInt aCommand )
         {   
         case EPhoneDtmfDialerCancel:
             {
+            CloseDTMFEditorL();
             }
             break;    
     
@@ -176,7 +197,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleKeyMessageL(
                 // We can't answer to call in this state so display
                 // Not allowed -note.
                 SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed, ETrue );                                             
+                    EPhoneNoteTextNotAllowed );                                             
                  }
             break;
             
@@ -185,6 +206,67 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleKeyMessageL(
             CPhoneConference::HandleKeyMessageL( aMessage, aCode );
             break;
         }
+    }
+
+// -----------------------------------------------------------
+// CPhoneConferenceAndWaitingAndCallSetup::HandleErrorL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneConferenceAndWaitingAndCallSetup::HandleErrorL( 
+        const TPEErrorInfo& aErrorInfo )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndWaitingAndCallSetup::HandleErrorL()");
+    
+    if( aErrorInfo.iErrorCode == ECCPErrorCCUserAlertingNoAnswer )
+        {
+        // Should not shown "No Answer" note
+        __PHONELOG1( EBasic, EPhoneUIStates,
+       "PhoneUIStates: CPhoneConferenceAndWaitingAndCallSetup::HandleErrorL - aErrorInfo.iErrorCode =%d ",
+            aErrorInfo.iErrorCode);
+        }
+    else
+        {
+        CPhoneState::HandleErrorL( aErrorInfo );
+        }
+    }
+
+// -----------------------------------------------------------
+// CPhoneConferenceAndWaitingAndCallSetup::OpenMenuBarL
+// -----------------------------------------------------------
+//
+void CPhoneConferenceAndWaitingAndCallSetup::OpenMenuBarL()
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, 
+        "CPhoneConferenceAndWaitingAndCallSetup::OpenMenuBarL");
+
+    // Set specific flag to view so that DTMF menu item available
+    TPhoneCmdParamBoolean dtmfSendFlag;
+    dtmfSendFlag.SetBoolean( ETrue );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetDtmfOptionsFlag, 
+        &dtmfSendFlag );
+   
+    TInt resourceId ( EPhoneAlertingWaitingAndConfHeldCallMenuBar );
+    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
+        {
+        resourceId = EPhoneDtmfDialerMenubar;
+        }
+    else if ( IsNumberEntryVisibleL() )
+        {
+        resourceId = 
+            EPhoneAlertingWaitingAndConfHeldCallMenuBarWithNumberEntry;
+        }
+    else if ( IsConferenceBubbleInSelectionMode() )
+        {
+        resourceId = EPhoneConfCallParticipantsDropMenubar;    
+        }         
+
+    TPhoneCmdParamInteger integerParam;
+    integerParam.SetInteger( 
+                CPhoneMainResourceResolver::Instance()->
+                ResolveResourceID( resourceId ) );    
+
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
+        &integerParam );
     }
 
 // -----------------------------------------------------------
@@ -235,7 +317,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectingL( TInt aCallId )
         &callHeaderParam );
         
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() )
+    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
@@ -269,12 +351,13 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectedL( TInt aCallId )
     CaptureKeysDuringCallNotificationL( EFalse );
     
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() )
+    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );    
+    SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
     EndUiUpdate();
     
     // Go to Conference And Single And Waiting state
@@ -302,10 +385,10 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL");
-    
     BeginUiUpdateLC();
-        
+    
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     if ( IsNumberEntryUsedL() )
         {
@@ -342,16 +425,13 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL()
             // Reset Hold flag to view
             TPhoneCmdParamBoolean holdFlag;
             holdFlag.SetBoolean( EFalse );
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );       
-
-            // Go to Call Setup And Waiting state
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
             SetTouchPaneButtons( EPhoneCallSetupButtons ); 
-
-            // No need update cbas            
+            SetToolbarDimming( ETrue );
             iStateMachine->ChangeState( EPhoneStateCallSetupAndWaiting );
             }
         }
-    EndUiUpdate();          
+    EndUiUpdate();
     }
 
 // -----------------------------------------------------------
@@ -371,6 +451,9 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleIdleL( TInt aCallId )
 
     // Stop capturing keys
     CaptureKeysDuringCallNotificationL( EFalse );
+
+    // Close menu bar, if it is displayed
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     TPhoneCmdParamBoolean conferenceExistsForCallId;
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCallExistsInConference,
@@ -426,7 +509,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleIdleL( TInt aCallId )
                 UpdateCbaL( EPhoneCallHandlingInCallCBA );                  
                 iStateMachine->ChangeState( EPhoneStateConferenceAndCallSetup );
                 }
-            EndUiUpdate();             
+            EndUiUpdate();
             }
         }
     }

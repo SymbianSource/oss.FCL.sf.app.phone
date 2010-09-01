@@ -52,9 +52,9 @@ CPhoneMediatorCommandListener* CPhoneMediatorCommandListener::Instance()
         {
         TRAPD( err, instance = CPhoneMediatorCommandListener::NewL() );
         if ( err )
-            {
-            Panic( EPhoneUtilsCouldNotCreateSingleton );    
-            }
+	        {
+	        Panic( EPhoneUtilsCouldNotCreateSingleton );	
+	        }
         }
     return instance;
     }
@@ -74,25 +74,25 @@ CPhoneMediatorCommandListener::CPhoneMediatorCommandListener() :
 CPhoneMediatorCommandListener::~CPhoneMediatorCommandListener()
     {
     if ( iCommandResponder )
-        {
-        iCommandResponder->UnregisterCommand( KMediatorTelephonyDomain, 
+    	{
+    	iCommandResponder->UnregisterCommand( KMediatorTelephonyDomain, 
                                               KCatVideoTelToPhoneCommands, 
                                               iVideoTelCommands );
 
-        iCommandResponder->UnregisterCommand( KMediatorTelephonyDomain, 
+    	iCommandResponder->UnregisterCommand( KMediatorTelephonyDomain, 
                                               KCatAudioCommandsToTelephony, 
                                               iAudioCommands );
 
-        iCommandResponder->UnregisterCommand( KMediatorTelephonyDomain, 
+    	iCommandResponder->UnregisterCommand( KMediatorTelephonyDomain, 
                                               KCatCommandsToTelephony, 
                                               iGenericCommands );
 
         delete iCommandResponder;
         iCommandResponder = NULL;
-        }
+    	}
     iVideoTelCommands.Close();
-    iAudioCommands.Close();
-    iGenericCommands.Close();
+	iAudioCommands.Close();
+	iGenericCommands.Close();
     }
 
 // -----------------------------------------------------------------------------
@@ -104,7 +104,7 @@ void CPhoneMediatorCommandListener::ConstructL()
     {
     __LOGMETHODSTARTEND(EPhoneMediatorCenter, "CPhoneMediatorCommandListener::ConstructL( ) ");
 
-    RegisterMediatorCommandsL();
+	RegisterMediatorCommandsL();
     }
 
 // -----------------------------------------------------------
@@ -130,37 +130,37 @@ CPhoneMediatorCommandListener* CPhoneMediatorCommandListener::NewL()
 // -----------------------------------------------------------------------------
 //    
 void CPhoneMediatorCommandListener::Initialize( 
-    MPhoneMenuAndCbaEvents* aMenuAndCbaEventHandler,
-    MPhoneEngineMessageSender* aMessageSender,
-    MPEEngineInfo* aEngineInfo )
-    {
-    __LOGMETHODSTARTEND(EPhoneMediatorCenter, "CPhoneMediatorCommandListener::Initialize( ) ");
-    iMenuAndCbaHandler = aMenuAndCbaEventHandler;
-    iMessageSender = aMessageSender;
-    iEngineInfo = aEngineInfo;
-    }
+	MPhoneMenuAndCbaEvents* aMenuAndCbaEventHandler,
+	MPhoneEngineMessageSender* aMessageSender,
+	MPEEngineInfo* aEngineInfo )
+	{
+	__LOGMETHODSTARTEND(EPhoneMediatorCenter, "CPhoneMediatorCommandListener::Initialize( ) ");
+	iMenuAndCbaHandler = aMenuAndCbaEventHandler;
+	iMessageSender = aMessageSender;
+	iEngineInfo = aEngineInfo;
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorCommandListener::RegisterMediatorCommandsL
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorCommandListener::RegisterMediatorCommandsL()
-    {
+	{
     __LOGMETHODSTARTEND(EPhoneMediatorCenter, 
         "CPhoneMediatorCommandListener::RegisterMediatorCommandsL( ) ");
-    iCommandResponder = CMediatorCommandResponder::NewL( this );
+	iCommandResponder = CMediatorCommandResponder::NewL( this );
 
     RegisterVideoTelephonyMediatorCommands();
     RegisterAudioMediatorCommands();
     RegisterGenericMediatorCommands();                                                
-    }
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorCommandListener::RegisterVideoTelephonyMediatorCommands
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorCommandListener::RegisterVideoTelephonyMediatorCommands()
-    {
+	{
     __LOGMETHODSTARTEND(EPhoneMediatorCenter, 
         "CPhoneMediatorCommandListener::RegisterVideoTelephonyMediatorCommands( ) ");
     TCapabilitySet caps;
@@ -170,7 +170,7 @@ void CPhoneMediatorCommandListener::RegisterVideoTelephonyMediatorCommands()
     MediatorService::TCommand newCommand;
     newCommand.iCommandId = EVtCmdFallback;
     newCommand.iVersion = TVersion( KVideoTelToPhoneCmdVersionMajor, 
-        KVideoTelToPhoneCmdVersionMinor, KVideoTelToPhoneCmdVersionBuild );
+    	KVideoTelToPhoneCmdVersionMinor, KVideoTelToPhoneCmdVersionBuild );
     caps.Set( ECapabilityNetworkControl );
     newCommand.iCaps = caps;
     newCommand.iTimeout = KPhoneUiMediatorIfTimeout;    
@@ -186,15 +186,15 @@ void CPhoneMediatorCommandListener::RegisterVideoTelephonyMediatorCommands()
     TInt error = iCommandResponder->RegisterCommand( KMediatorTelephonyDomain, 
                                                      KCatVideoTelToPhoneCommands, 
                                                      iVideoTelCommands );
-    __ASSERT_DEBUG( error == KErrNone, Panic( EPhoneMediatorCenterRegistrationFailed ) );
-    }
+	__ASSERT_DEBUG( error == KErrNone, Panic( EPhoneMediatorCenterRegistrationFailed ) );
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorCommandListener::RegisterAudioMediatorCommands
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorCommandListener::RegisterAudioMediatorCommands()
-    {
+	{
     __LOGMETHODSTARTEND(EPhoneMediatorCenter, 
         "CPhoneMediatorCommandListener::RegisterAudioMediatorCommands( ) ");
     TCapabilitySet caps;
@@ -204,7 +204,7 @@ void CPhoneMediatorCommandListener::RegisterAudioMediatorCommands()
     MediatorService::TCommand newCommand;
     newCommand.iCommandId = EAudioCmdUnmute;
     newCommand.iVersion = TVersion( KAudioCmdToTelephonyVersionMajor, 
-        KAudioCmdToTelephonyVersionMinor, KAudioCmdToTelephonyVersionBuild );
+    	KAudioCmdToTelephonyVersionMinor, KAudioCmdToTelephonyVersionBuild );
     caps.Set( ECapabilityNetworkControl );
     newCommand.iCaps = caps;
     newCommand.iTimeout = KPhoneUiMediatorIfTimeout;    
@@ -217,15 +217,15 @@ void CPhoneMediatorCommandListener::RegisterAudioMediatorCommands()
     TInt error = iCommandResponder->RegisterCommand( KMediatorTelephonyDomain, 
                                                      KCatAudioCommandsToTelephony, 
                                                      iAudioCommands );
-    __ASSERT_DEBUG( error == KErrNone, Panic( EPhoneMediatorCenterRegistrationFailed ) );
-    }
+	__ASSERT_DEBUG( error == KErrNone, Panic( EPhoneMediatorCenterRegistrationFailed ) );
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorCommandListener::RegisterGenericMediatorCommands
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorCommandListener::RegisterGenericMediatorCommands()
-    {
+	{
     __LOGMETHODSTARTEND(EPhoneMediatorCenter, 
         "CPhoneMediatorCommandListener::RegisterGenericMediatorCommands( ) ");
     TCapabilitySet caps;
@@ -235,7 +235,7 @@ void CPhoneMediatorCommandListener::RegisterGenericMediatorCommands()
     MediatorService::TCommand newCommand;
     newCommand.iCommandId = EPhoneCmdEndActiveCall;
     newCommand.iVersion = TVersion( KTelephonyCommandsVersionMajor, 
-        KTelephonyCommandsVersionMinor, KTelephonyCommandsVersionBuild );
+    	KTelephonyCommandsVersionMinor, KTelephonyCommandsVersionBuild );
     caps.Set( ECapabilityNetworkControl );
     newCommand.iCaps = caps;
     newCommand.iTimeout = KPhoneUiMediatorIfTimeout;    
@@ -245,164 +245,164 @@ void CPhoneMediatorCommandListener::RegisterGenericMediatorCommands()
     TInt error = iCommandResponder->RegisterCommand( KMediatorTelephonyDomain, 
                                                      KCatCommandsToTelephony, 
                                                      iGenericCommands );
-    __ASSERT_DEBUG( error == KErrNone, Panic( EPhoneMediatorCenterRegistrationFailed ) );
-    }
+	__ASSERT_DEBUG( error == KErrNone, Panic( EPhoneMediatorCenterRegistrationFailed ) );
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorCommandListener::MediatorCommandL
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorCommandListener::MediatorCommandL( 
-    TUid aDomain, 
-    TUid aCategory, 
+	TUid aDomain, 
+	TUid aCategory, 
     TInt aCommandId, 
     TVersion aVersion, 
     const TDesC8& /*aData*/ )
-    {
+	{
     __LOGMETHODSTARTEND(EPhoneMediatorCenter, "CPhoneMediatorCommandListener::MediatorCommandL( ) ");
-    if( aDomain == KMediatorTelephonyDomain &&
-        aCategory == KCatVideoTelToPhoneCommands )
-        {
-        VideoTelephonyCommandL( aCommandId, aVersion );
-        SendResponse( aDomain, aCategory, aCommandId );
-        return;         
-        }
-    else if( aDomain == KMediatorTelephonyDomain &&
+	if( aDomain == KMediatorTelephonyDomain &&
+	    aCategory == KCatVideoTelToPhoneCommands )
+		{
+		VideoTelephonyCommandL( aCommandId, aVersion );
+		SendResponse( aDomain, aCategory, aCommandId );
+		return;			
+		}
+	else if( aDomain == KMediatorTelephonyDomain &&
              aCategory == KCatAudioCommandsToTelephony )
-        {
-        AudioCommandL( aCommandId, aVersion );
-        SendResponse( aDomain, aCategory, aCommandId );
-        return;
-        }
-    else if( aDomain == KMediatorTelephonyDomain &&
-             aCategory == KCatCommandsToTelephony )
-        {
-        GenericCommandL( aCommandId, aVersion );
-        SendResponse( aDomain, aCategory, aCommandId );
-        return;         
-        }
+		{
+		AudioCommandL( aCommandId, aVersion );
+		SendResponse( aDomain, aCategory, aCommandId );
+		return;
+		}
+	else if( aDomain == KMediatorTelephonyDomain &&
+	         aCategory == KCatCommandsToTelephony )
+		{
+		GenericCommandL( aCommandId, aVersion );
+		SendResponse( aDomain, aCategory, aCommandId );
+		return;			
+		}
     
-    TInt error = iCommandResponder->IssueResponse( aDomain, 
+	TInt error = iCommandResponder->IssueResponse( aDomain, 
                                                  aCategory, 
                                                  aCommandId,
                                                  KErrNotFound, 
-                                                 KNullDesC8 );                              
-    }
+                                                 KNullDesC8 );								
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorCommandListener::CancelMediatorCommand
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorCommandListener::CancelMediatorCommand( 
-    TUid /*aDomain*/,
+	TUid /*aDomain*/,
     TUid /*aCategory*/, 
     TInt /*aCommandId*/ )
-    {
+	{
     __LOGMETHODSTARTEND(EPhoneMediatorCenter, 
         "CPhoneMediatorCommandListener::CancelMediatorCommand( ) ");
-    }
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorCommandListener::SendResponse
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorCommandListener::SendResponse( 
-    TUid aDomain, 
-    TUid aCategory, 
+	TUid aDomain, 
+	TUid aCategory, 
     TInt aCommandId )
-    {
+	{
     __LOGMETHODSTARTEND(EPhoneMediatorCenter, 
         "CPhoneMediatorCommandListener::SendResponse( ) ");
-    iCommandResponder->IssueResponse( aDomain, 
+	iCommandResponder->IssueResponse( aDomain, 
                                       aCategory, 
                                       aCommandId,
                                       KErrNone, 
-                                      KNullDesC8 );     
-    }
+                                      KNullDesC8 );		
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorCommandListener::VideoTelephonyCommandL
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorCommandListener::VideoTelephonyCommandL( TInt aCommandId, TVersion /*aVersion*/ )
-    {
+	{
     __LOGMETHODSTARTEND(EPhoneMediatorCenter, 
         "CPhoneMediatorCommandListener::VideoTelephonyCommandL( ) ");
         
     __ASSERT_DEBUG( iMenuAndCbaHandler, Panic( EPhoneMediatorCenterSingletonNotInitialized ) );
     __ASSERT_DEBUG( iMessageSender, Panic( EPhoneMediatorCenterSingletonNotInitialized ) );
     
-    switch( aCommandId )
-        {
-        case EVtCmdFallback:
-            iMenuAndCbaHandler->HandleCommandL( EPhoneInCallCmdEndThisActiveCall );
-            CPhoneReconnectQuery::InstanceL()->ShowReconnectQueryL( ETrue );
-            break;
-            
-        case EVtCmdSwitchToVoice:
-            iMenuAndCbaHandler->HandleCommandL( EPhoneCmdYesSwitchToVoice );
-            break;
-            
-        case EVtCmdLowMemory:
-            iMenuAndCbaHandler->HandleCommandL( EPhoneCmdVideoCallOutOfMemory );
-            break;
-            
-        default:
-            __ASSERT_DEBUG( false, Panic( EPhoneMediatorCenterInvalidCommand ) );
-            break;
-        }       
-    }
+	switch( aCommandId )
+		{
+		case EVtCmdFallback:
+		    iMenuAndCbaHandler->HandleCommandL( EPhoneInCallCmdEndThisActiveCall );
+		    CPhoneReconnectQuery::InstanceL()->ShowReconnectQueryL( ETrue );
+		    break;
+		    
+		case EVtCmdSwitchToVoice:
+		    iMenuAndCbaHandler->HandleCommandL( EPhoneCmdYesSwitchToVoice );
+			break;
+			
+		case EVtCmdLowMemory:
+		    iMenuAndCbaHandler->HandleCommandL( EPhoneCmdVideoCallOutOfMemory );
+		    break;
+			
+		default:
+			__ASSERT_DEBUG( false, Panic( EPhoneMediatorCenterInvalidCommand ) );
+			break;
+		}		
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorCommandListener::AudioCommandL
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorCommandListener::AudioCommandL( TInt aCommandId, TVersion /*aVersion*/ )
-    {
+	{
     __LOGMETHODSTARTEND(EPhoneMediatorCenter, 
         "CPhoneMediatorCommandListener::AudioCommandL( ) ");
 
     __ASSERT_DEBUG( iMessageSender, Panic( EPhoneMediatorCenterSingletonNotInitialized ) );
     __ASSERT_DEBUG( iEngineInfo, Panic( EPhoneMediatorCenterSingletonNotInitialized ) );
-        
-    switch( aCommandId )
-        {
-        case EAudioCmdUnmute:
-            iEngineInfo->SetAudioMuteCommand( false );
-            iMessageSender->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageSetAudioMute );
-            break;
-            
-        case EAudioCmdMute:
-            iEngineInfo->SetAudioMuteCommand( true );
-            iMessageSender->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageSetAudioMute );
-            break;
-            
-        default:
-            __ASSERT_DEBUG( false, Panic( EPhoneMediatorCenterInvalidCommand ) );
-            break;
-        }
-    }
+		
+	switch( aCommandId )
+		{
+		case EAudioCmdUnmute:
+			iEngineInfo->SetAudioMuteCommand( false );
+			iMessageSender->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageSetAudioMute );
+			break;
+			
+		case EAudioCmdMute:
+			iEngineInfo->SetAudioMuteCommand( true );
+			iMessageSender->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageSetAudioMute );
+			break;
+			
+		default:
+			__ASSERT_DEBUG( false, Panic( EPhoneMediatorCenterInvalidCommand ) );
+			break;
+		}
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorCommandListener::GenericCommandL
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorCommandListener::GenericCommandL( TInt aCommandId, TVersion /*aVersion*/ )
-    {
+	{
     __LOGMETHODSTARTEND(EPhoneMediatorCenter, 
         "CPhoneMediatorCommandListener::GenericCommandL( ) ");
     __ASSERT_DEBUG( iMenuAndCbaHandler, Panic( EPhoneMediatorCenterSingletonNotInitialized ) );
 
-    switch( aCommandId )
-        {
-        case EPhoneCmdEndActiveCall:
-            iMenuAndCbaHandler->HandleCommandL( EPhoneInCallCmdEndThisActiveCall );
-            break;
-            
-        default:
-            __ASSERT_DEBUG( false, Panic( EPhoneMediatorCenterInvalidCommand ) );
-            break;
-        }
-    }
+	switch( aCommandId )
+		{
+		case EPhoneCmdEndActiveCall:
+			iMenuAndCbaHandler->HandleCommandL( EPhoneInCallCmdEndThisActiveCall );
+			break;
+			
+		default:
+			__ASSERT_DEBUG( false, Panic( EPhoneMediatorCenterInvalidCommand ) );
+			break;
+		}
+	}
 
 // End of File

@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  This file contains the header file of the CPESettingsCommand.h 
-*                object.
+*		 		 object.
 *
 */
 
@@ -23,10 +23,10 @@
 
 //  INCLUDES
 #include <e32base.h>
-#include <nwdefs.h>
-#include "pepanic.pan"
-#include "pevirtualengine.h"
-#include <msssettingsobserver.h>
+#include <NwDefs.h>
+#include "PEPanic.pan"
+#include "PEVirtualEngine.h"
+#include <MSSSettingsObserver.h>
 
 
 // FORWARD DECLARATIONS

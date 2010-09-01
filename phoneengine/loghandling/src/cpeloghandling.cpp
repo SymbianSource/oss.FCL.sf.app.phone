@@ -186,15 +186,15 @@ EXPORT_C TInt CPELogHandling::SaveCallEntry
          CallIdCheck::IsVideo( aCallId )
        ) 
         {
-        CPELogInfo* logInfo( NULL );
+		CPELogInfo* logInfo( NULL );
         TRAP( errorCode, logInfo = CPELogInfo::NewL(); );
             
         if ( logInfo )
             {
             // continue gathering log data
             
-            // set phonenumber and/or voip address
-            SetRemoteContact( aCallId, *logInfo );
+		    // set phonenumber and/or voip address
+			SetRemoteContact( aCallId, *logInfo );
             logInfo->SetEventData( aCallId, iDataStore ); 
             TRAP_IGNORE( 
                 // Contact link can be big, not critical for basic functionality.
@@ -394,12 +394,15 @@ void CPELogHandling::SetRemoteContact( TInt aCallId, CPELogInfo& aLogInfo )
     
     if ( EPECallTypeVoIP == iDataStore.CallType( aCallId ) )
         {
-        // voip address field must be used for voip calls
-        aLogInfo.SetVoipAddress( aLogInfo.PhoneNumber() );
-        aLogInfo.SetPhoneNumber( KNullDesC() );
+        if ( EFalse == IsValidPhoneNumber( aLogInfo.PhoneNumber() ) )
+            {
+            // voip address field must be used for voip calls if
+            // string is not valid for CS call.
+            aLogInfo.SetVoipAddress( aLogInfo.PhoneNumber() );
+            aLogInfo.SetPhoneNumber( KNullDesC() );
+            }
         }
     }
-
 
 // -----------------------------------------------------------------------------
 // CPELogHandling::SaveCallInfoL
@@ -839,6 +842,25 @@ CPELogExtensionWrapper* CPELogHandling::CreateExtensionWrapperLC(
         const TUid& aPluginUid ) const
     {
     return CPELogExtensionWrapper::NewLC( aPluginUid );
+    }
+
+// -----------------------------------------------------------------------------
+// CPELogHandling::IsValidPhoneNumber
+// -----------------------------------------------------------------------------
+//
+TBool CPELogHandling::IsValidPhoneNumber( 
+        const TDesC& aString ) const
+    {
+    _LIT( KAllowedCharsInPhoneNumber, "0123456789*+pw#PW" );
+    
+    TLex input( aString );
+    TPtrC validChars( KAllowedCharsInPhoneNumber );
+    while ( validChars.Locate( input.Peek() ) != KErrNotFound )
+        {
+        input.Inc();
+        }
+    
+    return ( !input.Remainder().Length() );
     }
 
 // End of File

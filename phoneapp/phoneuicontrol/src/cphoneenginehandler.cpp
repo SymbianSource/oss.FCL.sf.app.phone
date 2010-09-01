@@ -54,7 +54,7 @@ void CPhoneEngineHandler::DoHandleMessageL(
     __PHONELOG2( EBasic, EPhoneControl,
         "CPhoneEngineHandler::DoHandleMessageL - Message received (aMessage=%d aCallId=%d)",
             aMessage, aCallId );
-    iStateMachine->State()->HandlePhoneEngineMessageL( aMessage, aCallId );
+    iStateMachine->HandlePhoneEngineMessageL( aMessage, aCallId );
     }
 
 //  End of File  

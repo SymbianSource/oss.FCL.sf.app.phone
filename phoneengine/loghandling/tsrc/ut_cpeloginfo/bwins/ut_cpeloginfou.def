@@ -1,3 +1,0 @@
-EXPORTS
-	?CreateTestSuiteL@@YAPAVMEUnitTest@@XZ @ 1 NONAME ; class MEUnitTest * CreateTestSuiteL(void)
-

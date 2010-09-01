@@ -21,9 +21,9 @@
 
 #include    <mphonedevicemodeobserver.h>
 #include    <hwrmdomainpskeys.h>
-#include    "cteldmgriphandler.h"
-#include    "mteldmaccessory.h"
-#include    "cteldmcommandhandler.h"
+#include    "CTelDMGripHandler.h"
+#include	"MTelDMAccessory.h" 
+#include	"CTelDMCommandHandler.h"
 #include    <settingsinternalcrkeys.h>
 #include    <centralrepository.h>
 
@@ -80,7 +80,7 @@ void CTelDMGripHandler::ConstructL()
     {    
     /// Attach to key. Start listening for changes.
     iProperty.Attach( KPSUidHWRM, KHWRMGripStatus );
-    IssueRequest();                               
+    IssueRequest();                   		      
     }
  
 // -----------------------------------------------------------------------------

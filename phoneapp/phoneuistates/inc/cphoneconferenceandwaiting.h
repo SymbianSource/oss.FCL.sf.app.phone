@@ -61,17 +61,21 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
         virtual void HandleKeyMessageL(
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
-            
-        virtual void HandleKeyEventL(
-            const TKeyEvent& aKeyEvent,
-            TEventCode aEventCode );
-
+     
         /**
-        * Handles user selected UI commands.
-        * @param aCommand - selected command
-        */    
-        TBool HandleCommandL( TInt aCommand );
-
+        * HandleError
+        * Implements error handling framework
+        * @param aErrorInfo: the error info
+        */
+        IMPORT_C virtual void HandleErrorL( 
+            const TPEErrorInfo& aErrorInfo ); 
+        
+        /**
+        * This function is called from displaycallsetup and 
+        * the purpose is to do state specific things for callsetup.
+        */
+        IMPORT_C virtual void DoStateSpecificCallSetUpDefinitionsL();
+        
     protected:
 
         /**
@@ -87,6 +91,8 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
         */
         virtual void ConstructL();
         
+        virtual void OpenMenuBarL();
+        
         virtual void UpdateInCallCbaL();
         
         
@@ -100,14 +106,9 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
                   
          void MakeStateTransitionToConferenceAndSingleL( TInt aCallId );
          
-         void HandleDiallingL( TInt aCallId );
+         void HandleDialingL( TInt aCallId );
          
          void HandleWentOneToOneL( TInt aCallId );
-         
-         /**
-          *  Handles received EPhoneCmdUpdateUiControls command.
-          */
-         void UpdateUiControlsL();
       
      private:
         TInt iRingingCallId;

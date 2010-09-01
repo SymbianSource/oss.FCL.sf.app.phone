@@ -466,18 +466,15 @@ public:
     TPECallOrigin CallOrigin() const;
     
     /**
-    * Sets the protocol spesific error code
-    * @param aError is the error code from protocol.
-    * @return None.
-    */
-    void SetProtocolError( TInt aError ); 
+     * Sets transfer call back flag.
+     */
+    void SetDoCallBackRequest( TBool aDoCallBack );
     
     /**
-    * Returns the protocol spesific error code
-    * @return Error code.
-    */
-    TInt ProtocolError() const; 
-    
+     * Returns transfer call back flag.
+     */
+    TBool DoCallBackRequest() const;
+
 private:
     
     /**
@@ -649,9 +646,9 @@ private:
     TPECallOrigin iCallOrigin;
     
     /**
-     * Protocol error code.
+     * Flag which indicates if call back request is needed
      */
-    TInt iProtocolError;
+    TBool iDoCallBackRequest;
     };
 
 #endif // C_CPECALLINFO_H

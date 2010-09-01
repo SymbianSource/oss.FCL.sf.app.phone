@@ -18,9 +18,9 @@
 
 
 // INCLUDE FILES
-#include    "cteldmcallstatelistener.h"
-#include    "mteldmcallstateobserver.h"
-#include    "mteldmaccessory.h"
+#include    "CTelDMCallStateListener.h"
+#include 	"MTelDMCallStateObserver.h"
+#include	"MTelDMAccessory.h" 
 
 #include    <ctsydomainpskeys.h>
 
@@ -78,7 +78,7 @@ void CTelDMCallStateListener::ConstructL()
     {
     /// Attach to key. Start listening call state changes.
     iProperty.Attach( KPSUidCtsyCallInformation, KCTsyCallState );
-    IssueRequest();                               
+    IssueRequest();                   		      
       
     }
  
@@ -92,14 +92,14 @@ void CTelDMCallStateListener::HandleChange()
     TInt err( KErrNone );
     iCallState = KErrNone;
     err = RProperty::Get( KPSUidCtsyCallInformation, 
-                            KCTsyCallState,
-                            iCallState );
+    						KCTsyCallState,
+        					iCallState );
     if ( err == KErrNone )
-        {                   
-        for ( TInt i = 0; i < iObserverArray.Count(); i++ ) 
-            {
-            TRAP_IGNORE( iObserverArray[ i ]->CallStateChangedL(iCallState) );
-            }
+        { 					
+	    for ( TInt i = 0; i < iObserverArray.Count(); i++ ) 
+		    {
+		    TRAP_IGNORE( iObserverArray[ i ]->CallStateChangedL(iCallState) );
+		    }
         }
     } 
   
@@ -146,7 +146,7 @@ void CTelDMCallStateListener::IssueRequest()
 // 
 // -----------------------------------------------------------------------------
 void CTelDMCallStateListener::AddObserverL( MTelDMCallStateObserver& 
-                                                            aCallStateObserver )
+															aCallStateObserver )
     {
     if ( iObserverArray.Find( &aCallStateObserver ) != KErrNone )
         {

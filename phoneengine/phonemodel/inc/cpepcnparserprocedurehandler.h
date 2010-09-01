@@ -20,7 +20,7 @@
 #define CPEPCNPARSERPROCEDUREHANDLER_H
 
 //  INCLUDES
-#include    <cphonegsmpcnprocedurehandler.h>
+#include    <CPhoneGsmPcnProcedureHandler.h>
 #include    "pevirtualengine.h"
 
 // CONSTANTS
@@ -48,7 +48,7 @@ class MPEPhoneModelInternal;
 // It is handler for GsmPcn procedures.
 
 NONSHARABLE_CLASS( CPEPcnParserProcedureHandler )
-        :public CPhoneGsmPcnProcedureHandler
+		:public CPhoneGsmPcnProcedureHandler
     {
     public:  //Constructors and descructor    
 
@@ -107,18 +107,18 @@ NONSHARABLE_CLASS( CPEPcnParserProcedureHandler )
         * C++ default constructor.
         */
         CPEPcnParserProcedureHandler
-            ( 
-            CPEMessageHandler& aOwner,  
-            MPEPhoneModelInternal& aModel
-            );
+			( 
+			CPEMessageHandler& aOwner,  
+			MPEPhoneModelInternal& aModel
+			);
 
 
     private:    
         // CPEGsmMessageHandler object which owns this requester.
         CPEMessageHandler& iOwner;
-        // Contains information of the Suplementary Services command.
-        TPESSCommandInfo iSupplementaryServicesCommandInfo;
-        //MPEPhoneModelInternal is used to send message to the phone application
+		// Contains information of the Suplementary Services command.
+		TPESSCommandInfo iSupplementaryServicesCommandInfo;
+		//MPEPhoneModelInternal is used to send message to the phone application
         MPEPhoneModelInternal& iModel;
         // Security model
         CManualSecuritySettings* iSecurityModel;

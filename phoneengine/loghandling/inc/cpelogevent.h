@@ -103,7 +103,7 @@ class CPELogEvent : public CBase
 
         /**
         * Update log info for the log event
-        * @param TPELogInfo& alogInfo, log information
+        * @param CPELogInfo& alogInfo, log information
         * @return None.
         */
         void UpdateLogInfoL( const CPELogInfo& aLogInfo );
@@ -236,7 +236,7 @@ class CPELogEvent : public CBase
          * @param    aLogInfo      Log info containing remote contact.
          */
         void SetRemoteContact( CLogEvent& aEvent, const CPELogInfo& aLogInfo );
-        
+              
     private:    // Data
         // Owner of the object.
         CPELogHandling& iOwner;

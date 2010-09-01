@@ -49,12 +49,12 @@ CPEParserSimControlHandler::CPEParserSimControlHandler(
 CPEParserSimControlHandler::~CPEParserSimControlHandler()
     {
     if( iSecurityModel != NULL )
-        {
-        iSecurityModel->CancelChangePin();
-        iSecurityModel->CancelUnblockPin();
-        delete iSecurityModel;
-        TSecUi::UnInitializeLib();  
-        }
+	    {
+	    iSecurityModel->CancelChangePin();
+	    iSecurityModel->CancelUnblockPin();
+	    delete iSecurityModel;
+	    TSecUi::UnInitializeLib();	
+	    }
     TEFLOGSTRING( KTAOBJECT,
         "PE CPEParserSimControlHandler::~CPEParserSimControlHandler: complete");
     }
@@ -108,13 +108,13 @@ void CPEParserSimControlHandler::ProcessChangePinL(
             break;
         }
         
-    if( iSecurityModel == NULL )
-        {
-        TSecUi::InitializeLibL();
-        iSecurityModel = CManualSecuritySettings::NewL();
-        TEFLOGSTRING( KTAOBJECT,
-            "PE CPEParserSimControlHandler::ConstructL" );
-        }
+	if( iSecurityModel == NULL )
+		{
+		TSecUi::InitializeLibL();
+ 		iSecurityModel = CManualSecuritySettings::NewL();
+    	TEFLOGSTRING( KTAOBJECT,
+        	"PE CPEParserSimControlHandler::ConstructL" );
+		}
         
     if( iSecurityModel->ChangePinL( pin, aOldPin, aNewPin, aVerifyNew ) )
         {
@@ -157,14 +157,14 @@ void CPEParserSimControlHandler::ProcessUnblockPinL(
             break;
         }
 
-    if( iSecurityModel == NULL )
-        {
-        TSecUi::InitializeLibL();
-        iSecurityModel = CManualSecuritySettings::NewL();
-        TEFLOGSTRING( KTAOBJECT,
-            "PE CPEParserSimControlHandler::ConstructL" );
-        }
-        
+	if( iSecurityModel == NULL )
+		{
+		TSecUi::InitializeLibL();
+ 		iSecurityModel = CManualSecuritySettings::NewL();
+    	TEFLOGSTRING( KTAOBJECT,
+        	"PE CPEParserSimControlHandler::ConstructL" );
+		}
+		
     if( iSecurityModel->UnblockPinL( pin, aPuk, aNewPin, aVerifyNew ) )
         {
         iSupplementaryServicesCommandInfo.action = EPEPasswordOperation;

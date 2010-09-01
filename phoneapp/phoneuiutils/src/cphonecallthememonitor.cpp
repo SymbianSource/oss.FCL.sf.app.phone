@@ -54,7 +54,18 @@ void CPhoneCallThemeMonitor::ConstructL()
     __LOGMETHODSTARTEND( EPhoneUIUtils, "CPhoneCallThemeMonitor::ConstructL ()" );    
 
     // Get all current values
-    TRAP_IGNORE( ReadAllL() );    
+    TRAP_IGNORE( ReadAllL() );
+    
+    // Start listen changes in setting and image path
+    CPhoneCenRepProxy::Instance()->NotifyChangeL(
+        KCRUidThemes, 
+        KThemesCallImagePath,
+        this );
+    
+    CPhoneCenRepProxy::Instance()->NotifyChangeL(
+        KCRUidThemes, 
+        KThemesCallImageSetting,
+        this );
     }
 
 // -----------------------------------------------------------------------------
@@ -166,7 +177,13 @@ void CPhoneCallThemeMonitor::ReadAllL()
         iCallerImageThemePath = NULL;
         iCallerImageThemePath = HBufC::NewL( KMaxFilePathLength );
         TPtr imagePtr ( iCallerImageThemePath->Des() );
-            
+        
+        // Get image file path
+        CPhoneCenRepProxy::Instance()->GetString(
+            KCRUidThemes,
+            KThemesCallImagePath,
+            imagePtr );
+
         __PHONELOG1( EBasic, EPhoneUIUtils,
             "CPhoneCallThemeMonitor::ReadAllL -> image path = %S", &imagePtr );
         } 

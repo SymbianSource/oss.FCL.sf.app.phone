@@ -1,304 +1,332 @@
 EXPORTS
 	?DynMenu@TPhoneCmdParamDynMenu@@QAEPAXXZ @ 1 NONAME ; void * TPhoneCmdParamDynMenu::DynMenu(void)
-	?SetParticipantListCLI@TPhoneCmdParamCallHeaderData@@QAEXW4TPhoneParticipantListCLI@1@@Z @ 2 NONAME ; void TPhoneCmdParamCallHeaderData::SetParticipantListCLI(enum TPhoneCmdParamCallHeaderData::TPhoneParticipantListCLI)
-	?ContactLink@TPhoneCmdParamCallHeaderData@@QBEABVTDesC8@@XZ @ 3 NONAME ; class TDesC8 const & TPhoneCmdParamCallHeaderData::ContactLink(void) const
-	?LogIt@CPhoneLogger@@QAAXW4TPhoneUILoggingLevel@@W4TPhoneUILoggingComponent@@V?$TRefByValue@$$CBVTDesC16@@@@ZZ @ 4 NONAME ; void CPhoneLogger::LogIt(enum TPhoneUILoggingLevel, enum TPhoneUILoggingComponent, class TRefByValue<class TDesC16 const >, ...)
-	?IsEscapeKey@CPhoneKeys@@SAHABUTKeyEvent@@W4TEventCode@@@Z @ 5 NONAME ; int CPhoneKeys::IsEscapeKey(struct TKeyEvent const &, enum TEventCode)
-	?Tone@TPhoneCmdParamNote@@QBE?AW4TTone@CAknNoteDialog@@XZ @ 6 NONAME ; enum CAknNoteDialog::TTone TPhoneCmdParamNote::Tone(void) const
-	?LogStateChange@CPhoneLogger@@QAEXHH@Z @ 7 NONAME ; void CPhoneLogger::LogStateChange(int, int)
-	?SetObserver@TPhoneCmdParamNumberEntryObserver@@QAEXVTCallBack@@@Z @ 8 NONAME ; void TPhoneCmdParamNumberEntryObserver::SetObserver(class TCallBack)
-	?QueryType@TPhoneCmdParamQuery@@QBE?AW4TPhoneQueryType@@XZ @ 9 NONAME ; enum TPhoneQueryType TPhoneCmdParamQuery::QueryType(void) const
-	?SetCallType@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 10 NONAME ; void TPhoneCmdParamCallHeaderData::SetCallType(int)
-	?NumberType@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 11 NONAME ; int TPhoneCmdParamCallHeaderData::NumberType(void) const
-	?CbaCommandMapping@TPhoneCmdParamQuery@@QBEHH@Z @ 12 NONAME ; int TPhoneCmdParamQuery::CbaCommandMapping(int) const
-	?SetTone@TPhoneCmdParamQuery@@QAEXH@Z @ 13 NONAME ; void TPhoneCmdParamQuery::SetTone(int)
-	?CLIText@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 14 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::CLIText(void) const
-	??0CPhoneLogger@@QAE@VTUid@@@Z @ 15 NONAME ; CPhoneLogger::CPhoneLogger(class TUid)
-	?RingingType@TPhoneCmdParamRingTone@@QBEHXZ @ 16 NONAME ; int TPhoneCmdParamRingTone::RingingType(void) const
-	?Remove@CPhoneRecoverySystem@@SAXH@Z @ 17 NONAME ; void CPhoneRecoverySystem::Remove(int)
-	??0TPhoneCmdParamKeyEvent@@QAE@XZ @ 18 NONAME ; TPhoneCmdParamKeyEvent::TPhoneCmdParamKeyEvent(void)
-	?SetPhoneEngine@CPhoneLogger@@QAEXPAVMPEPhoneModel@@@Z @ 19 NONAME ; void CPhoneLogger::SetPhoneEngine(class MPEPhoneModel *)
-	?SetSendKeyEnabled@TPhoneCmdParamQuery@@QAEXH@Z @ 20 NONAME ; void TPhoneCmdParamQuery::SetSendKeyEnabled(int)
-	?Pointer@TPhoneCmdParamPointer@@QBEPAXXZ @ 21 NONAME ; void * TPhoneCmdParamPointer::Pointer(void) const
-	?SetCallerText@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@@Z @ 22 NONAME ; void TPhoneCmdParamCallHeaderData::SetCallerText(class TDesC16 const &)
-	?Line2@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 23 NONAME ; int TPhoneCmdParamIncallIndicatorData::Line2(void) const
-	?Text@TPhoneCmdParamGlobalNote@@QBEABVTDesC16@@XZ @ 24 NONAME ; class TDesC16 const & TPhoneCmdParamGlobalNote::Text(void) const
-	?RecoverNow@CPhoneRecoverySystem@@QAEHHCH@Z @ 25 NONAME ; int CPhoneRecoverySystem::RecoverNow(int, signed char, int)
-	?LogMsgFromControlToView@CPhoneLogger@@QAEXHH@Z @ 26 NONAME ; void CPhoneLogger::LogMsgFromControlToView(int, int)
-	??0TPhoneCmdParamBitmap@@QAE@XZ @ 27 NONAME ; TPhoneCmdParamBitmap::TPhoneCmdParamBitmap(void)
-	?SetHasThumbnail@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 28 NONAME ; void TPhoneCmdParamCallHeaderData::SetHasThumbnail(int)
-	?Text@TPhoneCmdParamNote@@QBEABVTDesC16@@XZ @ 29 NONAME ; class TDesC16 const & TPhoneCmdParamNote::Text(void) const
-	??1CPhoneMethodLogger@@UAE@XZ @ 30 NONAME ; CPhoneMethodLogger::~CPhoneMethodLogger(void)
-	?MaskBitmap@TPhoneCmdParamBitmap@@QBEPAVCFbsBitmap@@XZ @ 31 NONAME ; class CFbsBitmap * TPhoneCmdParamBitmap::MaskBitmap(void) const
-	?IsScreenLocked@CPhoneStorage@@UAEHXZ @ 32 NONAME ; int CPhoneStorage::IsScreenLocked(void)
-	?SetText@TPhoneCmdParamGlobalNote@@QAEXABVTDesC16@@@Z @ 33 NONAME ; void TPhoneCmdParamGlobalNote::SetText(class TDesC16 const &)
-	?AddLibraryL@CPhoneLibraryContainer@@QAEXABVRLibrary@@@Z @ 34 NONAME ; void CPhoneLibraryContainer::AddLibraryL(class RLibrary const &)
-	??1CPhoneResourceResolverBase@@UAE@XZ @ 35 NONAME ; CPhoneResourceResolverBase::~CPhoneResourceResolverBase(void)
-	?ResetBlockedKeysList@CPhoneStorage@@UAEXXZ @ 36 NONAME ; void CPhoneStorage::ResetBlockedKeysList(void)
-	?SetInt@CPhoneCenRepProxy@@QAEHABVTUid@@IH@Z @ 37 NONAME ; int CPhoneCenRepProxy::SetInt(class TUid const &, unsigned int, int)
-	?GetCustomCommandForTimeOut@TPhoneCmdParamQuery@@QBEHAAH@Z @ 38 NONAME ; int TPhoneCmdParamQuery::GetCustomCommandForTimeOut(int &) const
-	?ParamId@TPhoneCommandParam@@QBE?AW4TPhoneParamId@1@XZ @ 39 NONAME ; enum TPhoneCommandParam::TPhoneParamId TPhoneCommandParam::ParamId(void) const
-	?SetString@CPhoneCenRepProxy@@QAEHABVTUid@@IABVTDesC16@@@Z @ 40 NONAME ; int CPhoneCenRepProxy::SetString(class TUid const &, unsigned int, class TDesC16 const &)
-	?Line2@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 41 NONAME ; int TPhoneCmdParamCallHeaderData::Line2(void) const
-	??1CPhoneTimer@@UAE@XZ @ 42 NONAME ; CPhoneTimer::~CPhoneTimer(void)
-	?LogMsgFromPEToPhoneUIEnd@CPhoneLogger@@QAEXH@Z @ 43 NONAME ; void CPhoneLogger::LogMsgFromPEToPhoneUIEnd(int)
-	?DialerController@TPhoneCmdParamCustomDialer@@QAEPAVMPhoneDialerController@@XZ @ 44 NONAME ; class MPhoneDialerController * TPhoneCmdParamCustomDialer::DialerController(void)
-	?SetMultipleInstances@TPhoneCmdParamAppInfo@@QAEXH@Z @ 45 NONAME ; void TPhoneCmdParamAppInfo::SetMultipleInstances(int)
-	?ChangePropertyValue@CPhonePubSubProxy@@QAEXABVTUid@@IH@Z @ 46 NONAME ; void CPhonePubSubProxy::ChangePropertyValue(class TUid const &, unsigned int, int)
-	?SetThumbnail@TPhoneCmdParamCallHeaderData@@QAEXPAVCFbsBitmap@@@Z @ 47 NONAME ; void TPhoneCmdParamCallHeaderData::SetThumbnail(class CFbsBitmap *)
-	?SetCbaCommandMapping@TPhoneCmdParamQuery@@QAEXHH@Z @ 48 NONAME ; void TPhoneCmdParamQuery::SetCbaCommandMapping(int, int)
-	?EventCode@TPhoneCmdParamKeyEvent@@QBE?AW4TEventCode@@XZ @ 49 NONAME ; enum TEventCode TPhoneCmdParamKeyEvent::EventCode(void) const
-	?KeyEvent@TPhoneCmdParamKeyEvent@@QBE?BUTKeyEvent@@XZ @ 50 NONAME ; struct TKeyEvent const TPhoneCmdParamKeyEvent::KeyEvent(void) const
-	?SetDataText@TPhoneCmdParamQuery@@QAEXPAVTDes16@@@Z @ 51 NONAME ; void TPhoneCmdParamQuery::SetDataText(class TDes16 *)
-	??0TPhoneCmdParamAppInfo@@QAE@XZ @ 52 NONAME ; TPhoneCmdParamAppInfo::TPhoneCmdParamAppInfo(void)
-	?LittleBubbleVisible@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 53 NONAME ; int TPhoneCmdParamIncallIndicatorData::LittleBubbleVisible(void) const
-	?SetCallState@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 54 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetCallState(int)
-	?GetString@CPhoneCenRepProxy@@QBEHABVTUid@@IAAVTDes16@@@Z @ 55 NONAME ; int CPhoneCenRepProxy::GetString(class TUid const &, unsigned int, class TDes16 &) const
-	?SetCauseCode@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 56 NONAME ; void TPhoneCmdParamGlobalNote::SetCauseCode(int)
-	?ResourceId@TPhoneCmdParamProgressNote@@QBEHXZ @ 57 NONAME ; int TPhoneCmdParamProgressNote::ResourceId(void) const
-	?CallId@TPhoneCmdParamCallStateData@@QBEHXZ @ 58 NONAME ; int TPhoneCmdParamCallStateData::CallId(void) const
-	?NotifyChangeL@CPhoneCenRepProxy@@QAEXABVTUid@@IPAVMPhoneCenRepObserver@@@Z @ 59 NONAME ; void CPhoneCenRepProxy::NotifyChangeL(class TUid const &, unsigned int, class MPhoneCenRepObserver *)
-	?SetResourceId@TPhoneCmdParamDynMenu@@QAEXH@Z @ 60 NONAME ; void TPhoneCmdParamDynMenu::SetResourceId(int)
-	?Validate@CPhoneKeys@@SAHABVTDesC16@@@Z @ 61 NONAME ; int CPhoneKeys::Validate(class TDesC16 const &)
-	??0TPhoneCmdParamKeyCapture@@QAE@XZ @ 62 NONAME ; TPhoneCmdParamKeyCapture::TPhoneCmdParamKeyCapture(void)
-	?SetResourceId@TPhoneCmdParamNote@@QAEXH@Z @ 63 NONAME ; void TPhoneCmdParamNote::SetResourceId(int)
-	?LogMsgFromPEToPhoneUI@CPhoneLogger@@QAEXHH@Z @ 64 NONAME ; void CPhoneLogger::LogMsgFromPEToPhoneUI(int, int)
-	?SetNotificationDialog@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 65 NONAME ; void TPhoneCmdParamGlobalNote::SetNotificationDialog(int)
-	??0TPhoneCmdParamProgressNote@@QAE@XZ @ 66 NONAME ; TPhoneCmdParamProgressNote::TPhoneCmdParamProgressNote(void)
-	?CallState@TPhoneCmdParamCallStateData@@QBEHXZ @ 67 NONAME ; int TPhoneCmdParamCallStateData::CallState(void) const
-	?SetPointer@TPhoneCmdParamPointer@@QAEXPAX@Z @ 68 NONAME ; void TPhoneCmdParamPointer::SetPointer(void *)
-	??1CPhoneCenRepProxy@@UAE@XZ @ 69 NONAME ; CPhoneCenRepProxy::~CPhoneCenRepProxy(void)
-	?SetEventCode@TPhoneCmdParamKeyEvent@@QAEXW4TEventCode@@@Z @ 70 NONAME ; void TPhoneCmdParamKeyEvent::SetEventCode(enum TEventCode)
-	?WaitTime@TPhoneCmdParamProgressNote@@QBE?AVTTimeIntervalMicroSeconds32@@XZ @ 71 NONAME ; class TTimeIntervalMicroSeconds32 TPhoneCmdParamProgressNote::WaitTime(void) const
-	?SetParam@TPhoneCmdParamAppInfo@@QAEXABVTDesC8@@@Z @ 72 NONAME ; void TPhoneCmdParamAppInfo::SetParam(class TDesC8 const &)
-	??0TPhoneCmdParamPointer@@QAE@XZ @ 73 NONAME ; TPhoneCmdParamPointer::TPhoneCmdParamPointer(void)
-	??0TPhoneCmdParamGlobalNote@@QAE@XZ @ 74 NONAME ; TPhoneCmdParamGlobalNote::TPhoneCmdParamGlobalNote(void)
-	?CallType@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 75 NONAME ; int TPhoneCmdParamCallHeaderData::CallType(void) const
-	?SetCiphering@TPhoneCmdParamEmergencyCallHeaderData@@QAEXH@Z @ 76 NONAME ; void TPhoneCmdParamEmergencyCallHeaderData::SetCiphering(int)
-	?SetTone@TPhoneCmdParamNote@@QAEXW4TTone@CAknNoteDialog@@@Z @ 77 NONAME ; void TPhoneCmdParamNote::SetTone(enum CAknNoteDialog::TTone)
-	?SetCustomCommandForTimeOut@TPhoneCmdParamQuery@@QAEXH@Z @ 78 NONAME ; void TPhoneCmdParamQuery::SetCustomCommandForTimeOut(int)
-	??1TPhoneCmdParamCallHeaderData@@QAE@XZ @ 79 NONAME ; TPhoneCmdParamCallHeaderData::~TPhoneCmdParamCallHeaderData(void)
-	?IsBTAccAvailable@TPhoneCmdParamAudioAvailability@@QBEHXZ @ 80 NONAME ; int TPhoneCmdParamAudioAvailability::IsBTAccAvailable(void) const
-	?NewL@CPhoneStorage@@SAPAV1@XZ @ 81 NONAME ; class CPhoneStorage * CPhoneStorage::NewL(void)
-	?CNAPTextClippingDirection@TPhoneCmdParamCallHeaderData@@QBE?AW4TPhoneTextClippingDirection@1@XZ @ 82 NONAME ; enum TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection TPhoneCmdParamCallHeaderData::CNAPTextClippingDirection(void) const
-	?Timeout@TPhoneCmdParamNote@@QBE?AW4TTimeout@CAknNoteDialog@@XZ @ 83 NONAME ; enum CAknNoteDialog::TTimeout TPhoneCmdParamNote::Timeout(void) const
-	?Instance@CPhoneRecoverySystem@@SAPAV1@XZ @ 84 NONAME ; class CPhoneRecoverySystem * CPhoneRecoverySystem::Instance(void)
-	?CancelTimer@CPhoneTimer@@QAEXXZ @ 85 NONAME ; void CPhoneTimer::CancelTimer(void)
-	?NewL@CPhoneTimer@@SAPAV1@H@Z @ 86 NONAME ; class CPhoneTimer * CPhoneTimer::NewL(int)
-	?GetInt@CPhoneCenRepProxy@@QBEHABVTUid@@IAAH@Z @ 87 NONAME ; int CPhoneCenRepProxy::GetInt(class TUid const &, unsigned int, int &) const
-	?SetTextToSay@TPhoneCmdParamRingTone@@QAEXABVTDesC16@@@Z @ 88 NONAME ; void TPhoneCmdParamRingTone::SetTextToSay(class TDesC16 const &)
-	?SetCallState@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 89 NONAME ; void TPhoneCmdParamCallHeaderData::SetCallState(int)
-	?ContentCba@TPhoneCmdParamQuery@@QBEHXZ @ 90 NONAME ; int TPhoneCmdParamQuery::ContentCba(void) const
-	?SetTextResourceId@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 91 NONAME ; void TPhoneCmdParamGlobalNote::SetTextResourceId(int)
-	??0TPhoneCmdParamDynMenu@@QAE@XZ @ 92 NONAME ; TPhoneCmdParamDynMenu::TPhoneCmdParamDynMenu(void)
-	?CancelAllNotifications@CPhonePubSubProxy@@SAXPAVMPhonePubSubObserver@@@Z @ 93 NONAME ; void CPhonePubSubProxy::CancelAllNotifications(class MPhonePubSubObserver *)
-	??0TPhoneCommandParam@@QAE@XZ @ 94 NONAME ; TPhoneCommandParam::TPhoneCommandParam(void)
-	?SetCLIText@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@W4TPhoneTextClippingDirection@1@@Z @ 95 NONAME ; void TPhoneCmdParamCallHeaderData::SetCLIText(class TDesC16 const &, enum TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection)
-	??1CPhoneLogger@@UAE@XZ @ 96 NONAME ; CPhoneLogger::~CPhoneLogger(void)
-	?SetCallState@TPhoneCmdParamCallStateData@@QAEXH@Z @ 97 NONAME ; void TPhoneCmdParamCallStateData::SetCallState(int)
-	?CallerText@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 98 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::CallerText(void) const
-	?Diverted@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 99 NONAME ; int TPhoneCmdParamCallHeaderData::Diverted(void) const
-	?String@TPhoneCmdParamString@@QAEPAVTPtr16@@XZ @ 100 NONAME ; class TPtr16 * TPhoneCmdParamString::String(void)
-	?SetKey@TPhoneCmdParamKeyCapture@@QAEXW4TStdScanCode@@@Z @ 101 NONAME ; void TPhoneCmdParamKeyCapture::SetKey(enum TStdScanCode)
-	?NotificationDialog@TPhoneCmdParamGlobalNote@@QBEHXZ @ 102 NONAME ; int TPhoneCmdParamGlobalNote::NotificationDialog(void) const
-	?IsExtraChar@CPhoneKeys@@SAHH@Z @ 103 NONAME ; int CPhoneKeys::IsExtraChar(int)
-	?SetDynMenu@TPhoneCmdParamDynMenu@@QAEXPAX@Z @ 104 NONAME ; void TPhoneCmdParamDynMenu::SetDynMenu(void *)
-	?IsSecondHashKey@CPhoneKeys@@SAHABVTDes16@@@Z @ 105 NONAME ; int CPhoneKeys::IsSecondHashKey(class TDes16 const &)
-	?SetCallerImageStatus@TPhoneCmdParamRingTone@@QAEXH@Z @ 106 NONAME ; void TPhoneCmdParamRingTone::SetCallerImageStatus(int)
-	?SetTimeout@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 107 NONAME ; void TPhoneCmdParamGlobalNote::SetTimeout(int)
-	?GetReal@CPhoneCenRepProxy@@QBEHABVTUid@@IAAN@Z @ 108 NONAME ; int CPhoneCenRepProxy::GetReal(class TUid const &, unsigned int, double &) const
-	?SetShortLabelText@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@@Z @ 109 NONAME ; void TPhoneCmdParamCallHeaderData::SetShortLabelText(class TDesC16 const &)
-	?SetDialerController@TPhoneCmdParamCustomDialer@@QAEXPAVMPhoneDialerController@@@Z @ 110 NONAME ; void TPhoneCmdParamCustomDialer::SetDialerController(class MPhoneDialerController *)
-	?RingTone@TPhoneCmdParamRingTone@@QBEABVTDesC16@@XZ @ 111 NONAME ; class TDesC16 const & TPhoneCmdParamRingTone::RingTone(void) const
-	?TimeOut@TPhoneCmdParamQuery@@QBEHXZ @ 112 NONAME ; int TPhoneCmdParamQuery::TimeOut(void) const
-	?ShortLabelText@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 113 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::ShortLabelText(void) const
-	?SetInteger@TPhoneCmdParamInteger@@QAEXH@Z @ 114 NONAME ; void TPhoneCmdParamInteger::SetInteger(int)
-	?SetMaskBitmap@TPhoneCmdParamBitmap@@QAEXPAVCFbsBitmap@@@Z @ 115 NONAME ; void TPhoneCmdParamBitmap::SetMaskBitmap(class CFbsBitmap *)
-	?SetTimeout@TPhoneCmdParamNote@@QAEXW4TTimeout@CAknNoteDialog@@@Z @ 116 NONAME ; void TPhoneCmdParamNote::SetTimeout(enum CAknNoteDialog::TTimeout)
-	?IsBlockedKeysListEmpty@CPhoneStorage@@UAEHXZ @ 117 NONAME ; int CPhoneStorage::IsBlockedKeysListEmpty(void)
-	?SetCustomMessage@TPhoneCmdParamAppInfo@@QAEXABVTDesC8@@@Z @ 118 NONAME ; void TPhoneCmdParamAppInfo::SetCustomMessage(class TDesC8 const &)
-	?BaseConstructL@CPhoneResourceResolverBase@@QAEXXZ @ 119 NONAME ; void CPhoneResourceResolverBase::BaseConstructL(void)
-	?SetTextResourceId@TPhoneCmdParamNote@@QAEXH@Z @ 120 NONAME ; void TPhoneCmdParamNote::SetTextResourceId(int)
-	?SetString@TPhoneCmdParamString@@QAEXPAVTPtr16@@@Z @ 121 NONAME ; void TPhoneCmdParamString::SetString(class TPtr16 *)
-	?SetAppUid@TPhoneCmdParamAppInfo@@QAEXABVTUid@@@Z @ 122 NONAME ; void TPhoneCmdParamAppInfo::SetAppUid(class TUid const &)
-	?SetBTAccAvailable@TPhoneCmdParamAudioAvailability@@QAEXH@Z @ 123 NONAME ; void TPhoneCmdParamAudioAvailability::SetBTAccAvailable(int)
-	?IsTelephonyFeatureSupported@CPhoneCenRepProxy@@QAEHH@Z @ 124 NONAME ; int CPhoneCenRepProxy::IsTelephonyFeatureSupported(int)
-	?CallImageThemeFilePath@CPhoneCallThemeMonitor@@QBE?AVTPtrC16@@XZ @ 125 NONAME ; class TPtrC16 CPhoneCallThemeMonitor::CallImageThemeFilePath(void) const
-	?HasThumbnail@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 126 NONAME ; int TPhoneCmdParamCallHeaderData::HasThumbnail(void) const
-	?ClearBlackListNow@CPhoneClearBlacklist@@QAEXXZ @ 127 NONAME ; void CPhoneClearBlacklist::ClearBlackListNow(void)
-	?SetCipheringIndicatorAllowed@TPhoneCmdParamEmergencyCallHeaderData@@QAEXH@Z @ 128 NONAME ; void TPhoneCmdParamEmergencyCallHeaderData::SetCipheringIndicatorAllowed(int)
-	?SetCommandParamId@TPhoneCmdParamQuery@@QAEXW4TPhoneParamId@TPhoneCommandParam@@@Z @ 129 NONAME ; void TPhoneCmdParamQuery::SetCommandParamId(enum TPhoneCommandParam::TPhoneParamId)
-	??0TPhoneCmdParamEmergencyCallHeaderData@@QAE@XZ @ 130 NONAME ; TPhoneCmdParamEmergencyCallHeaderData::TPhoneCmdParamEmergencyCallHeaderData(void)
-	?After@CPhoneTimer@@QAEXVTTimeIntervalMicroSeconds32@@PAVMPhoneTimer@@@Z @ 131 NONAME ; void CPhoneTimer::After(class TTimeIntervalMicroSeconds32, class MPhoneTimer *)
-	?NewL@CPhoneLibraryContainer@@SAPAV1@XZ @ 132 NONAME ; class CPhoneLibraryContainer * CPhoneLibraryContainer::NewL(void)
-	?CreateL@CPhoneClearBlacklist@@SAPAV1@AAVRWsSession@@ABVRWindowBase@@@Z @ 133 NONAME ; class CPhoneClearBlacklist * CPhoneClearBlacklist::CreateL(class RWsSession &, class RWindowBase const &)
-	??1CPhoneStorage@@UAE@XZ @ 134 NONAME ; CPhoneStorage::~CPhoneStorage(void)
-	?SetVolume@TPhoneCmdParamRingTone@@QAEXH@Z @ 135 NONAME ; void TPhoneCmdParamRingTone::SetVolume(int)
-	??0TPhoneCmdParamString@@QAE@XZ @ 136 NONAME ; TPhoneCmdParamString::TPhoneCmdParamString(void)
-	?SetContactLink@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC8@@@Z @ 137 NONAME ; void TPhoneCmdParamCallHeaderData::SetContactLink(class TDesC8 const &)
-	??4TPhoneCmdParamQuery@@QAEAAV0@ABV0@@Z @ 138 NONAME ; class TPhoneCmdParamQuery & TPhoneCmdParamQuery::operator=(class TPhoneCmdParamQuery const &)
-	??0TPhoneCmdParamAudioAvailability@@QAE@XZ @ 139 NONAME ; TPhoneCmdParamAudioAvailability::TPhoneCmdParamAudioAvailability(void)
-	?GetBlockedKeyList@CPhoneStorage@@UBEABV?$RArray@H@@XZ @ 140 NONAME ; class RArray<int> const & CPhoneStorage::GetBlockedKeyList(void) const
-	?Timeout@TPhoneCmdParamGlobalNote@@QBEHXZ @ 141 NONAME ; int TPhoneCmdParamGlobalNote::Timeout(void) const
+	?CLITextClippingDirection@TPhoneCmdParamCallHeaderData@@QBE?AW4TPhoneClippingDirection@CBubbleManager@@XZ @ 2 NONAME ; enum CBubbleManager::TPhoneClippingDirection TPhoneCmdParamCallHeaderData::CLITextClippingDirection(void) const
+	?SetParticipantListCLI@TPhoneCmdParamCallHeaderData@@QAEXW4TPhoneParticipantListCLI@1@@Z @ 3 NONAME ; void TPhoneCmdParamCallHeaderData::SetParticipantListCLI(enum TPhoneCmdParamCallHeaderData::TPhoneParticipantListCLI)
+	?ContactLink@TPhoneCmdParamCallHeaderData@@QBEABVTDesC8@@XZ @ 4 NONAME ; class TDesC8 const & TPhoneCmdParamCallHeaderData::ContactLink(void) const
+	?LogIt@CPhoneLogger@@QAAXW4TPhoneUILoggingLevel@@W4TPhoneUILoggingComponent@@V?$TRefByValue@$$CBVTDesC16@@@@ZZ @ 5 NONAME ; void CPhoneLogger::LogIt(enum TPhoneUILoggingLevel, enum TPhoneUILoggingComponent, class TRefByValue<class TDesC16 const >, ...)
+	?IsEscapeKey@CPhoneKeys@@SAHABUTKeyEvent@@W4TEventCode@@@Z @ 6 NONAME ; int CPhoneKeys::IsEscapeKey(struct TKeyEvent const &, enum TEventCode)
+	?Tone@TPhoneCmdParamNote@@QBE?AW4TTone@CAknNoteDialog@@XZ @ 7 NONAME ; enum CAknNoteDialog::TTone TPhoneCmdParamNote::Tone(void) const
+	?LogStateChange@CPhoneLogger@@QAEXHH@Z @ 8 NONAME ; void CPhoneLogger::LogStateChange(int, int)
+	?SetObserver@TPhoneCmdParamNumberEntryObserver@@QAEXVTCallBack@@@Z @ 9 NONAME ; void TPhoneCmdParamNumberEntryObserver::SetObserver(class TCallBack)
+	?QueryType@TPhoneCmdParamQuery@@QBE?AW4TPhoneQueryType@@XZ @ 10 NONAME ; enum TPhoneQueryType TPhoneCmdParamQuery::QueryType(void) const
+	?SetCallType@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 11 NONAME ; void TPhoneCmdParamCallHeaderData::SetCallType(int)
+	?NumberType@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 12 NONAME ; int TPhoneCmdParamCallHeaderData::NumberType(void) const
+	?CbaCommandMapping@TPhoneCmdParamQuery@@QBEHH@Z @ 13 NONAME ; int TPhoneCmdParamQuery::CbaCommandMapping(int) const
+	?SetTone@TPhoneCmdParamQuery@@QAEXH@Z @ 14 NONAME ; void TPhoneCmdParamQuery::SetTone(int)
+	??0TPhoneCmdParamSingleItemFetch@@QAE@XZ @ 15 NONAME ; TPhoneCmdParamSingleItemFetch::TPhoneCmdParamSingleItemFetch(void)
+	?PhoneNumber@TPhoneCmdParamSpeedDial@@QAEPAVTPtr16@@XZ @ 16 NONAME ; class TPtr16 * TPhoneCmdParamSpeedDial::PhoneNumber(void)
+	?CLIText@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 17 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::CLIText(void) const
+	??0CPhoneLogger@@QAE@VTUid@@@Z @ 18 NONAME ; CPhoneLogger::CPhoneLogger(class TUid)
+	?RingingType@TPhoneCmdParamRingTone@@QBEHXZ @ 19 NONAME ; int TPhoneCmdParamRingTone::RingingType(void) const
+	?Remove@CPhoneRecoverySystem@@SAXH@Z @ 20 NONAME ; void CPhoneRecoverySystem::Remove(int)
+	??0TPhoneCmdParamKeyEvent@@QAE@XZ @ 21 NONAME ; TPhoneCmdParamKeyEvent::TPhoneCmdParamKeyEvent(void)
+	?SetPhoneEngine@CPhoneLogger@@QAEXPAVMPEPhoneModel@@@Z @ 22 NONAME ; void CPhoneLogger::SetPhoneEngine(class MPEPhoneModel *)
+	?SetSendKeyEnabled@TPhoneCmdParamQuery@@QAEXH@Z @ 23 NONAME ; void TPhoneCmdParamQuery::SetSendKeyEnabled(int)
+	?Pointer@TPhoneCmdParamPointer@@QBEPAXXZ @ 24 NONAME ; void * TPhoneCmdParamPointer::Pointer(void) const
+	?SetCallerText@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@@Z @ 25 NONAME ; void TPhoneCmdParamCallHeaderData::SetCallerText(class TDesC16 const &)
+	?PhoneNumber@TPhoneCmdParamReconnectQuery@@QBE?BVTPtrC16@@XZ @ 26 NONAME ; class TPtrC16 const TPhoneCmdParamReconnectQuery::PhoneNumber(void) const
+	?Line2@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 27 NONAME ; int TPhoneCmdParamIncallIndicatorData::Line2(void) const
+	?Text@TPhoneCmdParamGlobalNote@@QBEABVTDesC16@@XZ @ 28 NONAME ; class TDesC16 const & TPhoneCmdParamGlobalNote::Text(void) const
+	?RecoverNow@CPhoneRecoverySystem@@QAEHHCH@Z @ 29 NONAME ; int CPhoneRecoverySystem::RecoverNow(int, signed char, int)
+	?LogMsgFromControlToView@CPhoneLogger@@QAEXHH@Z @ 30 NONAME ; void CPhoneLogger::LogMsgFromControlToView(int, int)
+	??0TPhoneCmdParamBitmap@@QAE@XZ @ 31 NONAME ; TPhoneCmdParamBitmap::TPhoneCmdParamBitmap(void)
+	?NumberType@TPhoneCmdParamSpeedDial@@QAE?AW4TPhoneNumberType@@XZ @ 32 NONAME ; enum TPhoneNumberType TPhoneCmdParamSpeedDial::NumberType(void)
+	?SetHasThumbnail@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 33 NONAME ; void TPhoneCmdParamCallHeaderData::SetHasThumbnail(int)
+	?Text@TPhoneCmdParamNote@@QBEABVTDesC16@@XZ @ 34 NONAME ; class TDesC16 const & TPhoneCmdParamNote::Text(void) const
+	??1CPhoneMethodLogger@@UAE@XZ @ 35 NONAME ; CPhoneMethodLogger::~CPhoneMethodLogger(void)
+	?WaitForReady@TPhoneCmdParamGlobalNote@@QBEHXZ @ 36 NONAME ; int TPhoneCmdParamGlobalNote::WaitForReady(void) const
+	?MaskBitmap@TPhoneCmdParamBitmap@@QBEPAVCFbsBitmap@@XZ @ 37 NONAME ; class CFbsBitmap * TPhoneCmdParamBitmap::MaskBitmap(void) const
+	?SetText@TPhoneCmdParamGlobalNote@@QAEXABVTDesC16@@@Z @ 38 NONAME ; void TPhoneCmdParamGlobalNote::SetText(class TDesC16 const &)
+	?AddLibraryL@CPhoneLibraryContainer@@QAEXABVRLibrary@@@Z @ 39 NONAME ; void CPhoneLibraryContainer::AddLibraryL(class RLibrary const &)
+	??1CPhoneResourceResolverBase@@UAE@XZ @ 40 NONAME ; CPhoneResourceResolverBase::~CPhoneResourceResolverBase(void)
+	?SetInt@CPhoneCenRepProxy@@QAEHABVTUid@@IH@Z @ 41 NONAME ; int CPhoneCenRepProxy::SetInt(class TUid const &, unsigned int, int)
+	?GetCustomCommandForTimeOut@TPhoneCmdParamQuery@@QBEHAAH@Z @ 42 NONAME ; int TPhoneCmdParamQuery::GetCustomCommandForTimeOut(int &) const
+	?ParamId@TPhoneCommandParam@@QBE?AW4TPhoneParamId@1@XZ @ 43 NONAME ; enum TPhoneCommandParam::TPhoneParamId TPhoneCommandParam::ParamId(void) const
+	?SetString@CPhoneCenRepProxy@@QAEHABVTUid@@IABVTDesC16@@@Z @ 44 NONAME ; int CPhoneCenRepProxy::SetString(class TUid const &, unsigned int, class TDesC16 const &)
+	?Line2@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 45 NONAME ; int TPhoneCmdParamCallHeaderData::Line2(void) const
+	??1CPhoneTimer@@UAE@XZ @ 46 NONAME ; CPhoneTimer::~CPhoneTimer(void)
+	?LogMsgFromPEToPhoneUIEnd@CPhoneLogger@@QAEXH@Z @ 47 NONAME ; void CPhoneLogger::LogMsgFromPEToPhoneUIEnd(int)
+	?DialerController@TPhoneCmdParamCustomDialer@@QAEPAVMPhoneDialerController@@XZ @ 48 NONAME ; class MPhoneDialerController * TPhoneCmdParamCustomDialer::DialerController(void)
+	?Type@TPhoneCmdParamGlobalNote@@QBE?AW4TAknGlobalNoteType@@XZ @ 49 NONAME ; enum TAknGlobalNoteType TPhoneCmdParamGlobalNote::Type(void) const
+	?SetMultipleInstances@TPhoneCmdParamAppInfo@@QAEXH@Z @ 50 NONAME ; void TPhoneCmdParamAppInfo::SetMultipleInstances(int)
+	?Tone@TPhoneCmdParamGlobalNote@@QBEHXZ @ 51 NONAME ; int TPhoneCmdParamGlobalNote::Tone(void) const
+	?ChangePropertyValue@CPhonePubSubProxy@@QAEXABVTUid@@IH@Z @ 52 NONAME ; void CPhonePubSubProxy::ChangePropertyValue(class TUid const &, unsigned int, int)
+	?SetThumbnail@TPhoneCmdParamCallHeaderData@@QAEXPAVCFbsBitmap@@@Z @ 53 NONAME ; void TPhoneCmdParamCallHeaderData::SetThumbnail(class CFbsBitmap *)
+	?SetCbaCommandMapping@TPhoneCmdParamQuery@@QAEXHH@Z @ 54 NONAME ; void TPhoneCmdParamQuery::SetCbaCommandMapping(int, int)
+	?EventCode@TPhoneCmdParamKeyEvent@@QBE?AW4TEventCode@@XZ @ 55 NONAME ; enum TEventCode TPhoneCmdParamKeyEvent::EventCode(void) const
+	?KeyEvent@TPhoneCmdParamKeyEvent@@QBE?BUTKeyEvent@@XZ @ 56 NONAME ; struct TKeyEvent const TPhoneCmdParamKeyEvent::KeyEvent(void) const
+	?SetDataText@TPhoneCmdParamQuery@@QAEXPAVTDes16@@@Z @ 57 NONAME ; void TPhoneCmdParamQuery::SetDataText(class TDes16 *)
+	??0TPhoneCmdParamAppInfo@@QAE@XZ @ 58 NONAME ; TPhoneCmdParamAppInfo::TPhoneCmdParamAppInfo(void)
+	?LittleBubbleVisible@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 59 NONAME ; int TPhoneCmdParamIncallIndicatorData::LittleBubbleVisible(void) const
+	?SetCallState@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 60 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetCallState(int)
+	?GetString@CPhoneCenRepProxy@@QBEHABVTUid@@IAAVTDes16@@@Z @ 61 NONAME ; int CPhoneCenRepProxy::GetString(class TUid const &, unsigned int, class TDes16 &) const
+	?ResourceId@TPhoneCmdParamProgressNote@@QBEHXZ @ 62 NONAME ; int TPhoneCmdParamProgressNote::ResourceId(void) const
+	?ReconnectQueryObserver@TPhoneCmdParamReconnectQuery@@QBEAAVMCaUiReconnectQueryObserver@@XZ @ 63 NONAME ; class MCaUiReconnectQueryObserver & TPhoneCmdParamReconnectQuery::ReconnectQueryObserver(void) const
+	?CallId@TPhoneCmdParamCallStateData@@QBEHXZ @ 64 NONAME ; int TPhoneCmdParamCallStateData::CallId(void) const
+	?SetContactMatcher@TPhoneCmdParamReconnectQuery@@QAEXPAVCPhCntMatcher@@@Z @ 65 NONAME ; void TPhoneCmdParamReconnectQuery::SetContactMatcher(class CPhCntMatcher *)
+	?NotifyChangeL@CPhoneCenRepProxy@@QAEXABVTUid@@IPAVMPhoneCenRepObserver@@@Z @ 66 NONAME ; void CPhoneCenRepProxy::NotifyChangeL(class TUid const &, unsigned int, class MPhoneCenRepObserver *)
+	?SetResourceId@TPhoneCmdParamDynMenu@@QAEXH@Z @ 67 NONAME ; void TPhoneCmdParamDynMenu::SetResourceId(int)
+	?Validate@CPhoneKeys@@SAHABVTDesC16@@@Z @ 68 NONAME ; int CPhoneKeys::Validate(class TDesC16 const &)
+	??0TPhoneCmdParamKeyCapture@@QAE@XZ @ 69 NONAME ; TPhoneCmdParamKeyCapture::TPhoneCmdParamKeyCapture(void)
+	?SetResourceId@TPhoneCmdParamNote@@QAEXH@Z @ 70 NONAME ; void TPhoneCmdParamNote::SetResourceId(int)
+	?LogMsgFromPEToPhoneUI@CPhoneLogger@@QAEXHH@Z @ 71 NONAME ; void CPhoneLogger::LogMsgFromPEToPhoneUI(int, int)
+	??0TPhoneCmdParamProgressNote@@QAE@XZ @ 72 NONAME ; TPhoneCmdParamProgressNote::TPhoneCmdParamProgressNote(void)
+	?CallState@TPhoneCmdParamCallStateData@@QBEHXZ @ 73 NONAME ; int TPhoneCmdParamCallStateData::CallState(void) const
+	?SetPointer@TPhoneCmdParamPointer@@QAEXPAX@Z @ 74 NONAME ; void TPhoneCmdParamPointer::SetPointer(void *)
+	??1CPhoneCenRepProxy@@UAE@XZ @ 75 NONAME ; CPhoneCenRepProxy::~CPhoneCenRepProxy(void)
+	?SetEventCode@TPhoneCmdParamKeyEvent@@QAEXW4TEventCode@@@Z @ 76 NONAME ; void TPhoneCmdParamKeyEvent::SetEventCode(enum TEventCode)
+	?WaitTime@TPhoneCmdParamProgressNote@@QBE?AVTTimeIntervalMicroSeconds32@@XZ @ 77 NONAME ; class TTimeIntervalMicroSeconds32 TPhoneCmdParamProgressNote::WaitTime(void) const
+	?SetParam@TPhoneCmdParamAppInfo@@QAEXABVTDesC8@@@Z @ 78 NONAME ; void TPhoneCmdParamAppInfo::SetParam(class TDesC8 const &)
+	?CallType@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 79 NONAME ; int TPhoneCmdParamCallHeaderData::CallType(void) const
+	??0TPhoneCmdParamPointer@@QAE@XZ @ 80 NONAME ; TPhoneCmdParamPointer::TPhoneCmdParamPointer(void)
+	??0TPhoneCmdParamGlobalNote@@QAE@XZ @ 81 NONAME ; TPhoneCmdParamGlobalNote::TPhoneCmdParamGlobalNote(void)
+	?SetCiphering@TPhoneCmdParamEmergencyCallHeaderData@@QAEXH@Z @ 82 NONAME ; void TPhoneCmdParamEmergencyCallHeaderData::SetCiphering(int)
+	?SetTone@TPhoneCmdParamNote@@QAEXW4TTone@CAknNoteDialog@@@Z @ 83 NONAME ; void TPhoneCmdParamNote::SetTone(enum CAknNoteDialog::TTone)
+	?SetCustomCommandForTimeOut@TPhoneCmdParamQuery@@QAEXH@Z @ 84 NONAME ; void TPhoneCmdParamQuery::SetCustomCommandForTimeOut(int)
+	?SetIncludeVideoOption@TPhoneCmdParamReconnectQuery@@QAEXH@Z @ 85 NONAME ; void TPhoneCmdParamReconnectQuery::SetIncludeVideoOption(int)
+	?IsBTAccAvailable@TPhoneCmdParamAudioAvailability@@QBEHXZ @ 86 NONAME ; int TPhoneCmdParamAudioAvailability::IsBTAccAvailable(void) const
+	?Timeout@TPhoneCmdParamNote@@QBE?AW4TTimeout@CAknNoteDialog@@XZ @ 87 NONAME ; enum CAknNoteDialog::TTimeout TPhoneCmdParamNote::Timeout(void) const
+	?Instance@CPhoneRecoverySystem@@SAPAV1@XZ @ 88 NONAME ; class CPhoneRecoverySystem * CPhoneRecoverySystem::Instance(void)
+	?CancelTimer@CPhoneTimer@@QAEXXZ @ 89 NONAME ; void CPhoneTimer::CancelTimer(void)
+	?NewL@CPhoneTimer@@SAPAV1@H@Z @ 90 NONAME ; class CPhoneTimer * CPhoneTimer::NewL(int)
+	?GetInt@CPhoneCenRepProxy@@QBEHABVTUid@@IAAH@Z @ 91 NONAME ; int CPhoneCenRepProxy::GetInt(class TUid const &, unsigned int, int &) const
+	?SetTextToSay@TPhoneCmdParamRingTone@@QAEXABVTDesC16@@@Z @ 92 NONAME ; void TPhoneCmdParamRingTone::SetTextToSay(class TDesC16 const &)
+	?SetCallState@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 93 NONAME ; void TPhoneCmdParamCallHeaderData::SetCallState(int)
+	?ContentCba@TPhoneCmdParamQuery@@QBEHXZ @ 94 NONAME ; int TPhoneCmdParamQuery::ContentCba(void) const
+	?SetTextResourceId@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 95 NONAME ; void TPhoneCmdParamGlobalNote::SetTextResourceId(int)
+	??0TPhoneCmdParamDynMenu@@QAE@XZ @ 96 NONAME ; TPhoneCmdParamDynMenu::TPhoneCmdParamDynMenu(void)
+	?CancelAllNotifications@CPhonePubSubProxy@@SAXPAVMPhonePubSubObserver@@@Z @ 97 NONAME ; void CPhonePubSubProxy::CancelAllNotifications(class MPhonePubSubObserver *)
+	??0TPhoneCommandParam@@QAE@XZ @ 98 NONAME ; TPhoneCommandParam::TPhoneCommandParam(void)
+	?SetCNAPText@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@W4TPhoneClippingDirection@CBubbleManager@@@Z @ 99 NONAME ; void TPhoneCmdParamCallHeaderData::SetCNAPText(class TDesC16 const &, enum CBubbleManager::TPhoneClippingDirection)
+	??1CPhoneLogger@@UAE@XZ @ 100 NONAME ; CPhoneLogger::~CPhoneLogger(void)
+	?Softkeys@TPhoneCmdParamGlobalNote@@QBEHXZ @ 101 NONAME ; int TPhoneCmdParamGlobalNote::Softkeys(void) const
+	??0TPhoneCmdParamMessageEditor@@QAE@XZ @ 102 NONAME ; TPhoneCmdParamMessageEditor::TPhoneCmdParamMessageEditor(void)
+	?SetCallState@TPhoneCmdParamCallStateData@@QAEXH@Z @ 103 NONAME ; void TPhoneCmdParamCallStateData::SetCallState(int)
+	?CallerText@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 104 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::CallerText(void) const
+	?String@TPhoneCmdParamString@@QAEPAVTPtr16@@XZ @ 105 NONAME ; class TPtr16 * TPhoneCmdParamString::String(void)
+	?SetKey@TPhoneCmdParamKeyCapture@@QAEXW4TStdScanCode@@@Z @ 106 NONAME ; void TPhoneCmdParamKeyCapture::SetKey(enum TStdScanCode)
+	?IsExtraChar@CPhoneKeys@@SAHH@Z @ 107 NONAME ; int CPhoneKeys::IsExtraChar(int)
+	?SetDynMenu@TPhoneCmdParamDynMenu@@QAEXPAX@Z @ 108 NONAME ; void TPhoneCmdParamDynMenu::SetDynMenu(void *)
+	?IsSecondHashKey@CPhoneKeys@@SAHABVTDes16@@@Z @ 109 NONAME ; int CPhoneKeys::IsSecondHashKey(class TDes16 const &)
+	?SetCallerImageStatus@TPhoneCmdParamRingTone@@QAEXH@Z @ 110 NONAME ; void TPhoneCmdParamRingTone::SetCallerImageStatus(int)
+	?GetReal@CPhoneCenRepProxy@@QBEHABVTUid@@IAAN@Z @ 111 NONAME ; int CPhoneCenRepProxy::GetReal(class TUid const &, unsigned int, double &) const
+	?SetShortLabelText@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@@Z @ 112 NONAME ; void TPhoneCmdParamCallHeaderData::SetShortLabelText(class TDesC16 const &)
+	?SetDialerController@TPhoneCmdParamCustomDialer@@QAEXPAVMPhoneDialerController@@@Z @ 113 NONAME ; void TPhoneCmdParamCustomDialer::SetDialerController(class MPhoneDialerController *)
+	?RingTone@TPhoneCmdParamRingTone@@QBEABVTDesC16@@XZ @ 114 NONAME ; class TDesC16 const & TPhoneCmdParamRingTone::RingTone(void) const
+	?TimeOut@TPhoneCmdParamQuery@@QBEHXZ @ 115 NONAME ; int TPhoneCmdParamQuery::TimeOut(void) const
+	?ShortLabelText@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 116 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::ShortLabelText(void) const
+	?SetInteger@TPhoneCmdParamInteger@@QAEXH@Z @ 117 NONAME ; void TPhoneCmdParamInteger::SetInteger(int)
+	?SetMaskBitmap@TPhoneCmdParamBitmap@@QAEXPAVCFbsBitmap@@@Z @ 118 NONAME ; void TPhoneCmdParamBitmap::SetMaskBitmap(class CFbsBitmap *)
+	?SetTimeout@TPhoneCmdParamNote@@QAEXW4TTimeout@CAknNoteDialog@@@Z @ 119 NONAME ; void TPhoneCmdParamNote::SetTimeout(enum CAknNoteDialog::TTimeout)
+	?SetCustomMessage@TPhoneCmdParamAppInfo@@QAEXABVTDesC8@@@Z @ 120 NONAME ; void TPhoneCmdParamAppInfo::SetCustomMessage(class TDesC8 const &)
+	?BaseConstructL@CPhoneResourceResolverBase@@QAEXXZ @ 121 NONAME ; void CPhoneResourceResolverBase::BaseConstructL(void)
+	?SetTextResourceId@TPhoneCmdParamNote@@QAEXH@Z @ 122 NONAME ; void TPhoneCmdParamNote::SetTextResourceId(int)
+	?SetString@TPhoneCmdParamString@@QAEXPAVTPtr16@@@Z @ 123 NONAME ; void TPhoneCmdParamString::SetString(class TPtr16 *)
+	?SetAppUid@TPhoneCmdParamAppInfo@@QAEXABVTUid@@@Z @ 124 NONAME ; void TPhoneCmdParamAppInfo::SetAppUid(class TUid const &)
+	?String@TPhoneCmdParamSingleItemFetch@@QBEPAVTDes16@@XZ @ 125 NONAME ; class TDes16 * TPhoneCmdParamSingleItemFetch::String(void) const
+	?SetBTAccAvailable@TPhoneCmdParamAudioAvailability@@QAEXH@Z @ 126 NONAME ; void TPhoneCmdParamAudioAvailability::SetBTAccAvailable(int)
+	?IsTelephonyFeatureSupported@CPhoneCenRepProxy@@QAEHH@Z @ 127 NONAME ; int CPhoneCenRepProxy::IsTelephonyFeatureSupported(int)
+	?CallImageThemeFilePath@CPhoneCallThemeMonitor@@QBE?AVTPtrC16@@XZ @ 128 NONAME ; class TPtrC16 CPhoneCallThemeMonitor::CallImageThemeFilePath(void) const
+	?HasThumbnail@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 129 NONAME ; int TPhoneCmdParamCallHeaderData::HasThumbnail(void) const
+	?ClearBlackListNow@CPhoneClearBlacklist@@QAEXXZ @ 130 NONAME ; void CPhoneClearBlacklist::ClearBlackListNow(void)
+	?SetCipheringIndicatorAllowed@TPhoneCmdParamEmergencyCallHeaderData@@QAEXH@Z @ 131 NONAME ; void TPhoneCmdParamEmergencyCallHeaderData::SetCipheringIndicatorAllowed(int)
+	?SetCommandParamId@TPhoneCmdParamQuery@@QAEXW4TPhoneParamId@TPhoneCommandParam@@@Z @ 132 NONAME ; void TPhoneCmdParamQuery::SetCommandParamId(enum TPhoneCommandParam::TPhoneParamId)
+	??0TPhoneCmdParamEmergencyCallHeaderData@@QAE@XZ @ 133 NONAME ; TPhoneCmdParamEmergencyCallHeaderData::TPhoneCmdParamEmergencyCallHeaderData(void)
+	?After@CPhoneTimer@@QAEXVTTimeIntervalMicroSeconds32@@PAVMPhoneTimer@@@Z @ 134 NONAME ; void CPhoneTimer::After(class TTimeIntervalMicroSeconds32, class MPhoneTimer *)
+	?NewL@CPhoneLibraryContainer@@SAPAV1@XZ @ 135 NONAME ; class CPhoneLibraryContainer * CPhoneLibraryContainer::NewL(void)
+	?CreateL@CPhoneClearBlacklist@@SAPAV1@AAVRWsSession@@ABVRWindowBase@@@Z @ 136 NONAME ; class CPhoneClearBlacklist * CPhoneClearBlacklist::CreateL(class RWsSession &, class RWindowBase const &)
+	?SetVolume@TPhoneCmdParamRingTone@@QAEXH@Z @ 137 NONAME ; void TPhoneCmdParamRingTone::SetVolume(int)
+	??0TPhoneCmdParamString@@QAE@XZ @ 138 NONAME ; TPhoneCmdParamString::TPhoneCmdParamString(void)
+	?SetContactLink@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC8@@@Z @ 139 NONAME ; void TPhoneCmdParamCallHeaderData::SetContactLink(class TDesC8 const &)
+	??4TPhoneCmdParamQuery@@QAEAAV0@ABV0@@Z @ 140 NONAME ; class TPhoneCmdParamQuery & TPhoneCmdParamQuery::operator=(class TPhoneCmdParamQuery const &)
+	??0TPhoneCmdParamAudioAvailability@@QAE@XZ @ 141 NONAME ; TPhoneCmdParamAudioAvailability::TPhoneCmdParamAudioAvailability(void)
 	??0TPhoneCmdParamRingTone@@QAE@XZ @ 142 NONAME ; TPhoneCmdParamRingTone::TPhoneCmdParamRingTone(void)
 	?Observer@TPhoneCmdParamNumberEntryObserver@@QAE?AVTCallBack@@XZ @ 143 NONAME ; class TCallBack TPhoneCmdParamNumberEntryObserver::Observer(void)
-	??0CPhoneResourceResolverBase@@IAE@XZ @ 144 NONAME ; CPhoneResourceResolverBase::CPhoneResourceResolverBase(void)
-	?SetCallId@TPhoneCmdParamCallStateData@@QAEXH@Z @ 145 NONAME ; void TPhoneCmdParamCallStateData::SetCallId(int)
-	?MultipleInstances@TPhoneCmdParamAppInfo@@QBEHXZ @ 146 NONAME ; int TPhoneCmdParamAppInfo::MultipleInstances(void) const
-	?ItemTextArrayForListQuery@TPhoneCmdParamQuery@@QBEPAVMDesC16Array@@XZ @ 147 NONAME ; class MDesC16Array * TPhoneCmdParamQuery::ItemTextArrayForListQuery(void) const
-	?SetHeaderText@TPhoneCmdParamEmergencyCallHeaderData@@QAEXABVTDesC16@@@Z @ 148 NONAME ; void TPhoneCmdParamEmergencyCallHeaderData::SetHeaderText(class TDesC16 const &)
-	?SetContentCba@TPhoneCmdParamQuery@@QAEXH@Z @ 149 NONAME ; void TPhoneCmdParamQuery::SetContentCba(int)
-	?CaptureType@TPhoneCmdParamKeyCapture@@QBE?AW4TPhoneCaptureType@@XZ @ 150 NONAME ; enum TPhoneCaptureType TPhoneCmdParamKeyCapture::CaptureType(void) const
-	?SetQueryResourceId@TPhoneCmdParamQuery@@QAEXH@Z @ 151 NONAME ; void TPhoneCmdParamQuery::SetQueryResourceId(int)
-	?CancelNotify@CPhoneCenRepProxy@@QAEXPAVMPhoneCenRepObserver@@I@Z @ 152 NONAME ; void CPhoneCenRepProxy::CancelNotify(class MPhoneCenRepObserver *, unsigned int)
-	?Param@TPhoneCmdParamAppInfo@@QBEABVTDesC8@@XZ @ 153 NONAME ; class TDesC8 const & TPhoneCmdParamAppInfo::Param(void) const
-	??0CPhoneMethodLogger@@QAE@W4TPhoneUILoggingComponent@@VTPtrC16@@@Z @ 154 NONAME ; CPhoneMethodLogger::CPhoneMethodLogger(enum TPhoneUILoggingComponent, class TPtrC16)
-	?IsDtmfTone@CPhoneKeys@@SAHABUTKeyEvent@@W4TEventCode@@@Z @ 155 NONAME ; int CPhoneKeys::IsDtmfTone(struct TKeyEvent const &, enum TEventCode)
-	?SetMode@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 156 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetMode(int)
-	?NewL@CPhoneCallThemeMonitor@@SAPAV1@XZ @ 157 NONAME ; class CPhoneCallThemeMonitor * CPhoneCallThemeMonitor::NewL(void)
-	?SendKeyEnabled@TPhoneCmdParamQuery@@QBEHXZ @ 158 NONAME ; int TPhoneCmdParamQuery::SendKeyEnabled(void) const
-	?SetNeedToEnableKeylock@CPhoneStorage@@UAEXH@Z @ 159 NONAME ; void CPhoneStorage::SetNeedToEnableKeylock(int)
-	?Find@CPhoneCenRepProxy@@QBEHABVTUid@@KKAAV?$RArray@K@@@Z @ 160 NONAME ; int CPhoneCenRepProxy::Find(class TUid const &, unsigned long, unsigned long, class RArray<unsigned long> &) const
-	?SetLabelText@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@@Z @ 161 NONAME ; void TPhoneCmdParamCallHeaderData::SetLabelText(class TDesC16 const &)
-	?CNAPText@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 162 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::CNAPText(void) const
-	?SetOwnPhoneNumberText@TPhoneCmdParamEmergencyCallHeaderData@@QAEXABVTDesC16@@@Z @ 163 NONAME ; void TPhoneCmdParamEmergencyCallHeaderData::SetOwnPhoneNumberText(class TDesC16 const &)
-	?Emergency@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 164 NONAME ; int TPhoneCmdParamIncallIndicatorData::Emergency(void) const
-	?AppUid@TPhoneCmdParamAppInfo@@QBE?AVTUid@@XZ @ 165 NONAME ; class TUid TPhoneCmdParamAppInfo::AppUid(void) const
-	?CustomMessage@TPhoneCmdParamAppInfo@@QBEABVTDesC8@@XZ @ 166 NONAME ; class TDesC8 const & TPhoneCmdParamAppInfo::CustomMessage(void) const
-	?QueryResourceId@TPhoneCmdParamQuery@@QBEHXZ @ 167 NONAME ; int TPhoneCmdParamQuery::QueryResourceId(void) const
-	?NotifyChangeL@CPhonePubSubProxy@@QAEXABVTUid@@IPAVMPhonePubSubObserver@@@Z @ 168 NONAME ; void CPhonePubSubProxy::NotifyChangeL(class TUid const &, unsigned int, class MPhonePubSubObserver *)
-	?SetRingTone@TPhoneCmdParamRingTone@@QAEXABVTDesC16@@@Z @ 169 NONAME ; void TPhoneCmdParamRingTone::SetRingTone(class TDesC16 const &)
-	?AppendBlockedKeysListL@CPhoneStorage@@UAEXW4TStdScanCode@@@Z @ 170 NONAME ; void CPhoneStorage::AppendBlockedKeysListL(enum TStdScanCode)
-	?SetEmergency@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 171 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetEmergency(int)
-	?SetDefaultCba@TPhoneCmdParamQuery@@QAEXH@Z @ 172 NONAME ; void TPhoneCmdParamQuery::SetDefaultCba(int)
-	?Type@TPhoneCmdParamTransEffect@@QBE?AW4TPhoneTransEffectType@@XZ @ 173 NONAME ; enum TPhoneTransEffectType TPhoneCmdParamTransEffect::Type(void) const
-	??0TPhoneCmdParamSfiData@@QAE@XZ @ 174 NONAME ; TPhoneCmdParamSfiData::TPhoneCmdParamSfiData(void)
-	??0TPhoneCmdParamCallHeaderData@@QAE@XZ @ 175 NONAME ; TPhoneCmdParamCallHeaderData::TPhoneCmdParamCallHeaderData(void)
-	??1CPhoneClearBlacklist@@UAE@XZ @ 176 NONAME ; CPhoneClearBlacklist::~CPhoneClearBlacklist(void)
-	?SetMute@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 177 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetMute(int)
-	?KeyCode@TPhoneCmdParamKeyCapture@@QBE?AW4TKeyCode@@XZ @ 178 NONAME ; enum TKeyCode TPhoneCmdParamKeyCapture::KeyCode(void) const
-	?IsNumberKey@CPhoneKeys@@SAHABUTKeyEvent@@W4TEventCode@@@Z @ 179 NONAME ; int CPhoneKeys::IsNumberKey(struct TKeyEvent const &, enum TEventCode)
-	?TextResourceId@TPhoneCmdParamGlobalNote@@QBEHXZ @ 180 NONAME ; int TPhoneCmdParamGlobalNote::TextResourceId(void) const
-	?SetCiphering@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 181 NONAME ; void TPhoneCmdParamCallHeaderData::SetCiphering(int)
-	?EnablePreconditionL@CPhoneRecoverySystem@@QAEXXZ @ 182 NONAME ; void CPhoneRecoverySystem::EnablePreconditionL(void)
-	?AddL@CPhoneRecoverySystem@@QAEHVTCallBack@@CW4TRecoveryState@CTeleRecoverySystem@@@Z @ 183 NONAME ; int CPhoneRecoverySystem::AddL(class TCallBack, signed char, enum CTeleRecoverySystem::TRecoveryState)
-	?SetLine2@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 184 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetLine2(int)
-	?SetAudioOutput@TPhoneCmdParamAudioOutput@@QAEXW4TPEAudioOutput@@@Z @ 185 NONAME ; void TPhoneCmdParamAudioOutput::SetAudioOutput(enum TPEAudioOutput)
-	?HeaderText@TPhoneCmdParamEmergencyCallHeaderData@@QBEABVTDesC16@@XZ @ 186 NONAME ; class TDesC16 const & TPhoneCmdParamEmergencyCallHeaderData::HeaderText(void) const
-	?CallImageThemeSettings@CPhoneCallThemeMonitor@@QBEHXZ @ 187 NONAME ; int CPhoneCallThemeMonitor::CallImageThemeSettings(void) const
-	??0TPhoneCmdParamTransEffect@@QAE@XZ @ 188 NONAME ; TPhoneCmdParamTransEffect::TPhoneCmdParamTransEffect(void)
-	?Number@TPhoneCmdParamSfiData@@QBEABVTDesC16@@XZ @ 189 NONAME ; class TDesC16 const & TPhoneCmdParamSfiData::Number(void) const
-	?OwnPhoneNumberText@TPhoneCmdParamEmergencyCallHeaderData@@QBEABVTDesC16@@XZ @ 190 NONAME ; class TDesC16 const & TPhoneCmdParamEmergencyCallHeaderData::OwnPhoneNumberText(void) const
-	?CauseCode@TPhoneCmdParamGlobalNote@@QBEHXZ @ 191 NONAME ; int TPhoneCmdParamGlobalNote::CauseCode(void) const
-	?QueryPrompt@TPhoneCmdParamQuery@@QBEABVTDesC16@@XZ @ 192 NONAME ; class TDesC16 const & TPhoneCmdParamQuery::QueryPrompt(void) const
-	?SetQueryPrompt@TPhoneCmdParamQuery@@QAEXABVTDesC16@@@Z @ 193 NONAME ; void TPhoneCmdParamQuery::SetQueryPrompt(class TDesC16 const &)
-	?Type@TPhoneCmdParamGlobalNote@@QBE?AW4PhoneNotificationType@@XZ @ 194 NONAME ; enum PhoneNotificationType TPhoneCmdParamGlobalNote::Type(void) const
-	?IsNumericKey@CPhoneKeys@@SAHABUTKeyEvent@@W4TEventCode@@@Z @ 195 NONAME ; int CPhoneKeys::IsNumericKey(struct TKeyEvent const &, enum TEventCode)
-	?SetCaptureType@TPhoneCmdParamKeyCapture@@QAEXW4TPhoneCaptureType@@@Z @ 196 NONAME ; void TPhoneCmdParamKeyCapture::SetCaptureType(enum TPhoneCaptureType)
-	?ViewUid@TPhoneCmdParamAppInfo@@QBE?AVTUid@@XZ @ 197 NONAME ; class TUid TPhoneCmdParamAppInfo::ViewUid(void) const
-	?SetLabelText@TPhoneCmdParamEmergencyCallHeaderData@@QAEXABVTDesC16@@@Z @ 198 NONAME ; void TPhoneCmdParamEmergencyCallHeaderData::SetLabelText(class TDesC16 const &)
-	?IsCallerText@TPhoneCmdParamRingTone@@QAEHXZ @ 199 NONAME ; int TPhoneCmdParamRingTone::IsCallerText(void)
-	?SetBitmap@TPhoneCmdParamBitmap@@QAEXPAVCFbsBitmap@@@Z @ 200 NONAME ; void TPhoneCmdParamBitmap::SetBitmap(class CFbsBitmap *)
-	?SetNumber@TPhoneCmdParamSfiData@@QAEXABVTDesC16@@@Z @ 201 NONAME ; void TPhoneCmdParamSfiData::SetNumber(class TDesC16 const &)
-	?CipheringIndicatorAllowed@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 202 NONAME ; int TPhoneCmdParamCallHeaderData::CipheringIndicatorAllowed(void) const
-	?Name@TPhoneCmdParamSfiData@@QBEABVTDesC16@@XZ @ 203 NONAME ; class TDesC16 const & TPhoneCmdParamSfiData::Name(void) const
-	??0TPhoneCmdParamQuery@@QAE@ABV0@@Z @ 204 NONAME ; TPhoneCmdParamQuery::TPhoneCmdParamQuery(class TPhoneCmdParamQuery const &)
-	?CallState@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 205 NONAME ; int TPhoneCmdParamCallHeaderData::CallState(void) const
-	??0TPhoneCmdParamIncallIndicatorData@@QAE@XZ @ 206 NONAME ; TPhoneCmdParamIncallIndicatorData::TPhoneCmdParamIncallIndicatorData(void)
-	?Picture@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 207 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::Picture(void) const
-	?SetCallThemeSettingsObserver@CPhoneCallThemeMonitor@@QAEXPAVMPhoneCallThemeSettingsObserver@@@Z @ 208 NONAME ; void CPhoneCallThemeMonitor::SetCallThemeSettingsObserver(class MPhoneCallThemeSettingsObserver *)
-	?SetDiverted@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 209 NONAME ; void TPhoneCmdParamCallHeaderData::SetDiverted(int)
-	?ServiceId@TPhoneCmdParamCallHeaderData@@QBEKXZ @ 210 NONAME ; unsigned long TPhoneCmdParamCallHeaderData::ServiceId(void) const
-	?LabelText@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 211 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::LabelText(void) const
-	?Overflow@CPhoneLogger@@EAEXAAVTDes16@@@Z @ 212 NONAME ; void CPhoneLogger::Overflow(class TDes16 &)
-	?SetCNAPText@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@W4TPhoneTextClippingDirection@1@@Z @ 213 NONAME ; void TPhoneCmdParamCallHeaderData::SetCNAPText(class TDesC16 const &, enum TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection)
-	?SetKeyEvent@TPhoneCmdParamKeyEvent@@QAEXABUTKeyEvent@@@Z @ 214 NONAME ; void TPhoneCmdParamKeyEvent::SetKeyEvent(struct TKeyEvent const &)
-	?Instance@CPhonePubSubProxy@@SAPAV1@XZ @ 215 NONAME ; class CPhonePubSubProxy * CPhonePubSubProxy::Instance(void)
-	?ResourceId@TPhoneCmdParamNote@@QBEHXZ @ 216 NONAME ; int TPhoneCmdParamNote::ResourceId(void) const
-	?CipheringIndicatorAllowed@TPhoneCmdParamEmergencyCallHeaderData@@QBEHXZ @ 217 NONAME ; int TPhoneCmdParamEmergencyCallHeaderData::CipheringIndicatorAllowed(void) const
-	?CancelAllNotifies@CPhoneCenRepProxy@@SAXPAVMPhoneCenRepObserver@@@Z @ 218 NONAME ; void CPhoneCenRepProxy::CancelAllNotifies(class MPhoneCenRepObserver *)
-	?TextResourceId@TPhoneCmdParamNote@@QBEHXZ @ 219 NONAME ; int TPhoneCmdParamNote::TextResourceId(void) const
-	?SetRemotePhoneNumber@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@@Z @ 220 NONAME ; void TPhoneCmdParamCallHeaderData::SetRemotePhoneNumber(class TDesC16 const &)
-	?CipheringIndicatorAllowed@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 221 NONAME ; int TPhoneCmdParamIncallIndicatorData::CipheringIndicatorAllowed(void) const
-	??0TPhoneCmdParamCallStateData@@QAE@XZ @ 222 NONAME ; TPhoneCmdParamCallStateData::TPhoneCmdParamCallStateData(void)
-	?SetKeyCode@TPhoneCmdParamKeyCapture@@QAEXW4TKeyCode@@@Z @ 223 NONAME ; void TPhoneCmdParamKeyCapture::SetKeyCode(enum TKeyCode)
-	?SetScreenLocked@CPhoneStorage@@UAEXH@Z @ 224 NONAME ; void CPhoneStorage::SetScreenLocked(int)
-	?CustomMessageId@TPhoneCmdParamAppInfo@@QBE?AVTUid@@XZ @ 225 NONAME ; class TUid TPhoneCmdParamAppInfo::CustomMessageId(void) const
-	?RemotePhoneNumber@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 226 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::RemotePhoneNumber(void) const
-	?SetType@TPhoneCmdParamNote@@QAEXW4TPhoneNoteType@@@Z @ 227 NONAME ; void TPhoneCmdParamNote::SetType(enum TPhoneNoteType)
-	?Instance@CPhoneClearBlacklist@@SAPAV1@XZ @ 228 NONAME ; class CPhoneClearBlacklist * CPhoneClearBlacklist::Instance(void)
-	?TextToSay@TPhoneCmdParamRingTone@@QBEABVTDesC16@@XZ @ 229 NONAME ; class TDesC16 const & TPhoneCmdParamRingTone::TextToSay(void) const
-	?Type@TPhoneCmdParamNote@@QBE?AW4TPhoneNoteType@@XZ @ 230 NONAME ; enum TPhoneNoteType TPhoneCmdParamNote::Type(void) const
-	?SetPicture@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@@Z @ 231 NONAME ; void TPhoneCmdParamCallHeaderData::SetPicture(class TDesC16 const &)
-	?Integer@TPhoneCmdParamInteger@@QBEHXZ @ 232 NONAME ; int TPhoneCmdParamInteger::Integer(void) const
-	?Mode@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 233 NONAME ; int TPhoneCmdParamIncallIndicatorData::Mode(void) const
-	?SetText@TPhoneCmdParamNote@@QAEXABVTDesC16@@@Z @ 234 NONAME ; void TPhoneCmdParamNote::SetText(class TDesC16 const &)
-	?SetCallerTextStatus@TPhoneCmdParamRingTone@@QAEXH@Z @ 235 NONAME ; void TPhoneCmdParamRingTone::SetCallerTextStatus(int)
-	?IsWiredAccAvailable@TPhoneCmdParamAudioAvailability@@QBEHXZ @ 236 NONAME ; int TPhoneCmdParamAudioAvailability::IsWiredAccAvailable(void) const
-	??0TPhoneCmdParamBoolean@@QAE@XZ @ 237 NONAME ; TPhoneCmdParamBoolean::TPhoneCmdParamBoolean(void)
-	?QueryCommandObserver@TPhoneCmdParamQuery@@QAEPAVMPhoneQueryCommandObserver@@XZ @ 238 NONAME ; class MPhoneQueryCommandObserver * TPhoneCmdParamQuery::QueryCommandObserver(void)
-	?DataText@TPhoneCmdParamQuery@@QBEPAVTDes16@@XZ @ 239 NONAME ; class TDes16 * TPhoneCmdParamQuery::DataText(void) const
-	?SetReal@CPhoneCenRepProxy@@QAEHABVTUid@@IN@Z @ 240 NONAME ; int CPhoneCenRepProxy::SetReal(class TUid const &, unsigned int, double)
-	??0TPhoneCmdParamCustomDialer@@QAE@XZ @ 241 NONAME ; TPhoneCmdParamCustomDialer::TPhoneCmdParamCustomDialer(void)
-	??1CPhonePubSubProxy@@UAE@XZ @ 242 NONAME ; CPhonePubSubProxy::~CPhonePubSubProxy(void)
-	??0TPhoneCmdParamNote@@QAE@XZ @ 243 NONAME ; TPhoneCmdParamNote::TPhoneCmdParamNote(void)
-	?Volume@TPhoneCmdParamRingTone@@QBEHXZ @ 244 NONAME ; int TPhoneCmdParamRingTone::Volume(void) const
-	?SetItemTextArrayForListQuery@TPhoneCmdParamQuery@@QAEXAAVMDesC16Array@@@Z @ 245 NONAME ; void TPhoneCmdParamQuery::SetItemTextArrayForListQuery(class MDesC16Array &)
-	?Type@TPhoneCmdParamRingTone@@QBE?AW4TPhoneRingToneType@@XZ @ 246 NONAME ; enum TPhoneRingToneType TPhoneCmdParamRingTone::Type(void) const
-	?Key@TPhoneCmdParamKeyCapture@@QBE?AW4TStdScanCode@@XZ @ 247 NONAME ; enum TStdScanCode TPhoneCmdParamKeyCapture::Key(void) const
-	?LabelText@TPhoneCmdParamEmergencyCallHeaderData@@QBEABVTDesC16@@XZ @ 248 NONAME ; class TDesC16 const & TPhoneCmdParamEmergencyCallHeaderData::LabelText(void) const
-	?Ciphering@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 249 NONAME ; int TPhoneCmdParamIncallIndicatorData::Ciphering(void) const
-	?SetQueryCommandObserver@TPhoneCmdParamQuery@@QAEXAAVMPhoneQueryCommandObserver@@@Z @ 250 NONAME ; void TPhoneCmdParamQuery::SetQueryCommandObserver(class MPhoneQueryCommandObserver &)
-	?IsPhoneUIFeatureSupported@CPhoneCenRepProxy@@QAEHH@Z @ 251 NONAME ; int CPhoneCenRepProxy::IsPhoneUIFeatureSupported(int)
-	?DefaultCba@TPhoneCmdParamQuery@@QBEHXZ @ 252 NONAME ; int TPhoneCmdParamQuery::DefaultCba(void) const
-	?CallState@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 253 NONAME ; int TPhoneCmdParamIncallIndicatorData::CallState(void) const
-	??0TPhoneCmdParamNumberEntryObserver@@QAE@XZ @ 254 NONAME ; TPhoneCmdParamNumberEntryObserver::TPhoneCmdParamNumberEntryObserver(void)
-	?SetLine2@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 255 NONAME ; void TPhoneCmdParamCallHeaderData::SetLine2(int)
-	?FetchValuesFromCenRepL@CPhoneCenRepProxy@@QAEXAAVTPhoneCmdParamAppInfo@@W4TKeyCode@@PAVHBufC8@@AAH@Z @ 256 NONAME ; void CPhoneCenRepProxy::FetchValuesFromCenRepL(class TPhoneCmdParamAppInfo &, enum TKeyCode, class HBufC8 *, int &)
-	?ParticipantCLI@TPhoneCmdParamCallHeaderData@@QBE?AW4TPhoneParticipantListCLI@1@XZ @ 257 NONAME ; enum TPhoneCmdParamCallHeaderData::TPhoneParticipantListCLI TPhoneCmdParamCallHeaderData::ParticipantCLI(void) const
-	?Thumbnail@TPhoneCmdParamCallHeaderData@@QBEPAVCFbsBitmap@@XZ @ 258 NONAME ; class CFbsBitmap * TPhoneCmdParamCallHeaderData::Thumbnail(void) const
-	?SetTimeOut@TPhoneCmdParamQuery@@QAEXH@Z @ 259 NONAME ; void TPhoneCmdParamQuery::SetTimeOut(int)
-	?Boolean@TPhoneCmdParamBoolean@@QBEHXZ @ 260 NONAME ; int TPhoneCmdParamBoolean::Boolean(void) const
-	?CLITextClippingDirection@TPhoneCmdParamCallHeaderData@@QBE?AW4TPhoneTextClippingDirection@1@XZ @ 261 NONAME ; enum TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection TPhoneCmdParamCallHeaderData::CLITextClippingDirection(void) const
-	?LogMsgFromPhoneUIToPE@CPhoneLogger@@QAEXHH@Z @ 262 NONAME ; void CPhoneLogger::LogMsgFromPhoneUIToPE(int, int)
-	?SetCustomMessageId@TPhoneCmdParamAppInfo@@QAEXABVTUid@@@Z @ 263 NONAME ; void TPhoneCmdParamAppInfo::SetCustomMessageId(class TUid const &)
-	?ResolveResourceID@CPhoneResourceResolverBase@@UBEHABH@Z @ 264 NONAME ; int CPhoneResourceResolverBase::ResolveResourceID(int const &) const
-	?SetName@TPhoneCmdParamSfiData@@QAEXABVTDesC16@@@Z @ 265 NONAME ; void TPhoneCmdParamSfiData::SetName(class TDesC16 const &)
-	?SetLittleBubbleVisible@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 266 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetLittleBubbleVisible(int)
-	?Ciphering@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 267 NONAME ; int TPhoneCmdParamCallHeaderData::Ciphering(void) const
-	?SetType@TPhoneCmdParamRingTone@@QAEXW4TPhoneRingToneType@@@Z @ 268 NONAME ; void TPhoneCmdParamRingTone::SetType(enum TPhoneRingToneType)
-	?ResourceId@TPhoneCmdParamDynMenu@@QBEHXZ @ 269 NONAME ; int TPhoneCmdParamDynMenu::ResourceId(void) const
-	?SetCipheringIndicatorAllowed@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 270 NONAME ; void TPhoneCmdParamCallHeaderData::SetCipheringIndicatorAllowed(int)
-	?SetWaitTime@TPhoneCmdParamProgressNote@@QAEXVTTimeIntervalMicroSeconds32@@@Z @ 271 NONAME ; void TPhoneCmdParamProgressNote::SetWaitTime(class TTimeIntervalMicroSeconds32)
-	?Ciphering@TPhoneCmdParamEmergencyCallHeaderData@@QBEHXZ @ 272 NONAME ; int TPhoneCmdParamEmergencyCallHeaderData::Ciphering(void) const
-	??1CPhoneCallThemeMonitor@@UAE@XZ @ 273 NONAME ; CPhoneCallThemeMonitor::~CPhoneCallThemeMonitor(void)
-	?SetNumberType@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 274 NONAME ; void TPhoneCmdParamCallHeaderData::SetNumberType(int)
-	?Mute@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 275 NONAME ; int TPhoneCmdParamIncallIndicatorData::Mute(void) const
-	?SetBoolean@TPhoneCmdParamBoolean@@QAEXH@Z @ 276 NONAME ; void TPhoneCmdParamBoolean::SetBoolean(int)
-	?IsTelephonyFeatureSupported@CPhoneResourceResolverBase@@MBEHH@Z @ 277 NONAME ; int CPhoneResourceResolverBase::IsTelephonyFeatureSupported(int) const
-	?Instance@CPhoneMainErrorMessagesHandler@@SAPAV1@XZ @ 278 NONAME ; class CPhoneMainErrorMessagesHandler * CPhoneMainErrorMessagesHandler::Instance(void)
-	?SetViewUid@TPhoneCmdParamAppInfo@@QAEXABVTUid@@@Z @ 279 NONAME ; void TPhoneCmdParamAppInfo::SetViewUid(class TUid const &)
-	?SetServiceId@TPhoneCmdParamCallHeaderData@@QAEXK@Z @ 280 NONAME ; void TPhoneCmdParamCallHeaderData::SetServiceId(unsigned long)
-	?Instance@CPhoneCenRepProxy@@SAPAV1@XZ @ 281 NONAME ; class CPhoneCenRepProxy * CPhoneCenRepProxy::Instance(void)
-	?SetQueryType@TPhoneCmdParamQuery@@QAEXW4TPhoneQueryType@@@Z @ 282 NONAME ; void TPhoneCmdParamQuery::SetQueryType(enum TPhoneQueryType)
-	?Value@CPhonePubSubProxy@@QAEHABVTUid@@I@Z @ 283 NONAME ; int CPhonePubSubProxy::Value(class TUid const &, unsigned int)
-	?SetWiredAccAvailable@TPhoneCmdParamAudioAvailability@@QAEXH@Z @ 284 NONAME ; void TPhoneCmdParamAudioAvailability::SetWiredAccAvailable(int)
-	??0TPhoneCmdParamAudioOutput@@QAE@XZ @ 285 NONAME ; TPhoneCmdParamAudioOutput::TPhoneCmdParamAudioOutput(void)
-	?IsCallerImage@TPhoneCmdParamRingTone@@QAEHXZ @ 286 NONAME ; int TPhoneCmdParamRingTone::IsCallerImage(void)
-	??0TPhoneCmdParamQuery@@QAE@XZ @ 287 NONAME ; TPhoneCmdParamQuery::TPhoneCmdParamQuery(void)
-	?Instance@CPhoneMainResourceResolver@@SAPAV1@XZ @ 288 NONAME ; class CPhoneMainResourceResolver * CPhoneMainResourceResolver::Instance(void)
-	??1CPhoneLibraryContainer@@UAE@XZ @ 289 NONAME ; CPhoneLibraryContainer::~CPhoneLibraryContainer(void)
-	?ClearBlackListOnNextKey@CPhoneClearBlacklist@@QAEXXZ @ 290 NONAME ; void CPhoneClearBlacklist::ClearBlackListOnNextKey(void)
-	?Tone@TPhoneCmdParamQuery@@QBEHXZ @ 291 NONAME ; int TPhoneCmdParamQuery::Tone(void) const
-	?SetCiphering@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 292 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetCiphering(int)
-	?SetRingingType@TPhoneCmdParamRingTone@@QAEXH@Z @ 293 NONAME ; void TPhoneCmdParamRingTone::SetRingingType(int)
-	?SetCipheringIndicatorAllowed@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 294 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetCipheringIndicatorAllowed(int)
-	?NeedToEnableKeylock@CPhoneStorage@@UAEHXZ @ 295 NONAME ; int CPhoneStorage::NeedToEnableKeylock(void)
-	?AudioOutput@TPhoneCmdParamAudioOutput@@QBE?AW4TPEAudioOutput@@XZ @ 296 NONAME ; enum TPEAudioOutput TPhoneCmdParamAudioOutput::AudioOutput(void) const
-	?SetResourceId@TPhoneCmdParamProgressNote@@QAEXH@Z @ 297 NONAME ; void TPhoneCmdParamProgressNote::SetResourceId(int)
-	??0TPhoneCmdParamInteger@@QAE@XZ @ 298 NONAME ; TPhoneCmdParamInteger::TPhoneCmdParamInteger(void)
-	?SetType@TPhoneCmdParamGlobalNote@@QAEXW4PhoneNotificationType@@@Z @ 299 NONAME ; void TPhoneCmdParamGlobalNote::SetType(enum PhoneNotificationType)
-	?SetType@TPhoneCmdParamTransEffect@@QAEXW4TPhoneTransEffectType@@@Z @ 300 NONAME ; void TPhoneCmdParamTransEffect::SetType(enum TPhoneTransEffectType)
-	?Bitmap@TPhoneCmdParamBitmap@@QBEPAVCFbsBitmap@@XZ @ 301 NONAME ; class CFbsBitmap * TPhoneCmdParamBitmap::Bitmap(void) const
-	?After@CPhoneTimer@@QAEXVTTimeIntervalMicroSeconds32@@VTCallBack@@@Z @ 302 NONAME ; void CPhoneTimer::After(class TTimeIntervalMicroSeconds32, class TCallBack)
+	?SetSoftkeys@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 144 NONAME ; void TPhoneCmdParamGlobalNote::SetSoftkeys(int)
+	?AddQwertyModeObserverL@CPhoneQwertyHandler@@QAEXAAVMPhoneQwertyModeObserver@@@Z @ 145 NONAME ; void CPhoneQwertyHandler::AddQwertyModeObserverL(class MPhoneQwertyModeObserver &)
+	??0CPhoneResourceResolverBase@@IAE@XZ @ 146 NONAME ; CPhoneResourceResolverBase::CPhoneResourceResolverBase(void)
+	?SetCallId@TPhoneCmdParamCallStateData@@QAEXH@Z @ 147 NONAME ; void TPhoneCmdParamCallStateData::SetCallId(int)
+	?MultipleInstances@TPhoneCmdParamAppInfo@@QBEHXZ @ 148 NONAME ; int TPhoneCmdParamAppInfo::MultipleInstances(void) const
+	?ItemTextArrayForListQuery@TPhoneCmdParamQuery@@QBEPAVMDesC16Array@@XZ @ 149 NONAME ; class MDesC16Array * TPhoneCmdParamQuery::ItemTextArrayForListQuery(void) const
+	?SetHeaderText@TPhoneCmdParamEmergencyCallHeaderData@@QAEXABVTDesC16@@@Z @ 150 NONAME ; void TPhoneCmdParamEmergencyCallHeaderData::SetHeaderText(class TDesC16 const &)
+	?SetContentCba@TPhoneCmdParamQuery@@QAEXH@Z @ 151 NONAME ; void TPhoneCmdParamQuery::SetContentCba(int)
+	?CaptureType@TPhoneCmdParamKeyCapture@@QBE?AW4TPhoneCaptureType@@XZ @ 152 NONAME ; enum TPhoneCaptureType TPhoneCmdParamKeyCapture::CaptureType(void) const
+	?SetQueryResourceId@TPhoneCmdParamQuery@@QAEXH@Z @ 153 NONAME ; void TPhoneCmdParamQuery::SetQueryResourceId(int)
+	?CancelNotify@CPhoneCenRepProxy@@QAEXPAVMPhoneCenRepObserver@@I@Z @ 154 NONAME ; void CPhoneCenRepProxy::CancelNotify(class MPhoneCenRepObserver *, unsigned int)
+	?Param@TPhoneCmdParamAppInfo@@QBEABVTDesC8@@XZ @ 155 NONAME ; class TDesC8 const & TPhoneCmdParamAppInfo::Param(void) const
+	??0CPhoneMethodLogger@@QAE@W4TPhoneUILoggingComponent@@VTPtrC16@@@Z @ 156 NONAME ; CPhoneMethodLogger::CPhoneMethodLogger(enum TPhoneUILoggingComponent, class TPtrC16)
+	?IsDtmfTone@CPhoneKeys@@SAHABUTKeyEvent@@W4TEventCode@@@Z @ 157 NONAME ; int CPhoneKeys::IsDtmfTone(struct TKeyEvent const &, enum TEventCode)
+	?SetMode@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 158 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetMode(int)
+	?AppUid@TPhoneCmdParamTransEffect@@QBE?AVTUid@@XZ @ 159 NONAME ; class TUid TPhoneCmdParamTransEffect::AppUid(void) const
+	?NewL@CPhoneCallThemeMonitor@@SAPAV1@XZ @ 160 NONAME ; class CPhoneCallThemeMonitor * CPhoneCallThemeMonitor::NewL(void)
+	?SetCLIText@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@W4TPhoneClippingDirection@CBubbleManager@@@Z @ 161 NONAME ; void TPhoneCmdParamCallHeaderData::SetCLIText(class TDesC16 const &, enum CBubbleManager::TPhoneClippingDirection)
+	?SetPhoneNumber@TPhoneCmdParamSpeedDial@@QAEXPAVTPtr16@@@Z @ 162 NONAME ; void TPhoneCmdParamSpeedDial::SetPhoneNumber(class TPtr16 *)
+	?SendKeyEnabled@TPhoneCmdParamQuery@@QBEHXZ @ 163 NONAME ; int TPhoneCmdParamQuery::SendKeyEnabled(void) const
+	?SetTitlePaneResourceId@TPhoneCmdParamSingleItemFetch@@QAEXH@Z @ 164 NONAME ; void TPhoneCmdParamSingleItemFetch::SetTitlePaneResourceId(int)
+	?Find@CPhoneCenRepProxy@@QBEHABVTUid@@KKAAV?$RArray@K@@@Z @ 165 NONAME ; int CPhoneCenRepProxy::Find(class TUid const &, unsigned long, unsigned long, class RArray<unsigned long> &) const
+	?SetLabelText@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@@Z @ 166 NONAME ; void TPhoneCmdParamCallHeaderData::SetLabelText(class TDesC16 const &)
+	?CNAPText@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 167 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::CNAPText(void) const
+	?SetOwnPhoneNumberText@TPhoneCmdParamEmergencyCallHeaderData@@QAEXABVTDesC16@@@Z @ 168 NONAME ; void TPhoneCmdParamEmergencyCallHeaderData::SetOwnPhoneNumberText(class TDesC16 const &)
+	?Emergency@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 169 NONAME ; int TPhoneCmdParamIncallIndicatorData::Emergency(void) const
+	?SetCbaResourceId@TPhoneCmdParamSingleItemFetch@@QAEXH@Z @ 170 NONAME ; void TPhoneCmdParamSingleItemFetch::SetCbaResourceId(int)
+	?AppUid@TPhoneCmdParamAppInfo@@QBE?AVTUid@@XZ @ 171 NONAME ; class TUid TPhoneCmdParamAppInfo::AppUid(void) const
+	?CustomMessage@TPhoneCmdParamAppInfo@@QBEABVTDesC8@@XZ @ 172 NONAME ; class TDesC8 const & TPhoneCmdParamAppInfo::CustomMessage(void) const
+	?QueryResourceId@TPhoneCmdParamQuery@@QBEHXZ @ 173 NONAME ; int TPhoneCmdParamQuery::QueryResourceId(void) const
+	?SetRingTone@TPhoneCmdParamRingTone@@QAEXABVTDesC16@@@Z @ 174 NONAME ; void TPhoneCmdParamRingTone::SetRingTone(class TDesC16 const &)
+	?NotifyChangeL@CPhonePubSubProxy@@QAEXABVTUid@@IPAVMPhonePubSubObserver@@@Z @ 175 NONAME ; void CPhonePubSubProxy::NotifyChangeL(class TUid const &, unsigned int, class MPhonePubSubObserver *)
+	?SetEmergency@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 176 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetEmergency(int)
+	?SetDefaultCba@TPhoneCmdParamQuery@@QAEXH@Z @ 177 NONAME ; void TPhoneCmdParamQuery::SetDefaultCba(int)
+	?Type@TPhoneCmdParamTransEffect@@QBE?AW4TPhoneTransEffectType@@XZ @ 178 NONAME ; enum TPhoneTransEffectType TPhoneCmdParamTransEffect::Type(void) const
+	??0TPhoneCmdParamSfiData@@QAE@XZ @ 179 NONAME ; TPhoneCmdParamSfiData::TPhoneCmdParamSfiData(void)
+	??0TPhoneCmdParamCallHeaderData@@QAE@XZ @ 180 NONAME ; TPhoneCmdParamCallHeaderData::TPhoneCmdParamCallHeaderData(void)
+	??1CPhoneClearBlacklist@@UAE@XZ @ 181 NONAME ; CPhoneClearBlacklist::~CPhoneClearBlacklist(void)
+	?SetMute@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 182 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetMute(int)
+	?KeyCode@TPhoneCmdParamKeyCapture@@QBE?AW4TKeyCode@@XZ @ 183 NONAME ; enum TKeyCode TPhoneCmdParamKeyCapture::KeyCode(void) const
+	?IsNumberKey@CPhoneKeys@@SAHABUTKeyEvent@@W4TEventCode@@@Z @ 184 NONAME ; int CPhoneKeys::IsNumberKey(struct TKeyEvent const &, enum TEventCode)
+	?TextResourceId@TPhoneCmdParamGlobalNote@@QBEHXZ @ 185 NONAME ; int TPhoneCmdParamGlobalNote::TextResourceId(void) const
+	?SetCiphering@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 186 NONAME ; void TPhoneCmdParamCallHeaderData::SetCiphering(int)
+	?EnablePreconditionL@CPhoneRecoverySystem@@QAEXXZ @ 187 NONAME ; void CPhoneRecoverySystem::EnablePreconditionL(void)
+	?AddL@CPhoneRecoverySystem@@QAEHVTCallBack@@CW4TRecoveryState@CTeleRecoverySystem@@@Z @ 188 NONAME ; int CPhoneRecoverySystem::AddL(class TCallBack, signed char, enum CTeleRecoverySystem::TRecoveryState)
+	?SetLine2@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 189 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetLine2(int)
+	?SetAudioOutput@TPhoneCmdParamAudioOutput@@QAEXW4TPEAudioOutput@@@Z @ 190 NONAME ; void TPhoneCmdParamAudioOutput::SetAudioOutput(enum TPEAudioOutput)
+	?HeaderText@TPhoneCmdParamEmergencyCallHeaderData@@QBEABVTDesC16@@XZ @ 191 NONAME ; class TDesC16 const & TPhoneCmdParamEmergencyCallHeaderData::HeaderText(void) const
+	?CallImageThemeSettings@CPhoneCallThemeMonitor@@QBEHXZ @ 192 NONAME ; int CPhoneCallThemeMonitor::CallImageThemeSettings(void) const
+	?SetLocation@TPhoneCmdParamSpeedDial@@QAEXH@Z @ 193 NONAME ; void TPhoneCmdParamSpeedDial::SetLocation(int)
+	??0TPhoneCmdParamTransEffect@@QAE@XZ @ 194 NONAME ; TPhoneCmdParamTransEffect::TPhoneCmdParamTransEffect(void)
+	?Number@TPhoneCmdParamSfiData@@QBEABVTDesC16@@XZ @ 195 NONAME ; class TDesC16 const & TPhoneCmdParamSfiData::Number(void) const
+	?OwnPhoneNumberText@TPhoneCmdParamEmergencyCallHeaderData@@QBEABVTDesC16@@XZ @ 196 NONAME ; class TDesC16 const & TPhoneCmdParamEmergencyCallHeaderData::OwnPhoneNumberText(void) const
+	?QueryPrompt@TPhoneCmdParamQuery@@QBEABVTDesC16@@XZ @ 197 NONAME ; class TDesC16 const & TPhoneCmdParamQuery::QueryPrompt(void) const
+	?SetQueryPrompt@TPhoneCmdParamQuery@@QAEXABVTDesC16@@@Z @ 198 NONAME ; void TPhoneCmdParamQuery::SetQueryPrompt(class TDesC16 const &)
+	?NewL@CPhoneQwertyHandler@@SAPAV1@XZ @ 199 NONAME ; class CPhoneQwertyHandler * CPhoneQwertyHandler::NewL(void)
+	?IsNumericKey@CPhoneKeys@@SAHABUTKeyEvent@@W4TEventCode@@@Z @ 200 NONAME ; int CPhoneKeys::IsNumericKey(struct TKeyEvent const &, enum TEventCode)
+	?SetCaptureType@TPhoneCmdParamKeyCapture@@QAEXW4TPhoneCaptureType@@@Z @ 201 NONAME ; void TPhoneCmdParamKeyCapture::SetCaptureType(enum TPhoneCaptureType)
+	?ViewUid@TPhoneCmdParamAppInfo@@QBE?AVTUid@@XZ @ 202 NONAME ; class TUid TPhoneCmdParamAppInfo::ViewUid(void) const
+	?CallFlag@TPhoneCmdParamCallHeaderData@@QBEKXZ @ 203 NONAME ; unsigned long TPhoneCmdParamCallHeaderData::CallFlag(void) const
+	?SetLabelText@TPhoneCmdParamEmergencyCallHeaderData@@QAEXABVTDesC16@@@Z @ 204 NONAME ; void TPhoneCmdParamEmergencyCallHeaderData::SetLabelText(class TDesC16 const &)
+	??0TPhoneCmdParamSpeedDial@@QAE@XZ @ 205 NONAME ; TPhoneCmdParamSpeedDial::TPhoneCmdParamSpeedDial(void)
+	?IsCallerText@TPhoneCmdParamRingTone@@QAEHXZ @ 206 NONAME ; int TPhoneCmdParamRingTone::IsCallerText(void)
+	?SetBitmap@TPhoneCmdParamBitmap@@QAEXPAVCFbsBitmap@@@Z @ 207 NONAME ; void TPhoneCmdParamBitmap::SetBitmap(class CFbsBitmap *)
+	?SetNumber@TPhoneCmdParamSfiData@@QAEXABVTDesC16@@@Z @ 208 NONAME ; void TPhoneCmdParamSfiData::SetNumber(class TDesC16 const &)
+	?Location@TPhoneCmdParamSpeedDial@@QAEHXZ @ 209 NONAME ; int TPhoneCmdParamSpeedDial::Location(void)
+	?CipheringIndicatorAllowed@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 210 NONAME ; int TPhoneCmdParamCallHeaderData::CipheringIndicatorAllowed(void) const
+	?Name@TPhoneCmdParamSfiData@@QBEABVTDesC16@@XZ @ 211 NONAME ; class TDesC16 const & TPhoneCmdParamSfiData::Name(void) const
+	??0TPhoneCmdParamQuery@@QAE@ABV0@@Z @ 212 NONAME ; TPhoneCmdParamQuery::TPhoneCmdParamQuery(class TPhoneCmdParamQuery const &)
+	?CallState@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 213 NONAME ; int TPhoneCmdParamCallHeaderData::CallState(void) const
+	??0TPhoneCmdParamIncallIndicatorData@@QAE@XZ @ 214 NONAME ; TPhoneCmdParamIncallIndicatorData::TPhoneCmdParamIncallIndicatorData(void)
+	?Picture@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 215 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::Picture(void) const
+	?SetCallThemeSettingsObserver@CPhoneCallThemeMonitor@@QAEXPAVMPhoneCallThemeSettingsObserver@@@Z @ 216 NONAME ; void CPhoneCallThemeMonitor::SetCallThemeSettingsObserver(class MPhoneCallThemeSettingsObserver *)
+	?ServiceId@TPhoneCmdParamCallHeaderData@@QBEKXZ @ 217 NONAME ; unsigned long TPhoneCmdParamCallHeaderData::ServiceId(void) const
+	?LabelText@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 218 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::LabelText(void) const
+	?Overflow@CPhoneLogger@@EAEXAAVTDes16@@@Z @ 219 NONAME ; void CPhoneLogger::Overflow(class TDes16 &)
+	?SetServiceId@TPhoneCmdParamSpeedDial@@QAEXI@Z @ 220 NONAME ; void TPhoneCmdParamSpeedDial::SetServiceId(unsigned int)
+	?SetKeyEvent@TPhoneCmdParamKeyEvent@@QAEXABUTKeyEvent@@@Z @ 221 NONAME ; void TPhoneCmdParamKeyEvent::SetKeyEvent(struct TKeyEvent const &)
+	?Instance@CPhonePubSubProxy@@SAPAV1@XZ @ 222 NONAME ; class CPhonePubSubProxy * CPhonePubSubProxy::Instance(void)
+	?ResourceId@TPhoneCmdParamNote@@QBEHXZ @ 223 NONAME ; int TPhoneCmdParamNote::ResourceId(void) const
+	?CipheringIndicatorAllowed@TPhoneCmdParamEmergencyCallHeaderData@@QBEHXZ @ 224 NONAME ; int TPhoneCmdParamEmergencyCallHeaderData::CipheringIndicatorAllowed(void) const
+	?CancelAllNotifies@CPhoneCenRepProxy@@SAXPAVMPhoneCenRepObserver@@@Z @ 225 NONAME ; void CPhoneCenRepProxy::CancelAllNotifies(class MPhoneCenRepObserver *)
+	??1CPhoneQwertyHandler@@UAE@XZ @ 226 NONAME ; CPhoneQwertyHandler::~CPhoneQwertyHandler(void)
+	?TextResourceId@TPhoneCmdParamNote@@QBEHXZ @ 227 NONAME ; int TPhoneCmdParamNote::TextResourceId(void) const
+	?SetRemotePhoneNumber@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@@Z @ 228 NONAME ; void TPhoneCmdParamCallHeaderData::SetRemotePhoneNumber(class TDesC16 const &)
+	?CipheringIndicatorAllowed@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 229 NONAME ; int TPhoneCmdParamIncallIndicatorData::CipheringIndicatorAllowed(void) const
+	??0TPhoneCmdParamCallStateData@@QAE@XZ @ 230 NONAME ; TPhoneCmdParamCallStateData::TPhoneCmdParamCallStateData(void)
+	?SetKeyCode@TPhoneCmdParamKeyCapture@@QAEXW4TKeyCode@@@Z @ 231 NONAME ; void TPhoneCmdParamKeyCapture::SetKeyCode(enum TKeyCode)
+	?CustomMessageId@TPhoneCmdParamAppInfo@@QBE?AVTUid@@XZ @ 232 NONAME ; class TUid TPhoneCmdParamAppInfo::CustomMessageId(void) const
+	?RemotePhoneNumber@TPhoneCmdParamCallHeaderData@@QBEABVTDesC16@@XZ @ 233 NONAME ; class TDesC16 const & TPhoneCmdParamCallHeaderData::RemotePhoneNumber(void) const
+	?SetType@TPhoneCmdParamNote@@QAEXW4TPhoneNoteType@@@Z @ 234 NONAME ; void TPhoneCmdParamNote::SetType(enum TPhoneNoteType)
+	?Instance@CPhoneClearBlacklist@@SAPAV1@XZ @ 235 NONAME ; class CPhoneClearBlacklist * CPhoneClearBlacklist::Instance(void)
+	?TextToSay@TPhoneCmdParamRingTone@@QBEABVTDesC16@@XZ @ 236 NONAME ; class TDesC16 const & TPhoneCmdParamRingTone::TextToSay(void) const
+	?Type@TPhoneCmdParamNote@@QBE?AW4TPhoneNoteType@@XZ @ 237 NONAME ; enum TPhoneNoteType TPhoneCmdParamNote::Type(void) const
+	??0TPhoneCmdParamReconnectQuery@@QAE@AAVMCaUiReconnectQueryObserver@@@Z @ 238 NONAME ; TPhoneCmdParamReconnectQuery::TPhoneCmdParamReconnectQuery(class MCaUiReconnectQueryObserver &)
+	?SetCallFlag@TPhoneCmdParamCallHeaderData@@QAEXW4TPhoneCallTypeFlags@CBubbleManager@@@Z @ 239 NONAME ; void TPhoneCmdParamCallHeaderData::SetCallFlag(enum CBubbleManager::TPhoneCallTypeFlags)
+	?SetPicture@TPhoneCmdParamCallHeaderData@@QAEXABVTDesC16@@@Z @ 240 NONAME ; void TPhoneCmdParamCallHeaderData::SetPicture(class TDesC16 const &)
+	?Integer@TPhoneCmdParamInteger@@QBEHXZ @ 241 NONAME ; int TPhoneCmdParamInteger::Integer(void) const
+	?Mode@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 242 NONAME ; int TPhoneCmdParamIncallIndicatorData::Mode(void) const
+	?SetText@TPhoneCmdParamNote@@QAEXABVTDesC16@@@Z @ 243 NONAME ; void TPhoneCmdParamNote::SetText(class TDesC16 const &)
+	?SetCallerTextStatus@TPhoneCmdParamRingTone@@QAEXH@Z @ 244 NONAME ; void TPhoneCmdParamRingTone::SetCallerTextStatus(int)
+	?IsWiredAccAvailable@TPhoneCmdParamAudioAvailability@@QBEHXZ @ 245 NONAME ; int TPhoneCmdParamAudioAvailability::IsWiredAccAvailable(void) const
+	?SetWaitForReady@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 246 NONAME ; void TPhoneCmdParamGlobalNote::SetWaitForReady(int)
+	??0TPhoneCmdParamBoolean@@QAE@XZ @ 247 NONAME ; TPhoneCmdParamBoolean::TPhoneCmdParamBoolean(void)
+	?QueryCommandObserver@TPhoneCmdParamQuery@@QAEPAVMPhoneQueryCommandObserver@@XZ @ 248 NONAME ; class MPhoneQueryCommandObserver * TPhoneCmdParamQuery::QueryCommandObserver(void)
+	?DataText@TPhoneCmdParamQuery@@QBEPAVTDes16@@XZ @ 249 NONAME ; class TDes16 * TPhoneCmdParamQuery::DataText(void) const
+	?SetType@TPhoneCmdParamSingleItemFetch@@QAEXW4TFetchType@CPhCntSingleItemFetch@@@Z @ 250 NONAME ; void TPhoneCmdParamSingleItemFetch::SetType(enum CPhCntSingleItemFetch::TFetchType)
+	?SetReal@CPhoneCenRepProxy@@QAEHABVTUid@@IN@Z @ 251 NONAME ; int CPhoneCenRepProxy::SetReal(class TUid const &, unsigned int, double)
+	??0TPhoneCmdParamCustomDialer@@QAE@XZ @ 252 NONAME ; TPhoneCmdParamCustomDialer::TPhoneCmdParamCustomDialer(void)
+	??1CPhonePubSubProxy@@UAE@XZ @ 253 NONAME ; CPhonePubSubProxy::~CPhonePubSubProxy(void)
+	?NumericKeyCode@CPhoneQwertyHandler@@QAEHABUTKeyEvent@@@Z @ 254 NONAME ; int CPhoneQwertyHandler::NumericKeyCode(struct TKeyEvent const &)
+	?SetMessageData@TPhoneCmdParamMessageEditor@@QAEXPAVCMessageData@@@Z @ 255 NONAME ; void TPhoneCmdParamMessageEditor::SetMessageData(class CMessageData *)
+	??0TPhoneCmdParamNote@@QAE@XZ @ 256 NONAME ; TPhoneCmdParamNote::TPhoneCmdParamNote(void)
+	?Volume@TPhoneCmdParamRingTone@@QBEHXZ @ 257 NONAME ; int TPhoneCmdParamRingTone::Volume(void) const
+	?SetItemTextArrayForListQuery@TPhoneCmdParamQuery@@QAEXAAVMDesC16Array@@@Z @ 258 NONAME ; void TPhoneCmdParamQuery::SetItemTextArrayForListQuery(class MDesC16Array &)
+	?Type@TPhoneCmdParamRingTone@@QBE?AW4TPhoneRingToneType@@XZ @ 259 NONAME ; enum TPhoneRingToneType TPhoneCmdParamRingTone::Type(void) const
+	?Key@TPhoneCmdParamKeyCapture@@QBE?AW4TStdScanCode@@XZ @ 260 NONAME ; enum TStdScanCode TPhoneCmdParamKeyCapture::Key(void) const
+	?LabelText@TPhoneCmdParamEmergencyCallHeaderData@@QBEABVTDesC16@@XZ @ 261 NONAME ; class TDesC16 const & TPhoneCmdParamEmergencyCallHeaderData::LabelText(void) const
+	?Ciphering@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 262 NONAME ; int TPhoneCmdParamIncallIndicatorData::Ciphering(void) const
+	?SetQueryCommandObserver@TPhoneCmdParamQuery@@QAEXAAVMPhoneQueryCommandObserver@@@Z @ 263 NONAME ; void TPhoneCmdParamQuery::SetQueryCommandObserver(class MPhoneQueryCommandObserver &)
+	?IsPhoneUIFeatureSupported@CPhoneCenRepProxy@@QAEHH@Z @ 264 NONAME ; int CPhoneCenRepProxy::IsPhoneUIFeatureSupported(int)
+	?DefaultCba@TPhoneCmdParamQuery@@QBEHXZ @ 265 NONAME ; int TPhoneCmdParamQuery::DefaultCba(void) const
+	?CallState@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 266 NONAME ; int TPhoneCmdParamIncallIndicatorData::CallState(void) const
+	??0TPhoneCmdParamNumberEntryObserver@@QAE@XZ @ 267 NONAME ; TPhoneCmdParamNumberEntryObserver::TPhoneCmdParamNumberEntryObserver(void)
+	?MessageData@TPhoneCmdParamMessageEditor@@QBEPAVCMessageData@@XZ @ 268 NONAME ; class CMessageData * TPhoneCmdParamMessageEditor::MessageData(void) const
+	?SetLine2@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 269 NONAME ; void TPhoneCmdParamCallHeaderData::SetLine2(int)
+	?FetchValuesFromCenRepL@CPhoneCenRepProxy@@QAEXAAVTPhoneCmdParamAppInfo@@W4TKeyCode@@PAVHBufC8@@AAH@Z @ 270 NONAME ; void CPhoneCenRepProxy::FetchValuesFromCenRepL(class TPhoneCmdParamAppInfo &, enum TKeyCode, class HBufC8 *, int &)
+	?CNAPTextClippingDirection@TPhoneCmdParamCallHeaderData@@QBE?AW4TPhoneClippingDirection@CBubbleManager@@XZ @ 271 NONAME ; enum CBubbleManager::TPhoneClippingDirection TPhoneCmdParamCallHeaderData::CNAPTextClippingDirection(void) const
+	?ParticipantCLI@TPhoneCmdParamCallHeaderData@@QBE?AW4TPhoneParticipantListCLI@1@XZ @ 272 NONAME ; enum TPhoneCmdParamCallHeaderData::TPhoneParticipantListCLI TPhoneCmdParamCallHeaderData::ParticipantCLI(void) const
+	?Thumbnail@TPhoneCmdParamCallHeaderData@@QBEPAVCFbsBitmap@@XZ @ 273 NONAME ; class CFbsBitmap * TPhoneCmdParamCallHeaderData::Thumbnail(void) const
+	?SetTimeOut@TPhoneCmdParamQuery@@QAEXH@Z @ 274 NONAME ; void TPhoneCmdParamQuery::SetTimeOut(int)
+	?Boolean@TPhoneCmdParamBoolean@@QBEHXZ @ 275 NONAME ; int TPhoneCmdParamBoolean::Boolean(void) const
+	?LogMsgFromPhoneUIToPE@CPhoneLogger@@QAEXHH@Z @ 276 NONAME ; void CPhoneLogger::LogMsgFromPhoneUIToPE(int, int)
+	?SetCustomMessageId@TPhoneCmdParamAppInfo@@QAEXABVTUid@@@Z @ 277 NONAME ; void TPhoneCmdParamAppInfo::SetCustomMessageId(class TUid const &)
+	?ResolveResourceID@CPhoneResourceResolverBase@@UBEHABH@Z @ 278 NONAME ; int CPhoneResourceResolverBase::ResolveResourceID(int const &) const
+	?SetName@TPhoneCmdParamSfiData@@QAEXABVTDesC16@@@Z @ 279 NONAME ; void TPhoneCmdParamSfiData::SetName(class TDesC16 const &)
+	?TitlePaneResourceId@TPhoneCmdParamSingleItemFetch@@QBEHXZ @ 280 NONAME ; int TPhoneCmdParamSingleItemFetch::TitlePaneResourceId(void) const
+	?SetType@TPhoneCmdParamGlobalNote@@QAEXW4TAknGlobalNoteType@@@Z @ 281 NONAME ; void TPhoneCmdParamGlobalNote::SetType(enum TAknGlobalNoteType)
+	?IncludeVideoCallOption@TPhoneCmdParamReconnectQuery@@QBEHXZ @ 282 NONAME ; int TPhoneCmdParamReconnectQuery::IncludeVideoCallOption(void) const
+	?SetLittleBubbleVisible@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 283 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetLittleBubbleVisible(int)
+	?Ciphering@TPhoneCmdParamCallHeaderData@@QBEHXZ @ 284 NONAME ; int TPhoneCmdParamCallHeaderData::Ciphering(void) const
+	?SetType@TPhoneCmdParamRingTone@@QAEXW4TPhoneRingToneType@@@Z @ 285 NONAME ; void TPhoneCmdParamRingTone::SetType(enum TPhoneRingToneType)
+	?ResourceId@TPhoneCmdParamDynMenu@@QBEHXZ @ 286 NONAME ; int TPhoneCmdParamDynMenu::ResourceId(void) const
+	?SetCipheringIndicatorAllowed@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 287 NONAME ; void TPhoneCmdParamCallHeaderData::SetCipheringIndicatorAllowed(int)
+	?SetWaitTime@TPhoneCmdParamProgressNote@@QAEXVTTimeIntervalMicroSeconds32@@@Z @ 288 NONAME ; void TPhoneCmdParamProgressNote::SetWaitTime(class TTimeIntervalMicroSeconds32)
+	?Ciphering@TPhoneCmdParamEmergencyCallHeaderData@@QBEHXZ @ 289 NONAME ; int TPhoneCmdParamEmergencyCallHeaderData::Ciphering(void) const
+	??1CPhoneCallThemeMonitor@@UAE@XZ @ 290 NONAME ; CPhoneCallThemeMonitor::~CPhoneCallThemeMonitor(void)
+	?SetNumberType@TPhoneCmdParamCallHeaderData@@QAEXH@Z @ 291 NONAME ; void TPhoneCmdParamCallHeaderData::SetNumberType(int)
+	?Mute@TPhoneCmdParamIncallIndicatorData@@QBEHXZ @ 292 NONAME ; int TPhoneCmdParamIncallIndicatorData::Mute(void) const
+	?IsQwertyInput@CPhoneQwertyHandler@@QBEHXZ @ 293 NONAME ; int CPhoneQwertyHandler::IsQwertyInput(void) const
+	?SetBoolean@TPhoneCmdParamBoolean@@QAEXH@Z @ 294 NONAME ; void TPhoneCmdParamBoolean::SetBoolean(int)
+	?IsTelephonyFeatureSupported@CPhoneResourceResolverBase@@MBEHH@Z @ 295 NONAME ; int CPhoneResourceResolverBase::IsTelephonyFeatureSupported(int) const
+	?Instance@CPhoneMainErrorMessagesHandler@@SAPAV1@XZ @ 296 NONAME ; class CPhoneMainErrorMessagesHandler * CPhoneMainErrorMessagesHandler::Instance(void)
+	?SetViewUid@TPhoneCmdParamAppInfo@@QAEXABVTUid@@@Z @ 297 NONAME ; void TPhoneCmdParamAppInfo::SetViewUid(class TUid const &)
+	?SetServiceId@TPhoneCmdParamCallHeaderData@@QAEXK@Z @ 298 NONAME ; void TPhoneCmdParamCallHeaderData::SetServiceId(unsigned long)
+	?Instance@CPhoneCenRepProxy@@SAPAV1@XZ @ 299 NONAME ; class CPhoneCenRepProxy * CPhoneCenRepProxy::Instance(void)
+	?AddCallFlag@TPhoneCmdParamCallHeaderData@@QAEXW4TPhoneCallTypeFlags@CBubbleManager@@@Z @ 300 NONAME ; void TPhoneCmdParamCallHeaderData::AddCallFlag(enum CBubbleManager::TPhoneCallTypeFlags)
+	?SetQueryType@TPhoneCmdParamQuery@@QAEXW4TPhoneQueryType@@@Z @ 301 NONAME ; void TPhoneCmdParamQuery::SetQueryType(enum TPhoneQueryType)
+	?Value@CPhonePubSubProxy@@QAEHABVTUid@@I@Z @ 302 NONAME ; int CPhonePubSubProxy::Value(class TUid const &, unsigned int)
+	?SetWiredAccAvailable@TPhoneCmdParamAudioAvailability@@QAEXH@Z @ 303 NONAME ; void TPhoneCmdParamAudioAvailability::SetWiredAccAvailable(int)
+	?SetString@TPhoneCmdParamSingleItemFetch@@QAEXPAVTDes16@@@Z @ 304 NONAME ; void TPhoneCmdParamSingleItemFetch::SetString(class TDes16 *)
+	??0TPhoneCmdParamAudioOutput@@QAE@XZ @ 305 NONAME ; TPhoneCmdParamAudioOutput::TPhoneCmdParamAudioOutput(void)
+	?IsCallerImage@TPhoneCmdParamRingTone@@QAEHXZ @ 306 NONAME ; int TPhoneCmdParamRingTone::IsCallerImage(void)
+	??0TPhoneCmdParamQuery@@QAE@XZ @ 307 NONAME ; TPhoneCmdParamQuery::TPhoneCmdParamQuery(void)
+	?SetAppUid@TPhoneCmdParamTransEffect@@QAEXABVTUid@@@Z @ 308 NONAME ; void TPhoneCmdParamTransEffect::SetAppUid(class TUid const &)
+	?SetPhoneNumber@TPhoneCmdParamReconnectQuery@@QAEXVTPtrC16@@@Z @ 309 NONAME ; void TPhoneCmdParamReconnectQuery::SetPhoneNumber(class TPtrC16)
+	?Instance@CPhoneMainResourceResolver@@SAPAV1@XZ @ 310 NONAME ; class CPhoneMainResourceResolver * CPhoneMainResourceResolver::Instance(void)
+	?ServiceId@TPhoneCmdParamSpeedDial@@QBEIXZ @ 311 NONAME ; unsigned int TPhoneCmdParamSpeedDial::ServiceId(void) const
+	??1CPhoneLibraryContainer@@UAE@XZ @ 312 NONAME ; CPhoneLibraryContainer::~CPhoneLibraryContainer(void)
+	?ClearBlackListOnNextKey@CPhoneClearBlacklist@@QAEXXZ @ 313 NONAME ; void CPhoneClearBlacklist::ClearBlackListOnNextKey(void)
+	?Tone@TPhoneCmdParamQuery@@QBEHXZ @ 314 NONAME ; int TPhoneCmdParamQuery::Tone(void) const
+	?SetNumberType@TPhoneCmdParamSpeedDial@@QAEXW4TPhoneNumberType@@@Z @ 315 NONAME ; void TPhoneCmdParamSpeedDial::SetNumberType(enum TPhoneNumberType)
+	?SetRingingType@TPhoneCmdParamRingTone@@QAEXH@Z @ 316 NONAME ; void TPhoneCmdParamRingTone::SetRingingType(int)
+	?CbaResourceId@TPhoneCmdParamSingleItemFetch@@QBEHXZ @ 317 NONAME ; int TPhoneCmdParamSingleItemFetch::CbaResourceId(void) const
+	?SetCiphering@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 318 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetCiphering(int)
+	?SetCipheringIndicatorAllowed@TPhoneCmdParamIncallIndicatorData@@QAEXH@Z @ 319 NONAME ; void TPhoneCmdParamIncallIndicatorData::SetCipheringIndicatorAllowed(int)
+	?AudioOutput@TPhoneCmdParamAudioOutput@@QBE?AW4TPEAudioOutput@@XZ @ 320 NONAME ; enum TPEAudioOutput TPhoneCmdParamAudioOutput::AudioOutput(void) const
+	?SetResourceId@TPhoneCmdParamProgressNote@@QAEXH@Z @ 321 NONAME ; void TPhoneCmdParamProgressNote::SetResourceId(int)
+	??0TPhoneCmdParamInteger@@QAE@XZ @ 322 NONAME ; TPhoneCmdParamInteger::TPhoneCmdParamInteger(void)
+	?Type@TPhoneCmdParamSingleItemFetch@@QAE?AW4TFetchType@CPhCntSingleItemFetch@@XZ @ 323 NONAME ; enum CPhCntSingleItemFetch::TFetchType TPhoneCmdParamSingleItemFetch::Type(void)
+	?SetType@TPhoneCmdParamTransEffect@@QAEXW4TPhoneTransEffectType@@@Z @ 324 NONAME ; void TPhoneCmdParamTransEffect::SetType(enum TPhoneTransEffectType)
+	?Bitmap@TPhoneCmdParamBitmap@@QBEPAVCFbsBitmap@@XZ @ 325 NONAME ; class CFbsBitmap * TPhoneCmdParamBitmap::Bitmap(void) const
+	?SetTone@TPhoneCmdParamGlobalNote@@QAEXH@Z @ 326 NONAME ; void TPhoneCmdParamGlobalNote::SetTone(int)
+	?After@CPhoneTimer@@QAEXVTTimeIntervalMicroSeconds32@@VTCallBack@@@Z @ 327 NONAME ; void CPhoneTimer::After(class TTimeIntervalMicroSeconds32, class TCallBack)
+	?ContactMatcher@TPhoneCmdParamReconnectQuery@@QBEPAVCPhCntMatcher@@XZ @ 328 NONAME ; class CPhCntMatcher * TPhoneCmdParamReconnectQuery::ContactMatcher(void) const
+	?ConvertToNumeric@CPhoneQwertyHandler@@QAEHAAUTKeyEvent@@@Z @ 329 NONAME ; int CPhoneQwertyHandler::ConvertToNumeric(struct TKeyEvent &)
+	?DoVanityNumberConversion@PhoneVanityDialingUtils@@SAXAAVTDes16@@@Z @ 330 NONAME ; void PhoneVanityDialingUtils::DoVanityNumberConversion(class TDes16 &)
 

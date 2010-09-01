@@ -90,6 +90,10 @@ class CPhoneSingleAndAlerting : public CPhoneAlerting
         void HandleIdleL( TInt aCallId );
         
         /**
+        * Open menu bar
+        */
+        virtual void OpenMenuBarL();
+        /**
         * Update InCallCba 
         */
         virtual void UpdateInCallCbaL();

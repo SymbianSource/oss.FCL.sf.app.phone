@@ -23,14 +23,20 @@ PRJ_PLATFORMS
 DEFAULT
 
 PRJ_EXPORTS
-../data/silence.rul\
-    /epoc32/release/winscw/udeb/z/private/10282bc4/rules/silence.rul
+../data/silenceringingtone_activate.rul\
+	/epoc32/RELEASE/winscw/UDEB/Z/private/10282BC4/Rules/silenceringingtone_activate.rul
 
-../data/silence.rul\
-    /epoc32/data/z/private/10282bc4/rules/silence.rul
+../data/silenceringingtone_activate.rul\
+	/epoc32/data/Z/private/10282BC4/Rules/silenceringingtone_activate.rul
 
-../data/silenceactionplugin_stub.sis\
-    /epoc32/data/z/system/install/silenceactionplugin_stub.sis
+../data/silenceringingtone_silence.rul\
+	/epoc32/RELEASE/winscw/UDEB/Z/private/10282BC4/Rules/silenceringingtone_silence.rul
+
+../data/silenceringingtone_silence.rul\
+	/epoc32/data/Z/private/10282BC4/Rules/silenceringingtone_silence.rul
+
+../data/silenceactionplugin_stub.SIS\
+    /epoc32/data/z/system/install/silenceactionplugin_stub.SIS
     
 ../rom/silenceactionplugin.iby\
     CORE_APP_LAYER_IBY_EXPORT_PATH(silenceactionplugin.iby)

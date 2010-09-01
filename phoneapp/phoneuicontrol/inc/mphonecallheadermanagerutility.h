@@ -39,7 +39,17 @@ class MPhoneCallHeaderManagerUtility
         virtual void SetPhoneNumberAvailabilityL(
                 const TInt aNumberLength,
                 const TBool aContactInfoAvailable ) = 0;
-
+        
+        /**
+        * Resolves call header text in InCall-state,
+        * text could be 'Call 1', 'Call 2', ...
+        * @param aCallId - Call Id.
+        * @param aData - The returned data including needed text.
+        */
+        virtual void GetInCallNumberTextL( 
+                TInt aCallId, 
+                TDes& aData ) const = 0;
+        
         /**
         * Loads strings for displaying in call header.
         * @param aCallLabelId - Resource Id for longer text.

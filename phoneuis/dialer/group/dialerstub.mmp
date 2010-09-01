@@ -1,0 +1,73 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This is project specification file for the dummy Dialer. 
+*                It is used to compile dummy dialer dll in phones without touch.
+*
+*/
+
+
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+// Capability assignment.
+CAPABILITY CAP_GENERAL_DLL
+
+// Assign Vendor ID.
+VENDORID VID_DEFAULT
+
+TARGET      dialerstub.dll
+TARGETTYPE  dll
+UID         0x1000008d 0x102078ED 
+
+ #if defined(ARMCC)
+ DEFFILE ../eabi/dialer.def
+ #elif defined( WINSCW )
+ DEFFILE ../bwins/dialer.def
+ #else
+ DEFFILE ../bmarm/dialer.def
+ #endif
+
+START RESOURCE ../data/dialer.rss
+HEADER
+TARGETPATH   RESOURCE_FILES_DIR 
+LANG    sc
+END  // RESOURCE
+
+SOURCEPATH  ../src
+SOURCE  cdialerstub.cpp
+SOURCE  cvideodtmfdialerstub.cpp
+
+USERINCLUDE ../../../phoneapp/phoneui/srcdata
+USERINCLUDE ../../../phoneapp/phoneuiview/inc
+USERINCLUDE ../../../phoneapp/phoneuiutils/inc
+USERINCLUDE ../inc 
+USERINCLUDE ../data 
+
+SYSTEMINCLUDE ../../../inc  // s60/app/telephony/inc
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY euser.lib eikcore.lib estor.lib etext.lib 
+LIBRARY cone.lib ws32.lib bmpanim.lib 
+LIBRARY eikcoctl.lib fbscli.lib bafl.lib 
+LIBRARY peninputclient.lib
+
+LIBRARY commonengine.lib
+
+LIBRARY gdi.lib
+LIBRARY bitgdi.lib
+LIBRARY egul.lib
+LIBRARY efsrv.lib
+LIBRARY ecom.lib
+
+// End of File

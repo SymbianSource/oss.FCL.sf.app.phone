@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -76,11 +76,15 @@ class CPhoneStateMachineGSM : public CPhoneStateMachine
         // Phone customization
         MPhoneCustomization* iCustomization;
         
-    private: // Data
-    
-        // Is emergency object instantiated - needed to prevent multiple instantiation
-        TBool iEmergencyStateConstructed;
-    
+    private:
+    	
+        TBool IsSimlockStartupStateCreated()const;
+        
+ 	private: // Data
+ 	
+		// Is emergency object instantiated - needed to prevent multiple instantiation
+ 		TBool iEmergencyStateConstructed;
+ 	
          // Emergency state which is hold in memory all the time.
         MPhoneState* iEmergencyState;         
     };

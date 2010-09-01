@@ -124,11 +124,11 @@ void CPELogInfo::SetEventData(
                 iName = KLogsPayphoneText;
                 break;
             case RMobileCall::ERemoteIdentitySuppressed:
-                if ( aDataStore.RemotePhoneNumber( aCallId ).Length() == 0 )
-                    {
-                    iName = KLogsPrivateText;
-                    }
-                break;
+            	if ( aDataStore.RemotePhoneNumber( aCallId ).Length() == 0 )
+            		{
+            		iName = KLogsPrivateText;
+            		}
+            	break;
             default:
                 break;
             }

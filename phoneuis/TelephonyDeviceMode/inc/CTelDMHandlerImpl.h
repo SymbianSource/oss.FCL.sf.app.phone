@@ -82,7 +82,7 @@ NONSHARABLE_CLASS( CTelDMHandlerImpl ) : public CTelDMHandler
         /**
         * Accessory status, Owned 
         */
-        CTelDMAudioAccessoryListener* iAccessory;
+ 		CTelDMAudioAccessoryListener* iAccessory;
          
         /**
         * Call state listener, Owned 
@@ -91,8 +91,8 @@ NONSHARABLE_CLASS( CTelDMHandlerImpl ) : public CTelDMHandler
 
         /**
         * Commander, Owned 
-        */      
-        CTelDMCommandHandler* iCommandHandler;
+        */		
+		CTelDMCommandHandler* iCommandHandler;
 
     };
 

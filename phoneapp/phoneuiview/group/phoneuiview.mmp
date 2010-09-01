@@ -1,0 +1,175 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  View subcomponent of PhoneUI
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+// Capability assignment.
+CAPABILITY CAP_APPLICATION MultiMediaDD PowerMgmt NetworkControl DRM DiskAdmin
+
+// Assign Vendor ID.
+VENDORID VID_DEFAULT
+
+TARGET          phoneuiview.dll
+TARGETTYPE      dll
+UID             0x1000008d 0x101F4D18
+
+SOURCEPATH      ../src
+
+SOURCE          cphoneapplicationexit.cpp
+SOURCE          cphoneaudiocontroller.cpp
+SOURCE          cphoneaudioplayer.cpp
+SOURCE          cphonebubblemapping.cpp
+SOURCE          cphonebubblewrapper.cpp
+SOURCE          cphonecallheadertextanimation.cpp
+SOURCE          cphonecontactcontroller.cpp
+SOURCE          cphonedtmfsendingnote.cpp
+SOURCE          cphoneincallindicator.cpp
+SOURCE          cphonekeycapturecontroller.cpp
+SOURCE          cphonemenucontroller.cpp
+SOURCE          cphonenote.cpp
+SOURCE          cphonenotecontroller.cpp
+SOURCE          cphoneprogressnote.cpp
+SOURCE          cphonequerycontroller.cpp
+SOURCE          cphonequerydialog.cpp
+SOURCE          cphoneringingtone.cpp
+SOURCE          cphoneringingtoneplayerao.cpp
+SOURCE          cphonestatuspane.cpp
+SOURCE          cphonetextquery.cpp
+SOURCE          cphoneview.cpp
+SOURCE          cphonedialerview.cpp
+SOURCE          cphoneviewcontroller.cpp
+SOURCE          cphonevmbxhandler.cpp
+SOURCE          cphonedtmfnumberlistquery.cpp
+SOURCE          cphonebuttonscontroller.cpp
+SOURCE          cphonesingleitemfetch.cpp
+SOURCE          cphonedialercontroller.cpp
+SOURCE          cphonelistquerydialog.cpp
+SOURCE          cphonenumberentry.cpp 
+SOURCE          phonebubbleextensionmanager.cpp 
+SOURCE          phonebubbleextension.cpp 
+SOURCE          phonebubbleextensiondata.cpp
+SOURCE          cphonetoolbarcontroller.cpp
+SOURCE          cphoneeasydialingcontroller.cpp 
+SOURCE          cphonedtmfdialercontroller.cpp 
+SOURCE          phoneringingtonesrvplayerao.cpp
+SOURCE          phoneringingtonesrv.cpp
+SOURCE          phoneringingtonesrvsession.cpp
+SOURCE          phoneringingtoneclient.cpp
+
+/* Languages */
+LANG SC
+
+USERINCLUDE     ../inc
+USERINCLUDE     ../../phoneuicontrol/inc
+USERINCLUDE     ../../phoneuiutils/inc
+USERINCLUDE     ../../phonemediatorcenter/inc
+USERINCLUDE     ../../phoneui/srcdata
+
+APP_LAYER_SYSTEMINCLUDE         // Application layer domain APIs
+SYSTEMINCLUDE   /epoc32/include/ecom
+SYSTEMINCLUDE   ../../../inc    // Telephony internal headers
+SYSTEMINCLUDE   /epoc32/include/mda/client
+SYSTEMINCLUDE   /epoc32/include/mmf/common
+SYSTEMINCLUDE   /epoc32/include/mmf/server
+
+LIBRARY         euser.lib
+LIBRARY         cone.lib
+LIBRARY         eikcore.lib
+LIBRARY         ws32.lib
+LIBRARY         bafl.lib
+LIBRARY         efsrv.lib // TParse
+LIBRARY         ecom.lib // for CPhoneBubbleExtensionManager plugin
+
+LIBRARY         eikcoctl.lib // status pane
+LIBRARY         eikdlg.lib   // for CPhoneNote
+LIBRARY         eikctl.lib
+
+//LIBRARY         eikctl.lib
+LIBRARY         aknskins.lib
+LIBRARY         avkon.lib
+LIBRARY         aknnotify.lib // for AknInCallBubble
+LIBRARY         apparc.lib
+
+LIBRARY         apgrfx.lib  // Apa server
+
+LIBRARY         cdlengine.lib
+LIBRARY         aknicon.lib
+LIBRARY         akncapserverclient.lib
+
+// Scalable UI.
+LIBRARY         aknlayout2scalable.lib
+LIBRARY         aknlayout2.lib
+
+
+LIBRARY         bitmaptransforms.lib
+LIBRARY         fbscli.lib
+LIBRARY         bitgdi.lib
+LIBRARY         hlplch.lib // Help launcher
+LIBRARY         sendui.lib // CSendAppUi
+LIBRARY         mediaclient.lib
+LIBRARY         mediaclientaudio.lib
+
+// DRM
+LIBRARY         drmhelper.lib
+LIBRARY         apmime.lib
+LIBRARY         caf.lib
+
+// UTF-8 conversion for the TTS
+LIBRARY         charconv.lib
+
+LIBRARY         featmgr.lib // FeatureManager
+
+LIBRARY         phoneuiutils.lib
+LIBRARY         bubblemanager.lib
+LIBRARY         phoneclient.lib 
+
+// From S60
+LIBRARY         commonengine.lib //StringLoader
+LIBRARY         etext.lib // CRichText
+
+// Phonebook engine
+LIBRARY         pbkeng.lib
+
+// Ringingtone output
+LIBRARY         audiooutputrouting.lib
+
+// AIW
+LIBRARY         servicehandler.lib
+
+
+LIBRARY         dialer.lib
+LIBRARY         egul.lib
+
+
+// Video mailbox
+LIBRARY         vmbx.lib
+
+LIBRARY         cauiengine.lib // For Video call Reconnect query
+LIBRARY         gslauncher.lib // For call settings launch.
+
+// Transition effects
+LIBRARY         gfxtrans.lib
+
+LIBRARY         platformenv.lib // PathInfo
+
+LIBRARY         phonemediatorcenter.lib
+LIBRARY         serviceprovidersettings.lib
+
+LIBRARY         musmanagerclient.lib
+
+LIBRARY         aknskinsrv.lib

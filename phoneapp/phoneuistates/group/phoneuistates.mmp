@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -22,10 +22,7 @@
 #include <platform_paths.hrh>
 
 // Capability assignment.
-// <-- QT PHONE START --> 
-CAPABILITY CAP_GENERAL_DLL
-//CAPABILITY CAP_APPLICATION MultiMediaDD PowerMgmt NetworkControl DRM DiskAdmin
-// <-- QT PHONE END --> 
+CAPABILITY CAP_APPLICATION MultiMediaDD PowerMgmt NetworkControl DRM DiskAdmin
 
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
@@ -65,19 +62,16 @@ SOURCE          cphonestatemachinegsm.cpp
 SOURCE          cphonetwosingles.cpp
 SOURCE          cphonetwosinglesandwaiting.cpp
 SOURCE          cphoneuistatemachinefactorygsm.cpp
-
+SOURCE          cphonestartupsimlockui.cpp 
 /* Languages */
 LANG SC
 
 USERINCLUDE     ../inc
 USERINCLUDE     ../../phoneuicontrol/inc
-// <-- QT PHONE START --> 
-USERINCLUDE     ../../phoneuiqtviewadapter/inc
-//USERINCLUDE     ../../phoneuiview/inc
-// <-- QT PHONE END --> 
+USERINCLUDE     ../../phoneuiview/inc
 USERINCLUDE     ../../phoneui/inc
 USERINCLUDE     ../../phoneuiutils/inc
-USERINCLUDE     ../../phoneui2/srcdata
+USERINCLUDE     ../../phoneui/srcdata
 USERINCLUDE     ../../phonemediatorcenter/inc
 
 APP_LAYER_SYSTEMINCLUDE         // Application layer domain APIs
@@ -85,10 +79,7 @@ SYSTEMINCLUDE   ../../../inc    // Telephony internal headers
 
 LIBRARY         avkon.lib // AknTextUtils
 LIBRARY         bafl.lib
-// <-- QT PHONE START --> 
-LIBRARY         phonestringloader.lib
-//LIBRARY       commonengine.lib //StringLoader 
-// <-- QT PHONE END -->
+LIBRARY         commonengine.lib //StringLoader 
 LIBRARY         cone.lib
 LIBRARY         engineinfo.lib
 LIBRARY         euser.lib

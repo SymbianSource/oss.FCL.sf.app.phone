@@ -49,12 +49,12 @@ class CPhoneClearBlacklist : public CCoeStatic
         * Singleton must be initialized only once and then Instance() method 
         * may be used to get handle to instance.
         * @param aWsSession window server session.
-        * @param aDevice window.
+	    * @param aDevice window.
         * @return the created instance.
         */
         IMPORT_C static CPhoneClearBlacklist* CreateL(
-            RWsSession& aWsSession, 
-            const RWindowBase& aDevice );
+	        RWsSession& aWsSession, 
+	        const RWindowBase& aDevice );
     
         /**
         * Returns an instance of this class.

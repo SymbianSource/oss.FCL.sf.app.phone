@@ -241,10 +241,10 @@ class CPhoneCenRepProxy :
          * @return KErrNone if successful, system wide error code otherwise.
          */
         IMPORT_C TInt Find(
-                const TUid& aUid,
-                const TUint32 aPartial, 
-                const TUint32 aMask,
-                RArray<TUint32>& aValues ) const;
+        		const TUid& aUid,
+        	    const TUint32 aPartial, 
+        	    const TUint32 aMask,
+        	    RArray<TUint32>& aValues ) const;
         
         /**
         * Fetches values from central repository
@@ -255,8 +255,8 @@ class CPhoneCenRepProxy :
         * @param aValuesFetched ETrue if values fetched ok
         */
         IMPORT_C void FetchValuesFromCenRepL( TPhoneCmdParamAppInfo& aAppInfo, 
-                                        TKeyCode aCode,
-                                        HBufC8* aAppParam, TBool& aValuesFetched );
+       		 							TKeyCode aCode,
+       		 							HBufC8* aAppParam, TBool& aValuesFetched );
 
 
     public: // New methods

@@ -39,7 +39,7 @@ class CPhoneHandler;
 * Class for handling messages from Engine and from all inputs to the states
 */
 class CPhoneRemoteControlHandler : 
-    public CBase,
+	public CBase,
     public MRemConCoreApiTargetObserver
     {
     public: 

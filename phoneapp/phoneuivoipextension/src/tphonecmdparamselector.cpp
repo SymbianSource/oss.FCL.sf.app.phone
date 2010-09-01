@@ -45,9 +45,9 @@ EXPORT_C TPhoneCmdParamSelector::TPhoneCmdParamSelector() :
 // ---------------------------------------------------------
 //
 EXPORT_C void TPhoneCmdParamSelector::SetServiceId( const TUint aServiceId )
-    {
-    iServiceId = aServiceId;
-    }
+   	{
+   	iServiceId = aServiceId;
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSelector::ServiceId
@@ -57,8 +57,8 @@ EXPORT_C void TPhoneCmdParamSelector::SetServiceId( const TUint aServiceId )
 //
 EXPORT_C TUint TPhoneCmdParamSelector::ServiceId()
     {
-    return iServiceId;
-    }
+   	return iServiceId;
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSelector::SetCallType
@@ -89,9 +89,9 @@ EXPORT_C TPhoneSsCallType TPhoneCmdParamSelector::CallType()
 // ---------------------------------------------------------
 //
 EXPORT_C void TPhoneCmdParamSelector::SetRegStatus( TBool aEnabled )
-    {
-    iEnabled = aEnabled;   
-    }
+   	{
+   	iEnabled = aEnabled;   
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSelector::RegStatus
@@ -100,8 +100,8 @@ EXPORT_C void TPhoneCmdParamSelector::SetRegStatus( TBool aEnabled )
 // ---------------------------------------------------------
 //
 EXPORT_C TBool TPhoneCmdParamSelector::RegStatus()
-    {
-    return iEnabled;
-    }
+   	{
+   	return iEnabled;
+   	}
 
 //  End of File

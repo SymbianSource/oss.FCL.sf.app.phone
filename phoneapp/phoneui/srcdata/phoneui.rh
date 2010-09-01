@@ -1,0 +1,103 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This file contains declarations for resources of PhoneAppS60.
+*     The file can be included only in resource file.
+*     
+*
+*/
+
+
+#ifndef PHONEAPPS60_RH
+#define PHONEAPPS60_RH
+
+//  STRUCTURE DEFINITIONS
+
+// ---------------------------------------------------------
+//    SMALLEST_POSSIBLE_RESOURCE
+//    
+// ---------------------------------------------------------
+//
+STRUCT SMALLEST_POSSIBLE_RESOURCE
+	{
+	BYTE bytesize = 0;
+	}
+
+// ---------------------------------------------------------
+//    phone_link_apps
+//    It defines structure to contain information about apps 
+//    to be able to activate them.
+// ---------------------------------------------------------
+//
+STRUCT PHONE_LINK_APPS
+    {
+    STRUCT apps[];
+    }
+
+// ---------------------------------------------------------
+//    phone_app
+//    It defines structure that contains information about 
+//    a single app.
+// ---------------------------------------------------------
+//
+STRUCT PHONE_APP
+    {
+    WORD id;          
+    LTEXT txt="";     
+    LONG view = -1;
+    LONG app = -1;
+    }
+
+// ---------------------------------------------------------
+//    phone_string_list
+//    It defines structure that contains array of strings.
+// ---------------------------------------------------------
+//
+STRUCT PHONE_STRING_LIST
+    {
+    STRUCT strings[];
+    }
+
+// ---------------------------------------------------------
+//    phone_string
+//    It is link to the string resource (must be of type LBUF).
+// ---------------------------------------------------------
+//
+STRUCT PHONE_STRING
+    {
+    LLINK id;
+    }
+
+// ---------------------------------------------------------------------------
+// phone_touch_button_configuration
+// ---------------------------------------------------------------------------
+//    
+STRUCT PHONE_TOUCH_BUTTON_CONFIGURATIONS
+    {
+    STRUCT configurations[]; // PHONE_TOUCH_BUTTON_CONFIGURATION
+    }
+    
+// ---------------------------------------------------------------------------
+// phone_touch_button_configuration
+// ---------------------------------------------------------------------------
+//
+STRUCT PHONE_TOUCH_BUTTON_CONFIGURATION
+    {
+    WORD  button_set_id;   // from TPhoneUIConfigurableButtons  
+    LLINK button_sets[];   // button set resources
+    }
+
+#endif
+
+// End of File

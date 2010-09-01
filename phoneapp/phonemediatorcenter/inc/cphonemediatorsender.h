@@ -89,7 +89,7 @@ class CPhoneMediatorSender : public CCoeStatic, private MMediatorCommandResponse
          * @param aCommandParam - Reference to command parameter
          */
         IMPORT_C void SendEvent( const TPhoneViewCommandId aCommandId, 
-            TPhoneCommandParam& aCommandParam );
+        	TPhoneCommandParam& aCommandParam );
 
         /**
          * Sends event to the Mediator.
@@ -98,8 +98,8 @@ class CPhoneMediatorSender : public CCoeStatic, private MMediatorCommandResponse
          * @param aCommandParam - Reference to command parameter
          */
         IMPORT_C void SendEvent( const TPhoneViewCommandId aCommandId, 
-            const TInt aCallId, 
-            TPhoneCommandParam& aCommandParam ) const;
+        	const TInt aCallId, 
+        	TPhoneCommandParam& aCommandParam ) const;
 
         /**
          * Sends event to the Mediator.
@@ -108,8 +108,8 @@ class CPhoneMediatorSender : public CCoeStatic, private MMediatorCommandResponse
          * @param aCommandParam - Pointer to TDesC16
          */
         IMPORT_C void SendEvent( const TPhoneViewCommandId aCommandId, 
-            const TInt aCallId, 
-            const TDesC* aMessage ) const;
+        	const TInt aCallId, 
+        	const TDesC* aMessage ) const;
 
         /**
         * Issue a Mediator Service command.
@@ -193,10 +193,10 @@ class CPhoneMediatorSender : public CCoeStatic, private MMediatorCommandResponse
                 
         
     private:
-        
-        /**
-         * Interface for sending events to Mediator
-         */
+    	
+    	/**
+    	 * Interface for sending events to Mediator
+    	 */
         CMediatorEventProvider* iEventSender;
         
         /**
@@ -209,15 +209,15 @@ class CPhoneMediatorSender : public CCoeStatic, private MMediatorCommandResponse
         */
         MediatorService::REventList iGenericEvents;
 
-        /**
-        * Interface for sending commands to Mediator
-        */        
+		/**
+		* Interface for sending commands to Mediator
+		*/        
         CMediatorCommandInitiator* iCommandInitiator;
-    
-        /**
-        * Buffer for re-sending command after received Mediator response
-        */
-        TPhoneCommandBuffer iCommandBuffer;
+   	
+    	/**
+    	* Buffer for re-sending command after received Mediator response
+    	*/
+    	TPhoneCommandBuffer iCommandBuffer;
 
         /**
         * Pointer for executing command related to Video Telephony shutdown.

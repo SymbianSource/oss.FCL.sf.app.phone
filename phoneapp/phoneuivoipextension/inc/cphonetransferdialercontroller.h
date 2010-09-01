@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2008, 2009 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -23,7 +23,7 @@
 
 // INCLUDES
 #include <aknbutton.h>
-#include "mphonedialercontroller.h"
+#include "cphonedialercontroller.h"
 
 // FORWARD DECLARATIONS
 class CAknToolbar; 
@@ -31,8 +31,7 @@ class CAknToolbar;
 /**
 *  VoIP unattended transfer dialer customization
 */
-NONSHARABLE_CLASS( CPhoneTransferDialerController ): public CBase,
-                                       public MPhoneDialerController
+NONSHARABLE_CLASS( CPhoneTransferDialerController ): public CPhoneDialerController
     {
     public:      
 
@@ -45,14 +44,6 @@ NONSHARABLE_CLASS( CPhoneTransferDialerController ): public CBase,
 
     public: // From MDialerController
     
-        
-        /**
-        * Initializes the controller. 
-        * @param    aToolbar    CAknToolbar instance.
-        * @since    S60 v5.1
-        */ 
-        void InitializeL( CAknToolbar& aToolbar );
-        
         /**
         * Returns Cba resource id
         * @return Resource Id of the softkeys
@@ -75,34 +66,27 @@ NONSHARABLE_CLASS( CPhoneTransferDialerController ): public CBase,
         const TDesC& NumberEntryPromptTextL();
         
         /**
-        * Handles the number entry empty event
-        * @param aEmpty ETrue if numberentry is empty
-        * @since S60 v5.1
-        */
-        void HandleNumberEntryIsEmpty( TBool aEmpty );
+         * @see MPhoneDialerController
+         */
+        TInt GetButtonData( TButtonIndex aIndex, RPointerArray<CButtonData>& aData ) const;
         
         /**
-        * Sets visibility of buttons created by the implementation
-        * @param aShow ETrue if numberentry is empty
-        * @since S60 v5.1
-        */
-        void ShowButtons( TBool aShow );
+         * @see MPhoneDialerController
+         */
+        TInt ButtonState( TButtonIndex aIndex ) const;
+        
+        /**
+         * @see MPhoneDialerController
+         */
+        TBool ButtonDimmed( TButtonIndex aIndex ) const;
+        
+        /**
+         * @see MPhoneDialerController
+         */
+        TBool EasyDialingAllowed() const;
         
     private:
     
-        /**
-         * Creates instance of CAKnButton
-         * @param aNormalIconId Button normal icon id
-         * @param aNormalMaskId Mask id
-         * @param aTooltipText Reference to tooltip text
-         * @param aSkinIconId Skin icon id
-         * @return Pointer to created button instance
-         */
-        CAknButton* CreateButtonLC( TInt aNormalIconId,
-                                    TInt aNormalMaskId,
-                                    const TDesC& aTooltipText, 
-                                    const TAknsItemID& aSkinIconId ) const; 
-        
         /**
          * Returns tool tip for specific command
          * @param aCommandId Command id which the tooltip text 
@@ -113,6 +97,10 @@ NONSHARABLE_CLASS( CPhoneTransferDialerController ): public CBase,
         
         TAknsItemID SkinId( TInt aIconIndex ) const;
 
+        CButtonData* CreateButtonDataL(
+                TInt aCommandId,
+                TInt aNormalIconId,
+                TInt aNormalMaskId ) const;
     protected:
 
         /**
@@ -122,17 +110,8 @@ NONSHARABLE_CLASS( CPhoneTransferDialerController ): public CBase,
             
     private: // Data
     
-        // Pointer to CAknToolbar, Not own
-        CAknToolbar* iToolbar;
-        
-        // ETrue if number entry input field is empty
-        TBool iNumberEntryIsEmpty;
-        
         // Number entry prompt text ("Address:")
         HBufC* iNumberEntryPromptText;
-        
-        // ETrue if initialized 
-        TBool iIsInitialized;
       
     };
 

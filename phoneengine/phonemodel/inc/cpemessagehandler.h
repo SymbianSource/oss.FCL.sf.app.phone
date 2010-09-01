@@ -22,12 +22,11 @@
 
 //  INCLUDES
 #include <pevirtualengine.h>
-#include <DosSvrServices.h>
-#include <cphcltcommandhandler.h>
+#include "DosSvrServices.h"
+#include <CPhCltCommandHandler.h>
 #include <cphcltdialdata.h>
 
 #include "mpecallhandling.h"
-#include "mpecallcontrolif.h" 
 
 // CONSTANTS
 const TInt KModeNormal = 0;  // Normal System mode  
@@ -38,6 +37,21 @@ const TInt KModePDA    = 2;  // PDA mode
 _LIT( KPEClientValidChars, "+0123456789*#pwPW" );
 _LIT( KPEValidDTMFChars, "0123456789*#pwPW" );
 _LIT( KPEValidDTMFStringStopChars, "+pPwW" );
+
+// DTMF Speed dial substitution
+_LIT( KPEValidSpeedDialChars, "23456789" );
+const TInt KPEDtmfSpeedDialSubstitutionsMax = 2; // prevent infinite loop.
+const TInt KPESpeedDialIndexMin = 2;
+const TInt KPESpeedDialIndexMax = 9;
+
+// DTMF parsing status for Speed dial location
+enum TPESpeedDialSubstituionStatus
+    {
+    EPEDtmfSpeedDialOk,
+    EPEDtmfSpeedDialPromptUser,
+    EPEDtmfSpeedDialNotAssigned,
+    EPEDtmfSpeedDialInvalidSpeedDial
+    };
 
 // Invalid characters in an dialing string, these chars can be removed from dial string
 _LIT( KPECharsThatCanBeDelete, "\"/ ().-" );
@@ -90,10 +104,7 @@ class MPEServiceHandling;
 *  @lib phoneenginebase.dll
 *  @since S60_5.0
 */
-NONSHARABLE_CLASS( CPEMessageHandler ) 
-    : 
-        public CBase, 
-        public MPECallControlIF
+NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase
     {
     public:  // Destructor
 
@@ -156,7 +167,13 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         * @return Return possible error code.
         */
         TInt HandleReleaseCall( TPEHangUpOptions aAutoResumeOption = ETPEHangUpDefault );
-
+        
+		/**
+        * Handles release message from application 
+        * @return Return possible error code.
+        */
+        TInt HandleReleaseConference();
+        
         /**
         * Handles send dtmf message from phone application 
         * @return possible error code from the CallHandling subsystem.
@@ -236,6 +253,12 @@ NONSHARABLE_CLASS( CPEMessageHandler )
                                            const TBool aCheckForDelete ) const;
 
         /**
+        * Handles lifetimer data from customa api -> engineinfo.
+        * @return TInt possible error code..
+        */
+        TInt HandleGetLifeTimerData() const;
+
+        /**
         * Handles EPEMessageDTMFSent message from call handling subsystem
         * @param ECCPErrorNone or KPEDontSendMessage
         */
@@ -259,6 +282,12 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         * @return error code.
         */
         static TInt CallBackHandleSendDtmf( TAny* aAny );
+
+        /**
+        * Handles plus (+) sign in a DTMF string.
+        * @param aDtmfString Current DTMF string to process.
+        */
+        void HandlePlusSignInDtmf( const TPEDtmfString& aDtmfString );
         
         /**
         * Called asyncronously from callback.
@@ -543,11 +572,6 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         TInt HandleReplaceActive();
         
         /**
-        * Check if phone is locked, if locked leave with ECCPErrorAuthenticationFailed error.
-        */
-        void CheckIfPhoneIsLockedL();
-        
-        /**
          * Handles unattended transfer request response.
          * @param    aAcceptRequest     ETrue to accept, EFalse to reject request.
          */
@@ -569,27 +593,14 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         * Handle disable service
         */     
         void HandleDisableService();
-
+        
         /**
         * Adds SIM rejected MO CS call to logs. 
         * @param aCallId is the identification number of the call.   
         * @return KErrNone if succesfull
         */
         TInt AddSIMRejectedMoCsCallToLog( const TInt aCallId );
-
-        /**
-        * Handle dial service call
-        */ 
-        TInt HandleDialServiceCall(
-            const TBool aClientCall );
-        
-        /**
-        * Returns a boolean to indicate whether network connection 
-        * is allowed or not.  
-        * @return Return a True or False. 
-        */
-        TBool IsNetworkConnectionAllowed() const;
-    
+   
     private: // New functions
         
         /**
@@ -633,6 +644,12 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         * @return TBool.
         */
         TBool AutomaticAnswer( const TInt aCallId ) const;
+
+        /**
+        * Returns a boolean to indicate whether emergency call is allowed or not.  
+        * @return Return a True or False. 
+        */
+        TBool IsEmergencyAllowed() const;
 
         /**
         * Handle Client Call Data.
@@ -748,7 +765,7 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         * @param aClientCall, Informs is the current call client originated or not.
         * @return Return possible error code.
         */
-        TInt HandleDialCallL( const TBool aClientCall );
+        TInt HandleDialCallL( const TBool aClientCall );      
 
         /**
         * Reset CCCECallParameters to prevent of use a previous call´s parameters
@@ -819,11 +836,14 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         TBool iEmergencyCallActive;
         //
         TBool iBtaaDisconnected;
+		// Flag to associate switch to vid/voice call operation and video call's reconnect operation.
+		// Use to fetch the right SwitchToNumber.
+        TBool iSwitchToVidCalReconFlag;
         //Client Information, member variable because emergency call from phone client
         //is not allowed to allocate memory. 
         CPEClientInformation* iClientInformation;
-        // Dial Data
-        CPhCltDialData* iClientDialData;
+		// Dial Data
+		CPhCltDialData* iClientDialData;
         // Instances will contain the results of the parsing
         CPhoneGsmParserResult* iResult;
         // Handles emergency number from the parser.

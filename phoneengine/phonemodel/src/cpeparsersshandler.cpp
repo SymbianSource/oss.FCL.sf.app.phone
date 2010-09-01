@@ -28,26 +28,21 @@
 #include <featmgr.h>
 #include <mpedatastore.h>
 #include <nwdefs.h>
-#include <psetcallbarring.h>
-#include <psetcalldiverting.h>
-#include <psetcallwaiting.h>
-#include <psetcli.h>
-#include <psetcontainer.h>
-#include <psetcontainer.h>
-#include <psuibarringobs.h>
-#include <psuibarringobs.h>
-#include <psuicliobserver.h>
-#include <psuicontainer.h>
-#include <psuidivertobs.h>
-#include <psuiwaitingobs.h>
-#include <psuiwaitingobs.h>
+#include <PsetCallBarring.h>
+#include <PsetCallDiverting.h>
+#include <PsetCallWaiting.h>
+#include <PsetCli.h>
+#include <PsetContainer.h>
+#include <PsetContainer.h>
+#include <PsuiBarringObs.h>
+#include <PsuiBarringObs.h>
+#include <PsuiCliObserver.h>
+#include <PsuiContainer.h>
+#include <PsuiDivertObs.h>
+#include <PsuiWaitingObs.h>
+#include <PsuiWaitingObs.h>
 #include <talogger.h>
 
-#include <psetwrapper.h>
-#include <psuidivertnotehandler.h>
-#include <psetcalldivertingwrapper.h>
-#include <psuiwaitingnotehandler.h>
-#include <psetcallwaitingwrapper.h>
 
 // CONSTANTS
 const TInt KPEDefinedBasicServiceGroup = 99;
@@ -99,13 +94,12 @@ CPEParserSSHandler::~CPEParserSSHandler()
     delete iCliObserver;
     delete iBarring;
     delete iCbObserver;
+    delete iDivert;
+    delete iCfObserver;
     delete iWaiting;
+    delete iCwObserver;
     delete iSettings;
     delete iObsContainer;
-    
-    delete iCallDivertingHandler;
-    delete iPsetWrapper;
-    
 
     TEFLOGSTRING( KTAOBJECT, "CPEParserSSHandler::~CPEParserSSHandler" );
     }
@@ -899,7 +893,7 @@ void CPEParserSSHandler::ProcessWaitingL(
             iModel.SendMessage( MEngineMonitor::EPEMessageIssuedSSRequest );
             break;
         case EInterrogate:
-            TEFLOGSTRING( KTAMESINT, "PE CPEParserSSHandler::ProcessWaitingL EInterrogate" );
+		    TEFLOGSTRING( KTAMESINT, "PE CPEParserSSHandler::ProcessWaitingL EInterrogate" );
             iWaiting->GetCallWaitingStatusL();
             iSupplementaryServicesCommandInfo.action = EPESSInterrogation;
             iModel.DataStore()->SetSSCommandInfo( iSupplementaryServicesCommandInfo );
@@ -978,14 +972,12 @@ void CPEParserSSHandler::ConnectToSsEngineL()
 void CPEParserSSHandler::CreateCWObsL()
     {
     ConnectToSsEngineL();
-   
-    if ( !iPsetWrapper )
+    //call waiting observer and engine
+    if ( !iCwObserver )
         {
-        iPsetWrapper = new PSetWrapper;    
-        iCallWaitingWrapper = &iPsetWrapper->callWaitingWrapper();
-        iCallWaitingHandler = new PsUiWaitingNoteHandler(*iCallWaitingWrapper);
-        iWaiting = &iCallWaitingWrapper->getCPsetCallWaiting();
-        iWaiting->SetRequestObserver(this);
+        iCwObserver = iObsContainer->CreateCWObsL();
+        iWaiting = iSettings->CreateCWObjectL( *iCwObserver );
+        iWaiting->SetRequestObserver( this );
         }
     }
 
@@ -1011,13 +1003,13 @@ void CPEParserSSHandler::CreateCBObsL()
 //
 void CPEParserSSHandler::CreateCFObsL()
     {
-    if ( !iPsetWrapper )
-        {
-        iPsetWrapper = new PSetWrapper;    
-        iCallDivertingWrapper = &iPsetWrapper->callDivertingWrapper();
-        iCallDivertingHandler = new PsUiDivertNoteHandler(*iCallDivertingWrapper);
-        iDivert = &iCallDivertingWrapper->getCPsetCallDiverting();
-        iDivert->SetRequestObserver(this);
+    ConnectToSsEngineL();
+    //call divert observer and engine
+    if ( !iCfObserver )
+        {   
+        iCfObserver = iObsContainer->CreateCFObsL();
+        iDivert = iSettings->CreateCFObjectL( *iCfObserver );
+        iDivert->SetRequestObserver( this );
         }
     }
     
@@ -1074,31 +1066,26 @@ void CPEParserSSHandler::DoClean(
 //
 void CPEParserSSHandler::ResetVariables()
     {
+    delete iCfObserver;
+    iCfObserver = NULL;
     delete iCbObserver;
     iCbObserver = NULL;
+    delete iCwObserver;
+    iCwObserver = NULL;
     delete iCliObserver;
     iCliObserver = NULL;
-   
+    delete iDivert;
+    iDivert = NULL;
     delete iBarring;
     iBarring = NULL;
-    
+    delete iWaiting;
+    iWaiting = NULL;
     delete iCli;
     iCli = NULL;
     delete iSettings;
     iSettings = NULL;
     delete iObsContainer;
     iObsContainer = NULL;
-    
-    iDivert = NULL;
-    delete iCallDivertingHandler;
-    iCallDivertingHandler = NULL;
-      
-    iWaiting = NULL;
-    delete iCallWaitingHandler;
-    iCallWaitingHandler = NULL;
-    
-    delete iPsetWrapper;
-    iPsetWrapper = NULL;
     }
 
 // -----------------------------------------------------------------------------

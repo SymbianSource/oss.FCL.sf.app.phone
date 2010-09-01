@@ -95,6 +95,11 @@ class CPhoneEmergency : public CPhoneGsmInCall
         * Handle state-specific behaviour handleErrorL
         */ 
         void HandleErrorL( const TPEErrorInfo& aErrorInfo );
+
+        /**
+        * Open menu bar
+        */
+        void OpenMenuBarL();
         
         virtual void UpdateInCallCbaL();
         
@@ -141,6 +146,13 @@ class CPhoneEmergency : public CPhoneGsmInCall
         * Handle initializing cba's
         */
         void UpdateSetupCbaL();
+        
+        /**
+        * Passes create number entry command forward if not call setup
+        */
+        void HandleCreateNumberEntryL( 
+                const TKeyEvent& aKeyEvent,
+                TEventCode aEventCode );
        
         /**
         * Handles commands from the Remote Control framework.
@@ -153,36 +165,37 @@ class CPhoneEmergency : public CPhoneGsmInCall
                     TRemConCoreApiButtonAction aButtonAct );
         
     private:
-        
-        /**
-        * Check whether UseEmergencyNoIhfCBA set should be used or not. 
-        * @param aAudioOutput current audio output type.
+    	
+    	/**
+		* Check whether UseEmergencyNoIhfCBA set should be used or not. 
+		* @param aAudioOutput current audio output type.
         * @return ETrue if UseEmergencyNoIhfCBA should be used,
         * EFalse otherwise.
-        */
-        TBool UseEmergencyNoIhfCBA( const TPEAudioOutput& aAudioOutput ) const;
-        
-        /**
-        * Check whether UseHandsetEmergencyCBA set should be used or not.
-        * @param aAudioOutput current audio output type.
+		*/
+    	TBool UseEmergencyNoIhfCBA( const TPEAudioOutput& aAudioOutput ) const;
+    	
+    	/**
+		* Check whether UseHandsetEmergencyCBA set should be used or not.
+		* @param aAudioOutput current audio output type.
         * @return ETrue if UseHandsetEmergencyCBA should be used,
         * EFalse otherwise.
-        */
-        TBool UseHandsetEmergencyCBA( const TPEAudioOutput& aAudioOutput ) const;
-        
-        /**
-        * Check whether the touch call handling is supported or not.
-        * @return ETrue if KFeatureIdTouchCallHandling is supported,
-        * EFalse otherwise.
-        */
-        TBool TouchCallHandlingSupported () const;
+		*/
+    	TBool UseHandsetEmergencyCBA( const TPEAudioOutput& aAudioOutput ) const;
+    	
+    	/**
+		* Check whether the touch call handling is supported or not.
+		* @return ETrue if KFeatureIdTouchCallHandling is supported,
+		* EFalse otherwise.
+		*/
+    	TBool TouchCallHandlingSupported () const;
+    	
+       /**
+       * Update status of startup if startup finish during emergency call
+       */
+       void HandlePhoneStartupL();
          
     private:
-        /**
-        * Is device lock on/off
-        */
-        TBool iDeviceLockOn;
-        
+ 
         /**
         * If true update emergency call wait note
         */

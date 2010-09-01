@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -20,10 +20,11 @@
 #include "cphonestatestartup.h"
 #include "phonestatedefinitions.h"
 #include "mphonestatemachine.h"
-#include "tphonecmdparamkeycapture.h"
+#include "tphonecmdparamKeycapture.h"
 #include "tphonecmdparamboolean.h"
 #include "phonelogger.h"
 #include "phonerssbase.h"
+#include "mphonesecuritymodeobserver.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -62,24 +63,30 @@ EXPORT_C void CPhoneStateStartup::ConstructL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::ConstructL() ");
     CPhoneState::BaseConstructL();
+    
+    // Set send key activation off.
+    TPhoneCmdParamBoolean boolean;
+    boolean.SetBoolean( EFalse );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetSendKeyDialerActivationFlag, 
+            &boolean );
 
     // CAPTURE KEY EVENTS PERMANENTLY
         
     // Capture the up and down events for the No key
-    /*TPhoneCmdParamKeyCapture noKeyCaptureParam;
+    TPhoneCmdParamKeyCapture noKeyCaptureParam;
     noKeyCaptureParam.SetKey( EStdKeyNo );
     noKeyCaptureParam.SetKeyCode( EKeyNo );
     noKeyCaptureParam.SetCaptureType( EPhoneKeyAllEvents );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStartCapturingKey, 
-        &noKeyCaptureParam );*/
+        &noKeyCaptureParam );
           
     // Capture the up and down events for the EStdKeyEnd key
-    /*TPhoneCmdParamKeyCapture endKeyCaptureParam;
+    TPhoneCmdParamKeyCapture endKeyCaptureParam;
     endKeyCaptureParam.SetKey( EStdKeyEnd );
     endKeyCaptureParam.SetKeyCode( EKeyEnd );
     endKeyCaptureParam.SetCaptureType( EPhoneKeyAllEvents );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStartCapturingKey, 
-        &endKeyCaptureParam );*/
+        &endKeyCaptureParam );
     }
 
 // -----------------------------------------------------------
@@ -128,7 +135,7 @@ EXPORT_C void CPhoneStateStartup::HandlePhoneEngineMessageL(
 // CPhoneStateStartup::HandlePEConstructionReadyL
 // -----------------------------------------------------------
 //
-void CPhoneStateStartup::HandlePEConstructionReadyL( TInt /*aCallId*/ )
+EXPORT_C void CPhoneStateStartup::HandlePEConstructionReadyL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::HandlePEConstructionReadyL() ");
     // Indicate that phone engine construction is ready
@@ -137,23 +144,7 @@ void CPhoneStateStartup::HandlePEConstructionReadyL( TInt /*aCallId*/ )
     // Only go to the idle state if phone is also ready
     if ( iPhoneReady )
         {
-        // Security mode check. 
-        TPhoneCmdParamBoolean isSecurityMode;      
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );        
-        if ( !isSecurityMode.Boolean() && !IsSimOk() )
-            {
-            TPhoneCmdParamBoolean securityMode;
-            securityMode.SetBoolean( ETrue );
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetSecurityMode, &securityMode );
-            iCreateNote = CIdle::NewL( CActive::EPriorityHigh );
-            
-            CreateAndShowNoteAfterIdle(); 
-            }
-        // Go to idle state
-        SetDefaultFlagsL();
-        iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
-        
-        iStateMachine->ChangeState( EPhoneStateIdle );
+        InitializationReadyL();
         }
     }
 
@@ -174,7 +165,7 @@ EXPORT_C void CPhoneStateStartup::HandleKeyMessageL(
     // if the phone engine is not ready.
     if ( iPhoneReady && !iPEReady )
         {
-        SendGlobalErrorNoteL( EPhoneNoteTextPEFailedAtStartup, ETrue );
+        SendGlobalErrorNoteL( EPhoneNoteTextPEFailedAtStartup );
         }
     }
 
@@ -186,6 +177,17 @@ EXPORT_C void CPhoneStateStartup::HandleKeyEventL(
         const TKeyEvent& /*aKeyEvent*/, TEventCode /*aEventCode*/ )
     {
     // Empty implementation
+    }
+
+// CPhoneStateStartup::HandleCreateNumberEntryL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneStateStartup::HandleCreateNumberEntryL( 
+        const TKeyEvent& /* aKeyEvent */ ,
+        TEventCode /* aEventCode */ )
+    {
+    // Empty implementation
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::HandleCreateNumberEntryL() ");   
     }
 
 // -----------------------------------------------------------
@@ -210,26 +212,18 @@ EXPORT_C void CPhoneStateStartup::HandlePhoneStartupL()
     // Indicate that the phone is ready
     iPhoneReady = ETrue;
 
+    // Sim security status is available at this phase.
+    iStateMachine->SecurityMode()->Initialize();
+    if ( !IsSimOk() )
+        {
+        iCreateNote = CIdle::NewL( CActive::EPriorityHigh );
+        CreateAndShowNoteAfterIdle(); 
+        }
+    
     // Only go to idle state when Phone engine is also ready
     if ( iPEReady )
         {
-        // Security mode check.
-        TPhoneCmdParamBoolean isSecurityMode;      
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-        if ( !isSecurityMode.Boolean() && !IsSimOk() )
-            {
-            TPhoneCmdParamBoolean securityMode;
-            securityMode.SetBoolean( ETrue );
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetSecurityMode, &securityMode );
-            iCreateNote = CIdle::NewL( CActive::EPriorityHigh );
-            
-            CreateAndShowNoteAfterIdle(); 
-            }
-        // Go to idle state
-        SetDefaultFlagsL();
-        iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
-        
-        iStateMachine->ChangeState( EPhoneStateIdle );
+        InitializationReadyL();
         }
     }
 
@@ -243,15 +237,9 @@ EXPORT_C void CPhoneStateStartup::HandleIdleForegroundEventL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::HandleIdleForegroundEventL( ) ");
     // Security mode check. 
-    TPhoneCmdParamBoolean isSecurityMode;      
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );        
-    if ( !isSecurityMode.Boolean() && !IsSimOk() )
+    if ( !iStateMachine->SecurityMode()->IsSecurityMode() && !IsSimOk() )
         {
-        TPhoneCmdParamBoolean securityMode;
-        securityMode.SetBoolean( ETrue );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetSecurityMode, &securityMode );
         iCreateNote = CIdle::NewL( CActive::EPriorityHigh );
-        
         CreateAndShowNoteAfterIdle(); 
         }
     }
@@ -287,5 +275,22 @@ TInt CPhoneStateStartup::DoShowNoteL( TAny* aAny )
 
     return KErrNone;
     }
+
+// -----------------------------------------------------------------------------
+// CPhoneStateStartup::InitializationReadyL
+//
+// -----------------------------------------------------------------------------
+//
+void CPhoneStateStartup::InitializationReadyL()
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::InitializationReady() ");
+    // Go to idle state
+    SetDefaultFlagsL();
+    iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
+    iViewCommandHandle->ExecuteCommand( EPhoneViewPrepareIcons );
+    iViewCommandHandle->ExecuteCommand( EPhoneViewLoadPlugins );
+    iStateMachine->ChangeState( EPhoneStateIdle );   
+    }
+
 
 // End of File

@@ -1,0 +1,96 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Dialer virtual keypad button text labels.
+*               This is the Chinese Zhuyin variant of the file.
+*
+*/
+
+// NOTE: It's mandatory that all variated keypad resources have
+// the same resouce identifier and same structure. Same interface
+// is used for all of them!
+
+//  RESOURCE IDENTIFIER
+NAME DIKP
+
+#include <eikon.rh>
+#include <eikon.hrh>
+
+#include "dialerkeypad.rh"
+
+RESOURCE RSS_SIGNATURE { }
+
+RESOURCE TBUF { buf=""; }
+
+RESOURCE DIALER_KEYPAD r_dialer_keypad
+    {
+    keys = 
+        {
+        DIALER_KEY // 1
+            {
+            firstRow = <0x3105><0x3106>;
+            secondRow = <0x3107><0x3108>;
+            },
+        DIALER_KEY // 2
+            {
+            firstRow = <0x3109><0x310a>;
+            secondRow = <0x310b><0x310c>;
+            },
+        DIALER_KEY // 3
+            {
+            firstRow = <0x310d><0x310e><0x310f>;
+            },
+        DIALER_KEY // 4
+            {
+            firstRow = <0x3110><0x3111><0x3112>;
+            },
+        DIALER_KEY // 5
+            {
+            firstRow = <0x3113><0x3114>;
+            secondRow = <0x3115><0x3116>;
+            },
+        DIALER_KEY // 6
+            {
+            firstRow = <0x3117><0x3118><0x3119>;
+            },
+        DIALER_KEY // 7
+            {
+            firstRow = <0x311a><0x311b>;
+            secondRow = <0x311c><0x311d>;
+            },
+        DIALER_KEY // 8
+            {
+            firstRow = <0x311e><0x311f>;
+            secondRow = <0x3120><0x3121>;
+            },
+        DIALER_KEY // 9
+            {
+            firstRow = <0x3122><0x3123>;
+            secondRow = <0x3124><0x3125><0x3126>;
+            },
+        DIALER_KEY // *
+            {
+            firstRow = DEFAULT_KEY_ASTERISK_TEXT;
+            },
+        DIALER_KEY // 0
+            {
+            firstRow = <0x3127><0x3128><0x3129>;
+            },
+        DIALER_KEY // #
+            {
+            firstRow = DEFAULT_KEY_HASH_TEXT;
+            }
+        };
+    }
+
+// End Of File

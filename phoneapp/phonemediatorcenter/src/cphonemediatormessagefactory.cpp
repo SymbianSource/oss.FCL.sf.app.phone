@@ -30,7 +30,7 @@
 // ---------------------------------------------------------
 //
 CPhoneMediatorMessageFactory::CPhoneMediatorMessageFactory( MPEEngineInfo& aEngineInfo ) : 
-    iEngineInfo( aEngineInfo )
+	iEngineInfo( aEngineInfo )
     {
     }
 
@@ -70,25 +70,25 @@ CPhoneMediatorMessageFactory::~CPhoneMediatorMessageFactory()
 // ---------------------------------------------------------
 //
 MPhoneMediatorMessage* CPhoneMediatorMessageFactory::CreateMessageL( 
-    const TInt aMessage, TInt aCallId )
-    {
+	const TInt aMessage, TInt aCallId )
+	{
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, "CPhoneMediatorMessageFactory::CreateMessageL( ) ");
     __PHONELOG2( EBasic, EPhoneMediatorCenter, 
-        "CPhoneMediatorMessageFactory::CreateMessageL - aMessage=%d, aCallId=%d", aMessage, aCallId );
+    	"CPhoneMediatorMessageFactory::CreateMessageL - aMessage=%d, aCallId=%d", aMessage, aCallId );
 
-    MPhoneMediatorMessage* message = NULL;
+	MPhoneMediatorMessage* message = NULL;
 
-    switch( aMessage )
-        {
-        case MEngineMonitor::EPEMessageDataPortLoaned:
-            message = CPhoneDataPortMessage::NewL( iEngineInfo );
-            break;
-            
-        default:
-            break;
-        }
-            
-    return message;
-    }
+	switch( aMessage )
+		{
+		case MEngineMonitor::EPEMessageDataPortLoaned:
+			message = CPhoneDataPortMessage::NewL( iEngineInfo );
+			break;
+			
+		default:
+			break;
+		}
+			
+	return message;
+	}
 
 //  End of File  

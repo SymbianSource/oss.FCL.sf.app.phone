@@ -1,0 +1,56 @@
+/*
+* Copyright (c) 1020 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource definitions for Branding plugin
+*
+*/
+
+
+#include "ecom/registryinfo.rh"
+#include "telbrandingconstants.hrh"
+// -----------------------------------------------------------------------------
+//   
+// Branding plug-in ecom resource file.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE REGISTRY_INFO theInfo
+    {
+    // telbranding.dll UID
+    dll_uid = KDllUid;
+    interfaces = 
+        {
+        INTERFACE_INFO
+            {
+            // bubble extension interface UID
+            interface_uid = KInterfaceUid;
+            implementations = 
+                {
+                IMPLEMENTATION_INFO
+                    {
+                    // Branding plug-in implementation UID
+                    implementation_uid = KImplementationUid;
+                    version_no = 1;
+                    display_name = "Branding plug-in";
+                    default_data = "";
+                    // Note : opaque_data MUST have @ least a single byte of data
+                    // in this instance it is an empty string.
+                    opaque_data = " ";
+                    }
+                // Place additional interface implementations here
+                };
+            }
+        // Place additional interfaces here
+        };
+    }
+// End of File

@@ -30,7 +30,7 @@
 //
 EXPORT_C TPhoneCmdParamString::TPhoneCmdParamString() :
     TPhoneCommandParam(),
-    iString( NULL )
+	iString( NULL )
     {
     iParamId = EPhoneParamIdString;
     }
@@ -42,10 +42,10 @@ EXPORT_C TPhoneCmdParamString::TPhoneCmdParamString() :
 // ---------------------------------------------------------
 //
 EXPORT_C void TPhoneCmdParamString::SetString( TPtr* aString )
-    {
-    __ASSERT_DEBUG( aString, Panic( EPhoneUtilsParameterNotInitialized ) );
-    iString = aString;   
-    }
+   	{
+   	__ASSERT_DEBUG( aString, Panic( EPhoneUtilsParameterNotInitialized ) );
+   	iString = aString;   
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamString::String
@@ -54,9 +54,9 @@ EXPORT_C void TPhoneCmdParamString::SetString( TPtr* aString )
 // ---------------------------------------------------------
 //
 EXPORT_C TPtr* TPhoneCmdParamString::String()
-    {
-    __ASSERT_DEBUG( iString, Panic( EPhoneUtilsInvariant ) );
-    return iString;
-    }
+   	{
+   	__ASSERT_DEBUG( iString, Panic( EPhoneUtilsInvariant ) );
+   	return iString;
+   	}
 
 //  End of File

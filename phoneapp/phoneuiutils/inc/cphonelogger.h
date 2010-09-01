@@ -310,43 +310,43 @@ class CPhoneMethodLogger: public CBase
 
 //If logging method == 2 define log file name.
      
-    #define __PHONELOG(A, B, C)             (static_cast<CPhoneLogger*> \
-        (CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
-            LogIt(A, B, _L(C) );
-        
-    #define __PHONELOG1(A, B, C, X)         (static_cast<CPhoneLogger*> \
-        (CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
-            LogIt(A, B, _L(C), X);
-        
-    #define __PHONELOG2(A, B, C, X, Y)      (static_cast<CPhoneLogger*> \
-        (CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
-            LogIt(A, B, _L(C), X, Y);
-        
-    #define __PHONELOG3(A, B, C, X, Y, Z)   (static_cast<CPhoneLogger*> \
-        (CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
-            LogIt(A, B, _L(C), X, Y, Z);
+    #define __PHONELOG(A, B, C)			  	(static_cast<CPhoneLogger*> \
+    	(CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
+    		LogIt(A, B, _L(C) );
+    	
+    #define __PHONELOG1(A, B, C, X)        	(static_cast<CPhoneLogger*> \
+    	(CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
+    		LogIt(A, B, _L(C), X);
+    	
+    #define __PHONELOG2(A, B, C, X, Y)     	(static_cast<CPhoneLogger*> \
+    	(CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
+    		LogIt(A, B, _L(C), X, Y);
+    	
+    #define __PHONELOG3(A, B, C, X, Y, Z)  	(static_cast<CPhoneLogger*> \
+    	(CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
+    		LogIt(A, B, _L(C), X, Y, Z);
 
-    #define __PHONELOGENGINEMSG( C, X )     (static_cast<CPhoneLogger*> \
-        (CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
-            LogMsgFromPEToPhoneUI( (TInt)C, X);
-        
+    #define __PHONELOGENGINEMSG( C, X )		(static_cast<CPhoneLogger*> \
+    	(CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
+    		LogMsgFromPEToPhoneUI( (TInt)C, X);
+    	
     #define __PHONELOGENGINEMSGEND( C )      (static_cast<CPhoneLogger*> \
-        (CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
-            LogMsgFromPEToPhoneUIEnd( (TInt)C );
+    	(CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
+    		LogMsgFromPEToPhoneUIEnd( (TInt)C );
     
     #define __PHONELOGENGINECMD( C )         (static_cast<CPhoneLogger*> \
-        (CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
-            LogMsgFromPhoneUIToPE( (TInt)C, 0 );
+    	(CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
+    		LogMsgFromPhoneUIToPE( (TInt)C, 0 );
     
-    #define __PHONELOGVIEWMSG( C, X )       (static_cast<CPhoneLogger*> \
-        (CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
-            LogMsgFromControlToView( (TInt)C, X);
+    #define __PHONELOGVIEWMSG( C, X )     	(static_cast<CPhoneLogger*> \
+    	(CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
+    		LogMsgFromControlToView( (TInt)C, X);
     
     #define __PHONELOGSTATECHANGE( C, X )    (static_cast<CPhoneLogger*> \
-        (CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
-            LogStateChange( (TInt)C, TInt(X) );
+    	(CCoeEnv::Static(KUidPhoneUILoggerSingleton)))-> \
+    		LogStateChange( (TInt)C, TInt(X) );
 
-    #define __LOGMETHODSTARTEND( A, C )     CPhoneMethodLogger __log( A, ( _L(C) ) );
+    #define __LOGMETHODSTARTEND( A, C )   	CPhoneMethodLogger __log( A, ( _L(C) ) );
 
 
 #endif   // else --> #if (PHONE_LOGGING_METHOD==0 )

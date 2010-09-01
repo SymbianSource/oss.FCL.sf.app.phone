@@ -118,14 +118,14 @@ class TPhoneCmdParamIncallIndicatorData : public TPhoneUICommandParam
         /**
         * Sets the little bubble visible or hidden
         * @param aVisible EFalse to prevent little bubble from showing
-        *                 ETrue to set visible
+        * 		 		  ETrue to set visible
         */
         IMPORT_C void SetLittleBubbleVisible( TBool aVisible );
         
         /**
         * Returns the little bubble visible status
         * @return Returns EFalse when little bubble is wanted to be hidden
-        *         ETrue to be visible
+        *		  ETrue to be visible
         */
         IMPORT_C TBool LittleBubbleVisible() const;
 

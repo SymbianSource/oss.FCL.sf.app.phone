@@ -42,8 +42,8 @@ class CPhoneUIStateMachineFactoryGSM :
         CPhoneResourceResolverBase* CreatePhoneResourceResolverL();
         
         CPhoneErrorMessagesHandler* CreatePhoneErrorMessagesHandlerL(
-            MPhoneViewCommandHandle* aViewCommandHandle,
-            MPhoneStateMachine* aStateMachine );
+        	MPhoneViewCommandHandle* aViewCommandHandle,
+        	MPhoneStateMachine* aStateMachine );
     };
 
 #endif      // __CPHONEUISTATEMACHINEFACTORYGSM_H

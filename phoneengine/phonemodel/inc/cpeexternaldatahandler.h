@@ -22,6 +22,8 @@
 //  INCLUDE FILES
 #include "cpeaudiooutputpreferencemonitor.h"
 #include "cpecalldurationdisplaysettingmonitor.h"
+#include "cpeincallearvolumesettingmonitor.h"
+#include "cpeincallloudspeakervolumesettingmonitor.h"
 #include "cpenetworkregistrationstatusmonitor.h"
 #include "cpeprofilesettingmonitor.h"
 #include "mpeexternaldatahandler.h"
@@ -31,7 +33,6 @@
 // FORWARD DECLARATIONS
 class MPEDataStore;
 class MPEPhoneModelInternal;
-class PeNetworkHandler;
 
 // DATA TYPES
 // None
@@ -106,11 +107,12 @@ NONSHARABLE_CLASS( CPEExternalDataHandler )
 
         // Monitor objects
         CPEAudioOutputPreferenceMonitor* iAudioOutputPreferenceMonitor;
-        CPECallDurationDisplaySettingMonitor* iCallDurationDisplay;     
+        CPECallDurationDisplaySettingMonitor* iCallDurationDisplay;
+        CPEIncallEarVolumeSettingMonitor* iEarVolumeSetting;
+        CPEIncallLoudspeakerVolumeSettingMonitor* iLoudspeakerVolumeSetting;
         CPENetworkRegistrationStatusMonitor* iNetworkRegistrationStatus;
         CPEProfileSettingMonitor* iProfileSettings;
         CPEAccessoryModeMonitor* iAccessoryModeMonitor;
-        PeNetworkHandler* iNetworkHandler;
 
         // Repository objects
         CRepository* iAccessorySettingsRepository;

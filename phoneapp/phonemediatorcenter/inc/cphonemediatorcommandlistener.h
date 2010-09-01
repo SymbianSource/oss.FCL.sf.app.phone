@@ -58,9 +58,9 @@ class CPhoneMediatorCommandListener : public CCoeStatic,
         * @param aEngineInfo - Interface for setting Phone Engine specific information
         */
         void Initialize( 
-            MPhoneMenuAndCbaEvents* aMenuAndCbaEventHandler,
-            MPhoneEngineMessageSender* aMessageSender,
-            MPEEngineInfo* aEngineInfo );
+        	MPhoneMenuAndCbaEvents* aMenuAndCbaEventHandler,
+        	MPhoneEngineMessageSender* aMessageSender,
+        	MPEEngineInfo* aEngineInfo );
         
         /**
         * A Mediator Service command.
@@ -162,15 +162,15 @@ class CPhoneMediatorCommandListener : public CCoeStatic,
         
     private:
     
-        // For mapping commands to CBA and Menu selections
-        MPhoneMenuAndCbaEvents* iMenuAndCbaHandler;
-        
-        // For mapping commands to Phone Engine messages
-        MPhoneEngineMessageSender* iMessageSender;
+    	// For mapping commands to CBA and Menu selections
+    	MPhoneMenuAndCbaEvents* iMenuAndCbaHandler;
+    	
+    	// For mapping commands to Phone Engine messages
+    	MPhoneEngineMessageSender* iMessageSender;
 
-        // For setting needed Phone Engine information
-        MPEEngineInfo* iEngineInfo;
-        
+		// For setting needed Phone Engine information
+		MPEEngineInfo* iEngineInfo;
+    	
         CMediatorCommandResponder* iCommandResponder;
         MediatorService::RCommandList iVideoTelCommands;
         MediatorService::RCommandList iAudioCommands;

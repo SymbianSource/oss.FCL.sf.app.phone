@@ -70,11 +70,11 @@ EXPORT_C void TPhoneCmdParamNote::SetResourceId( TInt aResourceId )
 // ---------------------------------------------------------
 //
 EXPORT_C void TPhoneCmdParamNote::SetTextResourceId( TInt aTextResourceId )
-    {
-    __ASSERT_DEBUG( aTextResourceId,
-        Panic( EPhoneUtilsParameterNotInitialized ) );
-    iTextResourceId = aTextResourceId;   
-    }
+  	{
+   	__ASSERT_DEBUG( aTextResourceId,
+   		Panic( EPhoneUtilsParameterNotInitialized ) );
+   	iTextResourceId = aTextResourceId;   
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamNote::SetText
@@ -128,9 +128,9 @@ EXPORT_C TPhoneNoteType TPhoneCmdParamNote::Type() const
 // ---------------------------------------------------------
 //
 EXPORT_C TInt TPhoneCmdParamNote::ResourceId() const
-    {
-    return iResourceId;
-    }
+   	{
+   	return iResourceId;
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamNote::TextResourceId
@@ -139,9 +139,9 @@ EXPORT_C TInt TPhoneCmdParamNote::ResourceId() const
 // ---------------------------------------------------------
 //
 EXPORT_C TInt TPhoneCmdParamNote::TextResourceId() const
-    {
-    return iTextResourceId;
-    }
+   	{
+   	return iTextResourceId;
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamNote::Text

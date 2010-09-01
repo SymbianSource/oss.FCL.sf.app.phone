@@ -284,6 +284,14 @@ class CPECallHandling
         IMPORT_C TInt TerminateAllConnections();
         
         /**
+        * Asks phone identity parameters from the mmetel.
+        * @param aMessage Reply message to the phone application.
+        * @return Error (KErrNone or KErrNotFound).
+        */
+        IMPORT_C TInt UpdatePhoneIdentity( 
+            MEngineMonitor::TPEMessagesFromPhoneEngine aMessage );
+
+        /**
         * Sets active line
         */
         IMPORT_C void SetActiveLine();
@@ -373,6 +381,14 @@ class CPECallHandling
         IMPORT_C TInt CallTerminatedError( const TInt aCallId );
         
         /**
+        * This method gets the lifetime of the MS. The lifetime information 
+        * includes the manufacturing date of the MS and the total amount of airtime use.
+        * @param aLifeTimeInfo Life time information
+        * @return Get succeeded or not.
+        */
+        IMPORT_C TBool GetLifeTime( TDes8& aLifeTimeInfo );
+        
+        /**
         * Replace active call with waiting call. 
         * @since Series60_5.0
         * @return Error (KErrNone is success).
@@ -416,6 +432,13 @@ class CPECallHandling
         * @return Error (KErrNone is success).
         */
         IMPORT_C TInt ForwardCallToAddress( TInt aIndex );
+        
+        /**
+        * Makes HangUp requests for conference call. 
+        * @return Error (ECCPErrorNotFound if there is not a conference call 
+        * 
+        */
+        IMPORT_C TInt ReleaseConference();
 
     public: // From MPECallHandling - DTMF related
         /**

@@ -17,6 +17,7 @@
 
 
 // INCLUDES
+#include <ScreensaverInternalPSKeys.h>
 #include <eikmenub.h> 
 #include <eikenv.h>
 #include <StringLoader.h>
@@ -39,6 +40,7 @@
 #include "tphonecmdparamcallstatedata.h"
 #include "phonestatedefinitionsgsm.h"
 #include "phonelogger.h"
+#include "cphonepubsubproxy.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -78,6 +80,11 @@ EXPORT_C void CPhoneTwoSingles::ConstructL()
     globalNotifierParam.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
+    
+    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                    KPSUidScreenSaver,
+                    KScreenSaverAllowScreenSaver,
+                    EPhoneScreensaverAllowed );
     }
 
 // -----------------------------------------------------------
@@ -138,6 +145,47 @@ EXPORT_C void CPhoneTwoSingles::HandlePhoneEngineMessageL(
             break;
         }
     }
+
+// -----------------------------------------------------------
+// CPhoneTwoSingles::OpenMenuBarL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneTwoSingles::OpenMenuBarL()
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, 
+        "CPhoneTwoSingles::OpenMenuBarL()");
+    TInt resourceId;
+
+    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
+        {
+        resourceId = EPhoneDtmfDialerMenubar;
+        }
+    if ( iOnScreenDialer && IsCustomizedDialerVisibleL() )
+        {
+        resourceId = CustomizedDialerMenuResourceIdL();
+        }
+    else if ( IsNumberEntryVisibleL() )
+        {
+        resourceId = EPhoneCallActiveAndHeldMenubarWithNumberEntry;
+        }
+    else
+        {
+        resourceId = EPhoneCallActiveAndHeldMenubar;
+        }
+
+    TPhoneCmdParamInteger integerParam;
+    integerParam.SetInteger( 
+        CPhoneMainResourceResolver::Instance()->
+        ResolveResourceID( resourceId ) );
+
+    // Set Hold flag to view
+    TPhoneCmdParamBoolean holdFlag;
+    holdFlag.SetBoolean( EFalse );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
+
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
+        &integerParam );
+    }
       
 // -----------------------------------------------------------
 // CPhoneTwoSingles:HandleIdleL
@@ -159,18 +207,12 @@ void CPhoneTwoSingles::HandleIdleL( TInt aCallId )
     switch( activeCallCount.Integer() )
         {
         case EOneActiveCall:
-            {   
-            if ( IsNumberEntryUsedL() )
-                {
-                // Show the number entry if it exists
-                SetNumberEntryVisibilityL(ETrue);
-                }
-            else
-                {
+            {
+            // Close menu bar if number entry is not open.
+            iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
                 
-                // Set incall CBAs
-                UpdateCbaL( EPhoneCallHandlingInCallCBA );                
-                }
+            // Set incall CBAs
+            UpdateCbaL( EPhoneCallHandlingInCallCBA );                
             
             TPhoneCmdParamCallStateData callStateData;  
             callStateData.SetCallState( EPEStateHeld );
@@ -194,7 +236,7 @@ void CPhoneTwoSingles::HandleIdleL( TInt aCallId )
 
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
 
-            SetTouchPaneButtons( EPhoneIncallButtons );         
+    	    SetTouchPaneButtons( EPhoneIncallButtons );         
             // Go to single state
             // CBA updates in above if-else conditions
             iStateMachine->ChangeState( EPhoneStateSingle ); 
@@ -253,8 +295,6 @@ void CPhoneTwoSingles::HandleConnectedL( TInt aCallId )
     callHeaderParam.SetCallState( EPEStateConnected );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
-    
-    SetTouchPaneButtons( EPhoneIncallButtons );
     }
     
 // -----------------------------------------------------------
@@ -281,8 +321,6 @@ void CPhoneTwoSingles::HandleHeldL( TInt aCallId )
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
-    
-    SetTouchPaneButtons( EPhoneIncallButtons );
     }
     
 // -----------------------------------------------------------
@@ -316,9 +354,7 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
         conferenceText, 
         callLabelId, 
         CCoeEnv::Static() );
-    callHeaderParam.SetCLIText( conferenceText, TPhoneCmdParamCallHeaderData::ERight );
-    
-    callHeaderParam.SetCallState(EPEStateConnectedConference);
+    callHeaderParam.SetCLIText( conferenceText, CBubbleManager::ERight );
     BeginUiUpdateLC();
     
     callHeaderParam.SetCiphering(
@@ -341,6 +377,7 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
 
     SetTouchPaneButtons( EPhoneConferenceButtons );
+    SetTouchPaneButtonEnabled( EPhoneInCallCmdPrivate );
     EndUiUpdate();
     
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
@@ -359,7 +396,21 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSingles::HandleIncomingL()");
     
+    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                    KPSUidScreenSaver,
+                    KScreenSaverAllowScreenSaver,
+                    EPhoneScreensaverNotAllowed );
+    
+    IsNumberEntryUsedL() ? 
+        BeginTransEffectLC( ECallUiAppear ) :
+        BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
+    
+    // Hide the number entry if it exists
+    if ( IsNumberEntryUsedL() )
+        {
+        SetNumberEntryVisibilityL( EFalse );    
+        }
     
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
@@ -368,21 +419,21 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
     AllowShowingOfWaitingCallHeaderL( dialerParam );
     
     // Close fast swap window if it's displayed
-    CEikonEnv::Static()->DismissTaskList();
+    EikonEnv()->DismissTaskList();
 
     // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
     
-    // Check if HW Keys or Call UI should be disabled
-    CheckDisableHWKeysAndCallUIL();
+    // Set touch controls
+    SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
 
     EndUiUpdate();
+    EndTransEffect();
 
     // Go to incoming state
-    iCbaManager->SetCbaL( EPhoneCallHandlingIncomingRejectCBA );
-    
+    UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
     iStateMachine->ChangeState( EPhoneStateTwoSinglesAndWaiting );        
     }
 
@@ -392,31 +443,19 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
 //
 void CPhoneTwoSingles::DisplayIncomingCallL( 
     TInt aCallId, 
-    const TPhoneCmdParamBoolean aCommandParam )
+    const TPhoneCmdParamBoolean /*aCommandParam*/ )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
          "CPhoneTwoSingles::DisplayIncomingCallL()"); 
+    // Close menu bar, if it is displayed
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
-    // Cannot delete active note, e.g. New call query, 
-    // but show waiting note with or without caller name
-    if ( IsAnyQueryActiveL() ||  
-        ( !aCommandParam.Boolean() && iOnScreenDialer ) )
-        {
-        CallWaitingNoteL( aCallId );        
-        }
-    else
-        {
-        // Remove any phone dialogs if they are displayed
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-        }
+    // Remove any phone dialogs if they are displayed
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
 
     // Indicate that the Phone needs to be sent to the background if
     // an application other than the top application is in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( !TopAppIsDisplayedL() );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus,
-        &booleanParam );
+    SetNeedToReturnToForegroundAppStatusL( !TopAppIsDisplayedL() );
 
     // Bring Phone app in the foreground
     TPhoneCmdParamInteger uidParam;
@@ -438,7 +477,7 @@ void CPhoneTwoSingles::DisplayIncomingCallL(
 EXPORT_C void CPhoneTwoSingles::UpdateInCallCbaL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneTwoSingles::UpdateInCallCbaL() ");
-    UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
+	UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
     }
 
 // End of File

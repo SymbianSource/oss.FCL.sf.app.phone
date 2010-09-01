@@ -23,7 +23,7 @@
 
 #include    <e32base.h>
 #include    <aknkeylock.h>  
-#include    "mteldmcallstateobserver.h"
+#include 	"MTelDMCallStateObserver.h"
 
 // FORWARD DECLARATIONS
 
@@ -40,7 +40,7 @@ class CTelDMCallStateListener;
 * @since 3.1
 */
 NONSHARABLE_CLASS( CTelDMCommandHandler ): public CBase,
-                            public MTelDMCallStateObserver
+							public MTelDMCallStateObserver
     {
     public: // constructor & destructor
 
@@ -48,66 +48,66 @@ NONSHARABLE_CLASS( CTelDMCommandHandler ): public CBase,
         * Two phase constructor 
         */
         static CTelDMCommandHandler* NewL( MPhoneDeviceModeObserver& aCallHandler, 
-                                            MTelDMAccessory& aAccessory );
+        									MTelDMAccessory& aAccessory );
 
         // Destructor
         virtual ~CTelDMCommandHandler();
 
-    public: 
-    
-        enum TCommands
-            {
-            EGripOpen,
-            EGripClose
-            };
-    
-        void HandleCommand( TCommands aCommand );
-        
-    public: // from MTelDMCallStateObserver
-        
-        /** See MTelDMCallStateObserver.h */
-        void CallStateChangedL( TInt aCallState );
-    
-    
+	public: 
+	
+		enum TCommands
+			{
+			EGripOpen,
+			EGripClose
+			};
+	
+		void HandleCommand( TCommands aCommand );
+		
+	public: // from MTelDMCallStateObserver
+		
+		/** See MTelDMCallStateObserver.h */
+		void CallStateChangedL( TInt aCallState );
+	
+	
     private: // Constructor
         
         /** c++ constructor */
         CTelDMCommandHandler( MPhoneDeviceModeObserver& aCallHandler, 
-                                MTelDMAccessory& aAccessory );
+        						MTelDMAccessory& aAccessory );
 
         /** 2nd phase constructor */
         void ConstructL();
         
     private:
     
-        /**
-        * Ends calls
-        */
-        void EndCalls();
-        
-        /**
-        * Offer key lock query.
-        */
-        void OfferKeyLock();
-        
+    	/**
+    	* Ends calls
+    	*/
+    	void EndCalls();
+    	
+    	/**
+    	* Offer key lock query.
+    	*/
+    	void OfferKeyLock();
+    	
         /**
         * Check emergency call
         * @return status of emergency call
         */
-        TBool IsEmergencyCall() const;
+    	TBool IsEmergencyCall() const;
         
-        /**
+    	/**
         * Check soft reject
         * @return status of soft reject operation
         */
-        TBool IsSoftRejectOngoing() const;
+    	TBool IsSoftRejectOngoing() const;
         
     private: 
     
-        // Reference to device mode observer
-        MPhoneDeviceModeObserver& iCallHandler;
-        
-        // Reference to accessory listene
+    	// Reference to device mode observer
+		MPhoneDeviceModeObserver& iCallHandler;
+		
+		// Reference to accessory listene
         MTelDMAccessory& iAccessory; 
         
         // For keypad locking.

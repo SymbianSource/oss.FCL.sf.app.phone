@@ -26,9 +26,9 @@
 #include "mpecallhandling.h"
 #include "mpephonemodelinternal.h"
 #include <apgtask.h>
-#include <cphcltcallnotify.h>
-#include <cphcltemergencycall.h>
-#include <cphcltussd.h>
+#include <CPhCltCallNotify.h>
+#include <CPhCltEmergencyCall.h>
+#include <CPhCltUssd.h>
 #include <mpedatastore.h>
 #include <talogger.h>
 
@@ -64,9 +64,9 @@ void CPEClientServices::ConstructL()
 
     User::LeaveIfError( iPhoneServer.Connect( ) );
 
-    // Need to call CreateAll so that Phone Server creates all managers
-    // (f.ex. USSD manager). Otherwise USSD requests/notifications don't
-    // get through unless USSD request is sent from Mobile Terminal first.
+	// Need to call CreateAll so that Phone Server creates all managers
+	// (f.ex. USSD manager). Otherwise USSD requests/notifications don't
+	// get through unless USSD request is sent from Mobile Terminal first.
     TRequestStatus phoneServerStatus;
     iPhoneServer.CreateAll( phoneServerStatus );
     User::WaitForRequest( phoneServerStatus );
@@ -85,16 +85,16 @@ void CPEClientServices::ConstructL()
         iModel, 
         *iCallNotifier ); 
 
-    iClientCommandHandlerMonitor = CPEClientCommandHandlerMonitor::NewL( 
-        iCallHandling, 
-        iMessageHandler, 
-        iModel, 
-        iPhoneServer,
-        iManualCallControlHandler );
-        
-    iDeviceModeHandler = CPEDeviceModeHandler::NewL( 
-        iCallHandling, 
-        iMessageHandler );      
+	iClientCommandHandlerMonitor = CPEClientCommandHandlerMonitor::NewL( 
+	    iCallHandling, 
+	    iMessageHandler, 
+	    iModel, 
+	    iPhoneServer,
+	    iManualCallControlHandler );
+	    
+	iDeviceModeHandler = CPEDeviceModeHandler::NewL( 
+	    iCallHandling, 
+	    iMessageHandler );	    
     }
 
 // -----------------------------------------------------------------------------
@@ -110,11 +110,11 @@ CPEClientServices* CPEClientServices::NewL(
     {
     TEFLOGSTRING( KTAOBJECT, "PE CPEClientServices::NewL()" );
     
-    CPEClientServices* self = new ( ELeave ) CPEClientServices( 
-        aModel, 
-        aMessageHandler, 
-        aCallHandling,
-        aManualCallControlHandler );
+	CPEClientServices* self = new ( ELeave ) CPEClientServices( 
+	    aModel, 
+	    aMessageHandler, 
+	    aCallHandling,
+	    aManualCallControlHandler );
 
     CleanupStack::PushL( self );
     self->ConstructL();

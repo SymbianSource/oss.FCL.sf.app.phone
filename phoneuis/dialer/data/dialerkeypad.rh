@@ -1,0 +1,48 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: Resource prototypes for dialer keypad labels
+*
+*/
+#ifndef DIALERKEYPAD_RH
+#define DIALERKEYPAD_RH
+
+// system includes
+
+// constants
+#define DEFAULT_KEY_1_TEXT ""
+#define DEFAULT_KEY_2_TEXT "abc"
+#define DEFAULT_KEY_3_TEXT "def"
+#define DEFAULT_KEY_4_TEXT "ghi"
+#define DEFAULT_KEY_5_TEXT "jkl"
+#define DEFAULT_KEY_6_TEXT "mno"
+#define DEFAULT_KEY_7_TEXT "pqrs"
+#define DEFAULT_KEY_8_TEXT "tuv"
+#define DEFAULT_KEY_9_TEXT "wxyz"
+#define DEFAULT_KEY_0_TEXT <0xf812>
+#define DEFAULT_KEY_ASTERISK_TEXT ""
+#define DEFAULT_KEY_HASH_TEXT ""
+
+STRUCT DIALER_KEY
+    {
+    LTEXT firstRow = "";
+    LTEXT secondRow = "";
+    }
+
+STRUCT DIALER_KEYPAD
+    {
+    STRUCT keys[];
+    }
+
+
+#endif // DIALERKEYPAD_RH

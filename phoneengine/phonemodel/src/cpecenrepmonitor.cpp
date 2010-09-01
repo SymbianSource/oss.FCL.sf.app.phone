@@ -56,10 +56,6 @@ void CPECenRepMonitor::BaseConstructL(
     {
     // Create repository instance
     iRepository = CRepository::NewL( aRepositoryUid );
-
-    // Store current value
-    UpdateL();
-
     // Start monitoring
     SubmitNotifyRequestL();
     }

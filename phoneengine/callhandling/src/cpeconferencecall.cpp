@@ -84,7 +84,7 @@ CPEConferenceCall::~CPEConferenceCall
 // -----------------------------------------------------------------------------
 //
 void CPEConferenceCall::ConstructL(
-        CCCE& aConvergedCallEngine )
+		CCCE& aConvergedCallEngine )
     {
     TEFLOGSTRING( KTAOBJECT, "cpecallgsm: CPEGsmConferenceCall::ConstructL start." );
     iConferenceCall = &( aConvergedCallEngine.ConferenceCallL( *this ) );
@@ -172,26 +172,26 @@ void CPEConferenceCall::AddCallL
 EXPORT_C void CPEConferenceCall::CallEventOccurred( 
         const MCCEConferenceCallObserver::TCCEConferenceCallEvent aEvent,
         MCCECall* aReferredCall  )
-    {
-    TEFLOGSTRING2( KTAREQEND, "CALL CPEConferenceCall::ConferenceCallEventOccurred, event: %d", aEvent );
-    
-    if ( aReferredCall )
-        {
-        //resolve the referred call first
-        RMobileCall::TMobileCallInfoV1 callInfo;
-        RMobileCall::TMobileCallInfoV1Pckg callInfoPckg( callInfo );
-        TEFLOGSTRING( KTAREQOUT, "CALL CPEConferenceCall::ConferenceCallEventOccurred: Request MCCECall::GetMobileCallInfo()" );
-        aReferredCall->GetMobileCallInfo( callInfoPckg );
-        callInfo = callInfoPckg();
-        iCallName = callInfo.iCallName;
-        
-        // now that the call name has been stored, owner may fetch it
-        // upon receiving a conference call related indication
-        }
-    else
-        {
-        iCallName = KNullDesC;
-        }
+	{
+	TEFLOGSTRING2( KTAREQEND, "CALL CPEConferenceCall::ConferenceCallEventOccurred, event: %d", aEvent );
+	
+	if ( aReferredCall )
+		{
+		//resolve the referred call first
+		RMobileCall::TMobileCallInfoV1 callInfo;
+		RMobileCall::TMobileCallInfoV1Pckg callInfoPckg( callInfo );
+	    TEFLOGSTRING( KTAREQOUT, "CALL CPEConferenceCall::ConferenceCallEventOccurred: Request MCCECall::GetMobileCallInfo()" );
+	    aReferredCall->GetMobileCallInfo( callInfoPckg );
+	    callInfo = callInfoPckg();
+	    iCallName = callInfo.iCallName;
+	    
+	    // now that the call name has been stored, owner may fetch it
+	    // upon receiving a conference call related indication
+	   	}
+	else
+		{
+		iCallName = KNullDesC;
+		}
 
     switch ( aEvent )
         {
@@ -234,7 +234,7 @@ EXPORT_C void CPEConferenceCall::CallEventOccurred(
             break;
             }
         }
-    }
+	}
 
 // -----------------------------------------------------------------------------
 // CPEConferenceCall::CallStateChanged
@@ -282,26 +282,26 @@ EXPORT_C void CPEConferenceCall::CallStateChanged(
 // -----------------------------------------------------------------------------
 //
 EXPORT_C void CPEConferenceCall::CallCapsChanged( 
-        const MCCEConferenceCallObserver::TCCEConferenceCallCaps aCaps )
-    {
-    TEFLOGSTRING2( KTAREQEND, "CALL CPEConferenceCall::CallCapsChanged, caps: %d", aCaps );
-    iCaps = aCaps;
-    SendMessage( MEngineMonitor::EPEMessageConferenceCapsChange );
-    }
-    
+		const MCCEConferenceCallObserver::TCCEConferenceCallCaps aCaps )
+	{
+	TEFLOGSTRING2( KTAREQEND, "CALL CPEConferenceCall::CallCapsChanged, caps: %d", aCaps );
+	iCaps = aCaps;
+	SendMessage( MEngineMonitor::EPEMessageConferenceCapsChange );
+	}
+	
 // -----------------------------------------------------------------------------
 // CPEConferenceCall::ErrorOccurred
 // 
 // -----------------------------------------------------------------------------
 //
 EXPORT_C void CPEConferenceCall::ErrorOccurred( TCCPConferenceCallError aError )
-    {
-    TEFLOGSTRING2( KTAERROR, "CALL CPEConferenceCall::ErrorOccurred, error: %d", aError );
-    
-    iOwner.SendErrorMessage( KPEConferenceCallID, aError );
+	{
+	TEFLOGSTRING2( KTAERROR, "CALL CPEConferenceCall::ErrorOccurred, error: %d", aError );
+	
+	iOwner.SendErrorMessage( KPEConferenceCallID, aError );
 
-    }
-    
+	}
+	
 // -----------------------------------------------------------------------------
 // CPEConferenceCall::SendMessage
 // Forwards message to CPEConferenceCall object
@@ -313,7 +313,7 @@ void CPEConferenceCall::SendMessage(
     iOwner.SendMessage( aMessage, KPEConferenceCallID );
     }
 
-    
+	
 // -----------------------------------------------------------------------------
 // CPEConferenceCall::SendMessage
 // Forwards message to CPEConferenceCall object

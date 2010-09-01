@@ -19,7 +19,7 @@
 // INCLUDE FILES
 #include <bautils.h>
 #include <AknUtils.h>
-#include "phoneresourceids.h"
+#include <phoneuivoip.rsg>
 #include <data_caging_path_literals.hrh>
 #include "cphoneresourceresolvervoip.h"
 #include "cphonemainresourceresolver.h"
@@ -44,6 +44,18 @@ CPhoneResourceResolverVoIP::CPhoneResourceResolverVoIP()
 //
 void CPhoneResourceResolverVoIP::ConstructL()
     {
+    // Add resource file
+    // Create path to default resource file name
+    TFileName path( KDriveZ );
+    path.Append( KDC_APP_RESOURCE_DIR );
+    path.Append( KPhoneResourceFileVoIP );
+
+    RFs &fsSession= iEnv.FsSession();
+    BaflUtils::NearestLanguageFile( fsSession, path );
+    iVoIPResourceOffset = iEnv.AddResourceFileL( path );
+
+    BaseConstructL();
+    
     // Register resolver
     CPhoneMainResourceResolver::Instance()->RegisterResolver( this );
     }
@@ -66,6 +78,7 @@ CPhoneResourceResolverVoIP* CPhoneResourceResolverVoIP::NewL()
 // Destructor
 CPhoneResourceResolverVoIP::~CPhoneResourceResolverVoIP()
     {
+    iEnv.DeleteResourceFile( iVoIPResourceOffset );
     }
 
 // -----------------------------------------------------------------------------
@@ -154,31 +167,31 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
             break;
             
         case EPhoneVoIPHoldFail:
-            retVal = R_VOIP_HOLD_FAILED;
+        	retVal = R_VOIP_HOLD_FAILED;
             break;
             
         case EPhoneVoIPHoldNumberFail:
-            retVal = R_VOIP_HOLD_NUMBER_FAILED;
+        	retVal = R_VOIP_HOLD_NUMBER_FAILED;
             break;
             
         case EPhoneVoIPResumeFail:
-            retVal = R_VOIP_RESUME_FAILED;
+    		retVal = R_VOIP_RESUME_FAILED;
             break;
             
         case EPhoneVoIPResumeNumberFail:
-            retVal = R_VOIP_RESUME_NUMBER_FAILED;
+    		retVal = R_VOIP_RESUME_NUMBER_FAILED;
             break;
             
-        case EPhoneVoIPSwapFail:
-            retVal = R_VOIP_SWAP_FAILED;
+       	case EPhoneVoIPSwapFail:
+    		retVal = R_VOIP_SWAP_FAILED;
             break;
         
         case EPhoneVoIPConferenceHoldFail:
-            retVal = R_VOIP_CONFERENCE_HOLD_FAILED;
+    		retVal = R_VOIP_CONFERENCE_HOLD_FAILED;
             break;
         
         case EPhoneVoIPConferenceResumeFail:
-            retVal = R_VOIP_CONFERENCE_RESUME_FAILED;
+    		retVal = R_VOIP_CONFERENCE_RESUME_FAILED;
             break;
 
         case EPhoneVoIPTransferFail:
@@ -191,6 +204,7 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
             retVal = R_VOIP_CALL_TYPE_INTERNET;
             break;
         case EPhoneVoIPNumberAcqXSPCall:
+            retVal = R_PHONEUI_NUMBERACQ_OPTIONS_CALL_MENU_ITEM_XSP;
             break;
         case EPhoneVoIPUnattendedTransferOption:  
             retVal = R_VOIP_UNATTENDED_TRANSFER_OPTION;       
@@ -205,7 +219,7 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
             retVal = R_PHONE_VOIP_QUERY_ACC_ID_HEADER;
             break;
         case EPhoneVoIPTransferAddress:
-            retVal = R_VOIP_TRANSFER_ADDRESS;
+            retVal = R_VOIP_DIALER_UNATT_TRANSFER_INPUT_FIELD_TEXT;           
             break;
         case EPhoneVoIPTransferDialerNumberEntryEmptyMenubar:
             retVal = R_PHONEUIDIALER_NUMBERENTRY_EMPTY_TRANSFER_MENUBAR;
@@ -265,8 +279,7 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
             retVal = R_PHONEUI_VOIP_QUERY_HEADER_MOVED_PERMANENTLY;
             break;
         case EPhoneVoIPMovedPermanentlySoftkeys:
-            //retVal = R_PHONE_VOIP_SOFTKEYS_OK_END_CALL;
-            retVal = R_AVKON_SOFTKEYS_OK_CANCEL;
+            retVal = R_AVKON_SOFTKEYS_OK_ENDCALL;
             break;
         case EPhoneVoIPMultipleChoicesListQuery:
             retVal = R_PHONE_VOIP_MULTIPLE_CHOICES_LIST_QUERY;
@@ -285,8 +298,14 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
             break;
         case EPhoneVoIPDefectiveSettings:
             retVal = R_PHONE_VOIP_CREATING_CONN_FAILED_PERMANENTLY;
+			break;
+        case EPhoneVoIPTransferCallBackHeader:
+            retVal = R_VOIP_TRANSFER_CALL_BACK_HEADER;
             break;
-        default:
+        case EPhoneVoIPTransferCallBackText:
+            retVal = R_VOIP_TRANSFER_CALL_BACK;
+            break;
+		default:
             retVal = CPhoneResourceResolverGSM::ResolveResourceID( aResource );
             break;
         }

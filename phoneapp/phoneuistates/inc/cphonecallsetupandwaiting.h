@@ -60,6 +60,14 @@ class CPhoneCallSetupAndWaiting : public CPhoneGsmInCall
             const TInt aMessage, 
             TInt aCallId );       
         
+        /**
+        * HandleError
+        * Implements error handling framework
+        * @param aErrorInfo: the error info
+        */
+        IMPORT_C virtual void HandleErrorL( 
+            const TPEErrorInfo& aErrorInfo ); 
+
     protected:
 
         /**
@@ -75,6 +83,10 @@ class CPhoneCallSetupAndWaiting : public CPhoneGsmInCall
         */
         virtual void ConstructL();
             
+        /**
+        * Open menu bar
+        */
+        virtual void OpenMenuBarL();
         
         virtual void UpdateInCallCbaL();
         

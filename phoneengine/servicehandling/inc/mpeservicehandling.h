@@ -49,7 +49,7 @@ class MPEServiceHandling
          * (EPEMessageServiceEnabled) to PhoneEngine. 
          * 
          * @param   aServiceId      Identifier of the service.
-         */                                     
+         */	                                    
         virtual void EnableServiceL( TInt aServiceId ) = 0;
         
         /**

@@ -12,12 +12,12 @@
 * Contributors:
 *
 * Description: 
-*       Class that does processing for Phone Engine messages that are common
-*       for all GSM states. Most of the GSM states are intressed of these 
-*       messages but due to the class architecture they don't have any single
-*       state class to be put into. This class exists to minimize duplicate
-*       code so that not every GSM class need to implement these same handlings
-*       for the same messages.
+* 		Class that does processing for Phone Engine messages that are common
+*		for all GSM states. Most of the GSM states are intressed of these 
+*		messages but due to the class architecture they don't have any single
+*		state class to be put into. This class exists to minimize duplicate
+*		code so that not every GSM class need to implement these same handlings
+*		for the same messages.
 *
 */
 
@@ -75,7 +75,7 @@ class CPhoneGeneralGsmMessagesHandler : public CBase
          
 
     private:
-        
+		
         /**
         * By default EPOC constructor is private.
         */
@@ -85,16 +85,14 @@ class CPhoneGeneralGsmMessagesHandler : public CBase
             MPhoneState& aActiveState );
 
 
-    private:
-    
+	private:
+	
         /**
         * Show global InfoNote
         * @param aResourceId resource id to be resolved
-        * @param aNotificationDialog ETrue if notification dialog should be used
         */
-        void SendGlobalInfoNoteL( TInt aResourceId, 
-                TBool aNotificationDialog = EFalse );
-        
+		void SendGlobalInfoNoteL( TInt aResourceId );
+	    
         /**
         * Shows divert indication or sets internal divert flag
         * depending in which order we receive Incoming and 
@@ -103,30 +101,33 @@ class CPhoneGeneralGsmMessagesHandler : public CBase
         void HandleIncomingCallForwardedL();
 
         /**
+        * Shows software version note
+        */
+        void HandleShowVersionL();
+        
+        /**
         * Show global ErrorNote
         * @param aResourceId resource id to be resolved
-        * @param aNotificationDialog ETrue if notification dialog should be used
         */
-        void SendGlobalErrorNoteL( TInt aResourceId,
-                TBool aNotificationDialog = EFalse );
+        void SendGlobalErrorNoteL( TInt aResourceId );
 
 
     private:
 
-        /**
-        * Currently active state.
-        */    
-        MPhoneStateMachine& iStateMachine;
-        
-        /**
-        * Handle for sending view commands.
-        */
-        MPhoneViewCommandHandle& iViewCommandHandle;
-        
-        /**
-        * Currently active state object.
-        */
-        MPhoneState& iActiveState; 
+		/**
+		* Currently active state.
+		*/    
+		MPhoneStateMachine& iStateMachine;
+		
+		/**
+		* Handle for sending view commands.
+		*/
+		MPhoneViewCommandHandle& iViewCommandHandle;
+		
+		/**
+		* Currently active state object.
+		*/
+		MPhoneState& iActiveState; 
            
     };
 

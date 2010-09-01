@@ -29,7 +29,8 @@
 #include "phonerssgsm.h"
 #include "phonerssbase.h"
 #include "phonelogger.h"
-#include "phoneresourceids.h"
+#include <phoneui.rsg>
+
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -39,7 +40,8 @@
 // might leave.
 // -----------------------------------------------------------------------------
 //
-EXPORT_C CPhoneResourceResolverGSM::CPhoneResourceResolverGSM(): iEnv( *CEikonEnv::Static() )
+EXPORT_C CPhoneResourceResolverGSM::CPhoneResourceResolverGSM() :
+    iEnv( *CEikonEnv::Static() ) // codescanner::performance::eikonenvstatic
     {
     }
 
@@ -50,8 +52,11 @@ EXPORT_C CPhoneResourceResolverGSM::CPhoneResourceResolverGSM(): iEnv( *CEikonEn
 //
 EXPORT_C void CPhoneResourceResolverGSM::ConstructL()
     {
+    
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneResourceResolverGSM::ConstructL");
-
+      
+    BaseConstructL();
+    
     // Register resolver
     CPhoneMainResourceResolver::Instance()->RegisterResolver( this );
     }

@@ -35,7 +35,7 @@
 // None.
 
 // CONSTANTS
-// None.
+const TInt KDtmfSilent = 0;
 
 // MACROS
 // None.
@@ -83,9 +83,6 @@ void CPEGsmAudioData::ConstructL( CPEAudioFactory& aAudioFactory )
     
     iInbandTonePlayer = 
         CPEAudioInbandTonePlayer::NewL( *this, iFsSession, aAudioFactory );
-    TInt volume = iPhoneModel.DataStore()->AudioVolume(); 
-    iInbandTonePlayer->SetVolume( volume );
-    
     iDtmfTonePlayer = CPEAudioDtmfTonePlayer::NewL();
     }
 
@@ -121,7 +118,7 @@ EXPORT_C CPEGsmAudioData* CPEGsmAudioData::NewL
         ( 
         MPEPhoneModelInternal& aPhoneModel,
         RFs& aFsSession,
-        CPEAudioFactory& aAudioFactory  
+        CPEAudioFactory& aAudioFactory	
         )
     {
     CPEGsmAudioData* self = new ( ELeave ) 
@@ -154,16 +151,21 @@ EXPORT_C void CPEGsmAudioData::PlayDtmfTone
         const TChar& aTone //DTMF tone to play
         ) const
     {
-    TInt volume;  //DTMF tone volume
+	TInt volume;  //DTMF tone volume
     volume = iPhoneModel.DataStore()->KeypadVolume();
 
     TEFLOGSTRING3( KTAREQIN, 
         "AUD CPEGsmAudioData::PlayDtmfTone, aTone = %s, volume = %d", 
         &aTone, 
         volume );
-
-    iDtmfTonePlayer->SetVolume( volume );
-    iDtmfTonePlayer->PlayDtmfTone( aTone );
+		
+    // If profile key tones setting is OFF, the volume will be O 
+	// Don't play dtmf tone here to avoid interrupting the possible touch tone's playing.
+    if ( KDtmfSilent != volume )
+        {
+        iDtmfTonePlayer->SetVolume( volume );
+        iDtmfTonePlayer->PlayDtmfTone( aTone );
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -235,7 +237,7 @@ EXPORT_C void CPEGsmAudioData::HandleDTMFEvent( const MCCEDtmfObserver::TCCEDtmf
                 if ( DtmfLocalPlayAllowed() )
                     {
                     TEFLOGSTRING( KTAINT, "AUD CPEGsmAudioData::HandleDTMFEvent: PlayDtmfTone" );
-                    PlayDtmfTone( aTone );
+    			    PlayDtmfTone( aTone );
                     }
                 else
                     {
@@ -252,16 +254,16 @@ EXPORT_C void CPEGsmAudioData::HandleDTMFEvent( const MCCEDtmfObserver::TCCEDtmf
             case ECCEDtmfStringSendingCompleted:
             default:
                 TEFLOGSTRING( KTAINT, "AUD CPEGsmAudioData::HandleDTMFEvent: StopDtmfTonePlay" );
-                //Stop tone playing
-                StopDtmfTonePlay();
+    			//Stop tone playing
+    			StopDtmfTonePlay();
                 break;
             }
         }
     else
         {
         TEFLOGSTRING( KTAINT, "AUD CPEGsmAudioData::HandleDTMFEvent: Error case" );
-        //Stop tone playing
-        StopDtmfTonePlay();
+    	//Stop tone playing
+    	StopDtmfTonePlay();
         }
     }
 
@@ -298,11 +300,10 @@ TBool CPEGsmAudioData::DtmfLocalPlayAllowed() const
 // CPEGsmAudioData::DoHandleVolumeChange
 // -----------------------------------------------------------------------------
 //
-void CPEGsmAudioData::DoHandleVolumeChange( TInt aVolume, TBool aSendMsg)
+void CPEGsmAudioData::DoHandleVolumeChange( TInt aVolume )
 
     {
     iInbandTonePlayer->SetVolume( aVolume );
-    CPEAudioData::DoHandleVolumeChange(aVolume , aSendMsg);
     }
 
 // ================= OTHER EXPORTED FUNCTIONS ===============================

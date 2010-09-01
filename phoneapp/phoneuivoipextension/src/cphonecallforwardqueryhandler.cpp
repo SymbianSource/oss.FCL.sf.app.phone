@@ -34,7 +34,8 @@
 #include "cphonemainresourceresolver.h"
 #include "cphonestatemachinevoip.h"
 #include "tphonecmdparamstring.h"
-#include "phoneviewcommanddefinitions.h"
+
+
 
 // ======== MEMBER FUNCTIONS ========
 

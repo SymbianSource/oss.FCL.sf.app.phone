@@ -1,0 +1,52 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file provides the information required for building 
+*                PslnCallImagePlugin.
+*
+*/
+
+#ifdef  __CALL_IMAGETEXT
+#include  <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+../Data/pslncallimageplugin_stub.SIS\
+    /epoc32/data/z/system/install/pslncallimageplugin_stub.SIS
+
+../rom/PslnCallImagePlugin.iby\
+    CORE_APP_LAYER_IBY_EXPORT_PATH(PslnCallImagePlugin.iby)
+
+../rom/PslnCallImagePluginResources.iby\
+    LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(PslnCallImagePluginResources.iby)
+    
+../loc/pslncallimageplugin.loc\
+    APP_LAYER_LOC_EXPORT_PATH(pslncallimageplugin.loc)
+
+PRJ_EXTENSIONS
+START EXTENSION s60/mifconv
+  OPTION TARGETFILE pslncallimageplugin.mif
+  OPTION HEADERFILE pslncallimageplugin.mbg
+  OPTION SOURCES -c8,8 qgn_prop_psln_cimage_sub
+END
+
+PRJ_MMPFILES
+//gnumakefile PslnCallImagePluginIcons.mk
+PslnCallImagePlugin.mmp
+
+PRJ_TESTMMPFILES
+#endif // __CALL_IMAGETEXT
+
+//  End of File  

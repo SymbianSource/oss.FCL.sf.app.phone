@@ -98,8 +98,8 @@ class CPESingleCall
         /**
         * Disables FDN checking for SIM ATK originated calls
         */  
-        void DisableFDNCheck();
-        
+		void DisableFDNCheck();
+		
         /**
         * Creates deflect request to cce call object
         * @param aMobileAddress the address of the remote party
@@ -147,13 +147,13 @@ class CPESingleCall
         /**
         * Returns the inband tone needed to play in state transition
         */    
-        TCCPTone Tone();
-        
+		TCCPTone Tone();
+		
         /**
         * Creates hangup request to cce call  object
         * @return possible error code
         */ 
-        TInt HangUp();
+		TInt HangUp();
         
         /**
         * Offers call parameters

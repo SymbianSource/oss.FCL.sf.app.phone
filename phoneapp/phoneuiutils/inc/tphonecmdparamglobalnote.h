@@ -23,16 +23,11 @@
 //  INCLUDES
 
 #include <w32std.h>
-//#include <AknGlobalNote.h> // for CAknGlobalNote
-
+#include <AknGlobalNote.h> // for CAknGlobalNote
 #include "tphonecommandparam.h"
 
 // DATA TYPES
-enum PhoneNotificationType{
-    EPhoneNotificationDialog = 0, // notify of a state change that does not require user input.
-    EPhoneMessageBoxInformation,
-    EPhoneMessageBoxWarning
-};
+
 // CLASS DECLARATION
 
 /**
@@ -53,7 +48,7 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         * Sets the global note type.
         * @param aType is the global note type
         */
-        IMPORT_C void SetType( PhoneNotificationType aType );
+        IMPORT_C void SetType( TAknGlobalNoteType aType );
 
         /**
         * Sets the text resource ID for the global note
@@ -67,32 +62,30 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         */
         IMPORT_C void SetText( const TDesC& aText );
 
-       /**
-        * Sets timeout for a note.
-        * @param    aTimeout    Timeout in milliseconds. If timeout == 0 then 
-        * default timeout is used. If timeout < 0 the note is not closed 
-        * automatically.
+        /**
+        * Sets the global note tone.
+        * @param aTone is the note tone
         */
-        IMPORT_C void SetTimeout( TInt aTimeout );
+        IMPORT_C void SetTone( TInt aTone );
+       
+        /**
+        * Sets the global note wait status.
+        * @param aStatus Wait for completed or not
+        */
+        IMPORT_C void SetWaitForReady( TBool aStatus );
         
         /**
-        * Sets notification dialog flag.
-        * @param aNotificationDialog True if notification dialog 
-        *        should be used.
+        * Sets the global note softkeys.
+        * @param aTone is the note softkeys
         */
-        IMPORT_C void SetNotificationDialog( TBool aNotificationDialog );
-        
-        /**
-        * Sets cause code.
-        * @param aCauseCode Cause code.
-        */
-        IMPORT_C void SetCauseCode( TInt aCauseCode );
+        IMPORT_C void SetSoftkeys( TInt aSoftkeys );
+
         
         /**
         * Returns the global note type
         * @return Returns the type
         */
-        IMPORT_C PhoneNotificationType Type() const;
+        IMPORT_C TAknGlobalNoteType Type() const;
 
         /**
         * Returns the global note text resource ID.
@@ -107,30 +100,30 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         IMPORT_C const TDesC& Text() const;
 
         /**
-         * Returns the timeout value.
-         * @return   Timeout value.
-         */
-        IMPORT_C TInt Timeout() const;
-        
-        /**
-         * Returns the notification dialog flag.
-         * @return Notification dialog flag.
-         */
-        IMPORT_C TBool NotificationDialog() const;
-        
-        /**
-        * Returns cause code.
-        * @return Cause code.
+        * Returns the global note tone.
+        * @return Returns the global note tone
         */
-        IMPORT_C TInt CauseCode() const;
-    
+        IMPORT_C TInt Tone() const;
+        
+        /**
+        * Gets the global note wait status
+        * @return  ETrue if wait for completed
+        */
+        IMPORT_C TBool WaitForReady() const;
+        
+        /**
+        * Returns the global note softkeys.
+        * @return Returns the global note softkeys
+        */
+        IMPORT_C TInt Softkeys() const;      
+ 
     private:    
         
         /**
         * Global note type
         */
-        PhoneNotificationType iType;
-        
+        TAknGlobalNoteType iType;
+
         /**
         * Global note text resource ID
         */
@@ -140,21 +133,22 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         * Global note text
         */
         TPtrC iText;
+
+        /**
+        * Global note tone
+        */
+        TInt iTone;
         
         /**
-        * Timeout for a note.
+        * Wait for ready status
         */
-        TInt iTimeout;
+        TBool iWaitforReady;
         
         /**
-        * Notification Dialog flag.
+        * Global note softkeys
         */
-        TBool iNotificationDialog;
-        
-        /**
-        * Cause code. 
-        */
-        TInt iCauseCode; 
+        TInt iSoftkeys;
+
     };
 
 #endif // __TPHONECMDPARAMGLOBALNOTE_H

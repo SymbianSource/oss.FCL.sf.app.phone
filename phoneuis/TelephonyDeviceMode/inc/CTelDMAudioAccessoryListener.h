@@ -21,7 +21,7 @@
 
 //  INCLUDE FILES   
 #include <MTelephonyAudioRoutingObserver.h>
-#include "mteldmaccessory.h"
+#include "MTelDMAccessory.h"
 
 // FORWARD DECLARATIONS
 
@@ -35,8 +35,8 @@ class CTelephonyAudioRouting;
 * @since 3.1
 */
 NONSHARABLE_CLASS( CTelDMAudioAccessoryListener ): public CBase,
-                          public MTelDMAccessory,
-                          public MTelephonyAudioRoutingObserver
+						  public MTelDMAccessory,
+						  public MTelephonyAudioRoutingObserver
     {
     public: // constructor & destructor
 
@@ -54,24 +54,24 @@ NONSHARABLE_CLASS( CTelDMAudioAccessoryListener ): public CBase,
         /**
         * See MTelDMAccessory
         */
-        TBool IsAccessoryAttached();
-        
-        /**
-        * See MTelDMAccessory
-        */
-        TBool IsAnyActiveAccessory();
-    
-    public: //from  MTelephonyAudioRoutingObserver 
-    
-        void AvailableOutputsChanged( CTelephonyAudioRouting& 
-                                                aTelephonyAudioRouting);
-        
-        void OutputChanged( CTelephonyAudioRouting& 
-                                        aTelephonyAudioRouting);
-        
-        void SetOutputComplete( CTelephonyAudioRouting& 
-                                            aTelephonyAudioRouting, 
-                                            TInt aError); 
+		TBool IsAccessoryAttached();
+		
+		/**
+		* See MTelDMAccessory
+		*/
+		TBool IsAnyActiveAccessory();
+	
+	public: //from 	MTelephonyAudioRoutingObserver 
+	
+		void AvailableOutputsChanged( CTelephonyAudioRouting& 
+												aTelephonyAudioRouting);
+		
+		void OutputChanged( CTelephonyAudioRouting& 
+										aTelephonyAudioRouting);
+		
+		void SetOutputComplete( CTelephonyAudioRouting& 
+											aTelephonyAudioRouting, 
+											TInt aError); 
     private: // Constructor
         
         /** c++ constructor */
@@ -83,7 +83,7 @@ NONSHARABLE_CLASS( CTelDMAudioAccessoryListener ): public CBase,
         
     private: 
     
-        // Array of available outputs         
+    	// Array of available outputs         
         RArray<CTelephonyAudioRouting::TAudioOutput> iOutputArray;
         
         // Current accessory mode.

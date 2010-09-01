@@ -1,0 +1,90 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Dialer virtual keypad button text labels.
+*               This is the default latin variant of the file.
+*
+*/
+
+// NOTE: It's mandatory that all variated keypad resources have
+// the same resouce identifier and same structure. Same interface
+// is used for all of them!
+
+//  RESOURCE IDENTIFIER
+NAME DIKP
+
+#include <eikon.rh>
+#include <eikon.hrh>
+
+#include "dialerkeypad.rh"
+
+RESOURCE RSS_SIGNATURE { }
+
+RESOURCE TBUF { buf=""; }
+
+RESOURCE DIALER_KEYPAD r_dialer_keypad
+    {
+    keys = 
+        {
+        DIALER_KEY // 1
+            {
+            firstRow = DEFAULT_KEY_1_TEXT;
+            },
+        DIALER_KEY // 2
+            {
+            firstRow = DEFAULT_KEY_2_TEXT;
+            },
+        DIALER_KEY // 3
+            {
+            firstRow = DEFAULT_KEY_3_TEXT;
+            },
+        DIALER_KEY // 4
+            {
+            firstRow = DEFAULT_KEY_4_TEXT;
+            },
+        DIALER_KEY // 5
+            {
+            firstRow = DEFAULT_KEY_5_TEXT;
+            },
+        DIALER_KEY // 6
+            {
+            firstRow = DEFAULT_KEY_6_TEXT;
+            },
+        DIALER_KEY // 7
+            {
+            firstRow = DEFAULT_KEY_7_TEXT;
+            },
+        DIALER_KEY // 8
+            {
+            firstRow = DEFAULT_KEY_8_TEXT;
+            },
+        DIALER_KEY // 9
+            {
+            firstRow = DEFAULT_KEY_9_TEXT;
+            },
+        DIALER_KEY // *
+            {
+            firstRow = DEFAULT_KEY_ASTERISK_TEXT;
+            },
+        DIALER_KEY // 0
+            {
+            firstRow = DEFAULT_KEY_0_TEXT;
+            },
+        DIALER_KEY // #
+            {
+            firstRow = DEFAULT_KEY_HASH_TEXT;
+            }
+        };
+    }
+
+// End Of File

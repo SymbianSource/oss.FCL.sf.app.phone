@@ -12,7 +12,7 @@
 * Contributors:
 *
 * Description:  The file contains values for shared data keys specifying
-*       telephony specific software settings. 
+*  		telephony specific software settings. 
 *
 *
 */
@@ -34,6 +34,12 @@
 * @since Series 60 3.1
 */
 #define KTelephonyLVFlagCoverHideSendEndKey 0x00000004
+
+/**
+* Shows contact name in Call UI even if there are several matches for the phone number.
+*
+*/
+#define KTelephonyLVFlagShowContactWhenSeveralMatches 0x00000008
 
 /** 
 * KTelephonyLVFlagScrollSoftKeys defines status of scroll softkeys. When the 
@@ -90,31 +96,12 @@
 #define KTelephonyLVFlagAdvancedENCheck 0x00000200
 
 /**
-* KTelephonyLVFlagDisableCallControlHardKeysWhileLocked 
-*/
-#define KTelephonyLVFlagDisableCallControlHardKeysWhileLocked 0x00000400 
-
-/**
-* KTelephonyLVFlagUssdTone defines if the USSD tone play functionality is 
-* enabled.
-* When the flag is set, tone is played when USSD message is received. 
-* @since Series 60 2.6
-*/
-#define KTelephonyLVFlagUssdTone 0x00000800
-
-
-/**
 * KTelephonyLVFlagArbitraryVideoScaling defines if video player
 * implementation in the device support arbitrary scaling.
 * When the flag is set, arbitrary scaling is applied.
 * @since Series 60 3.1
 */
 #define KTelephonyLVFlagArbitraryVideoScaling 0x00001000
-
-/**
-* KTelephonyLVFlagAllowUnlockOnIncoming 
-*/
-#define KTelephonyLVFlagAllowUnlockOnIncoming 0x00002000 
 
 /**
 * KTelephonyLVFlagMannerMode defines if the manner mode is enabled.
@@ -146,14 +133,6 @@
 * @since Series 60 5.0
 */
 #define KTelephonyLVFlagOptionsChange 0x00400000
-
-/**
-* KTelephonyLVFlagForbiddenIcon defines if forbidden feature is enabled.
-* When flag is set, applications should show GSM, WCDMA, GSM/WCDMA 
-* and Forbiddeb icons in manual selection of network.
-* @since Series 60 5.0
-*/
-#define KTelephonyLVFlagForbiddenIcon 0x00800000
 
 /**
 * Ussd ( service command ) shows number of remaining characters 

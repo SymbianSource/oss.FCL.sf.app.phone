@@ -17,6 +17,7 @@
 
 
 #include <StringLoader.h>
+#include <activeidle2domainpskeys.h>
 #include <featmgr.h>
 #include <eikenv.h>
 
@@ -39,9 +40,15 @@
 #include "phoneviewcommanddefinitions.h"
 #include "phoneappcommands.hrh"
 #include "phonelogger.h"
+#include "mphonesecuritymodeobserver.h"
 
 const TInt  KPhoneKeyStart            = 33;
 const TInt  KPhoneKeyEnd              = 127;
+
+const TInt KKeyCtrlA( 1 );
+const TInt KKeyCtrlC( 3 );
+const TInt KKeyCtrlV( 22 );
+const TInt KKeyCtrlX( 24 );
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -60,7 +67,7 @@ CPhoneNumberEntryManager::CPhoneNumberEntryManager(
      iStateMachine ( aStateMachine ),
      iCustomization ( aCustomization ),
      iCbaManager ( aCbaManager ),
-     iEnv( *CEikonEnv::Static() )
+     iEnv( *CEikonEnv::Static() ) // codescanner::eikonenvstatic
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::CPhoneNumberEntryManager() ");
     }
@@ -144,6 +151,23 @@ void CPhoneNumberEntryManager::StoreNumberEntryContentL()
     }
 
 // -----------------------------------------------------------
+// CPhoneNumberEntryManager::RestoreNumberEntryContentL
+// -----------------------------------------------------------
+//
+void CPhoneNumberEntryManager::RestoreNumberEntryContentL()
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::RestoreNumberEntryContentL( ) ");
+    if ( iNumberEntryContent )
+        {
+        // Restore the number entry content from cache
+        TPtr ptr( iNumberEntryContent->Des() );            
+        iViewCommandHandle.ExecuteCommandL( EPhoneViewSetNumberEntryContent, 0, ptr );
+        delete iNumberEntryContent;
+        iNumberEntryContent = NULL;
+        }
+    }
+
+// -----------------------------------------------------------
 // CPhoneNumberEntryManager::IsNumberEntryContentStored
 // -----------------------------------------------------------
 //
@@ -164,6 +188,14 @@ void CPhoneNumberEntryManager::ClearNumberEntryContentCache()
     iNumberEntryContent = NULL;
     }
 
+// -----------------------------------------------------------
+// CPhoneNumberEntryManager::CreateNumberEntryL
+// -----------------------------------------------------------
+void CPhoneNumberEntryManager::CreateNumberEntryL()
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::CreateNumberEntryL( ) ");
+    iViewCommandHandle.ExecuteCommandL( EPhoneViewCreateNumberEntry );
+    }
  
 // -----------------------------------------------------------
 // CPhoneNumberEntryManager::SetNumberEntryVisibilityL
@@ -176,6 +208,98 @@ void CPhoneNumberEntryManager::SetNumberEntryVisibilityL( TPhoneCmdParamBoolean 
             "CPhoneNumberEntryManager::SetNumberEntryVisibilityL : aVisible =%d", 
             aVisible.Boolean() );
     iViewCommandHandle.ExecuteCommandL( EPhoneViewSetNumberEntryVisible, &aVisible );
+    if ( aVisible.Boolean() )
+        {
+        // Set Number Entry CBA
+        iCbaManager.UpdateCbaL( EPhoneNumberAcqCBA );
+        }
+    }
+
+// -----------------------------------------------------------
+// CPhoneNumberEntryManager::HandleCreateNumberEntryL
+// add conditions here regarding when NE can be opened:
+// - activeidle is not the top most application
+// - any query is not visible
+// - dialog is not visible ("new call")
+// - information note is not visible ("IMEI code", "life timer")
+// - options menu bar is not visible
+// - "switch to ..." -operation  is not ongoing
+// -----------------------------------------------------------
+//
+void CPhoneNumberEntryManager::HandleCreateNumberEntryL()
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::HandleCreateNumberEntryL() ");
+    
+    const TBool autoLockOn = iStateMachine.SecurityMode()->IsSecurityMode();
+    const TBool idleVal = CPhonePubSubProxy::Instance()->Value( KPSUidAiInformation, KActiveIdleState );
+    const TBool queryActive = iState->IsAnyQueryActiveL();
+    const TBool menuBarVisible = iState->IsMenuBarVisibleL();
+    
+    if( autoLockOn || 
+        ( idleVal == EPSAiForeground ) ||
+        ( menuBarVisible || queryActive ) )
+        {
+        __PHONELOG( EBasic, EPhoneControl, 
+             "CPhoneNumberEntryManager::HandleCreateNumberEntryL() NE NOT CREATED" );
+        __PHONELOG2( EBasic, EPhoneControl, 
+             "CPhoneNumberEntryManager::HandleCreateNumberEntryL() autoLcokOn(%d) idleVal(%d)", 
+             autoLockOn, idleVal );
+        __PHONELOG2( EBasic, EPhoneControl, 
+             "CPhoneNumberEntryManager::HandleCreateNumberEntryL() queryActive(%d) menuBarVisible(%d)", 
+             queryActive, menuBarVisible );
+        }
+    else
+        {
+        //creates NE
+        if( ( !iStateMachine.PhoneEngineInfo()->IsSwitchToOperationOngoing () ) &&
+            ( !IsNumberEntryUsedL() ) &&
+            ( !queryActive || FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) ) )
+            {
+            __PHONELOG( EBasic, EPhoneControl,
+                        "CPhoneNumberEntryManager::HandleCreateNumberEntryL() --create NE" );
+            
+            if ( iState->IsNoteDismissableL() )
+                {
+                iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveNote );
+                }
+            
+            if( iStateMachine.SecurityMode()->IsSecurityMode() )
+                {
+                iState->HandleCommandL( EPhoneNumberAcqSecurityDialer );
+                }
+            else
+                {
+                // Effect is shown when dialer is created.
+                iState->BeginTransEffectLC( ENumberEntryCreate );
+                iViewCommandHandle.ExecuteCommandL( EPhoneViewCreateNumberEntry );
+                iState->EndTransEffect();
+                // Go to current state implementation
+                iCbaManager.UpdateInCallCbaL();
+                iState->UpdateInCallContextMenuL();
+                iEnv.SyncNotifyFocusObserversOfChangeInFocus();
+                }
+            }
+
+        //shows existing NE
+        if ( ( !iStateMachine.PhoneEngineInfo()->IsSwitchToOperationOngoing () ) &&
+             ( !IsNumberEntryVisibleL() ) &&
+             ( !queryActive || FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) ) )
+            {
+            __PHONELOG( EBasic, EPhoneControl, 
+                        "CPhoneNumberEntryManager::HandleCreateNumberEntryL() -- show NE" );
+            
+            if ( iState->IsNoteDismissableL() )
+                {
+                iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveNote );
+                }
+            
+            TPhoneCmdParamBoolean booleanParam;
+            booleanParam.SetBoolean( ETrue );
+            // Show the number entry
+            SetNumberEntryVisibilityL(booleanParam);
+            }
+        }
+    
     }
 
 // -----------------------------------------------------------
@@ -219,6 +343,103 @@ HBufC* CPhoneNumberEntryManager::PhoneNumberFromEntryLC() const
     return phoneNumber;
     }
 
+// -----------------------------------------------------------
+// CPhoneNumberEntryManager::HandleNumberEntryEdited
+// -----------------------------------------------------------
+//
+void CPhoneNumberEntryManager::HandleNumberEntryEdited()
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::HandleNumberEntryEdited( ) ");
+    TBool isNumberEntryVisible( EFalse );
+    TRAP_IGNORE( isNumberEntryVisible = IsNumberEntryVisibleL() );
+
+    if( isNumberEntryVisible )
+        {
+        HBufC* phoneNumber( NULL );
+        TRAP_IGNORE( phoneNumber = HBufC::NewL( KPhoneNumberEntryBufferSize ) );
+        if( phoneNumber )
+            {
+            phoneNumber->Des().Zero();
+            TPtr ptr( phoneNumber->Des() );
+            TPhoneCmdParamString stringParam;
+            stringParam.SetString( &ptr );
+            TRAP_IGNORE( iViewCommandHandle.ExecuteCommandL(
+                    EPhoneViewGetNumberFromEntry,
+                    &stringParam ) );
+            // Save the phone number
+            iStateMachine.PhoneEngineInfo()->SetPhoneNumber( ptr );
+
+            iStateMachine.SendPhoneEngineMessage(
+                    MPEPhoneModel::EPEMessagePhoneNumberEdited );
+
+            // remove the phone number
+            delete phoneNumber;
+
+            // Set service code flag to view
+            TPhoneCmdParamBoolean serviceCodeParam;
+            serviceCodeParam.SetBoolean(
+                iStateMachine.PhoneEngineInfo()->PhoneNumberIsServiceCode() );
+            TRAP_IGNORE( iViewCommandHandle.ExecuteCommandL( 
+                    EPhoneViewSetServiceCodeFlag,
+                    &serviceCodeParam ) );
+            }
+        }
+    }
+
+// -----------------------------------------------------------
+// CPhoneNumberEntryManager::KeyEventForExistingNumberEntryL
+// -----------------------------------------------------------
+//
+void CPhoneNumberEntryManager::KeyEventForExistingNumberEntryL( 
+        const TKeyEvent& aKeyEvent,
+        TEventCode aEventCode )
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::KeyEventForExistingNumberEntryL( ) ");
+
+    TPhoneCmdParamKeyEvent keyEventParam;
+    keyEventParam.SetKeyEvent( aKeyEvent );
+    keyEventParam.SetEventCode( aEventCode );
+
+    if ( IsValidAlphaNumericKey( aKeyEvent, aEventCode ) 
+            || aKeyEvent.iCode == KKeyCtrlA
+            || aKeyEvent.iCode == KKeyCtrlC
+            || aKeyEvent.iCode == KKeyCtrlV
+            || aKeyEvent.iCode == KKeyCtrlX )
+        {
+        iViewCommandHandle.HandleCommandL(
+                EPhoneViewSendKeyEventToNumberEntry, &keyEventParam );
+        }
+    else if ( aKeyEvent.iCode == EKeyBackspace )
+        {
+        TPhoneViewResponseId resp = iViewCommandHandle.HandleCommandL(
+                    EPhoneViewSendKeyEventToNumberEntry, &keyEventParam );
+
+        if ( resp == EPhoneViewResponseNumberEntryCleared )
+            {
+            // Remove number entry from screen
+            iViewCommandHandle.ExecuteCommandL(
+                EPhoneViewRemoveNumberEntry );
+
+            // Stop DTMF tone playing just in case (user might be holding down a number
+            // key when pressed 'clear' key).
+            iStateMachine.SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF );
+
+            // Handle state-specific behaviour when number entry is
+            // cleared
+            HandleNumberEntryClearedL();
+            }
+
+        }
+    else if( aKeyEvent.iCode == EKeyLeftArrow ||
+           aKeyEvent.iCode == EKeyRightArrow ||
+           aKeyEvent.iCode == EKeyUpArrow ||
+           aKeyEvent.iCode == EKeyDownArrow )
+           {
+           iViewCommandHandle.HandleCommandL(
+               EPhoneViewSendKeyEventToNumberEntry, &keyEventParam );
+           }
+    }
+
 // -----------------------------------------------------------------------------
 // CPhoneNumberEntryManager::IsValidAlphaNumericKey
 // Checks is the key event a number, a special character
@@ -237,7 +458,7 @@ TBool CPhoneNumberEntryManager::IsValidAlphaNumericKey(
     // a numeric key (1,2,3,4,6,7,8,9,0,+,*,p,w )
     // or
     // a letter from fullscreen qwerty, miniqwerty or handwriting
-    // when voip is enabled.
+    // when voip or easydialing is enabled.
     if ( numericKeyEntered
         || IsAlphanumericSupportedAndCharInput( aKeyEvent ) )
         {
@@ -249,17 +470,23 @@ TBool CPhoneNumberEntryManager::IsValidAlphaNumericKey(
 
 // -----------------------------------------------------------------------------
 // CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput
+// Check that number entry is in alphabetic mode and given key is an allowed
+// character key
 // -----------------------------------------------------------------------------
 //
 TBool CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput(
         const TKeyEvent& aKeyEvent ) const
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput( ) ");
-    TBool ret = ( ( iCustomization &&
-                 iCustomization->AllowAlphaNumericMode() ) &&
-                 ( ( aKeyEvent.iScanCode >= KPhoneKeyStart &&
-                     aKeyEvent.iScanCode <= KPhoneKeyEnd ) ||
-                     aKeyEvent.iModifiers & EModifierSpecial ) );
+    
+    TBool numericMode = EFalse;
+    TRAP_IGNORE( numericMode = ( iViewCommandHandle.HandleCommandL( EPhoneViewIsNumberEntryNumericMode ) 
+            == EPhoneViewResponseSuccess ) );
+    
+    TBool ret = !numericMode &&
+                ( ( aKeyEvent.iScanCode >= KPhoneKeyStart &&
+                    aKeyEvent.iScanCode <= KPhoneKeyEnd ) ||
+                  aKeyEvent.iModifiers & EModifierSpecial );
     __PHONELOG1( EBasic, EPhoneControl, 
             "CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput: %d", ret );
     return ret;
@@ -284,6 +511,29 @@ void CPhoneNumberEntryManager::NumberEntryClearL() const
     iViewCommandHandle.ExecuteCommandL( EPhoneViewClearNumberEntryContent );
     }
 
+// -----------------------------------------------------------
+// CPhoneNumberEntryManager::NumberEntryInNumericModeL
+// -----------------------------------------------------------
+//
+TBool CPhoneNumberEntryManager::NumberEntryInNumericModeL()
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::NumberEntryInNumericModeL( ) ");
+    return iViewCommandHandle.HandleCommandL(
+        EPhoneViewIsNumberEntryNumericMode ) == EPhoneViewResponseSuccess;
+    }
 
+// -----------------------------------------------------------
+// CPhoneNumberEntryManager::NumberEntryToggleAlphaNumericModeL
+// -----------------------------------------------------------
+//
+TBool CPhoneNumberEntryManager::NumberEntryToggleAlphaNumericModeL()
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::NumberEntryToggleAlphaNumericModeL( ) ");
+    TPhoneCmdParamBoolean newModeAlpha;
+    // Toggle number entry alpha/numeric mode
+    iViewCommandHandle.ExecuteCommandL(
+        EPhoneViewToggleNumberEntryAlphaNumericMode, &newModeAlpha );
+    return newModeAlpha.Boolean();
+    }
 
 

@@ -126,7 +126,7 @@ class CPhoneRecoverySystem
         * @param aState new state.
         */
         void SetState( TRecoveryId aId, 
-            CTeleRecoverySystem::TRecoveryState aState );
+        	CTeleRecoverySystem::TRecoveryState aState );
     
         /**
         * Resets pending recovery actions back to waiting.
@@ -202,23 +202,23 @@ class CPhoneRecoverySystem
         * @param aId - Id to be added in container
         * @exception -1 (KErrNoSpace) is thrown if there isn't room in the container
         */
-        void AddIdToContainer( TRecoveryId aId );
-        
-        /**
-        * Removes given id from the container which holds all the ids this singleton
-        * has given out via AddL method.
-        * @param aId - Id to be removed from container
-        */
-        void RemoveFromContainer( TRecoveryId aId );
-        
-        /**
-        * This is called from destructor. Method removes all the ids from recovery
-        * system that are hold within container. This is done this way because
-        * this singleton object is actually destructed by coeenv before some of
-        * object's clients' destructor is called where it would try to remove
-        * id from the recovery system. Now this way we do not leak any resources.
-        */
-        void RemoveAllIdsFromContainer();
+		void AddIdToContainer( TRecoveryId aId );
+		
+		/**
+		* Removes given id from the container which holds all the ids this singleton
+		* has given out via AddL method.
+		* @param aId - Id to be removed from container
+		*/
+		void RemoveFromContainer( TRecoveryId aId );
+		
+		/**
+		* This is called from destructor. Method removes all the ids from recovery
+		* system that are hold within container. This is done this way because
+		* this singleton object is actually destructed by coeenv before some of
+		* object's clients' destructor is called where it would try to remove
+		* id from the recovery system. Now this way we do not leak any resources.
+		*/
+		void RemoveAllIdsFromContainer();
 
 
     private:    // Data  

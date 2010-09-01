@@ -68,6 +68,7 @@ class TPhoneCommandParam
         EPAUIParamIdSoftkeyName,
         EPAUIParamIdGlobalIndicator, // for displaying global note
         EPAUIParamIdCallGuard,
+        EPAUIParamIdSpeedDial,
 
     // ----- USED TYPES ---------
         EPhoneParamIdInteger,
@@ -92,6 +93,7 @@ class TPhoneCommandParam
         EPhoneParamIdAudioOutput,
         EPhoneParamIdAudioAvailable,
         EPhoneParamIdRingTone,
+        EPhoneParamIdSpeedDial,
         EPhoneParamIdReconnectQuery,
         EPhoneParamIdVideoCallSetupFailedCreateVoiceCallToTheSameContactQuery,
         EPhoneParamRebootQuery,

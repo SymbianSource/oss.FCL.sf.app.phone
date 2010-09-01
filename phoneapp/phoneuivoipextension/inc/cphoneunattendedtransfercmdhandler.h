@@ -64,6 +64,12 @@ public:
      * @param   aCommand    VoIP command identifier.
      */
     void HandleCommandL( TInt aCommand );
+   
+    /**
+     * Shows call back query in case when transfered call is
+     * not connected
+     */
+    void LaunchCallBackQueryL();
     
 private:
 

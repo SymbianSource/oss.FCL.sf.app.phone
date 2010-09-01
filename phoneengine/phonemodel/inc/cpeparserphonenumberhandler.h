@@ -20,7 +20,7 @@
 #define CPEPARSERPHONENUMBERHANDLER_H
 
 //  INCLUDES
-#include <cphonegsmphonenumberhandler.h>
+#include <CPhoneGsmPhoneNumberHandler.h>
 #include <pevirtualengine.h>
 
 // CONSTANTS
@@ -80,12 +80,11 @@ NONSHARABLE_CLASS( CPEParserPhoneNumberHandler ) : public CPhoneGsmPhoneNumberHa
     
         /**
         * Removes non-GSM standard postfix characters before dialling attempt.
-        * Leaves with ECCPErrorInvalidPhoneNumber if recognizes + char.
         * @since 5.0
         * @param aPostfix postfix to modify.
         * @return modified postfix.
         */
-        TPtrC FilterPostfixL( TPtrC aPostfix );
+        TPtrC FilterPostfix( TPtrC aPostfix );
 
         /**
         * Checks if phone is offline

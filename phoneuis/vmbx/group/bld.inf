@@ -1,0 +1,54 @@
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file provides the information required for building the 
+*                whole of a vm.
+*
+*/
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT 
+
+//  Help exports
+#include "../help/group/bld.inf"
+
+PRJ_EXPORTS
+
+// sis export
+vm_stub.SIS                         /epoc32/data/z/system/install/vm_stub.sis
+
+// iby export
+../rom/Vmbx.iby                     CORE_APP_LAYER_IBY_EXPORT_PATH(vmbx.iby)
+../rom/VmbxResources.iby            LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(vmbxresources.iby)
+
+// loc export    
+../loc/vm.loc                       APP_LAYER_LOC_EXPORT_PATH(vm.loc)
+
+PRJ_EXTENSIONS
+
+START EXTENSION s60/mifconv
+  OPTION TARGETFILE vm_aif.mif
+  OPTION SOURCES -c8,8 qgn_menu_smsvo
+END
+
+PRJ_MMPFILES
+//gnumakefile icons_dc.mk
+//gnumakefile icons_aif_scalable_dc.mk
+
+vm.mmp
+#include "../gsvmbxplugin/group/bld.inf"
+
+
+//  End of File

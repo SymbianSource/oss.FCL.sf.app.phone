@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -86,6 +86,16 @@ class CPhoneStateInCall : public CPhoneState
         IMPORT_C virtual void ConstructL();
 
         /**
+        * Open menu bar
+        */
+        IMPORT_C virtual void OpenMenuBarL();
+
+        /**
+        * Launch the New call phone number query
+        */
+        IMPORT_C void LaunchNewCallQueryL();
+
+        /**
         * Call number fetched from New call dialog
         * @param aFetchedNumber number fetched from the diaog
         */
@@ -134,7 +144,19 @@ class CPhoneStateInCall : public CPhoneState
         * Close all dtmf dialogs
         */
         IMPORT_C void CloseDtmfQueryL();
-
+    
+        /**
+        * Creates number entry.
+        */
+        IMPORT_C void CreateNumberEntryL();
+        
+        
+        /**
+          * Concludes does the engine have information of the
+          * phone number. This information is then send to the view.
+          * @param aCallId - Call Id.
+        */
+        IMPORT_C void PhoneNumberAvailableInPhoneEngineL( TInt aCallId );
     
     private: // New functions
 
@@ -170,19 +192,59 @@ class CPhoneStateInCall : public CPhoneState
         void CancelDTMFSendingL();
 
         /**
+        * Handle EPEMessagePromptSpeedDial
+        */
+        void HandleDTMFPromptSpeedDialL();
+
+        /**
         * Sends DTMF sequence to Phone Engine
         */
         void SendDtmfL();
+        
+        /**
+        * Sends DTMF speed dial number sequence to Phone Engine
+        */
+        void SendDtmfSpeedDialNumberL();
+        
+        /**
+        * Sends command to view for launching manual DTMF entry
+        */
+        void LaunchDtmfManualQueryL();
 
         /**
         * Sends command to view for launching DTMF list query
         */
         void LaunchDtmfListQueryL();
-              
+        
         /**
+        * Launch DTMF Single Item fetch dialog
+        */
+        void LaunchDtmfSearchDialogL();
+        
+        /**
+        * Launch DTMF Single Item fetch for DTMF List query usage
+        */
+        void LaunchDtmfListViewSearchDialogL();
+
+        /**
+        * Launch New call fetch dialog
+        */
+        void LaunchNewCallSearchDialogL();
+              
+		/**
         * Sends command to view for 'Lock keypad'
         */
         void LockKeypadL();
+        
+		/**
+        * Handle successful single item fetch.
+        */
+        void HandleSuccessFetchedNumberL();
+        
+        /**
+        * Handle failed single item fetch.
+        */
+        void HandleFailedFetchedNumberL();
         
         /**
         * Update remote data and label to the call header.
@@ -221,14 +283,26 @@ class CPhoneStateInCall : public CPhoneState
         */
         void HandleVoiceKeyPressL( TPhoneKeyEventMessages aMessage );
         
+        // From CPhoneState
+        /**
+         * This function is called when there is property value change.
+         * @param aCategory Category of the property
+         * @param aKey      Property key that is changed
+         * @param aValue    New property value
+         */
+        IMPORT_C virtual void HandlePropertyChangedL(
+            const TUid& aCategory,
+            const TUint aKey,
+            const TInt aValue );
+
     private:
     
-        /**
-        * Special timer for preventing recursive calls
-        * which would otherwise occur with multiple
-        * wait characters in a DTMF string.
-        */
-        CPhoneDtmfWaitCharTimer* iDtmfWaitCharTimer;
+    	/**
+    	* Special timer for preventing recursive calls
+    	* which would otherwise occur with multiple
+    	* wait characters in a DTMF string.
+    	*/
+    	CPhoneDtmfWaitCharTimer* iDtmfWaitCharTimer;
   
     
     };

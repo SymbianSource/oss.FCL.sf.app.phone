@@ -1,0 +1,573 @@
+/*
+* Copyright (c) 2002-2006 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*     This is a localisation file for Phone
+*     A .loc file is the one and only place where the logical strings
+*     to be localised are defined. 
+*
+*/
+
+
+
+// LOCALISATION STRINGS
+
+// d: Local hold operation is confirmed with
+// d: the text in confirmation note. %U is replaced
+// d: with call identification.
+// l: popup_note_window
+// w: 
+//
+#define qtn_incal_conf_hold_cli "%U on hold"
+
+// d: Local hold operation is confirmed with
+// d: the text in confirmation note. There is no name
+// d: in phonebook for the number of the call.
+// l: popup_note_window
+// w: 
+//
+#define qtn_incal_conf_hold_nocli "Call %N on hold"
+
+// d: Local hold operation is confirmed with
+// d: the text in confirmation note. The held call is
+// d: conference.
+// l: popup_note_window
+// w: 
+//
+#define qtn_incal_conf_hold_conf "Conference on hold"
+
+
+// d: It is title in new call data query.
+// l: popup_query_data_window
+// w: 
+//
+#define text_phone_number "Phone number:"
+
+// d: It is softkey used to initiate single entry fetch.
+// l: control_pane_t1/opt7
+// w: 
+//
+#define text_softkey_find "Search"
+
+// d: It is softkey in new call data query. It starts making
+// d: call to the number specified in query.
+// l: control_pane_t1/opt7
+// w: 
+//
+#define text_softkey_new_call "Call"
+
+// d: It is title in single item fetch from new call query.
+// l: title_pane_t2/opt9
+// w: 
+//
+#define qtn_incal_call_title "New call to"
+
+// d: When the remote end holds the active Call, it will be indicated to 
+// d: the user with this information note
+// l: popup_note_window
+// w: 
+//
+#define qtn_incal_info_hold "On hold"
+
+// d: When the remote end activates the held call, it will be indicated to 
+// d: the user with this information note
+// l: popup_note_window
+// w: 
+//
+#define qtn_incal_remote_active_note "Connected"
+
+// d: If the remote end transfers the call before the transferred to party 
+// d: has answered, this wait note pop-up window is displayed
+// l: popup_note_wait_window
+// w: 
+//
+#define qtn_incal_wait_transfer "Transfer in progress"
+
+// d: When the remote end transfers the call to a third party, this
+// d: information note is shown if the calling line identification of the 
+// d: transferred to party is not available.
+// l: popup_note_window
+// w: 
+//
+#define qtn_incal_transferred_note "Transferred"
+
+// d: If the call identification of the transferred to party is 
+// d: available, this information note is displayed instead, 
+// d: where %U is the calling line identification.
+// l: popup_note_window
+// w: 
+//
+#define qtn_incal_transferred_nro_note "Connected to %U"
+
+// d: If the remote end joins the user to a multiparty call,this 
+// d: information note is displayed
+// l: popup_note_window
+// w: 
+//
+#define qtn_incal_info_conf_active "Conference call active"
+
+// d: If user tries to disconnect BT connection while there is
+// d: audio on going, the following query will be displayed.
+// l: popup_note_window
+// w: 
+//
+#define qtn_que_continue_in_handset "Connection is closed. Continue in handportable mode?"
+
+// d: When sending a media file to caller
+// d: the text in confirmation note. %U is replaced
+// l: popup_note_window
+// w: 
+//
+#define qtn_incal_sfi_sent "Sending file to %U"
+
+// d: If user tries to disconnect BT connection while there is
+// d: video call ongoing, the following query will be displayed.
+// l: popup_note_window
+// w: 
+//
+#define qtn_que_continue_in_louds "Connection is closed. Continue in loudspeaker mode?"
+
+// d: information note when trying to switch to video in 2G.
+// l: popup_note_window
+// w: 
+// r: 3.1u
+//
+#define qtn_incal_info_no_network_support "No network support for video call"
+
+// d: Confirmation note when switching from voice to video
+// l: popup_note_window
+// w: 
+// r: 3.1u
+//
+#define qtn_query_create_video_call "End active call and create video call to the same contact?"
+
+// d: Confirmation note when switching from video to voice
+// l: popup_note_window
+// w: 
+// r: 3.1u
+//
+#define qtn_incal_query_create_video_call "End active call and create voice call to the same contact?"
+
+// d: information note when trying to switch to video or MO video call attempt during MC or PCSuite restore.
+// l: popup_note_window
+// w: 
+// r: 3.1
+//
+#define qtn_video_call_not_allowed "Video call not allowed during restore"
+
+// d: It is text for a command button. If it is selected, 
+// d: the user can choose a participant in conference.
+// d: The selected participant will be dropped.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_drop "Drop participant"
+
+// d: It is text for a command button. If it is selected, 
+// d: operation separates selected remote party 
+// d: call from the active conference call.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_private "Private"
+
+// d: It is text for a command button. If it is selected, 
+// d: active call is ended.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_end_active_call "End active call"
+
+// d: It is text for a command button. If it is selected, 
+// d: add call to conference call.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_join "Add to conference"
+
+// d: It is text for a command button. If it is selected, 
+// d: calls are swapped.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_swap "Swap"
+
+// d: It is text for a command button. If it is selected, 
+// d: view is changed to idle.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_go_idle "Go to idle"
+
+// d: It is text for a command button. If it is selected, 
+// d: all calls are ended.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_end_all_calls "End all calls"
+
+// d: It is text for a command button  If it is selected, 
+// d: participants list is opened.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_participants "Participants"
+
+// d: It is text for a command button. If it is selected, 
+// d: held call is activated.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_unhold "Unhold"
+
+// d: It is text for a command button. If it is selected, 
+// d: call is put on hold.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_hold "Hold"
+
+// d: It is text for a command button. If it is selected,
+// d: handsfree is activated.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_loudspeaker "Loudspeaker"
+
+// d: It is text for a command button. If it is selected,
+// d: audio is routed to handset mode
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_handset "Handset"
+
+// d: It is text for a command button. If it is selected, 
+// d: phone is unmuted.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_unmute_mic "Unmute"
+
+// d: It is text for a command button. If it is selected, 
+// d: phone is muted.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_mute_mic "Mute"
+
+// d: It is text for a command button. If it is selected, 
+// d: call is changed from voice to video.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_voice_to_video "Voice to video"
+
+// d: It is text for a command button. If it is selected, 
+// d: conference is built from calls.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_conference "Conference"
+
+// d: It is text for a command button. If it is selected, 
+// d: audio is routed bt handsfree.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_bluetooth "BT Handsfree"
+
+// d: It is text for a command button. If it is selected, 
+// d: call is ended.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_end_call "End call"
+
+// d: It is text for a command button. If it is selected, 
+// d: incoming call is rejected.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_reject "Reject"
+
+// d: It is text for a command button. If it is selected, 
+// d: incoming call is answered.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_answer "Answer"
+
+// d: It is text for a command button. If it is selected, 
+// d: ringing tone is muted.
+// l: cell_call4_button_pane_t1
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_silence "Silence"
+
+// d: Confirmation note when switching from video to voice
+// l: popup_note_window
+// w: 
+// r: 5.0
+//
+#define qtn_incal_query_vcall_failed "Video call setup failed. Create voice to the same contact?"
+
+
+
+//Landscape texts for buttons
+
+
+
+// d: It is text for a command button. If it is selected, 
+// d: the user can choose a participant in conference.
+// d: The selected participant will be dropped.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_drop_landscape "Drop"
+
+// d: It is text for a command button. If it is selected, 
+// d: operation separates selected remote party 
+// d: call from the active conference call.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_private_landscape "Private"
+
+// d: It is text for a command button. If it is selected, 
+// d: active call is ended.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_end_active_call_landscape "End active call"
+
+// d: It is text for a command button. If it is selected, 
+// d: add call to conference call.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_join_landscape "Join"
+
+// d: It is text for a command button. If it is selected, 
+// d: calls are swapped.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_swap_landscape "Swap"
+
+// d: It is text for a command button. If it is selected, 
+// d: view is changed to idle.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_go_idle_landscape "Go to idle"
+
+// d: It is text for a command button. If it is selected, 
+// d: all calls are ended.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_end_all_calls_landscape "End all calls"
+
+// d: It is text for a command button  If it is selected, 
+// d: participants list is opened.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_participants_landscape "Participants"
+
+// d: It is text for a command button. If it is selected, 
+// d: held call is activated.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_unhold_landscape "Unhold"
+
+// d: It is text for a command button. If it is selected, 
+// d: call is put on hold.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_hold_landscape "Hold"
+
+// d: It is text for a command button. If it is selected,
+// d: handsfree is activated.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_loudspeaker_landscape "Loudspeaker"
+
+// d: It is text for a command button. If it is selected,
+// d: audio is routed to handset mode
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_handset_landscape "Handset"
+
+// d: It is text for a command button. If it is selected, 
+// d: phone is unmuted.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_unmute_mic_landscape "Unmute"
+
+// d: It is text for a command button. If it is selected, 
+// d: phone is muted.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_mute_mic_landscape "Mute"
+
+// d: It is text for a command button. If it is selected, 
+// d: call is changed from voice to video.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_voice_to_video_landscape "Video call"
+
+// d: It is text for a command button. If it is selected, 
+// d: call is changed from video to voice.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_video_to_voice_landscape "Voice call"
+
+// d: It is text for a command button. If it is selected, 
+// d: conference is built from calls.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_conference_landscape "Conference"
+
+// d: It is text for a command button. If it is selected, 
+// d: audio is routed bt handsfree.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_bluetooth_landscape "BT handsfree"
+
+// d: It is text for a command button. If it is selected, 
+// d: call is ended.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_end_call_landscape "End call"
+
+// d: It is text for a command button. If it is selected, 
+// d: incoming call is rejected.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_reject_landscape "Reject"
+
+// d: It is text for a command button. If it is selected, 
+// d: incoming call is answered.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_answer_landscape "Answer"
+
+// d: It is text for a command button. If it is selected, 
+// d: ringing tone is muted.
+// l: cell_call4_button_pane_t1/opt2
+// w:
+// r: 5.0
+//
+#define qtn_incal_button_silence_landscape "Silence"
+
+
+// d: Tooltip text for callhandling toolbar 'loudspeaker' button.
+// l: popup_preview_text_window_t1  
+// w:
+// r: 9.2
+//
+#define qtn_incal_tooltip_loudspeaker "Activate loudspeaker"
+
+// d: Tooltip text for callhandling toolbar 'handset' button.
+// l: popup_preview_text_window_t1  
+// w:
+// r: 9.2
+//
+#define qtn_incal_tooltip_handset "Activate handset"
+
+// d: Tooltip text for callhandling toolbar 'BT handsfree' button.
+// l: popup_preview_text_window_t1  
+// w:
+// r: 9.2
+//
+#define qtn_incal_tooltip_bt_handsfree "Activate BT handsfree"
+
+// d: Tooltip text for callhandling toolbar 'Mute' button.
+// l: popup_preview_text_window_t1  
+// w:
+// r: 9.2
+//
+#define qtn_incal_tooltip_mute "Mute microphone"
+
+// d: Tooltip text for callhandling toolbar 'UnMute' button.
+// l: popup_preview_text_window_t1  
+// w:
+// r: 9.2
+//
+#define qtn_incal_tooltip_unmute "Unmute microphone"
+
+// d: Tooltip text for callhandling toolbar 'Contacts' button.
+// l: popup_preview_text_window_t1  
+// w:
+// r: 9.2
+//
+#define qtn_incal_tooltip_contacts "Open Contacts"
+
+
+// End of File

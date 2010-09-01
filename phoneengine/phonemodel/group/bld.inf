@@ -1,0 +1,65 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  PhoneModelGsm bld file
+*
+*/
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+
+// Internal headers
+../inc/telephonyvariant.hrh           |../../../inc/telephonyvariant.hrh
+../inc/telinternalcrkeys.h            |../../../inc/telinternalcrkeys.h 
+../inc/telinternalpskeys.h            |../../../inc/telinternalpskeys.h 
+../inc/telinternalpstypes.h           |../../../inc/telinternalpstypes.h 
+../inc/pevirtualengine.h              |../../../inc/pevirtualengine.h
+../inc/mphonedevicemodeobserver.h     |../../../inc/mphonedevicemodeobserver.h
+../inc/cpephonemodelif.h              |../../../inc/cpephonemodelif.h
+
+// Phoneengine subsystem exports
+../inc/mpeactivestarter.h             |../../inc/mpeactivestarter.h
+../inc/mpeexternaldatahandler.h       |../../inc/mpeexternaldatahandler.h
+../inc/mpephonemodelinternal.h        |../../inc/mpephonemodelinternal.h
+../inc/pepanic.pan                    |../../inc/pepanic.pan
+../inc/talogger.h                     |../../inc/talogger.h
+
+// Backup registration files
+backup_registration.xml /epoc32/data/z/private/1000a86c/backup_registration.xml
+backup_registration.xml /epoc32/release/winscw/udeb/z/private/1000a86c/backup_registration.xml
+backup_registration.xml /epoc32/release/winscw/urel/z/private/1000a86c/backup_registration.xml
+
+// SIS stubs
+../data/phonemodel_stub.sis         /epoc32/data/z/system/install/phonemodel_stub.sis
+
+// IBY files
+../rom/phonengengine.iby                        CORE_APP_LAYER_IBY_EXPORT_PATH(phonengengine.iby)
+// Generic configuration interface for component cenrep settings  
+../conf/s60telephony.confml                 APP_LAYER_CONFML(s60telephony.confml)
+../conf/s60telephony_japan.confml           CONFML_EXPORT_PATH(s60telephony_japan.confml,japan)
+../conf/s60telephony_101F87E3.crml 	        APP_LAYER_CRML(s60telephony_101F87E3.crml)
+../conf/s60telephony_102828B1.crml 	        APP_LAYER_CRML(s60telephony_102828B1.crml)
+../conf/s60telephony_102828B2.crml 	        APP_LAYER_CRML(s60telephony_102828B2.crml)
+../conf/s60telephony_102828B8.crml 	        APP_LAYER_CRML(s60telephony_102828B8.crml)
+../conf/s60telephony_102828F8.crml 	        APP_LAYER_CRML(s60telephony_102828F8.crml)
+../conf/s60telephony_102830B6.crml 	        APP_LAYER_CRML(s60telephony_102830B6.crml)
+../conf/s60telephony_2001B2E6.crml 	        APP_LAYER_CRML(s60telephony_2001B2E6.crml)
+ 
+PRJ_MMPFILES
+phonemodel.mmp
+
+//  End of File

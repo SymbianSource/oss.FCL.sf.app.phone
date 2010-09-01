@@ -45,11 +45,11 @@ EXPORT_C TPhoneCmdParamSpeedDial::TPhoneCmdParamSpeedDial() :
 // ---------------------------------------------------------
 //
 EXPORT_C void TPhoneCmdParamSpeedDial::SetPhoneNumber( TPtr* aPhoneNumber )
-    {
-    __ASSERT_DEBUG( aPhoneNumber, 
-        Panic( EPhoneUtilsParameterNotInitialized ) );
-    iPhoneNumber = aPhoneNumber;   
-    }
+   	{
+   	__ASSERT_DEBUG( aPhoneNumber, 
+   		Panic( EPhoneUtilsParameterNotInitialized ) );
+   	iPhoneNumber = aPhoneNumber;   
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSpeedDial::PhoneNumber
@@ -58,11 +58,11 @@ EXPORT_C void TPhoneCmdParamSpeedDial::SetPhoneNumber( TPtr* aPhoneNumber )
 // ---------------------------------------------------------
 //
 EXPORT_C TPtr* TPhoneCmdParamSpeedDial::PhoneNumber()
-    {
-    __ASSERT_DEBUG( iPhoneNumber, 
-        Panic( EPhoneUtilsInvariant ) );
-    return iPhoneNumber;
-    }
+   	{
+   	__ASSERT_DEBUG( iPhoneNumber, 
+   		Panic( EPhoneUtilsInvariant ) );
+   	return iPhoneNumber;
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSpeedDial::SetNumberType
@@ -93,11 +93,11 @@ EXPORT_C TPhoneNumberType TPhoneCmdParamSpeedDial::NumberType()
 // ---------------------------------------------------------
 //
 EXPORT_C void TPhoneCmdParamSpeedDial::SetLocation( TInt aLocation )
-    {
-    __ASSERT_DEBUG( aLocation >= 0, 
-        Panic( EPhoneUtilsParameterNotInitialized ) );
-    iLocation = aLocation;   
-    }
+   	{
+   	__ASSERT_DEBUG( aLocation >= 0, 
+   		Panic( EPhoneUtilsParameterNotInitialized ) );
+   	iLocation = aLocation;   
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSpeedDial::Location
@@ -106,11 +106,11 @@ EXPORT_C void TPhoneCmdParamSpeedDial::SetLocation( TInt aLocation )
 // ---------------------------------------------------------
 //
 EXPORT_C TInt TPhoneCmdParamSpeedDial::Location()
-    {
-    __ASSERT_DEBUG( iLocation >= 0, 
-        Panic( EPhoneUtilsInvariant ) );
-    return iLocation;
-    }
+   	{
+   	__ASSERT_DEBUG( iLocation >= 0, 
+   		Panic( EPhoneUtilsInvariant ) );
+   	return iLocation;
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSpeedDial::SetServiceId

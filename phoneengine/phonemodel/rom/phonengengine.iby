@@ -22,31 +22,27 @@
 #include <data_caging_paths_for_iby.hrh>
 
 // Phone Engine
-file=ABI_DIR\BUILD_DIR\phoneengine.dll        SHARED_LIB_DIR\phoneengine.dll
+file=ABI_DIR\BUILD_DIR\PHONEENGINE.DLL        SHARED_LIB_DIR\PHONEENGINE.DLL
 
 // Engine Info
-file=ABI_DIR\BUILD_DIR\engineinfo.dll        SHARED_LIB_DIR\engineinfo.dll
+file=ABI_DIR\BUILD_DIR\ENGINEINFO.DLL        SHARED_LIB_DIR\ENGINEINFO.DLL
 
 // Audio Handling
-file=ABI_DIR\BUILD_DIR\audiohandling.dll    SHARED_LIB_DIR\audiohandling.dll
+file=ABI_DIR\BUILD_DIR\AUDIOHANDLING.DLL    SHARED_LIB_DIR\AUDIOHANDLING.DLL
 data=MULTI_LINGUIFY(RSC DATAZ_\RESOURCE_FILES_DIR\defaultbeep RESOURCE_FILES_DIR\defaultbeep)
 
 // Call Handling
-file=ABI_DIR\BUILD_DIR\callhandling.dll     SHARED_LIB_DIR\callhandling.dll
+file=ABI_DIR\BUILD_DIR\CALLHANDLING.DLL     SHARED_LIB_DIR\CALLHANDLING.DLL
 
 // Contact Handling
-file=ABI_DIR\BUILD_DIR\contacthandling.dll  SHARED_LIB_DIR\contacthandling.dll
+file=ABI_DIR\BUILD_DIR\CONTACTHANDLING.DLL  SHARED_LIB_DIR\CONTACTHANDLING.DLL
 
 // Log Handling
-file=ABI_DIR\BUILD_DIR\loghandling.dll      SHARED_LIB_DIR\loghandling.dll
+file=ABI_DIR\BUILD_DIR\LOGHANDLING.DLL      SHARED_LIB_DIR\LOGHANDLING.DLL
 
 // Service Handling
 file=ABI_DIR\BUILD_DIR\peservicehandling.dll      SHARED_LIB_DIR\peservicehandling.dll
 
-// <-- QT PHONE START --> 
-// Dial Service
-file=ABI_DIR\BUILD_DIR\phoneservices.dll      SHARED_LIB_DIR\phoneservices.dll
-// <-- QT PHONE END--> 
 data=DATAZ_\private\1000A86C\backup_registration.xml  private\1000A86C\backup_registration.xml
 
 

@@ -71,29 +71,29 @@ class CPESupplementaryServicesMonitor
         /**
         From MCCESsObserver
         */
-        IMPORT_C void BarringEventOccurred( const MCCESsObserver::TCCESsBarringEvent aBarringEvent );
+    	IMPORT_C void BarringEventOccurred( const MCCESsObserver::TCCESsBarringEvent aBarringEvent );
 
         /**
         From MCCESsObserver
         */
-        IMPORT_C void CLIEventOccurred( const MCCESsObserver::TCCESsCLIEvent aCallLineEvent );
+    	IMPORT_C void CLIEventOccurred( const MCCESsObserver::TCCESsCLIEvent aCallLineEvent );
 
         /**
         From MCCESsObserver
         */
-        IMPORT_C void CallForwardEventOccurred( 
-                            const MCCESsObserver::TCCESsCallForwardEvent aCallForwardEvent,
-                            const TDesC& aRemoteAddress );
+    	IMPORT_C void CallForwardEventOccurred( 
+    						const MCCESsObserver::TCCESsCallForwardEvent aCallForwardEvent,
+    						const TDesC& aRemoteAddress );
 
         /**
         From MCCESsObserver
         */
-        IMPORT_C void CallCugEventOccurred( const MCCESsObserver::TCCESsCugEvent aCugEvent );
+    	IMPORT_C void CallCugEventOccurred( const MCCESsObserver::TCCESsCugEvent aCugEvent );
 
         /**
         From MCCESsObserver
         */
-        IMPORT_C void NotifyCurrentActiveALSLine( TInt aLine );
+    	IMPORT_C void NotifyCurrentActiveALSLine( TInt aLine );
 
     private:
         // Owner of this object

@@ -66,18 +66,18 @@ class CPhoneMediatorFactory : public CCoeStatic
         * the Singleton object. After that providing parameters aren't needed.
         */
         IMPORT_C CPhoneMediatorCommandListener* CommandListener( 
-            MPhoneMenuAndCbaEvents* aMenuAndCbaEventHandler = NULL,
-            MPhoneEngineMessageSender* aMessageSender = NULL,
-            MPEEngineInfo* aEngineInfo = NULL );
+        	MPhoneMenuAndCbaEvents* aMenuAndCbaEventHandler = NULL,
+        	MPhoneEngineMessageSender* aMessageSender = NULL,
+        	MPEEngineInfo* aEngineInfo = NULL );
 
-        /**
-        * Returns instance of Mediator Message.         
+		/**
+		* Returns instance of Mediator Message.        	
         * @param aMessage - Message from Phone Engine (EPEMessage).
         * @param aCallId - Caller id
         * @return MPhoneMediatorMessage object.
         */
         IMPORT_C MPhoneMediatorMessage* MediatorMessage(
-            const TInt aMessage, TInt aCallId );
+        	const TInt aMessage, TInt aCallId );
         
 
     private:
@@ -99,15 +99,15 @@ class CPhoneMediatorFactory : public CCoeStatic
         
              
     private:
-        
-        // Not owned
-        MPhoneMenuAndCbaEvents* iMenuAndCbaEvents;
-        
-        // Not owned
-        MPhoneEngineMessageSender* iMessageSender;
-        
-        // Not owned
-        MPEEngineInfo* iEngineInfo;
+    	
+    	// Not owned
+    	MPhoneMenuAndCbaEvents* iMenuAndCbaEvents;
+    	
+    	// Not owned
+    	MPhoneEngineMessageSender* iMessageSender;
+    	
+    	// Not owned
+    	MPEEngineInfo* iEngineInfo;
 
     };
     

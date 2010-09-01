@@ -19,6 +19,7 @@
 // INCLUDE FILES
 #include <featmgr.h>        // for FeatureManager
 #include <settingsinternalcrkeys.h>
+#include <phoneappcommands.hrh>
 
 #include "cphoneuicontroller.h"
 #include "pevirtualengine.h"
@@ -26,14 +27,16 @@
 #include "cphoneenginehandler.h"
 #include "cphonesystemeventhandler.h"
 #include "cphoneremotecontrolhandler.h"
-#include "mphoneviewcommandhandle.h"
 #include "phonestatedefinitions.h"
 #include "phonelogger.h"
 #include "phoneconstants.h"
 #include "phoneui.pan"
+#include "cphonekeyeventforwarder.h"
 #include "cphonecenrepproxy.h"
 #include "cphonemediatorfactory.h"
 #include "tphonecmdparamnumberentryobserver.h"
+#include "cphonesecuritymodeobserver.h"
+#include "cphoneviewcontroller.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -52,12 +55,11 @@ CPhoneUIController::CPhoneUIController()
 // (other items were commented in a header).
 // -----------------------------------------------------------
 //
-void CPhoneUIController::ConstructL( 
-    MPhoneViewCommandHandle* aViewCommandHandle )
+void CPhoneUIController::ConstructL( CPhoneViewController& aViewController )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneUIController::ConstructL()");
     // Creates correct protocol DLL
-    CreateProtocolDllL( aViewCommandHandle );
+    CreateProtocolDllL( aViewController );
 
     // Reference the phone state machine
     iStateMachine = CPhoneStateHandle::Instance()->StateMachine();
@@ -66,8 +68,10 @@ void CPhoneUIController::ConstructL(
     iEngineHandler = CPhoneEngineHandler::NewL( iStateMachine );
     // Create the system event handler
     iSystemEventHandler = CPhoneSystemEventHandler::NewL( iStateMachine );
-     // Create the remote control handler
-    iRemoteControlHandler = CPhoneRemoteControlHandler::NewL( iStateMachine );
+
+    // Create the key event forwarder
+    iKeyEventForwarder = CPhoneKeyEventForwarder::NewL( 
+        CEikonEnv::Static()->EikAppUi()->ClientRect(), iStateMachine, &aViewController ); // codescanner::eikonenvstatic
 
     TInt leaveCode( 0 );
     TInt retry( 0 );
@@ -107,12 +111,27 @@ void CPhoneUIController::ConstructL(
 
     // Store the phone engine information in the state machine
     iStateMachine->SetPhoneEngine( iPhoneEngine );
+	
+	// Set up security mode observer.
+	iSecurityModeObserver = CPhoneSecurityModeObserver::NewL();
+	iSecurityModeObserver->SetPhoneEngineInfo( iPhoneEngine->EngineInfo() );
+	iStateMachine->SetSecurityModeObserver( iSecurityModeObserver );
+	iStateMachine->SetSecurityMessageHandler( iSecurityModeObserver );
+	
+    // Set Number Entry observer
+    TPhoneCmdParamNumberEntryObserver cmdParamNumberEntryObserver;
+    cmdParamNumberEntryObserver.SetObserver( TCallBack( HandlePhoneNumberEditorCallBack, this ) );
+    aViewController.ExecuteCommand( EPhoneViewSetNumberEntryObserver, 
+                                            &cmdParamNumberEntryObserver);
     
+	// Set up controller to observe security mode state changes.
+    iStateMachine->SecurityMode()->RegisterStateObserver( aViewController );
+	
     // Go to the startup state
     iStateMachine->ChangeState( EPhoneStateStartup );
 
-      CPhoneMediatorFactory::Instance()->CommandListener( this, iStateMachine,
-            iStateMachine->PhoneEngineInfo() );
+	  CPhoneMediatorFactory::Instance()->CommandListener( this, iStateMachine,
+		    iStateMachine->PhoneEngineInfo() );
     }
 
 // -----------------------------------------------------------------------------
@@ -121,12 +140,10 @@ void CPhoneUIController::ConstructL(
 // -----------------------------------------------------------------------------
 //
 EXPORT_C CPhoneUIController* CPhoneUIController::NewL( 
-    MPhoneViewCommandHandle* aViewCommandHandle )
+    CPhoneViewController& aViewCommandHandle )
     {
-    __ASSERT_DEBUG( aViewCommandHandle,
-        Panic( EPhoneCtrlParameterNotInitialized ) );
-    
-    CPhoneUIController* self = new( ELeave ) CPhoneUIController;
+
+    CPhoneUIController* self = new( ELeave ) CPhoneUIController();
     
     CleanupStack::PushL( self );
     self->ConstructL( aViewCommandHandle );
@@ -143,10 +160,12 @@ EXPORT_C CPhoneUIController* CPhoneUIController::NewL(
 EXPORT_C CPhoneUIController::~CPhoneUIController()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneUIController::~CPhoneUIController()");
-    delete iRemoteControlHandler;
-    delete iSystemEventHandler;
-    delete iEngineHandler;
-    delete iStateHandle;
+	delete iSecurityModeObserver;
+	delete iRemoteControlHandler;
+	delete iSystemEventHandler;
+	delete iEngineHandler;
+	delete iKeyEventForwarder;
+//    delete iStateHandle; <-- CCoeStatic objects are destroyed outside application
     }
 
 // ---------------------------------------------------------
@@ -158,6 +177,14 @@ EXPORT_C void CPhoneUIController::HandleMessage(
     const TInt aCallId ) 
     {
     __PHONELOGENGINEMSG( aMessage, aCallId );
+    
+    // PhoneCmdHandler is using Call information API so 
+	// Remote Control Handler can be constructed only after CCCE is constructed.
+	if ( aMessage == EPEMessagePEConstructionReady )
+		{
+		TRAP_IGNORE( ConstructRemoteControlHandlerL() );
+		}
+        	
     TRAPD( err, iEngineHandler->DoHandleMessageL( aMessage, aCallId ) );
 
     if ( err != KErrNone )
@@ -182,7 +209,7 @@ EXPORT_C void CPhoneUIController::HandleError(
     {
     TInt err( KErrNone );
     
-       TRAP( err, iStateMachine->State()->HandleErrorL( aErrorInfo ) );            
+   	TRAP( err, iStateMachine->State()->HandleErrorL( aErrorInfo ) );	    	
     
     if( err != KErrNone )
         {
@@ -191,7 +218,7 @@ EXPORT_C void CPhoneUIController::HandleError(
             EPhoneControl,
             "PHONEUI_ERROR: CPhoneUIController::HandleError -  leave (err=%d)",
             err);
-           __ASSERT_DEBUG( EFalse, Panic( EPhoneCtrlUnknownPanic ) );
+       	__ASSERT_DEBUG( EFalse, Panic( EPhoneCtrlUnknownPanic ) );
         }
     }    
 
@@ -203,26 +230,34 @@ EXPORT_C TKeyResponse CPhoneUIController::HandleKeyEventL(
     const TKeyEvent& aKeyEvent,
     TEventCode aEventCode )
     {
-    if ( aEventCode == EEventKey )
-        {
-        iStateMachine->State()->HandleKeyMessageL( 
-                        MPhoneKeyEvents::EPhoneKeyShortPress, 
-                        TKeyCode( aKeyEvent.iCode ) );
-        
-        iStateMachine->State()->HandleDtmfKeyToneL( aKeyEvent, aEventCode );
-        }
-    else if ( aEventCode == EEventLongPress )
-        {
-        iStateMachine->State()->HandleKeyMessageL( 
-                        MPhoneKeyEvents::EPhoneKeyLongPress, 
-                        TKeyCode( aKeyEvent.iCode ) );    
-        }
-    else 
-        {
-        iStateMachine->State()->HandleDtmfKeyToneL( aKeyEvent, aEventCode );
-        }
-        
-    return EKeyWasNotConsumed;
+    __ASSERT_DEBUG( iKeyEventForwarder, Panic( EPhoneCtrlInvariant ) );
+    return iKeyEventForwarder->OfferKeyEventAfterControlStackL( 
+                aKeyEvent,
+                aEventCode );
+    }
+
+// ---------------------------------------------------------
+// CPhoneUIController::DynInitMenuPaneL
+// ---------------------------------------------------------
+//
+EXPORT_C void CPhoneUIController::DynInitMenuPaneL( 
+    TInt aResourceId, 
+    CEikMenuPane* aMenuPane )
+    {
+    __ASSERT_DEBUG( iSystemEventHandler, Panic( EPhoneCtrlInvariant ) );
+    iSystemEventHandler->DynInitMenuPaneL( aResourceId, aMenuPane );
+    }
+
+// ---------------------------------------------------------
+// CPhoneUIController::DynInitMenuBarL
+// ---------------------------------------------------------
+//
+EXPORT_C void CPhoneUIController::DynInitMenuBarL( 
+    TInt aResourceId, 
+    CEikMenuBar* aMenuBar )
+    {
+    __ASSERT_DEBUG( iSystemEventHandler, Panic( EPhoneCtrlInvariant ) );
+    iSystemEventHandler->DynInitMenuBarL( aResourceId, aMenuBar );
     }
 
 // ---------------------------------------------------------
@@ -304,6 +339,17 @@ EXPORT_C TBool CPhoneUIController::HandleCommandL( TInt aCommand )
     {
     __ASSERT_DEBUG( iStateMachine->State(), Panic( EPhoneCtrlInvariant ) );
 
+	// Send key up message to engine so that we wouldn't accidentally play
+	// any DTMF tone.
+    
+    // DTMF tone is not ended if command is EPhoneDialerValidNumber or
+    // EPhoneDialerInvalidNumber. These commands result from
+    // user pressing numbers, and they must not interfere with tones.
+    if ( ! ( aCommand == EPhoneDialerValidNumber || aCommand == EPhoneDialerInvalidNumber ) )
+        {
+        iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF );
+        }
+
     return iStateMachine->State()->HandleCommandL( aCommand );
     }
 
@@ -317,52 +363,41 @@ EXPORT_C TBool CPhoneUIController::ProcessCommandL( TInt aCommand )
     return iStateMachine->State()->ProcessCommandL( aCommand );
     }
 
-
-// ---------------------------------------------------------
-// CPhoneUIController::HandleKeyLockEnabled
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneUIController::HandleKeyLockEnabled( TBool aKeylockEnabled )
-    {
-    iSystemEventHandler->HandleKeyLockEnabled( aKeylockEnabled );
-    }
-
 // ---------------------------------------------------------
 // CPhoneUIController::CreateProtocolDllL
 // ---------------------------------------------------------
 //
-void CPhoneUIController::CreateProtocolDllL( 
-    MPhoneViewCommandHandle* aViewCommandHandle )
-    {
-    TBool voipSupported( EFalse );
+void CPhoneUIController::CreateProtocolDllL( CPhoneViewController& aViewController )
+	{
+	TBool voipSupported( EFalse );
 
     if( FeatureManager::FeatureSupported( KFeatureIdCommonVoip ) )
-        {
-        TInt dynamicVoIP( KDynamicVoIPOff );
-        CPhoneCenRepProxy::Instance()->GetInt( 
-            KCRUidTelephonySettings, KDynamicVoIP, dynamicVoIP );
-            
-        if( dynamicVoIP == KDynamicVoIPOn )
-            {
-            voipSupported = ETrue;                
-            }
-        }
+	    {
+	    TInt dynamicVoIP( KDynamicVoIPOff );
+		CPhoneCenRepProxy::Instance()->GetInt( 
+	        KCRUidTelephonySettings, KDynamicVoIP, dynamicVoIP );
+	        
+	    if( dynamicVoIP == KDynamicVoIPOn )
+		    {
+			voipSupported = ETrue;		    	
+		    }
+	    }
 
     if( voipSupported )
-        {
-        iStateHandle = CPhoneStateHandle::CreateL(
-            aViewCommandHandle,
-            KVoIPExtension,
-            KUidAppVoIPExtensionStates );                        
-        }
-    else
-        {
-        iStateHandle = CPhoneStateHandle::CreateL(
-            aViewCommandHandle,
-            KGSMProtocol,
-            KUidAppGSMStates );            
-        }        
-    }
+	    {
+	    iStateHandle = CPhoneStateHandle::CreateL(
+	        &aViewController,
+	        KVoIPExtension,
+	        KUidAppVoIPExtensionStates );				    	
+	    }
+	else
+		{
+	    iStateHandle = CPhoneStateHandle::CreateL(
+	        &aViewController,
+	        KGSMProtocol,
+	        KUidAppGSMStates );			
+		}		
+	}
 
 // ---------------------------------------------------------
 // CPhoneUIController::HandlePhoneNumberEditorCallBack
@@ -384,6 +419,17 @@ TInt CPhoneUIController::HandlePhoneNumberEditorCallBack( TAny* aAny )
 //
 void CPhoneUIController::DoHandlePhoneNumberEditorCallBack()
     {
+    iStateMachine->State()->HandleNumberEntryEdited();
+    }
+
+// ---------------------------------------------------------
+// CPhoneUIController::ConstructRemoteControlHandlerL
+// ---------------------------------------------------------
+//
+void CPhoneUIController::ConstructRemoteControlHandlerL()
+    { 
+	// Create the remote control handler
+	iRemoteControlHandler = CPhoneRemoteControlHandler::NewL( iStateMachine );
     }
 
 //  End of File  

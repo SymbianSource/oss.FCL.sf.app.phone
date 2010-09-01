@@ -72,12 +72,12 @@ CPhoneSwitchToVideoOrVoiceCommand::~CPhoneSwitchToVideoOrVoiceCommand()
 // ---------------------------------------------------------
 //
 void CPhoneSwitchToVideoOrVoiceCommand::ExecuteLD()
-    {
+	{
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, 
         "CPhoneSwitchToVideoOrVoiceCommand::ExecuteL( ) ");
     iEngineMessageSender.SendPhoneEngineMessage( 
         MPEPhoneModel::EPEMessageSwitchToVideoOrVoice );
     delete this;
-    }
+	}
 
 //  End of File  

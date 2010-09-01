@@ -70,11 +70,11 @@ EXPORT_C CPhCntSingleItemFetch::TFetchType
 //
 EXPORT_C void TPhoneCmdParamSingleItemFetch::SetTitlePaneResourceId( 
    TInt aTitlePaneResourceId )
-    {
-    __ASSERT_DEBUG( aTitlePaneResourceId, 
-        Panic( EPhoneUtilsParameterNotInitialized ) );
-    iTitlePaneResourceId = aTitlePaneResourceId;   
-    }
+   	{
+   	__ASSERT_DEBUG( aTitlePaneResourceId, 
+   		Panic( EPhoneUtilsParameterNotInitialized ) );
+   	iTitlePaneResourceId = aTitlePaneResourceId;   
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSingleItemFetch::TitleResourceId
@@ -83,11 +83,11 @@ EXPORT_C void TPhoneCmdParamSingleItemFetch::SetTitlePaneResourceId(
 // ---------------------------------------------------------
 //
 EXPORT_C TInt TPhoneCmdParamSingleItemFetch::TitlePaneResourceId() const
-    {
-    __ASSERT_DEBUG( iTitlePaneResourceId, 
-        Panic( EPhoneUtilsInvariant ) );
-    return iTitlePaneResourceId;
-    }
+   	{
+   	__ASSERT_DEBUG( iTitlePaneResourceId, 
+   		Panic( EPhoneUtilsInvariant ) );
+   	return iTitlePaneResourceId;
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSingleItemFetch::SetCbaResourceId
@@ -97,11 +97,11 @@ EXPORT_C TInt TPhoneCmdParamSingleItemFetch::TitlePaneResourceId() const
 //
 EXPORT_C void TPhoneCmdParamSingleItemFetch::SetCbaResourceId( 
    TInt aCbaResourceId )
-    {
-    __ASSERT_DEBUG( aCbaResourceId, 
-        Panic( EPhoneUtilsParameterNotInitialized ) );
-    iCbaResourceId = aCbaResourceId;   
-    }
+   	{
+   	__ASSERT_DEBUG( aCbaResourceId, 
+   		Panic( EPhoneUtilsParameterNotInitialized ) );
+   	iCbaResourceId = aCbaResourceId;   
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSingleItemFetch::CbaResourceId
@@ -110,11 +110,11 @@ EXPORT_C void TPhoneCmdParamSingleItemFetch::SetCbaResourceId(
 // ---------------------------------------------------------
 //
 EXPORT_C TInt TPhoneCmdParamSingleItemFetch::CbaResourceId() const
-    {
-    __ASSERT_DEBUG( iCbaResourceId, 
-        Panic( EPhoneUtilsInvariant ) );
-    return iCbaResourceId;
-    }
+   	{
+   	__ASSERT_DEBUG( iCbaResourceId, 
+   		Panic( EPhoneUtilsInvariant ) );
+   	return iCbaResourceId;
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSingleItemFetch::SetString
@@ -123,11 +123,11 @@ EXPORT_C TInt TPhoneCmdParamSingleItemFetch::CbaResourceId() const
 // ---------------------------------------------------------
 //
 EXPORT_C void TPhoneCmdParamSingleItemFetch::SetString( TDes* aString )
-    {
-    __ASSERT_DEBUG( aString, 
-        Panic( EPhoneUtilsParameterNotInitialized ) );
-    iString = aString;
-    }
+   	{
+   	__ASSERT_DEBUG( aString, 
+   		Panic( EPhoneUtilsParameterNotInitialized ) );
+   	iString = aString;
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamSingleItemFetch::String
@@ -136,10 +136,10 @@ EXPORT_C void TPhoneCmdParamSingleItemFetch::SetString( TDes* aString )
 // ---------------------------------------------------------
 //
 EXPORT_C TDes* TPhoneCmdParamSingleItemFetch::String() const
-    {
-    __ASSERT_DEBUG( iString, 
-        Panic( EPhoneUtilsInvariant ) );
-    return iString;
-    }
+   	{
+   	__ASSERT_DEBUG( iString, 
+   		Panic( EPhoneUtilsInvariant ) );
+   	return iString;
+   	}
    
 //  End of File  

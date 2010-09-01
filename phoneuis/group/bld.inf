@@ -15,6 +15,14 @@
 *              
 */ 
 
-#include "../telephonydevicemode/group/bld.inf"
+#include "../easydialing/group/bld.inf"
+#include "../dialer/group/bld.inf"
+#include "../BubbleManager/Group/bld.inf"
+#include "../ConnectUtil/group/bld.inf"
+#include "../Ussd/group/bld.inf"
+#include "../vmbx/group/bld.inf"
+#include "../TelephonyDeviceMode/group/bld.inf"
+
+
 
 // End of File

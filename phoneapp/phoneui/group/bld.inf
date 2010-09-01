@@ -1,0 +1,73 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  PhoneApp / PhoneUI 
+*     		
+*
+*/
+
+#ifdef RD_PHONE_NG
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+
+DEFAULT
+
+//  Help exports
+#include "../help/group/bld.inf"
+
+PRJ_EXPORTS
+// Stub SIS files:
+../group/phoneui_stub.sis                       /epoc32/data/z/system/install/phoneui_stub.sis
+
+
+// IBY files:
+../rom/phoneui.iby                              CORE_APP_LAYER_IBY_EXPORT_PATH(phoneui.iby)
+../rom/phoneuiresources.iby                     LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(phoneuiresources.iby)
+../rom/phoneuiresourcesvoip.iby                 LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(phoneuiresourcesvoip.iby)
+
+// LOC files:
+../loc/basiccallhandling.loc                    APP_LAYER_LOC_EXPORT_PATH(basiccallhandling.loc)
+../loc/callheadertexts.loc                      APP_LAYER_LOC_EXPORT_PATH(callheadertexts.loc)
+../loc/callterminationnote.loc                  APP_LAYER_LOC_EXPORT_PATH(callterminationnote.loc)
+../loc/dtmfsignalling.loc                       APP_LAYER_LOC_EXPORT_PATH(dtmfsignalling.loc)
+../loc/incallmenuandsoftkeys.loc                APP_LAYER_LOC_EXPORT_PATH(incallmenuandsoftkeys.loc)
+../loc/incalloperations.loc                     APP_LAYER_LOC_EXPORT_PATH(incalloperations.loc)
+../loc/mobileoriginatedcalls.loc                APP_LAYER_LOC_EXPORT_PATH(mobileoriginatedcalls.loc)
+../loc/multicallhandling.loc                    APP_LAYER_LOC_EXPORT_PATH(multicallhandling.loc)
+../loc/numberentry.loc                          APP_LAYER_LOC_EXPORT_PATH(numberentry.loc)
+../loc/phone.loc                                APP_LAYER_LOC_EXPORT_PATH(phone.loc)
+../loc/voip.loc                                 APP_LAYER_LOC_EXPORT_PATH(voip.loc)
+../loc/dialer.loc    				APP_LAYER_LOC_EXPORT_PATH(dialer.loc)
+
+
+PRJ_EXTENSIONS
+START EXTENSION s60/mifconv
+	OPTION TARGETFILE phoneui.mif
+	OPTION HEADERFILE phoneui.mbg
+	OPTION SOURCEFILE iconlist.txt
+END
+
+START EXTENSION s60/mifconv
+	OPTION TARGETFILE phoneui_aif.mif
+	OPTION SOURCES -c8,8 qgn_menu_idle
+END
+
+PRJ_MMPFILES
+phoneui.mmp
+
+
+#endif // RD_PHONE_NG
+
+// End of File

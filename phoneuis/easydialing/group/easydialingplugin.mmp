@@ -1,0 +1,136 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: Project config file
+*
+*/
+
+#include <platform_paths.hrh>
+#include "data_caging_paths.hrh"
+#include "../inc/easydialingconstants.hrh"
+
+TARGET          easydialingplugin.dll
+CAPABILITY      CAP_ECOM_PLUGIN
+
+TARGETTYPE      PLUGIN
+UID             0x10009D8D 0x200212A0 // EASYDIALING_PLUGIN_DLL_UID (Uncommented because of OST)
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../src
+SOURCE          dllmain.cpp
+SOURCE          easydialingplugin.cpp
+SOURCE          easydialinglistbox.cpp
+SOURCE          easydialinglistboxdata.cpp
+SOURCE          easydialinglistboxitemdrawer.cpp
+SOURCE          easydialinglistboxview.cpp
+SOURCE	        easydialingcenreplistener.cpp
+SOURCE          easydialingcontactdata.cpp
+SOURCE          easydialingcontactdatamanager.cpp
+SOURCE          easydialingutils.cpp
+
+USERINCLUDE     ../inc
+USERINCLUDE     ../edcontactor/inc
+USERINCLUDE     ../traces
+
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE    /epoc32/include/internal
+SYSTEMINCLUDE    /epoc32/include/ecom
+
+SOURCEPATH      ../data
+
+START RESOURCE 200212A0.rss
+    LANG    SC
+    TARGET  easydialingplugin.rsc
+END
+
+START RESOURCE easydialingpluginresources.rss
+    HEADER
+    TARGETPATH  /resource
+    TARGET      easydialingpluginresources.rsc
+	LANGUAGE_IDS
+END
+
+
+// Symbian framework libraries
+
+LIBRARY euser.lib
+LIBRARY ECom.lib
+LIBRARY cone.lib
+LIBRARY avkon.lib
+LIBRARY eikcore.lib
+LIBRARY eikctl.lib
+LIBRARY eikcoctl.lib
+LIBRARY bafl.lib
+LIBRARY gdi.lib 
+LIBRARY egul.lib
+LIBRARY	efsrv.lib
+LIBRARY	ws32.lib
+LIBRARY fbscli.lib
+LIBRARY bitgdi.lib
+LIBRARY	etext.lib
+
+// Avkon, Avkon skin and Avkon layout libraries.
+LIBRARY aknicon.lib
+LIBRARY aknlistloadertfx.lib
+LIBRARY aknskins.lib 
+LIBRARY aknskinsrv.lib 
+LIBRARY aknswallpaperutils.lib
+LIBRARY aknlayout2scalable.lib
+LIBRARY cdlengine.lib
+LIBRARY aknlayout2.lib
+
+// Transition effects
+LIBRARY gfxtrans.lib
+
+// AIW library
+LIBRARY servicehandler.lib
+
+// Predictive search libraries
+LIBRARY PcsUtils.lib
+LIBRARY PsServerClientAPI.lib
+
+// Virtual phonebook library
+LIBRARY VPbkEng.lib
+
+// Phonebook engine
+LIBRARY	pbkeng.lib
+
+// ECE Communication launcher library
+LIBRARY ccaclient.lib
+
+// Central repository
+LIBRARY centralrepository.lib   
+LIBRARY commonengine.lib
+LIBRARY cenrepnotifhandler.lib 
+
+// CPbk2ImageManager
+LIBRARY pbk2presentation.lib
+
+// bitmap handling
+LIBRARY bitmaptransforms.lib
+
+// Easy dialing own contactor module.
+LIBRARY edcontactor.lib
+
+// Service provider settings api
+LIBRARY serviceprovidersettings.lib
+
+// CMS library used for getting information about contacts.
+//LIBRARY 		  cmsclient.lib
+
+// Libraries used for R&D purposes only
+DEBUGLIBRARY flogger.lib
+
+
+// End of File
+

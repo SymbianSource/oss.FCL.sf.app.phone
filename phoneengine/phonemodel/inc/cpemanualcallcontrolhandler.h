@@ -20,7 +20,7 @@
 #define CPEMANUALCALLCONTROLHANDLER_H
 
 //  INCLUDES
-#include <cphcltcommandhandler.h>
+#include <CPhCltCommandHandler.h>
 
 // CONSTANTS
 // None.
@@ -138,8 +138,8 @@ NONSHARABLE_CLASS( CPEManualCallControlHandler ) : public CBase
         /**
         * C++ default constructor.
         */
-        CPEManualCallControlHandler( MPECallHandling& aCallHandling, 
-                CPEMessageHandler& aMessageHandler,
+		CPEManualCallControlHandler( MPECallHandling& aCallHandling, 
+		        CPEMessageHandler& aMessageHandler,
                 MPEDataStore& aDataStore );
     
     protected:  // Data

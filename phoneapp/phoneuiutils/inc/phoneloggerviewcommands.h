@@ -32,6 +32,12 @@ public:
 		{
 		/** EPhoneViewStartValue */
 		EPhoneViewStartValue,
+		/** EPhoneViewCreateNumberEntry */
+		EPhoneViewCreateNumberEntry,
+		/** EPhoneViewSetNumberEntryContent */
+		EPhoneViewSetNumberEntryContent,
+		/** EPhoneViewSendKeyEventToNumberEntry */
+		EPhoneViewSendKeyEventToNumberEntry,
 		/** EPhoneViewRemoveNumberEntry */
 		EPhoneViewRemoveNumberEntry,
 		/** EPhoneViewSetNumberEntryVisible */
@@ -44,6 +50,10 @@ public:
 		EPhoneViewGetNumberEntryIsUsedStatus,
 		/** EPhoneViewGetNumberEntryIsVisibleStatus */
 		EPhoneViewGetNumberEntryIsVisibleStatus,
+		/** EPhoneViewToggleNumberEntryAlphaNumericMode */
+		EPhoneViewToggleNumberEntryAlphaNumericMode,
+		/** EPhoneViewIsNumberEntryNumericMode */
+		EPhoneViewIsNumberEntryNumericMode,
 		/** EPhoneViewClearNumberEntryContent */
 		EPhoneViewClearNumberEntryContent,
 		/** EPhoneViewCreateCallHeader */
@@ -56,10 +66,28 @@ public:
 		EPhoneViewUpdateCallHeaderCallDuration,
 		/** EPhoneViewRemoveCallHeader */
 		EPhoneViewRemoveCallHeader,
+		/** EPhoneViewMenuBarOpen */
+		EPhoneViewMenuBarOpen,
+		/** EPhoneViewMenuBarClose */
+		EPhoneViewMenuBarClose,
+		/** EPhoneViewDimCbaCommand */
+		EPhoneViewDimCbaCommand,
 		/** EPhoneViewUpdateCba */
 		EPhoneViewUpdateCba,
 		/** EPhoneViewUpdateBubble */
 		EPhoneViewUpdateBubble,
+		/** EPhoneViewMenuPane */
+		EPhoneViewMenuPane,
+		/** EPhoneViewMenuBar */
+		EPhoneViewMenuBar,
+		/** EPhoneViewSetTitlePaneContent */
+		EPhoneViewSetTitlePaneContent,
+		/** EPhoneViewSetNaviPaneContent */
+		EPhoneViewSetNaviPaneContent,
+		/** EPhoneViewSetTitlePanePicture */
+		EPhoneViewSetTitlePanePicture,
+		/** EPhoneViewGetTitlePaneIsVisibleStatus */
+		EPhoneViewGetTitlePaneIsVisibleStatus,
 		/** EPhoneViewActivateAudioPathUIChanges */
 		EPhoneViewActivateAudioPathUIChanges,
 		/** EPhoneViewActivateAudioAvailabilityUIChanges */
@@ -78,12 +106,18 @@ public:
 		EPhoneViewRemoveProgressNote,
 		/** EPhoneViewRemoveGlobalNote */
 		EPhoneViewRemoveGlobalNote,
+		/** EPhoneViewGetIsNoteVisible */
+		EPhoneViewGetIsNoteVisible,
+		/** EPhoneViewGetIsProgressNoteVisible */
+		EPhoneViewGetIsProgressNoteVisible,
 		/** EPhoneViewShowQuery */
 		EPhoneViewShowQuery,
 		/** EPhoneViewSetListQueryString */
 		EPhoneViewSetListQueryString,
 		/** EPhoneViewRemoveQuery */
 		EPhoneViewRemoveQuery,
+		/** EPhoneViewGetTextQueryContents */
+		EPhoneViewGetTextQueryContents,
 		/** EPhoneViewSetTopApplication */
 		EPhoneViewSetTopApplication,
 		/** EPhoneViewBringAppToForeground */
@@ -98,16 +132,54 @@ public:
 		EPhoneViewGetTopApplicationIsDisplayedStatus,
 		/** EPhoneViewGetForegroundApplication */
 		EPhoneViewGetForegroundApplication,
+		/** EPhoneViewSetBackgroundImageBitmap */
+		EPhoneViewSetBackgroundImageBitmap,
+		/** EPhoneViewGetBackgroundImageBitmap */
+		EPhoneViewGetBackgroundImageBitmap,
+		/** EPhoneViewActivateApp */
+		EPhoneViewActivateApp,
+		/** EPhoneViewActivateAppView */
+		EPhoneViewActivateAppView,
+		/** EPhoneViewActivateAppViewWithCustomMessage */
+		EPhoneViewActivateAppViewWithCustomMessage,
+		/** EPhoneViewActivateAppViewConventional */
+		EPhoneViewActivateAppViewConventional,
+		/** EPhoneViewLaunchApplication */
+		EPhoneViewLaunchApplication,
+		/** EPhoneViewLaunchHelpApplication */
+		EPhoneViewLaunchHelpApplication,
+		/** EPhoneViewOpenMessageEditor */
+		EPhoneViewOpenMessageEditor,
+		/** EPhoneViewExitApplications */
+		EPhoneViewExitApplications,
+		/** EPhoneViewUpdateIncallIndicator */
+		EPhoneViewUpdateIncallIndicator,
 		/** EPhoneViewStartCapturingKey */
 		EPhoneViewStartCapturingKey,
 		/** EPhoneViewStopCapturingKey */
 		EPhoneViewStopCapturingKey,
 		/** EPhoneViewSetGlobalNotifiersDisabled */
 		EPhoneViewSetGlobalNotifiersDisabled,
+		/** EPhoneViewSetSpeedDialLocation */
+		EPhoneViewSetSpeedDialLocation,
+		/** EPhoneViewGetNumberFromSpeedDialLocation */
+		EPhoneViewGetNumberFromSpeedDialLocation,
+		/** EPhoneViewAssignSpeedDialLocation */
+		EPhoneViewAssignSpeedDialLocation,
 		/** EPhoneViewGetHoldFlag */
 		EPhoneViewGetHoldFlag,
 		/** EPhoneViewSetHoldFlag */
 		EPhoneViewSetHoldFlag,
+		/** EPhoneViewSetSoftRejectFlag */
+		EPhoneViewSetSoftRejectFlag,
+		/** EPhoneViewGetSoftRejectFlag */
+		EPhoneViewGetSoftRejectFlag,
+		/** EPhoneViewSetServiceCodeFlag */
+		EPhoneViewSetServiceCodeFlag,
+		/** EPhoneViewUpdateContact */
+		EPhoneViewUpdateContact,
+		/** EPhoneViewAddContact */
+		EPhoneViewAddContact,
 		/** EPhoneViewOpenSingleItemFetchDialog */
 		EPhoneViewOpenSingleItemFetchDialog,
 		/** EPhoneViewRemovePhoneDialogs */
@@ -122,12 +194,22 @@ public:
 		EPhoneViewPrivateFromConference,
 		/** EPhoneViewSelectedConfMember */
 		EPhoneViewSelectedConfMember,
+		/** EPhoneViewGetConferenceListVisibleFlag */
+		EPhoneViewGetConferenceListVisibleFlag,
+		/** EPhoneViewOpenConferenceList */
+		EPhoneViewOpenConferenceList,
+		/** EPhoneViewGetCallState */
+		EPhoneViewGetCallState,
 		/** EPhoneViewGetCallIdByState */
 		EPhoneViewGetCallIdByState,
+		/** EPhoneViewMoveHighLightInList */
+		EPhoneViewMoveHighLightInList,
 		/** EPhoneViewGetCountOfActiveCalls */
 		EPhoneViewGetCountOfActiveCalls,
 		/** EPhoneViewSetNaviPaneAudioVolume */
 		EPhoneViewSetNaviPaneAudioVolume,
+		/** EPhoneViewShowNaviPaneAudioVolume */
+		EPhoneViewShowNaviPaneAudioVolume,
 		/** EPhoneViewHideNaviPaneAudioVolume */
 		EPhoneViewHideNaviPaneAudioVolume,
 		/** EPhoneViewGetIsConference */
@@ -146,22 +228,30 @@ public:
 		EPhoneViewMuteRingToneOnAnswer,
 		/** EPhoneViewCipheringInfoChange */
 		EPhoneViewCipheringInfoChange,
+		/** EPhoneViewUpdateMaxConfMemberFlag */
+		EPhoneViewUpdateMaxConfMemberFlag,
 		/** EPhoneViewCloseFSW */
 		EPhoneViewCloseFSW,
 		/** EPhoneViewLaunchRfsDeep */
 		EPhoneViewLaunchRfsDeep,
 		/** EPhoneViewLaunchRfsNormal */
 		EPhoneViewLaunchRfsNormal,
+		/** EPhoneViewUpdateView */
+		EPhoneViewUpdateView,
 		/** EPhoneViewOpenSoftRejectEditor */
 		EPhoneViewOpenSoftRejectEditor,
-		/** EPhoneViewSetSecurityMode */
-		EPhoneViewSetSecurityMode,
-		/** EPhoneViewGetSecurityModeStatus */
-		EPhoneViewGetSecurityModeStatus,
+		/** EPhoneViewSendMessage */
+		EPhoneViewSendMessage,
+		/** EPhoneViewSetBlockingDialogStatus */
+		EPhoneViewSetBlockingDialogStatus,
+		/** EPhoneViewSetPhoneNumberAvailableInPhoneEngine */
+		EPhoneViewSetPhoneNumberAvailableInPhoneEngine,
+		/** EPhoneViewSetStatusPaneVisible */
+		EPhoneViewSetStatusPaneVisible,
 		/** EPhoneViewEnableKeyLock */
 		EPhoneViewEnableKeyLock,
-		/** EPhoneViewEnableKeyLockWithoutNote */
-		EPhoneViewEnableKeyLockWithoutNote,
+		/** EPhoneViewLaunchFaxModem */
+		EPhoneViewLaunchFaxModem,
 		/** EPhoneViewUpdateFSW */
 		EPhoneViewUpdateFSW,
 		/** EPhoneViewIsQuery */
@@ -174,36 +264,130 @@ public:
 		EPhoneViewBeginUpdate,
 		/** EPhoneViewEndUpdate */
 		EPhoneViewEndUpdate,
+		/** EPhoneViewSetConfrenceOptionsFlag */
+		EPhoneViewSetConfrenceOptionsFlag,
 		/** EPhoneViewRemoveConferenceBubble */
 		EPhoneViewRemoveConferenceBubble,
+		/** EPhoneViewGetSoftRejectWindowGroupId */
+		EPhoneViewGetSoftRejectWindowGroupId,
 		/** EPhoneViewSetTouchPaneButtons */
 		EPhoneViewSetTouchPaneButtons,
+		/** EPhoneViewSetTouchPaneVisible */
+		EPhoneViewSetTouchPaneVisible,
+		/** EPhoneViewEnableTouchButton */
+		EPhoneViewEnableTouchButton,
+		/** EPhoneViewDisableTouchButton */
+		EPhoneViewDisableTouchButton,
+		/** EPhoneResetTouchButtons */
+		EPhoneResetTouchButtons,
+		/** EPhoneViewGetIsConferenceInSelectionMode */
+		EPhoneViewGetIsConferenceInSelectionMode,
+		/** EPhoneViewIsStraightCallToVideoMailBox */
+		EPhoneViewIsStraightCallToVideoMailBox,
+		/** EPhoneViewSetDtmfDialerViewVisible */
+		EPhoneViewSetDtmfDialerViewVisible,
+		/** EPhoneViewSetRestrictedDialer */
+		EPhoneViewSetRestrictedDialer,
+		/** EPhoneViewIsConferenceInExpandedMode */
+		EPhoneViewIsConferenceInExpandedMode,
+		/** EPhoneViewIsMenuBarVisible */
+		EPhoneViewIsMenuBarVisible,
 		/** EPhoneViewGetBlockingDialogStatus */
 		EPhoneViewGetBlockingDialogStatus,
+		/** EPhoneViewYesSingleItemFetch */
+		EPhoneViewYesSingleItemFetch,
+		/** EPhoneViewNoSingleItemFetch */
+		EPhoneViewNoSingleItemFetch,
+		/** EPhoneViewGetLocalizedNumberFromEntry */
+		EPhoneViewGetLocalizedNumberFromEntry,
 		/** EPhoneViewIsNoteActive */
 		EPhoneViewIsNoteActive,
+		/** EPhoneViewOpenNumberEntry */
+		EPhoneViewOpenNumberEntry,
 		/** EPhoneViewOpenCallHandling */
 		EPhoneViewOpenCallHandling,
+		/** EPhoneViewGetConferenceAndSingleFlag */
+		EPhoneViewGetConferenceAndSingleFlag,
+		/** EPhoneViewSetConferenceAndSingleFlag */
+		EPhoneViewSetConferenceAndSingleFlag,
+		/** EPhoneViewSetVideoCallFlag */
+		EPhoneViewSetVideoCallFlag,
+		/** EPhoneViewSetDtmfOptionsFlag */
+		EPhoneViewSetDtmfOptionsFlag,
+		/** EPhoneViewShowVTSetupFailedCreateCallToSameContactQuery */
+		EPhoneViewShowVTSetupFailedCreateCallToSameContactQuery,
 		/** EPhoneViewGetAudioVolumeLevel */
 		EPhoneViewGetAudioVolumeLevel,
+		/** EPhoneViewIsIdleTopApp */
+		EPhoneViewIsIdleTopApp,
+		/** EPhoneViewUpdateToolbar */
+		EPhoneViewUpdateToolbar,
+		/** EPhoneViewSetControlAndVisibility */
+		EPhoneViewSetControlAndVisibility,
+		/** EPhoneViewAllowWaitingCallHeader */
+		EPhoneViewAllowWaitingCallHeader,
+		/** EPhoneViewBeginTransEffect */
+		EPhoneViewBeginTransEffect,
+		/** EPhoneViewEndTransEffect */
+		EPhoneViewEndTransEffect,
+		/** EPhoneViewSetDialerControlVisible */
+		EPhoneViewSetDialerControlVisible,
+		/** EPhoneViewCloseSingleItemFetchDialog */
+		EPhoneViewCloseSingleItemFetchDialog,
+		/** EPhoneViewGetActivatePreviousApp */
+		EPhoneViewGetActivatePreviousApp,
+		/** EPhoneViewActivatePreviousApp */
+		EPhoneViewActivatePreviousApp,
+		/** EPhoneViewSetPointerCapture */
+		EPhoneViewSetPointerCapture,
+		/** EPhoneViewSetSendKeyDialerActivationFlag */
+		EPhoneViewSetSendKeyDialerActivationFlag,
+		/** EPhoneViewPrepareIcons */
+		EPhoneViewPrepareIcons,
+		/** EPhoneViewKeypadAudioEnabled */
+		EPhoneViewKeypadAudioEnabled,
+		/** EPhoneViewKeypadAudioDisabled */
+		EPhoneViewKeypadAudioDisabled,
 		/** EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel */
 		EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel,
 		/** EPhoneViewRemoveDtmfNote */
 		EPhoneViewRemoveDtmfNote,
+		/** EPhoneViewUpdatePhoneIconToFSW */
+		EPhoneViewUpdatePhoneIconToFSW,
 		/** EPhoneViewSetEikonNotifiersDisabled */
 		EPhoneViewSetEikonNotifiersDisabled,
 		/** EPhoneViewCancelAllNotications */
 		EPhoneViewCancelAllNotications,
-		/** EPhoneViewDisableKeyLock */
-		EPhoneViewDisableKeyLock,
+		/** EPhoneViewSetVideoCallDTMFVisibilityFlag */
+		EPhoneViewSetVideoCallDTMFVisibilityFlag,
+		/** EPhoneViewLoadPlugins */
+		EPhoneViewLoadPlugins,
+		/** EPhoneViewOpenVirtualKeyBoard */
+		EPhoneViewOpenVirtualKeyBoard,
+		/** EPhoneViewUpdateNoteSoftkeys */
+		EPhoneViewUpdateNoteSoftkeys,
 		/** EPhoneViewSendAiwCommand */
 		EPhoneViewSendAiwCommand,
+		/** EPhoneViewShowCustomizedDialer */
+		EPhoneViewShowCustomizedDialer,
+		/** EPhoneViewHideCustomizedDialer */
+		EPhoneViewHideCustomizedDialer,
+		/** EPhoneViewGetCustomizedDialerMenuResourceId */
+		EPhoneViewGetCustomizedDialerMenuResourceId,
+		/** EPhoneViewGetCustomizedDialerCbaResourceId */
+		EPhoneViewGetCustomizedDialerCbaResourceId,
 		/** EPhoneViewCipheringInfoChangePlayTone */
 		EPhoneViewCipheringInfoChangePlayTone,
+		/** EPhoneViewCreatePhoneBookServices */
+		EPhoneViewCreatePhoneBookServices,
 		/** EPhoneViewDisableKeyLockWithoutNote */
 		EPhoneViewDisableKeyLockWithoutNote,
 		/** EPhoneViewGetKeyLockStatus */
 		EPhoneViewGetKeyLockStatus,
+		/** EPhoneViewSetNumberEntryObserver */
+		EPhoneViewSetNumberEntryObserver,
+		/** EPhoneViewGetSingleItemFetchType */
+		EPhoneViewGetSingleItemFetchType,
 		/** EPhoneViewRemoveGlobalWaitNote */
 		EPhoneViewRemoveGlobalWaitNote,
 		/** EPhoneViewSetPhoneCustomization */
@@ -218,36 +402,46 @@ public:
 		EPhoneViewAddContactByString,
 		/** EPhoneViewIsActiveNoteDissmissableByKeyEvent */
 		EPhoneViewIsActiveNoteDissmissableByKeyEvent,
+		/** EPhoneViewUpdateContextMenu */
+		EPhoneViewUpdateContextMenu,
+		/** EPhoneViewSetNoConnectedCalls */
+		EPhoneViewSetNoConnectedCalls,
+		/** EPhoneViewIsDTMFEditorVisible */
+		EPhoneViewIsDTMFEditorVisible,
+		/** EPhoneViewSetToolbarDimming */
+		EPhoneViewSetToolbarDimming,
 		/** EPhoneViewEnableToolbarButton */
 		EPhoneViewEnableToolbarButton,
 		/** EPhoneViewHideToolbar */
 		EPhoneViewHideToolbar,
 		/** EPhoneViewShowToolbar */
 		EPhoneViewShowToolbar,
-		/** EPhoneViewGetExpandedBubbleCallId */
-		EPhoneViewGetExpandedBubbleCallId,
-		/** EPhoneViewOpenDialer */
-		EPhoneViewOpenDialer,
-		/** EPhoneSetConferenceExpanded */
-		EPhoneSetConferenceExpanded,
-		/** EPhoneAppShutDown */
-		EPhoneAppShutDown,
-		/** EPhoneViewBackButtonActive */
-		EPhoneViewBackButtonActive,
-		/** EPhoneViewHsToForegroundAfterCall */
-		EPhoneViewHsToForegroundAfterCall,
-		/** EPhoneViewOpenContacts */
-		EPhoneViewOpenContacts,
-		/** EPhoneViewSetIhfFlag */
-		EPhoneViewSetIhfFlag,
-		/** EPhoneViewSetMuteFlag */
-		EPhoneViewSetMuteFlag,
-		/** EPhoneViewLaunchLogs */
-		EPhoneViewLaunchLogs,
-		/** EPhoneViewSetBlueToothFlag */
-		EPhoneViewSetBlueToothFlag,
-		/** EPhoneViewSetBluetoothAvailableFlag */
-		EPhoneViewSetBluetoothAvailableFlag,
+		/** EPhoneViewGetEasyDialingInFocusStatus */
+		EPhoneViewGetEasyDialingInFocusStatus,
+		/** EPhoneViewSetInvalidCsPhoneNumberFlag */
+		EPhoneViewSetInvalidCsPhoneNumberFlag,
+		/** EPhoneViewGetInvalidCsPhoneNumberFlag */
+		EPhoneViewGetInvalidCsPhoneNumberFlag,
+		/** EPhoneViewGetEasyDialingMenuId */
+		EPhoneViewGetEasyDialingMenuId,
+		/** EPhoneViewGetEasyDialingCbaId */
+		EPhoneViewGetEasyDialingCbaId,
+		/** EPhoneViewGetNeedToReturnToForegroundAppStatus */
+		EPhoneViewGetNeedToReturnToForegroundAppStatus,
+		/** EPhoneViewSetNeedToReturnToForegroundAppStatus */
+		EPhoneViewSetNeedToReturnToForegroundAppStatus,
+		/** EPhoneViewSetConferenceAndWaitingVideo */
+		EPhoneViewSetConferenceAndWaitingVideo,
+		/** EPhoneViewLaunchMultimediaSharing */
+		EPhoneViewLaunchMultimediaSharing,
+		/** EPhoneViewGetQwertyModeObserver */
+		EPhoneViewGetQwertyModeObserver,
+		/** EPhoneViewSetIncallBubbleTrue */
+		EPhoneViewSetIncallBubbleTrue,
+		/** EPhoneViewSetIncallBubbleFalse */
+		EPhoneViewSetIncallBubbleFalse,
+		/** EPhoneViewIsDisplayingMenuOrDialog */
+		EPhoneViewIsDisplayingMenuOrDialog,
 		/** , // Don't remove this, this should always be the last in list. */
 		EPhoneAmountOfCommands
 		};

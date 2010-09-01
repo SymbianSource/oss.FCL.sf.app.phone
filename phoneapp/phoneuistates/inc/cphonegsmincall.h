@@ -107,23 +107,9 @@ class CPhoneGsmInCall : public CPhoneStateInCall
         */
         void HandleHoldNoteL( TInt aCallId, TBool aHold );
         
-        
-        /**
-        * Setter for divert indication showing in bubble.
-        * @param aDivertIndication ETrue to show divert indication,
-        *        EFalse to not. Usually setting EFalse isn't necessary
-        *        as it's a default value in bubble creation.
-        */
-        IMPORT_C void SetDivertIndication(
-            const TBool aDivertIndication );
-        
     private:
     
-        void ReplaceCallL();
-        /**
-        * Handles divert indication 
-        */
-        void HandeDivertIndicationL();
+    	void ReplaceCallL();
     };
 
 #endif // CPHONEGSMINCALL_H

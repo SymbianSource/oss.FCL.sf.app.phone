@@ -37,21 +37,29 @@
 enum TPhoneTransEffectType
     {
     EPhoneTransEffectNone,
+    EPhoneTransEffectCallUiAppear,
+    EPhoneTransEffectCallUiDisappear,
+    // These 3 effect types can be used only when dialer is
+    // opened/closed when some other app than phone is visible 
+    // on the foreground/in the background.
+    // These cannot be used for internal transitions (=call ui<->dialer).
     EPhoneTransEffectDialerOpen,
     EPhoneTransEffectDialerClose,
     EPhoneTransEffectDialerCreate,
+    // For applying effect to external app launch done from dialer.
+    // Effects triggered by App FW don't work properly.
+    EPhoneTransEffectAppStartFromDialer,
     EPhoneTransEffectStop
     };
 
 // CLASS DECLARATION
 
 /**
-*  A parameter class for note dialog information.
+*  A parameter class for transition effect information.
 */
 class TPhoneCmdParamTransEffect : public TPhoneUICommandParam
     {   
-   
-    
+
     public: 
            
         /**
@@ -67,19 +75,37 @@ class TPhoneCmdParamTransEffect : public TPhoneUICommandParam
         */
         IMPORT_C void SetType( TPhoneTransEffectType aType );
 
- 
+        /**
+        * Sets application uid associated with the effect.
+        * @param    aAppUid, Id of app.
+        * @return   None.
+        */
+        IMPORT_C void SetAppUid( const TUid& aAppUid );
+
         /**
         * Returns the effect type
         * @return Returns the type
         */
         IMPORT_C TPhoneTransEffectType Type() const;
-   
+
+        /**
+        * Returns App uid associated with the effect.
+        * @param    None.
+        * @return   iAppUid.
+        */
+        IMPORT_C TUid AppUid() const;
+
     private:    
         
         /**
-        * Note type
+        * Effect type
         */
         TPhoneTransEffectType iType;
+        
+        /**
+        * App UID
+        */
+        TUid iAppUid;
 
     };
 

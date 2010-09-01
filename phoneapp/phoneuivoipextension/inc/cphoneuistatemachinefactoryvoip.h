@@ -45,8 +45,8 @@ NONSHARABLE_CLASS( CPhoneUIStateMachineFactoryVoIP ):
         * See MPhoneUIStateMachineFactory for details
         */
         CPhoneErrorMessagesHandler* CreatePhoneErrorMessagesHandlerL(
-            MPhoneViewCommandHandle* aViewCommandHandle,
-            MPhoneStateMachine* aStateMachine );
+        	MPhoneViewCommandHandle* aViewCommandHandle,
+        	MPhoneStateMachine* aStateMachine );
     };
 
 #endif      // CPHONEUISTATEMACHINEFACTORYVOIP_H

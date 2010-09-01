@@ -52,11 +52,11 @@ CPhoneResourceResolverBase*
 // ---------------------------------------------------------
 CPhoneErrorMessagesHandler*
     CPhoneUIStateMachineFactoryGSM::CreatePhoneErrorMessagesHandlerL(
-        MPhoneViewCommandHandle* aViewCommandHandle,
-        MPhoneStateMachine* aStateMachine )
+    	MPhoneViewCommandHandle* aViewCommandHandle,
+    	MPhoneStateMachine* aStateMachine )
     {
     return CPhoneErrorMessagesHandler::NewL( aViewCommandHandle,
-                                             aStateMachine );
+    										 aStateMachine );
     }
 
 // ---------------------------------------------------------

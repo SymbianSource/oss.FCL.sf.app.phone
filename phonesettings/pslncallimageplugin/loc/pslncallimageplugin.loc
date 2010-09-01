@@ -1,0 +1,63 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localization strings for PslnCallImagePlugin
+*
+*/
+
+
+//  LOCALISATION STRINGS
+
+// d:Text of a list item in Main state's folder list.
+// d:Item opens Call Image folder.
+// l:list_single_large_graphic_pane_t1_cp2
+// w:
+// r:3.1
+//
+#define qtn_skins_title_call_image "Call image"
+
+
+// d:Text of a tab group item Call Image in Personalisation app's tab group.
+// d:Shown in tabgroup when a folder has been activated from Main state.
+// l:tabs_3_long_active_pane_t1
+// w:
+// r:3.1
+//
+#define qtn_skins_tabs_call_image "Call image"
+
+// d:Title pane text in Call image view.
+// l:title_pane_t2/opt9
+// w:
+// r:5.0
+//
+#define qtn_skins_title_pane_callimage "Call image"
+
+// d:List item in Call image view list. Shown as first item in the list.
+// d:Selects theme image used as call image. 
+// l:list_set_graphic_pane_t1
+// w:
+// r:3.2
+//
+#define qtn_skins_default_call_image "Theme image"
+
+// d:List item in Call image view list.
+// d:Selects user defined image used as call image. 
+// l:list_set_graphic_pane_t1
+// w:
+// r:3.2
+//
+#define qtn_skins_settings_browse "User defined"
+           
+// End of File
+
+

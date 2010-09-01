@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2008 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2005-2008 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,6 +21,7 @@
 #include <mpeengineinfo.h>
 #include <mpeclientinformation.h>
 #include <MediatorDomainUIDs.h>
+#include <videotelcontrolmediatorapi.h>
 #include "cphonealerting.h"
 #include "mphonestatemachine.h"
 #include "tphonecmdparamboolean.h"
@@ -116,7 +117,7 @@ EXPORT_C void CPhoneAlerting::HandleKeyMessageL(
                 {
                 // Show not allowed note
                 SendGlobalErrorNoteL( 
-                    EPhoneNoteTextNotAllowed, ETrue );
+                    EPhoneNoteTextNotAllowed );
                 }
             break;
 
@@ -131,11 +132,7 @@ EXPORT_C void CPhoneAlerting::HandleKeyMessageL(
 
                 if ( IsNumberEntryUsedL() )
                     {
-                    // Remove number entry from screen
-                    iViewCommandHandle->ExecuteCommandL( 
-                        EPhoneViewRemoveNumberEntry );
-                    // Do state-specific operation when number entry is cleared
-                    HandleNumberEntryClearedL();
+                    CloseClearNumberEntryAndLoadEffectL( ENumberEntryClose );
                     }
                 if ( !TopAppIsDisplayedL() )
                     {
@@ -174,17 +171,22 @@ EXPORT_C void CPhoneAlerting::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnected:
+            {
             HandleConnectedL( aCallId );
+            }
             break;
         
         case MEngineMonitor::EPEMessageDisconnecting:
+            {
             HandleDisconnectingL( aCallId );
+            }
             break;
         
         case MEngineMonitor::EPEMessageRemoteTerminated:
+            {
             iViewCommandHandle->ExecuteCommandL( 
-                EPhoneViewHideNaviPaneAudioVolume );
-            CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
+                EPhoneViewHideNaviPaneAudioVolume );            
+            }
             break;
         
         case MEngineMonitor::EPEMessageIncoming:
@@ -218,6 +220,7 @@ EXPORT_C void CPhoneAlerting::HandlePhoneEngineMessageL(
                 }
             }
             break;
+                   
         
         default:
             break;
@@ -234,24 +237,60 @@ EXPORT_C void CPhoneAlerting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneAlerting::HandleConnectedL()");
-    // Keep Phone in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
+
+    // Close menu bar, if it is displayed
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
     BeginUiUpdateLC();
-        
+
     // Update the single call
     UpdateSingleActiveCallL( aCallId );
 
-    SetTouchPaneButtons( EPhoneIncallButtons ); 
-        
+    SetTouchPaneButtons( EPhoneIncallButtons );
+
+    SetToolbarDimming( EFalse );
+
     EndUiUpdate();
     
     // Go to single state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );    
     iStateMachine->ChangeState( EPhoneStateSingle );
+    }
+
+// -----------------------------------------------------------
+// CPhoneAlerting::OpenMenuBarL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneAlerting::OpenMenuBarL()
+    {
+    __LOGMETHODSTARTEND( EPhoneUIStates, 
+        "CPhoneAlerting::OpenMenuBarL()");
+    TInt resourceId;
+
+    if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
+        {
+        resourceId = EPhoneDtmfDialerMenubar;
+        }
+    else if ( IsNumberEntryVisibleL() )
+        {
+        resourceId = EPhoneAlertingCallMenubarWithNumberEntry;
+        }
+    // Use different resources for alerting data, video and cs call
+    else if( IsVideoCallAlertingL() )
+        {
+        resourceId = EPhoneAlertingVideoCallMenubar;
+        }
+    else
+        {
+        resourceId = EPhoneAlertingCallMenubar;
+        }            
+ 
+    TPhoneCmdParamInteger integerParam;
+    integerParam.SetInteger( 
+        CPhoneMainResourceResolver::Instance()->
+        ResolveResourceID( resourceId ) );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarOpen, 
+        &integerParam );
     }
 
 // -----------------------------------------------------------
@@ -262,7 +301,30 @@ EXPORT_C TBool CPhoneAlerting::HandleCommandL( TInt aCommand )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,  
         "CPhoneAlerting::HandleCommandL()" );
-    return CPhoneGsmInCall::HandleCommandL( aCommand );
+    TBool commandStatus = ETrue;
+
+    switch( aCommand )
+        {
+        case EPhoneInCallCmdHelp:
+            {
+            TPtrC contextName;
+            if ( IsVideoCallAlertingL() )
+                {
+                contextName.Set( KINCAL_HLP_VIDEOCALL() );    
+                }
+            else
+                {
+                contextName.Set( KINCAL_HLP_CALL_HANDLING() );
+                }
+            iViewCommandHandle->ExecuteCommandL(
+                EPhoneViewLaunchHelpApplication, 0, contextName );
+            }
+            break;
+        default:
+            commandStatus = CPhoneGsmInCall::HandleCommandL( aCommand );
+            break;
+        }
+    return commandStatus;
     }
 
 // -----------------------------------------------------------
@@ -307,6 +369,13 @@ EXPORT_C void CPhoneAlerting::HandleDisconnectingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,  
             "CPhoneAlerting::HandleDisconnectingL()" );
+    
+    if ( iStateMachine->PhoneEngineInfo()->CallOrigin( aCallId ) == EPECallOriginSAT )
+        {
+        // User has hangup alerting SAT call, complete sat request
+        CompleteSatRequestL( aCallId );
+        }
+    
     CPhoneGsmInCall::HandleDisconnectingL( aCallId );
     }
 

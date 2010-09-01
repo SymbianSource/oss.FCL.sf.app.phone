@@ -1,14 +1,22 @@
 <?xml version="1.0"?>
-<!DOCTYPE SystemDefinition SYSTEM "sysdef_1_5_1.dtd" [
+<!DOCTYPE SystemDefinition SYSTEM "sysdef_1_4_0.dtd" [
   <!ENTITY layer_real_source_path "sf/app/phone" >
 ]>
 
-<SystemDefinition name="phone" schema="1.5.1">
+<SystemDefinition name="phone" schema="1.4.0">
   <systemModel>
     <layer name="app_layer">
       <module name="phone">
-        <unit name="phone" unitID="tedo.phone" bldFile="&layer_real_source_path;" mrp="" proFile="phone.pro" />
+        <unit name="phone" unitID="tedo.phone" bldFile="&layer_real_source_path;/group" mrp="" />
       </module>
     </layer>
+
+    <layer name="api_test_layer">
+      <module name="tedo_api_tests">
+        <unit unitID="tedo.dialer.test" name="dialer.test" bldFile="&layer_real_source_path;/phoneuis/dialer/tsrc/public/basic/group" mrp="" />
+        <unit unitID="tedo.phoneui.test" name="phoneui.test" bldFile="&layer_real_source_path;/phoneapp/phoneui/tsrc/public/basic/group" mrp="" />
+       </module>
+    </layer>
+
   </systemModel>
 </SystemDefinition>

@@ -1,0 +1,15 @@
+EXPORTS
+	?Controller@CDialer@@QAEPAVMPhoneDialerController@@XZ @ 1 NONAME ; class MPhoneDialerController * CDialer::Controller(void)
+	?NumberEntry@CDialer@@QAEPAVMNumberEntry@@XZ @ 2 NONAME ; class MNumberEntry * CDialer::NumberEntry(void)
+	?NewL@CVideoDTMFDialer@@SAPAV1@ABVCCoeControl@@AAV2@ABVTRect@@@Z @ 3 NONAME ; class CVideoDTMFDialer * CVideoDTMFDialer::NewL(class CCoeControl const &, class CCoeControl &, class TRect const &)
+	?UpdateToolbar@CDialer@@QAEXXZ @ 4 NONAME ; void CDialer::UpdateToolbar(void)
+	?SetNumberEntryObserver@CDialer@@UAEXAAVMNumberEntryObserver@@@Z @ 5 NONAME ; void CDialer::SetNumberEntryObserver(class MNumberEntryObserver &)
+	?NewL@CDialer@@SAPAV1@ABVCCoeControl@@ABVTRect@@PAVMPhoneDialerController@@@Z @ 6 NONAME ; class CDialer * CDialer::NewL(class CCoeControl const &, class TRect const &, class MPhoneDialerController *)
+	??1CDialer@@UAE@XZ @ 7 NONAME ; CDialer::~CDialer(void)
+	?GetEasyDialingInterface@CDialer@@QBEPAVCDialingExtensionInterface@@XZ @ 8 NONAME ; class CDialingExtensionInterface * CDialer::GetEasyDialingInterface(void) const
+	?SetControllerL@CDialer@@QAEXPAVMPhoneDialerController@@@Z @ 9 NONAME ; void CDialer::SetControllerL(class MPhoneDialerController *)
+	?RelayoutAndDraw@CDialer@@QAEXXZ @ 10 NONAME ; void CDialer::RelayoutAndDraw(void)
+	??1CVideoDTMFDialer@@UAE@XZ @ 11 NONAME ; CVideoDTMFDialer::~CVideoDTMFDialer(void)
+	?HandleKeyboardLayoutChange@CDialer@@UAEXXZ @ 12 NONAME ; void CDialer::HandleKeyboardLayoutChange(void)
+	?HandleQwertyModeChange@CDialer@@UAEXH@Z @ 13 NONAME ; void CDialer::HandleQwertyModeChange(int)
+

@@ -24,6 +24,5 @@ DEFAULT
 
 PRJ_EXPORTS
 ../inc/phoneappcommands.hrh     APP_LAYER_PLATFORM_EXPORT_PATH(phoneappcommands.hrh)
-../inc/xqphoneappcommands.h     APP_LAYER_PLATFORM_EXPORT_PATH(xqphoneappcommands.h)
 
 

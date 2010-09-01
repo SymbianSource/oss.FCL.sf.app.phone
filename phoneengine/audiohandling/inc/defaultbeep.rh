@@ -17,12 +17,12 @@
 
 
 // Note frequencies
-#define SEQ_FREQ_A0      440
+#define SEQ_FREQ_A0	     440
 #define SEQ_FREQ_AsBf0   466  // 466.1637615 A#, Bb
-#define SEQ_FREQ_B0      494  // 493.8833013
-#define SEQ_FREQ_C0      523  // 523.2511306
-#define SEQ_FREQ_CsDf0   554  // 554.365262 C#, Db, etc.
-#define SEQ_FREQ_D0      587  // 587.3295358
+#define SEQ_FREQ_B0	     494  // 493.8833013
+#define SEQ_FREQ_C0	     523  // 523.2511306
+#define SEQ_FREQ_CsDf0	 554  // 554.365262 C#, Db, etc.
+#define SEQ_FREQ_D0	     587  // 587.3295358
 #define SEQ_FREQ_DsEf0   622  // 622.2539674
 #define SEQ_FREQ_E0      659  // 659.2551138
 #define SEQ_FREQ_F0      698  // 698.4564629
@@ -58,24 +58,24 @@
 
 // Volume defines
 #define SEQ_VOL_F        32767 // Forte = Loud
-#define SEQ_VOL_MF       24575 // Mezzo forte = Medium loud
-#define SEQ_VOL_MP       16383 // Mezzo piano = Medium soft
+#define SEQ_VOL_MF	     24575 // Mezzo forte = Medium loud
+#define SEQ_VOL_MP		 16383 // Mezzo piano = Medium soft
 #define SEQ_VOL_P         8191 // Piano = Soft
 
 
 STRUCT SEQ_2TONES
 {
-    WORD duration;
-    WORD freq1;
-    WORD vol1;
-    WORD freq2;
-    WORD vol2;
+	WORD duration;
+	WORD freq1;
+	WORD vol1;
+	WORD freq2;
+	WORD vol2;
 }
 
 STRUCT SEQ_LOOP
 {
-    WORD repeats;
-    STRUCT tones[];
+	WORD repeats;
+	STRUCT tones[];
 }
 
 

@@ -63,8 +63,8 @@ class CPhoneDataPortMessage : public CBase, public MPhoneMediatorMessage
         
              
     private:
-        
-        MPEEngineInfo& iEngineInfo;
+    	
+		MPEEngineInfo& iEngineInfo;
     };
     
 #endif // CPHONEDATAPORTMESSAGE_H

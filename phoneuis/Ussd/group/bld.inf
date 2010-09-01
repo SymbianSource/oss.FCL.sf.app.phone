@@ -1,0 +1,44 @@
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file provides the information required for building the 
+*                whole of a ussd.
+*
+*/
+
+#include  <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+//  Help exports
+#include "../help/group/bld.inf"
+
+PRJ_EXPORTS
+
+../data/ussd_stub.SIS       /epoc32/data/z/system/install/Ussd_stub.sis
+../rom/Ussd.iby             CORE_APP_LAYER_IBY_EXPORT_PATH(Ussd.iby)
+../rom/UssdResources.iby    LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(UssdResources.iby)
+../loc/ussd.loc             APP_LAYER_LOC_EXPORT_PATH(ussd.loc)
+
+PRJ_EXTENSIONS
+START EXTENSION s60/mifconv
+  Option TARGETFILE ussd_aif.mif
+  OPTION SOURCES -c8,8 qgn_menu_ussd
+END
+
+PRJ_MMPFILES
+//gnumakefile ussd_icons_aif_scalable_dc.mk
+../group/ussd.mmp
+
+//  End of File  

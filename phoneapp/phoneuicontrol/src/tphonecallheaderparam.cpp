@@ -43,8 +43,7 @@ TPhoneCallHeaderParam::TPhoneCallHeaderParam(
         MPhoneStateMachine& aStateMachine ) 
         : iManagerUtility ( aManagerUtility ),
           iStateMachine ( aStateMachine ),
-          iCallHeaderType ( EPECallTypeUninitialized ),
-          iSetDivertIndication ( EFalse )
+          iCallHeaderType ( CBubbleManager::ENormal )
     {
     }
 
@@ -72,7 +71,7 @@ void TPhoneCallHeaderParam::SetCallHeaderTexts(
     __PHONELOG2( EBasic, EPhoneControl, "TPhoneCallHeaderParam::SetCallHeaderTexts - NumberType(%d), CLI(%d)", numberType, cli );
     __PHONELOG2( EBasic, EPhoneControl, "TPhoneCallHeaderParam::SetCallHeaderTexts - CNAP(%d), AuxLine(%d)", cnap, auxLine );
     
-    if ( !cli && !cnap && numberType != EPEPrivateNumber && numberType != EPEUnknownNumber )
+    if ( !cli && !cnap && ( numberType != EPEPrivateNumber ) )
         {
         if ( auxLine )
             {
@@ -155,8 +154,9 @@ void TPhoneCallHeaderParam::SetCliParamatersL(
          ( !ContactInfoAvailable( aCallId ) ) )
         {
         // Set phonenumber/URI as the CLI text for the call header      
-       aCallHeaderData->SetCLIText( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ),
-                 TPhoneCmdParamCallHeaderData::ELeft );
+        aCallHeaderData->SetCLIText( 
+                iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ),
+                CBubbleManager::ELeft );
             
         // No contact name, use phonenumber when available.
         aCallHeaderData->SetParticipantListCLI(
@@ -164,19 +164,22 @@ void TPhoneCallHeaderParam::SetCliParamatersL(
         }
     else
         {
-        TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection cnapClippingDirection = TPhoneCmdParamCallHeaderData::ERight;
+        CBubbleManager::TPhoneClippingDirection cnapClippingDirection = CBubbleManager::ERight;
         TBuf<KCntMaxTextFieldLength> remoteInfoText( KNullDesC );
- 
-        TBool secondaryCli = GetRemoteInfoDataL( aCallId, remoteInfoText );
-        cnapClippingDirection = TPhoneCmdParamCallHeaderData::ELeft;
-
-        aCallHeaderData->SetCLIText( remoteInfoText,  TPhoneCmdParamCallHeaderData::ERight );
         
-        if (secondaryCli)
+        /*If call is Private/PayPhone call then IsCallPrivateOrPayPhone
+        * will set SetIdentitySpecificCallHeaderData parameters therefore
+        * there is no need to call GetRemoteInfoDataL.*/  
+        if ( !IsCallPrivateOrPayPhone( aCallId, remoteInfoText ) )
             {
-            aCallHeaderData->SetCNAPText( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ), 
-                cnapClippingDirection );
+            GetRemoteInfoDataL( aCallId, remoteInfoText );
+            cnapClippingDirection = CBubbleManager::ELeft;
             }
+        
+        // Set remote info data as the CLI text for the call header 
+        aCallHeaderData->SetCLIText( remoteInfoText, CBubbleManager::ERight );
+        aCallHeaderData->SetCNAPText( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ), 
+                cnapClippingDirection );
         }
     
     SetCallerImage( aCallId, aCallHeaderData );
@@ -227,10 +230,10 @@ void TPhoneCallHeaderParam::SetBasicCallHeaderParamsL(
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetBasicCallHeaderParamsL( ) ");
     // Set call header call state
     aCallHeaderData->SetCallState( 
-        iStateMachine.PhoneEngineInfo()->CallState( aCallId ) );
-
-    // Set call header type            
+            iStateMachine.PhoneEngineInfo()->CallState( aCallId ) );
+    // Set call header type
     aCallHeaderData->SetCallType( GetCallType( aCallId, aCallHeaderData ) );
+    aCallHeaderData->SetCallFlag( CallHeaderType() );
     
     // Set call header voice privacy status
     aCallHeaderData->SetCiphering( 
@@ -265,16 +268,33 @@ TPECallType TPhoneCallHeaderParam::GetCallType(
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::GetCallType( ) ");
     // Set call header type.
-    TPECallType callType = 
-        iStateMachine.PhoneEngineInfo()->CallType( aCallId );
-    SetCallHeaderType( callType );
-    
-    if ( iStateMachine.PhoneEngineInfo()->CallALSLine( aCallId ) 
-         == CCCECallParameters::ECCELineTypeAux )
-        {
-        aCallHeaderData->SetLine2( ETrue );
-        }
-
+    TPECallType callType = iStateMachine.PhoneEngineInfo()->CallType( aCallId );
+    switch ( callType )
+       {
+       case EPECallTypeCSVoice:
+           {
+           if ( iStateMachine.PhoneEngineInfo()->CallALSLine( aCallId ) 
+                == CCCECallParameters::ECCELineTypeAux )
+               {
+               SetCallHeaderType( CBubbleManager::ELine2 );
+               aCallHeaderData->SetLine2( ETrue );
+               }
+           else
+               {
+               SetCallHeaderType( CBubbleManager::ENormal );
+               }
+           }
+           break;
+       case EPECallTypeVideo:
+           SetCallHeaderType( CBubbleManager::EVideo );
+           break;
+       case EPECallTypeVoIP:
+           SetCallHeaderType( CBubbleManager::EVoIPCall );
+           break;
+         default:
+           // None
+           break;     
+       }
     __PHONELOG1( EBasic, EPhoneControl, 
                 "TPhoneCallHeaderParam::GetCallType() - callType: %d ", 
                 callType )
@@ -286,7 +306,7 @@ TPECallType TPhoneCallHeaderParam::GetCallType(
 // ---------------------------------------------------------------------------
 //
 void TPhoneCallHeaderParam::SetCallHeaderType( 
-    TInt aCallHeaderType )
+    const CBubbleManager::TPhoneCallTypeFlags aCallHeaderType )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetCallHeaderType( ) ");
     iCallHeaderType = aCallHeaderType;
@@ -299,7 +319,7 @@ void TPhoneCallHeaderParam::SetCallHeaderType(
 //  TPhoneCallHeaderParam::CallHeaderType
 // ---------------------------------------------------------------------------
 //
-TInt TPhoneCallHeaderParam::CallHeaderType() const
+CBubbleManager::TPhoneCallTypeFlags TPhoneCallHeaderParam::CallHeaderType() const
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::CallHeaderType( ) ");
     __PHONELOG1( EBasic, EPhoneControl, 
@@ -345,10 +365,10 @@ void TPhoneCallHeaderParam::SetCliAndCnapParamatersL(
          ( !ContactInfoAvailable( aCallId ) ) && 
          ( !info.ShowNumber() ) )
         {
-        // No contact info data available; use the phone number
+        // No contact info data available use the phone number.
         aCallHeaderData->SetCLIText(
                 iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ),
-                TPhoneCmdParamCallHeaderData::ELeft);
+                CBubbleManager::ELeft);
         
         // No contact name, use phonenumber when available.
         aCallHeaderData->SetParticipantListCLI( 
@@ -358,12 +378,20 @@ void TPhoneCallHeaderParam::SetCliAndCnapParamatersL(
         {
         TBuf<KCntMaxTextFieldLength> remoteInfoText( KNullDesC );
         
-        GetRemoteInfoDataL( aCallId, remoteInfoText );
-        aCallHeaderData->SetCLIText( remoteInfoText, TPhoneCmdParamCallHeaderData::ERight );
+        /*If call is Private/PayPhone call then IsCallPrivateOrPayPhone
+        * will set SetIdentitySpecificCallHeaderData parameters therefore
+        * there is no need to call GetRemoteInfoDataL.*/        
+        if ( !IsCallPrivateOrPayPhone( aCallId, remoteInfoText ) )
+            {
+            GetRemoteInfoDataL( aCallId, remoteInfoText );
+            }
+        
+        // Set remote info data as the CLI text for the call header
+        aCallHeaderData->SetCLIText( remoteInfoText, CBubbleManager::ERight );
         }
 
     // Fetch CNAP text and clipping direction
-    TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection cnapClippingDirection;
+    CBubbleManager::TPhoneClippingDirection cnapClippingDirection; 
     GetCNAPText( aCallId, cnapText, cnapClippingDirection );
     
     // Set CNAP data 
@@ -382,7 +410,7 @@ void TPhoneCallHeaderParam::SetCliAndCnapParamatersL(
     if ( IsFeatureSupported( KTelephonyLVFlagUUS, aCallId ) )
         {
         aCallHeaderData->SetCNAPText( iStateMachine.PhoneEngineInfo()->RemotePartyName( aCallId ), 
-                TPhoneCmdParamCallHeaderData::ERight );
+                CBubbleManager::ERight );
         }
     }
 
@@ -391,14 +419,14 @@ void TPhoneCallHeaderParam::SetCliAndCnapParamatersL(
 // ---------------------------------------------------------------------------
 //
 void TPhoneCallHeaderParam::GetCNAPText( 
-    const TInt aCallId,
+       const TInt aCallId,
        TDes& aData, 
-       TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection& aDirection ) const
+       CBubbleManager::TPhoneClippingDirection& aDirection ) const
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::GetCNAPText( ) ");
     
     // Set clipping direction  
-    aDirection = TPhoneCmdParamCallHeaderData::ERight;
+    aDirection = CBubbleManager::ERight;
     
     // If it's not a private number show further info
     if ( iStateMachine.PhoneEngineInfo()->RemotePhoneNumberType( aCallId ) != 
@@ -413,7 +441,7 @@ void TPhoneCallHeaderParam::GetCNAPText(
             aData.Copy( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ) );
             
             // Clipping direction for non-private number
-            aDirection = TPhoneCmdParamCallHeaderData::ELeft;
+            aDirection = CBubbleManager::ELeft;
             }
         }
     }
@@ -459,9 +487,10 @@ void TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader(
     TPhoneCmdParamCallHeaderData* aCallHeaderData )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader( ) ");
-    if( iSetDivertIndication )
+    TBool forwarded = iStateMachine.PhoneEngineInfo()->CallForwarded( aCallId );
+    if ( forwarded )
         {
-        aCallHeaderData->SetDiverted( ETrue );
+        aCallHeaderData->AddCallFlag( CBubbleManager::EDiverted );
         }
     
     if ( iStateMachine.PhoneEngineInfo()->CallALSLine( aCallId ) == CCCECallParameters::ECCELineTypeAux )
@@ -470,19 +499,6 @@ void TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader(
                 "TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader - CallALSLine() == CCCECallParameters::ECCELineTypeAux");
         aCallHeaderData->SetLine2( ETrue );    
         }        
-    }
-
-// ---------------------------------------------------------------------------
-// TPhoneCallHeaderParam::SetDivertIndication
-// ---------------------------------------------------------------------------
-//
-void TPhoneCallHeaderParam::SetDivertIndication( const TBool aDivertIndication )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetDivertIndication( ) ");
-    iSetDivertIndication = aDivertIndication;           
-    __PHONELOG1( EBasic, EPhoneControl, 
-                "TPhoneCallHeaderParam::SetDivertIndication() - iSetDivertIndication: %d ", 
-                iSetDivertIndication )
     }
 
 // ---------------------------------------------------------------------------
@@ -523,8 +539,18 @@ void TPhoneCallHeaderParam::SetOutgoingCallHeaderParamsL(
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetOutgoingCallHeaderParamsL( ) ");
     // Set basic params must be called before update is called.
     SetBasicCallHeaderParamsL( aCallId, aCallHeaderData );
-    
     // Set call header labels
+    SetCallHeaderLabels( aCallHeaderData );
+    SetCliParamatersL( aCallId, aCallHeaderData );
+    }
+
+// ---------------------------------------------------------------------------
+//  TPhoneCallHeaderParam::SetCallHeaderLabels
+// ---------------------------------------------------------------------------
+//
+void TPhoneCallHeaderParam::SetCallHeaderLabels( 
+       TPhoneCmdParamCallHeaderData* aCallHeaderData )
+    {
     if ( aCallHeaderData->CallType() == EPECallTypeVideo )
         {
         iManagerUtility.LoadCallHeaderTexts( 
@@ -539,8 +565,6 @@ void TPhoneCallHeaderParam::SetOutgoingCallHeaderParamsL(
                 EPhoneOutgoingCallLabelShort, 
                 aCallHeaderData );
         }
-    
-    SetCliParamatersL( aCallId, aCallHeaderData );
     }
 
 // ---------------------------------------------------------------------------
@@ -559,23 +583,36 @@ void TPhoneCallHeaderParam::UpdateCallHeaderInfoL(
     
     // Set call header type
     GetCallType( aCallId, aCallHeaderData );
+    aCallHeaderData->SetCallFlag( CallHeaderType() );
     
     // Set CLI text for the call header
-    TBool secondaryCli = GetRemoteInfoDataL( aCallId, remoteInfoText );
+    GetRemoteInfoDataL( aCallId, remoteInfoText );
     if ( remoteInfoText != KNullDesC )
         {
-        aCallHeaderData->SetCLIText( remoteInfoText, TPhoneCmdParamCallHeaderData::ERight );
-        if ( secondaryCli )
+        aCallHeaderData->SetCLIText( remoteInfoText, CBubbleManager::ERight );
+        if ( IsCallPrivateOrPayPhone( aCallId, remoteInfoText ) )
+            {
+            aCallHeaderData->SetCNAPText( remoteInfoText, CBubbleManager::ERight );
+            }
+        else
             {
             aCallHeaderData->SetCNAPText( iStateMachine.PhoneEngineInfo()->
-                RemotePhoneNumber( aCallId ), TPhoneCmdParamCallHeaderData::ELeft );       
+                RemotePhoneNumber( aCallId ), CBubbleManager::ELeft );
+
+            // No contact name, use phonenumber when available.
+            if ( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ).Length() 
+                    && !ContactInfoAvailable( aCallId ) )
+                {
+                aCallHeaderData->SetParticipantListCLI(
+                        TPhoneCmdParamCallHeaderData::EPhoneParticipantCNAPText );
+                }
             }
         }
     else
         {
         aCallHeaderData->SetCLIText( 
             iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ),
-            TPhoneCmdParamCallHeaderData::ELeft );
+            CBubbleManager::ERight );
         }
 
     // If KTelephonyLVFlagUUS is enabled it will over write RemotePartyName setting.
@@ -588,13 +625,14 @@ void TPhoneCallHeaderParam::UpdateCallHeaderInfoL(
         if ( iStateMachine.PhoneEngineInfo()->CallState( aCallId ) == EPEStateRinging )
             {
             // Set CNAP text  
-            aCallHeaderData->SetCNAPText( remotePartyName, TPhoneCmdParamCallHeaderData::ERight );
+            aCallHeaderData->SetCNAPText( remotePartyName, CBubbleManager::ERight );
             }
         else
             {
-            aCallHeaderData->SetCLIText( remotePartyName, TPhoneCmdParamCallHeaderData::ERight );
+            aCallHeaderData->SetCLIText( remotePartyName, CBubbleManager::ERight );
             }
         }   
+
     
     // Set call header labels
     SetCallHeaderTexts( 
@@ -607,24 +645,44 @@ void TPhoneCallHeaderParam::UpdateCallHeaderInfoL(
     SetCallerImage( 
             aCallId, 
             aCallHeaderData ); 
+    
+    // Update divert indication
+    SetDivertIndicatorToCallHeader( aCallId, aCallHeaderData );
     }
 
-
+// ---------------------------------------------------------------------------
+// TPhoneCallHeaderParam::IsCallPrivateOrPayPhone
+// ---------------------------------------------------------------------------
+//
+TBool TPhoneCallHeaderParam::IsCallPrivateOrPayPhone( const TInt aCallId, TDes& aData ) const 
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "TPhoneCallHeaderParam::IsCallPrivateOrPayPhone() ");
+    __ASSERT_DEBUG( iStateMachine.PhoneEngineInfo(), Panic( EPhoneCtrlInvariant ) );
+    TBool ret( EFalse );
+    const RMobileCall::TMobileCallRemoteIdentityStatus identity = iStateMachine.PhoneEngineInfo()->RemoteIdentity( aCallId );
+    if ( ( iStateMachine.PhoneEngineInfo()->RemotePhoneNumberType( aCallId ) == EPEPrivateNumber ) ||
+            identity == RMobileCall::ERemoteIdentityUnavailableNoCliCoinOrPayphone || 
+            identity == RMobileCall::ERemoteIdentityAvailableNoCliCoinOrPayphone )
+        {
+        SetIdentitySpecificCallHeaderData( aCallId, aData );
+        ret = ETrue;
+        }
+    
+    __PHONELOG1( EBasic, EPhoneControl, "TPhoneCallHeaderParam::IsCallPrivateOrPayPhone() - returns = %d ", ret);
+    return ret;  
+    }
 
 // ---------------------------------------------------------------------------
 //  TPhoneCallHeaderParam::GetRemoteInfoDataL
 // ---------------------------------------------------------------------------
 //
-TBool TPhoneCallHeaderParam::GetRemoteInfoDataL( 
+void TPhoneCallHeaderParam::GetRemoteInfoDataL( 
         const TInt aCallId, 
         TDes& aData ) const 
     {
     __LOGMETHODSTARTEND( EPhoneControl, "TPhoneCallHeaderParam::GetRemoteInfoDataL() ");
     __PHONELOG1( EBasic, EPhoneControl, "TPhoneCallHeaderParam::GetRemoteInfoDataL() - call id =%d ", aCallId);
     __ASSERT_DEBUG( iStateMachine.PhoneEngineInfo(), Panic( EPhoneCtrlInvariant ) );
-    
-    TBool secondaryCli(EFalse);
-        
     if ( aCallId == KEmergencyCallId )
         {
         // Set emergency label text
@@ -632,61 +690,86 @@ TBool TPhoneCallHeaderParam::GetRemoteInfoDataL(
         }
     else
         {
-        const RMobileCall::TMobileCallRemoteIdentityStatus identity = iStateMachine.PhoneEngineInfo()->RemoteIdentity( aCallId );
         // Note next if-statements are in priority order so be careful if you change order
         // or add new if-statements.
         if ( iStateMachine.PhoneEngineInfo()->RemoteName( aCallId ).Length() )
             {
             // Display the contact name if it is available
             aData.Copy( iStateMachine.PhoneEngineInfo()->RemoteName( aCallId ) );
-            secondaryCli = ETrue;
             }
         else if ( iStateMachine.PhoneEngineInfo()->RemotePartyName( aCallId ).Length() )
             {
             // Display the CNAP or UUS info if it is available.
             aData.Copy( iStateMachine.PhoneEngineInfo()->RemotePartyName( aCallId ) );
-            secondaryCli = ETrue;
             }
         else if ( iStateMachine.PhoneEngineInfo()->RemoteCompanyName( aCallId ).Length() )
             {
             // Display the company name if it is available
             aData.Copy( iStateMachine.PhoneEngineInfo()->RemoteCompanyName( aCallId ) );
             }
-        else if ( iStateMachine.PhoneEngineInfo()->CallDirection( aCallId ) == RMobileCall::EMobileTerminated )
+        else if ( iStateMachine.PhoneEngineInfo()->CallState( aCallId ) == EPEStateRinging  )
             {
-            if ( EPEPrivateNumber == iStateMachine.PhoneEngineInfo()->RemotePhoneNumberType( aCallId ) )
+            SetIdentitySpecificCallHeaderData( aCallId, aData );
+           }
+        else
+            {
+            if ( ( iStateMachine.PhoneEngineInfo()->CallState( aCallId ) != EPEStateDialing ) && 
+                 ( iStateMachine.PhoneEngineInfo()->CallState( aCallId ) != EPEStateRinging ) &&
+                 ( iStateMachine.PhoneEngineInfo()->CallState( aCallId ) != EPEStateAnswering ) )
                 {
-                if ( EPECallTypeVoIP == CallHeaderType() )
-                    {
-                    iManagerUtility.LoadResource( aData, iManagerUtility.Customization()->CustomizeCallHeaderText() );
-                    }
-                else
-                    {
-                    // private number
-                    iManagerUtility.LoadResource( aData, EPhoneCLIWithheld );
-                    }
+                iManagerUtility.GetInCallNumberTextL( aCallId, aData );
                 }
-            else if ( identity == RMobileCall::ERemoteIdentityUnavailableNoCliCoinOrPayphone || 
-                    identity == RMobileCall::ERemoteIdentityAvailableNoCliCoinOrPayphone )
-                {
-                __PHONELOG( EBasic, EPhoneControl, "GetRemoteInfoDataL : payphone" );
-                // Display "Payphone".
-                iManagerUtility.LoadResource( aData, EPhoneCLIPayphone );
-                }
-            else if ( identity == RMobileCall::ERemoteIdentityUnknown )
-                {
-                __PHONELOG( EBasic, EPhoneControl, "GetRemoteInfoDataL : unknown number" );
-                // Display "Unknown Number".
-                iManagerUtility.LoadResource( aData, EPhoneCallCLIUnknown );
-                }
-            else if ( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ).Length() )
-                {
-                // Display the number if it is available
-                aData.Copy( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ) );
-                }            
             }
-
         }
-    return secondaryCli;
+    }
+
+// ---------------------------------------------------------------------------
+// TPhoneCallHeaderParam::SetIdentitySpecificCallHeaderData
+// ---------------------------------------------------------------------------
+//
+void TPhoneCallHeaderParam::SetIdentitySpecificCallHeaderData( const TInt aCallId,  TDes& aData ) const 
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "TPhoneCallHeaderParam::SetIdentitySpecificCallHeaderData() ")
+    __ASSERT_DEBUG( iStateMachine.PhoneEngineInfo(), Panic( EPhoneCtrlInvariant ) );
+    
+    const RMobileCall::TMobileCallRemoteIdentityStatus identity = iStateMachine.PhoneEngineInfo()->RemoteIdentity( aCallId );
+    const TPEPhoneNumberIdType idType = iStateMachine.PhoneEngineInfo()->RemotePhoneNumberType( aCallId );
+    
+    __PHONELOG1( EBasic, EPhoneControl, "TPhoneCallHeaderParam::SetIdentitySpecificCallHeaderData() - RemoteIdentity: %d ", 
+            identity )
+    __PHONELOG1( EBasic, EPhoneControl, "TPhoneCallHeaderParam::SetIdentitySpecificCallHeaderData() - idType: %d ", 
+            idType )
+    // If ringing call is emergency call then do not set identity specific info to call header
+    // because emergency call header doesnt contain identity specific information.
+    if ( aCallId == KEmergencyCallId )
+            {
+            // do nothing.
+            }
+    else if ( idType == EPEPrivateNumber )
+        {
+        // If call header has customized items and callheadertype is voip
+        // then load customized text.
+        if ( ( iManagerUtility.Customization() ) && ( CallHeaderType() == CBubbleManager::EVoIPCall ) )
+            {
+            // Display private address
+            iManagerUtility.LoadResource( aData, iManagerUtility.Customization()->CustomizeCallHeaderText() );
+            }
+        else
+            {
+            // Display "private number".
+            iManagerUtility.LoadResource( aData, EPhoneCLIWithheld );  
+            }       
+        }
+    else if( ( identity == RMobileCall::ERemoteIdentityUnavailableNoCliCoinOrPayphone ) ||
+             ( identity == RMobileCall::ERemoteIdentityAvailableNoCliCoinOrPayphone ) )
+        {
+        // Display "Payphone".
+        iManagerUtility.LoadResource( aData, EPhoneCLIPayphone );
+        }
+    else if ( identity == RMobileCall::ERemoteIdentityUnknown  )
+        {
+        // Display "Call".
+        iManagerUtility.LoadResource( aData, EPhoneCall );
+        }
     }
 

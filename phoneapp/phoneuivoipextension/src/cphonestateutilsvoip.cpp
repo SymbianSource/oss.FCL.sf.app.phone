@@ -15,7 +15,7 @@
 *
 */
 
-#include <cphcltemergencycall.h>
+#include <CPhCltEmergencyCall.h>
 #include <mpeengineinfo.h>
 #include <cconvergedserviceselector.h>
 #include "cphonestateutilsvoip.h"

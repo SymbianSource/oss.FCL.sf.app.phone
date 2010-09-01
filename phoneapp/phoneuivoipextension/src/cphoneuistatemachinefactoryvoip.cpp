@@ -53,11 +53,11 @@ CPhoneResourceResolverBase*
 // ---------------------------------------------------------
 CPhoneErrorMessagesHandler*
     CPhoneUIStateMachineFactoryVoIP::CreatePhoneErrorMessagesHandlerL( 
-        MPhoneViewCommandHandle* aViewCommandHandle,
-        MPhoneStateMachine* aPhoneStateMachine )
+    	MPhoneViewCommandHandle* aViewCommandHandle,
+    	MPhoneStateMachine* aPhoneStateMachine )
     {
     return CPhoneVoIPErrorMessagesHandler::NewL( aViewCommandHandle, 
-                                                 aPhoneStateMachine );
+    											 aPhoneStateMachine );
     }
 
 // ---------------------------------------------------------

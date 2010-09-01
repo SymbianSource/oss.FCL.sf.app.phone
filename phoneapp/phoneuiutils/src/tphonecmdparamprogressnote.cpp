@@ -29,7 +29,7 @@
 // -----------------------------------------------------------------------------
 //
 EXPORT_C TPhoneCmdParamProgressNote::TPhoneCmdParamProgressNote():
-    TPhoneCommandParam(),
+	TPhoneCommandParam(),
     iResourceId( 0 ),
     iWaitTime( 0 )
     {
@@ -43,10 +43,10 @@ EXPORT_C TPhoneCmdParamProgressNote::TPhoneCmdParamProgressNote():
 // ---------------------------------------------------------
 //
 EXPORT_C void TPhoneCmdParamProgressNote::SetResourceId( TInt aResourceId )
-    {
-    __ASSERT_DEBUG( aResourceId, Panic( EPhoneUtilsParameterNotInitialized ) );
-    iResourceId = aResourceId;   
-    }
+	{
+   	__ASSERT_DEBUG( aResourceId, Panic( EPhoneUtilsParameterNotInitialized ) );
+   	iResourceId = aResourceId;   
+   	}
 
 // ---------------------------------------------------------
 // TPhoneCmdParamProgressNote::SetWaitTime
@@ -56,9 +56,9 @@ EXPORT_C void TPhoneCmdParamProgressNote::SetResourceId( TInt aResourceId )
 //
 EXPORT_C void TPhoneCmdParamProgressNote::SetWaitTime( 
    TTimeIntervalMicroSeconds32 aWaitTime )
-    {
-    iWaitTime = aWaitTime;   
-    }
+	{
+   	iWaitTime = aWaitTime;   
+   	}
 
 
 // ---------------------------------------------------------
@@ -68,10 +68,10 @@ EXPORT_C void TPhoneCmdParamProgressNote::SetWaitTime(
 // ---------------------------------------------------------
 //
 EXPORT_C TInt TPhoneCmdParamProgressNote::ResourceId() const
-    {
-    __ASSERT_DEBUG( iResourceId, Panic( EPhoneUtilsInvariant ) );
-    return iResourceId;
-    }
+   	{
+   	__ASSERT_DEBUG( iResourceId, Panic( EPhoneUtilsInvariant ) );
+   	return iResourceId;
+   	}
 
   // ---------------------------------------------------------
 // TPhoneCmdParamProgressNote::WaitTime
@@ -80,8 +80,8 @@ EXPORT_C TInt TPhoneCmdParamProgressNote::ResourceId() const
 // ---------------------------------------------------------
 //
 EXPORT_C TTimeIntervalMicroSeconds32 TPhoneCmdParamProgressNote::WaitTime() const
-    {
-    return iWaitTime;
-    } 
+	{
+   	return iWaitTime;
+   	} 
 
 //  End of File  

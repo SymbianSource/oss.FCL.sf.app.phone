@@ -21,6 +21,8 @@
 
 //INCLUDES
 #include <e32base.h>
+#include <bmbubblemanager.h>
+
 #include "mphonecallheadermanagerutility.h"
 #include "mphonestatemachine.h"
 #include "mphoneviewcommandhandle.h"
@@ -84,27 +86,19 @@ NONSHARABLE_CLASS( CPhoneCallHeaderManager ) :  public CBase,
         */
         void DisplayHeaderForOutgoingCallL(
                 const TInt aCallId );
-
+       
         /**
         * Sets the call header type used in the call bubble.
         * @param aCallHeaderType, call header type.
         */
         void SetCallHeaderType( 
-                TInt aCallHeaderType );
+                const CBubbleManager::TPhoneCallTypeFlags aCallHeaderType );
         
         /**
         * Returns the set call header type.
         */
-        TInt CallHeaderType() const;
+        CBubbleManager::TPhoneCallTypeFlags CallHeaderType() const;
                 
-        /**
-        * Sets divert indication to call header if necessary
-        * @param aCallId - Call Id.
-        * @param aCallHeaderData - Call header where indication will be set
-        *                          if needed.
-        */
-        void SetDivertIndication( const TBool aDivertIndication );
-        
         /**
         * Checks if call is waiting, returns ETrue if call is waiting
         * otherwise EFalse.
@@ -119,10 +113,10 @@ NONSHARABLE_CLASS( CPhoneCallHeaderManager ) :  public CBase,
         */
         TBool IsVideoCall( const TInt aCallId ) const;
  
-        /**
+		/**
         * Sets texts to call header
         * @param aCallId - Call Id.
-        * @param aWaitingCall waiting call indication
+		* @param aWaitingCall waiting call indication
         * @param aCallHeaderData - Call header where indication will be set
         *                          if needed.
         */         
@@ -139,7 +133,12 @@ NONSHARABLE_CLASS( CPhoneCallHeaderManager ) :  public CBase,
         void SetPhoneNumberAvailabilityL( 
                 const TInt aNumberLength,
                 const TBool aContactInfoAvailable );
-
+        
+        /**
+        * @see MPhoneBubbleManagerUtility.
+        */
+        void GetInCallNumberTextL( TInt aCallId, TDes& aData ) const;
+        
         /**
         * @see MPhoneBubbleManagerUtility.
         */

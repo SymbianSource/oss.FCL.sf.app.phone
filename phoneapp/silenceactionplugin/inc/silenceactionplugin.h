@@ -39,8 +39,8 @@ class CSilenceAction;
 * Triggered when the conditions from the rule file are valid.
 */
 class CSilenceActionPlugIn : 
-    public CCFActionPlugIn,
-    public MSilenceActionObserver
+	public CCFActionPlugIn,
+	public MSilenceActionObserver
     {
     public: // Constructors and destructor
 
@@ -51,7 +51,7 @@ class CSilenceActionPlugIn :
 
     public: // From CCFActionPlugIn
 
-        // @see CCFActionPlugIn
+		// @see CCFActionPlugIn
         void InitializeL();
 
         // @see CCFActionPlugIn
@@ -69,16 +69,16 @@ class CSilenceActionPlugIn :
         // @see MSilenceActionObserver
         void MuteActionCompleted();
         
-    protected:
+	protected:
 
         // C++ constrcutor
         CSilenceActionPlugIn();
         
     private: // New functions
-        
-        void DoCancel();
-        
-        void RunL();
+    	
+    	void DoCancel();
+    	
+    	void RunL();
                     
     private: // Data
         

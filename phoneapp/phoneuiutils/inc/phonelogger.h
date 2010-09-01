@@ -34,10 +34,10 @@
  set PHONEUI_LOGGER_METHOD to RDEBUG_LOGGING to get logging via RDebug::Print
  set PHONEUI_LOGGER_METHOD to FILE_LOGGING to get logging to log file
  */
-    
- #define  NO_LOGGING        0   // No logging at all.
- #define  RDEBUG_LOGGING    1   // Logging via RDebug::Print
- #define  FILE_LOGGING      2   // Logging to log file
+  	
+ #define  NO_LOGGING 		0   // No logging at all.
+ #define  RDEBUG_LOGGING	1 	// Logging via RDebug::Print
+ #define  FILE_LOGGING  	2   // Logging to log file
 
 /*
  * here is default logic: if we have DEBUG build then select

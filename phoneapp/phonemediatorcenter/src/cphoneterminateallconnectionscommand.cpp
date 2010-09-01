@@ -72,12 +72,12 @@ CPhoneTerminateAllConnectionsCommand::~CPhoneTerminateAllConnectionsCommand()
 // ---------------------------------------------------------
 //
 void CPhoneTerminateAllConnectionsCommand::ExecuteLD()
-    {
+	{
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, 
         "CPhoneTerminateAllConnectionsCommand::ExecuteL( ) ");
     iEngineMessageSender.SendPhoneEngineMessage( 
         MPEPhoneModel::EPEMessageTerminateAllConnections );
     delete this;
-    }
+	}
 
 //  End of File  

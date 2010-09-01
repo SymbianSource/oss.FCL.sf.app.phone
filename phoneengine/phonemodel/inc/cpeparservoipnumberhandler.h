@@ -20,7 +20,7 @@
 #define CPEPARSERVOIPNUMBERHANDLER_H
 
 //  INCLUDES
-#include <cphonevoipnumberhandler.h>
+#include <CPhoneVoipNumberHandler.h>
 #include <pevirtualengine.h>
 
 // CONSTANTS
@@ -92,7 +92,7 @@ NONSHARABLE_CLASS( CPEParserVoipNumberHandler ) : public CPhoneVoipNumberHandler
         * @return modified postfix.
         */
        TPtrC FilterPostfix( TPtrC aPostfix );
-        
+		
         /**
         * C++ default constructor.
         */

@@ -123,9 +123,9 @@ void CPhoneCenRepEventHandler::HandleNotifyError(
     // Resume listening
     TRAPD( err, iCenRepNotifyHandler->StartListeningL() );
     if ( KErrNone != err )
-        {
-        Panic( err );
-        }
+    	{
+    	Panic( err );
+    	}
     }
 
 // End of File

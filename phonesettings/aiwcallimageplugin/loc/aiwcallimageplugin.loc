@@ -1,0 +1,41 @@
+/*
+* Copyright (c) 2004-2005 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains the localised strings for aiwcallimageplugin.
+*
+*/
+
+
+
+//  LOCALISATION STRINGS
+
+
+// d: It is text for set call iamge menu option. If it is selected, 
+// d: typical call image set is done.
+// l: list_single_popup_submenu_pane_t1
+//
+#define qtn_call_image_menu_item "Set as Call Image"
+
+// d: It is text shown in an error note when
+// d: call image set is failed.
+// l: popup_note_window
+//
+#define qtn_call_image_fail_note "Image set failed"
+
+// d: It is text shown in an note when
+// d: call image set is succesful.
+// l: popup_note_window
+//
+#define qtn_call_image_conf_note "Set as call image"
+
+//  End of File  

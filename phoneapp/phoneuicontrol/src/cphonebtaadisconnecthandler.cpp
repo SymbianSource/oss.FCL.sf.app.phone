@@ -97,11 +97,12 @@ void CPhoneBtaaDisconnectHandler::Cancel()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneBtaaDisconnectHandler::Cancel()");
     TRAP_IGNORE( iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveQuery ) );
-    DeleteAll();
-    if ( !iOldMuted && iStateMachine->PhoneEngineInfo()->AudioMute() )
+    if ( !iOldMuted && iStateMachine->PhoneEngineInfo()->AudioMute() &&
+    	ELaunchQuery == iState )
         {
         TRAP_IGNORE ( SetMuteL( EFalse ) );
         }
+	DeleteAll();
     iOldMuted = EFalse;
     }
 
@@ -283,7 +284,7 @@ void CPhoneBtaaDisconnectHandler::TerminateAllCallsL()
 void CPhoneBtaaDisconnectHandler::ShowQueryL( TInt aResourceId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneBtaaDisconnectHandler::ShowQueryL( ) ");
-    //__ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
+	//__ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
     TPhoneCmdParamQuery queryParam;
     queryParam.SetQueryType( EPhoneGlobalQueryDialog );
   

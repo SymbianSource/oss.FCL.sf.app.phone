@@ -1,0 +1,279 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*
+*/
+
+//  RESOURCE IDENTIFIER
+NAME HEWB    // 4 letter ID
+
+
+//  INCLUDES
+#include <eikon.rh>
+#include <avkon.rh>
+#include <avkon.rsg>
+#include <appinfo.rh>
+#include <AiwCommon.rh>
+
+#include "edta.hrh"
+#include "edta.rls"
+//#include "easydialingconstants.hrh"
+
+//  RESOURCE DEFINITIONS
+// -----------------------------------------------------------------------------
+//
+//    Define the resource file signature
+//    This resource should be empty.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE
+    {
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    Default Document Name
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_default_document_name
+    {
+    buf=STRING_r_default_document_name;
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    Define default menu and CBA key.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE EIK_APP_INFO
+    {
+    menubar = r_edta_menubar;
+    cba = R_AVKON_SOFTKEYS_OPTIONS_EXIT;
+    }
+
+
+// -----------------------------------------------------------------------------
+//
+//   r_edta_menubar
+//   Menubar for edta example
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_edta_menubar
+    {
+    titles =
+        {
+        MENU_TITLE { menu_pane = r_edta_menu; }
+        };
+    }
+
+
+// -----------------------------------------------------------------------------
+//
+//   r_edta_menu
+//   Menu for "Options"
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_edta_menu
+    {
+    items =
+        {
+        MENU_ITEM
+                {
+                txt = STRING_r_hewb_command_plugin_functions_menu;
+                cascade = r_edta_plugin_functions_menu;
+                },
+        MENU_ITEM
+                {
+                command = EEdtaCommandShowContacts;
+                txt = STRING_r_hewb_command_search_contacts;
+                },
+        MENU_ITEM
+                {
+                command = EEdtaSelectAndLaunchContact;
+                txt = STRING_r_hewb_command_select_and_launch_contact;
+                },
+        MENU_ITEM
+                {
+                command = EEdtaCommandCheckPCSServer;
+                txt = STRING_r_hewb_command_check_pcsserver;
+                },
+        MENU_ITEM
+                {
+                command = EEdtaCommandShowNameOrdering;
+                txt = STRING_r_hewb_command_show_name_ordering;
+                },
+        MENU_ITEM
+                {
+                txt = STRING_r_hewb_command_test_functions_menu;
+                cascade = r_edta_test_functions_menu;
+                },
+        MENU_ITEM
+                {
+                command = EAknSoftkeyExit;
+                txt = STRING_r_hewb_exit;
+                }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+//   r_edta_plugin_functions_menu
+//   Submenu for "Options"
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_edta_plugin_functions_menu
+    {
+    items =
+        {
+        MENU_ITEM
+                {
+                command = EEdtaSetPluginInput;
+                txt = STRING_r_hewb_command_set_plugin_input;
+                },
+        MENU_ITEM
+                {
+                command = EEdtaCommandTwoConsequtiveSearchesTest;
+                txt = STRING_r_hewb_command_two_consequtive_searches;
+                },
+        MENU_ITEM
+                {
+                txt = STRING_r_hewb_command_thumbnail_settings_menu;
+                cascade = r_edta_plugin_thumbnail_settings_menu;
+                }              
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+//   r_edta_plugin_thumbnail_settings_menu
+//   Submenu for "Thumbnail setting"
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_edta_plugin_thumbnail_settings_menu
+    {
+    items =
+       {
+       MENU_ITEM
+               {
+               command = EEdtaCommandShowThumbnails;
+               txt = STRING_r_hewb_command_show_thumbnails;
+               },
+       MENU_ITEM
+               {
+               command = EEdtaCommandHideThumbnails;
+               txt = STRING_r_hewb_command_hide_thumbnails;
+               }
+       };
+    }
+
+
+// -----------------------------------------------------------------------------
+//
+//   r_edta_test_functions_menu
+//   Submenu for "Options"
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_edta_test_functions_menu
+    {
+    items =
+        {
+        MENU_ITEM
+                {
+                command = EEdtaCommandCreateTestContactBase;
+                txt = STRING_r_hewb_command_create_contact_base;
+                },               
+        MENU_ITEM
+                {
+                command = EEdtaCommandMiscCoverageTest;
+                txt = STRING_r_hewb_command_coverage_test;
+                }
+        };
+    }
+
+
+// -----------------------------------------------------------------------------
+//
+// Resources for messages.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF32 r_hewb_command_set_plugin_input_text { buf=STRING_r_hewb_command_set_plugin_input_text; }
+RESOURCE TBUF32 r_hewb_file_text { buf=STRING_r_hewb_file_text; }
+RESOURCE TBUF32 r_hewb_caption_string { buf=STRING_r_hewb_caption_string; }
+
+// ----------------------------------------------------------------------------
+//
+// r_edta_localisable_app_info
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE LOCALISABLE_APP_INFO r_edta_localisable_app_info
+    {
+    short_caption = STRING_r_hewb_caption_string;
+    caption_and_icon =
+    CAPTION_AND_ICON_INFO
+        {
+        caption = STRING_r_hewb_caption_string;
+
+        number_of_icons = 1;
+	   	icon_file = STRING_r_icon_file_path;
+	    };
+    }
+
+// ----------------------------------------------------------------------------
+//
+// r_dialog_text_edit_query
+//
+// ----------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_dialog_text_edit_query
+    {
+    flags = EAknGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control = AVKON_DATA_QUERY
+                {
+                layout = EDataLayout;
+                label = "Enter dial search string ?";
+                control = EDWIN
+                    {
+                    allowed_case_modes = EAknEditorAllCaseModes; 
+                    default_case = EAknEditorLowerCase;
+                    allowed_input_modes = EAknEditorTextInputMode | EAknEditorNumericInputMode;
+                    default_input_mode = EAknEditorTextInputMode;
+                    avkon_flags = EAknEditorFlagNoT9;
+                    width = 32;
+                    maxlength = 32;
+                    lines = 1;
+                    };
+                };
+            }
+        };
+    }
+
+// End of File
+

@@ -40,6 +40,9 @@
 #include "cphonestateutilsvoip.h"
 #include "cphonestatemachinevoip.h"
 
+#include "easydialingcommands.hrh"
+
+
 // ================= MEMBER FUNCTIONS =======================
 
 // C++ default constructor can NOT contain any code, that
@@ -111,7 +114,9 @@ void CPhoneStateSingleVoIP::HandlePhoneEngineMessageL(
         {
         case MEngineMonitor::EPEMessageUnattendedTransferRequest:
             LaunchUnattendedTransferAcceptanceQueryL();
-            break;
+            // Forward message to phone customization 
+			CPhoneState::ForwardPEMessageToPhoneCustomizationL( aMessage, aCallId );
+			break;
         default:
             CPhoneSingleCall::HandlePhoneEngineMessageL( 
                 aMessage, aCallId );
@@ -134,10 +139,18 @@ TBool CPhoneStateSingleVoIP::HandleCommandL( TInt aCommand )
         {
         case EPhoneNumberAcqCmdInternetCall:
             StateUtils().SelectServiceAndDialL();
-            break;
-        
+        	break;
+     	
         case EPhoneNumberAcqCmdSendCommand:
-            StartCallingL();
+            // If easydialing has focus, call should be initiated to focused contact.
+            if ( IsDialingExtensionInFocusL() )
+                {
+                commandStatus = CPhoneSingleCall::HandleCommandL( aCommand );
+                }
+            else
+                {
+                StartCallingL();
+                }
             break;
          
         case EPhoneCmdAcceptUnattendedTransfer:
@@ -177,10 +190,19 @@ void CPhoneStateSingleVoIP::HandleKeyMessageL(
                  
             if( IsNumberEntryVisibleL() && neLength )
                 {
-                if ( IsOnScreenDialerSupported() &&  
-                     IsCustomizedDialerVisibleL()  )
+                if ( IsOnScreenDialerSupported() )
                     {
-                    return;
+                    if ( IsDTMFEditorVisibleL() || 
+                         IsCustomizedDialerVisibleL() )
+                        {
+                        return;
+                        }
+                    // If easydialing has focus, call should be initiated to focused contact.
+                    else if ( IsDialingExtensionInFocusL() )
+                        {
+                        CPhoneSingleCall::HandleKeyMessageL( aMessage, aKeyCode );
+                        return;
+                        }
                     }
                     
                 StartCallingL();
@@ -193,9 +215,9 @@ void CPhoneStateSingleVoIP::HandleKeyMessageL(
             }
             break;
             
-        default:
-            CPhoneSingleCall::HandleKeyMessageL( aMessage, aKeyCode );
-            break;
+		default:
+			CPhoneSingleCall::HandleKeyMessageL( aMessage, aKeyCode );
+			break;
         }
     }
 
@@ -204,18 +226,18 @@ void CPhoneStateSingleVoIP::HandleKeyMessageL(
 // -----------------------------------------------------------
 //
 void CPhoneStateSingleVoIP::StartCallingL()
-    {
+	{
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneStateSingleVoIP::StartCallingL()" )
     
     TUint serviceId( 0 );
     CPhoneStateUtilsVoip& utililty = StateUtils();
-    if ( utililty.IsVoipPreferredCall( serviceId ) )
-        {
-        utililty.SelectServiceAndDialL( KNullDesC, serviceId );         
-        }
-    else
-        {
+	if ( utililty.IsVoipPreferredCall( serviceId ) )
+		{
+		utililty.SelectServiceAndDialL( KNullDesC, serviceId );			
+		}
+	else
+		{
         if ( utililty.IsVoipNumber() )
             {
             utililty.SelectServiceAndDialL();
@@ -245,8 +267,8 @@ void CPhoneStateSingleVoIP::StartCallingL()
                 CleanupStack::PopAndDestroy( phoneNumber );
                 }
             }
-        }
-    }
+		}
+	}
 
 // -----------------------------------------------------------
 // CPhoneStateSingleVoIP::LaunchUnattendedTransferAcceptanceQueryL
@@ -360,15 +382,21 @@ void CPhoneStateSingleVoIP::HandleUnattendedTransferRequestResponseL(
         MPEEngineInfo* info = iStateMachine->PhoneEngineInfo();
         const TPEPhoneNumber& transferTarget = 
             info->UnattendedTransferTarget( CallId() );
- 
+        info->SetIsTransferDial( ETrue );
         TUint32 serviceId = iStateMachine->PhoneEngineInfo()->
             ServiceId( CallId() );
         StateUtils().SelectServiceAndDialL( transferTarget, serviceId );
+        
+        // Store transferor address to phoneengine, this is used for
+        // calling back if transfer call fails for some reason
+        info->SetCallBackAddress( info->RemotePhoneNumber( CallId() ) );
         }
     else
         {
         iStateMachine->SendPhoneEngineMessage( 
             MPEPhoneModel::EPEMessageRejectUnattendedTransfer );
+        iStateMachine->PhoneEngineInfo()->SetCallBackAddress(
+            KNullDesC() );
         }
     }
 

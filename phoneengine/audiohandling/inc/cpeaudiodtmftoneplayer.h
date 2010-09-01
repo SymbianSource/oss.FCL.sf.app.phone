@@ -141,8 +141,8 @@ class CPEAudioDtmfTonePlayer
 
         /**
         * Normalize tone.
-        * @since Series60_2.7
-        * @param aTone dtmf tone.
+		* @since Series60_2.7
+		* @param aTone dtmf tone.
         * @return None.
         */
         void Normalize( TChar& aTone );
@@ -156,7 +156,7 @@ class CPEAudioDtmfTonePlayer
          * CMMFDevSound. The CMMFDevSound uses valuess that can from 0 to the
          * value returned by a call to CMMFDevSound::MaxVolume().
          */
-        TInt ConvertVolume( TInt aVolume );
+    	TInt ConvertVolume( TInt aVolume );
     
     protected:    // Data
 

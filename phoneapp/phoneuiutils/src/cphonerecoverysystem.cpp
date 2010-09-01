@@ -45,9 +45,9 @@ EXPORT_C CPhoneRecoverySystem* CPhoneRecoverySystem::Instance()
         {
         TRAPD( err, instance = CPhoneRecoverySystem::NewL() );
         if ( err )
-            {
-            Panic( EPhoneUtilsCouldNotCreateSingleton );    
-            }
+	        {
+	        Panic( EPhoneUtilsCouldNotCreateSingleton );	
+	        }
         }
     return instance;
     }
@@ -103,25 +103,25 @@ EXPORT_C TRecoveryId CPhoneRecoverySystem::AddL(
     CTeleRecoverySystem::TRecoveryState aState )
     {
     if ( !iRecoverySystem )
-        {
-        iRecoverySystem = CreateRecoverySystemL();  
-        }
-        
+	    {
+	    iRecoverySystem = CreateRecoverySystemL();	
+	    }
+	    
     TRecoveryId id = iRecoverySystem->AddL( 
         aCallBack, 
         aPriority, 
         aState );
 
     try
-        {
-        AddIdToContainer( id ); 
-        }
-    catch( TInt exception )
-        {
-        __ASSERT_DEBUG( EFalse, Panic( EPhoneUtilsBufferOverflow ) );   
-        }
-    
-    return id;
+	    {
+	    AddIdToContainer( id );	
+	    }
+	catch( TInt exception )
+		{
+		__ASSERT_DEBUG( EFalse, Panic( EPhoneUtilsBufferOverflow ) );	
+		}
+	
+	return id;
     }
     
 // -----------------------------------------------------------------------------
@@ -198,13 +198,13 @@ EXPORT_C TInt CPhoneRecoverySystem::RecoverNow( TRecoveryId aId,
     __ASSERT_DEBUG( iRecoverySystem, Panic( EPhoneUtilsInvariant ) );
     
     if ( !iRecoverySystem )
-        {
-        TRAPD( error, iRecoverySystem = CreateRecoverySystemL() )
+	    {
+	    TRAPD( error, iRecoverySystem = CreateRecoverySystemL() )
         if( error != KErrNone )
             {
             return error;
             }
-        }
+	    }
     return iRecoverySystem->RecoverNow( aId, aPriority, aAllSteps );
     }
 
@@ -217,10 +217,10 @@ EXPORT_C void CPhoneRecoverySystem::EnablePreconditionL()
     __ASSERT_DEBUG( iRecoverySystem, Panic( EPhoneUtilsInvariant ) );
     
     if ( !iRecoverySystem )
-        {
+	    {
         iRecoverySystem = CreateRecoverySystemL();
-        }
-        
+	    }
+	    
     iRecoverySystem->EnablePrecondition();
     }
 
@@ -229,51 +229,51 @@ EXPORT_C void CPhoneRecoverySystem::EnablePreconditionL()
 // -----------------------------------------------------------------------------
 //
 void CPhoneRecoverySystem::AddIdToContainer( TRecoveryId aId )
-    {
-    __ASSERT_DEBUG( iIdContainer.Count() == KIdContainerSize, Panic( EPhoneUtilsInvariant ) );
-    for( TInt i = 0; i < KIdContainerSize; i++ )
-        {
-        if( iIdContainer[ i ] == KEmptySlot )
-            {
-            iIdContainer[ i ] = aId;
-            return;             
-            }
-        }
-    
-    // All slots checked, no space - throw exception    
-    throw KErrNoSpace;      
-    }
+	{
+	__ASSERT_DEBUG( iIdContainer.Count() == KIdContainerSize, Panic( EPhoneUtilsInvariant ) );
+	for( TInt i = 0; i < KIdContainerSize; i++ )
+		{
+		if( iIdContainer[ i ] == KEmptySlot )
+			{
+			iIdContainer[ i ] = aId;
+			return;				
+			}
+		}
+	
+	// All slots checked, no space - throw exception	
+	throw KErrNoSpace;		
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneRecoverySystem::RemoveFromContainer
 // -----------------------------------------------------------------------------
 //
 void CPhoneRecoverySystem::RemoveFromContainer( TRecoveryId aId )
-    {
-    __ASSERT_DEBUG( iIdContainer.Count() == KIdContainerSize, Panic( EPhoneUtilsInvariant ) );
-    for( TInt i = 0; i < KIdContainerSize; i++ )
-        {
-        if( iIdContainer[ i ] == aId )
-            {
-            iIdContainer[ i ] = KEmptySlot;
-            }
-        }
-    }
+	{
+	__ASSERT_DEBUG( iIdContainer.Count() == KIdContainerSize, Panic( EPhoneUtilsInvariant ) );
+	for( TInt i = 0; i < KIdContainerSize; i++ )
+		{
+		if( iIdContainer[ i ] == aId )
+			{
+			iIdContainer[ i ] = KEmptySlot;
+			}
+		}
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneRecoverySystem::RemoveAllIdsFromContainer
 // -----------------------------------------------------------------------------
 //
 void CPhoneRecoverySystem::RemoveAllIdsFromContainer()
-    {
-    __ASSERT_DEBUG( iIdContainer.Count() == KIdContainerSize, Panic( EPhoneUtilsInvariant ) );
-    for( TInt i = 0; i < KIdContainerSize; i++ )
-        {
-        if( iIdContainer[ i ] != KEmptySlot )
-            {
-            RemoveId( iIdContainer[ i ] );
-            }
-        }       
-    }
+	{
+	__ASSERT_DEBUG( iIdContainer.Count() == KIdContainerSize, Panic( EPhoneUtilsInvariant ) );
+	for( TInt i = 0; i < KIdContainerSize; i++ )
+		{
+		if( iIdContainer[ i ] != KEmptySlot )
+			{
+			RemoveId( iIdContainer[ i ] );
+			}
+		}		
+	}
 
 //  End of File  

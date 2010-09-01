@@ -31,7 +31,7 @@
 // ---------------------------------------------------------
 //
 CPhoneDataPortMessage::CPhoneDataPortMessage( MPEEngineInfo& aEngineInfo ) :
-    iEngineInfo( aEngineInfo )
+	iEngineInfo( aEngineInfo )
     {
     }
 
@@ -72,17 +72,17 @@ CPhoneDataPortMessage::~CPhoneDataPortMessage()
 // ---------------------------------------------------------
 //
 void CPhoneDataPortMessage::ExecuteL()
-    {
+	{
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, "CPhoneDataPortMessage::ExecuteL( ) ");
-    const TName& dataPortName = iEngineInfo.DataPortName();
-    TDataPortPackage dataPortPackage( dataPortName );
-    CPhoneMediatorSender::Instance()->IssueCommand( KMediatorVideoTelephonyDomain,
-                                                    KCatPhoneToVideotelCommands,
-                                                    EVtCmdUseDataport,
-                                                    TVersion( KPhoneToVideotelCmdVersionMajor,
-                                                              KPhoneToVideotelCmdVersionMinor,
-                                                              KPhoneToVideotelCmdVersionBuild ),
-                                                    dataPortPackage );
-    }
+	const TName& dataPortName = iEngineInfo.DataPortName();
+	TDataPortPackage dataPortPackage( dataPortName );
+	CPhoneMediatorSender::Instance()->IssueCommand( KMediatorVideoTelephonyDomain,
+													KCatPhoneToVideotelCommands,
+													EVtCmdUseDataport,
+													TVersion( KPhoneToVideotelCmdVersionMajor,
+													          KPhoneToVideotelCmdVersionMinor,
+													          KPhoneToVideotelCmdVersionBuild ),
+													dataPortPackage );
+	}
 
 //  End of File  

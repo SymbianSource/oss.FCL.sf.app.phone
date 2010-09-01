@@ -21,7 +21,7 @@
 #define CPEPARSERSIMCONTROLHANDLER_H
 
 //INCLUDES
-#include <cphonegsmsimcontrolhandler.h>
+#include <CPhoneGsmSimControlHandler.h>
 #include <pevirtualengine.h>
 
 // CONSTANTS

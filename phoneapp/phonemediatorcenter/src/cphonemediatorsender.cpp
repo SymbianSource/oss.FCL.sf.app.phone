@@ -24,6 +24,7 @@
 #include "phonelogger.h"
 #include "phoneconstants.h"
 #include "phonemediatorpackagetypes.h"
+#include "mphonecoveruiobserver.h"
 #include "phoneui.pan"
 #include "tphonecmdparamcallheaderdata.h"
 #include "tphonecmdparamboolean.h"
@@ -48,9 +49,9 @@ EXPORT_C CPhoneMediatorSender* CPhoneMediatorSender::Instance()
         {
         TRAPD( err, instance = CPhoneMediatorSender::NewL() );
         if ( err )
-            {
-            Panic( EPhoneMediatorCenterCouldNotCreateSingleton );   
-            }
+	        {
+	        Panic( EPhoneMediatorCenterCouldNotCreateSingleton );	
+	        }
         }
     return instance;
     }
@@ -85,7 +86,7 @@ void CPhoneMediatorSender::ConstructL()
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, "CPhoneMediatorSender::ConstructL( ) ");
     iCommandInitiator = CMediatorCommandInitiator::NewL( this );
     iEventSender = CMediatorEventProvider::NewL();
-    ResetCommandBuffer();
+	ResetCommandBuffer();
     
     RegisterGenericEvents();        
     }
@@ -113,16 +114,16 @@ CPhoneMediatorSender* CPhoneMediatorSender::NewL()
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorSender::RegisterGenericEvents()
-    {
+	{
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, "CPhoneMediatorSender::RegisterGenericEvents( ) ");
-    TCapabilitySet caps;
-    caps.SetEmpty();
-    
-    MediatorService::TEvent newEvent;
-    newEvent.iEventId = EPhoneEventCallData;
-    newEvent.iVersion = TVersion( KTelephonyEventsVersionMajor,
-                                  KTelephonyEventsVersionMinor, 
-                                  KTelephonyEventsVersionBuild );
+	TCapabilitySet caps;
+	caps.SetEmpty();
+	
+	MediatorService::TEvent newEvent;
+	newEvent.iEventId = EPhoneEventCallData;
+	newEvent.iVersion = TVersion( KTelephonyEventsVersionMajor,
+                              	  KTelephonyEventsVersionMinor, 
+                              	  KTelephonyEventsVersionBuild );
     newEvent.iCaps = caps;
     
     TRAPD( errorCode, iGenericEvents.AppendL( newEvent ));
@@ -133,7 +134,7 @@ void CPhoneMediatorSender::RegisterGenericEvents()
                                      iGenericEvents );  
         __ASSERT_DEBUG( !res, Panic( EPhoneMediatorCenterRegistrationFailed ) );
         }
-    }
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorSender::SendEvent
@@ -150,131 +151,130 @@ EXPORT_C void CPhoneMediatorSender::SendEvent(
 // -----------------------------------------------------------------------------
 //
 EXPORT_C void CPhoneMediatorSender::SendEvent( const TPhoneViewCommandId aCommandId, 
-    const TInt aCallId ) const
-    {
-    switch( aCommandId )
-        {
-        case EPhoneViewRemoveCallHeader:
-            {
+	const TInt aCallId ) const
+	{
+	switch( aCommandId )
+		{
+		case EPhoneViewRemoveCallHeader:
+		    {
             __PHONELOG1( EBasic, EPhoneMediatorCenter, 
                 "CPhoneMediatorSender::SendEvent - EPhoneEventCallData iCallId:%d" ,aCallId );
-            TTelephonyCallDataParam callDataParam;
-            callDataParam.iCallId = aCallId;
-            callDataParam.iCallState = ECallStateIdle;
-            TTelephonyCallDataParamPackage callDataParamPackage( callDataParam );
-            iEventSender->RaiseEvent( KMediatorTelephonyDomain,
-                                      KCatEventsFromTelephony,
-                                      EPhoneEventCallData,
-                                      TVersion( KTelephonyEventsVersionMajor,
-                                        KTelephonyEventsVersionMinor, 
-                                        KTelephonyEventsVersionBuild ),
-                                      callDataParamPackage );   
+			TTelephonyCallDataParam callDataParam;
+			callDataParam.iCallId = aCallId;
+			callDataParam.iCallState = ECallStateIdle;
+			TTelephonyCallDataParamPackage callDataParamPackage( callDataParam );
+			iEventSender->RaiseEvent( KMediatorTelephonyDomain,
+							          KCatEventsFromTelephony,
+							          EPhoneEventCallData,
+                                	  TVersion( KTelephonyEventsVersionMajor,
+                              	      	KTelephonyEventsVersionMinor, 
+                              	      	KTelephonyEventsVersionBuild ),
+                                	  callDataParamPackage );	
             }
-            break;
-            
-        default:
-            break;
-        }
-    }
+			break;
+			
+		default:
+			break;
+		}
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorSender::SendEvent
 // -----------------------------------------------------------------------------
 //
 EXPORT_C void CPhoneMediatorSender::SendEvent( const TPhoneViewCommandId aCommandId, 
-    TPhoneCommandParam& aCommandParam )
-    {
-    switch( aCommandId )
-        {
-        case EPhoneViewActivateMuteUIChanges:
+	TPhoneCommandParam& aCommandParam )
+	{
+	switch( aCommandId )
+	    {
+		case EPhoneViewActivateMuteUIChanges:
             {
             TPhoneCmdParamBoolean& booleanParam = static_cast<TPhoneCmdParamBoolean&>( aCommandParam );
             const TBool audioMute( booleanParam.Boolean() );
             TInt response = KErrNone;
-
-            TInt command = -1; 
+            TInt command = -1;
             if( audioMute )
                 {
                 __PHONELOG( EBasic, EPhoneMediatorCenter, 
                     "CPhoneMediatorSender::SendEvent - transformed to Mediator Command EVtCmdMute" );
                 command = EVtCmdMute;
-                response = IssueCommand( KMediatorVideoTelephonyDomain,
-                                         KCatPhoneToVideotelCommands, 
-                                         command,
-                                         TVersion( KPhoneToVideotelCmdVersionMajor,
-                                                   KPhoneToVideotelCmdVersionMinor, 
-                                                   KPhoneToVideotelCmdVersionBuild ),
-                                         KNullDesC8 );
+			    response = IssueCommand( KMediatorVideoTelephonyDomain,
+			                  			 KCatPhoneToVideotelCommands, 
+			                  			 command,
+                              			 TVersion( KPhoneToVideotelCmdVersionMajor,
+                              	        		   KPhoneToVideotelCmdVersionMinor, 
+                              	        		   KPhoneToVideotelCmdVersionBuild ),
+                              			 KNullDesC8 );
                 }
             else
                 {
                 __PHONELOG( EBasic, EPhoneMediatorCenter, 
                     "CPhoneMediatorSender::SendEvent - transformed to Mediator Command EVtCmdUnmute" );
                 command = EVtCmdUnmute;
-                response = IssueCommand( KMediatorVideoTelephonyDomain,
-                                         KCatPhoneToVideotelCommands, 
-                                         command,
-                                         TVersion( KPhoneToVideotelCmdVersionMajor,
-                                                   KPhoneToVideotelCmdVersionMinor, 
-                                                   KPhoneToVideotelCmdVersionBuild ),
-                                         KNullDesC8 );
+			    response = IssueCommand( KMediatorVideoTelephonyDomain,
+			                  			 KCatPhoneToVideotelCommands, 
+			                  			 command,
+                              			 TVersion( KPhoneToVideotelCmdVersionMajor,
+                              	        		   KPhoneToVideotelCmdVersionMinor, 
+                              	        		   KPhoneToVideotelCmdVersionBuild ),
+                              			 KNullDesC8 );
                 }
                 
             if( ( response == KErrInUse ) && ( iCommandBuffer.iCommandId == KErrNotFound ) )
-                {
-                // Previous command wasn't handled yet so buffer the last unhandled command.
-                // This command will be sent after we get response to the previous command
-                iCommandBuffer.iCommandId = command;
-                iCommandBuffer.iDomainUid = KMediatorVideoTelephonyDomain;
-                iCommandBuffer.iCategoryUid = KCatPhoneToVideotelCommands;
-                iCommandBuffer.iVersion = TVersion( KPhoneToVideotelCmdVersionMajor,
-                                                    KPhoneToVideotelCmdVersionMinor, 
-                                                    KPhoneToVideotelCmdVersionBuild );
-                }
+	            {
+				// Previous command wasn't handled yet so buffer the last unhandled command.
+				// This command will be sent after we get response to the previous command
+				iCommandBuffer.iCommandId = command;
+				iCommandBuffer.iDomainUid = KMediatorVideoTelephonyDomain;
+				iCommandBuffer.iCategoryUid = KCatPhoneToVideotelCommands;
+				iCommandBuffer.iVersion = TVersion( KPhoneToVideotelCmdVersionMajor,
+                              	        		    KPhoneToVideotelCmdVersionMinor, 
+                              	        		    KPhoneToVideotelCmdVersionBuild );
+	            }
             }
-            break;
+			break;
             
         default:
             break;    
-        }   
-    }
+	    }	
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorSender::SendEvent
 // -----------------------------------------------------------------------------
 //
 EXPORT_C void CPhoneMediatorSender::SendEvent( const TPhoneViewCommandId aCommandId, 
-    const TInt aCallId, TPhoneCommandParam& aCommandParam ) const
-    {
-    switch( aCommandId )
-        {
-        case EPhoneViewCreateCallHeader:
+ 	const TInt aCallId, TPhoneCommandParam& aCommandParam ) const
+	{
+	switch( aCommandId )
+		{
+		case EPhoneViewCreateCallHeader:
             {
             TPhoneCmdParamCallHeaderData& callHeaderParam = static_cast<TPhoneCmdParamCallHeaderData&>( aCommandParam );
             __PHONELOG2( EBasic, EPhoneMediatorCenter, 
                 "CPhoneMediatorSender::SendEvent - EPhoneEventCallData iCallId:%d iCLIText:%S",
                 aCallId, &callHeaderParam.CLIText() );
-            TTelephonyCallDataParam callDataParam;
-            callDataParam.iCallId = aCallId;
-            callDataParam.iCLIText = callHeaderParam.CLIText();
-            callDataParam.iCallState = MapCallState( callHeaderParam.CallState() );
-            callDataParam.iRemotePhoneNumber = callHeaderParam.RemotePhoneNumber();
-            callDataParam.iCallType = MapCallType( callHeaderParam.CallType() );
-            TTelephonyCallDataParamPackage callDataParamPackage( callDataParam );
-            iEventSender->RaiseEvent( KMediatorTelephonyDomain,
-                                      KCatEventsFromTelephony,
-                                      EPhoneEventCallData,
-                                      TVersion( KTelephonyEventsVersionMajor,
-                                        KTelephonyEventsVersionMinor, 
-                                        KTelephonyEventsVersionBuild ),
-                                      callDataParamPackage );   
+			TTelephonyCallDataParam callDataParam;
+			callDataParam.iCallId = aCallId;
+			callDataParam.iCLIText = callHeaderParam.CLIText();
+			callDataParam.iCallState = MapCallState( callHeaderParam.CallState() );
+			callDataParam.iRemotePhoneNumber = callHeaderParam.RemotePhoneNumber();
+			callDataParam.iCallType = MapCallType( callHeaderParam.CallType() );
+			TTelephonyCallDataParamPackage callDataParamPackage( callDataParam );
+			iEventSender->RaiseEvent( KMediatorTelephonyDomain,
+							          KCatEventsFromTelephony,
+							          EPhoneEventCallData,
+                                	  TVersion( KTelephonyEventsVersionMajor,
+                              	      	KTelephonyEventsVersionMinor, 
+                              	      	KTelephonyEventsVersionBuild ),
+                                	  callDataParamPackage );	
             }
-            break;
-            
-        default:
-            break;
-        }
-    }
+			break;
+			
+		default:
+			break;
+		}
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorSender::SendEvent
@@ -298,54 +298,54 @@ EXPORT_C TInt CPhoneMediatorSender::IssueCommand( const TUid aDomain, const TUid
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, "CPhoneMediatorSender::IssueCommand( ) ");
     __PHONELOG3( EBasic, EPhoneMediatorCenter, 
             "aCommandId = %d, aDomain = %d, aCategory = %d", aCommandId, aDomain, aCategory );
-    if( aShutdownCommand )
-        {
-        iShutdownCommand = aShutdownCommand;            
-        }
+	if( aShutdownCommand )
+    	{
+        iShutdownCommand = aShutdownCommand;    	    
+    	}
 
-    return iCommandInitiator->IssueCommand( 
-        aDomain, 
-        aCategory, 
-        aCommandId, 
-        aVersion, 
-        aData );        
-    }
+	return iCommandInitiator->IssueCommand( 
+		aDomain, 
+		aCategory, 
+		aCommandId, 
+		aVersion, 
+        aData );		
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorSender::CommandResponseL
 // -----------------------------------------------------------------------------
 //
 void CPhoneMediatorSender::CommandResponseL( TUid aDomain, TUid aCategory, 
-    TInt aCommandId, TInt /*aStatus*/, const TDesC8& /*aData*/ )
-    {
+	TInt aCommandId, TInt /*aStatus*/, const TDesC8& /*aData*/ )
+	{
     // First check for buffered command
-    if( iCommandBuffer.iCommandId != KErrNotFound )
-        {
-        // We have a buffered command waiting
+	if( iCommandBuffer.iCommandId != KErrNotFound )
+		{
+		// We have a buffered command waiting
         __PHONELOG( EBasic, EPhoneMediatorCenter, 
             "CPhoneMediatorSender::VideoTelephonyCommandResponse - Buffered Command waiting" );
-        if( iCommandBuffer.iCommandId != aCommandId )
-            {
-            // And it's not identical to the command which response we now received
-            // so it's necessary to re-send it
-            __PHONELOG1( EBasic, EPhoneMediatorCenter, 
-                "CPhoneMediatorSender::VideoTelephonyCommandResponse - Resending command %d", iCommandBuffer.iCommandId );
-            IssueCommand( iCommandBuffer.iDomainUid,
-                          iCommandBuffer.iCategoryUid, 
-                          iCommandBuffer.iCommandId,
+		if( iCommandBuffer.iCommandId != aCommandId )
+			{
+			// And it's not identical to the command which response we now received
+			// so it's necessary to re-send it
+	        __PHONELOG1( EBasic, EPhoneMediatorCenter, 
+	            "CPhoneMediatorSender::VideoTelephonyCommandResponse - Resending command %d", iCommandBuffer.iCommandId );
+			IssueCommand( iCommandBuffer.iDomainUid,
+			              iCommandBuffer.iCategoryUid, 
+			              iCommandBuffer.iCommandId,
                           iCommandBuffer.iVersion,
                           KNullDesC8 );
                           
-            ResetCommandBuffer();
-            }
-        }
+			ResetCommandBuffer();
+			}
+		}
 
-    if( ( aDomain == KMediatorVideoTelephonyDomain ) &&
-        ( aCategory == KCatPhoneToVideotelCommands ) )
-        {
-        VideoTelephonyCommandResponse( aCommandId );        
-        }
-    }
+	if( ( aDomain == KMediatorVideoTelephonyDomain ) &&
+	    ( aCategory == KCatPhoneToVideotelCommands ) )
+    	{
+        VideoTelephonyCommandResponse( aCommandId );  	    
+    	}
+	}
 
 // -----------------------------------------------------------------------------
 // CPhoneMediatorSender::VideoTelephonyCommandResponse
@@ -360,7 +360,7 @@ void CPhoneMediatorSender::VideoTelephonyCommandResponse( TInt aCommandId )
     switch( aCommandId )
         {
         case EVtCmdReleaseDataport:
-            __ASSERT_DEBUG( iShutdownCommand, Panic( EPhoneMediatorCenterParameterNotInitialized ) );
+		    __ASSERT_DEBUG( iShutdownCommand, Panic( EPhoneMediatorCenterParameterNotInitialized ) );
             TRAP_IGNORE( iShutdownCommand->ExecuteLD());
             break;
             

@@ -77,6 +77,11 @@ private:
      * Shows new call query. 
      */
     void ShowNewCallQueryL();
+     
+    /**
+     * Starts new call. 
+     */
+    void DoNewCallL();
           
     /**
      * Opens single item contact fetch.

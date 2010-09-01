@@ -22,6 +22,8 @@
 // INCLUDES
 #include <e32base.h>
 #include <teltouchpaneextension.h>
+#include <bmtouchpaneinterface.h>
+
 
 /**
  * Wrapper class to touch pane interface.
@@ -32,8 +34,9 @@ NONSHARABLE_CLASS( TPhTouchPaneWrapper ): public MTelTouchPaneExtension
     {
 
 public:
-    TPhTouchPaneWrapper();
-     
+
+    TPhTouchPaneWrapper( MBubbleTouchPaneInterface& aTouchPane );
+    
     /**
      * Returns number of buttons in touch pane.
      *
@@ -63,6 +66,12 @@ public:
     void SetButtonDimmed( TInt aCommand, TBool aDimmed );
 
 private:
+    
+    /**
+     * Reference to touch pane interface
+     * Not own.
+     */
+    MBubbleTouchPaneInterface& iTouchPane;
     
     };
 

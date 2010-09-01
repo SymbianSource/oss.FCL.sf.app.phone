@@ -22,7 +22,6 @@
 
 //  INCLUDES
 #include <pevirtualengine.h>
-#include "mpecallsettersif.h" 
 
 // CONSTANTS
 // None
@@ -41,7 +40,7 @@ class MPEClientInformation;
 *  @lib phoneengine.lib
 *  @since Series 60 4.0
 */
-NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
+NONSHARABLE_CLASS( MPEEngineInfo )
     {
 
     public:
@@ -255,6 +254,12 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
         virtual const TInt& KeypadVolume() const = 0;
 
         /**
+        * Gets lifetimer data
+        * @return lifetime data (TDes8&)
+        */
+        virtual const TPELifeTimeData& LifeTimerData() const = 0;
+
+        /**
         * Gets a logging indicator
         * @param aCallId, call identification number     
         * @return continuous logging indicator
@@ -289,6 +294,12 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
         * @return personal tone status
         */
         virtual const TBool& PersonalToneStatus() const = 0;
+
+        /**
+        * Gets phone identity parameters
+        * @return phone identity parameters. 
+        */
+        virtual const TPEPhoneIdentityParameters& PhoneIdentityParameters() const = 0;
 
         /**
         * Gets phone number
@@ -629,7 +640,7 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
          * Returns address choices from received call forward request 
          * or NULL if addresses are not available.
          * 
-         * @param   aCallId     Call identification number.
+		 * @param   aCallId     Call identification number.
          * @return  Address array.
          */
         virtual const CDesC8Array* ForwardAddressChoices( TInt aCallId ) const = 0;
@@ -675,9 +686,9 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
         */
         virtual TBool IsSwitchToOperationOngoing() const = 0;
         
-        /**
+		/**
         * Checks if given state can be found.
-        * @param aCallState state to be checked.
+		* @param aCallState state to be checked.
         */
         virtual TBool CheckIfCallStateExists( const TPEState& aCallState )= 0;
         
@@ -688,35 +699,26 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
         virtual TPECallOrigin CallOrigin( const TInt aCallId ) const = 0;
         
         /**
-         * Returns Phonebook contact identifier.
+         * Sets flag indicating unattended transfer dial
+         * @param aTransferDial ETrue if voip unattended transfer dial was initiated
          */
-        virtual TInt ContactId2 () const = 0;
+        virtual void SetIsTransferDial( TBool aTransferDial ) = 0;
         
         /**
-        * Sets the protocol spesific error code
-        * @param aError is the error code from protocol.
-        * @return None.
-        */
-        virtual void SetProtocolError( TInt aError, TInt aCallId ) = 0; 
- 
+         * Returns flag indicating unattended transfer dial
+         */
+        virtual TBool IsTransferDial() const = 0;
+           
         /**
-        * Returns the protocol spesific error code
-        * @return Error code.
-        */
-        virtual TInt ProtocolError( TInt aCallId ) = 0; 
+         * Sets unattended transfer call back address
+         * @param aAddress Unattended transfer call back address
+         */
+        virtual void SetCallBackAddress( const TDesC& aAddress ) = 0;
         
         /**
-        * Returns flag if the outgoing barring is activated.
-        * @return ETrue if barring activated.
-        */
-        virtual TBool IsOutgoingCallBarringActivated() = 0;
-        
-        /**
-        * Sets the flag if the outgoing barring is activated.
-        * @return ETrue if barring activated.
-        */
-        virtual void SetOutgoingCallBarringActivated( 
-                TBool aActivated ) = 0;
+         * Returns unattended transfer call back address
+         */
+        virtual const TDesC& CallBackAddress() const = 0;
         
     }; // MPEEngineInfo
     
