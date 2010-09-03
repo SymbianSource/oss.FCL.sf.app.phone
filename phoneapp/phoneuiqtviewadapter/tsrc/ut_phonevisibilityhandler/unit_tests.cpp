@@ -125,7 +125,6 @@ private slots:
 private:
     PhoneVisibilityHandler *m_handler;
     bool m_bringToForegroundCalled;
-    int m_startPosition;
     int m_startPriority;
     int m_normalPriority;
 };
@@ -171,8 +170,8 @@ void TestPhoneVisibilityHandler::initTestCase ()
     
     m_handler = new PhoneVisibilityHandler (*this, this);
     
-    m_startPosition = CEikonEnv::Static()->RootWin().OrdinalPosition();
-    QVERIFY(m_startPosition > 0); // Expect OrdinalPosition higher than 0
+    // Expect OrdinalPosition higher than 0
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     m_startPriority = CEikonEnv::Static()->RootWin().OrdinalPriority();
     QCOMPARE(m_startPriority, (int)ECoeWinPriorityNeverAtFront);
 }
@@ -203,12 +202,12 @@ void TestPhoneVisibilityHandler::t_normal()
 {
     // Test hide device dialogs when background ( false )
     m_handler->hideDeviceDialogs(false);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
     
     // Test hide device dialogs when background ( true )
     m_handler->hideDeviceDialogs(true);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
     
     // bringToForeground is call
@@ -229,7 +228,7 @@ void TestPhoneVisibilityHandler::t_normal()
     
     // send backgroud is called last
     m_handler->sendToBackground(false);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
 }
 
@@ -269,24 +268,24 @@ void TestPhoneVisibilityHandler::t_carmode()
     
     // send backgroud is called last
     m_handler->sendToBackground(false);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
 }
 
 void TestPhoneVisibilityHandler::t_devicelock()
 {
     m_handler->HandlePropertyChangedL(KPSUidCoreApplicationUIs, KCoreAppUIsAutolockStatus, ETimerLocked);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
     
     // Test hide device dialogs when background ( false )
     m_handler->hideDeviceDialogs(false);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
     
     // Test hide device dialogs when background ( true )
     m_handler->hideDeviceDialogs(true);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
     
     // bringToForeground is call
@@ -298,7 +297,7 @@ void TestPhoneVisibilityHandler::t_devicelock()
     // Test hide device dialogs when foreground ( false )
     m_handler->hideDeviceDialogs(false);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), 0);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), (int)ECoeWinPriorityAlwaysAtFront);
+    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), ECoeWinPriorityAlwaysAtFront + 1);
 
     // Test hide device dialogs when foreground ( true )
     m_handler->hideDeviceDialogs(true);
@@ -313,7 +312,7 @@ void TestPhoneVisibilityHandler::t_devicelock()
     
     // send backgroud is called last
     m_handler->sendToBackground(false);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
     
 }
@@ -335,7 +334,7 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     // send backgroud is called last
     m_handler->sendToBackground(false);
     QVERIFY(!g_enableKeyGuardCalled);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
     
     
@@ -354,7 +353,7 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     // send backgroud is called last
     m_handler->sendToBackground(false);
     QVERIFY(g_enableKeyGuardCalled);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
     
     // Test when keyguard is enabled before call +
@@ -374,7 +373,7 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     CEikonEnv::Static()->RootWin().SetOrdinalPosition(-1, ECoeWinPriorityNormal);
     m_handler->sendToBackground(false);
     QVERIFY(!g_enableKeyGuardCalled);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
     
     
@@ -399,7 +398,7 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     cleanup();
     m_handler->sendToBackground(false);
     QVERIFY(g_enableKeyGuardCalled);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
     
     // Test case where two calls is created and key guard is enabled during middle
@@ -423,7 +422,7 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     cleanup();
     m_handler->sendToBackground(false);
     QVERIFY(g_enableKeyGuardCalled);
-    QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), m_startPosition);
+    QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
 }
 

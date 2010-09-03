@@ -20,7 +20,6 @@
 #include <QMap>
 #include <QString>
 #include <QQueue>
-#include <hbdevicemessagebox.h>
 #include <cpsettingformitemdata.h>
 #include <psetcalldivertingwrapper.h>
 #include "cptelephonyutilsdefs.h"
@@ -37,6 +36,8 @@ class CpDivertItemData;
 class QEventLoop; 
 class HbLineEdit; 
 class HbDataFormModelItem;
+class CpDivertQuery;
+class QModelIndex;
 
 using namespace CpTelephonyUtils;
 
@@ -60,14 +61,7 @@ class CpDivertPluginGroup : public CpSettingFormItemData
         DivertRequest request;
         CpDivertItemData *item;
     };
-    
-    // Activate divert phases
-    enum ActivateDivertPhases
-    {
-        NonePhase,
-        PopUpVoiceNumberListQueryPhase,
-        PopUpTimerQueryPhase
-    };
+
     
 public:
 
@@ -112,10 +106,11 @@ public slots:
      */
     void itemShown(const QModelIndex& item);
     
-    void voiceNumberListQueryClosed(HbAction* action);
-    void popUpNumberEditorClosed(HbAction* action);
-    void popUpTimerQueryClosed(HbAction* action);
-    
+    /**
+     Slot which handles activate divert query result
+     */
+    void divertQueryOk(PSCallDivertingCommand &command);
+    void divertQueryCancelled(PSCallDivertingCommand &command);
 private:     
     
     /**
@@ -140,27 +135,9 @@ private:
             CpSettingFormItemData *parent = 0);
     
     /**
-     Show to user divert number query list.
-     */
-    void popUpVoiceNumberListQuery(
-            const QString& heading, PsServiceGroup serviceGroup);
-    
-    /**
-     Show to user number query.
-     */
-    void popUpNumberEditor(
-            const QString& heading);
-    
-    
-    /**
      Send comand to psetwrappercalldiverting.
      */
     void setCallDiverting(PSCallDivertingCommand& command);
-    
-    /**
-     Show to user divert time out query list.
-     */
-    void popUpTimerQuery();
     
     /**
      Desides which bsc parameters to use.
@@ -206,24 +183,18 @@ private:
      */
     CpSettingFormItemData* item(
             PsService service, PsCallDivertingCondition condition);
-private:
     
     /**
-     Creates dialog with default parameters
+     Helper function which dims divert items when divert request is ongoing.
      */
-    HbDialog* createDialog( const QString& heading ) const;
-
+    void disableDivertItems();
+    
     /**
-     Adds item to given list widget
+     Helper function which enables divert items when divert request is complete.
      */
-    void addItemToListWidget(HbListWidget* w,
-        const QString& item, const QString& data) const;
-
-    /**
-     Adds item to given list widget
-     */
-    void addItemToListWidget(HbListWidget* w,
-        const QString& item, const int& data) const;
+    void enableDivertItems();
+    
+private:
 
     /**
      Synchronizes content and status of divert options dependent from the 
@@ -238,8 +209,7 @@ private:
      statuses of CFB, CFNry and CFNrc.
      */
     void updateNotAvailableDivertOption();
-    
-    void nextPhaseForActivateDivert(bool ok);
+
     
     bool isDivertSettingsItem(HbDataFormModelItem* modelItem);
      
@@ -274,12 +244,10 @@ private:   // data
     QQueue<CpDivertRequestQueueItem> m_divertRequestQueue;
 
     CpItemDataHelper &m_helper;
-    
-    ActivateDivertPhases m_activateDivertPhase;
-    PSCallDivertingCommand m_divertCommand;
-    int m_timerId;
-    HbDialog *m_dialog;
 
+    int m_timerId;
+
+    CpDivertQuery *m_activateDivertPopUp;
 };
 
 #endif // CPDIVERTPLUGINGROUP_H

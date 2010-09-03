@@ -150,7 +150,7 @@ void CPESingleCall::DialEmergency(
         const TPEPhoneNumber& aEmergencyNumber )
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::DialEmergency" );
-    iCall->DialEmergencyCall( aEmergencyNumber );
+    Call().DialEmergencyCall( aEmergencyNumber );
     }
 
 // -----------------------------------------------------------------------------
@@ -176,7 +176,7 @@ void CPESingleCall::DisableFDNCheck()
 TInt CPESingleCall::Hold()
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::Hold" );
-    return iCall->Hold();
+    return Call().Hold();
     }
 
 // -----------------------------------------------------------------------------
@@ -187,7 +187,7 @@ TInt CPESingleCall::Hold()
 TInt CPESingleCall::Resume()
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::Resume" );
-    return iCall->Resume();
+    return Call().Resume();
     }
 
 // -----------------------------------------------------------------------------
@@ -198,7 +198,7 @@ TInt CPESingleCall::Resume()
 TInt CPESingleCall::Swap()
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::Swap" );
-    return iCall->Swap();
+    return Call().Swap();
     }
 
 // -----------------------------------------------------------------------------
@@ -209,7 +209,7 @@ TInt CPESingleCall::Swap()
 void CPESingleCall::Transfer( const TDesC& aTransferTarget )
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::Transfer" );
-    iCall->AttendedTransfer( aTransferTarget );
+    Call().AttendedTransfer( aTransferTarget );
     }
 
 // -----------------------------------------------------------------------------
@@ -220,7 +220,7 @@ void CPESingleCall::Transfer( const TDesC& aTransferTarget )
 TCCPTone CPESingleCall::Tone()
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::Tone" );
-    return iCall->Tone();
+    return Call().Tone();
     }
 
 // -----------------------------------------------------------------------------
@@ -232,7 +232,7 @@ TInt CPESingleCall::HangUp()
     {
     TEFLOGSTRING( KTAREQOUT, "CALL CPESingleCall::HangUp" );
     SetMissedCall( EFalse );
-    return iCall->HangUp();
+    return Call().HangUp();
     }
 
 // -----------------------------------------------------------------------------
@@ -282,20 +282,20 @@ TInt CPESingleCall::GetMissedCall(
 // CPESingleCall::IsSecureCall
 // -----------------------------------------------------------------------------
 //
-TBool CPESingleCall::IsSecureCall() const
+TBool CPESingleCall::IsSecureCall()
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::IsSecureCall" );
-    return iCall->IsSecured();
+    return Call().IsSecured();
     }
 
 // -----------------------------------------------------------------------------
 // CPESingleCall::SecureSpecified
 // -----------------------------------------------------------------------------
 //
-TBool CPESingleCall::SecureSpecified() const
+TBool CPESingleCall::SecureSpecified()
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::SecureSpecified" );
-    return iCall->SecureSpecified(); 
+    return Call().SecureSpecified(); 
     }
 
 // -----------------------------------------------------------------------------
@@ -306,7 +306,7 @@ TInt CPESingleCall::AcceptUnattendedTransfer()
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::AcceptUnattendedTransfer" );
     
-    return iCall->AcceptTransfer( ETrue );
+    return Call().AcceptTransfer( ETrue );
     }
 
 
@@ -318,18 +318,18 @@ TInt CPESingleCall::RejectUnattendedTransfer()
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::RejectUnattendedTransfer" );
     
-    return iCall->AcceptTransfer( EFalse );
+    return Call().AcceptTransfer( EFalse );
     }
 
 // -----------------------------------------------------------------------------
 // CPESingleCall::UnattendedTransfer
 // -----------------------------------------------------------------------------
 //
-TInt CPESingleCall::UnattendedTransfer( const TDesC& aTransferTo ) const
+TInt CPESingleCall::UnattendedTransfer( const TDesC& aTransferTo )
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::UnattendedTransfer" );
 
-    return iCall->UnattendedTransfer( aTransferTo );
+    return Call().UnattendedTransfer( aTransferTo );
     }
 
 // -----------------------------------------------------------------------------
@@ -339,7 +339,7 @@ TInt CPESingleCall::UnattendedTransfer( const TDesC& aTransferTo ) const
 TInt CPESingleCall::ForwardCallToAddress( TInt aIndex )
     {
     TEFLOGSTRING( KTAINT, "CALL CPESingleCall::ForwardToAddress" );
-    TRAPD( err, iCall->ForwardToAddressL( aIndex ) );
+    TRAPD( err, Call().ForwardToAddressL( aIndex ) );
     return err;
     }
     

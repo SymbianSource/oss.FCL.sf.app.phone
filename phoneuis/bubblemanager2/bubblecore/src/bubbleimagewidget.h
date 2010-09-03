@@ -28,6 +28,7 @@ class BubbleImageWidget : public HbWidget
     Q_OBJECT
 
     Q_PROPERTY(bool keepSquareShape READ keepSquareShape WRITE setKeepSquareShape)
+    Q_PROPERTY(QString imageName READ imageName WRITE setImageName)
     
 public:
     explicit BubbleImageWidget(
@@ -35,7 +36,8 @@ public:
         QGraphicsItem* parent = 0 );
     virtual ~BubbleImageWidget();
 
-    void setImage(const QString& name);
+    void setImageName(const QString& name);
+    QString imageName() const;
 
     bool keepSquareShape() const;
     void setKeepSquareShape(bool keepSquare);

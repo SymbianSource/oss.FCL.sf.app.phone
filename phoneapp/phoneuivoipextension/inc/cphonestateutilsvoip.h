@@ -24,7 +24,6 @@
 class MPhoneStateMachine;
 class MPhoneViewCommandHandle;
 class CPhCltEmergencyCall;
-class CConvergedServiceSelector;
 
 /**
  *  Provides common utility functions for voip-states.
@@ -119,12 +118,6 @@ private: // data
      * Own.
      */
     CPhCltEmergencyCall* iEmergencyCall;
-    
-    /** 
-     * Service selector.
-     * Own.
-     */
-    CConvergedServiceSelector* iServiceSelector;
     
     /**
      * Interface to the state machine.

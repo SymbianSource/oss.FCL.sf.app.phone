@@ -128,13 +128,7 @@ class CPhoneStateInCall : public CPhoneState
         /**
         * Upadated CBAs
         */
-        IMPORT_C virtual void UpdateCbaL( TInt aResource );     
-
-        /**
-        * Close all dtmf dialogs
-        */
-        IMPORT_C void CloseDtmfQueryL();
-
+        IMPORT_C virtual void UpdateCbaL( TInt aResource );
     
     private: // New functions
 

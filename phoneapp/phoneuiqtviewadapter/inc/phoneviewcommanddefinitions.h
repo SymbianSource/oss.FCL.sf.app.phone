@@ -143,6 +143,7 @@ enum
     EPhoneViewLaunchLogs,
     EPhoneViewSetBlueToothFlag,
     EPhoneViewSetBluetoothAvailableFlag,
+    EPhoneViewSetSoftRejectDimmed,
     EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.
 };
 

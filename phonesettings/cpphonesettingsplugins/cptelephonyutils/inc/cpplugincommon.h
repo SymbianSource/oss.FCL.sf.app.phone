@@ -46,11 +46,6 @@ public:
       */
     static bool videoSupported();
 
-    /*!
-      Error code text conversion
-      */
-    static bool errorCodeTextMapping(const int errorcode, QString &errorText);
-
 };
 
 /*!

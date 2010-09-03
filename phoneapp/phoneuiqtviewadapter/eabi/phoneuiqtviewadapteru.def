@@ -111,4 +111,5 @@ EXPORTS
 	_ZThn8_N20PhoneUIQtViewAdapter15ExecuteCommandLEiiR7TDesC16 @ 110 NONAME
 	_ZThn8_N20PhoneUIQtViewAdapterD0Ev @ 111 NONAME
 	_ZThn8_N20PhoneUIQtViewAdapterD1Ev @ 112 NONAME
+	_ZN20PhoneUIQtViewAdapter12clearDialpadEv @ 113 NONAME
 

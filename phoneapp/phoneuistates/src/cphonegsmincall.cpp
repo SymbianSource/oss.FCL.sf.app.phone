@@ -253,9 +253,6 @@ void CPhoneGsmInCall::BringIncomingToForegroundL()
     // Remove any phone dialogs if they are displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
 
-    // Capture keys when there is an incoming call
-    CaptureKeysDuringCallNotificationL( ETrue );
-
     // Bring Phone app in the foreground
     TPhoneCmdParamInteger uidParam;
     uidParam.SetInteger( KUidPhoneApplication.iUid );

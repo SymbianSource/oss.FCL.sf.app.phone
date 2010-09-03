@@ -17,6 +17,15 @@
 
 #include <QtGui>
 #include <QDebug>
+
+//#define BUBBLETEST_ENABLE_TESTABILITY
+#ifdef BUBBLETEST_ENABLE_TESTABILITY
+    #include <QtPlugin>
+    #include <QPluginLoader>
+    #include <QLibraryInfo>
+    #include "testabilityinterface.h"
+#endif
+
 #include <hbaction.h>
 #include <hbtoolbar.h>
 #include <bubblemanager2.h>
@@ -25,6 +34,7 @@
 #include "bubbletestview.h"
 #include <hbeffect.h>
 
+
 BubbleTestView::BubbleTestView(HbMainWindow& window, QGraphicsItem *parent) :
     HbView (parent), mMainWindow(window), mMuted(0), mConfBubbleId(-1),
     mProvideJoin(false)
@@ -32,6 +42,8 @@ BubbleTestView::BubbleTestView(HbMainWindow& window, QGraphicsItem *parent) :
     setFlags (QGraphicsItem::ItemIsFocusable);
     setFocusPolicy (Qt::StrongFocus);
     setTitle("BubbleTest2");
+
+    loadTestabilityPlugin();
     
     // the widget under the test
     mBubbleManager = new BubbleManager (this);
@@ -362,8 +374,34 @@ void BubbleTestView::keyPressEvent(QKeyEvent *event)
                 }
             }
         }
+        break;
     }
-    
+
+    case 'C': { // ciphering
+        mCipheringOff->setChecked(!mCipheringOff->isChecked());
+        break;
+    }
+
+    case 'D': { // divert
+        mCallDivert->setChecked(!mCallDivert->isChecked());
+        break;
+    }
+
+    case 'I': { // image
+        mContactPicture->setChecked(!mContactPicture->isChecked());
+        break;
+    }
+
+    case 'N': { // remote name
+        mContactName->setChecked(!mContactName->isChecked());
+        break;
+    }
+
+    case 'T': { // timer
+        mCallTimer->setChecked(!mCallTimer->isChecked());
+        break;
+    }
+
     default:
     break;
     }
@@ -1019,5 +1057,36 @@ void BubbleTestView::toggleConferenceHoldDelayed()
         }
         j++;
     }
+}
+
+void BubbleTestView::loadTestabilityPlugin()
+{
+#ifdef BUBBLETEST_ENABLE_TESTABILITY
+    QString testabilityPlugin = "testability/testability";
+    QString testabilityPluginPostfix = ".dll";
+
+    testabilityPlugin = QLibraryInfo::location(QLibraryInfo::PluginsPath) +
+                                               QObject::tr("/") + testabilityPlugin +
+                                               testabilityPluginPostfix;
+
+    QPluginLoader loader(testabilityPlugin.toLatin1().data());
+
+    QObject *plugin = loader.instance();
+    if (plugin) {
+            qDebug("Testability plugin loaded successfully!");
+            mTestabilityInterface = qobject_cast<TestabilityInterface *>(plugin);
+
+            if (mTestabilityInterface) {
+                    qDebug("Testability interface obtained!");
+                    mTestabilityInterface->Initialize();
+            } else {
+                    qDebug("Failed to get testability interface!");
+            }
+    } else {
+            qDebug("Testability plugin %s load failed with error:%s",
+                   testabilityPlugin.toLatin1().data(),
+                   loader.errorString().toLatin1().data());
+    }
+#endif
 }
 

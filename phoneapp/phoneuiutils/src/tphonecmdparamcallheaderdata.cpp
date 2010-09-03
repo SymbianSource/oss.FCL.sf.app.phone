@@ -45,8 +45,8 @@ EXPORT_C TPhoneCmdParamCallHeaderData::TPhoneCmdParamCallHeaderData() :
     iParticipantListCLI( EPhoneParticipantCLIText ),
     iCipheringIndicatorAllowed( ETrue ),
     iContactLink( KNullDesC8 ),
-    iRemotePhoneNumber( KNullDesC )
-    ,iDiverted( EFalse )
+    iRemotePhoneNumber( KNullDesC ),
+    iDiverted( EFalse )
     {
     iParamId = EPhoneParamIdCallHeaderData;
     }

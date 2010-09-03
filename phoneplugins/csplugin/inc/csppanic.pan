@@ -71,6 +71,7 @@ _LIT( KCSPPanic, "CSPlugin Panic!" );
         ECSPPanicInvalidParameter = 39,
         ECSPPanicDataConnectionInitError = 40,
         ECSPPanicTimerAlreadyActive = 41,
+        ECSPPanicAudioStreamInitFailure = 42,
         
         ECSPPanicMaximum = 100
         };

@@ -79,7 +79,7 @@ class CPhoneIdle : public CPhoneStateIdle
         * @param aErrorInfo: the error info
         */
         IMPORT_C virtual void HandleErrorL( 
-            const TPEErrorInfo& aErrorInfo );    
+            const TPEErrorInfo& aErrorInfo );
         
     };
 

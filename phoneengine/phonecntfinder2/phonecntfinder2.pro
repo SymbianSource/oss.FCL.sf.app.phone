@@ -75,7 +75,7 @@ BLD_INF_RULES.prj_exports += \
  "./rom/phonecntfinder.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(phonecntfinder.iby)"
  
 BLD_INF_RULES.prj_exports += \
- "./data/phonecntfinder_stub.sis   \epoc32\data\z\system\install\phonecntfinder_stub.sis"
+ "./data/phonecntfinder_stub.sis /epoc32/data/z/system/install/phonecntfinder_stub.sis"
 
 
 

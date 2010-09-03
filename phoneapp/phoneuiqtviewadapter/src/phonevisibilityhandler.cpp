@@ -214,9 +214,8 @@ int PhoneVisibilityHandler::ongoingCalls()
 	  1 - ... Ordinal postition under one or more window group
 	  
 	It is agreed with devicedialog that:
-     - Incomincall, ECoeWinPriorityAlwaysAtFront + 100
-     - Ongoing call + security, ECoeWinPriorityAlwaysAtFront
-     - Ongoing call + Securire query, ECoeWinPriorityAlwaysAtFront - 1
+     - Incoming call, ECoeWinPriorityAlwaysAtFront + 100
+     - Ongoing call + security, ECoeWinPriorityAlwaysAtFront + 1
      - Ongoing call, ECoeWinPriorityNormal
  */
 void PhoneVisibilityHandler::adjustVisibility(AdjustAction action)
@@ -243,7 +242,7 @@ void PhoneVisibilityHandler::adjustVisibility(AdjustAction action)
     } else if (m_deviceLockEnabled) {
         // critical notes are allowed to show on top of Phone application
         PHONE_TRACE1(": Devicelock");
-        m_eikonEnv->RootWin().SetOrdinalPosition(0, ECoeWinPriorityAlwaysAtFront);
+        m_eikonEnv->RootWin().SetOrdinalPosition(0, ECoeWinPriorityAlwaysAtFront + 1);
         
     } else if (BringForwards == action) {
         // Try to show phone with normal priority

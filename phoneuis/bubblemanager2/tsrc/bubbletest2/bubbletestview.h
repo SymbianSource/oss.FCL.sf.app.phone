@@ -27,6 +27,10 @@ class QSignalMapper;
 class HbToolBar;
 class BubbleManager;
 
+QT_BEGIN_NAMESPACE
+class TestabilityInterface;
+QT_END_NAMESPACE
+
 class BubbleTestView : public HbView
 {
     Q_OBJECT
@@ -79,6 +83,7 @@ private:
     void conferenceWizard();
     void sendKeyEvent(int key);
     void toggleHoldConference();
+    void loadTestabilityPlugin();
 
 private:
     HbMainWindow&     mMainWindow;
@@ -139,6 +144,8 @@ private:
     QMap<QString, int> mTestBubbleIds;
     int mConfBubbleId;
     bool mProvideJoin;
+
+    TestabilityInterface* mTestabilityInterface;
 };
 
 #endif // BUBBLETESTVIEW_H

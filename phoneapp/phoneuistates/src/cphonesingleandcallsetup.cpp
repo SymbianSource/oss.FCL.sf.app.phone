@@ -216,11 +216,8 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
 
-    // Stop capturing keys
-    CaptureKeysDuringCallNotificationL( EFalse );
-
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() )
+    if ( !IsNumberEntryVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
@@ -260,13 +257,9 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
     callHeaderParam.SetCallState( EPEStateConnected );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
-
-    // Capturing keys and number entry must be removed because some
-    // networks jump over connecting state directly to connected state.
-    CaptureKeysDuringCallNotificationL( EFalse );
     
     // Remove the number entry if it isn't DTMF dialer
-    if ( !iOnScreenDialer || !IsNumberEntryVisibleL() )
+    if ( !IsNumberEntryVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
@@ -306,8 +299,6 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
         
     if( activeCallCount.Integer() )
         {
-        CheckIfRestoreNEContentAfterDtmfDialer();
- 
         if ( IsNumberEntryUsedL() )
             {
             // Show the number entry if it exists
@@ -320,10 +311,7 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
             }
             
         SetTouchPaneButtons( EPhoneIncallButtons );    
-        // UnCapture keys callsetup fails
-        CaptureKeysDuringCallNotificationL( EFalse );
-        // Setup call was terminated
-        iStateMachine->ChangeState( EPhoneStateSingle );            
+        iStateMachine->ChangeState( EPhoneStateSingle ); 
         }
     else
         {
@@ -335,7 +323,7 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
         SetToolbarButtonLoudspeakerEnabled();
         // Update call setup CBAs
         UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
-        iStateMachine->ChangeState( EPhoneStateCallSetup );            
+        iStateMachine->ChangeState( EPhoneStateCallSetup );
         }
         
     EndUiUpdate();

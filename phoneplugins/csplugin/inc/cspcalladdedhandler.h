@@ -32,7 +32,7 @@ class RCSPLineContainer;
 class CSPEtelLineStatusMonitor; 
 class CSPEtelCallWaitingRequester;
 class MCSPCommonInfo;
-class CSPAudioHandler;
+class CSPAudioHandlerBase;
 
 /**
 * Handles call adding from calls not done by the plugin.
@@ -57,7 +57,7 @@ NONSHARABLE_CLASS(CSPCallAddedHandler): public CBase,
                 RCSPLineContainer& aLineContainer,
                 CSPCallArray& aCallArray,
                 MCSPCommonInfo& aCommonInfo,
-                CSPAudioHandler& aAudioHandler );
+                CSPAudioHandlerBase& aAudioHandler );
 
         /**
         * C++ default destructor
@@ -111,7 +111,7 @@ NONSHARABLE_CLASS(CSPCallAddedHandler): public CBase,
                              RCSPLineContainer& aLineContainer,
                              CSPCallArray& aCallArray,
                              MCSPCommonInfo& aCommonInfo,
-                             CSPAudioHandler& aAudioHandler );
+                             CSPAudioHandlerBase& aAudioHandler );
                                           
         /**
         * Constructs the monitor in the second phase.
@@ -160,7 +160,7 @@ NONSHARABLE_CLASS(CSPCallAddedHandler): public CBase,
         /**
         * Audio Handler reference.
         */
-        CSPAudioHandler& iAudioHandler;
+        CSPAudioHandlerBase& iAudioHandler;
     };
 
 #endif // CSPCALLADDEDHANDLER_H

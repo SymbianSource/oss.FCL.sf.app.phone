@@ -181,14 +181,14 @@ class CPESingleCall
         * @param None.
         * @return TBool ETrue if security is enabled, else EFalse.
         */
-        TBool IsSecureCall() const;
+        TBool IsSecureCall();
 
         /**
         * Get call's secure specified status.
         * @param None.
         * @return TBool ETrue if secure specified
         */
-        TBool SecureSpecified() const;
+        TBool SecureSpecified();
         
         /**
          * Accepts unattended transfer request.
@@ -207,7 +207,7 @@ class CPESingleCall
         * @param aTransferTo Target address of the transfer
         * @return System wide error code
         */   
-        TInt UnattendedTransfer( const TDesC& aTransferTo ) const;
+        TInt UnattendedTransfer( const TDesC& aTransferTo );
         
         /**
          * Starts call forwarding to selected address.

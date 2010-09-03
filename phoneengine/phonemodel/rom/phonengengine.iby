@@ -43,10 +43,9 @@ file=ABI_DIR\BUILD_DIR\loghandling.dll      SHARED_LIB_DIR\loghandling.dll
 // Service Handling
 file=ABI_DIR\BUILD_DIR\peservicehandling.dll      SHARED_LIB_DIR\peservicehandling.dll
 
-// <-- QT PHONE START --> 
 // Dial Service
 file=ABI_DIR\BUILD_DIR\phoneservices.dll      SHARED_LIB_DIR\phoneservices.dll
-// <-- QT PHONE END--> 
+
 data=DATAZ_\private\1000A86C\backup_registration.xml  private\1000A86C\backup_registration.xml
 
 

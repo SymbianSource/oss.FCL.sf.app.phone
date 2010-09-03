@@ -15,7 +15,6 @@
 *
 */
 
-#include <cconvergedserviceselector.h>
 #include "cphoneviewcustomizationvoip.h"
 #include "mphoneviewblockingdialogobserver.h"
 #include "phonestatedefinitionsvoip.h"
@@ -46,7 +45,6 @@ CPhoneViewCustomizationVoip::CPhoneViewCustomizationVoip(
 //
 void CPhoneViewCustomizationVoip::ConstructL()
     {
-    iServiceSelector = CConvergedServiceSelector::NewL();
     }
 
 
@@ -86,7 +84,6 @@ CPhoneViewCustomizationVoip* CPhoneViewCustomizationVoip::NewLC(
 //
 CPhoneViewCustomizationVoip::~CPhoneViewCustomizationVoip()
     {
-    delete iServiceSelector;
     }
 
 
@@ -138,9 +135,6 @@ void CPhoneViewCustomizationVoip::RemoveDialog()
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneViewCustomizationVoip::RemoveDialog" );
-    
-    // Dismiss service selector queries, if necessary
-    iServiceSelector->CancelSelection();
     }
 
 
@@ -155,24 +149,5 @@ TBool CPhoneViewCustomizationVoip::SelectVoipService(
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneViewCustomizationVoip::SelectVoipService" );
     
-    // Indicate that the service selection is blocking key events 
-    // from the Phone.
-    aBlockingObserver.SetBlockingDialogIsDisplayed( ETrue );
-    
-    CConvergedServiceSelector::TSsResult results;
-    TInt selectionResult = iServiceSelector->GetCallingServiceByCallType( 
-        results, CConvergedServiceSelector::ESsVoipCall, 0, EFalse );
-    
-    if ( KErrNone == selectionResult )
-        {
-        TPhoneCmdParamSelector* selectorContent =
-            static_cast<TPhoneCmdParamSelector*>( aCommandParam );
-        selectorContent->SetRegStatus( results.iServiceEnabled );
-        selectorContent->SetServiceId( results.iServiceId );
-        }
-    
-    // Reset the flag
-    aBlockingObserver.SetBlockingDialogIsDisplayed( EFalse );
-    
-    return ( KErrNone == selectionResult );
+    return ETrue;
     }

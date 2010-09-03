@@ -82,6 +82,18 @@ NONSHARABLE_CLASS( CPhoneCbaManager ) :  public CBase
         */
         void SetRingtoneSilencedStatus( const TBool aSilenceStatus );
         
+        /**
+        * Sets the soft reject status
+        * @param aSoftRejectStatus, new status
+        */
+        void SetSoftRejectStatus( TBool aSoftRejectStatus );
+        
+        /**
+        * Returns the soft reject status
+        * @return Soft reject status
+        */
+        TBool SoftRejectStatus();
+        
     private:
         
         /*
@@ -100,6 +112,11 @@ NONSHARABLE_CLASS( CPhoneCbaManager ) :  public CBase
         * @return Resource id of CBA
         */
         TInt GetIncomingCallSilenceCBA( const TBool aSoftRejectActivated ); 
+
+        /**
+        * Sets soft reject flag
+        */
+        void SetSoftRejectDimmedFlag();
         
     private:
     
@@ -125,6 +142,8 @@ NONSHARABLE_CLASS( CPhoneCbaManager ) :  public CBase
         // UpdateIncomingCbaL only
         TBool iRingtoneSilenced;
         
+        // Soft reject status flag
+        TBool iSoftRejectStatus;
     };
 
 

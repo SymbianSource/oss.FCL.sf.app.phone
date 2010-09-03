@@ -46,6 +46,7 @@ CpBarringPluginGroup::CpBarringPluginGroup(CpItemDataHelper &helper)
     m_editBarringPasswordItem(0),
     m_barringStatusRequestOngoing(false),
     m_activeNoteId(0),
+    m_activeProgressNoteId(0),
     m_phoneNotes(0),
     m_barringPasswordValidator(0),
     m_delayedBarringActivationNote(false),
@@ -130,7 +131,6 @@ void CpBarringPluginGroup::itemShown(const QModelIndex& item)
     
     DPRINT << ": OUT";
 }
-
 
 /*!
   CpBarringPluginGroup::setupConnectionsToWrapper.
@@ -296,6 +296,8 @@ void CpBarringPluginGroup::barringStatusRequestCompleted(
         // query again for uncompleted items when user expands/opens barring 
         // settings group again.
         m_phoneNotes->cancelNote(m_activeNoteId);
+        m_phoneNotes->cancelNote(m_activeProgressNoteId);
+        m_activeProgressNoteId = 0;
         m_phoneNotes->showGlobalErrorNote(m_activeNoteId, result);
         m_barringRequestQueue.clear();
         return;
@@ -324,6 +326,8 @@ void CpBarringPluginGroup::barringStatusRequestCompleted(
     }
     if (m_barringRequestQueue.isEmpty()) {
         m_phoneNotes->cancelNote(m_activeNoteId);
+        m_phoneNotes->cancelNote(m_activeProgressNoteId);
+        m_activeProgressNoteId = 0;
         if (m_delayedBarringActivationNote) {
             m_delayedBarringActivationNote = false;
             m_phoneNotes->showNotificationDialog(hbTrId("txt_phone_info_barring_activated"));
@@ -452,10 +456,10 @@ void CpBarringPluginGroup::processBarringStatusRequestQueue()
         
         m_barringStatusRequestOngoing = true;
         
-        if (!m_phoneNotes->noteShowing()) {
+        if (!m_activeProgressNoteId && !m_phoneNotes->noteShowing()) {
             // Launch progress note only once for status update.
             m_phoneNotes->showGlobalProgressNote(
-                m_activeNoteId, hbTrId("txt_common_info_requesting"));
+                m_activeProgressNoteId, hbTrId("txt_common_info_requesting"));
         }
     }
     

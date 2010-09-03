@@ -125,11 +125,8 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneConferenceAndSingleAndWaiting::HandleIdleL()");
-
     BeginUiUpdateLC();
-    // Set touch controls
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
-
 
     TPhoneCmdParamBoolean conferenceExistsForCallId;
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCallExistsInConference,
@@ -137,13 +134,11 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
 
     if( conferenceExistsForCallId.Boolean() )
         {
-        // Remove conference member from conference bubble
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveFromConference,
             aCallId );
         }
     else
         {
-        // Remove call
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
 
         TPhoneCmdParamBoolean conferenceBubbleExists;
@@ -182,11 +177,8 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
 void CPhoneConferenceAndSingleAndWaiting::HandleAddedConferenceMemberL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingleAndWaiting::HandleAddedConferenceMemberL");
-    // Update conference bubble
     iViewCommandHandle->ExecuteCommandL( EPhoneViewAddToConference );
-
     UpdateConferenceSecurityStatusL( aCallId );
-
     MakeStateTransitionToConferenceAndWaitingL( KConferenceCallId );
     }
 
@@ -198,13 +190,8 @@ void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndWait
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndWaitingL()");
-
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
-
-    // Check if HW Keys or Call UI should be disabled
     CheckDisableHWKeysAndCallUIL();
-
-    // Go to Conference And Waiting state
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
     iStateMachine->ChangeState( EPhoneStateConferenceAndWaiting );
     }
@@ -213,32 +200,26 @@ void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndWait
 // CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSingleL
 // -----------------------------------------------------------
 //
-void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt /*aCallId*/ )
+void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSingleL( 
+        TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSingleL()");
-
-    if( /*FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke )
-        */ 1 &&  iStateMachine->PhoneStorage()->IsScreenLocked() )
+    if( iStateMachine->PhoneStorage()->IsScreenLocked() )
         {
         EnableCallUIL();
         }
-
-    // Reset blocked keys list
     iStateMachine->PhoneStorage()->ResetBlockedKeysList();
 
     if ( IsNumberEntryUsedL() )
         {
         if ( NeedToSendToBackgroundL() )
             {
-            // Return phone to the background if send to background is needed.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-
             UpdateCbaL( EPhoneCallHandlingInCallCBA );
             }
         else
             {
-            // Show the number entry if it exists
             SetNumberEntryVisibilityL(ETrue);
             }
         }
@@ -249,14 +230,10 @@ void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSing
         // sendbackround if needed.
         if ( NeedToSendToBackgroundL() )
             {
-            // Return phone to the background if send to background is needed.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
             }
         }
-
     SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
-    // Go to conference and single state
-    // CBA updates in above if-else conditions
     iStateMachine->ChangeState( EPhoneStateConferenceAndSingle );
     }
 
@@ -268,16 +245,10 @@ void CPhoneConferenceAndSingleAndWaiting::HandleConferenceIdleL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneConferenceAndSingleAndWaiting::HandleConferenceIdleL()");
-
     BeginUiUpdateLC();
-
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
-
-    // Remove any phone dialogs if they are displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-
     MakeTransitionAccordingToActiveCallsL();
-
     EndUiUpdate();
     }
 
@@ -293,22 +264,19 @@ void CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL(
         "CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL()");
     switch ( aCode )
         {
-        // send-key
-        case EKeyYes:
+        case EKeyYes: // send-key
             if( IsNumberEntryVisibleL() )
                 {
                 CallFromNumberEntryL();
                 }
             else
                 {
-                // Not allowed to answer
                 SendGlobalWarningNoteL(
                     EPhoneNoteTextCallNotAllowed, ETrue );
                 }
             break;
 
         default:
-            // do base operation
             CPhoneConferenceAndSingle::HandleKeyMessageL( aMessage, aCode );
             break;
         }
@@ -337,7 +305,6 @@ void CPhoneConferenceAndSingleAndWaiting::HandleKeyEventL(
 void CPhoneConferenceAndSingleAndWaiting::UpdateInCallCbaL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndSingleAndWaiting::UpdateInCallCbaL() ");
-
     UpdateCbaL ( EPhoneCallHandlingCallWaitingCBA );
     }
 
@@ -350,38 +317,26 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
     TPhoneCmdParamInteger activeCallCount;
     iViewCommandHandle->ExecuteCommandL(
         EPhoneViewGetCountOfActiveCalls, &activeCallCount );
-
     switch( activeCallCount.Integer() )
          {
          case ENoActiveCalls: // Go to incoming state
             {
-            // Get Waiting call's Call Id
             TPhoneCmdParamCallStateData callStateData;
             callStateData.SetCallState( EPEStateRinging );
             iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
                 &callStateData );
-
             if ( callStateData.CallId() != KErrNotFound )
                 {
-                // Display ringing bubble
                 TPhoneCmdParamCallHeaderData callHeaderParam;
                 callHeaderParam.SetCallState( EPEStateRinging );
-
                 SetCallHeaderTextsForCallComingInL( callStateData.CallId(), EFalse, &callHeaderParam );
 
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble,
                     callStateData.CallId(),
                     &callHeaderParam );
-
-                // Capture keys when there is an incoming call
-                CaptureKeysDuringCallNotificationL( ETrue );
-
-                // Go to Incoming state
+                
                 iCbaManager->UpdateIncomingCbaL( callStateData.CallId() );
-
-                // Check if HW Keys or Call UI should be disabled
                 CheckDisableHWKeysAndCallUIL();
-
                 SetTouchPaneButtons( EPhoneIncomingCallButtons );
                 SetRingingTonePlaybackL( callStateData.CallId() );
                 SetBackButtonActive(EFalse);
@@ -395,26 +350,18 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
                 }
             }
             break;
-         case EOneActiveCall:
+         case EOneActiveCall: // Go to Single And Waiting state
             {
-            // Go to Single And Waiting state
             UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
             SetTouchPaneButtons( EPhoneWaitingCallButtons );
-
-            // Check if HW Keys or Call UI should be disabled
             CheckDisableHWKeysAndCallUIL();
-
             iStateMachine->ChangeState( EPhoneStateWaitingInSingle );
             }
             break;
-         case ETwoActiveCalls:
+         case ETwoActiveCalls: // Go to Two Singles And Waiting state
             {
-            // Go to Two Singles And Waiting state
             UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
-
-            // Check if HW Keys or Call UI should be disabled
             CheckDisableHWKeysAndCallUIL();
-
             SetTouchPaneButtons( EPhoneWaitingCallButtons );
             iStateMachine->ChangeState( EPhoneStateTwoSinglesAndWaiting );
             }

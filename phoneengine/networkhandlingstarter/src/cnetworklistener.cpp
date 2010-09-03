@@ -21,6 +21,8 @@
 #include <PsetContainer.h>
 #include <PsetNetwork.h>
 #include <PsetSAObserver.h>
+#include <centralrepository.h>
+#include <CoreApplicationUIsSDKCRKeys.h>
 
 #include "cnetworklistener.h"
 #include "mnetworklistenerobserver.h"
@@ -196,7 +198,7 @@ void CNetworkListener::HandleNetworkLost()
         if (iRegistered) {
             iRegistered = EFalse;
 
-            if (!IsOffLineMode() &&
+            if (IsNetworkConnectionAllowed() &&
                 !IsBluetoothSAPConnected() &&
                 IsSimOk()) {
                 // Start 60 second timer and when expired show the
@@ -213,21 +215,23 @@ void CNetworkListener::HandleNetworkLost()
 }
 
 /*!
-    CNetworkListener::IsOffLineMode
+    CNetworkListener::IsNetworkConnectionAllowed
  */
-TBool CNetworkListener::IsOffLineMode() const
+TBool CNetworkListener::IsNetworkConnectionAllowed() const
 {
     DPRINT << ": IN";
-    
-    TInt result = KErrNone;
-    TBool isOffLineMode = EFalse;
-    QT_TRYCATCH_ERROR(result, isOffLineMode =
-        QSystemDeviceInfo::OfflineProfile == iDeviceInfo->currentProfile())
-    
-    DPRINT << ": OUT, result: " << result;
-    return (isOffLineMode && (KErrNone == result));
-    }
-    
+    // Key indicates whether network connections are allowed.
+    // E.g. is Offline Mode active or not.
+    TInt nwConnectionAllowed( ECoreAppUIsNetworkConnectionAllowed );
+    CRepository* repository = CRepository::NewL( KCRUidCoreApplicationUIs );
+    repository->Get(KCoreAppUIsNetworkConnectionAllowed,nwConnectionAllowed);
+    delete repository;
+    repository = NULL;
+
+    DPRINT << ": OUT, nwConnectionAllowed: " << nwConnectionAllowed;
+    return nwConnectionAllowed == ECoreAppUIsNetworkConnectionAllowed;
+}
+
 /*!
     CNetworkListener::IsBluetoothSAPConnected
  */

@@ -52,7 +52,8 @@ CPhoneCbaManager::CPhoneCbaManager(
          MPhoneStateMachine& aStateMachine )
    : iState ( aState ), 
      iViewCommandHandle ( aViewCommandHandle ),
-     iStateMachine ( aStateMachine )
+     iStateMachine ( aStateMachine ),
+     iSoftRejectStatus ( ETrue )
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneCbaManager::CPhoneCbaManager() ");
     }
@@ -118,75 +119,23 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
     btParam.SetBoolean( audioOutput == EPEBTAudioAccessory );        
     iViewCommandHandle.ExecuteCommand(EPhoneViewSetBlueToothFlag,&btParam);
 
+    SetSoftRejectDimmedFlag();
+    
     TPhoneCmdParamBoolean btAvailableParam;
     btAvailableParam.SetBoolean( btAvailable );        
     iViewCommandHandle.ExecuteCommand(
             EPhoneViewSetBluetoothAvailableFlag,&btAvailableParam);
-    
-    // Call setup cases
-    if ( EPhoneCallHandlingCallSetupCBA == aResource )
-        {
-        if ( !FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling) )
-            {
-            if ( audioOutput == EPELoudspeaker )
-                {
-                resourceId = EPhoneCallHandlingCallSetupToHandsetCBA;
-                }
-            else if ( audioOutput == EPEHandset )
-                {
-                resourceId = EPhoneCallHandlingCallSetupToIhfCBA;
-                }
-            }
-        }
-
-    // Is numberentry visible
-    else if ( iState->IsNumberEntryUsedL() )
-        {
-        if ( iState->IsAutoLockOn() || !(iState->IsSimOk()) )
-            {
-            resourceId = EPhoneEmptyBackCBA;
-            }
-        else
-            {
-            TPhoneCmdParamInteger activeCallCount;
-            iViewCommandHandle.ExecuteCommandL(
-                    EPhoneViewGetCountOfActiveCalls, &activeCallCount );
-            
-            TPhoneCmdParamCallStateData callStateData;
-            callStateData.SetCallState( EPEStateRinging );
-            iViewCommandHandle.HandleCommandL(
-                    EPhoneViewGetCallIdByState, &callStateData );
-            
-            TInt incomingCall = callStateData.CallId();
-
-            if( activeCallCount.Integer() == ENoActiveCalls )
-                {
-                resourceId = EPhoneNumberAcqCBA;
-                }
-            else if ( activeCallCount.Integer() > ENoActiveCalls &&  
-                      incomingCall > KErrNotFound )
-                {
-                resourceId = EPhoneCallHandlingCallWaitingCBA;
-                }
-            else
-                {
-                resourceId = EPhoneInCallNumberAcqCBA;
-                }
-            }
-        }
 
     // Check is Audio muted
-    else if ( iStateMachine.PhoneEngineInfo()->AudioMute() )
+    if ( iStateMachine.PhoneEngineInfo()->AudioMute() )
         {
         resourceId = EPhoneCallHandlingInCallUnmuteCBA;
         }
-
     // Multicall swap
     else if ( EPhoneCallHandlingNewCallSwapCBA == aResource )
         {
         resourceId = EPhoneCallHandlingNewCallSwapCBA;
         }
-
     // Call waiting cases
     else if ( EPhoneCallHandlingCallWaitingCBA == aResource )
         {
@@ -206,13 +155,11 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
                 }
             }
         }
-
     // Check is call in hold
     else if ( hold.Boolean() )
         {
         resourceId = EPhoneCallHandlingInCallUnholdCBA;
         }
-
     // Is BT accessory connected
     else if ( audioOutput == EPEBTAudioAccessory &&
               IsVoiceCallAlertingOrActiveL() &&
@@ -220,13 +167,11 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
         {
         resourceId = EPhoneCallHandlingInCallHandsetCBA;
         }
-
     else if ( audioOutput == EPEWiredAudioAccessory ||
               coverHideSendEndKey || iState->IsSwivelClosed() )
         {
         resourceId = EPhoneCallHandlingInCallNoIhfCBA;
         }
-
     // Check BT availability
     else if ( audioOutput == EPELoudspeaker )
         {
@@ -243,7 +188,6 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
         {
         resourceId = EPhoneCallHandlingInCallBtaaCBA;
         }
-
     SetCbaL( resourceId );
     }
 
@@ -254,7 +198,6 @@ EXPORT_C void CPhoneCbaManager::UpdateCbaL( TInt aResource )
 EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl,"CPhoneCbaManager::UpdateIncomingCbaL()" );
-
     const TBool coverHideSendEndKey =
         CPhoneCenRepProxy::Instance()->IsTelephonyFeatureSupported(
             KTelephonyLVFlagCoverHideSendEndKey );
@@ -267,14 +210,19 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
               ( ringingType == EProfileRingingTypeBeepOnce ));
 
     // Update soft reject flag
-    TBool softRejectActivated( ETrue );
+    iSoftRejectStatus = ETrue;
     // VoIP calls do not support sms sending
     if ( iStateMachine.PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP 
         || iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ).Length() == 0 )
         {
-        softRejectActivated = EFalse;
+        iSoftRejectStatus = EFalse;
         }
-
+    
+    TPhoneCmdParamBoolean dimSoftRejectParam;
+    dimSoftRejectParam.SetBoolean( !iSoftRejectStatus );        
+    iViewCommandHandle.ExecuteCommand(
+            EPhoneViewSetSoftRejectDimmed, &dimSoftRejectParam );
+    
     TInt incomingCbaResourceId;
 
     if ( iState->IsSwivelClosed() )
@@ -288,7 +236,6 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
             incomingCbaResourceId = EPhoneCallHandlingIncomingSwivelClosedCBA;
             }
         }
-
     else if ( coverHideSendEndKey )
         {
         if ( callIsAlerting )
@@ -296,7 +243,7 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
             // Set CBA to Options..Silence
             incomingCbaResourceId = EPhoneCallHandlingIncomingSliderCBA;
             }
-        else if ( softRejectActivated )
+        else if ( iSoftRejectStatus )
             {
             // Set CBA for soft reject
             incomingCbaResourceId = EPhoneCallHandlingIncomingSoftRejectSliderCBA;
@@ -307,14 +254,13 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
             incomingCbaResourceId = EPhoneCallHandlingIncomingSilentSliderCBA;
             }
         }
-
     else
         {
         if ( callIsAlerting )
             {
-            incomingCbaResourceId = GetIncomingCallSilenceCBA( softRejectActivated );
+            incomingCbaResourceId = GetIncomingCallSilenceCBA( iSoftRejectStatus );
             }
-        else if ( softRejectActivated )
+        else if ( iSoftRejectStatus )
             {
             // Set CBA for soft reject
             incomingCbaResourceId = EPhoneCallHandlingIncomingSoftRejectCBA;
@@ -324,7 +270,6 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
             incomingCbaResourceId = EPhoneCallHandlingIncomingRejectCBA;
             }
         }
-
     SetCbaL( incomingCbaResourceId );
     }
 
@@ -335,10 +280,14 @@ EXPORT_C void CPhoneCbaManager::UpdateIncomingCbaL( TInt aCallId )
 EXPORT_C void CPhoneCbaManager::SetCbaL( TInt aResource )
     {
     __LOGMETHODSTARTEND(EPhoneControl,"CPhoneCbaManager::SetCbaL()" );
-
     __PHONELOG1( EBasic, EPhoneControl,
             "CPhoneCbaManager::SetCbaL : %d",aResource );
-
+    if ( EPhoneCallHandlingIncomingRejectCBA == aResource ||
+         EPhoneCallHandlingIncomingSoftRejectCBA == aResource )
+        {
+        SetSoftRejectDimmedFlag();
+        }
+    
     TPhoneCmdParamInteger integerParam;
     integerParam.SetInteger(
         CPhoneMainResourceResolver::Instance()->ResolveResourceID(
@@ -354,7 +303,6 @@ EXPORT_C void CPhoneCbaManager::SetCbaL( TInt aResource )
 void CPhoneCbaManager::UpdateCbaSwivelStateChangedL()
     {
     __LOGMETHODSTARTEND(EPhoneControl,"CPhoneCbaManager::UpdateCbaSwivelStateChangedL()" );
-
     TPhoneCmdParamCallStateData callStateData;
     callStateData.SetCallState( EPEStateRinging );
     iViewCommandHandle.HandleCommandL(
@@ -391,7 +339,6 @@ TBool CPhoneCbaManager::IsVoiceCallAlertingOrActiveL()
     __LOGMETHODSTARTEND( EPhoneControl,
         "CPhoneCbaManager::IsVoiceCallAlertingOrActiveL()" );
     TBool retVal = EFalse;
-
     // Fetch alerting call's id from view
     TPhoneCmdParamCallStateData callStateData;
     callStateData.SetCallState( EPEStateConnecting );
@@ -402,7 +349,6 @@ TBool CPhoneCbaManager::IsVoiceCallAlertingOrActiveL()
         {
         TPECallType type = iStateMachine.PhoneEngineInfo()->CallType(
             callStateData.CallId() );
-
         if ( EPECallTypeCSVoice == type || EPECallTypeVoIP == type )
             {
             retVal = ETrue;
@@ -415,7 +361,6 @@ TBool CPhoneCbaManager::IsVoiceCallAlertingOrActiveL()
         callStateData.SetCallState( EPEStateConnected );
         iViewCommandHandle.HandleCommandL(
             EPhoneViewGetCallIdByState, &callStateData );
-
         if ( callStateData.CallId() > KErrNotFound )
             {
             TPECallType type = iStateMachine.PhoneEngineInfo()->CallType(
@@ -447,6 +392,31 @@ void CPhoneCbaManager::SetRingtoneSilencedStatus( const TBool aSilencedStatus )
     }
 
 // -----------------------------------------------------------
+// CPhoneCbaManager::SetSoftRejectStatus
+// -----------------------------------------------------------
+//
+void CPhoneCbaManager::SetSoftRejectStatus( TBool aSoftRejectStatus )
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneCbaManager::SetSoftRejectStatus ()" );
+    // Set the internal TBool variable
+    iSoftRejectStatus = aSoftRejectStatus;
+    __PHONELOG1( 
+            EBasic, 
+            EPhoneControl, 
+            "CPhoneCbaManager::SetSoftRejectStatus - iSoftRejectStatus =%d", 
+            iSoftRejectStatus  );
+    }
+
+// -----------------------------------------------------------
+// CPhoneCbaManager::SoftRejectStatus
+// -----------------------------------------------------------
+//
+TBool CPhoneCbaManager::SoftRejectStatus()
+    {
+    return iSoftRejectStatus;
+    }
+
+// -----------------------------------------------------------
 // CPhoneCbaManager::GetIncomingCallSilenceCBA
 // -----------------------------------------------------------
 //
@@ -454,10 +424,35 @@ TInt CPhoneCbaManager::GetIncomingCallSilenceCBA(
         const TBool /*aSoftRejectActivated*/ )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneCbaManager::GetIncomingCallSilenceCBA ()" );
-    TInt ret = EPhoneCallHandlingIncomingCBA;
-    return ret;
+    return EPhoneCallHandlingIncomingCBA;
     }
 
-// ======== LOCAL FUNCTIONS ========
+// -----------------------------------------------------------
+// CPhoneCbaManager::SetSoftRejectDimmedFlag
+// -----------------------------------------------------------
+//
+void CPhoneCbaManager::SetSoftRejectDimmedFlag()
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneCbaManager::GetIncomingCallSilenceCBA ()" );
+    TPhoneCmdParamCallStateData callStateData;
+    callStateData.SetCallState( EPEStateRinging );
+    iViewCommandHandle.HandleCommandL(
+        EPhoneViewGetCallIdByState, &callStateData );
+    TPhoneCmdParamBoolean dimSoftRejectParam;
+    if ( callStateData.CallId() > KErrNotFound )
+        {
+        TBool privateNumber = iStateMachine.PhoneEngineInfo()->
+                RemotePhoneNumber( callStateData.CallId() ).Length() == 0;
+        
+        dimSoftRejectParam.SetBoolean( privateNumber || !iSoftRejectStatus );        
+        }
+    else
+        {
+        iSoftRejectStatus = ETrue;
+        dimSoftRejectParam.SetBoolean( EFalse );
+        }
+    iViewCommandHandle.ExecuteCommand(
+            EPhoneViewSetSoftRejectDimmed, &dimSoftRejectParam );
+    }
 
 

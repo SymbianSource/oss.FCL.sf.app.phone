@@ -99,12 +99,6 @@ private:
 
 private: // data
 
-    /** 
-     * Service selector.
-     * Own.
-     */
-    CConvergedServiceSelector* iServiceSelector; 
-    
     /*
      * Handle to customization
      */

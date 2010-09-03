@@ -102,8 +102,8 @@ class CPhoneErrorMessagesHandler : public CBase,
                 TInt aResourceId,
                 TBool aNotificationDialog = EFalse );
         
-
-    private:        
+    private:
+        
         /**
         * Return SimState.
         */

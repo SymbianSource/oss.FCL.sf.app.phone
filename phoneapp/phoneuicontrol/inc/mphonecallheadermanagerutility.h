@@ -29,16 +29,6 @@
 class MPhoneCallHeaderManagerUtility
     {
     public:
-        
-        /**
-        * Concludes does the engine have information of the
-        * phone number. This information is then send to the view.
-        * @param aNumberLength - phone number's length
-        * @param aContactInfoAvailable - is contact's info available
-        */
-        virtual void SetPhoneNumberAvailabilityL(
-                const TInt aNumberLength,
-                const TBool aContactInfoAvailable ) = 0;
 
         /**
         * Loads strings for displaying in call header.

@@ -31,7 +31,6 @@
 #include "phoneappvoipcommands.hrh"
 #include "phonerssvoip.h"
 #include "cphonemenuextensionwrapper.h"
-#include "tphonetouchpanewrapper.h" 
 
 
 // ================= MEMBER FUNCTIONS =======================

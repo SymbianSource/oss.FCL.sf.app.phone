@@ -419,10 +419,6 @@ const TInt KPhoneUiMediatorIfTimeout = 10000;
 // Name of Call UI dll which is loaded polymorficly in CPhoneQueryController
 _LIT( KPhoneCaUiLoadedLib, "cauiengine.dll" );
 
-// CPhoneTextQuery constants
-const TInt KLeftCbaId = 0;
-const TInt KRightCbaId = 2;
-
 // Used in CPhoneNoteTimer
 // Time in milliseconds that the timer runs.
 const TInt KDtmfWaitNoteTimeoutValue = 100000;
@@ -443,12 +439,6 @@ const TInt KPhoneBtaaConnectionLostQueryTimeout = 60000000;
 
 // Time cap between information note and reconnect query
 const TInt KInformationNoteDisplayTime = 3000000;
-
-// HELP
-_LIT( KINCAL_HLP_CALL_HANDLING, "INCAL_HLP_CALL_HANDLING" );
-_LIT( KINCAL_HLP_VIDEOCALL, "INCAL_HLP_VIDEO_CALL" );
-_LIT( KDATA_DIALER_HLP_MAIN, "DIALER_HLP_MAIN" );
-_LIT( KDATA_DIALER_HLP_SEND_DTMF, "DIALER_HLP_SEND_DTMF" );
 
 // Maximum length of file path for caller image theme
 const TInt KMaxFilePathLength = 256;

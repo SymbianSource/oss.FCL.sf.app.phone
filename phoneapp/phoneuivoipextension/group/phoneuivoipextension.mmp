@@ -23,10 +23,7 @@
 #include <platform_paths.hrh>
 
 // Capability assignment.
-// <-- QT PHONE START --> 
 CAPABILITY CAP_GENERAL_DLL
-//CAPABILITY CAP_APPLICATION MultiMediaDD NetworkControl PowerMgmt DRM DiskAdmin
-// <-- QT PHONE END --> 
 
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
@@ -51,9 +48,6 @@ SOURCE          cphonevoiperrormessageshandler.cpp
 SOURCE          cphonemenuextensionwrapper.cpp
 SOURCE          cphoneextensionhandler.cpp
 SOURCE          tphonecmdparamselector.cpp
-// <-- QT PHONE START -->
-//SOURCE          tphonetouchpanewrapper.cpp
-// <-- QT PHONE END -->
 SOURCE          cphonetransferdialercontroller.cpp
 SOURCE          cphoneviewcustomizationvoip.cpp
 SOURCE          cphonestateutilsvoip.cpp
@@ -64,37 +58,10 @@ SOURCE          cphoneunattendedtransfercmdhandler.cpp
 SOURCE          cphonenewcallcmdhandler.cpp
 SOURCE          cphonecallforwardqueryhandler.cpp
 
-// <-- QT PHONE START -->
-/* Languages */
-/*LANG SC
-
-#ifndef __SECURE_DATA__ 
-SOURCEPATH      ../srcdata
-
-// load protocol specific resources
-RESOURCE        phoneuivoip.rss
-#else
-// Resources
-
-SOURCEPATH      ../srcdata
-
-START RESOURCE  phoneuivoip.rss
-TARGETPATH APP_RESOURCE_DIR 
-HEADER
-LANGUAGE_IDS
-END  // RESOURCE
-
-#endif // __SECURE_DATA__
-*/
-// <-- QT PHONE END -->
-
 USERINCLUDE     ../inc
 USERINCLUDE     ../../phoneuicontrol/inc
 USERINCLUDE     ../../phoneuistates/inc
-// <-- QT PHONE START -->
 USERINCLUDE     ../../phoneuiqtviewadapter/inc
-//USERINCLUDE     ../../phoneuiview/inc
-// <-- QT PHONE END -->
 USERINCLUDE     ../../phoneui/inc
 USERINCLUDE     ../../phoneuiutils/inc
 USERINCLUDE     ../../phoneui2/srcdata
@@ -107,10 +74,7 @@ LIBRARY         bafl.lib
 // <-- QT PHONE START -->
 //LIBRARY         cch.lib 
 // <-- QT PHONE END -->
-// <-- QT PHONE START --> 
 LIBRARY         phonestringloader.lib
-//LIBRARY         commonengine.lib //StringLoader 
-// <-- QT PHONE END -->
 LIBRARY         cone.lib
 LIBRARY         ecom.lib
 LIBRARY         eikcoctl.lib // CEikMenuPane

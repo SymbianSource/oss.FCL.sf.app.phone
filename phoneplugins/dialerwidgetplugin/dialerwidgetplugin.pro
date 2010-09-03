@@ -27,7 +27,6 @@ INCLUDEPATH += ./inc \
 symbian: { 
     LIBS += -lxqservice \
         -lxqserviceutil \
-        -lxqtelephonyservice \
         -lxqsettingsmanager \
         -llogsengine
     TARGET.UID3 = 0x20022F44

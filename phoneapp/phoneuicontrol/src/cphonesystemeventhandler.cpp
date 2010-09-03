@@ -162,15 +162,6 @@ void CPhoneSystemEventHandler::HandleKeyLockEnabled( TBool aKeylockEnabled )
     iStateMachine->State()->HandleKeyLockEnabled( aKeylockEnabled );
     }
 
-// -----------------------------------------------------------
-// CPhoneSystemEventHandler::HandleEnvironmentChangeL
-// -----------------------------------------------------------
-//
-void CPhoneSystemEventHandler::HandleEnvironmentChangeL( const TInt aChanges )
-    {
-    iStateMachine->State()->HandleEnvironmentChangeL( aChanges );
-    }
-
 // ---------------------------------------------------------
 // CPhoneSystemEventHandler::HandlePhoneStartupL
 // ---------------------------------------------------------

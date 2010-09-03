@@ -81,11 +81,6 @@ class CPhoneIncoming : public CPhoneStateIncoming
         * ConstructL()
         */
         IMPORT_C virtual void ConstructL();
-        
-        /**
-        * Handles long hash key
-        */
-        virtual void HandleLongHashL();
 
     private:
         

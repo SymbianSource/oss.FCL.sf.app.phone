@@ -17,6 +17,7 @@
 #include "phoneuicommandcontroller.h"
 #include "phoneresourceadapter.h"
 #include "phoneuiqtbuttonscontroller.h"
+#include "phoneconstants.h"
 #include "qtphonelog.h"
 #include <hbaction.h>
 #include <spsettings.h>
@@ -181,35 +182,41 @@ QList<int> PhoneUiCommandController::menuCommands(
     PHONE_DEBUG("PhoneMenuController::menuCommands");
     QList<int> commands;
     bool sameServices = areServicesSame(callStates,serviceIds);
-
-    switch(callStates.values().count()) {
-    case 1: {
-        // No logical string for switch to video option	
-        /*if (callStates.values().contains(EPEStateConnected)) {
-            commands.append(PhoneInCallCmdSwitchToVideo);
-        }*/
-    }
-    break;
-    case 2: {
-        if (!callStates.values().contains(EPEStateRinging) &&
-            !callStates.values().contains(EPEStateDisconnecting) &&
-            !callStates.values().contains(EPEStateDialing)) {
-            commands.append(PhoneInCallCmdEndAllCalls);
+    bool isEmergencyCall = emergencyCall(callStates);
+    
+    // No menu items if an emergency call ongoing.
+    if (false == isEmergencyCall) {
+        switch(callStates.values().count()) {
+        case 1: {
+            // No logical string for switch to video option	
+            /*if (callStates.values().contains(EPEStateConnected)) {
+                commands.append(PhoneInCallCmdSwitchToVideo);
+            }*/
         }
-        if (callStates.values().contains(EPEStateConnected) &&
-            callStates.values().contains(EPEStateHeld)) {
-            if (sameServices) {
-                commands.append(PhoneInCallCmdTransfer);
+        break;
+        case 2: {
+            if (!callStates.values().contains(EPEStateRinging) &&
+                !callStates.values().contains(EPEStateDisconnecting) &&
+                !callStates.values().contains(EPEStateDialing)) {
+                commands.append(PhoneInCallCmdEndAllCalls);
+            }
+            if ((callStates.values().contains(EPEStateConnected) &&
+                 callStates.values().contains(EPEStateHeld)) ||
+                (callStates.values().contains(EPEStateConnecting) &&
+                 callStates.values().contains(EPEStateHeld))) {
+                if (sameServices) {
+                    commands.append(PhoneInCallCmdTransfer);
+                }
             }
         }
-    }
-    break;
-    case 3: {
-        commands.append(PhoneInCallCmdEndAllCalls);    
-    }
-    break;
-    default:
         break;
+        case 3: {
+            commands.append(PhoneInCallCmdEndAllCalls);    
+        }
+        break;
+        default:
+            break;
+        }
     }
     
     return commands;
@@ -717,3 +724,9 @@ PhoneAction *PhoneUiCommandController::mapCommandToAction(
             
     return action;
 }
+
+bool PhoneUiCommandController::emergencyCall(QMap<int,int> callStates) const
+{   
+    return callStates.keys().contains(KEmergencyCallId);
+}
+

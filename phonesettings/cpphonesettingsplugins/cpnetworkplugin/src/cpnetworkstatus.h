@@ -25,6 +25,7 @@ using namespace QtMobility;
 
 class CpSettingFormItemData;
 class HbIcon;
+class CpSettingsWrapper;
 
 class CpNetworkStatus 
     : public QObject
@@ -63,8 +64,8 @@ private:
 private:
     
     QScopedPointer<QSystemNetworkInfo> m_networkInfo;
-    
     QScopedPointer<QSystemDeviceInfo> m_deviceInfo;
+    CpSettingsWrapper *m_cpSettingsWrapper;
         
     // Not own
     CpSettingFormItemData *m_settingFormItemData;

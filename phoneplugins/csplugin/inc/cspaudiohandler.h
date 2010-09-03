@@ -19,23 +19,27 @@
 #define CSPAUDIOHANDLER_H
 
 #include <e32base.h>
+#include "cspaudiohandlerbase.h"
+#include "mtmshandlerobserver.h"
+#include "mcsptimerobserver.h"
 
+//FORWARD DECLARATIONS
 class TmsHandler;
+class CSPTimer;
+
 /**
  * Handles call adding from calls not done by the plugin.
  *
  */
-class CSPAudioHandler : public CBase
+class CSPAudioHandler : public CSPAudioHandlerBase,
+                        public MTmsHandlerObserver,
+                        public MCSPTimerObserver
     {
 public:
     //Constructors and descructor
 
     /**
      * Two-phased constructing for the monitor.
-     *
-     * @param aObserver the observer for getting notification
-     * @param aLine the line to monitor
-     * @param aLineId line identifier
      */
     static CSPAudioHandler* NewL();
 
@@ -43,45 +47,54 @@ public:
      * C++ default destructor.
      */
     virtual ~CSPAudioHandler();
+    
+// from base class CSPAudioHandlerBase     
+
+    /*
+     * From CSPAudioHandlerBase
+     * Set observer to receive call audio stream events.     
+     */
+    void SetObserver(MCSPAudioHandlerObserver& aObserver);
 
     /**
-     * Start audio streams.
+     * From CSPAudioHandlerBase
+     * Start audio streams.     
      */
     void Start();
 
     /**
-     * Stop audio streams.
+     * From CSPAudioHandlerBase
+     * Stop audio streams.     
      */
     void Stop();
 
+    /*
+     * From CSPAudioHandlerBase
+     * Specify timeout after which stream start retry will be terminated.
+     */
+    void ReportAudioFailureAfterTimeout(TInt aTimeout);
+
 protected:
-    // From CActive
-    /**
-     * From CActive
-     * RunL
+    /*
+     * From MTmsHandlerObserver
+     * Indicates call audio stream start success.
      */
-    void RunL();
+    void AudioStreamsStarted();
+
+    /*
+     * From MTmsHandlerObserver
+     * Indicates call audio stream start failure.
+     */
+    void AudioStreamsError(TInt aError);
 
     /**
-     * From CActive
-     * Catches errors if RunL leaves
-     * @param aError error code
-     * @return error code
+     * From MCSPTimerObserver.
      */
-    TInt RunError(TInt aError);
-
-    /**
-     * From CActive
-     * Cancels the monitor
-     */
-    void DoCancel();
+    void TimerEvent();
 
 private:
     /**
      * C++ default constructor
-     * @param aObserver the observer for status change (incoming call)
-     * @param aLine the line associated with the call
-     * @param aLineId line identifier
      */
     CSPAudioHandler();
 
@@ -93,7 +106,6 @@ private:
 private:
     // data
 
-
     /**
      * Audio streams handler.
      */
@@ -103,6 +115,17 @@ private:
      * Call count
      */
     TInt iCallCount;
+
+    /**
+     * Timer waiting for the activation of streams.
+     */
+    CSPTimer* iTimer;
+
+    /*
+     * Observer receiving call audio stream start events.
+     */
+    MCSPAudioHandlerObserver* iObserver;
     };
 
 #endif // CSPAUDIOHANDLER_H
+

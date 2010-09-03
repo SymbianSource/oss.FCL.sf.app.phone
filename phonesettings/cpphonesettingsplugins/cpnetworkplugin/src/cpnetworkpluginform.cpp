@@ -294,14 +294,14 @@ void CpNetworkPluginForm::networkModeStateChanged(int index)
         emit showGlobalNote(
             m_activeNoteId, 
             emit hbTrId("Off-line, not allowed"), 
-            HbMessageBox::MessageTypeInformation);
+            HbMessageBox::MessageTypeWarning);
     } else if(m_cpSettingsWrapper->isOngoingCall()) {
         // ongoing call.
         m_psetNetworkWrapper->getNetworkAccessMode();
         emit showGlobalNote(
             m_activeNoteId, 
             emit hbTrId("txt_cp_info_active_calls_must_be_disconnected_befo"), 
-            HbMessageBox::MessageTypeInformation);
+            HbMessageBox::MessageTypeWarning);
     } else {
         // ok case
         if(index == 0) {
@@ -331,14 +331,14 @@ void CpNetworkPluginForm::operatorSelectionStateChanged()
         emit showGlobalNote(
             m_activeNoteId, 
             emit hbTrId("txt_cp_info_operator_selection_is_not_possible_in"), 
-            HbMessageBox::MessageTypeInformation);
+            HbMessageBox::MessageTypeWarning);
     } else if(m_cpSettingsWrapper->isOngoingCall()) {
         // ongoing call.
         restoreOperatorSelectionUi();
         emit showGlobalNote(
             m_activeNoteId, 
             emit hbTrId("txt_cp_info_active_calls_must_be_disconnected_befo"), 
-            HbMessageBox::MessageTypeInformation);
+            HbMessageBox::MessageTypeWarning);
     } else {
         // ok case
         PSetNetworkWrapper::NetworkSelectionMode mode;
@@ -559,7 +559,7 @@ void CpNetworkPluginForm::networkReqestFailed(
             break;
     }
     emit showGlobalNote(
-        m_activeNoteId, text, HbMessageBox::MessageTypeInformation);
+        m_activeNoteId, text, HbMessageBox::MessageTypeWarning);
     
     // Update UI
     if(type == PSetNetworkWrapper::RequestSetNetworkMode) {
@@ -662,10 +662,9 @@ void CpNetworkPluginForm::handleNetworkChanged(
         }
             break; 
     }
-    
-    emit showGlobalNote(
-        m_activeNoteId, text, HbMessageBox::MessageTypeInformation);
-    
+
+    emit showNotificationDialog(text);
+
     DPRINT << ": OUT";
 }
 
@@ -916,6 +915,12 @@ void CpNetworkPluginForm::connectToPhoneNotes(PsUiNotes &notes)
         &notes, 
         SLOT(showGlobalNote(
             int &, const QString&, HbMessageBox::MessageBoxType)));
+
+    QObject::connect(
+        this, 
+        SIGNAL(showNotificationDialog( const QString&)),
+        &notes, 
+        SLOT(showNotificationDialog( const QString&)));
     
     QObject::connect(
         this, 

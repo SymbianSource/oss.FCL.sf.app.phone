@@ -118,6 +118,7 @@ private:
     QQueue<CpSettingFormItemData *> m_barringRequestQueue;
     bool m_barringStatusRequestOngoing;
     int m_activeNoteId;
+    int m_activeProgressNoteId;
     PsUiNotes* m_phoneNotes;
     QValidator *m_barringPasswordValidator;
     bool m_delayedBarringActivationNote;

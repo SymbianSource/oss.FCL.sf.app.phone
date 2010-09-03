@@ -1678,9 +1678,13 @@ EXPORT_C TInt CPECallHandling::SwapCalls()
     TInt callIndex;
     CPESingleCall* callData;
     TInt errorCode( ECCPErrorNotFound );
+    TBool onlyConferenceCall( ( iConferenceCall && 
+            ( iConferenceCall->EnumerateCalls() == GetNumberOfCalls()) ));
 
     if ( ( iConferenceCall ) && 
-         ( iConferenceCall->GetCallState() == EPEStateConnectedConference ) )
+         ( iConferenceCall->GetCallState() == EPEStateConnectedConference ||
+           (iConferenceCall->GetCallState() == EPEStateHeldConference &&
+            onlyConferenceCall ) ) )
         {
         errorCode = iConferenceCall->Swap();
         }

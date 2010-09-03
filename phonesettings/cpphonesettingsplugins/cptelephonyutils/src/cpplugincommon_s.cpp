@@ -41,20 +41,6 @@ BasicServiceGroups Tools::convertEtelMobileServiceCode(int serviceCode)
     return Unknown;
 }
 
-
-/*!
-  Tools::errorCodeTextMapping.
- */
-bool Tools::errorCodeTextMapping(const int errorcode, QString &errorText)
-{
-    DPRINT << "DUMMY WRAPPER";
-    errorText.clear();
-    bool errorTextFound(true);
-    errorText = hbTrId("Not done");
-    return errorTextFound;
-}
-
-
 CpSettingsWrapper::CpSettingsWrapper(QObject *parent): 
     QObject(parent)
 {

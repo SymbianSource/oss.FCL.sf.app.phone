@@ -40,7 +40,8 @@ public:
         FullConference  = 0x200, // Max member count in conference
         Outgoing        = 0x400, // Outgoing call
         IhfAsPushButton  = 0x800,  // Speaker as push button in bubble
-        BluetoothAvailable   = 0x1000  // Bluetooth available
+        BluetoothAvailable   = 0x1000,  // Bluetooth available
+        DisableSoftReject    = 0x2000,  // Disable soft reject
     };
     Q_DECLARE_FLAGS(PhoneButtonFlags, PhoneButtonFlag)
 

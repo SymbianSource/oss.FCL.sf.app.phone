@@ -102,7 +102,7 @@ EXPORT_C void CPhoneCallSetup::HandlePhoneEngineMessageL(
             HandleConnectingL( aCallId );
             break;
 
-        // fall through.    
+        // fall through.
         case MEngineMonitor::EPEMessageIssuingSSRequest:
         case MEngineMonitor::EPEMessageCallBarred:
         case MEngineMonitor::EPEMessageIssuedSSRequest:
@@ -118,15 +118,14 @@ EXPORT_C void CPhoneCallSetup::HandlePhoneEngineMessageL(
                 EPhoneUIStates, 
                 "CPhoneCallSetup::HandlePhoneEngineMessageL Start create gsm message handler %d",
                 aMessage ); 
-            
             CPhoneGeneralGsmMessagesHandler* gsmMsgHandler =
-                CPhoneGeneralGsmMessagesHandler::NewL( *iStateMachine,
-                                                       *iViewCommandHandle,
-                                                       *this );
-
+                CPhoneGeneralGsmMessagesHandler::NewL( 
+                        *iStateMachine,
+                        *iViewCommandHandle,
+                        *this );
             CleanupStack::PushL( gsmMsgHandler );
             gsmMsgHandler->HandlePhoneEngineMessageL( aMessage, aCallId );
-            CleanupStack::PopAndDestroy( gsmMsgHandler );       
+            CleanupStack::PopAndDestroy( gsmMsgHandler );
             }
             break;
             
@@ -147,26 +146,19 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
     // set when the CDMA network receives the call, not (like in GSM) when
     // when the remote party receives the call. So, in CDMA, the user
     // should still be able to cancel the MO call before the call is connected.
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneCallSetup::HandleConnectingL()");
-    
+    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneCallSetup::HandleConnectingL()");
     BeginUiUpdateLC();
     UpdateRemoteInfoDataL ( aCallId );
     
-    // Re-enable global notes
     TPhoneCmdParamBoolean globalNotifierParam;
     globalNotifierParam.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
 
-    // Home screen to foreground after call
     TPhoneCmdParamBoolean booleanParam;
     booleanParam.SetBoolean( ETrue );
     iViewCommandHandle->ExecuteCommand( EPhoneViewHsToForegroundAfterCall,
         &booleanParam );
-    
-    // Stop capturing keys
-    CaptureKeysDuringCallNotificationL( EFalse );
     
     TPhoneCmdParamCallHeaderData callHeaderParam;
     callHeaderParam.SetCallState( EPEStateConnecting );
@@ -174,12 +166,8 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
         &callHeaderParam );
 
     SetToolbarButtonLoudspeakerEnabled();
-
     EndUiUpdate();
-    
-    // Go to alerting state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
-
     iStateMachine->ChangeState( EPhoneStateAlerting );
     }
 

@@ -105,33 +105,25 @@ EXPORT_C void CPhoneAlerting::HandleKeyMessageL(
         "CPhoneAlerting::HandleKeyMessageL()");
     switch ( aCode )
         {
-        // send-key
-        case EKeyYes:
+        case EKeyYes: // send-key
             if ( IsNumberEntryUsedL() )
                 {
-                // send a manual control sequence
-                CallFromNumberEntryL();    
+                CallFromNumberEntryL();
                 }
             else
                 {
-                // Show not allowed note
                 SendGlobalErrorNoteL( 
                     EPhoneNoteTextNotAllowed, ETrue );
                 }
             break;
 
-        // end-key
-        case EKeyNo:
-            // handle long press
+        case EKeyNo: // end-key
             if ( aMessage == EPhoneKeyLongPress )
                 {
-                // Close all connections
                 iStateMachine->SendPhoneEngineMessage(
                     MPEPhoneModel::EPEMessageTerminateAllConnections ); 
-
                 if ( IsNumberEntryUsedL() )
                     {
-                    // Remove number entry from screen
                     iViewCommandHandle->ExecuteCommandL( 
                         EPhoneViewRemoveNumberEntry );
                     // Do state-specific operation when number entry is cleared
@@ -139,22 +131,19 @@ EXPORT_C void CPhoneAlerting::HandleKeyMessageL(
                     }
                 if ( !TopAppIsDisplayedL() )
                     {
-                    // Bring app to foreground
                     TPhoneCmdParamInteger uidParam;
                     uidParam.SetInteger( KUidPhoneApplication.iUid );
                     iViewCommandHandle->ExecuteCommandL(
                         EPhoneViewBringAppToForeground, &uidParam );
                     }
                 }
-            else
+            else // handle short end key
                 {
-                // handle end key
                 DisconnectOutgoingCallL();
                 }
             break;
             
         default:
-            // do base operation
             CPhoneGsmInCall::HandleKeyMessageL( aMessage, aCode );
             break;
         }
@@ -170,7 +159,6 @@ EXPORT_C void CPhoneAlerting::HandlePhoneEngineMessageL(
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneAlerting::HandlePhoneEngineMessageL()");
-    
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnected:
@@ -207,7 +195,6 @@ EXPORT_C void CPhoneAlerting::HandlePhoneEngineMessageL(
                     {
                     CPhoneGsmInCall::HandlePhoneEngineMessageL( 
                         aMessage, aCallId );
-                    
                     // Simulate incoming event which was received while 
                     // teardown of first call was ongoing.
                     iStateMachine->State()->HandlePhoneEngineMessageL( 
@@ -222,7 +209,6 @@ EXPORT_C void CPhoneAlerting::HandlePhoneEngineMessageL(
         default:
             break;
         }
-
     CPhoneGsmInCall::HandlePhoneEngineMessageL( aMessage, aCallId );
     }
 
@@ -234,23 +220,15 @@ EXPORT_C void CPhoneAlerting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneAlerting::HandleConnectedL()");
-    // Keep Phone in the foreground
     TPhoneCmdParamBoolean booleanParam;
     booleanParam.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-
     BeginUiUpdateLC();
-        
-    // Update the single call
     UpdateSingleActiveCallL( aCallId );
-
-    SetTouchPaneButtons( EPhoneIncallButtons ); 
-        
+    SetTouchPaneButtons( EPhoneIncallButtons );
     EndUiUpdate();
-    
-    // Go to single state
-    UpdateCbaL( EPhoneCallHandlingInCallCBA );    
+    UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateSingle );
     }
 
@@ -274,17 +252,14 @@ TBool CPhoneAlerting::IsVideoCallAlertingL()
     __LOGMETHODSTARTEND( EPhoneUIStates,  
         "CPhoneAlerting::IsVideoCallAlerting()" );
     TBool retVal = EFalse;
-    // Fetch active call's id from view
     TPhoneCmdParamCallStateData callStateData;
     callStateData.SetCallState( EPEStateConnecting );
     iViewCommandHandle->HandleCommandL(
         EPhoneViewGetCallIdByState, &callStateData );
-        
     if ( callStateData.CallId() > KErrNotFound )
         {
         retVal = IsVideoCall( callStateData.CallId() );
         }
-        
     return retVal;
     }
     
@@ -309,7 +284,5 @@ EXPORT_C void CPhoneAlerting::HandleDisconnectingL( TInt aCallId )
             "CPhoneAlerting::HandleDisconnectingL()" );
     CPhoneGsmInCall::HandleDisconnectingL( aCallId );
     }
-
-
 
 // End of File

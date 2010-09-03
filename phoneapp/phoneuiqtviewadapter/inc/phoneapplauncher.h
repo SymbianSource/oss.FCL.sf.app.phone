@@ -19,7 +19,18 @@
 #define PHONEAPPLAUNCHER_H
 
 #include <QObject>
+#include <QRunnable>
 
+class PhoneAppLauncherTask : public QRunnable
+{
+public:
+    void run();
+public:    
+    QString mService;
+    QString mInterface; 
+    QString mOperation;
+    QList<QVariant> mArguments;
+};
 
 /*!
  * \class PhoneAppLauncher
@@ -57,6 +68,7 @@ public:
             int activatedView,
             bool showDialpad,
             const QString& dialpadText);
+
 
 private:
     void sendServiceRequest(

@@ -25,6 +25,8 @@
 
 #ifdef Q_OS_SYMBIAN
 #include <logsmodel.h>
+#include <logsevent.h>
+#include <logsabstractmodel.h>
 #include <logsfilter.h>
 #include <LogsDomainCRKeys.h>
 #include <ctsydomaincrkeys.h>
@@ -32,6 +34,9 @@
 #include <xqappmgr.h>
 #include <xqaiwdecl.h>
 #endif
+
+Q_DECLARE_METATYPE(LogsEvent *)
+
 
 namespace PhoneIndicatorControllerKeys{
     const XQSettingsKey missedCallsSettingsKey( XQSettingsKey::TargetCentralRepository, 
@@ -146,13 +151,17 @@ void PhoneIndicatorController::updateMissedCallIndicator(
             delete m_logsModel;
             m_logsModel = NULL;
         } else {
-            m_logsModel = new LogsModel(LogsModel::LogsFullModel);
-            m_missedCallsFilter = new LogsFilter(LogsFilter::Missed);
-            connect( m_missedCallsFilter, 
+            if(!m_logsModel){
+                m_logsModel = new LogsModel(LogsModel::LogsFullModel);
+            }
+            if(!m_missedCallsFilter){
+                m_missedCallsFilter = new LogsFilter(LogsFilter::Missed);
+                connect( m_missedCallsFilter, 
                     SIGNAL(rowsInserted(const QModelIndex &, int, int )),
-                    this, SLOT(setMissedallIndicatorData()));
-            m_missedCallsFilter->setMaxSize(value.toInt() + 1);
-            m_missedCallsFilter->setSourceModel(m_logsModel);
+                        this, SLOT(setMissedallIndicatorData()));
+                m_missedCallsFilter->setSourceModel(m_logsModel);
+            }
+            m_missedCallsFilter->setMaxSize(value.toInt() + 1);            
         }
     }
 #endif  
@@ -188,49 +197,38 @@ void PhoneIndicatorController::setMissedallIndicatorData()
     
     if ( missedCallCount > 0 ) {
         QVariantMap parameters;
-        QString lastMissedCallFrom;
-        int repeatedMissedCalls(0);
-        
-        if ( m_missedCallsFilter->rowCount() > 0 ){
-                lastMissedCallFrom = m_missedCallsFilter->data(
-                        m_missedCallsFilter->index(0,0),
-                        Qt::DisplayRole).toStringList().takeFirst();
-                repeatedMissedCalls = 1;
-            }
-        for( int i = 1; i < missedCallCount && i 
-                < m_missedCallsFilter->rowCount(); i++ ){
-            QStringList displayData = m_missedCallsFilter->data(
-                    m_missedCallsFilter->index(i,0),
-                    Qt::DisplayRole).toStringList();
-            if ( lastMissedCallFrom == displayData.at(0) ){
-                repeatedMissedCalls++;
-            } else {
-                i = missedCallCount; // Break
-            }
-        }
-        // First row
-        parameters.insert( 
-                QVariant( HbIndicatorInterface::PrimaryTextRole ).toString(),
-                ( hbTrId("txt_phone_dblist_ln_missed_calls", 
-                        missedCallCount)));
-        
-        // Second row
-        if ( missedCallCount >= repeatedMissedCalls )
-            {
+        LogsEvent *event = qVariantValue<LogsEvent*>(m_missedCallsFilter->data(
+                m_missedCallsFilter->index(0,0),
+                LogsAbstractModel::RoleFullEvent));
+        if (event){
+            // First row
             parameters.insert( 
-                    QVariant( HbIndicatorInterface::SecondaryTextRole ).toString(), 
-                    lastMissedCallFrom );
+                    QVariant( HbIndicatorInterface::PrimaryTextRole ).toString(),
+                    ( hbTrId("txt_phone_dblist_ln_missed_calls", 
+                            missedCallCount)));
+            
+            if ( missedCallCount >= event->duplicates() ){
+                QString lastMissedCallFrom;
+                if ( event->isRemotePartyPrivate() ){
+                    lastMissedCallFrom = hbTrId("txt_phone_other_unknown_number");
+                } else {
+                    lastMissedCallFrom = event->remoteParty().isEmpty() ?
+                        event->number() : event->remoteParty();
+                }
+                parameters.insert( 
+                        QVariant( HbIndicatorInterface::SecondaryTextRole ).toString(), 
+                        lastMissedCallFrom );
             }
-
-        QString iconName = "qtg_mono_missed_call_unseen";
-        parameters.insert(
-                QVariant( HbIndicatorInterface::DecorationNameRole ).toString(),
-                iconName );
-        
+            QString iconName = "qtg_mono_missed_call_unseen";
+            parameters.insert(
+                    QVariant( HbIndicatorInterface::DecorationNameRole ).toString(),
+                    iconName );
+        }
         m_indicator.activate(indicatorType, parameters);
     } else {
         m_indicator.deactivate( indicatorType );
     }
+   
 #endif
 }
 
@@ -264,7 +262,7 @@ bool PhoneIndicatorController::compareKeys(
     return ( first.key() == second.key() && first.uid() == second.uid() );
 }
 
-void PhoneIndicatorController::handleInteraction(QString type,QVariantMap data)
+void PhoneIndicatorController::handleInteraction(QString /*type*/,QVariantMap data)
 {
     PHONE_TRACE
     

@@ -49,6 +49,8 @@ private slots:
     void testFirstNameNotEmpty();
     void testLastNameEmpty();
     void testLastNameNotEmpty();
+    void testGroupNameEmpty();
+    void testGroupNameNotEmpty();
     void testNumberEmpty();
     void testNumberNotEmpty();
     //void testSeveralFirstNames();
@@ -213,6 +215,45 @@ void U_CPhCntMatch2::testLastNameNotEmpty()
     delete buf;
 
     err = contact.removeDetail(&lastname);
+    err = cm->removeContact(contact.localId());
+    }
+
+void U_CPhCntMatch2::testGroupNameEmpty()
+    {
+    QContact contact;
+    QContactName lastname;
+    lastname.setLastName("");
+    bool err = contact.saveDetail(&lastname); 
+    err = cm->saveContact(&contact);
+    delete mMatch;
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
+    mMatchIf = mMatch;
+    Q_ASSERT(mMatchIf->GroupName().Length() == 0);
+
+    err = contact.removeDetail(&lastname);
+    err = cm->removeContact(contact.localId());
+    }
+
+
+void U_CPhCntMatch2::testGroupNameNotEmpty()
+    {
+    QContact contact;
+    contact.setType(QContactType::TypeGroup);
+    _LIT(KGroupName, "groupname");
+    QContactName groupname;
+    groupname.setCustomLabel("groupname");
+    bool err = contact.saveDetail(&groupname); 
+    err = cm->saveContact(&contact);
+    delete mMatch;
+    TRAP_IGNORE( mMatch = CPhCntMatch2::NewL(contact) );
+    mMatchIf = mMatch;
+    HBufC* buf = NULL;
+    buf = mMatchIf->GroupName().AllocL();
+    QString qBuf((QChar*)buf->Ptr(),buf->Length());
+    Q_ASSERT(*buf == KGroupName());
+    delete buf;
+
+    err = contact.removeDetail(&groupname);
     err = cm->removeContact(contact.localId());
     }
 

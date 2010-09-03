@@ -33,6 +33,7 @@
 #include "mcsppubsubobserver.h"
 #include "mcspremotealertingtoneobserver.h"
 #include "mcspconferencestatusobserver.h"
+#include "mcsptestcallprovider.h"
 
 
 // FORWARD DECLARATIONS
@@ -42,7 +43,6 @@ class CSPServiceSettingsHandler;
 class CSPEtelCallAddedMonitor;
 class CSPConferenceCall;
 class CSPCallArray;
-class CSPAudioHandler;
 class CSPEtelCallWaitingRequester;
 class CSPSupplementaryServicesMonitor;
 class MCCPSsObserver;
@@ -53,6 +53,8 @@ class CSPPubSubListener;
 class CSPCallCommandHandler;
 class CSPRemoteAlertingToneListener;
 class CSPEtelConferenceStatusMonitor; 
+class CSPAudioHandlerBase;
+
 
 /**
 * Main class for using CS Call Plug-in. Implements the CCP API.
@@ -66,7 +68,8 @@ class CSProvider : public CConvergedCallProvider,
                    public MCSPSecuritySettingObserver,
                    public MCSPPubSubObserver,
                    public MCSPRemoteAlertingToneObserver, 
-                   public MCSPConferenceStatusObserver
+                   public MCSPConferenceStatusObserver,
+                   public MCSPTestCallProvider
 {
     public:
     
@@ -88,6 +91,21 @@ class CSProvider : public CConvergedCallProvider,
         */ 
         void NotifySsEvent( RMmCustomAPI::TSsTypeAndMode& aSsTypeAndMode,
                             RMmCustomAPI::TSsInfo& aSsInfo );
+        
+        
+// from base class MCSPTestCallProvider
+        
+        /**
+         * Initializes call provider for testing purposes. 
+         * @since S60 10.1         
+         * @param aObserver general observer
+         * @param aSsObserver observer for events related to supplementary 
+         *        services.
+         * @param aAudioHandler AudioHandler implementation for testing purposes.
+         */
+        void InitializeL( const MCCPObserver& aObserver,
+                          const MCCPSsObserver& aSsObserver,
+                          CSPAudioHandlerBase* aAudioHandler );
 
 
 // from base class CConvergedCallProvider    
@@ -543,10 +561,10 @@ class CSProvider : public CConvergedCallProvider,
         TUint32 iServiceId;
         
         /**
-        * Dev sound handler.
+        * Audio interface.
         * Own.
         */
-        CSPAudioHandler* iAudioHandler;
+        CSPAudioHandlerBase* iAudioHandler;
         
         /**
         * Call waiting requester.

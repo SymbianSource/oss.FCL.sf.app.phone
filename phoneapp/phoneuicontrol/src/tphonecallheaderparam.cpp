@@ -238,10 +238,6 @@ void TPhoneCallHeaderParam::SetBasicCallHeaderParamsL(
     aCallHeaderData->SetCipheringIndicatorAllowed( 
         iStateMachine.PhoneEngineInfo()->SecureSpecified() );
     
-    iManagerUtility.SetPhoneNumberAvailabilityL( 
-            iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ).Length(),
-            ContactInfoAvailable( aCallId ) );
-    
     //see service provider settings API
     aCallHeaderData->SetServiceId(
        iStateMachine.PhoneEngineInfo()->ServiceId( aCallId ) );

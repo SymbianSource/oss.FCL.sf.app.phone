@@ -18,6 +18,9 @@
 #include "ut_cpdivertplugin.h"
 #include "qtestmains60ui.h"
 #include <psetcalldivertingwrapper.h>
+#include <psetwrapper.h> 
+#include <psuinotes.h> 
+#include <sssettingswrapper.h> 
 #include <hbdialog.h>
 #include <qaction>
 #include <hblabel.h>
@@ -84,7 +87,7 @@ void UT_CpDivertPlugin::init()
     CPsetContainer tmpPsetContainer;
     PSetCallDivertingWrapper *tmpDivWrapper = 
             new PSetCallDivertingWrapper(tmpPsetContainer, this);
-    expect("PSetWrapper::callDivertingWrapper").returns(tmpDivWrapper); // FIXME to mock framework
+    EXPECT(PSetWrapper, callDivertingWrapper).returns(tmpDivWrapper); // FIXME to mock framework
     m_divertplugin = (CpDivertPlugin*)qt_plugin_instance();
     
     QVERIFY(m_divertplugin);
@@ -138,7 +141,7 @@ void UT_CpDivertPlugin::t_createSettingFormItemData()
     CPsetContainer tmpContainer;
     PSetCallDivertingWrapper tmpDivWrapper(tmpContainer); 
     
-    expect("PSetWrapper::callDivertingWrapper").returns(&tmpDivWrapper); 
+    EXPECT(PSetWrapper, callDivertingWrapper).returns(&tmpDivWrapper); 
     
     CpDivertPlugin* p = (CpDivertPlugin*)qt_plugin_instance(); // Get static
     QList<CpSettingFormItemData*> list;
@@ -153,9 +156,9 @@ void UT_CpDivertPlugin::t_createSettingFormItemData()
 void UT_CpDivertPlugin::t_changeDivertingStateRequested()
 {
     //except user cancels
-    /*
+    
     appendAction("txt_phone_setlabel_all_calls", selectAction, "Cancel");
-    expect("PSetCallDivertingWrapper::getDefaultNumbers");
+    EXPECT(PSetCallDivertingWrapper, getDefaultNumbers);
     m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData("text", "");
     m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData(
         "checkState", Qt::Checked);
@@ -165,12 +168,12 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     
     //except user selects vmb
     appendAction("txt_phone_setlabel_all_calls", selectItem, "txt_phone_setlabel_voice_mbx");
-    expect("PSetCallDivertingWrapper::getDefaultNumbers");
-    expect("PSetCallDivertingWrapper::queryVoiceMailBoxNumber").willOnce(invoke(fillNumber)).returns(0);
-    expect("SsSettingsWrapper::get");
-    expect("PSetCallDivertingWrapper::setCallDiverting");
-    expect("PsUiNotes::noteShowing").returns(false);
-    expect("PsUiNotes::showGlobalProgressNote");
+    EXPECT(PSetCallDivertingWrapper, getDefaultNumbers);
+    EXPECT(PSetCallDivertingWrapper, queryVoiceMailBoxNumber).willOnce(invoke(fillNumber)).returns(0);
+    EXPECT(SsSettingsWrapper, get);
+    EXPECT(PSetCallDivertingWrapper, setCallDiverting);
+    EXPECT(PsUiNotes, noteShowing).returns(false);
+    EXPECT(PsUiNotes, showGlobalProgressNote);
     m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData(
         "checkState", Qt::Checked);
     m_divertpluginGroup->m_DataItemVoiceAllCalls->thisItemClicked();
@@ -182,9 +185,9 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     command.iCondition = qvariant_cast<PsCallDivertingCondition>(
             m_divertpluginGroup->m_DataItemVoiceAllCalls->property("condition"));
     command.iServiceGroup = ServiceGroupVoice;
-    expect("PsUiNotes::showNotificationDialog");
+    EXPECT(PsUiNotes, showNotificationDialog);
     m_divertpluginGroup->handleDivertingChanged(command, false);
-    expect("PsUiNotes::cancelNote");
+    EXPECT(PsUiNotes,cancelNote);
     m_divertpluginGroup->divertRequestProcessed();
     QVERIFY(verify()); // Verify result processing
 
@@ -193,11 +196,11 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData(
         "checkState", Qt::Checked);
     appendAction("txt_phone_setlabel_all_calls", selectItem, "0401234567");
-    expect("PSetCallDivertingWrapper::getDefaultNumbers");
-    expect("SsSettingsWrapper::get");
-    expect("PSetCallDivertingWrapper::setCallDiverting");
-    expect("PsUiNotes::noteShowing").returns(false);
-    expect("PsUiNotes::showGlobalProgressNote");
+    EXPECT(PSetCallDivertingWrapper,getDefaultNumbers);
+    EXPECT(SsSettingsWrapper,get);
+    EXPECT(PSetCallDivertingWrapper,setCallDiverting);
+    EXPECT(PsUiNotes, noteShowing).returns(false);
+    EXPECT(PsUiNotes, showGlobalProgressNote);
     m_divertpluginGroup->m_DataItemVoiceAllCalls->thisItemClicked();
     waitForQueueEmpty();
     command.iNumber = "0401234567";
@@ -205,19 +208,19 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     command.iCondition = qvariant_cast<PsCallDivertingCondition>(
             m_divertpluginGroup->m_DataItemVoiceAllCalls->property("condition"));
     command.iServiceGroup = ServiceGroupVoice;
-    expect("PsUiNotes::cancelNote");
-    expect("PsUiNotes::showNotificationDialog");
-    expect("PSetCallDivertingWrapper::setNewDefaultNumber").with(QString("0401234567"));
+    EXPECT(PsUiNotes, cancelNote);
+    EXPECT(PsUiNotes, showNotificationDialog);
+    EXPECT(PSetCallDivertingWrapper, setNewDefaultNumber).with(QString("0401234567"));
     m_divertpluginGroup->handleDivertingChanged(command, true);
-    expect("PsUiNotes::cancelNote");
+    EXPECT(PsUiNotes, cancelNote);
     m_divertpluginGroup->divertRequestProcessed();
     QVERIFY(verify());
     
     // Divert is disabled
-    expect("SsSettingsWrapper::get");
-    expect("PSetCallDivertingWrapper::setCallDiverting"); // Disable divert
-    expect("PsUiNotes::noteShowing").returns(false);
-    expect("PsUiNotes::showGlobalProgressNote");
+    EXPECT(SsSettingsWrapper, get);
+    EXPECT(PSetCallDivertingWrapper, setCallDiverting); // Disable divert
+    EXPECT(PsUiNotes, noteShowing).returns(false);
+    EXPECT(PsUiNotes, showGlobalProgressNote);
     m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData(
         "checkState", Qt::Unchecked);
     m_divertpluginGroup->m_DataItemVoiceAllCalls->thisItemClicked();
@@ -227,19 +230,19 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     command.iCondition = qvariant_cast<PsCallDivertingCondition>(
             m_divertpluginGroup->m_DataItemVoiceAllCalls->property("condition"));
     command.iServiceGroup = ServiceGroupVoice;
-    expect("PsUiNotes::showNotificationDialog");
+    EXPECT(PsUiNotes, showNotificationDialog);
     m_divertpluginGroup->handleDivertingChanged(command, false);
-    //expect("PsUiNotes::cancelNote");
+    //EXPECT(PsUiNotes, cancelNote);
     m_divertpluginGroup->divertRequestProcessed();
     QVERIFY(verify());
-    */
+    
     //except user selects other number, inserts number and cancels
     /* BUG in framework (Crash in QGestureManager::getState due to QWeakPointer) */
     /*
     appendAction("All voice calls:", selectItem, "Other number");
     appendAction("Number:", insertText, "12345");
     appendAction("Number:", selectAction, "Cancel");
-    expect("PSetCallDivertingWrapper::getDefaultNumbers");
+    EXPECT(PSetCallDivertingWrapper, getDefaultNumbers);
     m_divertpluginGroup->m_DataItemVoiceAllCalls->thisItemClicked();
     waitForQueueEmpty();
     QVERIFY(verify());
@@ -251,9 +254,9 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
  */
 void UT_CpDivertPlugin::t_itemShown()
 {
-    expect("PSetCallDivertingWrapper::getCallDivertingStatus");
-    expect("PsUiNotes::noteShowing").returns(false);
-    expect("PsUiNotes::showGlobalProgressNote");
+    EXPECT(PSetCallDivertingWrapper, getCallDivertingStatus);
+    EXPECT(PsUiNotes, noteShowing).returns(false);
+    EXPECT(PsUiNotes, showGlobalProgressNote);
     m_divertpluginGroup->itemShown(
             m_dataForm->indexFromItem(m_divertpluginGroup->m_DataItemVoiceAllCalls));
     m_divertpluginGroup->itemShown(
@@ -319,9 +322,9 @@ void UT_CpDivertPlugin::t_popUpTimerQuery()
     appendAction("txt_phone_info_number", selectAction, "OK");
     appendAction("txt_phone_title_delay", selectItem, delayLnString);
     // expect user chooses other number and inserts number and timeout
-    expect("PSetCallDivertingWrapper::getDefaultNumbers");    
-    expect("SsSettingsWrapper::get");
-    expect("PSetCallDivertingWrapper::setCallDiverting");
+    EXPECT(PSetCallDivertingWrapper, getDefaultNumbers);    
+    EXPECT(SsSettingsWrapper, get);
+    EXPECT(PSetCallDivertingWrapper, setCallDiverting);
     m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->setContentWidgetData(
         "checkState", Qt::Checked);
     m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->thisItemClicked();
@@ -333,14 +336,14 @@ void UT_CpDivertPlugin::t_popUpTimerQuery()
     command.iCondition = qvariant_cast<PsCallDivertingCondition>(
             m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->property("condition"));
     command.iServiceGroup = ServiceGroupVoice;
-    expect("PsUiNotes::showNotificationDialog");
+    EXPECT(PsUiNotes, showNotificationDialog);
     m_divertpluginGroup->handleDivertingChanged(command, false);
-    expect("PsUiNotes::cancelNote");
+    EXPECT(PsUiNotes, cancelNote);
     m_divertpluginGroup->divertRequestProcessed();
     QVERIFY(verify());
     
-    expect("SsSettingsWrapper::get");
-    expect("PSetCallDivertingWrapper::setCallDiverting");
+    EXPECT(SsSettingsWrapper, get);
+    EXPECT(PSetCallDivertingWrapper, setCallDiverting);
     m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->setContentWidgetData(
         "checkState", Qt::Unchecked);
     m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->thisItemClicked();
@@ -351,9 +354,9 @@ void UT_CpDivertPlugin::t_popUpTimerQuery()
     command.iCondition = qvariant_cast<PsCallDivertingCondition>(
             m_divertpluginGroup->m_DataItemVoiceIfNotAnswered->property("condition"));
     command.iServiceGroup = ServiceGroupVoice;
-    expect("PsUiNotes::showNotificationDialog");
+    EXPECT(PsUiNotes, showNotificationDialog);
     m_divertpluginGroup->handleDivertingChanged(command, false);
-    expect("PsUiNotes::cancelNote");
+    EXPECT(PsUiNotes, cancelNote);
     m_divertpluginGroup->divertRequestProcessed();
     QVERIFY(verify());
 
@@ -369,7 +372,7 @@ void UT_CpDivertPlugin::t_handleDivertingChanged()
     c.iStatus = DivertingStatusActive;
     c.iServiceGroup = ServiceGroupAllTeleservices;
     c.iNumber = QString("0401234567890");
-    expect("PSetCallDivertingWrapper::setNewDefaultNumber");
+    EXPECT(PSetCallDivertingWrapper, setNewDefaultNumber);
     m_divertpluginGroup->handleDivertingChanged(c, true);
     
     QVERIFY(verify());
@@ -377,7 +380,7 @@ void UT_CpDivertPlugin::t_handleDivertingChanged()
     c.iServiceGroup = ServiceGroupAllTeleservices;
     c.iCondition = DivertConditionUnconditional;
     c.iNumber = QString("0401234567890");
-    expect("PSetCallDivertingWrapper::setNewDefaultNumber");
+    EXPECT(PSetCallDivertingWrapper, setNewDefaultNumber);
     m_divertpluginGroup->handleDivertingChanged(c, false);
     
     QVERIFY(verify());

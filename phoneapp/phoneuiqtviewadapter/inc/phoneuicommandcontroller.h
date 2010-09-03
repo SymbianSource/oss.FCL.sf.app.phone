@@ -224,14 +224,19 @@ private:
                                  QList<int> callStates) const;
     
     /*!
-        \fn void buttonCommandList()
+        \fn void mapCommandToAction()
         
         Maps push button command to phone action.
     */
     PhoneAction *mapCommandToAction(int command,
                                     bool disabled=false) const;
     
-    
+    /*!
+        \fn void emergencyCall()
+        
+        Checks is an emergency call ongoing.
+    */    
+    bool emergencyCall(QMap<int,int> callStates) const;
     
 private:
 

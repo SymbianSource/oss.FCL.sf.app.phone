@@ -38,7 +38,6 @@ class CPsuiContainer;
 class CPsuiWaitingObs;
 class CPsuiBarringObs;
 class CPsuiDivertObs;
-class CPsuiCliObserver;
 
 class PSetCallDivertingWrapper;
 class PSetCallWaitingWrapper;
@@ -286,14 +285,9 @@ NONSHARABLE_CLASS( CPEParserSSHandler ) : public CPhoneGsmSsHandler,
        
         // Owned call barring.
         CPsetCallBarring* iBarring;
-        // Owned call barring observer.
-        CPsuiBarringObs* iCbObserver;    
     
         // Owned calling line identity.
         CPsetCli* iCli;
-        // Owned calling line identity observer.
-        CPsuiCliObserver* iCliObserver;
-        
         
         // Call diverting. Not own.
         CPsetCallDiverting* iDivert;  

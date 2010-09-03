@@ -88,8 +88,6 @@ class CPhoneSingleCall : public CPhoneGsmInCall
         IMPORT_C TInt CallId() const;
     private:
     
-        void OpenVideoCallMenuBarL();
-    
         void HandleHeldL( TInt aCallId );
         
         void HandleConnectedL( TInt aCallId );
@@ -107,8 +105,6 @@ class CPhoneSingleCall : public CPhoneGsmInCall
         void DisplayCallSetupL( TInt aCallId );
         
         void SwitchToVideoL();
-        
-        void SwitchToVoiceL();
     
     private:
     

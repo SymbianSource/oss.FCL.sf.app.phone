@@ -99,4 +99,5 @@ EXPORTS
 	?ExecuteCommand@PhoneUIQtViewAdapter@@UAEXH@Z @ 98 NONAME ; void PhoneUIQtViewAdapter::ExecuteCommand(int)
 	?metaObject@PhoneResourceAdapter@@UBEPBUQMetaObject@@XZ @ 99 NONAME ; struct QMetaObject const * PhoneResourceAdapter::metaObject(void) const
 	?setParticipantListActions@PhoneUIQtViewAdapter@@AAEXXZ @ 100 NONAME ; void PhoneUIQtViewAdapter::setParticipantListActions(void)
+	?clearDialpad@PhoneUIQtViewAdapter@@AAEXXZ @ 101 NONAME ; void PhoneUIQtViewAdapter::clearDialpad(void)
 

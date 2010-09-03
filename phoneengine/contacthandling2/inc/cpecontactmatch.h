@@ -119,6 +119,13 @@ class CPEContactMatch
             const MPhCntMatch& aMatch,
             const TInt aCallId );
 
+        /**
+        * Gets remote party name
+        * @param aMatch a contact item 
+        * @param aName, Remote party name
+        */
+        void GetName( const MPhCntMatch& aMatch,
+            TPEContactName& aName);
 
         /**
          * Creates contact id.

@@ -42,7 +42,7 @@ CSPCallAddedHandler* CSPCallAddedHandler::NewL(
                                    RCSPLineContainer& aLineContainer,
                                    CSPCallArray& aCallArray,
                                    MCSPCommonInfo& aCommonInfo,
-                                   CSPAudioHandler& aAudioHandler )
+                                   CSPAudioHandlerBase& aAudioHandler )
     {
     CSPLOGSTRING(CSPOBJECT, "CSPCallAddedHandler::NewL()" );
     CSPCallAddedHandler* self = new ( ELeave ) CSPCallAddedHandler( 
@@ -129,7 +129,7 @@ void CSPCallAddedHandler::CallAdded( RMobileLine& aLine,
         
         if ( call )
             {
-            // Set audio handler for DevSound
+            // Set audio handler
             call->SetAudioHandler( &iAudioHandler );
             
             MCCPCallObserver::TCCPCallState callState = call->State(); 
@@ -210,7 +210,7 @@ CSPCallAddedHandler::CSPCallAddedHandler(
             RCSPLineContainer& aLineContainer,
             CSPCallArray& aCallArray,
             MCSPCommonInfo& aCommonInfo,
-            CSPAudioHandler& aAudioHandler ) :
+            CSPAudioHandlerBase& aAudioHandler ) :
             iLineContainer( aLineContainer ),
             iObserver( aObserver ),            
             iCallArray( aCallArray ),

@@ -25,15 +25,12 @@ CONFIG += qtestlib
 QT -= gui
 
 symbian {
-
-    INCLUDEPATH += \epoc32\include\platform \
-                   \epoc32\include\platform\mw \
-                   \epoc32\include\mw \
-                   ../../../phoneuiutils/inc \
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
+    INCLUDEPATH += ../../../phoneuiutils/inc \
                    ../../../phoneuicontrol/inc \
                    ../../../phoneuiqtviewadapter/src \
                    ../../../../inc
-
+                   
     LIBS += -lxqservice \
             -lxqserviceutil
 

@@ -61,8 +61,6 @@ class CPhoneSystemEventHandler :
 
         void HandleIdleForegroundEventL();
 
-        void HandleEnvironmentChangeL( const TInt aChanges );
-
         void HandlePhoneStartupL();
         
         void HandlePhoneFocusLostEventL();

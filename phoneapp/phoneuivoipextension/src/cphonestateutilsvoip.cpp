@@ -17,7 +17,6 @@
 
 #include <cphcltemergencycall.h>
 #include <mpeengineinfo.h>
-#include <cconvergedserviceselector.h>
 #include "cphonestateutilsvoip.h"
 #include "cphonelogger.h"
 #include "phoneconstants.h"
@@ -56,7 +55,6 @@ void CPhoneStateUtilsVoip::ConstructL()
     {
     iBuffer = HBufC::NewL( KPhoneNumberEntryBufferSize );
     iEmergencyCall = CPhCltEmergencyCall::NewL( NULL );
-    iServiceSelector = CConvergedServiceSelector::NewL();
     }
 
 
@@ -100,7 +98,6 @@ CPhoneStateUtilsVoip::~CPhoneStateUtilsVoip()
     {
     delete iBuffer;
     delete iEmergencyCall;
-    delete iServiceSelector;
     }
 
 
@@ -154,19 +151,6 @@ TBool CPhoneStateUtilsVoip::IsVoipPreferredCall( TUint& aServiceId )
         "CPhoneStateUtilsVoip::IsVoipPreferredCall" );
     
     TBool isVoipPrefered( EFalse );
-    
-    CConvergedServiceSelector::TSsResult results;
-    TInt result = iServiceSelector->GetCallingServiceByCallType( results,
-        CConvergedServiceSelector::ESsVoiceCall, 0, ETrue );
-    
-    if ( KErrNone == result && 
-         CConvergedServiceSelector::ESsVoipCall == results.iCallType )
-        {
-        __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
-            "CPhoneStateUtilsVoip::IsVoipPreferred ETrue" );
-        aServiceId = results.iServiceId;
-        isVoipPrefered = ETrue;
-        }
     
     return isVoipPrefered;
     }

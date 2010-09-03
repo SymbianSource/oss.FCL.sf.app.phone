@@ -41,9 +41,8 @@
 #include "hbinstance.h"
 
 PhoneUiHouseHoldPrivate::PhoneUiHouseHoldPrivate(HbMainWindow &window) :
-    iAppsReady (0), iStartupSignalRecoveryId (0), iLightIdleReached (EFalse),
-    iOnScreenDialer (EFalse), iPhoneUIController (0),
-    m_window (window)
+    iAppsReady (0), iStartupSignalRecoveryId (0), iLightIdleReached (EFalse), 
+    iPhoneUIController (0), m_window (window)
 {
     PHONE_DEBUG("phoneui - Start phoneapp");
     
@@ -332,11 +331,6 @@ void PhoneUiHouseHoldPrivate::ConstructL()
 
     // Update the Apps ready flag
     iAppsReady += EPhoneStartedUp;
-    
-    if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) )     
-        {
-        iOnScreenDialer = ETrue;
-        }
 
      HbMainWindow *main = hbInstance->allMainWindows().at(0);
     RWindow *win = static_cast<RWindow *>(main->effectiveWinId()->DrawableWindow());

@@ -77,12 +77,13 @@ void ut_BubbleImageWidget::cleanupTestCase()
 
 void ut_BubbleImageWidget::testSetImage()
 {
-    mImage->setImage("");
-    QVERIFY(mAvatar->iconName()=="qtg_large_avatar");
+    mImage->setImageName("");
+    QVERIFY(mImage->imageName()=="qtg_large_avatar");
     QVERIFY(mAvatar->isVisible());
 
     QSignalSpy spy( mImageManager, SIGNAL(pixmapReady(QString)));
-    mImage->setImage(":/data/pixmap.png");
+    mImage->setImageName(":/data/pixmap.png");
+    QVERIFY(mImage->imageName()==":/data/pixmap.png");
     QVERIFY(mAvatar->isNull());
     QVERIFY(!mAvatar->isVisible());
     QVERIFY(spy.count()==1);

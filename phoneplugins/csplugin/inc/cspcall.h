@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -34,7 +34,7 @@
 #include "mcspcallerrorobserver.h"
 #include "mcspuusmessageobserver.h"
 #include "mcspcallcommandhandling.h"
-
+#include "mcspaudiohandlerobserver.h"
 
 class MCCPForwardProvider;
 class CSPForwardProvider;
@@ -46,7 +46,7 @@ class CSPCallInfoMonitor;
 class CSPEtelCallCapsMonitor;
 class CSPTransferProvider;
 class CSPEtelCallCapsMonitor;
-class CSPAudioHandler;
+class CSPAudioHandlerBase;
 class MCSPCommonInfo;
 class CSPUUIMonitor;
 class CSPUUIMessageSender;
@@ -63,32 +63,33 @@ class CSPCall : public CBase,
                 public MCSPCallObserver,
                 public MCSPCallErrorObserver,
                 public MCSPUUSMessageObserver,
-                public MCCPCallCommandHandling
+                public MCCPCallCommandHandling,
+                public MCSPAudioHandlerObserver
     {
     public:
         /*
         * C++ default destructor
         */
         virtual ~CSPCall( );
-       
-        /** 
+
+        /**
         * ETel call name accessor.
         * @return system wide error code
         */
         void CallName( TName& aCallName );
-        
+
         /**
         * Sets the audio handler for the call.
         * @param aHandler audio handler
         */
-        void SetAudioHandler( CSPAudioHandler* aHandler );
-        
+        void SetAudioHandler( CSPAudioHandlerBase* aHandler );
+
         /**
          * Security setting change notification.
          * @param aValue new value
          */
         void SecuritySettingChanged( TInt aValue );
-        
+
         /**
          * Remote alerting tone status changed notification.
          * @param aNewStatus New remote alerting tone status.
@@ -100,46 +101,46 @@ class CSPCall : public CBase,
          * Set iDontReportTerm flag value to ETrue.
          */
         void DontReportTerminationError();
-        
+
 // from base class MCSPCallObserver
 
         /**
         * Updates the call event for observers.
         * @param aEvent the event to be notified
         */
-        virtual void NotifyForwardEventOccurred( 
+        virtual void NotifyForwardEventOccurred(
                         MCCPForwardObserver::TCCPForwardEvent aEvent );
 
         /**
         * Updates the state change and forwards the state for observer.
-        * @param aState new state (ETel) of the call 
+        * @param aState new state (ETel) of the call
         */
-        virtual void NotifyCallStateChangedETel( 
+        virtual void NotifyCallStateChangedETel(
             RMobileCall::TMobileCallStatus aState );
 
         /**
         * Updates the call event for observers.
         * @param aEvent the event to be notified
         */
-        virtual void NotifyCallEventOccurred( 
+        virtual void NotifyCallEventOccurred(
             MCCPCallObserver::TCCPCallEvent aEvent );
 
         /**
         * Updates the transfer event for observers.
         * @param aEvent the event to be notified
         */
-        virtual void NotifyTransferCallEventOccurred( 
+        virtual void NotifyTransferCallEventOccurred(
                         MCCPTransferObserver::TCCPTransferEvent aEvent );
-        
+
         /**
         * Notifies changed call capabilities.
         * @param aCapsFlags new capability flags
         */
 
         virtual void CallCapsChanged( const TUint32 aCapsFlags );
-        
-// from base class MCSPCallErrorObserver        
-    
+
+// from base class MCSPCallErrorObserver
+
         /**
         * From MCSPCallErrorObserver
         * Dial request failed notification.
@@ -153,7 +154,7 @@ class CSPCall : public CBase,
         * @param aErrorCode request failing error code
         */
         void EmergencyDialRequestFailed( TInt aErrorCode );
-        
+
         /**
         * From MCSPCallErrorObserver
         * Notifies about error situation for CCE.
@@ -161,7 +162,7 @@ class CSPCall : public CBase,
         virtual void NotifyErrorOccurred( TCCPError aError );
 
 // from base class MCSPUUSMessageObserver
-        
+
         /**
         * From MCSPUUSMessageObserver
         * UUS message received notification. 
@@ -183,14 +184,14 @@ class CSPCall : public CBase,
         * From MCCPCSCall
         * Gets the calls data call capabilities
         * @param aCaps TMobileCallDataCapsV1
-        * @return KErrNone if the function member was successful, 
+        * @return KErrNone if the function member was successful,
         *        KErrNotSupported if call doesn't support circuit switched data
         *        KErrNotFound if this call is not a data call
         */
         virtual TInt GetMobileDataCallCaps( TDes8& aCaps ) const;
 
 // from base class MCCPCall
-        
+
         /**
         * From MCCPCall
         * Answers to an incoming call.
@@ -207,8 +208,8 @@ class CSPCall : public CBase,
 
         /**
         * From MCCPCall
-        * Reguests plug-in to queue the call.     
-        * @return system wide error code    
+        * Reguests plug-in to queue the call.
+        * @return system wide error code
         */
         virtual TInt Queue();
 
@@ -218,11 +219,11 @@ class CSPCall : public CBase,
         * @return system wide error code
         */
         virtual TInt Dial();
-        
+
         /**
         * From MCCPCSCall
         * Starts dialing to recipient
-        * @param aCallParams Call parameters used 
+        * @param aCallParams Call parameters used
         *   by the TSY (TCallParamsPckg)
         * @return system wide error code
         */
@@ -334,28 +335,28 @@ class CSPCall : public CBase,
         virtual TBool IsSecured() const;
 
         /**
-        * From MCCPCall 
+        * From MCCPCall
         * Get call's secure specified status.
-        * @return TBool ETrue if secure specified 
+        * @return TBool ETrue if secure specified
         */
         virtual TBool SecureSpecified() const;
 
         /**
-        * From MCCPCall  
+        * From MCCPCall
         * Set call parameters.
         * @param aNewParams New call paramater information.
         */
         virtual void SetParameters( const CCCPCallParameters& aNewParams );
-        
+
         /**
-        * From MCCPCall 
+        * From MCCPCall
         * Cet call parameters.
         * @return Current call paramater information.
         */
         virtual const CCCPCallParameters& Parameters() const;
 
         /**
-        * From MCCPCall 
+        * From MCCPCall
         * Get Forward provider
         * @param aObserver - observer class for forward events
         * @return Pointer to MCCPForwardProvider if succesfull, NULL if not available
@@ -364,19 +365,19 @@ class CSPCall : public CBase,
         virtual MCCPForwardProvider* ForwardProviderL( const MCCPForwardObserver& aObserver );
 
         /**
-        * From MCCPCall 
+        * From MCCPCall
         * Get Call transfer provider
         * @param aObserver - observer class for transfer events
         * @return Pointer to MCCPTransferProvider if succesfull, NULL if not available
         * @leave on error case system error code
         */
         virtual MCCPTransferProvider* TransferProviderL( const MCCPTransferObserver& aObserver );
-          
+
         /**
-        * From MCCPCall  
-        * Adds a new observer for MCCECall object. Called in MT call case. In MO 
+        * From MCCPCall
+        * Adds a new observer for MCCECall object. Called in MT call case. In MO
         * case observer will be given at call construction.
-        * Plug-in dependent feature if duplicates or more than one observers 
+        * Plug-in dependent feature if duplicates or more than one observers
         * are allowed or not. Currently CCE will set only one observer.
         * @param aObserver Observer
         * @leave system error if observer adding fails
@@ -384,16 +385,16 @@ class CSPCall : public CBase,
         virtual void AddObserverL( const MCCPCallObserver& aObserver );
 
         /**
-        * From MCCPCall  
+        * From MCCPCall
         * Remove an observer.
         * @param aObserver Observer
         * @return KErrNone if removed succesfully. KErrNotFound if observer was not found.
         * Any other system error depending on the error.
         */
         virtual TInt RemoveObserver( const MCCPCallObserver& aObserver );
-        
+
         /**
-        * From MCCPCall 
+        * From MCCPCall
         * Returns the inband tone associated to an error condition or a state transition of a call.
         * See defenition for TCCPTone.
         * @since S60 3.2
@@ -403,38 +404,46 @@ class CSPCall : public CBase,
         TCCPTone Tone() const;
 
 // from base class MCCPCSCall
-        
+
         /**
         * From MCCPCSCall
         * Indicates that FDN check is not used for dial.
         */
         virtual void NoFDNCheck( );
-        
+
         /**
-        * From MCCPCSCall 
+        * From MCCPCSCall
         * Log dialed  number. SAT related, check if dialed number is to be logged or not.
         * @since S60 5.0
         * @param None
         * @return Log dialed number or not.
         */
         virtual TBool LogDialedNumber() const;
-    
+
 // from base class MCCPCallCommandHandling
-        
+
         /**
         * Perform answer command.
         * @return system wide error code
         */
         TInt PerformAnswerRequest();
-        
+
         /**
         * Perform dial command.
         * @return system wide error code
         */
         TInt PerformDialRequest();
-        
+
+// from base class MCSPAudioHandlerObserver
+
+        /*
+         * Callback received when call audio control streams fail to start
+         * within timeout specified in ReportAudioFailureAfterTimeout().
+         */
+        void AudioStartingFailed();
+
     protected:
-            
+
         /**
         * Starts dialing to recipient.
         * Bypasses FDN check according to aFdnCheck.
@@ -442,35 +451,35 @@ class CSPCall : public CBase,
         * @return system wide error code
         */
         virtual TInt DialFdnCond( TBool aFdnCheck ) = 0;
-                
+
     protected:
-    
+
         /**
-        * C++ default constructor.  
-        * 
-        * @param aLine line of the call 
-        * @param aMobileOriginated is call mobile originated 
+        * C++ default constructor.
+        *
+        * @param aLine line of the call
+        * @param aMobileOriginated is call mobile originated
         * @param aName contains call name (mobile terminated) or phone number (mobile originated)
-        * @param aCommonInfo reference to common info interface 
-        * @param aIsEmergencyCall is emergency call 
+        * @param aCommonInfo reference to common info interface
+        * @param aIsEmergencyCall is emergency call
         */
-        CSPCall(  RMobileLine& aLine, 
+        CSPCall(  RMobileLine& aLine,
                   TBool aMobileOriginated,
                   const TDesC& aName,
                   MCSPCommonInfo& aCommonInfo,
                   TBool aIsEmergencyCall );
-                  
+
         /*
         * Constructing 2nd phase.
-        * @param aParams call parameters  
+        * @param aParams call parameters
         */
         virtual void ConstructL( const CCCECallParameters& aParams );
-        
+
         /*
         * Notifies the ringing state to observers.
         */
         virtual void NotifyRingingState();
-        
+
         /**
         * Mapping ETel state to CCP state.
         * @param aEtelState an ETel state
@@ -485,37 +494,37 @@ class CSPCall : public CBase,
         * played by network and forwards the state for observer.
         * @param aState new state of the call
         */
-        virtual void NotifyCallStateChangedWithInband( 
+        virtual void NotifyCallStateChangedWithInband(
             MCCPCallObserver::TCCPCallState aState );
 
         /**
-        * Updates the state change 
+        * Updates the state change
         * and forwards the state for observer.
         * @param aState new state of the call
         */
-        virtual void NotifyCallStateChanged( 
+        virtual void NotifyCallStateChanged(
             MCCPCallObserver::TCCPCallState aState );
-            
+
         /**
         * From MCSPCallObserver
-        * Notify that remote party info has changed.        
+        * Notify that remote party info has changed.
         * @param aRemotePartyName new remote party name
         * @param aRemotePartyNumber new remote party number
         */
-        virtual void NotifyRemotePartyInfoChanged(                
+        virtual void NotifyRemotePartyInfoChanged(
             const TDesC& aRemotePartyName,
             const TDesC& aRemotePartyNumber );
 
         /**
-        * Open call handle.  
-        * Opens a new call handle for MO call  
-        * and an existing handle for MT call.    
+        * Open call handle.
+        * Opens a new call handle for MO call
+        * and an existing handle for MT call.
         */
         virtual void OpenCallHandleL();
 
         /**
-        * Update call info data including call name,  
-        * remote name and number data.  
+        * Update call info data including call name,
+        * remote name and number data.
         */
         virtual void UpdateCallInfo();
         
@@ -541,18 +550,18 @@ class CSPCall : public CBase,
         * Check and notify call termination error.
         */
         void CheckAndNotifyTerminationError();
-        
+
         /**
         * Error from iExitCode.
         */
         TInt ExitCodeError() const;
-        
+
         /**
-        * Update call name number info.   
+        * Update call name number info.
         * @param aCallInfo RMobileCall::TMobileCallInfoV3
-        * @param aCallCreatedByMonitor, set:  
+        * @param aCallCreatedByMonitor, set:
         *       EFalse for calls added by plugin owner
-        *       ETrue for calls added by ETel status monitor  
+        *       ETrue for calls added by ETel status monitor
         */
         void UpdateCallNameNumberInfo(
                 const RMobileCall::TMobileCallInfoV3& aCallInfo, 
@@ -560,43 +569,43 @@ class CSPCall : public CBase,
 
         /**
         * Open new call.
-        * New call is opened when the plugin owner adds the new 
-        * call (compare to OpenExistingCall where call is added by 
-        * ETel monitor).  
+        * New call is opened when the plugin owner adds the new
+        * call (compare to OpenExistingCall where call is added by
+        * ETel monitor).
         */
-        void OpenNewCall(); 
+        void OpenNewCall();
 
         /**
         * Open existing call.
         * Existing call is opened if one of the ETel
-        * monitors (incoming call monitor or line status monitor) 
-        * has added the call and no new call needs to be 
-        * opened.    
-        * @param aName name of the existing call   
+        * monitors (incoming call monitor or line status monitor)
+        * has added the call and no new call needs to be
+        * opened.
+        * @param aName name of the existing call
         */
-        void OpenExistingCallL( const TDesC& aName ); 
-        
+        void OpenExistingCallL( const TDesC& aName );
+
     private:
 
         /**
-        * Create call handlers for call requests and for 
-        * monitoring call events.   
+        * Create call handlers for call requests and for
+        * monitoring call events.
         */
         void CreateCallHandlersL();
-        
+
         /**
         * Update call state from ETel
-        * @return system wide error code 
+        * @return system wide error code
         */
         int UpdateCallState();
-        
+
         /**
          * Sends a remote party info changed notification
-         * if the remote party number has changed. 
+         * if the remote party number has changed.
          */
         void NotifyRemotePartyNumberChanged();
 
-	private: 
+	private:
 
         enum TCSPCallAudioStatus {
             ECSPCallAudioStatusInactive,
@@ -609,7 +618,7 @@ class CSPCall : public CBase,
           * CCP Call Observer array.
           */
           RPointerArray<MCCPCallObserver> iObservers;
-          
+
           /**
           * Actual ETel call handle.
           */
@@ -623,22 +632,22 @@ class CSPCall : public CBase,
           /**
           * Determines if the call direction is either MO (ETrue) or MT (EFalse)
           */
-          TBool iMobileOriginated;  
+          TBool iMobileOriginated;
 
           /**
           * Name information of the call.
-          * 
+          *
           * Name information is stored during CSPCall construction
-          * and assigned to iCallName (MT or client call) or 
-          * iRemotePartyNumber (MO call) afterwards.    
+          * and assigned to iCallName (MT or client call) or
+          * iRemotePartyNumber (MO call) afterwards.
           */
           TBuf<KCSPPhoneNumberMaxLength> iName;
-          
+
           /**
           * Remote party name of the call.
           */
           TBuf<KCSPPhoneNumberMaxLength> iRemotePartyNumber;
-          
+
           /**
           * Remote party name of the call.
           */
@@ -648,7 +657,7 @@ class CSPCall : public CBase,
           * Dialled party of the call.
           */
           TBuf<KCSPPhoneNumberMaxLength> iDialledParty;
-          
+
           /**
           * Call name for MT call.
           */
@@ -656,14 +665,14 @@ class CSPCall : public CBase,
 
           /**
           * Call parameters.
-          */      
-          CCCECallParameters* iParams; 
-         
+          */
+          CCCECallParameters* iParams;
+
           /**
           * Call state in CCP format
           */
           MCCPCallObserver::TCCPCallState iCallState;
-          
+
           /**
           * Capability flags.
           */
@@ -673,17 +682,17 @@ class CSPCall : public CBase,
           * Call status monitor
           */
           CSPEtelCallStatusMonitor* iCallStatusMonitor;
-            
+
           /**
           * Call event monitor
           */
           CSPEtelCallEventMonitor* iCallEventMonitor;
-          
+
           /**
           * Call info monitor
           */
           CSPCallInfoMonitor* iCallInfoMonitor;
-          
+
           /**
           * Makes the asynchronic requests for various purposes.
           */
@@ -703,73 +712,73 @@ class CSPCall : public CBase,
           * Call termination error notification has been sent.
           */
           TBool iTerminationErrorNotified;
-          
+
           /**
           * Emergency call.
           */
           TBool iIsEmergencyCall;
-    
+
     private:
-        
+
           /**
           * Transfer provider.
           * Own.
           */
           CSPTransferProvider* iTransferProvider;
-          
+
           /**
           * Forward provider. No actual implementation.
           * Own.
-          */          
+          */
           CSPForwardProvider* iForwardProvider;
-          
+
           /**
           * Audio dev sound handler.
           * Not own.
           */
-          CSPAudioHandler* iAudioHandler;
-          
+          CSPAudioHandlerBase* iAudioHandler;
+
           /**
           * FDN check usage status. Default is on. (ETrue)
           */
-          TBool iFdnCheck;          
-          
+          TBool iFdnCheck;
+
           /**
           * Monitors call capabilities from ETel.
           * Own.
           */
           CSPEtelCallCapsMonitor* iCallCapsMonitor;
-                    
-          /*  
+
+          /*
           * UUS monitor
-          */          
+          */
           CSPUUIMonitor* iUUIMonitor;
-          
-          /*  
+
+          /*
           * UUS sender
           */
           CSPUUIMessageSender* iUUIMessageSender;
-          
+
           /**
           * Data for parsed skype id.
           * Own.
           */
           HBufC* iSkypeId;
-          
+
           /**
           * Audio stop requested status. The flag prevents double audio stop.
-          * Stop is executed in Disconnecting state and Idle state 
+          * Stop is executed in Disconnecting state and Idle state
           * if previous state has been DisconnectingWithInband.
           * Audio start status.
           */
           TCSPCallAudioStatus iAudioStatus;
-          
+
           /**
           * Defines whether to report KErrGsmCCNormalUnspecified
           * and KErrGsmCCCallRejected.
           */
           TBool iDontReportTerm;
-          
+
           /**
            * User to user information. Sended to network before dial.
            * Own.
@@ -784,9 +793,8 @@ class CSPCall : public CBase,
           
           friend class UT_CSPCall;
           friend class MT_CConvergedCallProvider;
-          
-          
+
     };
 
-
 #endif // CSPCALL_H
+

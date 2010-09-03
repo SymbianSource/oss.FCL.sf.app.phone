@@ -100,7 +100,12 @@ NONSHARABLE_CLASS( CPhCntMatch2 ) : public CBase, public MPhCntMatch
         /**
         * From MPhCntMatch
         */ 
-        TPtrC Number() const;
+        TPtrC GroupName() const;
+        
+        /**
+        * From MPhCntMatch
+        */ 
+        TPtrC Number();
 
         /**
         * From MPhCntMatch
@@ -165,6 +170,7 @@ NONSHARABLE_CLASS( CPhCntMatch2 ) : public CBase, public MPhCntMatch
         CDesCArrayFlat* iDTMFArray;
         QString iFirstname;
         QString iLastname;
+        QString iGroupname;
         QString iPersonalRingtone;
         QString iCallImage;
 

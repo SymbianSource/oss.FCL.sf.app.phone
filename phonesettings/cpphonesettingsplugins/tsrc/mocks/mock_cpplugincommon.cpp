@@ -185,16 +185,3 @@ bool Tools::videoSupported(  )
     }
 
 
-// -----------------------------------------------------------------------------
-// Tools::errorCodeTextMapping
-// -----------------------------------------------------------------------------
-//
-bool Tools::errorCodeTextMapping( 
-        const int errorcode,
-        QString & errorText )
-    {
-    SMC_MOCK_METHOD2( bool, const int, errorcode, 
-        QString &, errorText )
-    }
-
-

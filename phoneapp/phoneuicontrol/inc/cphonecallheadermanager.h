@@ -132,13 +132,6 @@ NONSHARABLE_CLASS( CPhoneCallHeaderManager ) :  public CBase,
                 TPhoneCmdParamCallHeaderData* aCallHeaderData );
         
     public:  // Functions from base class
-        
-        /**
-        * @see MPhoneBubbleManagerUtility.
-        */
-        void SetPhoneNumberAvailabilityL( 
-                const TInt aNumberLength,
-                const TBool aContactInfoAvailable );
 
         /**
         * @see MPhoneBubbleManagerUtility.

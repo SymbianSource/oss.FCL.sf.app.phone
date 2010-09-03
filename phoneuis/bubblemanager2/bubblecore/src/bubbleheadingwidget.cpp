@@ -30,8 +30,8 @@
 #include "bubbleheader.h"
 
 BubbleHeadingWidget::BubbleHeadingWidget(QGraphicsItem* item)
-    : HbWidget(item), mIndicator1(0), mIndicator2(0),
-      mText1(0), mText2(0), mText3(0)
+    : HbWidget(item), mLineCount(0), mIndicator1(0),
+      mIndicator2(0), mText1(0), mText2(0), mText3(0)
 {
     createPrimitives();
 
@@ -44,7 +44,6 @@ BubbleHeadingWidget::BubbleHeadingWidget(QGraphicsItem* item)
     mCliFont = new HbFontSpec(HbFontSpec::Primary);
     mTextFont = new HbFontSpec(HbFontSpec::Secondary);
 
-    HbDeviceProfile profile;
     mCliFont->setTextHeight(4*HbDeviceProfile::current().unitValue());
     mTextFont->setTextHeight(4*HbDeviceProfile::current().unitValue());
 }
@@ -100,11 +99,11 @@ void BubbleHeadingWidget::updatePrimitives()
         // update text lines
         int cliLine = 0;
 
-        if (lines==3) {
+        if (mLineCount==3) {
             BubbleUtils::setCallHeaderTexts3Lines(
                 *mHeader, *mText1, *mText2, *mText3, cliLine,
                 mCallTimerTextLine );
-        } else if (lines==2) {
+        } else if (mLineCount==2) {
             BubbleUtils::setCallHeaderTexts2Lines(
                 *mHeader, *mText1, *mText2, cliLine,
                 mCallTimerTextLine );
@@ -134,17 +133,17 @@ void BubbleHeadingWidget::polish(HbStyleParameters &params)
 {
     QString layout;
 
-    if (lines == 3) {
+    if (mLineCount == 3) {
         layout = QLatin1String("three_lines");
         mText1->setVisible(true);
         mText2->setVisible(true);
         mText3->setVisible(true);
-    } else if (lines == 2) {
+    } else if (mLineCount == 2) {
         layout = QLatin1String("two_lines");
         mText1->setVisible(true);
         mText2->setVisible(true);
         mText3->setVisible(false);
-    } else if (lines == 1) {
+    } else if (mLineCount == 1) {
         layout = QLatin1String("one_line");
         mText1->setVisible(true);
         mText2->setVisible(true);
@@ -157,32 +156,32 @@ void BubbleHeadingWidget::polish(HbStyleParameters &params)
         layout.append(QLatin1String("_1"));
     }
 
-    setLayout(layout);
+    setLayoutOption(layout);
 
     HbWidget::polish(params);
 }
 
 int BubbleHeadingWidget::lineCount() const
 {
-    return lines;
+    return mLineCount;
 }
 
 void BubbleHeadingWidget::setLineCount(int count)
 {
-    lines = count;
+    mLineCount = count;
     if (isVisible()) {
         repolish();
     }
 }
 
-QString BubbleHeadingWidget::layout() const
+QString BubbleHeadingWidget::layoutOption() const
 {
-    return layoutOption;
+    return mLayoutOption;
 }
 
-void BubbleHeadingWidget::setLayout(const QString& layout)
+void BubbleHeadingWidget::setLayoutOption(const QString& option)
 {
-    layoutOption = layout;
+    mLayoutOption = option;
 }
 
 void BubbleHeadingWidget::updateTimerDisplayNow()
@@ -196,4 +195,29 @@ void BubbleHeadingWidget::updateTimerDisplayNow()
             mText3->setElideMode(Qt::ElideRight);
         }
     }
+}
+
+QString BubbleHeadingWidget::textLine1() const
+{
+    return mText1->text();
+}
+
+QString BubbleHeadingWidget::textLine2() const
+{
+    return mText2->text();
+}
+
+QString BubbleHeadingWidget::textLine3() const
+{
+    return mText3->text();
+}
+
+QString BubbleHeadingWidget::indicator1() const
+{
+    return mIndicator1->iconName();
+}
+
+QString BubbleHeadingWidget::indicator2() const
+{
+    return mIndicator2->iconName();
 }

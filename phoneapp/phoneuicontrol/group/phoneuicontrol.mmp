@@ -19,10 +19,7 @@
 #include <platform_paths.hrh>
 
 // Capability assignment.
-// <-- QT PHONE START --> 
 CAPABILITY CAP_GENERAL_DLL
-//CAPABILITY CAP_APPLICATION MultiMediaDD NetworkControl PowerMgmt DRM DiskAdmin
-// <-- QT PHONE END --> 
 
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
@@ -31,14 +28,10 @@ TARGET          phoneuicontrol.dll
 TARGETTYPE      dll
 UID             0x1000008d  0x101F4D0C
 
-//EXPORTUNFROZEN
-
 SOURCEPATH      ../src
 SOURCE          cphonebtaadisconnecthandler.cpp
 SOURCE          cphonedtmfwaitchartimer.cpp
 SOURCE          cphoneenginehandler.cpp
-
-SOURCE          cphonereconnectquery.cpp
 SOURCE          cphoneremotecontrolhandler.cpp
 SOURCE          cphonestate.cpp
 SOURCE          cphonestatecallsetup.cpp
@@ -61,10 +54,7 @@ LANG SC
 
 
 USERINCLUDE     ../inc
-// <-- QT PHONE START --> 
 USERINCLUDE     ../../phoneuiqtviewadapter/inc
-//USERINCLUDE     ../../phoneuiview/inc
-// <-- QT PHONE END --> 
 USERINCLUDE     ../../phoneuiutils/inc
 USERINCLUDE     ../../phoneui2/srcdata
 USERINCLUDE     ../../phoneuistates/inc
@@ -81,10 +71,7 @@ LIBRARY         efsrv.lib
 LIBRARY         engineinfo.lib
 LIBRARY         ws32.lib 
 LIBRARY         fbscli.lib
-// <-- QT PHONE START --> 
 LIBRARY         phonestringloader.lib
-//LIBRARY         commonengine.lib //StringLoader 
-// <-- QT PHONE END --> 
 LIBRARY         featmgr.lib // FeatureManager
 LIBRARY         connmon.lib // RConnectionMonitor
 LIBRARY         avkon.lib // AknTextUtils

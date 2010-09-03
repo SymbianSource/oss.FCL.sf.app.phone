@@ -61,12 +61,7 @@ NONSHARABLE_CLASS( CPhoneStateIncomingVoIP ): public CPhoneIncoming
         * ConstructL()
         */
         virtual void ConstructL();
-
-        /**
-        * Handles long hash key
-        */
-        virtual void HandleLongHashL();
-
+        
         /**
         * Handles audio play stoping
         */        

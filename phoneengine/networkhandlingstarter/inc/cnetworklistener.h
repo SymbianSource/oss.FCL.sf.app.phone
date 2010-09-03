@@ -180,10 +180,11 @@ private:
     void HandleNetworkLost();
     
     /**
-     * Tests if offline mode is engaged.
-     * @return ETrue if offline mode is currently active
+     * Tests if network connections are allowed.
+     * @return true if network connections are allowed
+     *    otherwise eg. in offline mode false
      */
-    TBool IsOffLineMode() const;
+    TBool IsNetworkConnectionAllowed() const;
     
     /**
      * Tests if Bluetooth SAP is in connected mode.

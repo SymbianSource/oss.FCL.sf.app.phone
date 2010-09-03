@@ -23,7 +23,8 @@ INCLUDEPATH += .
 INCLUDEPATH +=../../../inc 
 INCLUDEPATH +=../../../cptelephonyutils/inc
 INCLUDEPATH += ../../../tsrc/common
-DEFINES += BUILD_NETWORKPLUGIN BUILD_CPTELEPHONYUTILS QT_BUILD_SYSINFO_LIB QT_MAKEDLL
+DEFINES += BUILD_NETWORKPLUGIN BUILD_CPTELEPHONYUTILS BUILD_PSETWRAPPER \
+           QT_BUILD_SYSINFO_LIB QT_MAKEDLL
 MOBILITY += systeminfo
 
 QT -= gui
@@ -31,9 +32,7 @@ QT += testlib
 
 symbian: {
   CONFIG += no_icon
-  INCLUDEPATH += /epoc32/include/mw/QtTest \
-        /epoc32/include/platform/mw \
-        /epoc32/include/mw/qt
+  INCLUDEPATH +=  $$APP_LAYER_SYSTEMINCLUDE
   LIBS += -lmocklib \
         -lsymbianmock \
         -lcpframework
@@ -45,11 +44,13 @@ SOURCES += ut_cpnetworkstatus.cpp
 
 # code to be tested
 HEADERS += ../../src/cpnetworkstatus.h \
+           ../../../cptelephonyutils/inc/cpplugincommon.h \
            /epoc32/include/mw/qsysteminfo.h
        
 SOURCES += ../../src/cpnetworkstatus.cpp 
 
 # mocks needed for testing
-SOURCES += ../../../tsrc/mocks/mock_hbicon.cpp
-SOURCES += ../../../tsrc/mocks/mock_cpsettingformentryitemdata.cpp
-SOURCES += ../../../tsrc/mocks/mock_qsysteminfo.cpp
+SOURCES += ../../../tsrc/mocks/mock_cpplugincommon.cpp \
+           ../../../tsrc/mocks/mock_hbicon.cpp \
+           ../../../tsrc/mocks/mock_cpsettingformentryitemdata.cpp \
+           ../../../tsrc/mocks/mock_qsysteminfo.cpp

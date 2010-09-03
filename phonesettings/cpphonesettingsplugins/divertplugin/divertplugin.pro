@@ -35,11 +35,13 @@ LIBS += -lcpframework \
 # Input
 SOURCES += src/cpdivertplugingroup.cpp \
     src/cpdivertplugin.cpp \
-    src/cpdivertitemdata.cpp
+    src/cpdivertitemdata.cpp \
+    src/cpdivertquery.cpp
 
 HEADERS += src/cpdivertplugingroup.h \
     src/cpdivertplugin.h \
-    src/cpdivertitemdata.h
+    src/cpdivertitemdata.h \
+    src/cpdivertquery.h
 
 include(../cpplugincommon.pri)
 

@@ -103,9 +103,8 @@ class CPhoneStateCallSetup : public CPhoneState
         /**
         * Upadated CBAs
         */
-        IMPORT_C virtual void UpdateCbaL( TInt aResource );    
+        IMPORT_C virtual void UpdateCbaL( TInt aResource );
         
-                
     private:
 
         /**
@@ -120,11 +119,6 @@ class CPhoneStateCallSetup : public CPhoneState
         */
         void HandleIdleL( TInt aCallId );
 
-        /**
-        * A message handling function for message EPEMessageRemoteTerminated
-        */
-        void HandleRemoteTerminatedL( TInt aCallId );
-        
         /**
         * Handle EPEMessageAudioOutputChanged
         */
@@ -157,14 +151,13 @@ class CPhoneStateCallSetup : public CPhoneState
         void PlayKeySpecificDTMF( const TUint aCode );
              
     private:
-                
+        
         /**
         * Special timer for preventing recursive calls
         * which would otherwise occur with multiple
         * wait characters in a DTMF string.
         */
         CPhoneDtmfWaitCharTimer* iDtmfWaitCharTimer;
-         
     };
 
 #endif // CPHONESTATECALLSETUP

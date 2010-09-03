@@ -276,17 +276,6 @@ EXPORT_C void CPhoneUIController::HandleIdleForegroundEventL()
     }
 
 // ---------------------------------------------------------
-// CPhoneUIController::HandleEnvironmentChangeL
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneUIController::HandleEnvironmentChangeL( 
-    const TInt aChanges )
-    {
-    __ASSERT_DEBUG( iSystemEventHandler, Panic( EPhoneCtrlInvariant ) );
-    iSystemEventHandler->HandleEnvironmentChangeL( aChanges );
-    }
-
-// ---------------------------------------------------------
 // CPhoneUIController::HandlePhoneStartupL
 // ---------------------------------------------------------
 //

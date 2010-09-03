@@ -99,9 +99,6 @@ private:
 
     //Boolean flag. ETrue iff we have reached light idle
     TBool iLightIdleReached;
-        
-    //Indicates whether onscreen dialer is defined
-    TBool iOnScreenDialer;
 
     CPhoneUIController* iPhoneUIController;
     

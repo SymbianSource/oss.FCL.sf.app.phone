@@ -27,15 +27,13 @@
 class TPhoneCommandParam;
 class TPhoneCmdParamQuery;
 class TPhoneCmdParamGlobalNote;
-class HbDeviceMessageBox;
-class HbDeviceNotificationDialog;
-class HbDeviceProgressDialog;
 class HbProgressDialog;
 class HbMessageBox;
 class HbAction;
 class QSignalMapper;
 class QTimer;
-
+class PhoneGlobalNotes;
+class HbDialog;
 
 class PhoneNoteController : public QObject
 {
@@ -119,22 +117,6 @@ signals:
     void command (int command);
     
 private slots:
-
-    /*!
-        \fn void destroyDialog()
-        
-        Slot is called when device message box is closed.
-    
-    */
-    void destroyDialog();
-
-    /*!
-        \fn void destroyNotification()
-        
-        Slot is called when device notification dialog is closed.
-    
-    */
-    void destroyNotification();
     
     /*!
         \fn void removeMappings ()
@@ -144,32 +126,8 @@ private slots:
     */
     void removeMappings();
     
-    /*!
-        \fn void queryCancelled ()
-        
-        Slot is called when query is canceled.
-    
-    */
-    void queryCancelled();
-  
-    /*!
-        \fn void queryTimeout ()
-        
-        Slot is called when query timeout expires.
-    
-    */
-    void queryTimeout();
-    
 private:
 
-    /*!
-        \fn QString globalNoteText()
-        
-        This method returns text for global note.
-    */
-    QString globalNoteText(TPhoneCommandParam *commandParam);
-    
-    
     /*!
         \fn void showDtmfNote()
         
@@ -183,41 +141,16 @@ private:
         This method shows default query.
     */
     void showDefaultQuery(TPhoneCmdParamQuery* params);
-
-    /*!
-        \fn void showDefaultQuery()
-        
-        This method shows global wait note.
-    */
-    void showGlobalWaitNote(TPhoneCmdParamQuery* params);
-
-    /*!
-        \fn void showDeviceMessageBox()
-        
-        This method shows device message box.
-    */
-    void showDeviceMessageBox(TPhoneCmdParamGlobalNote* params);
     
-    /*!
-        \fn void showDeviceNotificationDialog()
-        
-        This method shows device notification dialog.
-    */
-    void showDeviceNotificationDialog(TPhoneCmdParamGlobalNote* params);
+    
+    void replaceDialogActions(HbDialog *dialog, QList<HbAction *> &actions);
     
 private:
-
-    QTimer *m_timer;
-    QList<HbDeviceMessageBox *> m_messageBoxList;
-    QList<HbDeviceNotificationDialog* > m_notificationList;
-    HbDeviceProgressDialog *m_progressDialog;
+    PhoneGlobalNotes *m_globalNotes;
     HbProgressDialog *m_dtmfNote;
     HbMessageBox *m_queryNote;
     QSignalMapper *m_signalMapper;
     QList<HbAction*> m_actions;
-    int m_queryCanceledCommand;
-    int m_timeoutCommand;
-    
 };
 
 #endif // PHONENOTECONTROLLER_H

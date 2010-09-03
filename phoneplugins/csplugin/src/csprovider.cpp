@@ -268,6 +268,23 @@ void CSProvider::NotifySsEvent(
     CSPLOGSTRING(CSPINT, "CSProvider::NotifySsEvent >");    
     }
 
+// ---------------------------------------------------------------------------
+// CSProvider::InitializeL for testing purposes
+// ---------------------------------------------------------------------------
+//
+void CSProvider::InitializeL( const MCCPObserver& aObserver,
+                              const MCCPSsObserver& aSsObserver,
+                              CSPAudioHandlerBase* aAudioHandler )
+    {
+    
+    if (!iAudioHandler)
+        {        
+        iAudioHandler = aAudioHandler;
+        }
+    
+    InitializeL( aObserver, aSsObserver );    
+    }
+
 // From CConvergedCallProvider
 // ---------------------------------------------------------------------------
 // CSProvider::InitializeL
@@ -352,7 +369,10 @@ void CSProvider::InitializeL( const MCCPObserver& aObserver,
 
     // Create audio handler
     CSPLOGSTRING(CSPOBJECT, "CSProvider::InitializeL create audio handler");
-    iAudioHandler = CSPAudioHandler::NewL();
+    if (!iAudioHandler)
+        {
+        iAudioHandler = CSPAudioHandler::NewL();
+        }
     
     // Create call added handler for listening ext call creation
     iCallAddedHandler = CSPCallAddedHandler::NewL( 

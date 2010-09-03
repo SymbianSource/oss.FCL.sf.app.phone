@@ -105,13 +105,7 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
             HandleAudioOutputChangedL();
             break;
 
-        case MEngineMonitor::EPEMessageIssuedSSRequest: // fall through 
-            // Note that after the sending of SS 
-            // strings the view stays in Dialer.
-            if ( !iOnScreenDialer )  
-                {
-                SetupIdleScreenInBackgroundL();
-                }
+        case MEngineMonitor::EPEMessageIssuedSSRequest: // fall through
         case MEngineMonitor::EPEMessageIssuingSSRequest: // fall through
         case MEngineMonitor::EPEMessageCallBarred: // fall through
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
@@ -145,7 +139,6 @@ EXPORT_C void CPhoneIdle::HandlePhoneEngineMessageL(
 EXPORT_C void CPhoneIdle::HandleErrorL( const TPEErrorInfo& aErrorInfo )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneIdle::HandleErrorL() ");
-    
     CPhoneState::HandleErrorL( aErrorInfo );
     }
 

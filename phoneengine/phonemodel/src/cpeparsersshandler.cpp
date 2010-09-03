@@ -33,14 +33,6 @@
 #include <psetcallwaiting.h>
 #include <psetcli.h>
 #include <psetcontainer.h>
-#include <psetcontainer.h>
-#include <psuibarringobs.h>
-#include <psuibarringobs.h>
-#include <psuicliobserver.h>
-#include <psuicontainer.h>
-#include <psuidivertobs.h>
-#include <psuiwaitingobs.h>
-#include <psuiwaitingobs.h>
 #include <talogger.h>
 
 #include <psetwrapper.h>
@@ -96,12 +88,9 @@ CPEParserSSHandler* CPEParserSSHandler::NewL(
 CPEParserSSHandler::~CPEParserSSHandler()
     {    
     delete iCli;
-    delete iCliObserver;
     delete iBarring;
-    delete iCbObserver;
     delete iWaiting;
     delete iSettings;
-    delete iObsContainer;
     
     delete iCallDivertingHandler;
     delete iPsetWrapper;
@@ -448,22 +437,22 @@ void CPEParserSSHandler::ProcessBarringL(
         case EActivate:
             setBarring.iSetting = EActivateBarring;
             iSupplementaryServicesCommandInfo.action = EPESSActivation;
-            iBarring->SetBarringL( setBarring, bsc );
-            iModel.DataStore()->SetSSCommandInfo( iSupplementaryServicesCommandInfo );
-            iModel.SendMessage( MEngineMonitor::EPEMessageIssuedSSRequest );
+            //iBarring->SetBarringL( setBarring, bsc );
+            //iModel.DataStore()->SetSSCommandInfo( iSupplementaryServicesCommandInfo );
+            //iModel.SendMessage( MEngineMonitor::EPEMessageIssuedSSRequest );
             break;
         case EDeactivate: 
             setBarring.iSetting = ECancelBarring;
             iSupplementaryServicesCommandInfo.action = EPESSDeactivation;
-            iBarring->SetBarringL( setBarring, bsc );
-            iModel.DataStore()->SetSSCommandInfo( iSupplementaryServicesCommandInfo );
-            iModel.SendMessage( MEngineMonitor::EPEMessageIssuedSSRequest );
+            //iBarring->SetBarringL( setBarring, bsc );
+            //iModel.DataStore()->SetSSCommandInfo( iSupplementaryServicesCommandInfo );
+            //iModel.SendMessage( MEngineMonitor::EPEMessageIssuedSSRequest );
             break;
         case EInterrogate:
             iSupplementaryServicesCommandInfo.action = EPESSInterrogation;
-            iBarring->GetBarringStatusL( EServiceGroupVoice, setBarring.iType );
-            iModel.DataStore()->SetSSCommandInfo( iSupplementaryServicesCommandInfo );
-            iModel.SendMessage( MEngineMonitor::EPEMessageIssuedSSRequest );
+            //iBarring->GetBarringStatusL( EServiceGroupVoice, setBarring.iType );
+            //iModel.DataStore()->SetSSCommandInfo( iSupplementaryServicesCommandInfo );
+            //iModel.SendMessage( MEngineMonitor::EPEMessageIssuedSSRequest );
             break;
         case ERegister:
         case EErase:
@@ -966,7 +955,6 @@ void CPEParserSSHandler::ConnectToSsEngineL()
  
     //creates the containers
     iSettings = CPsetContainer::NewL();
-    iObsContainer = CPsuiContainer::NewL();
 
     CleanupStack::Pop( this );
     }
@@ -996,13 +984,6 @@ void CPEParserSSHandler::CreateCWObsL()
 void CPEParserSSHandler::CreateCBObsL()
     {
     ConnectToSsEngineL();
-    //call barring observer and engine
-    if ( !iCbObserver )
-        {  
-        iCbObserver = iObsContainer->CreateCBObsL();
-        iBarring = iSettings->CreateCBObjectL( *iCbObserver );
-        iBarring->SetRequestObserver( this );
-        }
     }
 
 // -----------------------------------------------------------------------------
@@ -1028,13 +1009,6 @@ void CPEParserSSHandler::CreateCFObsL()
 void CPEParserSSHandler::CreateCliObsL()
     {
     ConnectToSsEngineL();
-    // cli observer and engine 
-    if ( !iCliObserver )
-        {  
-        iCliObserver = iObsContainer->CreateCliObsL();
-        iCli = iSettings->CreateCliObjectL( *iCliObserver );
-        iCli->SetRequestObserver( this );
-        }
     }   
      
 // -----------------------------------------------------------------------------
@@ -1074,11 +1048,6 @@ void CPEParserSSHandler::DoClean(
 //
 void CPEParserSSHandler::ResetVariables()
     {
-    delete iCbObserver;
-    iCbObserver = NULL;
-    delete iCliObserver;
-    iCliObserver = NULL;
-   
     delete iBarring;
     iBarring = NULL;
     
@@ -1086,8 +1055,6 @@ void CPEParserSSHandler::ResetVariables()
     iCli = NULL;
     delete iSettings;
     iSettings = NULL;
-    delete iObsContainer;
-    iObsContainer = NULL;
     
     iDivert = NULL;
     delete iCallDivertingHandler;

@@ -46,16 +46,6 @@
 EXPORT_C CPhoneResourceResolverBase::CPhoneResourceResolverBase():
     iEnv( *CEikonEnv::Static() )
     {
-    if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) )
-        {
-        iVariationFlags |= EOnscreenDialer;
-        }
-
-    if ( FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
-        {
-        iVariationFlags |= ETouchCallHandling;
-        }
-
     if ( FeatureManager::FeatureSupported( KFeatureIdVideocallMenuVisibility ) )
         {
         iVariationFlags |= EVideoCallMenu;
@@ -67,11 +57,8 @@ EXPORT_C CPhoneResourceResolverBase::~CPhoneResourceResolverBase()
     {
     // Remove resource file
     iEnv.DeleteResourceFile( iResourceOffset );
-    if ( FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
-        {
-        iEnv.DeleteResourceFile( iCUIResourceOffset );
-        iEnv.DeleteResourceFile( iPTCHResourceOffset );
-        }
+    iEnv.DeleteResourceFile( iCUIResourceOffset );
+    iEnv.DeleteResourceFile( iPTCHResourceOffset );
     }
 
 // -----------------------------------------------------------------------------
@@ -91,25 +78,20 @@ EXPORT_C void CPhoneResourceResolverBase::BaseConstructL()
     RFs &fsSession= iEnv.FsSession();
     BaflUtils::NearestLanguageFile( fsSession, path ); 
     iResourceOffset = iEnv.AddResourceFileL( path );
-    
-    if ( FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
-        {
-        // callhandlingui.rss
-        TFileName callHandlingPath( KDriveZ );
-        callHandlingPath.Append( KDC_APP_RESOURCE_DIR );
-        callHandlingPath.Append( KPhoneResourceFileCHUI );
-        BaflUtils::NearestLanguageFile( fsSession, callHandlingPath ); 
-        iCUIResourceOffset = iEnv.AddResourceFileL( callHandlingPath );
-        // phoneuitouch.rss
-        TFileName phoneUiTouchPath( KDriveZ );
-        phoneUiTouchPath.Append( KDC_APP_RESOURCE_DIR );
-        phoneUiTouchPath.Append( KPhoneResourceFilePHTC );
-        BaflUtils::NearestLanguageFile( fsSession, phoneUiTouchPath ); 
-        iPTCHResourceOffset = iEnv.AddResourceFileL( phoneUiTouchPath );
+    // callhandlingui.rss
+    TFileName callHandlingPath( KDriveZ );
+    callHandlingPath.Append( KDC_APP_RESOURCE_DIR );
+    callHandlingPath.Append( KPhoneResourceFileCHUI );
+    BaflUtils::NearestLanguageFile( fsSession, callHandlingPath ); 
+    iCUIResourceOffset = iEnv.AddResourceFileL( callHandlingPath );
+    // phoneuitouch.rss
+    TFileName phoneUiTouchPath( KDriveZ );
+    phoneUiTouchPath.Append( KDC_APP_RESOURCE_DIR );
+    phoneUiTouchPath.Append( KPhoneResourceFilePHTC );
+    BaflUtils::NearestLanguageFile( fsSession, phoneUiTouchPath ); 
+    iPTCHResourceOffset = iEnv.AddResourceFileL( phoneUiTouchPath );
 
-        iTouchButtonConfig.ReadConfiguration();
-        }
-    
+    iTouchButtonConfig.ReadConfiguration();
     }
 
 EXPORT_C TBool CPhoneResourceResolverBase::IsTelephonyFeatureSupported( TInt aFeatureId ) const
@@ -127,7 +109,6 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
     const TInt& aResource ) const
     {
     TInt retVal( KErrNotFound );
-
     __PHONELOG1( EBasic, EPhoneUIView, "CPhoneResourceResolverBase::ResolveResourceID - aResource(%d)",
         aResource );
     switch( aResource )
@@ -145,20 +126,14 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneNumberAcqMenubar:
-
-            if ( iVariationFlags & EOnscreenDialer)
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else if ( iVariationFlags & EVideoCallMenu )
+             if ( iVariationFlags & EVideoCallMenu )
                 {
                 retVal = R_PHONEUI_NUMBERACQ_VIDEOCALL_MENUBAR;
                 }
             else
                 {
-                retVal = R_PHONEUI_NUMBERACQ_MENUBAR;
+                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
                 }
-
             break;
 
         case EPhoneNumberAcqOkMenubar:
@@ -181,15 +156,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallHandlingEmergencyMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_EMERGENCY_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLHANDLING_EMERGENCY_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_EMERGENCY_MENUBAR;
             break;
 
         case EPhoneIncomingCallMenubar:
@@ -201,26 +168,11 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneIncomingCallMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_INCOMINGCALL_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
+            
         case EPhoneIncomingVideoCallMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_INCOMINGVIDEOCALL_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case  EPhoneAlertingCallMenubar:
@@ -228,15 +180,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case  EPhoneAlertingCallMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_ALERTINGCALL_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneCallActiveAndHeldMenubar:
@@ -244,14 +188,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallActiveAndHeldMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_ACTIVEANDHELD_MENUBAR_WITH_NUMBERENTRY;
-                }
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneCallWaitingMenubar:
@@ -259,15 +196,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallWaitingMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLWAITING_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneCallActiveHeldAndWaitingMenubar:
@@ -282,15 +211,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallActiveHeldAndWaitingMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer)
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLACTIVEHELDANDWAITING_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneAlertingAndHeldCallMenuBar:
@@ -298,15 +219,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneAlertingAndHeldCallMenuBarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_ALERTINGANDHELDCALL_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneAlertingAndConfHeldCallMenuBar:
@@ -314,14 +227,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneAlertingAndConfHeldCallMenuBarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_ALERTINGANDCONFHELDCALL_MENUBAR_WITH_NUMBERENTRY;
-                }
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneAlertingWaitingAndConfHeldCallMenuBar:
@@ -329,14 +235,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneAlertingWaitingAndConfHeldCallMenuBarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_ALERTINGWAITINGANDHELDCONFCALL_MENUBAR_WITH_NUMBERENTRY;
-                }
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneAlertingHeldAndWaitingCallMenuBar:
@@ -344,15 +243,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneAlertingHeldAndWaitingCallMenuBarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_ALERTINGHELDANDWAITINGCALL_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneAlertingAndWaitingCallMenuBar:
@@ -366,141 +257,51 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneConfCallMenubar:
-            if ( iVariationFlags & ETouchCallHandling )
-                {
-                retVal = R_PHONEUI_TOUCH_CONFCALL_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CONFCALL_MENUBAR;
-                }
+           retVal = R_PHONEUI_TOUCH_CONFCALL_MENUBAR;
             break;
 
         case EPhoneConfCallMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CONFCALL_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneConfAndCallWaitingMenubar:
-            if ( iVariationFlags & ETouchCallHandling )
-                {
-                retVal = R_PHONEUI_TOUCH_CONFANDCALLWAITING_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CONFANDCALLWAITING_MENUBAR;
-                }
+            retVal = R_PHONEUI_TOUCH_CONFANDCALLWAITING_MENUBAR;
             break;
 
         case EPhoneConfAndCallWaitingMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CONFANDCALLWAITING_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneConfAndHeldCallMenubar:
-            if ( iVariationFlags & ETouchCallHandling )
-                {
-                retVal = R_PHONEUI_TOUCH_ACTIVECONFANDHELD_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_ACTIVECONFANDHELD_MENUBAR;
-                }
+            retVal = R_PHONEUI_TOUCH_ACTIVECONFANDHELD_MENUBAR;
             break;
 
         case EPhoneConfAndHeldCallMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_ACTIVECONFANDHELD_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneActiveAndHeldConfMenubar:
-            if ( iVariationFlags & ETouchCallHandling )
-                {
-                retVal = R_PHONEUI_TOUCH_ACTIVEANDHELDCONF_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_ACTIVEANDHELDCONF_MENUBAR;
-                }
+            retVal = R_PHONEUI_TOUCH_ACTIVEANDHELDCONF_MENUBAR;
             break;
 
         case EPhoneActiveAndHeldConfMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_ACTIVEANDHELDCONF_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneConfCallActiveHeldAndWaitingMenubar:
-            if ( iVariationFlags & ETouchCallHandling )
-                {
-                retVal = R_PHONEUI_TOUCH_CONFCALLACTIVEHELDANDWAITING_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CONFCALLACTIVEHELDANDWAITING_MENUBAR;
-                }
+            retVal = R_PHONEUI_TOUCH_CONFCALLACTIVEHELDANDWAITING_MENUBAR;
             break;
 
         case EPhoneConfCallActiveHeldAndWaitingMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CONFCALLACTIVEHELDANDWAITING_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneCallActiveHeldConfAndWaitingMenubar:
-            if ( iVariationFlags & ETouchCallHandling )
-                {
-                retVal = R_PHONEUI_TOUCH_CALLACTIVEHELDCONFANDWAITING_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLACTIVEHELDCONFANDWAITING_MENUBAR;
-                }
+            retVal = R_PHONEUI_TOUCH_CALLACTIVEHELDCONFANDWAITING_MENUBAR;
             break;
 
         case EPhoneCallActiveHeldConfAndWaitingMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLACTIVEHELDCONFANDWAITING_MENUBAR_WITH_NUMBERENTRY;
-                }
-
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
         case EPhoneConfCallParticipantsMenubar:
@@ -512,23 +313,18 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallHandlingMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer)
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else if ( iVariationFlags & EVideoCallMenu )
+            if ( iVariationFlags & EVideoCallMenu )
                 {
                 retVal = R_PHONE_INCALL_VIDEOCALL_MENUBAR_WITH_NUMBERENTRY;
                 }
             else
                 {
-                retVal = R_PHONE_INCALL_MENUBAR_WITH_NUMBERENTRY;
+                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
                 }
             break;
+            
         case EPhoneDtmfDialerMenubar:
-                {
-                retVal = R_PHONEUIDIALER_DTMFVIEW_MENUBAR;
-                }
+            retVal = R_PHONEUIDIALER_DTMFVIEW_MENUBAR;
             break;
 
         case EPhoneEmptyCBA:
@@ -552,17 +348,13 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneNumberAcqCBA:
-            if ( iVariationFlags & EOnscreenDialer )
-                  {
-                  retVal = R_PHONEUI_DIALER_CBA;
-                  }
-            else if ( iVariationFlags & EVideoCallMenu )
+            if ( iVariationFlags & EVideoCallMenu )
                   {
                   retVal = R_PHONEUI_NUMBERACQ_VIDEOCALL_CBA;
                   }
             else
                  {
-                 retVal = R_PHONEUI_NUMBERACQ_CBA;
+                 retVal = R_PHONEUI_DIALER_CBA;
                  }
             break;
 
@@ -575,58 +367,23 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallHandlingCallSetupCBA:
-            if (  iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_ENDOUTGOING_CBA;
-                }
+            retVal = R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA;
             break;
 
         case EPhoneCallHandlingCallSetupToIhfCBA:
-            if (  iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUI_CALLHANDLING_CALLSETUP_TOIHF_DTMFDIALER_CBA;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLHANDLING_CALLSETUP_TOIHF_ENDOUTGOING_CBA;
-                }
+            retVal = R_PHONEUI_CALLHANDLING_CALLSETUP_TOIHF_DTMFDIALER_CBA;
             break;
 
         case EPhoneCallHandlingCallSetupToHandsetCBA:
-            if (  iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUI_CALLHANDLING_CALLSETUP_TOHANDSET_DTMFDIALER_CBA;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLHANDLING_CALLSETUP_TOHANDSET_ENDOUTGOING_CBA;
-                }
+            retVal = R_PHONEUI_CALLHANDLING_CALLSETUP_TOHANDSET_DTMFDIALER_CBA;
             break;
 
         case EPhoneCallHandlingInCallCBA:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUI_INCALL_DIALER_CBA;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLHANDLING_INCALL_CBA;
-                }
+            retVal = R_PHONEUI_INCALL_DIALER_CBA;
             break;
 
         case EPhoneCallHandlingInCallNoIhfCBA:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUI_INCALL_DIALER_CBA;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLHANDLING_INCALL_NOIHF_CBA;
-                }
+            retVal = R_PHONEUI_INCALL_DIALER_CBA;
             break;
 
         case EPhoneCallHandlingInCallUnmuteCBA:
@@ -634,47 +391,23 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallHandlingInCallUnholdCBA:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUI_INCALL_DIALER_CBA;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLHANDLING_INCALL_UNHOLD_CBA;
-                }
+            retVal = R_PHONEUI_INCALL_DIALER_CBA;
             break;
 
         case EPhoneCallHandlingInCallHandsetCBA:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA;
-                }
+            retVal = R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA;
             break;
 
         case EPhoneCallHandlingInCallBtaaCBA:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUI_CALLHANDLING_INCALL_BTAA_CBA;
-                }
-
+            retVal = R_PHONEUI_CALLHANDLING_INCALL_BTAA_CBA;
             break;
 
         case EPhoneCallHandlingEmergencyCBA:
-                {
-                retVal = R_PHONEUI_CALLHANDLING_EMERGENCY_CBA;
-                }
-
+            retVal = R_PHONEUI_CALLHANDLING_EMERGENCY_CBA;
             break;
 
         case EPhoneCallHandlingEmergencyHandsetCBA:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUI_INCALL_DIALER_CBA;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLHANDLING_EMERGENCY_HANDSET_CBA;
-                }
+            retVal = R_PHONEUI_INCALL_DIALER_CBA;
             break;
 
         case EPhoneCallHandlingEmergencyNoIhfCBA:
@@ -718,14 +451,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneCallHandlingNewCallSwapCBA:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUI_INCALL_DIALER_CBA;
-                }
-            else
-                {
-                retVal = R_PHONEUI_CALLHANDLING_NEW_CALL_SWAP_CBA;
-                }
+            retVal = R_PHONEUI_INCALL_DIALER_CBA;
             break;
 
         case EPhoneNewCallFetchCBA:
@@ -841,14 +567,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
        case EPhoneVideoCall2gMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_VIDEOCALL_2G_MENUBAR_WITH_NUMBERENTRY;
-                }
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
        case EPhoneVideoCallMenubar:
@@ -856,14 +575,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
        case EPhoneVideoCallMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_VIDEOCALL_MENUBAR_WITH_NUMBERENTRY;
-                }
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
        case EPhoneVideoCallWaitingMenubar:
@@ -879,14 +591,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
        case EPhoneVideoCallWaitingMenubarWithNumberEntry:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
-                }
-            else
-                {
-                retVal = R_PHONEUI_VIDEOCALL_WAITING_MENUBAR_WITH_NUMBERENTRY;
-                }
+            retVal = R_PHONEUIDIALER_NUMBERACQ_MENUBAR;
             break;
 
        case EPhoneEmptyBackCBA:
@@ -926,14 +631,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneEmergencyConnectWaitNote:
-            if ( iVariationFlags & EOnscreenDialer )
-                {
-                retVal = R_PHONE_EMERGENCY_NETWORK_CONNECT_WAIT_NOTE_EMPTY_DIALER;
-                }
-            else
-                {
-                retVal = R_PHONE_EMERGENCY_NETWORK_CONNECT_WAIT_NOTE;
-                }
+            retVal = R_PHONE_EMERGENCY_NETWORK_CONNECT_WAIT_NOTE_EMPTY_DIALER;
             break;
 
         case EPhoneEmergencyModeInformationNote:

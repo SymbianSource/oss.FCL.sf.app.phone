@@ -42,6 +42,7 @@ SOURCES += ut_cpdivertplugin.cpp
 # code to be tested
 HEADERS += ../../src/cpdivertplugin.h \
            ../../src/cpdivertplugingroup.h \
+           ../../src/cpdivertquery.h \
            ../../src/cpdivertitemdata.h \
            ../../../cptelephonyutils/inc/cpplugincommon.h \
            /epoc32/include/platform/mw/psetwrapper.h \
@@ -54,6 +55,7 @@ HEADERS += ../../src/cpdivertplugin.h \
            
 SOURCES += ../../src/cpdivertplugin.cpp \
            ../../src/cpdivertplugingroup.cpp \
+           ../../src/cpdivertquery.cpp \
            ../../src/cpdivertitemdata.cpp
 
 # mocks needed for testing

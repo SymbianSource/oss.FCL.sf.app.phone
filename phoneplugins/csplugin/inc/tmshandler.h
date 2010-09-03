@@ -11,15 +11,14 @@
  *
  * Contributors:
  *
- * Description: Starts and stops audio streams.
+ * Description: Activates TMS call audio control streams.
  *
  */
 
-#ifndef TMSHandler_H
-#define TMSHandler_H
+#ifndef TMSHANDLER_H
+#define TMSHANDLER_H
 
 #include <e32base.h>
-#include "mcsptimerobserver.h"
 #include <tms.h>
 #include <tmsstreamobsrvr.h>
 
@@ -35,15 +34,13 @@ class TMSSink;
 using namespace TMS;
 
 //FORWARD DECLARATIONS
-class CSPTimer;
+class MTmsHandlerObserver;
 
 /**
- *  Starts and stops TMS audio streams.
- *  If the activation fails then there is a retry timer which
- *  will try the activation later.
+ *  Class responsible for creation and activation of TMS call audio control
+ *  streams.
  */
 NONSHARABLE_CLASS(TmsHandler) : public CBase,
-                                public MCSPTimerObserver,
                                 public TMSStreamObserver
     {
 public:
@@ -51,12 +48,12 @@ public:
     /**
      * Two-phased constructing.
      */
-    static TmsHandler* NewL();
+    static TmsHandler* NewL(MTmsHandlerObserver& aObserver);
 
     /**
      * Two-phased constructing.
      */
-    static TmsHandler* NewLC();
+    static TmsHandler* NewLC(MTmsHandlerObserver& aObserver);
 
     /**
      * C++ default destructor.
@@ -64,80 +61,65 @@ public:
     virtual ~TmsHandler();
 
     /**
-     * Starts audio streams ie inits mic and speaker.
+     * Activates TMS call audio control streams.
      */
-    void StartStreams();
+    TInt StartStreams();
 
     /**
-     * Stops audio streams ie shuts down mic and speaker.
+     * Deactivates TMS call audio control streams.
      */
     void StopStreams();
 
-    /**
-     * From MCSPTimerObserver.
-     * Notify from CSPTimer that timeout passed.
+    /*
+     * Indicates whether both audio streams have been started.
      */
-    void TimerEvent();
+    TBool AreStreamsStarted();
 
-protected:
-    // Functions from base classes
-
-    // From TMSStreamObserver
+    /*
+     * From TMSStreamObserver
+     * TMS call audio stream control event handler.
+     */
     void TMSStreamEvent(const TMSStream& stream, TMSSignalEvent event);
 
-private:
+protected:
 
     /**
      * C++ default constructor.
      */
     TmsHandler();
 
-    void ConstructL();
-
-    static TInt TimerCallBack(TAny* aThisPtr);
-
-    void AudioStreamsStarted();
-
-    void StartTimer();
-
-    void StartMicAndSpeaker();
-
-    TBool IsMicAndSpeakerStarted();
-
-    gint CreateTMSCallControl();
-    gint CreateFactory();
-    gint CreateCall();
-
-    gint CreateUplink();
-    gint CreateDownlink();
-    gint OpenUplink();
-    gint OpenDownlink();
-
-    gint CreateModemSource();
-    gint AddModemSourceToStream();
-    gint CreateModemSink();
-    gint AddModemSinkToStream();
-    gint CreateMicSource();
-    gint AddMicSourceToStream();
-    gint CreateSpeakerSink();
-    gint AddSpeakerSinkToStream();
+    /*
+     * Symbian constructor
+     */
+    void ConstructL(MTmsHandlerObserver& aObserver);
 
 private:
-    // data
 
-    /**
-     * Timer for retrying the activation of streams (mic & speaker) if
-     * there was a failure in activation.
-     * Own.
+    /*
+     * Method creating and activating TMS call control objects.
      */
-    CSPTimer* iTimer;
+    TInt CreateTMSCallControl();
 
-    /**
-     * Timeout value used with timer. Timeout value doubles every retry to
-     * activate the streams.
+    /*
+     * Processes Uplink stream state change events.
      */
-    TInt iTimeout;
+    void ProcessUplinkStreamChangeEvent(TInt aState);
 
+    /*
+     * Processes Downlink stream state change events.
+     */
+    void ProcessDownlinkStreamChangeEvent(TInt aState);
+
+private:
+
+    /*
+     * Observer to TMS call audio stream events.
+     */
+    MTmsHandlerObserver* iObserver;
+
+    /*
+     * Pointers to TMS call audio control objects.
+     */
     TMSFactory* iFactory;
     TMSCall* iTmsCall;
     TMSCallType iCallType;
@@ -147,8 +129,14 @@ private:
     TMSSource* iTmsModemSource;
     TMSSink* iTmsSpeakerSink;
     TMSSink* iTmsModemSink;
-    TBool iUplinkStarted;
-    TBool iDnlinkStarted;
+
+    /*
+     * Stream state control helpers
+     */
+    TBool iStartAfterInitComplete;
+    TBool iUplInitializing;
+    TBool iDnlInitializing;
     };
 
 #endif // TMSHANDLER_H
+

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -44,7 +44,7 @@
 #include "cspuuimessagesender.h"
 
 const TInt KTimesToSplitValue = 16;
-
+const TInt KStreamsStartWaitTime = 2000000; //2 sec
 
 // ---------------------------------------------------------------------------
 // CSPCall::~CSPCall
@@ -56,19 +56,19 @@ CSPCall::~CSPCall()
 
     delete iParams;
     iCommonInfo.IndicateHangupComplete( *this );
-    
-    if ( iAudioHandler 
+
+    if ( iAudioHandler
          && iAudioStatus == ECSPCallAudioStatusActive )
         {
         iAudioStatus = ECSPCallAudioStatusInactive;
         iAudioHandler->Stop();
         }
-    
-    delete iUserToUserInformation;    
-    delete iRequester;    
+
+    delete iUserToUserInformation;
+    delete iRequester;
     delete iCallEventMonitor;
     delete iCallStatusMonitor;
-    delete iCallCapsMonitor; 
+    delete iCallCapsMonitor;
     delete iCallInfoMonitor;
     delete iForwardProvider;
     delete iTransferProvider;
@@ -76,12 +76,12 @@ CSPCall::~CSPCall()
     delete iUUIMessageSender;
     delete iSkypeId;
 
-    iObservers.Close();        
+    iObservers.Close();
     if ( iCall.SubSessionHandle() )
         {
         iCall.Close();
         }
-    
+
     CSPLOGSTRING(CSPOBJECT, "CSPCall::~CSPCall >");
     }
 
@@ -89,10 +89,15 @@ CSPCall::~CSPCall()
 // CSPCall::SetAudioHandler
 // ---------------------------------------------------------------------------
 //
-void CSPCall::SetAudioHandler( CSPAudioHandler* aHandler )
+void CSPCall::SetAudioHandler( CSPAudioHandlerBase* aHandler )
     {
     CSPLOGSTRING2(CSPINT, "CSPCall::SetAudioHandler handler: %x", aHandler);
     iAudioHandler = aHandler;
+
+    if (iAudioHandler)
+        {
+        iAudioHandler->SetObserver(*this);
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -103,61 +108,61 @@ void CSPCall::SecuritySettingChanged( TInt aValue )
     {
     switch ( aValue )
         {
-        case MCSPSecuritySettingObserver::ESecureCall:         
+        case MCSPSecuritySettingObserver::ESecureCall:
             {
-            CSPLOGSTRING(CSPINT, 
+            CSPLOGSTRING(CSPINT,
                     "CSPCall::SecuritySettingChanged Sending 'secure call' event");
             NotifyCallEventOccurred( MCCPCallObserver::ECCPSecureCall );
-            break; 
-            }            
-        case MCSPSecuritySettingObserver::ENotSecureCall:                     
+            break;
+            }
+        case MCSPSecuritySettingObserver::ENotSecureCall:
             {
-            CSPLOGSTRING(CSPINT, 
+            CSPLOGSTRING(CSPINT,
                     "CSPCall::SecuritySettingChanged Sending 'not secure call' event");
             NotifyCallEventOccurred( MCCPCallObserver::ECCPNotSecureCall );
-            break;  
+            break;
             }
-        case MCSPSecuritySettingObserver::ESecureNotSpecified:                     
+        case MCSPSecuritySettingObserver::ESecureNotSpecified:
             {
-            CSPLOGSTRING(CSPINT, 
+            CSPLOGSTRING(CSPINT,
                     "CSPCall::SecuritySettingChanged Sending SecureNotSpecified");
             NotifyCallEventOccurred( MCCPCallObserver::ECCPSecureNotSpecified );
-            break;  
+            break;
             }
 
-        default: 
+        default:
             {
             CSPLOGSTRING(CSPERROR, "CSPCall::SecuritySettingChanged, \
-                unknown event");            
-            break;  
+                unknown event");
+            break;
             }
         }
     }
 
 // ---------------------------------------------------------------------------
 // CSPCall::RemoteAlertingToneStatusChanged
-// Sends EarlyMediaStarted event to observer if network has started to 
+// Sends EarlyMediaStarted event to observer if network has started to
 // play remote alerting tone. There is only one known use case: Network
-// starts playing alerting tone during connecting state. 
+// starts playing alerting tone during connecting state.
 //
-// This RemoteAlertingToneStatusChanged is called for every call, 
-// so it is calls responsibility to determine if the 
+// This RemoteAlertingToneStatusChanged is called for every call,
+// so it is calls responsibility to determine if the
 // observer should be notified.
 // ---------------------------------------------------------------------------
 //
 void CSPCall::RemoteAlertingToneStatusChanged(
     RMmCustomAPI::TRemoteAlertingToneStatus aNewStatus )
     {
-    CSPLOGSTRING2(CSPINT, 
+    CSPLOGSTRING2(CSPINT,
         "CSPCall::RemoteAlertingToneStatusChanged new status: %d", aNewStatus );
-    
+
     if ( aNewStatus == RMmCustomAPI::EUiStopTone ||
-         aNewStatus == RMmCustomAPI::EUiNoTone ) // NW tells us to stop playing 
+         aNewStatus == RMmCustomAPI::EUiNoTone ) // NW tells us to stop playing
         {
         // Connecting is only state where network starts playing the tone.
         if ( iCallState == MCCPCallObserver::ECCPStateConnecting )
             {
-            NotifyCallEventOccurred( 
+            NotifyCallEventOccurred(
                 MCCPCallObserver::ECCCSPEarlyMediaStarted );
             }
         }
@@ -168,23 +173,23 @@ void CSPCall::RemoteAlertingToneStatusChanged(
 // Notifies observers about state changes
 // ---------------------------------------------------------------------------
 //
-void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState ) 
+void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState )
     {
-    CSPLOGSTRING3(CSPINT, 
-                  "CSPCall::NotifyCallStateChangedETel < state: %d this: %x", 
+    CSPLOGSTRING3(CSPINT,
+                  "CSPCall::NotifyCallStateChangedETel < state: %d this: %x",
                   aState, this );
     switch ( aState )
         {
         /*
         Cannot receive any mapping call statuses from ETel to following
         optional states:
-        
+
         ECCPStateForwarding   MO call is being forwarded at receiver end
         ECCPStateQueued       Call is queued locally.
-        
+
         The commented observer calls are for CS specific call states.
         */
-        
+
         // Indicates that the call is idle or unknown.
         case RMobileCall::EStatusIdle:
         case RMobileCall::EStatusUnknown:
@@ -192,21 +197,21 @@ void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState 
             CSPLOGSTRING(CSPINT, "CSPCall::NotifyCallStateChangedETel Idle");
 
             // If audio still active
-            if ( iAudioStatus == ECSPCallAudioStatusActive 
+            if ( iAudioStatus == ECSPCallAudioStatusActive
                  && iAudioHandler
                  && iParams->CallType() == CCPCall::ECallTypeCSVoice )
                 {
                 iAudioStatus = ECSPCallAudioStatusInactive;
                 iAudioHandler->Stop();
                 }
-                
+
             // Notify error in case not going through disconnecting
-            if ( iCallState != MCCPCallObserver::ECCPStateDisconnecting 
+            if ( iCallState != MCCPCallObserver::ECCPStateDisconnecting
                      && !iTerminationErrorNotified )
                 {
                 CheckAndNotifyTerminationError();
                 }
-            
+
             NotifyCallStateChanged( MCCPCallObserver::ECCPStateIdle );
             iCommonInfo.IndicateHangupComplete( *this );
             break;
@@ -220,12 +225,12 @@ void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState 
                 iAudioStatus = ECSPCallAudioStatusActive;
                 iAudioHandler->Start();
                 }
-                
+
             iDontReportTerm = EFalse;
             NotifyCallStateChanged( MCCPCallObserver::ECCPStateDialling );
             break;
-            }            
-        //Indicates that the MT call is ringing but not answered yet by 
+            }
+        // Indicates that the MT call is ringing but not answered yet by
         // the local user
         case RMobileCall::EStatusRinging:
             {
@@ -234,13 +239,13 @@ void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState 
             break;
             }
         // Indicates that the local user has answered the MT call but
-        // the network has not acknowledged the call connection yet. 
+        // the network has not acknowledged the call connection yet.
         case RMobileCall::EStatusAnswering:
             {
             CSPLOGSTRING(CSPINT, "CSPCall::NotifyCallStateChangedETel Answering");
 
             if ( !iMobileOriginated
-                && iAudioHandler 
+                && iAudioHandler
                 && iAudioStatus == ECSPCallAudioStatusInactive
                 && iParams->CallType() == CCPCall::ECallTypeCSVoice )
                 {
@@ -252,11 +257,11 @@ void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState 
             break;
             }
         // MO Call: the network notifies to the MS that the remote party
-        // is now ringing. 
+        // is now ringing.
         case RMobileCall::EStatusConnecting:
             {
             CSPLOGSTRING(CSPINT, "CSPCall::NotifyCallStateChangedETelConnecting");
-            RMmCustomAPI::TRemoteAlertingToneStatus tone = 
+            RMmCustomAPI::TRemoteAlertingToneStatus tone =
                 iCommonInfo.GetRemoteAlertingToneStatus();
             if ( tone == RMmCustomAPI::EUiNoTone ||
                  tone == RMmCustomAPI::EUiStopTone )
@@ -274,12 +279,21 @@ void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState 
             {
             CSPLOGSTRING(CSPINT, "CSPCall::NotifyCallStateChangedETel Connected");
 
+            // Expect MCSPAudioHandlerObserver::AudioStartingFailed callback
+            // when call audio control streams fail to start within specified
+            // timeout.
+            if (iAudioHandler && (iParams->CallType() == CCPCall::ECallTypeCSVoice))
+                {
+                iAudioHandler->ReportAudioFailureAfterTimeout(
+                        KStreamsStartWaitTime);
+                }
+
             iDontReportTerm = ETrue;
             NotifyCallStateChanged( MCCPCallObserver::ECCPStateConnected );
-            
+
             // Agreement with TSY is that the
             // COLP number is available in connected state.
-            NotifyRemotePartyNumberChanged();            
+            NotifyRemotePartyNumberChanged();
             break;
             }
         // Indicates that call is disconnecting. (Same as RCall::HangingUp)
@@ -291,8 +305,8 @@ void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState 
                 {
                 CheckAndNotifyTerminationError();
                 }
-            
-            NotifyCallStateChanged( MCCPCallObserver::ECCPStateDisconnecting );                
+
+            NotifyCallStateChanged( MCCPCallObserver::ECCPStateDisconnecting );
             break;
             }
         // Indicates that the call is disconnecting with inband data
@@ -300,19 +314,19 @@ void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState 
         // that the call is not to be released until user terminates call
         case RMobileCall::EStatusDisconnectingWithInband:
             {
-            CSPLOGSTRING(CSPINT, 
+            CSPLOGSTRING(CSPINT,
                 "CSPCall::NotifyCallStateChangedETel DisconnectingWithInband");
 
             if ( !iTerminationErrorNotified )
                 {
                 CheckAndNotifyTerminationError();
                 }
-            
-            NotifyCallStateChangedWithInband( 
-                                MCCPCallObserver::ECCPStateDisconnecting );
+
+            NotifyCallStateChangedWithInband(
+                    MCCPCallObserver::ECCPStateDisconnecting );
             break;
             }
-        // Indicates that the call is connected but on hold.  
+        // Indicates that the call is connected but on hold.
         case RMobileCall::EStatusHold:
             {
             CSPLOGSTRING(CSPINT, "CSPCall::NotifyCallStateChangedETel Hold");
@@ -325,25 +339,25 @@ void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState 
             NotifyCallStateChanged( MCCPCallObserver::ECCPStateTransferring );
             break;
             }
-            
+
         // Indicates that call is undergoing temporary channel loss
-        // and it may or may not be reconnected.  
-        case RMobileCall::EStatusReconnectPending: // fall through 
+        // and it may or may not be reconnected.
+        case RMobileCall::EStatusReconnectPending: // fall through
         //Indicates that the call is the non-active half of an alternating
         // call. This call is waiting for its active half or the remote
         // end to switch alternating call mode.
         case RMobileCall::EStatusWaitingAlternatingCallSwitch: // fall through
         case RMobileCall::EStatusTransferAlerting:
             {
-            CSPLOGSTRING2(CSPINT, 
+            CSPLOGSTRING2(CSPINT,
                     "CSPCall::NotifyCallStateChangedETel no special handling for state %d",
-                    aState);            
+                    aState);
             break;
             }
 
         default:
             {
-            CSPLOGSTRING(CSPERROR, 
+            CSPLOGSTRING(CSPERROR,
                     "CSPCall::NotifyCallStateChangedETel callstate UNKNOWN");
             break;
             }
@@ -356,12 +370,12 @@ void CSPCall::NotifyCallStateChangedETel( RMobileCall::TMobileCallStatus aState 
 // Notifies observers about call events
 // ---------------------------------------------------------------------------
 //
-void CSPCall::NotifyCallEventOccurred( 
+void CSPCall::NotifyCallEventOccurred(
     MCCPCallObserver::TCCPCallEvent aEvent )
     {
-    CSPLOGSTRING2(CSPINT, 
+    CSPLOGSTRING2(CSPINT,
             "CSPCall::NotifyCallEventOccurred < event: %d", aEvent);
-    
+
     TInt obsCount = iObservers.Count();
     for ( TInt i = 0; i < obsCount; i++ )
         {
@@ -371,10 +385,10 @@ void CSPCall::NotifyCallEventOccurred(
             {
             obs->CallEventOccurred( aEvent, this );
             }
-            
+
         CSPLOGSTRING2(CSPINT, "CSPCall::NotifyCallEventOccurred ok obs=%d",i);
         }
-        
+
     CSPLOGSTRING2(CSPINT, "CSPCall::NotifyCallEventOccurred > event: %d", aEvent);
     }
 
@@ -383,8 +397,8 @@ void CSPCall::NotifyCallEventOccurred(
 // Forward notification of transfer event to it's provider
 // ---------------------------------------------------------------------------
 //
-void CSPCall::NotifyTransferCallEventOccurred( 
-    MCCPTransferObserver::TCCPTransferEvent aEvent ) 
+void CSPCall::NotifyTransferCallEventOccurred(
+    MCCPTransferObserver::TCCPTransferEvent aEvent )
     {
     CSPLOGSTRING2(CSPINT, "CSPCall::NotifyTransferCallEventOccurred %d", aEvent);
     // forward the method call to CSPTransferProvider object
@@ -396,11 +410,11 @@ void CSPCall::NotifyTransferCallEventOccurred(
 // Notifies observers about call events
 // ---------------------------------------------------------------------------
 //
-void CSPCall::NotifyForwardEventOccurred( 
+void CSPCall::NotifyForwardEventOccurred(
     MCCPForwardObserver::TCCPForwardEvent aEvent )
     {
     CSPLOGSTRING2(CSPINT, "CSPCall::NotifyForwardEventOccurred %d", aEvent);
-    iForwardProvider->NotifyForwardEventOccurred( aEvent );    
+    iForwardProvider->NotifyForwardEventOccurred( aEvent );
     }
 
 // ---------------------------------------------------------------------------
@@ -424,19 +438,19 @@ void CSPCall::DialRequestFailed( TInt aErrorCode )
     {
     CSPLOGSTRING(CSPERROR, "CSPCall::DialRequestFailed");
     iDialCompletionCode = aErrorCode;
-    
-    // If state has not changed 
+
+    // If state has not changed
     // ( e.g. in case of dial could not be initiated by network problem)
-    if ( iCallStatusMonitor->State() == 
+    if ( iCallStatusMonitor->State() ==
                    RMobileCall::RMobileCall::EStatusUnknown )
         {
-        NotifyErrorOccurred( iRequester->MapError( aErrorCode ) );              
-        
+        NotifyErrorOccurred( iRequester->MapError( aErrorCode ) );
+
         // Force release since otherwise call remains unreleased
         CSPLOGSTRING(CSPERROR, "CSPCall::DialRequestFailed() Force Idle");
         NotifyCallStateChanged( MCCPCallObserver::ECCPStateIdle );
         }
-    
+
     // If dial request has completed after notifying disconnecting state
     else if ( iCallState == MCCPCallObserver::ECCPStateDisconnecting
              && !iTerminationErrorNotified )
@@ -453,14 +467,14 @@ void CSPCall::DialRequestFailed( TInt aErrorCode )
 void CSPCall::EmergencyDialRequestFailed( TInt /*aErrorCode*/ )
     {
     CSPLOGSTRING(CSPERROR, "CSPCall::EmergencyDialRequestFailed");
-    
+
     // Always same error code for CCE
     NotifyErrorOccurred( ECCPEmergencyFailed );
-    
+
     // Mark that exit code will not be used
     iTerminationErrorNotified = ETrue;
     }
-    
+
 // ---------------------------------------------------------------------------
 // CSPCall::NotifyErrorOccurred
 // Notifies observers about errors
@@ -480,7 +494,7 @@ void CSPCall::NotifyErrorOccurred( TCCPError aError )
             }
         }
     }
-    
+
 // ---------------------------------------------------------------------------
 // CSPCall::CallCapsChanged
 // Notifies observers about new capabilities.
@@ -519,7 +533,7 @@ TInt CSPCall::GetMobileCallInfo( TDes8& aCallInfo ) const
 //
 TInt CSPCall::GetMobileDataCallCaps( TDes8& /*aCaps*/ ) const
     {
-    CSPLOGSTRING(CSPERROR, 
+    CSPLOGSTRING(CSPERROR,
             "CSPCall::GetMobileDataCallCaps ERROR, Not supported");
     return KErrNotSupported;
     }
@@ -558,18 +572,18 @@ const TDesC& CSPCall::RemotePartyName()
     CSPLOGSTRING(CSPREQIN, "CSPCall::RemotePartyName");
     return iRemotePartyName;
     }
-  
+
 // ---------------------------------------------------------------------------
 // From class MCCPCall
 // CSPCall::DialledParty
 // ---------------------------------------------------------------------------
-//  
-const TDesC& CSPCall::DialledParty() const 
+//
+const TDesC& CSPCall::DialledParty() const
     {
     CSPLOGSTRING2(CSPREQIN, "CSPCall::DialledParty %S", &iRemotePartyNumber);
     return iRemotePartyNumber;
     }
-    
+
 // ---------------------------------------------------------------------------
 // From class MCCPCall
 // CSPCall::Answer
@@ -579,15 +593,15 @@ TInt CSPCall::Answer()
     {
     CSPLOGSTRING(CSPREQIN, "CSPCall::Answer <");
     TInt ret( KErrNone );
-    
-    if ( iCallState == MCCPCallObserver::ECCPStateRinging 
+
+    if ( iCallState == MCCPCallObserver::ECCPStateRinging
          || iCallState == MCCPCallObserver::ECCPStateQueued )
-        {    
+        {
         if( iMobileOriginated )
             {
             ret = KErrGeneral;
             }
-        else if( iCallState != MCCPCallObserver::ECCPStateRinging && 
+        else if( iCallState != MCCPCallObserver::ECCPStateRinging &&
             iCallState != MCCPCallObserver::ECCPStateQueued )
             {
             ret = KErrAccessDenied;
@@ -602,7 +616,7 @@ TInt CSPCall::Answer()
         // Not correct state for answer
         ret = KErrNotReady;
         }
-    
+
     CSPLOGSTRING2(CSPREQIN, "CSPCall::Answer > ret %d", ret);
     return ret;
     }
@@ -615,9 +629,9 @@ TInt CSPCall::Answer()
 TInt CSPCall::PerformAnswerRequest()
     {
     CSPLOGSTRING(CSPREQIN, "CSPCall::PerformAnswerRequest");
-    
+
     TInt ret = iRequester->MakeRequest( CSPEtelCallRequester::ERequestTypeAnswer );
-    CSPLOGSTRING3(CSPINT, 
+    CSPLOGSTRING3(CSPINT,
             "CSPCall::Answer request performed, call state %d ret: %d", iCallState, ret);
 
     return ret;
@@ -635,7 +649,7 @@ TInt CSPCall::Reject()
     if ( iCallState == MCCPCallObserver::ECCPStateRinging
          || iCallState == MCCPCallObserver::ECCPStateQueued
          || iCallState == MCCPCallObserver::ECCPStateAnswering )
-        {        
+        {
         CSPLOGSTRING( CSPREQIN, "CSPCall::Reject 2" );
         ret = HangUp();
         }
@@ -657,7 +671,7 @@ TInt CSPCall::Queue()
     CSPLOGSTRING(CSPREQIN, "CSPCall::Queue");
     TBool callWaitingState;
     iDontReportTerm = ETrue;
-    
+
     TRAPD( res, iCommonInfo.GetCallWaitingL( *iParams, callWaitingState ) );
     if( res == KErrNone )
         {
@@ -665,7 +679,7 @@ TInt CSPCall::Queue()
             {
             CSPLOGSTRING(CSPREQIN, "CSPCall::Queue Call Waiting On");
             iCallState = MCCPCallObserver::ECCPStateQueued;
-            
+
             // Notify Queued state
             TInt obsCount = iObservers.Count ( );
             for (TInt i = 0; i < obsCount; i++ )
@@ -687,14 +701,14 @@ TInt CSPCall::Queue()
         }
     else
         {
-        CSPLOGSTRING2(CSPERROR, 
-                      "CSPCall::Queue Error %d with CR. Call Waiting Off", 
+        CSPLOGSTRING2(CSPERROR,
+                      "CSPCall::Queue Error %d with CR. Call Waiting Off",
                       res);
         }
-    
+
     return KErrNotSupported;
     }
-    
+
 // ---------------------------------------------------------------------------
 // From class MCCPCall
 // CSPCall::Ringing
@@ -704,24 +718,24 @@ TInt CSPCall::Ringing()
     {
     CSPLOGSTRING(CSPREQIN, "CSPCall::Ringing");
     iDontReportTerm = ETrue;
-    
+
     // Ringing state is accepted because MT-call goes to ringing
     // state in the beginning based on ETel state maching.
     if ( iCallState == MCCPCallObserver::ECCPStateIdle ||
-         iCallState == MCCPCallObserver::ECCPStateRinging ) 
+         iCallState == MCCPCallObserver::ECCPStateRinging )
         {
         NotifyRingingState();
         return KErrNone;
         }
     else if ( iCallState == MCCPCallObserver::ECCPStateAnswering )
         {
-        // Do nothing if already in Answering state (autoanswer).   
-        return KErrNone; 
+        // Do nothing if already in Answering state (autoanswer).
+        return KErrNone;
         }
-        
+
     return KErrNotReady;
     }
-    
+
 // ---------------------------------------------------------------------------
 // From class MCCPCall
 // CSPCall::HangUp
@@ -731,9 +745,9 @@ TInt CSPCall::HangUp()
     {
     CSPLOGSTRING2(CSPREQIN, "CSPCall::HangUp this: %x", this);
     TInt ret( KErrNone );
-    
+
     CSPEtelCallRequester::TRequestType req = iRequester->Request();
-    if ( req == CSPEtelCallRequester::ERequestTypeDial || 
+    if ( req == CSPEtelCallRequester::ERequestTypeDial ||
          ( req == CSPEtelCallRequester::ERequestTypeDialEmergency ) )
         {
         CSPLOGSTRING(CSPREQIN, "CSPCall::HangUp 1: Cancel ongoing dial");
@@ -745,7 +759,7 @@ TInt CSPCall::HangUp()
         CSPLOGSTRING(CSPREQIN, "CSPCall::HangUp 2");
         ret = KErrAlreadyExists;
         }
-    else if ( req == CSPEtelCallRequester::ERequestTypeNone 
+    else if ( req == CSPEtelCallRequester::ERequestTypeNone
               && iCallState != MCCPCallObserver::ECCPStateIdle )
         {
         CSPLOGSTRING(CSPREQIN, "CSPCall::HangUp 3");
@@ -765,7 +779,7 @@ TInt CSPCall::HangUp()
         ret = iRequester->MakeRequest( CSPEtelCallRequester::ERequestTypeHangup );
         iCommonInfo.IndicateActiveHangup( *this );
         }
-        
+
     return ret;
     }
 
@@ -779,7 +793,7 @@ TInt CSPCall::Cancel()
     CSPLOGSTRING(CSPREQIN, "CSPCall::Cancel");
     return HangUp();
     }
-        
+
 // ---------------------------------------------------------------------------
 // From class MCCPCall
 // CSPCall::Hold
@@ -789,17 +803,17 @@ TInt CSPCall::Hold()
     {
     CSPLOGSTRING2(CSPREQIN, "CSPCall::Hold this: %x", this);
     TInt ret;
-        
+
     if ( iCallState == MCCPCallObserver::ECCPStateConnected )
         {
         CSPLOGSTRING(CSPREQOUT, "CSPCall::Hold make request");
 
         // Set call on hold
-        ret = iRequester->MakeRequest( 
+        ret = iRequester->MakeRequest(
                     CSPEtelCallRequester::ERequestTypeHold );
         if ( ret != KErrNone )
             {
-            CSPLOGSTRING2(CSPERROR, 
+            CSPLOGSTRING2(CSPERROR,
                 "CSPCall::Hold ERROR: %d", ret);
             }
         }
@@ -815,7 +829,7 @@ TInt CSPCall::Hold()
         }
 
     return ret;
-    } 
+    }
 
 // ---------------------------------------------------------------------------
 // From class MCCPCall
@@ -826,12 +840,12 @@ TInt CSPCall::Resume()
     {
     CSPLOGSTRING2(CSPREQIN, "CSPCall::Resume this: %x", this);
     TInt ret;
-        
+
     if ( iCallState == MCCPCallObserver::ECCPStateHold )
         {
         CSPLOGSTRING(CSPREQOUT, "CSPCall::Resume request");
-        
-        ret = iRequester->MakeRequest( 
+
+        ret = iRequester->MakeRequest(
             CSPEtelCallRequester::ERequestTypeResume );
         if ( KErrNone != ret )
             {
@@ -848,7 +862,7 @@ TInt CSPCall::Resume()
         CSPLOGSTRING(CSPERROR, "CSPCall::Resume not held state" );
         ret = KErrNotReady;
         }
-    
+
     return ret;
     }
 
@@ -863,7 +877,7 @@ TInt CSPCall::Swap()
     TInt ret;
     if ( iCallState == MCCPCallObserver::ECCPStateConnected
          || iCallState == MCCPCallObserver::ECCPStateHold )
-        {    
+        {
         ret = iRequester->MakeRequest( CSPEtelCallRequester::ERequestTypeSwap );
         if ( ret )
             {
@@ -920,7 +934,7 @@ MCCPCallObserver::TCCPCallControlCaps CSPCall::Caps( ) const
     CSPLOGSTRING2(CSPREQIN, "CSPCall::Caps %b", iCapsFlags );
     return (MCCPCallObserver::TCCPCallControlCaps) iCapsFlags;
     }
- 
+
 // ---------------------------------------------------------------------------
 // From class MCCPCall
 // CSPCall::SetParameters
@@ -947,20 +961,20 @@ const CCCPCallParameters& CSPCall::Parameters() const
 // CSPCall::TransferProvider
 // ---------------------------------------------------------------------------
 //
-MCCPTransferProvider* CSPCall::TransferProviderL(const MCCPTransferObserver& 
+MCCPTransferProvider* CSPCall::TransferProviderL(const MCCPTransferObserver&
                                                             aObserver )
     {
     CSPLOGSTRING(CSPREQIN, "CSPCall::TransferProvider");
     iTransferProvider->AddObserverL( aObserver );
     return iTransferProvider;
     }
-    
+
 // ---------------------------------------------------------------------------
 // From class MCCPCall
 // CSPCall::ForwardProvider
 // ---------------------------------------------------------------------------
 //
-MCCPForwardProvider* CSPCall::ForwardProviderL( 
+MCCPForwardProvider* CSPCall::ForwardProviderL(
         const MCCPForwardObserver& aObserver )
     {
     CSPLOGSTRING(CSPREQIN, "CSPCall::ForwardProvider");
@@ -990,14 +1004,14 @@ void CSPCall::AddObserverL( const MCCPCallObserver& aObserver )
 TInt CSPCall::RemoveObserver( const MCCPCallObserver& aObserver )
     {
     CSPLOGSTRING2(CSPREQIN, "CSPCall::RemoveObserver %x", &aObserver);
-    
+
     TInt found = iObservers.Find( &aObserver );
     if ( found != KErrNotFound )
         {
         iObservers.Remove( found );
         return KErrNone;
         }
-        
+
     return found;
     }
 
@@ -1030,7 +1044,7 @@ TBool CSPCall::IsCallForwarded( ) const
 // ---------------------------------------------------------------------------
 //
 TBool CSPCall::IsSecured( ) const
-    {    
+    {
     CSPLOGSTRING(CSPREQIN, "CSPCall::IsSecured");
     return iCommonInfo.NetworkSecurityStatus();
     }
@@ -1041,7 +1055,7 @@ TBool CSPCall::IsSecured( ) const
 // ---------------------------------------------------------------------------
 //
 TBool CSPCall::SecureSpecified( ) const
-    {    
+    {
     CSPLOGSTRING(CSPREQIN, "CSPCall::SecureSpecified");
     return iCommonInfo.SecureSpecified();
     }
@@ -1059,7 +1073,7 @@ TCCPTone CSPCall::Tone() const
     if ( iCallState == MCCPCallObserver::ECCPStateConnecting )
         {
         RMmCustomAPI::TRemoteAlertingToneStatus ts = iCommonInfo.GetRemoteAlertingToneStatus();
-        
+
         if (ts == RMmCustomAPI::EUiRbtTone )
             {
             tone = ECCPRemoteAlerting;
@@ -1068,7 +1082,7 @@ TCCPTone CSPCall::Tone() const
             {
             tone = ECCPNoSoundSequence;
             }
-        else            
+        else
             {
             // No tone
             tone = ECCPNoSoundSequence;
@@ -1076,14 +1090,14 @@ TCCPTone CSPCall::Tone() const
         }
     else
         {
-        // Handle disconnecting tones      
+        // Handle disconnecting tones
         TInt callDisconnectingError = ExitCodeError();
         CSPLOGSTRING2(CSPINT, "CSPCall::Tone exit code err: %d", callDisconnectingError);
 
         switch( callDisconnectingError )
             {
             case KErrNone:
-                // GSM: DIAL TONE (optional) - not used in Nokia phones 
+                // GSM: DIAL TONE (optional) - not used in Nokia phones
                 CSPLOGSTRING(CSPERROR, "CSPCall::Tone: No sound");
                 break;
             case KErrGsmCCUserBusy:
@@ -1098,7 +1112,7 @@ TCCPTone CSPCall::Tone() const
                 // GSM: NONE, Nokia phones: radio path not available
                 tone = ECCPToneRadioPathNotAvailable;
                 CSPLOGSTRING(CSPINT, "CSPCall::Tone: RadioPathNotAvailable");
-                break;      
+                break;
             case KErrGsmCCNoChannelAvailable:
             case KErrGsmCCTemporaryFailure:
             case KErrGsmCCSwitchingEquipmentCongestion:
@@ -1162,11 +1176,11 @@ TCCPTone CSPCall::Tone() const
                 break;
             }
          }
-    
+
     CSPLOGSTRING2(CSPREQIN, "CSPCall::Tone > tone: %d", tone);
     return tone;
     }
-    
+
 // ---------------------------------------------------------------------------
 // From class MCCPCSCall
 // CSPCall::NoFdnCheck
@@ -1177,7 +1191,7 @@ void CSPCall::NoFDNCheck( )
     CSPLOGSTRING(CSPREQIN, "CSPCall::NoFDNCheck");
     iFdnCheck = EFalse;
     }
-    
+
 // ---------------------------------------------------------------------------
 // CSPCall::LogDialedNumber
 // ---------------------------------------------------------------------------
@@ -1187,7 +1201,7 @@ TBool CSPCall::LogDialedNumber() const
     CSPLOGSTRING(CSPREQIN, "CSPCall::LogDialedNumber true");
     return ETrue;
     }
-    
+
 // ---------------------------------------------------------------------------
 // From class MCCPCSCall
 // CSPCall::Dial
@@ -1209,25 +1223,35 @@ TInt CSPCall::PerformDialRequest()
     CSPLOGSTRING(CSPREQIN, "CSPCall::PerformDialRequest");
     iDialCompletionCode = KErrNone;
     iTerminationErrorNotified = EFalse;
-    
+
     // Send the User to User Information.
     if( iUserToUserInformation->Length() )
         {
         iUUIMessageSender->SendUUIMessage( *iUserToUserInformation );
         }
-    
+
     return DialFdnCond( iFdnCheck );
     }
-    
+
+// ---------------------------------------------------------------------------
+// From class MCSPAudioHandlerObserver
+// CSPCall::AudioStartingFailed
+// ---------------------------------------------------------------------------
+//
+void CSPCall::AudioStartingFailed()
+    {
+    HangUp();
+    }
+
 // ---------------------------------------------------------------------------
 // CSPCall::CSPCall
 // ---------------------------------------------------------------------------
 //
-CSPCall::CSPCall( RMobileLine& aLine, 
+CSPCall::CSPCall( RMobileLine& aLine,
                   TBool aMobileOriginated,
                   const TDesC& aName,
                   MCSPCommonInfo& aCommonInfo,
-                  TBool aIsEmergencyCall ) : 
+                  TBool aIsEmergencyCall ) :
                     iLine( aLine ),
                     iMobileOriginated( aMobileOriginated ),
                     iName( aName ), 
@@ -1261,49 +1285,49 @@ CSPCall::CSPCall( RMobileLine& aLine,
 // CSPCall::ConstructL
 // Constructing CSPCall in 2nd phase
 // ---------------------------------------------------------------------------
-//    
+//
 void CSPCall::ConstructL( const CCCECallParameters& aParams )
     {
     CSPLOGSTRING(CSPOBJECT, "CSPCall::ConstructL <");
 
-    // Create cloned copy of call parameters 
+    // Create cloned copy of call parameters
     iParams = static_cast<CCCECallParameters*>( aParams.CloneL() );
-    
-    // Open call handle  
-    OpenCallHandleL(); 
 
-    // Update call info 
-    UpdateCallInfo(); 
-    
-    // Update call state from ETel 
-    UpdateCallState(); 
-    
-    // Create call handlers for call related requests 
-    // and for monitoring call related events 
-    CreateCallHandlersL(); 
-        
+    // Open call handle
+    OpenCallHandleL();
+
+    // Update call info
+    UpdateCallInfo();
+
+    // Update call state from ETel
+    UpdateCallState();
+
+    // Create call handlers for call related requests
+    // and for monitoring call related events
+    CreateCallHandlersL();
+
     CSPLOGSTRING(CSPOBJECT, "CSPCall::ConstructL >");
     }
 
 // ---------------------------------------------------------------------------
 // CSPCall::OpenCallHandleL
-// Open call handle, calls either OpenNewCallL or OpenExistingCallL depending 
-// of the call direction and if the call is a client call       
+// Open call handle, calls either OpenNewCallL or OpenExistingCallL depending
+// of the call direction and if the call is a client call
 // ---------------------------------------------------------------------------
-//    
+//
 void CSPCall::OpenCallHandleL()
     {
     CSPLOGSTRING(CSPINT, "CSPCall::OpenCallHandleL <");
-    
+
     if ( iMobileOriginated )
         {
-        // There is no existing call on line, open new call 
+        // There is no existing call on line, open new call
         OpenNewCall();
         }
     else
         {
-        // Mobile terminated call on line, open existing call 
-        OpenExistingCallL( iName ); 
+        // Mobile terminated call on line, open existing call
+        OpenExistingCallL( iName );
         }
 
     CSPLOGSTRING(CSPINT, "CSPCall::OpenCallHandleL >");
@@ -1311,9 +1335,9 @@ void CSPCall::OpenCallHandleL()
 
 // ---------------------------------------------------------------------------
 // CSPCall::UpdateCallInfoL
-// Update call info including remote party name and number data  
+// Update call info including remote party name and number data
 // ---------------------------------------------------------------------------
-//    
+//
 void CSPCall::UpdateCallInfo()
     {
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallInfo <");
@@ -1328,7 +1352,7 @@ void CSPCall::UpdateCallInfo()
 // CSPCall::UpdateCallInfoImpl
 // Implementation for UpdateCallInfo().
 // ---------------------------------------------------------------------------
-//    
+//
 void CSPCall::UpdateCallInfoImpl( const RMobileCall::TMobileCallInfoV7& aCallInfo )
     {
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallInfoImpl <");
@@ -1336,14 +1360,14 @@ void CSPCall::UpdateCallInfoImpl( const RMobileCall::TMobileCallInfoV7& aCallInf
     if ( iMobileOriginated )
         {
         // Call wasn't added by ETel monitor, update info accordingly
-        UpdateCallNameNumberInfo( aCallInfo, EFalse ); 
+        UpdateCallNameNumberInfo( aCallInfo, EFalse );
         }
     else
         {
         // Call was added by ETel monitor, update info accordingly
         UpdateCallNameNumberInfo( aCallInfo, ETrue );
         }
-    
+
 
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallInfoImpl >");
     }
@@ -1352,7 +1376,7 @@ void CSPCall::UpdateCallInfoImpl( const RMobileCall::TMobileCallInfoV7& aCallInf
 // CSPCall::UpdateCallOrigin
 // Set call origin to CCCECallParameters.
 // ---------------------------------------------------------------------------
-//    
+//
 void CSPCall::UpdateCallOrigin( const RMobileCall::TMobileCallInfoV7& aCallInfo )
     {
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallOrigin <");
@@ -1370,14 +1394,14 @@ void CSPCall::UpdateCallOrigin( const RMobileCall::TMobileCallInfoV7& aCallInfo 
 
 // ---------------------------------------------------------------------------
 // CSPCall::UpdateCallStateL
-//   
+//
 // ---------------------------------------------------------------------------
-//    
+//
 int CSPCall::UpdateCallState()
     {
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallState <");
-    TInt err( KErrNone ); 
-    
+    TInt err( KErrNone );
+
     // Update call state from ETel
     RMobileCall::TMobileCallStatus etelState;
     err = iCall.GetMobileCallStatus( etelState );
@@ -1386,13 +1410,13 @@ int CSPCall::UpdateCallState()
         iCallState = CCPStateFromETelState( etelState );
         }
     CSPLOGSTRING2(CSPINT, "CSPCall::UpdateCallState > res %d", err);
-    
-    return err; 
+
+    return err;
     }
 
 // ---------------------------------------------------------------------------
 // CSPCall::NotifyRemotePartyNumberChanged
-//   
+//
 // ---------------------------------------------------------------------------
 //
 void CSPCall::NotifyRemotePartyNumberChanged()
@@ -1417,9 +1441,9 @@ void CSPCall::NotifyRemotePartyNumberChanged()
 
 // ---------------------------------------------------------------------------
 // CSPCall::CreateCallHandlersL
-// Create call handlers for call related requests and call monitoring  
+// Create call handlers for call related requests and call monitoring
 // ---------------------------------------------------------------------------
-//    
+//
 void CSPCall::CreateCallHandlersL()
     {
     CSPLOGSTRING(CSPINT, "CSPCall::CreateCallHandlersL <");
@@ -1430,27 +1454,27 @@ void CSPCall::CreateCallHandlersL()
     iCallEventMonitor->StartMonitoring();
     iCallStatusMonitor = CSPEtelCallStatusMonitor::NewL( *this, iCall );
     iCallStatusMonitor->StartMonitoring();
-    
+
     iCallCapsMonitor = CSPEtelCallCapsMonitor::NewL( *this, iCall );
     iCallCapsMonitor->StartMonitoring();
     iCapsFlags = iCallCapsMonitor->FetchCallControlCapsL();
-    
+
     iCallInfoMonitor = CSPCallInfoMonitor::NewL( *this, iCall );
     iCallInfoMonitor->StartMonitoring();
-    
-    // Start UUI monitor and create message sender 
+
+    // Start UUI monitor and create message sender
     iSkypeId = TCSPSkypeIdParser::CreateSkypeIdBufferL();
     iUUIMonitor = CSPUUIMonitor::NewL( iCall,*this );
     iUUIMonitor->StartMonitor();
     iUUIMessageSender = CSPUUIMessageSender::NewL( iCall );
     iUserToUserInformation = iParams->UUSId().AllocL();
-    
+
     // Transfer provider
     iTransferProvider = CSPTransferProvider::NewL( iCall, *this, iCommonInfo );
 
     // Forward provider
     iForwardProvider = CSPForwardProvider::NewL();
-    
+
     CSPLOGSTRING(CSPINT, "CSPCall::CreateCallHandlersL >");
     }
 
@@ -1458,7 +1482,7 @@ void CSPCall::CreateCallHandlersL()
 // CSPCall::NotifyRingingState
 // Gets to ringing state
 // ---------------------------------------------------------------------------
-//     
+//
 void CSPCall::NotifyRingingState( )
     {
     CSPLOGSTRING(CSPREQIN, "CSPCall::NotifyRingingState");
@@ -1479,36 +1503,36 @@ void CSPCall::NotifyRingingState( )
 // CSPCall::CCPStateFromETelState
 // Simple mapping between state enumerations.
 // ---------------------------------------------------------------------------
-//     
-MCCPCallObserver::TCCPCallState CSPCall::CCPStateFromETelState( 
-    RMobileCall::TMobileCallStatus aEtelState ) 
+//
+MCCPCallObserver::TCCPCallState CSPCall::CCPStateFromETelState(
+    RMobileCall::TMobileCallStatus aEtelState )
     {
     MCCPCallObserver::TCCPCallState ret = MCCPCallObserver::ECCPStateIdle;
     switch ( aEtelState )
         {
         case RMobileCall::EStatusUnknown:
             {
-            CSPLOGSTRING( CSPREQIN, 
+            CSPLOGSTRING( CSPREQIN,
                 "CSPCall::State > RMobileCall::Unknown" );
             ret = MCCPCallObserver::ECCPStateIdle;
             break;
             }
         case RMobileCall::EStatusIdle:
             {
-            CSPLOGSTRING( CSPREQIN, 
+            CSPLOGSTRING( CSPREQIN,
                 "CSPCall::State > RMobileCall::EStatusIdle" );
             ret = MCCPCallObserver::ECCPStateIdle;
             break;
             }
         case RMobileCall::EStatusRinging:
             {
-            CSPLOGSTRING( CSPREQIN, 
+            CSPLOGSTRING( CSPREQIN,
                 "CSPCall::State > RMobileCall::EStatusRinging" );
             ret = MCCPCallObserver::ECCPStateRinging;
             break;
             }
         // Map the following to connecting status
-        case RMobileCall::EStatusDialling:                
+        case RMobileCall::EStatusDialling:
             {
             CSPLOGSTRING( CSPREQIN, "CSPCall::State > \
                 RMobileCall::EStatusDialling" );
@@ -1527,12 +1551,12 @@ MCCPCallObserver::TCCPCallState CSPCall::CCPStateFromETelState(
             CSPLOGSTRING( CSPREQIN, "CSPCall::State > \
                 RMobileCall::Answering" );
             ret = MCCPCallObserver::ECCPStateAnswering;
-            break;                
+            break;
             }
         // Call is connected and active.
         case RMobileCall::EStatusConnected:
             {
-            CSPLOGSTRING( CSPREQIN, 
+            CSPLOGSTRING( CSPREQIN,
             "CSPCall::State > RMobileCall::EStatusConnected" );
             ret = MCCPCallObserver::ECCPStateConnected;
             break;
@@ -1540,55 +1564,55 @@ MCCPCallObserver::TCCPCallState CSPCall::CCPStateFromETelState(
         case RMobileCall::EStatusDisconnectingWithInband:
         case RMobileCall::EStatusDisconnecting:
             {
-            CSPLOGSTRING( CSPREQIN, 
+            CSPLOGSTRING( CSPREQIN,
                  "CSPCall::State > RMobileCall::EStatusDisconnecting/Inband?");
             ret = MCCPCallObserver::ECCPStateDisconnecting;
             break;
             }
         case RMobileCall::EStatusReconnectPending:
             {
-            CSPLOGSTRING( CSPREQIN, 
+            CSPLOGSTRING( CSPREQIN,
             "CSPCall::State > RMobileCall::EStatusHangingUp" );
             ret = MCCPCallObserver::ECCPStateDisconnecting;
             break;
             }
         case RMobileCall::EStatusHold:
             {
-            CSPLOGSTRING( CSPREQIN, 
+            CSPLOGSTRING( CSPREQIN,
             "CSPCall::State > RMobileCall::EStatusHold" );
             ret = MCCPCallObserver::ECCPStateHold;
             break;
             }
-        case RMobileCall::EStatusWaitingAlternatingCallSwitch: 
+        case RMobileCall::EStatusWaitingAlternatingCallSwitch:
             {
             // This state is not used in real life.
-            CSPLOGSTRING( CSPREQIN, 
+            CSPLOGSTRING( CSPREQIN,
             "CSPCall::State > RMobileCall::EStatusWaitingAlternatingCallSwitch" );
             ret = MCCPCallObserver::ECCPStateConnected;
             break;
             }
-        case RMobileCall::EStatusTransferring: 
+        case RMobileCall::EStatusTransferring:
             {
-            CSPLOGSTRING( CSPREQIN, 
+            CSPLOGSTRING( CSPREQIN,
             "CSPCall::State > RMobileCall::EStatusHold" );
             ret = MCCPCallObserver::ECCPStateTransferring;
             break;
             }
-        case RMobileCall::EStatusTransferAlerting: 
+        case RMobileCall::EStatusTransferAlerting:
             {
-            CSPLOGSTRING( CSPREQIN, 
+            CSPLOGSTRING( CSPREQIN,
             "CSPCall::State > RMobileCall::EStatusHold" );
             ret = MCCPCallObserver::ECCPStateTransferring;
             break;
-            }            
+            }
         default:
             {
-            CSPLOGSTRING( CSPREQIN, 
+            CSPLOGSTRING( CSPREQIN,
                 "CSPCall::CCPStateFromETelState unhandled state ");
             }
         }
 
-    CSPLOGSTRING3(CSPINT, 
+    CSPLOGSTRING3(CSPINT,
         "CSPCall::CCPStateFromETelState ETel: %d CCP: %d", aEtelState, ret);
     return ret;
     }
@@ -1598,21 +1622,21 @@ MCCPCallObserver::TCCPCallState CSPCall::CCPStateFromETelState(
 // Notifies observers about state changes
 // ---------------------------------------------------------------------------
 //
-void CSPCall::NotifyCallStateChanged( MCCPCallObserver::TCCPCallState aState ) 
+void CSPCall::NotifyCallStateChanged( MCCPCallObserver::TCCPCallState aState )
     {
-    CSPLOGSTRING3(CSPINT, 
-            "CSPCall::NotifyCallStateChanged < state: %d this: %x", 
+    CSPLOGSTRING3(CSPINT,
+            "CSPCall::NotifyCallStateChanged < state: %d this: %x",
             aState, this );
-                           
-    iCallState = aState;    
-    TBool notifyObservers( ETrue ); 
+
+    iCallState = aState;
+    TBool notifyObservers( ETrue );
 
     if ( !iMobileOriginated && MCCPCallObserver::ECCPStateRinging == aState )
         {
-        CSPLOGSTRING2(CSPINT, "CSPCall::No notify on ringing MT", aState);        
-        notifyObservers = EFalse; 
+        CSPLOGSTRING2(CSPINT, "CSPCall::No notify on ringing MT", aState);
+        notifyObservers = EFalse;
         }
-    
+
     if ( notifyObservers )
         {
         TInt obsCount = iObservers.Count();
@@ -1620,14 +1644,14 @@ void CSPCall::NotifyCallStateChanged( MCCPCallObserver::TCCPCallState aState )
             {
             MCCPCallObserver *obs = iObservers[i];
             if ( obs )
-                {            
+                {
                 obs->CallStateChanged( aState, this );
                 }
             }
         }
-        
-    CSPLOGSTRING3(CSPINT, 
-            "CSPCall::NotifyCallStateChanged > state: %d this: %x", 
+
+    CSPLOGSTRING3(CSPINT,
+            "CSPCall::NotifyCallStateChanged > state: %d this: %x",
             aState, this );
     }
 
@@ -1636,24 +1660,24 @@ void CSPCall::NotifyCallStateChanged( MCCPCallObserver::TCCPCallState aState )
 // Notifies observers about state changes
 // ---------------------------------------------------------------------------
 //
-void CSPCall::NotifyCallStateChangedWithInband( 
-        MCCPCallObserver::TCCPCallState aState ) 
+void CSPCall::NotifyCallStateChangedWithInband(
+        MCCPCallObserver::TCCPCallState aState )
     {
-    CSPLOGSTRING3(CSPINT, 
-        "CSPCall::NotifyCallStateChangedWithInBand < state: %d this: %x", 
+    CSPLOGSTRING3(CSPINT,
+        "CSPCall::NotifyCallStateChangedWithInBand < state: %d this: %x",
         aState, this );
-    
+
     iCallState = aState;
-   
+
     if ( !iMobileOriginated && MCCPCallObserver::ECCPStateRinging == aState )
         {
         CSPLOGSTRING2(CSPINT, "CSPCall::No notify on ringing MT", aState);
         }
     else
-        {        
+        {
         TInt obsCount = iObservers.Count();
         for ( TInt i = 0; i < obsCount; i++ )
-            {            
+            {
             MCCPCallObserver *obs = iObservers[i];
             if ( obs )
                 {
@@ -1661,8 +1685,8 @@ void CSPCall::NotifyCallStateChangedWithInband(
                 }
             }
         }
-    CSPLOGSTRING3(CSPINT, 
-            "CSPCall::NotifyCallStateChangedWithInband > state: %d this: %x", 
+    CSPLOGSTRING3(CSPINT,
+            "CSPCall::NotifyCallStateChangedWithInband > state: %d this: %x",
             aState, this);
     }
 
@@ -1674,7 +1698,7 @@ void CSPCall::NotifyCallStateChangedWithInband(
 void CSPCall::ReadRepositoryL( TUid aUid, TUint aKey, TInt& aVal)
     {
     CSPLOGSTRING(CSPINT, "CSPCall::ReadRepositoryL");
-    
+
     CRepository* cr = CRepository::NewL( aUid );
     TInt err = cr->Get( aKey, aVal );
     delete cr;
@@ -1688,53 +1712,53 @@ void CSPCall::ReadRepositoryL( TUid aUid, TUint aKey, TInt& aVal)
 //
 void CSPCall::CheckAndNotifyTerminationError()
     {
-    CSPLOGSTRING2(CSPINT, 
-        "CSPCall::CheckAndNotifyTerminationError dial completion code: %d", 
+    CSPLOGSTRING2(CSPINT,
+        "CSPCall::CheckAndNotifyTerminationError dial completion code: %d",
         iDialCompletionCode);
-    
+
     // Emergency error handling is separated into CSPEtelCallRequester
     if ( !iIsEmergencyCall )
         {
         TInt termErr = ExitCodeError();
-        CSPLOGSTRING2(CSPINT, 
-                "CSPCall::CheckAndNotifyTerminationError exit code error: %d", 
+        CSPLOGSTRING2(CSPINT,
+                "CSPCall::CheckAndNotifyTerminationError exit code error: %d",
                 termErr);
-        
+
         if ( termErr == KErrNone )
             {
             // Handle KErrGsmCCUnassignedNumber correctly
             // because the value is not stored in exit code.
             termErr = iDialCompletionCode;
-            CSPLOGSTRING(CSPINT, 
+            CSPLOGSTRING(CSPINT,
                     "CSPCall::CheckAndNotifyTerminationError use dial completion code");
             }
-            
+
         if ( termErr == KErrGsmRRPreEmptiveRelease )
             {
-            // Error KErrGsmRRPreEmptiveRelease occurs when there is active call 
+            // Error KErrGsmRRPreEmptiveRelease occurs when there is active call
             // and user make emergency call, can be ignored.
-            CSPLOGSTRING3( 
-                CSPERROR, 
+            CSPLOGSTRING3(
+                CSPERROR,
                 "CSPCall::CheckAndNotifyTerminationError preemptive release, ignore: %d",
                 termErr,
                 this );
             }
-        else if ( iDontReportTerm 
-                && (  termErr == KErrGsmCCNormalUnspecified 
+        else if ( iDontReportTerm
+                && (  termErr == KErrGsmCCNormalUnspecified
                    || termErr == KErrGsmCCCallRejected ) )
             {
-            // Not an error, since this happens on normal 
+            // Not an error, since this happens on normal
             // call termination situation after connected call.
-            CSPLOGSTRING3(CSPERROR, 
-                    "CSPCall::CheckAndNotifyTerminationError DISCARD this: %x err: %d", 
-                    this, 
-                    termErr);    
-            }        
+            CSPLOGSTRING3(CSPERROR,
+                    "CSPCall::CheckAndNotifyTerminationError DISCARD this: %x err: %d",
+                    this,
+                    termErr);
+            }
         else if ( termErr )
             {
             TCCPError ccpErr(ECCPErrorNone);
 
-            // Only a couple of error codes can have diagnostic information. 
+            // Only a couple of error codes can have diagnostic information.
             // aDiagnostic ought to be undefined in other situatios,
             // but at least in this way we can really guarantee it.
             if ( termErr == KErrGsmCCFacilityRejected ||
@@ -1744,10 +1768,10 @@ void CSPCall::CheckAndNotifyTerminationError()
                  termErr == KErrGsmCCUserNotInCug )
                 {
                 TName name;
-                CallName( name );        
+                CallName( name );
                 TInt diagErr = iCommonInfo.GetDiagnosticError( name );
                 ccpErr = iRequester->MapError( diagErr );
-    
+
                 // Finally use exit code if diagnostic did not contain
                 // any useful information.
                 if ( ccpErr == ECCPRequestFailure )
@@ -1759,11 +1783,11 @@ void CSPCall::CheckAndNotifyTerminationError()
                 {
                 ccpErr = iRequester->MapError( termErr );
                 }
-            
+
             NotifyErrorOccurred( ccpErr );
             iTerminationErrorNotified = ETrue;
             }
-        }    
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -1773,7 +1797,7 @@ void CSPCall::CheckAndNotifyTerminationError()
 //
 TInt CSPCall::ExitCodeError() const
     {
-    CSPLOGSTRING2(CSPINT, "CSPCall::ExitCodeError < this: %x", 
+    CSPLOGSTRING2(CSPINT, "CSPCall::ExitCodeError < this: %x",
                     this );
     TInt callError;
     RMobileCall::TMobileCallInfoV7Pckg pck( iEtelCallInfo );
@@ -1797,7 +1821,7 @@ TInt CSPCall::ExitCodeError() const
             else
                 {
                 callError = ( ( iEtelCallInfo.iExitCode & 0x0000FFFF ) 
-                    | 0xFFFF0000 ); 
+                    | 0xFFFF0000 );
                 }
             }
         }
@@ -1806,14 +1830,14 @@ TInt CSPCall::ExitCodeError() const
         {
         callError = KErrNone;
         }
-    else 
+    else
         {
         // No extended error, expand value to full range
         callError = ( iEtelCallInfo.iExitCode | 0xFFFF0000 );
         }
-        
+
     CSPLOGSTRING2(CSPINT, "CSPCall::ExitCodeError > err: %d", callError);
-        
+
     return callError;
     }
 
@@ -1822,20 +1846,20 @@ TInt CSPCall::ExitCodeError() const
 // ---------------------------------------------------------------------------
 //
  void CSPCall::UUSMessageReceived( const TDesC& aMessage )
-    {      
+    {
     CSPLOGSTRING(CSPREQIN, "CSPCall::UUSMessageReceived");
     TCSPSkypeIdParser parser;
-           
+
     TPtr ptr = iSkypeId->Des();
     ptr.Zero();
     const TInt error( parser.Parse( aMessage, ptr ) );
-    
-    if ( !error ) 
+
+    if ( !error )
         {
         iRemotePartyName = ptr;
-        NotifyCallEventOccurred( MCCPCallObserver::ECCPNotifyRemotePartyInfoChange );            
+        NotifyCallEventOccurred( MCCPCallObserver::ECCPNotifyRemotePartyInfoChange );
         }
-    CSPLOGSTRING2(CSPINT, "CSPCall::UUSMessageReceived  err: %d",  error );        
+    CSPLOGSTRING2(CSPINT, "CSPCall::UUSMessageReceived  err: %d",  error );
     }
 
 // ---------------------------------------------------------------------------
@@ -1846,16 +1870,16 @@ void CSPCall::NotifyRemotePartyInfoChanged( const TDesC& aRemotePartyName,
                                             const TDesC& aRemotePartyNumber )
     {
     CSPLOGSTRING(CSPREQIN, "CSPCall::NotifyRemotePartyInfoChanged");
-    if ( aRemotePartyName.Length() )    
+    if ( aRemotePartyName.Length() )
         {
         iRemotePartyName = aRemotePartyName;
         }
-    
-    if ( aRemotePartyNumber.Length() )    
+
+    if ( aRemotePartyNumber.Length() )
         {
         iRemotePartyNumber = aRemotePartyNumber;
         }
-    
+
     NotifyCallEventOccurred( MCCPCallObserver::ECCPNotifyRemotePartyInfoChange );
     }
 
@@ -1863,7 +1887,7 @@ void CSPCall::NotifyRemotePartyInfoChanged( const TDesC& aRemotePartyName,
 // CSPCall::DontReportTerminationError
 // ---------------------------------------------------------------------------
 //
-void CSPCall::DontReportTerminationError() 
+void CSPCall::DontReportTerminationError()
     {
     CSPLOGSTRING(CSPREQIN, "CSPCall::DontReportTerminationError");
     iDontReportTerm = ETrue;
@@ -1883,35 +1907,35 @@ void CSPCall::UpdateCallNameNumberInfo(
     iCallName.Zero();
     iRemotePartyNumber.Zero();
     iRemotePartyName.Zero();
-    
-    if ( aCallAddedByMonitor )        
+
+    if ( aCallAddedByMonitor )
         {
-        CSPLOGSTRING(CSPINT, 
+        CSPLOGSTRING(CSPINT,
                 "CSPCall::UpdateCallNameNumberInfo call added by monitor");
 
         // If call was created by ETel line status or incoming call monitor
-        // the call name is already known, only remote party info is fetched from 
-        // call info 
+        // the call name is already known, only remote party info is fetched from
+        // call info
         iCallName.Append( iName );
         iRemotePartyName.Append( aCallInfo.iRemoteParty.iCallingName );
         iRemotePartyNumber.Append( aCallInfo.iRemoteParty.iRemoteNumber.iTelNumber );
         }
-    else 
+    else
         {
-        CSPLOGSTRING(CSPINT, 
+        CSPLOGSTRING(CSPINT,
                 "CSPCall::UpdateCallNameNumberInfo call added by plugin owner");
-        
-        // The call was not created by monitor and the remote number is already known, 
-        // fetch only call name from call info  
+
+        // The call was not created by monitor and the remote number is already known,
+        // fetch only call name from call info
         iCallName.Append( aCallInfo.iCallName );
-        iRemotePartyNumber.Append( iName ); 
+        iRemotePartyNumber.Append( iName );
         }
-    
-    CSPLOGSTRING2(CSPINT, 
+
+    CSPLOGSTRING2(CSPINT,
             "CSPCall::UpdateCallNameNumberInfo iCallName: %S", &iCallName );
-    CSPLOGSTRING2(CSPINT, 
+    CSPLOGSTRING2(CSPINT,
             "CSPCall::UpdateCallNameNumberInfo iRemotePartyNumber: %S", &iRemotePartyNumber );
-    CSPLOGSTRING2(CSPINT, 
+    CSPLOGSTRING2(CSPINT,
             "CSPCall::UpdateCallNameNumberInfo iRemotePartyName: %S", &iRemotePartyName );
 
     CSPLOGSTRING(CSPINT, "CSPCall::UpdateCallNameNumberInfo >");
@@ -1919,15 +1943,15 @@ void CSPCall::UpdateCallNameNumberInfo(
 
 // ---------------------------------------------------------------------------
 // CSPCall::OpenNewCall
-// Open new call 
+// Open new call
 // ---------------------------------------------------------------------------
-//    
+//
 void CSPCall::OpenNewCall()
     {
     CSPLOGSTRING(CSPINT, "CSPCall::OpenNewCall <");
 
-    // Open new call 
-    __ASSERT_ALWAYS( iCall.OpenNewCall( iLine ) == KErrNone, 
+    // Open new call
+    __ASSERT_ALWAYS( iCall.OpenNewCall( iLine ) == KErrNone,
             Panic( ECSPPanicNoEtel ) );
 
     CSPLOGSTRING(CSPINT, "CSPCall::OpenNewCall >");
@@ -1935,21 +1959,21 @@ void CSPCall::OpenNewCall()
 
 // ---------------------------------------------------------------------------
 // CSPCall::OpenExistingCallL
-// Open existing call  
+// Open existing call
 // ---------------------------------------------------------------------------
-//    
+//
 void CSPCall::OpenExistingCallL( const TDesC& aName )
     {
-    CSPLOGSTRING2(CSPINT, 
+    CSPLOGSTRING2(CSPINT,
             "CSPCall::OpenExistingCallL < aName: %S", &aName);
-    
-    // Open existing call with given name from current line 
-    TInt err = iCall.OpenExistingCall( iLine, aName ); 
-    
+
+    // Open existing call with given name from current line
+    TInt err = iCall.OpenExistingCall( iLine, aName );
+
     if ( KErrNone != err  )
         {
         CSPLOGSTRING2(CSPERROR,
-            "CSPCall::OpenCallHandleL OpenExistingCall error: %d, leaving", err);    
+            "CSPCall::OpenCallHandleL OpenExistingCall error: %d, leaving", err);
         User::Leave( err );
         }
 

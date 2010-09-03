@@ -26,7 +26,7 @@
   for enabling RDebug prints in development tracing. 
   Shouldn't be used in release code.
   */
-#define MSG_OUTPUT_RDEBUG
+#undef MSG_OUTPUT_RDEBUG
 
 
 
@@ -53,6 +53,9 @@ static void networkHandlingStarterMsgOutput(QtMsgType type, const char *msg)
     case QtFatalMsg:
         RDebug::Printf("networkhandlingstarter Fatal: %s\n", msg);
         abort();
+        break; 
+    default:
+        break; 
     }
 }
 

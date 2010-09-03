@@ -20,9 +20,35 @@
 #include <xqappmgr.h>
 #include <xqrequestinfo.h>
 #include <xqaiwdecl.h>
+#include <QThreadPool>
 
 #include "phoneapplauncher.h"
 #include "qtphonelog.h"
+
+// runnable object
+void PhoneAppLauncherTask::run()
+{
+    XQApplicationManager appManager;
+    QScopedPointer<XQAiwRequest> request( 
+        mService.isEmpty() ? 
+        appManager.create(mInterface, mOperation, false) :
+        appManager.create(mService, mInterface, mOperation, false) );
+    if (request == NULL) {
+        PHONE_TRACE1("service not found");
+        return;
+    }
+
+    XQRequestInfo info;
+    info.setForeground(true);
+    request->setInfo(info);
+    request->setArguments(mArguments);
+    QVariant retValue(-1);
+    if (!request->send(retValue)) {
+        int error = request->lastError();
+        PHONE_TRACE2("send failed, error %d", request->lastError());
+    }
+}
+
 
 /*!
     PhoneAppLauncher::PhoneAppLauncher.
@@ -55,11 +81,11 @@ void PhoneAppLauncher::launchMessaging(
     arguments.append(QVariant(name));
     arguments.append(QVariant(messageBody));
     sendServiceRequest(
-        "com.nokia.services.hbserviceprovider",
-        "conversationview",
+        "messaging",
+        XQI_MESSAGE_SEND,
         "send(QString,QString,QString)",
         arguments,
-        true);
+        false);
 }
 
 /*!
@@ -90,12 +116,14 @@ void PhoneAppLauncher::launchLogs(
     map.insert(XQLOGS_DIALPAD_TEXT, QVariant(dialpadText));
     QList<QVariant> args;
     args.append(QVariant(map));
-    sendServiceRequest(
-        "logs",
-        XQI_LOGS_VIEW,
-        XQOP_LOGS_SHOW,
-        args,
-        false);
+    // Circular wait condition possible -> launc new thread
+    PhoneAppLauncherTask *task = new PhoneAppLauncherTask();
+    task->mService = "logs";
+    task->mInterface = XQI_LOGS_VIEW;
+    task->mOperation = XQOP_LOGS_SHOW;
+    task->mArguments = args;
+    
+    QThreadPool::globalInstance()->start(task);
 }
 
 /*!
@@ -105,7 +133,7 @@ void PhoneAppLauncher::sendServiceRequest(
         const QString &service, 
         const QString &interface,
         const QString &operation,
-        const QList<QVariant> &arguments, 
+        const QList<QVariant> &arguments,
         const bool foreground)
 {
     int err = -1;
@@ -128,7 +156,6 @@ void PhoneAppLauncher::sendServiceRequest(
             PHONE_TRACE1("service not found");
             return;
         }
-
         if (foreground) {
             XQRequestInfo info;
             info.setForeground(true);
@@ -136,6 +163,7 @@ void PhoneAppLauncher::sendServiceRequest(
         }
         
         request->setArguments(arguments);
+        request->setSynchronous(false);
         QVariant retValue(-1);
         if (!request->send(retValue)) {
             int error = request->lastError();

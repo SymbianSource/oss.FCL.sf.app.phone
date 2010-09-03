@@ -453,6 +453,18 @@ void TestPhoneResourceAdapter::testConvertToToolBarCommandList ()
     QVERIFY(true == testList.at(1).mEnabled);
     testList.clear();
     
+    // Set soft reject dimmed
+    buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,true);
+    testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCOMINGCALL_CBA);
+    QCOMPARE(2,testList.count());
+    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
+    QVERIFY(PhoneCallComingCmdSilent == testList.at(1).mCommandId);
+    QVERIFY(false == testList.at(0).mEnabled);
+    QVERIFY(true == testList.at(1).mEnabled);
+    testList.clear();    
+    
+    // Set soft reject
+    buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,false);
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCOMINGCALL_REJECT_CBA);
     QCOMPARE(2,testList.count());
     QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
@@ -461,6 +473,18 @@ void TestPhoneResourceAdapter::testConvertToToolBarCommandList ()
     QVERIFY(true == testList.at(1).mEnabled);
     testList.clear(); 
     
+    // Set soft reject dimmed
+    buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,true);
+    testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCOMINGCALL_REJECT_CBA);
+    QCOMPARE(2,testList.count());
+    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
+    QVERIFY(PhoneInCallCmdReject == testList.at(1).mCommandId);
+    QVERIFY(false == testList.at(0).mEnabled);
+    QVERIFY(true == testList.at(1).mEnabled);
+    testList.clear(); 
+    
+    // Set soft reject
+    buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,false);
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCOMINGCALL_SOFT_REJECT_CBA);
     QCOMPARE(2,testList.count());
     QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
@@ -469,6 +493,18 @@ void TestPhoneResourceAdapter::testConvertToToolBarCommandList ()
     QVERIFY(false == testList.at(1).mEnabled);
     testList.clear(); 
     
+    // Set soft reject dimmed
+    buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,true);
+    testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCOMINGCALL_SOFT_REJECT_CBA);
+    QCOMPARE(2,testList.count());
+    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
+    QVERIFY(PhoneCallComingCmdSilent == testList.at(1).mCommandId);
+    QVERIFY(false == testList.at(0).mEnabled);
+    QVERIFY(false == testList.at(1).mEnabled);
+    testList.clear(); 
+    
+    // Set soft reject
+    buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,false);
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_CALLWAITING_CBA);
     QCOMPARE(2,testList.count());
     QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
@@ -476,6 +512,19 @@ void TestPhoneResourceAdapter::testConvertToToolBarCommandList ()
     QVERIFY(true == testList.at(0).mEnabled);
     QVERIFY(false == testList.at(1).mEnabled);
     testList.clear(); 
+    
+    // Set soft reject dimmed
+    buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,true);
+    testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_CALLWAITING_CBA);
+    QCOMPARE(2,testList.count());
+    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
+    QVERIFY(PhoneInCallCmdJoinToConference == testList.at(1).mCommandId);
+    QVERIFY(false == testList.at(0).mEnabled);
+    QVERIFY(false == testList.at(1).mEnabled);
+    testList.clear(); 
+    
+    // Set soft reject
+    buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,false);
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_EMERGENCY_CBA);
     QCOMPARE(2,testList.count());

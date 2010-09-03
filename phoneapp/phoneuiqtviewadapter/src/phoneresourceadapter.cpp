@@ -68,6 +68,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     switch (symbianResourceId) {
 	
     case R_PHONEUI_MTCAL_INCOMING_CALL:
+    case R_PHONEUI_VIDEO_CALL_INCOMING:
         {
         PhoneAction *text = new PhoneAction;
         text->setText (hbTrId("txt_phone_other_incoming_call"));
@@ -521,35 +522,52 @@ QList<PhoneAction::ToolBarItem> PhoneResourceAdapter::convertToToolBarCommandLis
     switch(symbianResourceId) {
         case R_PHONEUI_CALLHANDLING_INCOMINGCALL_CBA:
             {
-            ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSoftReject,true)); 
+            bool showSoftReject = (false == m_buttonsCtrl->getButtonFlags(
+                    PhoneUIQtButtonsController::DisableSoftReject));
+            
+            ret.append(PhoneAction::ToolBarItem(
+                    PhoneCallComingCmdSoftReject,showSoftReject)); 
             ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSilent,true));      
             }
             break;
 
         case R_PHONEUI_CALLHANDLING_INCOMINGCALL_REJECT_CBA:
             {
-            ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSoftReject,true));
+            bool showSoftReject = (false == m_buttonsCtrl->getButtonFlags(
+                    PhoneUIQtButtonsController::DisableSoftReject));
+            
+            ret.append(PhoneAction::ToolBarItem(
+                    PhoneCallComingCmdSoftReject,showSoftReject)); 
             ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdReject,true));  
             }
             break;
             
         case R_PHONEUI_CALLHANDLING_INCOMINGCALL_SOFT_REJECT_CBA:
             {
-            ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSoftReject,true));            
-            ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSilent,false)); 
+            bool showSoftReject = (false == m_buttonsCtrl->getButtonFlags(
+                    PhoneUIQtButtonsController::DisableSoftReject));
+            
+            ret.append(PhoneAction::ToolBarItem(
+                    PhoneCallComingCmdSoftReject,showSoftReject));            
+            ret.append(PhoneAction::ToolBarItem(
+                    PhoneCallComingCmdSilent,false)); 
             }
             break;
             
         case R_PHONEUI_CALLHANDLING_CALLWAITING_CBA:        
             {
-            ret.append(PhoneAction::ToolBarItem(PhoneCallComingCmdSoftReject,true));            
-            ret.append(PhoneAction::ToolBarItem(PhoneInCallCmdJoinToConference,false));        
+            bool showSoftReject = (false == m_buttonsCtrl->getButtonFlags(
+                    PhoneUIQtButtonsController::DisableSoftReject));
+            
+            ret.append(PhoneAction::ToolBarItem(
+                    PhoneCallComingCmdSoftReject,showSoftReject));            
+            ret.append(PhoneAction::ToolBarItem(
+                    PhoneInCallCmdJoinToConference,false));        
             }
             break;        
             
         case R_PHONEUI_DIALER_CBA:
         case R_PHONEUI_INCALL_DIALER_CBA:
-        case R_PHONEUI_CALLHANDLING_INCALL_UNHOLD_CBA:
         case R_PHONEUI_CALLHANDLING_INCALL_UNMUTE_CBA:
         case R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA:
         case R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA:

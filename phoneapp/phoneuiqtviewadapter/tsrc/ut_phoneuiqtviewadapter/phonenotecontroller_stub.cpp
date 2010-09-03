@@ -73,31 +73,7 @@ void PhoneNoteController::removeGlobalWaitNote()
     m_removeGlobalWaitNoteCalled = true;
 }
 
-QString PhoneNoteController::globalNoteText(
-        TPhoneCommandParam *commandParam)
-{   
-    QString ret;    
-    
-    return ret;
-}
-
-void PhoneNoteController::destroyDialog()
-{
-}
-
-void PhoneNoteController::destroyNotification()
-{
-}
-
 void PhoneNoteController::removeMappings()
-{
-}
-
-void PhoneNoteController::queryCancelled()
-{
-}
-
-void PhoneNoteController::queryTimeout()
 {
 }
 

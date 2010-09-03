@@ -47,6 +47,7 @@ signals:
     void showGlobalProgressNote(int &noteId, const QString& text);
     void showGlobalNote(
         int &noteId, const QString& text, HbMessageBox::MessageBoxType msgBoxType);
+    void showNotificationDialog(const QString& text);
     void cancelNote(int noteId);
 
 public slots:

@@ -28,8 +28,13 @@ class BubbleHeader;
 class BubbleHeadingWidget : public HbWidget
 {
     Q_OBJECT
-    Q_PROPERTY(int lines READ lineCount WRITE setLineCount)
-    Q_PROPERTY(QString layoutOption READ layout WRITE setLayout)
+    Q_PROPERTY(int lineCount READ lineCount WRITE setLineCount)
+    Q_PROPERTY(QString layoutOption READ layoutOption WRITE setLayoutOption)
+    Q_PROPERTY(QString textLine1 READ textLine1)
+    Q_PROPERTY(QString textLine2 READ textLine2)
+    Q_PROPERTY(QString textLine3 READ textLine3)
+    Q_PROPERTY(QString indicator1 READ indicator1)
+    Q_PROPERTY(QString indicator2 READ indicator2)
 
 public:
     BubbleHeadingWidget(QGraphicsItem* item=0);
@@ -38,8 +43,18 @@ public:
     int lineCount() const;
     void setLineCount(int count);
 
-    QString layout() const;
-    void setLayout(const QString& layout);
+    QString layoutOption() const;
+    void setLayoutOption(const QString& option);
+
+    QString textLine1() const;
+
+    QString textLine2() const;
+
+    QString textLine3() const;
+
+    QString indicator1() const;
+
+    QString indicator2() const;
 
     void reset();
     void readBubbleHeader(const BubbleHeader& header);
@@ -53,8 +68,8 @@ protected:
     void polish(HbStyleParameters &params);
 
 private:
-    int lines;
-    QString layoutOption;
+    int mLineCount;
+    QString mLayoutOption;
 
     const BubbleHeader* mHeader;
 

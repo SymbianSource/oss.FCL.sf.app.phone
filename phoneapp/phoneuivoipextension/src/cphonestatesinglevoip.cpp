@@ -177,8 +177,7 @@ void CPhoneStateSingleVoIP::HandleKeyMessageL(
                  
             if( IsNumberEntryVisibleL() && neLength )
                 {
-                if ( IsOnScreenDialerSupported() &&  
-                     IsCustomizedDialerVisibleL()  )
+                if ( IsCustomizedDialerVisibleL()  )
                     {
                     return;
                     }

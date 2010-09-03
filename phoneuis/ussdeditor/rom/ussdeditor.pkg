@@ -28,7 +28,6 @@
 
 ; Executable and default resource files
 "/epoc32/release/armv5/urel/ussdeditor.exe"    - "!:\sys\bin\ussdeditor.exe"
-"/epoc32/data/z/resource/apps/ussdeditor.rsc"    - "!:\resource\apps\ussdeditor.rsc"
 "/epoc32/data/z/private/10003a3f/import/apps/ussdeditor_reg.rsc"    - "!:\private\10003a3f\import\apps\ussdeditor_reg.rsc"
 
 ; Manual PKG post-rules from PRO files

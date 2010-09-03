@@ -79,12 +79,14 @@ void PhoneAppLauncher::sendServiceRequest(
         const QString &service, 
         const QString &interface,
         const QString &function,
-        const QList<QVariant> &arguments)
+        const QList<QVariant> &arguments,
+        const bool foreground)
 {
     Q_UNUSED(service);
     Q_UNUSED(interface);
     Q_UNUSED(function);
     Q_UNUSED(arguments);
+    Q_UNUSED(foreground);
 }
 
 // end of file

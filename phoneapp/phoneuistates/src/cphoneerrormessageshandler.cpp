@@ -38,9 +38,7 @@
 
 // CONSTANTS
 const TUid KCRUidTelConfiguration = {0x102828B8};
-
 const TUint32 KTelShowCauseCode   = 0x00000002;
-
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -112,12 +110,10 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL(
     {
     __LOGMETHODSTARTEND( EPhoneControl, 
         "CPhoneErrorMessagesHandler::SendGlobalInfoNoteL()" );
-
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
     if ( CPhonePubSubProxy::Instance()->Value( 
             KPSUidUikon, KUikGlobalNotesAllowed ) == 1 )
         {
-        // Re-enable global notes
         TPhoneCmdParamBoolean globalNotifierParam;
         globalNotifierParam.SetBoolean( EFalse );
         iViewCommandHandle->ExecuteCommandL( 
@@ -130,7 +126,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL(
         globalNoteParam.SetType( type );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
-        TInt resourceID( KErrNotFound );
+        TInt resourceID( aResourceId );
         TInt causeCode( KErrNotFound );
         TBool notification( ETrue );
         if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification ) )
@@ -147,11 +143,9 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL(
                 CPhoneMainResourceResolver::Instance()->
                 ResolveResourceID( aResourceId ) );
             }
-        
         iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewShowGlobalNote, &globalNoteParam );    
+            EPhoneViewShowGlobalNote, &globalNoteParam );
         }
-  
     }
  
 // ---------------------------------------------------------
@@ -164,11 +158,9 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL(
     __LOGMETHODSTARTEND( EPhoneControl, 
         "CPhoneErrorMessagesHandler::SendGlobalErrorNoteL()" );
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
-
     if ( CPhonePubSubProxy::Instance()->Value( 
             KPSUidUikon, KUikGlobalNotesAllowed ) == 1 )
         {
-        // Re-enable global notes
         TPhoneCmdParamBoolean globalNotifierParam;
         globalNotifierParam.SetBoolean( EFalse );
         iViewCommandHandle->ExecuteCommandL( 
@@ -181,7 +173,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL(
         globalNoteParam.SetType( type );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
         
-        TInt resourceID( KErrNotFound );
+        TInt resourceID( aResourceId );
         TInt causeCode( KErrNotFound );
         TBool notification( ETrue );
         if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification ) )
@@ -198,11 +190,9 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL(
                 CPhoneMainResourceResolver::Instance()->
                 ResolveResourceID( aResourceId ) );
             }
-        
         iViewCommandHandle->ExecuteCommandL(  
             EPhoneViewShowGlobalNote, &globalNoteParam );
         }
-  
     }
 
 // ---------------------------------------------------------
@@ -214,12 +204,10 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL(
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneErrorMessagesHandler::SendGlobalWarningNoteL( ) ");
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
-
     if ( CPhonePubSubProxy::Instance()->Value( 
             KPSUidUikon, KUikGlobalNotesAllowed ) == 1 || 
             SimState() == EPESimReadable )
-        {    
-        // Re-enable global notes
+        {
         TPhoneCmdParamBoolean globalNotifierParam;
         globalNotifierParam.SetBoolean( EFalse );
         iViewCommandHandle->ExecuteCommandL(  
@@ -232,7 +220,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL(
         globalNoteParam.SetType( type );
         globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
-        TInt resourceID( KErrNotFound );
+        TInt resourceID( aResourceId );
         TInt causeCode( KErrNotFound );
         TBool notification( ETrue );
         if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification) )
@@ -249,7 +237,6 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL(
                 CPhoneMainResourceResolver::Instance()->
                 ResolveResourceID( aResourceId ) );
             }
-        
         iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam );
         }
@@ -266,7 +253,7 @@ TPESimState CPhoneErrorMessagesHandler::SimState() const
         Panic( EPhoneCtrlInvariant ) );
     return iStateMachine->PhoneEngineInfo()->SimState();
     }
-            
+
 // -----------------------------------------------------------
 // CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL
 // -----------------------------------------------------------
@@ -274,12 +261,10 @@ TPESimState CPhoneErrorMessagesHandler::SimState() const
 EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEErrorInfo& aErrorInfo )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL()");
-    
     __PHONELOG1( EBasic, EPhoneControl,
             "PhoneUIControl: CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL - aErrorInfo.iErrorCode =%d ",
             aErrorInfo.iErrorCode);
     iCallId = aErrorInfo.iCallId;
-    
     switch( aErrorInfo.iErrorCode )
         {
         case ECCPErrorRejected:
@@ -704,17 +689,15 @@ TBool CPhoneErrorMessagesHandler::IsVideoCall( const TInt aCallId ) const
 TBool CPhoneErrorMessagesHandler::IsVoiceCall( const TInt aCallId ) const
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneErrorMessagesHandler::IsVoiceCall() ");
-
     if( aCallId == KErrNotFound )
         {
        // Illegal call id, check call type command
         return ( iStateMachine->PhoneEngineInfo()->CallTypeCommand()
             == EPECallTypeCSVoice );  
         }
-     
     return ( iStateMachine->PhoneEngineInfo()
             ->CallType( aCallId )== EPECallTypeCSVoice );
-	}
+    }
     
 // -----------------------------------------------------------
 // CPhoneErrorMessagesHandler::GetCauseCode
@@ -724,18 +707,46 @@ TBool CPhoneErrorMessagesHandler::GetCauseCode(
         TInt &aCauseCode, TInt &aResourceId, TBool &aNotification ) const
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneErrorMessagesHandler::CauseCode() ");
-
     aCauseCode = KErrNotFound;
     aNotification = ETrue;
     TInt callId = (KErrNotFound == iCallId) ? 
         iStateMachine->PhoneEngineInfo()->CallId() :
         iCallId;
-    
-    
     //get exit code error from call data
     TInt callError = iStateMachine->PhoneEngineInfo()->ProtocolError( 
             callId );
-
+    
+    if ( KErrNotFound == callError )
+        {
+        // These resources are used when there is not a protocol error
+        // available.
+        switch( aResourceId )
+            {
+            case EPhoneInvalidPhoneNumber:
+                {
+                callError = KErrGsmCCInvalidNumberFormat;
+                break;
+                }
+            case EPhoneNumberBusy:
+                {
+                callError = KErrGsmCCUserBusy;
+                break;
+                }
+            case EPhoneInformationNoNetworkSupportForVideoCallNote:
+            case EPhoneNoteVideoCallOnlyPossibleUnder3GCoverage:
+                {
+                // Video call special case when call is not
+                // initialized yet and the phone is out off the 3G network.
+                aResourceId = EPhoneNoteVideoCallOnlyPossibleUnder3GCoverage;
+                aNotification = EFalse;
+                aCauseCode = 50;
+                break;
+                }
+            default:
+                break;
+            }
+        }
+    
     switch( callError )
         {
         case KErrGsmCCUnassignedNumber:
@@ -1171,7 +1182,6 @@ TBool CPhoneErrorMessagesHandler::GetCauseCode(
         default:
             break;
         }  
-
     return (aCauseCode != KErrNotFound);
     }
 

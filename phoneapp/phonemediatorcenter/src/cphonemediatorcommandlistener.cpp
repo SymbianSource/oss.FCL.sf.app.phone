@@ -33,7 +33,6 @@
 #include "pevirtualengine.h"
 #include "mpeengineinfo.h"
 #include "mediatorcommandstotelephonyapi.h"
-#include "cphonereconnectquery.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -168,20 +167,14 @@ void CPhoneMediatorCommandListener::RegisterVideoTelephonyMediatorCommands()
 
     // Video Telephony Commands
     MediatorService::TCommand newCommand;
-    newCommand.iCommandId = EVtCmdFallback;
+    newCommand.iCommandId = EVtCmdLowMemory;
     newCommand.iVersion = TVersion( KVideoTelToPhoneCmdVersionMajor, 
         KVideoTelToPhoneCmdVersionMinor, KVideoTelToPhoneCmdVersionBuild );
     caps.Set( ECapabilityNetworkControl );
     newCommand.iCaps = caps;
     newCommand.iTimeout = KPhoneUiMediatorIfTimeout;    
     iVideoTelCommands.Append( newCommand );
-
-    newCommand.iCommandId = EVtCmdSwitchToVoice;
-    iVideoTelCommands.Append( newCommand );
     
-    newCommand.iCommandId = EVtCmdLowMemory;
-    iVideoTelCommands.Append( newCommand );
-
     // Register Video Telephony Commands
     TInt error = iCommandResponder->RegisterCommand( KMediatorTelephonyDomain, 
                                                      KCatVideoTelToPhoneCommands, 
@@ -334,15 +327,6 @@ void CPhoneMediatorCommandListener::VideoTelephonyCommandL( TInt aCommandId, TVe
     
     switch( aCommandId )
         {
-        case EVtCmdFallback:
-            iMenuAndCbaHandler->HandleCommandL( EPhoneInCallCmdEndThisActiveCall );
-            CPhoneReconnectQuery::InstanceL()->ShowReconnectQueryL( ETrue );
-            break;
-            
-        case EVtCmdSwitchToVoice:
-            iMenuAndCbaHandler->HandleCommandL( EPhoneCmdYesSwitchToVoice );
-            break;
-            
         case EVtCmdLowMemory:
             iMenuAndCbaHandler->HandleCommandL( EPhoneCmdVideoCallOutOfMemory );
             break;

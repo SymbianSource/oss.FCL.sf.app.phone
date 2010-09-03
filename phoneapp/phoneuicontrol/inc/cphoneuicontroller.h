@@ -111,13 +111,6 @@ class CPhoneUIController :
         IMPORT_C virtual void HandleIdleForegroundEventL();
 
         /**
-        * Handle environment changes.
-        * @param aChanges environment changes which may be reported by
-        *  a change notifier through the RChangeNotifier interface.
-        */
-        IMPORT_C void HandleEnvironmentChangeL( const TInt aChanges );
-
-        /**
         * Handles startup of the phone application 
         */
         IMPORT_C void HandlePhoneStartupL();

@@ -110,9 +110,8 @@ EXPORT_C void CPhoneIncoming::HandlePhoneEngineMessageL(
                 {
                 HandleIncomingL( iWaitingCallId );
                 }
-            else
+            else // There is no another incoming call
                 {
-                // There is no another incoming call
                 CPhoneStateIncoming::HandlePhoneEngineMessageL( 
                     aMessage, aCallId );
                 }
@@ -160,7 +159,6 @@ EXPORT_C void CPhoneIncoming::HandlePhoneEngineMessageL(
                BeginUiUpdateLC();
                iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
                EndUiUpdate();
-
                iWaitingCallId = KErrNotFound;
                }
            else
@@ -185,7 +183,6 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneIncoming::HandleIncomingL()");
-    
     TPhoneCmdParamCallStateData callState;
     callState.SetCallState( EPEStateConnected );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCallIdByState, &callState );
@@ -195,7 +192,6 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
-    
     AllowShowingOfWaitingCallHeaderL( dialerParam );
       
     // Close fast swap window if it's displayed
@@ -217,9 +213,7 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
         dialerParam.SetBoolean( EFalse );
         }
     
-    // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
-    
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
 
     if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
@@ -231,7 +225,6 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
         }
     else
         {
-        // if keys have been locked, disable keylock without information note
         if ( IsKeyLockOn() )
             {
             iViewCommandHandle->ExecuteCommandL( EPhoneViewDisableKeyLockWithoutNote );
@@ -249,7 +242,6 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
 
     if ( connectedCall > KErrNotFound )
         {
-        // Go to incoming state
         iCbaManager->UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
         iStateMachine->ChangeState( EPhoneStateWaitingInSingle );   
         }
@@ -265,17 +257,14 @@ void CPhoneIncoming::DisplayIncomingCallL(
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneIncoming::DisplayIncomingCallL()");
-
     // Cannot delete active note, e.g. New call query, 
     // but show waiting note with or without caller name
-    if ( IsAnyQueryActiveL() || 
-        ( aCommandParam.Boolean() && iOnScreenDialer ) )
+    if ( IsAnyQueryActiveL() || aCommandParam.Boolean() )
         {
-        CallWaitingNoteL( aCallId );        
+        CallWaitingNoteL( aCallId );
         }
     else
         {
-        // Remove any phone dialogs if they are displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
         }
     
@@ -287,13 +276,10 @@ void CPhoneIncoming::DisplayIncomingCallL(
         EPhoneViewSetNeedToSendToBackgroundStatus,
         &booleanParam );
 
-    // Bring Phone app in the foreground
     TPhoneCmdParamInteger uidParam;
     uidParam.SetInteger( KUidPhoneApplication.iUid );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewBringAppToForeground,
         &uidParam );
-
-    // Set Phone as the top application
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetTopApplication,
         &uidParam );
 
@@ -308,7 +294,6 @@ void CPhoneIncoming::AllowShowingOfWaitingCallHeaderL(
     TPhoneCmdParamBoolean& aCommandParam )
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneIncoming::AllowShowingOfWaitingCallHeaderL() ");
-
     if ( aCommandParam.Boolean() && IsNumberEntryUsedL() )
         {
         SetNumberEntryVisibilityL(EFalse);
@@ -316,26 +301,16 @@ void CPhoneIncoming::AllowShowingOfWaitingCallHeaderL(
     }
 
 // -----------------------------------------------------------
-// CPhoneIncoming::HandleLongHashL
+// CPhoneIncoming::HandleErrorL
 // -----------------------------------------------------------
 //
- void CPhoneIncoming::HandleLongHashL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneIncoming::HandleLongHashL( ) ");
-    }
-
- // -----------------------------------------------------------
- // CPhoneIncoming::HandleErrorL
- // -----------------------------------------------------------
- //
- EXPORT_C void CPhoneIncoming::HandleErrorL( 
+EXPORT_C void CPhoneIncoming::HandleErrorL( 
          const TPEErrorInfo& aErrorInfo )
      {
      __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneIncoming::HandleErrorL()");
-     
      if( aErrorInfo.iErrorCode == ECCPErrorCCUserAlertingNoAnswer )
          {
-         // Should not shown "No Answer" note
+         // Should not show "No Answer" note
          __PHONELOG1( EBasic, EPhoneUIStates,
         "PhoneUIControl: CPhoneIncoming::HandleErrorL - aErrorInfo.iErrorCode =%d ",
              aErrorInfo.iErrorCode);

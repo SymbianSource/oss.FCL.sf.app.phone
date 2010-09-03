@@ -112,10 +112,16 @@ class MPhCntMatch
         virtual TPtrC CompanyName() const = 0;
 
         /**
+        * Group name field from contact.
+        * @return Field text. Empty if there isn't one specified.
+        */
+        virtual TPtrC GroupName() const = 0;
+        
+        /**
         * Number field from contact (from matched field).
         * @return Field text. Empty if there isn't one specified.
         */
-        virtual TPtrC Number() const = 0;
+        virtual TPtrC Number() = 0;
 
         /**
         * Ringing tone field from contact.

@@ -18,6 +18,7 @@
 #include <hbicon.h>
 #include "cpnetworkstatus.h"
 #include "cppluginlogging.h"
+#include "cpplugincommon.h"
 
 
 /*!
@@ -25,6 +26,7 @@
  */
 CpNetworkStatus::CpNetworkStatus() : 
     QObject(0),
+    m_cpSettingsWrapper(NULL),
     m_settingFormItemData(NULL)
 {
     DPRINT << ": IN";
@@ -48,7 +50,9 @@ CpNetworkStatus::CpNetworkStatus() :
             SLOT(networkStatusChanged(
                     QSystemNetworkInfo::NetworkMode, 
                     QSystemNetworkInfo::NetworkStatus)));
-        
+
+    m_cpSettingsWrapper = new CpSettingsWrapper;
+
     DPRINT << ": OUT";
 }
 
@@ -75,6 +79,9 @@ CpNetworkStatus::~CpNetworkStatus()
             SLOT(networkStatusChanged(
                     QSystemNetworkInfo::NetworkMode, 
                     QSystemNetworkInfo::NetworkStatus)));
+
+    delete m_cpSettingsWrapper;
+    m_cpSettingsWrapper = NULL;
     
     DPRINT << ": OUT";
 }
@@ -90,7 +97,7 @@ QString CpNetworkStatus::statusText() const
     QString statusText;
     
     if ((QSystemDeviceInfo::SimNotAvailable == m_deviceInfo->simStatus()) ||
-        (QSystemDeviceInfo::OfflineProfile == m_deviceInfo->currentProfile())) {   
+        ( m_cpSettingsWrapper->isPhoneOffline())) {
         statusText = hbTrId("txt_cp_dblist_mobile_network_val_off");
     } else if (connectedToNetwork()) {
         statusText = m_networkInfo->networkName(QSystemNetworkInfo::WcdmaMode);
@@ -128,7 +135,7 @@ QString CpNetworkStatus::statusIconLocicalName() const
     QString statusIcon("");
     
     if ((QSystemDeviceInfo::SimNotAvailable == m_deviceInfo->simStatus()) ||
-        (QSystemDeviceInfo::OfflineProfile == m_deviceInfo->currentProfile())) {   
+       (m_cpSettingsWrapper->isPhoneOffline())) {
         statusIcon = QString("qtg_large_network_off");
     } else if (connectedToNetwork()) {
         statusIcon = QString("qtg_large_network");

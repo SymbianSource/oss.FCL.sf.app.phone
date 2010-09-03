@@ -172,7 +172,6 @@ void CPhoneCallHeaderManager::DisplayHeaderForCallComingInL(
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneCallHeaderManager::DisplayHeaderForCallComingInL() ");
     __ASSERT_DEBUG( iStateMachine.PhoneEngineInfo(), Panic( EPhoneCtrlInvariant ) );
     TPhoneCmdParamCallHeaderData callHeaderParam;
-    
     iCallHeaderParam->SetIncomingCallHeaderParamsL( 
             aCallId, 
             aWaitingCall, 
@@ -292,21 +291,7 @@ TInt CPhoneCallHeaderManager::CallHeaderType() const
 void CPhoneCallHeaderManager::SetDivertIndication( const TBool aDivertIndication )
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneCallHeaderManager::SetDivertIndication()");
-    iCallHeaderParam->SetDivertIndication( aDivertIndication );           
-    }
-
-// ---------------------------------------------------------------------------
-// CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL
-// ---------------------------------------------------------------------------
-//
-void CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL( 
-        const TInt /*aNumberLength*/,
-        const TBool /*aContactInfoAvailable*/ )
-    {
-    __LOGMETHODSTARTEND( 
-            EPhoneControl, 
-            "CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL() ");
-     
+    iCallHeaderParam->SetDivertIndication( aDivertIndication );
     }
 
 // -----------------------------------------------------------

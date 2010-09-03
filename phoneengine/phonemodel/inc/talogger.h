@@ -50,7 +50,7 @@ inline TUint KTALOGMASK()
 #else
 
 #ifdef __WINS__
-#define TEF_LOGGING_METHOD      2   // UDEB BUILD, WINS
+#define TEF_LOGGING_METHOD      0   // UDEB BUILD, WINS
 #else
 #define TEF_LOGGING_METHOD      2   // UDEB BUILD, HW
 #endif // __WINS__

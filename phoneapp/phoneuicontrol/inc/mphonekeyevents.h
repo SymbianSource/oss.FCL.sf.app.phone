@@ -63,12 +63,6 @@ class MPhoneKeyEvents
             const TKeyEvent& aKeyEvent,
             TEventCode aEventCode ) = 0;
 
-        virtual void HandleKeyPressDurationL(
-            TKeyCode aCode,
-            TTimeIntervalMicroSeconds aKeyPressDuration ) = 0;
-            
-        virtual void HandleLongHashL() = 0;
-        
         virtual void HandleDtmfKeyToneL( const TKeyEvent& aKeyEvent,
                         TEventCode aEventCode ) = 0;
         

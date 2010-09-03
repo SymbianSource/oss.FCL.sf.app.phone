@@ -17,12 +17,8 @@
 */
 
 // INCLUDE FILES
-#include <hbinputeditorinterface.h>
 #include <hbaction.h>
-#include <hbinputstandardfilters.h>
-#include <hbinputfilter.h> 
-#include <hbinputstate.h> 
-#include <hbinputvkbhost.h>
+#include <hbinputmethod.h>
 #include <hbapplication.h>
 #include <cphcltussdint.h>
 
@@ -53,11 +49,9 @@ UssdEditorQuery::UssdEditorQuery(CUssdComms &ussd, QGraphicsItem *parent)
         lineEdit()->setMaxLength(KUssdEditorMaxLength);
         lineEdit()->setMaxRows(KUssdMaxNumberOfEditorLines);
         lineEdit()->setText(QString());
-        lineEdit()->setFocus();
 
         // 0-9, *, +, #
-        HbEditorInterface inputMode(lineEdit());
-        inputMode.setFilter(HbPhoneNumberFilter::instance());
+        lineEdit()->setInputMethodHints(Qt::ImhDialableCharactersOnly);
 
         mComms.appStarting();
         // Disable Ok key by default

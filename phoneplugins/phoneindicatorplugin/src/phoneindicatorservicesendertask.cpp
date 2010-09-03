@@ -46,7 +46,7 @@ void PhoneIndicatorServiceSenderTask::run()
             service = "logs";
             interface = XQI_LOGS_VIEW;
             operation = XQOP_LOGS_SHOW;
-            map.insert(XQLOGS_VIEW_INDEX, QVariant((int)XQService::LogsViewAll));
+            map.insert(XQLOGS_VIEW_INDEX, QVariant((int)XQService::LogsViewMissed));
             map.insert(XQLOGS_SHOW_DIALPAD, QVariant(false));
             map.insert(XQLOGS_DIALPAD_TEXT , QVariant(QString()));
             args.append(QVariant(map));

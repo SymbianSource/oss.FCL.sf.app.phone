@@ -41,7 +41,7 @@ int DTMFService::playDTMFTone(const QChar& keyToPlay)
 {
     PHONE_TRACE2("keyToPlay:", keyToPlay);
     if (!hasCapability()) {
-        return;
+        return KErrPermissionDenied;
     }
     m_parameters.SetKeyCode(keyToPlay.unicode());
     TRAPD(ret, m_call.HandlePlayDTMFL() );
@@ -52,7 +52,7 @@ int DTMFService::stopDTMFPlay()
 {
     PHONE_TRACE;
     if (!hasCapability()) {
-        return;
+        return KErrPermissionDenied;
     }
     return m_call.HandleEndDTMF(); 
 }

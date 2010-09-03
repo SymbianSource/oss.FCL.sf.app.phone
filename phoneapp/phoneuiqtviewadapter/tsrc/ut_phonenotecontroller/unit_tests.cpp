@@ -107,7 +107,6 @@ void TestPhoneNoteController::testShowGlobalNoteDefault ()
 {
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetTimeout(0);
-    globalNoteParam.SetWaitForReady(ETrue);
     m_noteController->showGlobalNote(&globalNoteParam);
     QTest::qWait(2500);
     
@@ -120,7 +119,6 @@ void TestPhoneNoteController::testShowGlobalInfoNoteWithResourceId ()
 {
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetTextResourceId(R_NOTETEXT_NO_ANSWER);
-    globalNoteParam.SetWaitForReady(EFalse);
     globalNoteParam.SetType( EPhoneMessageBoxInformation );
     
     m_noteController->showGlobalNote(&globalNoteParam);
@@ -131,7 +129,6 @@ void TestPhoneNoteController::testShowGlobalInfoNoteWithResourceId ()
 void TestPhoneNoteController::testShowGlobalWarningNoteWithText ()
 {
     TPhoneCmdParamGlobalNote globalNoteParam;
-    globalNoteParam.SetWaitForReady(ETrue);
     globalNoteParam.SetType( EPhoneMessageBoxWarning );
     globalNoteParam.SetText(_L("Test note 1"));
     
@@ -142,7 +139,6 @@ void TestPhoneNoteController::testShowGlobalNoteWithTextAndResourceId ()
 {
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetTextResourceId(R_PHONE_TEXT_COLP_CONNECTED);
-    globalNoteParam.SetWaitForReady(EFalse);
     globalNoteParam.SetType( EPhoneMessageBoxInformation );
     globalNoteParam.SetText(_L("Test number"));
     
@@ -155,7 +151,6 @@ void TestPhoneNoteController::testShowGlobalNoteTwoTimes ()
 {
     TPhoneCmdParamGlobalNote globalNoteParam;
     //globalNoteParam.SetTextResourceId(R_NOTETEXT_NO_ANSWER);
-    globalNoteParam.SetWaitForReady(EFalse);
     globalNoteParam.SetType( EPhoneMessageBoxInformation );
     globalNoteParam.SetText(_L("Test note 2"));
     
@@ -173,7 +168,6 @@ void TestPhoneNoteController::testShowGlobalNoteThreeTimes ()
 {
     TPhoneCmdParamGlobalNote globalNoteParam;
     //globalNoteParam.SetTextResourceId(R_NOTETEXT_NO_ANSWER);
-    globalNoteParam.SetWaitForReady(EFalse);
     globalNoteParam.SetType( EPhoneMessageBoxInformation );
     globalNoteParam.SetText(_L("Test note 4"));
     
@@ -297,7 +291,7 @@ void TestPhoneNoteController::testShowIndicationDialogWithText ()
 {
     TPhoneCmdParamGlobalNote globalNoteParam;
     globalNoteParam.SetNotificationDialog( ETrue );
-    globalNoteParam.SetType( EAknGlobalWarningNote );
+    globalNoteParam.SetType( EPhoneMessageBoxWarning );
     globalNoteParam.SetText(_L("Test indication 1"));
     
     m_noteController->showGlobalNote(&globalNoteParam);

@@ -48,4 +48,6 @@ HEADERS += ../../inc/phoneuiqtbuttonscontroller.h
 SOURCES += ../../src/phoneuiqtbuttonscontroller.cpp
 HEADERS += ../../inc/phonenotecontroller.h
 SOURCES += ../../src/phonenotecontroller.cpp
+HEADERS += ../../inc/phoneglobalnotes.h
+SOURCES += ../../src/phoneglobalnotes.cpp
 SOURCES += unit_tests.cpp

@@ -32,7 +32,6 @@
 class MPhoneState;
 class MPhoneStateMachine;
 class CPhoneCallHeaderManager;
-class CPhoneTimer;
 class TPhoneCmdParamCallHeaderData;
 class MPhoneCustomization;
 class CPhoneNumberEntryManager;
@@ -112,15 +111,6 @@ class CPhoneState :
             TEventCode aEventCode );
 
         /**
-        * Handles key press duration events from the key event handler
-        * @param aCode key event code
-        * @param aKeyPressDuration key press duration
-        */
-        IMPORT_C virtual void HandleKeyPressDurationL(
-            TKeyCode aCode,
-            TTimeIntervalMicroSeconds aKeyPressDuration );
-
-        /**
         * From CEikAppUi. For Idle indicator
         */
         IMPORT_C virtual void HandleSystemEventL(
@@ -151,13 +141,6 @@ class CPhoneState :
         * Indicates when the keylock events
         */
         IMPORT_C virtual void HandleKeyLockEnabled( TBool aKeylockEnabled );
-        
-        /**
-        * Handle environment changes.
-        * @param aChanges environment changes which may be reported by
-        *  a change notifier through the RChangeNotifier interface.
-        */
-        IMPORT_C void HandleEnvironmentChangeL( const TInt aChanges );
 
         /**
         * Handles startup of the phone application
@@ -218,11 +201,6 @@ class CPhoneState :
         */
         IMPORT_C virtual void SetDivertIndication(
             const TBool aDivertIndication );
-
-        /**
-        * Handles Long hash key press
-        */
-        IMPORT_C void HandleLongHashL();
 
         /**
         * Checks whether customized dialer view is active,
@@ -461,14 +439,7 @@ class CPhoneState :
             TInt aContentCbaResourceId,
             TDes* aDataText,
             TBool aSendKeyEnabled = EFalse );
-
-        /**
-        * Handle numeric key event
-        */
-        IMPORT_C virtual void HandleNumericKeyEventL(
-            const TKeyEvent& aKeyEvent,
-            TEventCode aEventCode );
-
+        
         /**
         * Check if the application needs to be sent to the background
         * @return boolean value indicating that application needs to be
@@ -481,12 +452,6 @@ class CPhoneState :
         * @return boolean value indicating that top app is displayed
         */
         IMPORT_C TBool TopAppIsDisplayedL() const;
-
-        /**
-        * Capture keys during call notifications (dialing, incoming, waiting)
-        * @param aCaptured ETrue if keys are to be captured
-        */
-        IMPORT_C void CaptureKeysDuringCallNotificationL( TBool aCaptured );
 
         /**
         * Displays the call termination note, if required
@@ -525,14 +490,6 @@ class CPhoneState :
         * Return SimState.
         */
         IMPORT_C TPESimState SimState() const;
-
-        /**
-        * Starts ALS line change timer.
-        * This should be called after receiving long keypress
-        * which is 0.8 seconds. ALS line change timer ticks
-        * 2.2 seconds before callback is called.
-        */
-        IMPORT_C void StartAlsLineChangeTimerL();
 
         /**
         * Start show security note
@@ -575,13 +532,6 @@ class CPhoneState :
         * Sets the call header type used in the call bubble.
         */
         IMPORT_C void SetCallHeaderType( TInt aCallHeaderType );
-
-        /**
-        * Handles situation when hash key has been kept down long
-        * (long keypress) and the hash character is the only character
-        * in number entry.
-        */
-        IMPORT_C virtual void OnlyHashInNumberEntryL();
 
         /**
         * Informs view that UI is being updated (call bubble or number editor).
@@ -684,16 +634,6 @@ class CPhoneState :
         IMPORT_C void ClearNumberEntryContentCache();
 
         /**
-        * Restores number entry content after dtmf dialer
-        */
-        IMPORT_C void CheckIfRestoreNEContentAfterDtmfDialer();
-
-        /**
-         * Checks if on screen dialer feature is supported.
-         */
-        IMPORT_C TBool IsOnScreenDialerSupported() const;
-
-        /**
          * Returns ETrue if alphanumeric characters are supported.
          * @param aKeyEvent Key event.
          * @return ETrue if alphanumeric chars are supported.
@@ -762,11 +702,6 @@ class CPhoneState :
         void HandleChangedCallDurationL( TInt aCallId );
 
         /**
-        * Update profile display
-        */
-        void UpdateProfileDisplayL();
-
-        /**
         * Sends key down event to the phone engine
         * @param aKeyEvent a key event
         * @param aEventCode key event code
@@ -819,14 +754,6 @@ class CPhoneState :
         * Active call id
         */
         TInt GetActiveCallIdL();
-
-        /**
-        * Callback function for launching ALS line change dialog
-        * This is called when Als line change timer timeout is
-        * reached which means user has pushed the #-key long enough.
-        * @param aAny - not used
-        */
-        static TInt AlsLineChangeTimerCallbackL( TAny* aAny );
 
         /**
         * Shows WLAN MAC address note
@@ -886,27 +813,12 @@ class CPhoneState :
          */
         void HandleSimStateChangedL();
 
-        /**
-         * Checks if key events are allowed to be redirected for further handling
-         */
-        TBool IsKeyEventFurtherProcessedL( const TKeyEvent& aKeyEvent ) const;
-
         /*
          * Checks is given key contains numeric charaters or if customization is used
          * alphanumeir letters
         */
         TBool IsValidAlphaNumericKey( const TKeyEvent& aKeyEvent,
                 TEventCode aEventCode );
-
-        /*
-         * Updates CBA using either customization or resource resolver
-         */
-        void CustomizeCbaForPhoneNumberL();
-
-        /*
-         * Checks if Touch dialer is on in DTMF mode.
-         */
-        TBool IsTouchDTmfDialerOn() const;
 
         /*
          * Checks if keyevent is from dtmf key and sends it to phone-engine
@@ -951,9 +863,6 @@ class CPhoneState :
 
     protected:
 
-        //Indicates whether onscreen dialer is defined
-        TBool iOnScreenDialer;
-
         /**
         * Customization of functionality according to e.g.
         * call type specific needs.
@@ -973,11 +882,6 @@ class CPhoneState :
 
         // Bitmap redraw counter
         TInt iBitmapRedrawCounter;
-
-        /**
-        * Timer for ALS line change.
-        */
-        CPhoneTimer* iAlsLineChangeKeyPressTimer;
 
         // Internal variable for EikonEnv to avoid
         // use of static system calls

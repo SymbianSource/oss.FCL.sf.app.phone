@@ -286,82 +286,26 @@ void CPEContactMatch::CopyContactFieldsDataL(
     // Set ringing tone's filename
     iDataStore.SetPersonalRingingTone( aMatch.PersonalRingingTone(), aCallId );
 
-    // Set name
-    // The following logic determines if one of the languages that require
-    // swapping of first/last name order is selected and performs the operation.
-    HBufC* lastname( NULL );
-    HBufC* firstname( NULL );
-
-    if ( aMatch.LastName().Length() > 0 )
-        {
-        TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL, alloc last name" );
-        lastname = aMatch.LastName().Alloc();
-        }
-    if ( aMatch.FirstName().Length() > 0 )
-        {
-        TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL, alloc first name" );
-        firstname = aMatch.FirstName().Alloc();
-        }
-
-    if ( ( lastname ) && ( firstname ) )
-        {
-        //Swap name order, if required by the current language setting
-        const TLanguage language = User::Language();
-    
-        for ( TInt index = 0; index < KPENumberOfSwappedLanguages; index++ )
-            {
-            if ( KPESwappedLanguages[index] == language )
-                {
-                HBufC* tempfirstname( firstname );
-                firstname = lastname;
-                lastname = tempfirstname;
-                break;
-                }
-            }
-        }
-
     TPEContactName finalName;
-    // Parse name by concatenating lastname and firstname
-    if ( firstname )
+
+    if ( aMatch.GroupName().Length() == 0 )
         {
-        finalName = *firstname;
-        if ( finalName.Length() < KCntMaxTextFieldLength && lastname )
-            {
-            TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL, append with space" );
-            finalName.Append( KPESpace );
-            }
-        delete firstname;
-        firstname = NULL;
+        GetName( aMatch, finalName );
         }
-    if ( lastname )
+    else 
         {
-        if ( finalName.Length() < KCntMaxTextFieldLength )
-            {
-            // Check how long last name can be added to the iName string. 
-            TInt lastNameMaxLength = KCntMaxTextFieldLength - finalName.Length();
-            if ( lastname->Length() > lastNameMaxLength )
-                {
-                TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL, append with part of last name" );
-                // Cut extra chars from the string.
-                finalName.Append( lastname->Left( lastNameMaxLength ) );          
-                }
-            else 
-                {
-                TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL, append with last name" );
-                finalName.Append( *lastname );
-                }
-            }
-        delete lastname;
-        lastname = NULL;
+        // Group name found, set it as remote party name
+        finalName.Append( aMatch.GroupName().Left( KCntMaxTextFieldLength ) );
         }
-        
+    
     // Replace paragraph separator with space character
     const TText ps(0x2029);
-
+    
     while ( finalName.Locate( ps ) != KErrNotFound )
         {
         finalName[ finalName.Locate( ps )] = ' ';
         }
+    
     TEFLOGSTRING3( KTAINT, "CNT CPEContactMatch::iDataStore.SetRemoteName( finalName, aCallId ): finalName: %S callid: %d ", &finalName, aCallId);
     iDataStore.SetRemoteName( finalName, aCallId );
 
@@ -450,6 +394,84 @@ void CPEContactMatch::CopyContactFieldsDataL(
     // Set dtmf array
     iDataStore.SetPredefinedDtmfStrings( aMatch.AllDtmfNumbers(), aCallId );
     TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL: complete" );  
+    }
+
+// -----------------------------------------------------------------------------
+// CPEContactMatch::CopyContactFieldsDataL
+// Copies contact information to remote info struct
+// -----------------------------------------------------------------------------
+//
+void CPEContactMatch::GetName(
+        const MPhCntMatch& aMatch,
+        TPEContactName& aName
+        )
+    {
+    // Set name
+    // The following logic determines if one of the languages that require
+    // swapping of first/last name order is selected and performs the operation.
+    HBufC* lastname( NULL );
+    HBufC* firstname( NULL );
+    
+    if ( aMatch.LastName().Length() > 0 )
+        {
+        TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL, alloc last name" );
+        lastname = aMatch.LastName().Alloc();
+        }
+    if ( aMatch.FirstName().Length() > 0 )
+        {
+        TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL, alloc first name" );
+        firstname = aMatch.FirstName().Alloc();
+        }
+
+    if ( ( lastname ) && ( firstname ) )
+        {
+        //Swap name order, if required by the current language setting
+        const TLanguage language = User::Language();
+    
+        for ( TInt index = 0; index < KPENumberOfSwappedLanguages; index++ )
+            {
+            if ( KPESwappedLanguages[index] == language )
+                {
+                HBufC* tempfirstname( firstname );
+                firstname = lastname;
+                lastname = tempfirstname;
+                break;
+                }
+            }
+        }
+    // Parse name by concatenating lastname and firstname
+    if ( firstname )
+        {
+        aName = *firstname;
+        if ( aName.Length() < KCntMaxTextFieldLength && lastname )
+            {
+            TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL, append with space" );
+            aName.Append( KPESpace );
+            }
+        delete firstname;
+        firstname = NULL;
+        }
+    if ( lastname )
+        {
+        if ( aName.Length() < KCntMaxTextFieldLength )
+            {
+            // Check how long last name can be added to the iName string. 
+            TInt lastNameMaxLength = KCntMaxTextFieldLength - aName.Length();
+            if ( lastname->Length() > lastNameMaxLength )
+                {
+                TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL, append with part of last name" );
+                // Cut extra chars from the string.
+                aName.Append( lastname->Left( lastNameMaxLength ) );          
+                }
+            else 
+                {
+                TEFLOGSTRING( KTAINT, "CNT CPEContactMatch::CopyContactFieldsDataL, append with last name" );
+                aName.Append( *lastname );
+                }
+            }
+        delete lastname;
+        lastname = NULL;
+        }    
     }
 
 //  End of File  

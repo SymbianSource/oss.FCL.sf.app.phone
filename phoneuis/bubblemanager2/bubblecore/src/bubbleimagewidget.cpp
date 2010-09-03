@@ -57,7 +57,7 @@ BubbleImageWidget::~BubbleImageWidget()
 {
 }
 
-void BubbleImageWidget::setImage(const QString& name)
+void BubbleImageWidget::setImageName(const QString& name)
 {
     mImageName = name;
 
@@ -68,6 +68,15 @@ void BubbleImageWidget::setImage(const QString& name)
     } else {
         mDefaultAvatar->setIconName(QLatin1String("qtg_large_avatar"));
         mDefaultAvatar->setVisible(true);
+    }
+}
+
+QString BubbleImageWidget::imageName() const
+{
+    if (!mImageName.isEmpty()) {
+        return mImageName;
+    } else {
+        return mDefaultAvatar->iconName();
     }
 }
 

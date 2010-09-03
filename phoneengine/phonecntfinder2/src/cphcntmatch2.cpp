@@ -125,18 +125,30 @@ TPtrC CPhCntMatch2::CompanyName() const
 {
   return KNullDesC();
 }
+
+// -----------------------------------------------------------------------------
+// GroupName
+// -----------------------------------------------------------------------------
+//
+TPtrC CPhCntMatch2::GroupName() const
+{
+    return iGroupname.utf16();  
+}
+
 // -----------------------------------------------------------------------------
 // Number
 // -----------------------------------------------------------------------------
 //
-TPtrC CPhCntMatch2::Number() const
+TPtrC CPhCntMatch2::Number()
 {
     //how many numbers are returned here? should be only one that matched 
-    if ( iNumber == NULL ) {
-   
-    TPtrC ptr(FieldValue(QContactPhoneNumber::DefinitionName, 
-               QContactPhoneNumber::FieldNumber).utf16());
-    const_cast<HBufC*>(iNumber) = ptr.Alloc();
+    if ( iNumber == NULL ) {      
+        TPtrC ptr(FieldValue(QContactPhoneNumber::DefinitionName, 
+                   QContactPhoneNumber::FieldNumber).utf16());
+        iNumber = ptr.Alloc();
+        if (!iNumber) {
+            return KNullDesC();
+        }
     }  
     return iNumber->Des();
 }
@@ -227,6 +239,11 @@ void CPhCntMatch2::ConstructL()
     iLastname = FieldValue(
              QContactName::DefinitionName, 
              QContactName::FieldLastName);
+    
+    if (iContact.type() == QContactType::TypeGroup) {
+        QContactName contactName = iContact.detail(QContactName::DefinitionName);
+        iGroupname = contactName.customLabel();     
+    }
     
     //Get caller's image
     QList<QContactAvatar> details = iContact.details<QContactAvatar>();

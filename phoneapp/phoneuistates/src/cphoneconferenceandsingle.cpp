@@ -118,8 +118,8 @@ void CPhoneConferenceAndSingle::HandlePhoneEngineMessageL(
             HandleHeldL( aCallId );
             break;
             
-        case MEngineMonitor::EPEMessageInValidEmergencyNumber:              
-            SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed, ETrue );                       
+        case MEngineMonitor::EPEMessageInValidEmergencyNumber:
+            SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed, ETrue );
             break;
             
         case MEngineMonitor::EPEMessageValidEmergencyNumber:
@@ -145,7 +145,6 @@ TBool CPhoneConferenceAndSingle::HandleCommandL( TInt aCommand )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleCommandL");
     TBool commandStatus = ETrue;
-
     switch( aCommand )
         {
         case EPhoneNumberAcqCmdCall:
@@ -170,7 +169,6 @@ TBool CPhoneConferenceAndSingle::HandleCommandL( TInt aCommand )
             commandStatus = CPhoneConference::HandleCommandL( aCommand );
             break;
         }
-
     return commandStatus;
     }
 
@@ -181,7 +179,6 @@ TBool CPhoneConferenceAndSingle::HandleCommandL( TInt aCommand )
 void CPhoneConferenceAndSingle::HandleConnectedConferenceL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleConnectedConferenceL");
-    // Update call state
     TPhoneCmdParamCallHeaderData callHeaderParam;
     callHeaderParam.SetCallState( EPEStateConnectedConference );
 
@@ -206,9 +203,8 @@ void CPhoneConferenceAndSingle::HandleConnectedConferenceL()
     
     SetTouchPaneButtons( EPhoneConferenceAndHeldSingleButtons );
     UpdateInCallCbaL();
-    EndUiUpdate();          
+    EndUiUpdate();
     }
-
 
 // -----------------------------------------------------------
 // CPhoneConferenceAndSingle::HandleHeldConferenceL
@@ -221,25 +217,22 @@ void CPhoneConferenceAndSingle::HandleHeldConferenceL()
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleHeldConferenceL");
     TPhoneCmdParamCallHeaderData callHeaderParam;
     callHeaderParam.SetCallState( EPEStateHeldConference );
-    
     TInt callLabelId;
     TBuf<KPhoneCallHeaderLabelMaxLength> labelText( KNullDesC );
     callLabelId = CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( EPhoneCallOnHold );
-
     StringLoader::Load( 
         labelText, 
         callLabelId, 
         CCoeEnv::Static() );        
     callHeaderParam.SetLabelText( labelText );
-
     BeginUiUpdateLC();
-     
+    
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewUpdateBubble, KConferenceCallId, &callHeaderParam );
-        
-    SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );    
-    EndUiUpdate();     
+    SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
+    
+    EndUiUpdate();
     }
 
 // -----------------------------------------------------------
@@ -249,13 +242,10 @@ void CPhoneConferenceAndSingle::HandleHeldConferenceL()
 void CPhoneConferenceAndSingle::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleConnectedL");
-    
-    // Display connected bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
     callHeaderParam.SetCallState( EPEStateConnected );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
-
     UpdateInCallCbaL();
     SetTouchPaneButtons( EPhoneConferenceButtons );
     }
@@ -267,23 +257,19 @@ void CPhoneConferenceAndSingle::HandleConnectedL( TInt aCallId )
 void CPhoneConferenceAndSingle::HandleHeldL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleHeldL");
-    // Display hold bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
     callHeaderParam.SetCallState( EPEStateHeld );
     
     TBuf<KPhoneCallHeaderLabelMaxLength> labelText( KNullDesC );
     TInt callLabelId = CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( EPhoneCallOnHold );
-
     StringLoader::Load( 
         labelText, 
         callLabelId, 
         CCoeEnv::Static() );        
     callHeaderParam.SetLabelText( labelText );
-
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
-        &callHeaderParam );      
-    
+        &callHeaderParam );
     SetTouchPaneButtons( EPhoneConferenceButtons );
     }
 
@@ -294,20 +280,13 @@ void CPhoneConferenceAndSingle::HandleHeldL( TInt aCallId )
 void CPhoneConferenceAndSingle::HandleAddedConferenceMemberL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleAddedConferenceMemberL");
-    
     BeginUiUpdateLC();
-        
-    // Update conference bubble
     iViewCommandHandle->ExecuteCommandL( EPhoneViewAddToConference );
-    
     UpdateConferenceSecurityStatusL( aCallId );
-
     SetTouchPaneButtons( EPhoneConferenceButtons );
-    
     EndUiUpdate();
-
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
-    iStateMachine->ChangeState( EPhoneStateConference );        
+    iStateMachine->ChangeState( EPhoneStateConference );
     }
 
 // -----------------------------------------------------------
@@ -317,7 +296,6 @@ void CPhoneConferenceAndSingle::HandleAddedConferenceMemberL( TInt aCallId )
 void CPhoneConferenceAndSingle::UpdateInCallCbaL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndSingle::UpdateInCallCbaL() ");
-    
     UpdateCbaL ( EPhoneCallHandlingNewCallSwapCBA );
     }
 
@@ -329,31 +307,22 @@ void CPhoneConferenceAndSingle::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndSingle::HandleIncomingL");
-    
-    BeginUiUpdateLC();  
+    BeginUiUpdateLC(); 
     
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
-    
-    // Get allow waiting call header param value.
     AllowShowingOfWaitingCallHeaderL( dialerParam );
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewCloseFSW );
     
-    // Check if HW Keys or Call UI should be disabled
     CheckDisableHWKeysAndCallUIL();
-    
-    // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam  );
-
-    // Set touch controls
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
     
     EndUiUpdate();
     
-    // Go to Conference And Single And Waiting state
     UpdateCbaL( EPhoneCallHandlingIncomingRejectCBA );
-    iStateMachine->ChangeState( EPhoneStateConferenceAndSingleAndWaiting );                
+    iStateMachine->ChangeState( EPhoneStateConferenceAndSingleAndWaiting );
     }
 
 // -----------------------------------------------------------
@@ -364,33 +333,24 @@ void CPhoneConferenceAndSingle::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndSingle::HandleIdleL");
-    
     TPhoneCmdParamBoolean conferenceExistsForCallId;
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCallExistsInConference,
         aCallId, &conferenceExistsForCallId );
     
     if( conferenceExistsForCallId.Boolean() )
         {
-        // Remove conference member from conference bubble
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveFromConference, 
-            aCallId );                    
+            aCallId );
         }
     else
-        {       
-        // Remove call
+        {
         BeginUiUpdateLC(); 
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-
         SetTouchPaneButtons( EPhoneConferenceButtons );
-        
         UpdateCbaL( EPhoneCallHandlingInCallCBA );
-      
-
         EndUiUpdate();
-
         iStateMachine->ChangeState( EPhoneStateConference );
         }
-    
     }
 
 // -----------------------------------------------------------
@@ -400,9 +360,7 @@ void CPhoneConferenceAndSingle::HandleIdleL( TInt aCallId )
 void CPhoneConferenceAndSingle::HandleConferenceIdleL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleConferenceIdleL");
-    
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
-    
     TPhoneCmdParamInteger intParam;
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCountOfActiveCalls,
         &intParam );
@@ -432,28 +390,23 @@ void CPhoneConferenceAndSingle::HandleKeyMessageL(
         "CPhoneConferenceAndSingle::HandleKeyMessageL()");
     switch ( aCode )
         {
-        // send-key
-        case EKeyYes:
+        case EKeyYes: // send-key
             if( IsNumberEntryVisibleL() )
                 {
                 HandleSendL();
                 }
             else
                 {
-                // Number entry is below so swap the call
                 iStateMachine->SendPhoneEngineMessage(
-                    CPEPhoneModelIF::EPEMessageSwap );        
+                    CPEPhoneModelIF::EPEMessageSwap );
                 }
             break;
             
         default:
-            // do base operation
             CPhoneConference::HandleKeyMessageL( aMessage, aCode );
             break;
         }
     }
-
-
 
 // --------------------------------------------------------------
 // CPhoneConferenceAndSingle::HandleSendL 
@@ -461,23 +414,18 @@ void CPhoneConferenceAndSingle::HandleKeyMessageL(
 //
 void CPhoneConferenceAndSingle::HandleSendL()
     {
-    // Get the number entry contents
     HBufC *phoneNumber = HBufC::NewLC( KPhoneNumberEntryBufferSize );
     TPtr ptr( phoneNumber->Des() );
     TPhoneCmdParamString stringParam;
     stringParam.SetString( &ptr );
-    
     iViewCommandHandle->ExecuteCommand(
         EPhoneViewGetNumberFromEntry,
         &stringParam );
-    
     iStateMachine->PhoneEngineInfo()->SetPhoneNumber( ptr ) ;
     
     if ( iStateMachine->PhoneEngineInfo()->PhoneNumberIsServiceCode() || 
          phoneNumber->Des().Length() < KPhoneValidPhoneNumberLength )
-        {  
-        // Send a manual control sequence by providing number 
-        // information with dial command
+        {
         CallFromNumberEntryL();
         }
     else

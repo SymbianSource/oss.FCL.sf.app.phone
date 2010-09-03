@@ -195,4 +195,4 @@ BLD_INF_RULES.prj_exports += "./data/backup_registration.xml /epoc32/release/win
 BLD_INF_RULES.prj_exports += "./data/backup_registration.xml /epoc32/release/winscw/urel/z/private/1000a86c/backup_registration.xml"
 
 #Stub sis
-BLD_INF_RULES.prj_exports += "./data/phonemodel_stub.sis   \epoc32\data\z\system\install\phonemodel_stub.sis"
+BLD_INF_RULES.prj_exports += "./data/phonemodel_stub.sis /epoc32/data/z/system/install/phonemodel_stub.sis"

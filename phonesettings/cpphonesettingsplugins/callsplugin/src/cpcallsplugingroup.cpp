@@ -385,7 +385,7 @@ void CpCallsPluginGroup::showCallDurationStateChanged()
         emit showGlobalNote(
             m_activeNoteId, 
             emit hbTrId("txt_phone_info_not_allowed"), 
-            HbMessageBox::MessageTypeInformation);
+            HbMessageBox::MessageTypeWarning);
     } else {
         if (showCallDurationText == hbTrId("txt_phone_setlabel_val_yes")) {
             m_cpSettingsWrapper->setShowCallDuration(true);

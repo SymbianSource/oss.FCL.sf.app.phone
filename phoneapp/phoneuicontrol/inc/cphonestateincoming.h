@@ -58,10 +58,6 @@ class CPhoneStateIncoming : public CPhoneState
             const TKeyEvent& aKeyEvent,
             TEventCode aEventCode );
 
-        IMPORT_C virtual void HandleKeyPressDurationL(
-            TKeyCode aCode,
-            TTimeIntervalMicroSeconds aKeyPressDuration );
-
         /**
         * A message handling function for Phone Engine messages
         * @param aMessage Message from Phone Engine

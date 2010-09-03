@@ -85,20 +85,6 @@ CPhoneStateIncomingVoIP* CPhoneStateIncomingVoIP::NewL(
     return self;
     }
 
-
-// -----------------------------------------------------------
-// CPhoneStateIncomingVoIP::HandleLongHashL
-// -----------------------------------------------------------
-//
- void CPhoneStateIncomingVoIP::HandleLongHashL()
-    {
-    __LOGMETHODSTARTEND( PhoneUIVoIPExtension,
-        "CPhoneStateIncomingVoIP::HandleLongHashL( ) ");
-
-    CPhoneState::HandleLongHashL();
-    }
-
-
 // -----------------------------------------------------------
 // CPhoneStateIncomingVoIP::HandleAudioPlayStoppedL
 // -----------------------------------------------------------
@@ -113,11 +99,6 @@ void CPhoneStateIncomingVoIP::HandleAudioPlayStoppedL()
             CallType( iRingingCallId ) == EPECallTypeVoIP )
         {
         TInt resourceId = EPhoneCallHandlingIncomingRejectCBA;
-        
-        if ( IsNumberEntryVisibleL() && !IsOnScreenDialerSupported() )
-            {
-            resourceId = EPhoneNumberAcqCBA;
-            }
         
         iCbaManager->SetCbaL( resourceId );
         }

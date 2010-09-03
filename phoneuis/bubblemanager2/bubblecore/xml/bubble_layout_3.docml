@@ -39,7 +39,7 @@
     </widget>
     
     <widget name="cb2:bubbleHeading" type="BubbleHeadingWidget">
-        <integer name="lines" value="2"/>
+        <integer name="lineCount" value="2"/>
     </widget>
     
     <widget name="collapsedBubble" type="BubbleContainerWidget">
@@ -47,11 +47,11 @@
     </widget>
     
     <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
-        <integer name="lines" value="2"/>
+        <integer name="lineCount" value="2"/>
     </widget>    
 
     <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
-        <integer name="lines" value="3"/>
+        <integer name="lineCount" value="3"/>
     </widget>
     
     <widget name="eb:centerButton" type="BubbleButton">
@@ -118,7 +118,7 @@
     </widget>
     
     <widget name="cb2:bubbleHeading" type="BubbleHeadingWidget">
-        <integer name="lines" value="1"/>
+        <integer name="lineCount" value="1"/>
     </widget>
     
 
@@ -127,11 +127,11 @@
     </widget>
     
     <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
-        <integer name="lines" value="1"/>
+        <integer name="lineCount" value="1"/>
     </widget>        
 
     <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
-        <integer name="lines" value="3"/>
+        <integer name="lineCount" value="3"/>
     </widget>
     
     <widget name="eb:centerButton" type="BubbleButton">

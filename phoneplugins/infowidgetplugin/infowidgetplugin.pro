@@ -51,6 +51,7 @@ symbian: {
 	 "./rom/infowidgetplugin_resources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(infowidgetplugin_resources.iby)" 
 }
 
+DOCML += resource/infowidget.docml resource/settingsdialog.docml
 RESOURCES = infowidgetplugin.qrc
 
 symbian: PLUGIN_SUBDIR = /private/20022F35/import/widgetregistry/20029F28

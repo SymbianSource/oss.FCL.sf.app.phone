@@ -64,13 +64,6 @@ class MPhoneSystemEventHandler
         virtual void HandlePhoneFocusLostEventL() = 0;
 
         /**
-        * Handle environment changes.
-        * @param aChanges environment changes which may be reported by
-        *  a change notifier through the RChangeNotifier interface.
-        */
-        virtual void HandleEnvironmentChangeL( const TInt aChanges ) = 0;
-
-        /**
         * Handles startup of the phone application 
         */
         virtual void HandlePhoneStartupL() = 0;

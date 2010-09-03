@@ -32,37 +32,36 @@
 */
 class CPhoneStateIdle : public CPhoneState
     {
-    public:  
+    public:
         
-    /** Dial initiation method. */
-    enum TDialInitiationMethod
-        {
-        /** Dial initiation method unknown. */
-        EDialMethodUnknown          = 0,
-        /** Dial is initiated by explicit call type selection from menu.*/
-        EDialMethodMenuSelection    = 1,
-        /** Dial is initiated by send command. */
-        EDialMethodSendCommand      = 2,
-        /** Dial is initiated by one key dialing. */
-        EDialMethodOneKeyDialing    = 3
-
-        };
+        /** Dial initiation method. */
+        enum TDialInitiationMethod
+            {
+            /** Dial initiation method unknown. */
+            EDialMethodUnknown          = 0,
+            /** Dial is initiated by explicit call type selection from menu.*/
+            EDialMethodMenuSelection    = 1,
+            /** Dial is initiated by send command. */
+            EDialMethodSendCommand      = 2,
+            /** Dial is initiated by one key dialing. */
+            EDialMethodOneKeyDialing    = 3
+            };
     
-    /**
-    * Phone number types
-    *
-    * EPhoneNumberTypeNotFound - phone number's type was not found
-    * EPhoneNumberTypeCS - CS call can be made to the phone number
-    * EPhoneNumberTypeVideo - video call can be made to the phone number
-    * EPhoneNumberTypeVoip - VoIP call can be made to the address.
-    */
-    enum TPhoneNumberType
-        {
-        EPhoneNumberTypeNotFound = -1,
-        EPhoneNumberTypeCS = 0,
-        EPhoneNumberTypeVideo,
-        EPhoneNumberTypeVoip
-        };
+        /**
+        * Phone number types
+        *
+        * EPhoneNumberTypeNotFound - phone number's type was not found
+        * EPhoneNumberTypeCS - CS call can be made to the phone number
+        * EPhoneNumberTypeVideo - video call can be made to the phone number
+        * EPhoneNumberTypeVoip - VoIP call can be made to the address.
+        */
+        enum TPhoneNumberType
+            {
+            EPhoneNumberTypeNotFound = -1,
+            EPhoneNumberTypeCS = 0,
+            EPhoneNumberTypeVideo,
+            EPhoneNumberTypeVoip
+            };
     
         /**
         * Destructor.
@@ -172,14 +171,7 @@ class CPhoneStateIdle : public CPhoneState
         * @param None
         */
         IMPORT_C void DialVoiceCallL();
-
-        /**
-        * Handles situation when hash key has been kept down long
-        * (long keypress) and the hash character is the only character
-        * in number entry.
-        */
-        IMPORT_C virtual void OnlyHashInNumberEntryL();
-
+        
         /**
         * A message handling function for EPEMessageDialling
         * @param aCallId: the call id of the call
@@ -228,19 +220,11 @@ class CPhoneStateIdle : public CPhoneState
         void HandleEndKeyPressL( TPhoneKeyEventMessages aMessage );
         
         /**
-        * Changes manner mode.
-        * Switches from any profile to the Silent profile or from the
-        * Silent profile to the General profile.
-        */
-        void ChangeMannerModeL();
-        
-        /**
         * Checks if MC/PCSuite restore ongoing.
         * @param none.
         * @return ETrue if ongoing.
         */
         TBool RestoreOngoing();
-        
 
         void HandleVoiceCallCommandL();
          

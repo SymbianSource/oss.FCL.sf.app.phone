@@ -216,17 +216,7 @@ class TPhoneCallHeaderParam
         */
         void SetCliParamatersL(
                 const TInt aCallId, 
-                TPhoneCmdParamCallHeaderData* aCallHeaderData );  
-        
-        /**
-        * Concludes does the engine have information of the
-        * phone number. This information is then send to the view.
-        * @param aNumberLength - phone number's length
-        * @param aContactInfoAvailable - is contact's info available
-        */
-        void SetPhoneNumberAvailabilityL( 
-                const TInt aNumberLength,
-                const TBool aContactInfoAvailable );
+                TPhoneCmdParamCallHeaderData* aCallHeaderData );
                 
     private:
         

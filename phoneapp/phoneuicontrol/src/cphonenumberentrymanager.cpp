@@ -231,9 +231,8 @@ TBool CPhoneNumberEntryManager::IsValidAlphaNumericKey(
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::IsValidAlphaNumericKey( ) ");
     TBool ret(EFalse);
-    const TBool numericKeyEntered( CPhoneKeys::IsNumericKey(
-          aKeyEvent, aEventCode ) );
-
+    const TBool numericKeyEntered( 
+            CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) );
     // a numeric key (1,2,3,4,6,7,8,9,0,+,*,p,w )
     // or
     // a letter from fullscreen qwerty, miniqwerty or handwriting
@@ -243,7 +242,6 @@ TBool CPhoneNumberEntryManager::IsValidAlphaNumericKey(
         {
         ret= ETrue;
         }
-
     return ret;
     }
 
@@ -283,7 +281,4 @@ void CPhoneNumberEntryManager::NumberEntryClearL() const
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::NumberEntryClearL( ) ");
     iViewCommandHandle.ExecuteCommandL( EPhoneViewClearNumberEntryContent );
     }
-
-
-
 

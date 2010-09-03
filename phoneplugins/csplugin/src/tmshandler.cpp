@@ -11,7 +11,7 @@
  *
  * Contributors:
  *
- * Description:  Starts and stops audio streams.
+ * Description: Activates TMS call audio control streams.
  *
  */
 
@@ -20,28 +20,19 @@
 #include <tmsstream.h>
 #include "tmshandler.h"
 #include "csplogger.h"
-#include "csptimer.h"
 #include "csppanic.pan"
+#include "mtmshandlerobserver.h"
 
-/**
- * Timeout initial value.
- */
-const TInt KTimeoutInitial = 200000; // 0.2s
-
-/**
- * Double the timeout for every retry.
- */
-const TInt KTimeoutMultiplier = 2;
-
-// ======== MEMBER FUNCTIONS ========
+const TInt KStreamInitRetry = 1000000; //1 sec
+const TInt KRetryForever = -1;
 
 // ---------------------------------------------------------------------------
 // Static constructor
 // ---------------------------------------------------------------------------
 //
-TmsHandler* TmsHandler::NewL()
+TmsHandler* TmsHandler::NewL(MTmsHandlerObserver& aObserver)
     {
-    TmsHandler* self = TmsHandler::NewLC();
+    TmsHandler* self = TmsHandler::NewLC(aObserver);
     CleanupStack::Pop(self);
     return self;
     }
@@ -50,11 +41,11 @@ TmsHandler* TmsHandler::NewL()
 // Static constructor
 // ---------------------------------------------------------------------------
 //
-TmsHandler* TmsHandler::NewLC()
+TmsHandler* TmsHandler::NewLC(MTmsHandlerObserver& aObserver)
     {
     TmsHandler* self = new (ELeave) TmsHandler();
     CleanupStack::PushL(self);
-    self->ConstructL();
+    self->ConstructL(aObserver);
     return self;
     }
 
@@ -64,19 +55,12 @@ TmsHandler* TmsHandler::NewLC()
 //
 TmsHandler::~TmsHandler()
     {
-    if (iTimer)
-        {
-        iTimer->CancelNotify();
-        delete iTimer;
-        }
     if (iTmsUplink && iTmsCall)
         {
-        // CloseUplink();
         iTmsCall->DeleteStream(iTmsUplink);
         }
     if (iTmsDnlink && iTmsCall)
         {
-        // CloseDownlink();
         iTmsCall->DeleteStream(iTmsDnlink);
         }
     if (iFactory && iTmsCall)
@@ -99,70 +83,104 @@ TmsHandler::~TmsHandler()
         {
         iFactory->DeleteSink(iTmsModemSink);
         }
-
     delete iFactory;
-
     }
 
 // ---------------------------------------------------------------------------
-// From class MCSPAudioStream
-// Activates mic and speaker.
+// TmsHandler::StartStreams
+// Activates TMS call audio control streams. If called in the middle of an
+// ongoing stream initialization, the request is cashed in until both streams
+// transition to initialized state.
 // ---------------------------------------------------------------------------
 //
-void TmsHandler::StartStreams()
+TInt TmsHandler::StartStreams()
     {
     CSPLOGSTRING(CSPINT, "TmsHandler::StartStreams");
+    TInt status(TMS_RESULT_SUCCESS);
 
-    StartMicAndSpeaker();
+    if (iTmsUplink)
+        {
+        if (iTmsUplink->GetState() == TMS_STREAM_INITIALIZED)
+            {
+            status = iTmsUplink->Start(KRetryForever);
+            }
+        else if (iUplInitializing)
+            {
+            iStartAfterInitComplete = ETrue;
+            }
+        }
+
+    if (iTmsDnlink && status == TMS_RESULT_SUCCESS)
+        {
+        if (iTmsDnlink->GetState() == TMS_STREAM_INITIALIZED)
+            {
+            status = iTmsDnlink->Start(KRetryForever);
+            }
+        else if (iDnlInitializing)
+            {
+            iStartAfterInitComplete = ETrue;
+            }
+        }
+
+    CSPLOGSTRING2(CSPINT, "TmsHandler::StartStreams status %d", status);
+
+    if (status != TMS_RESULT_SUCCESS)
+        {
+        // Cancel any pending retry and cancel.
+        StopStreams();
+        status = KErrCancel;
+        }
+    return status;
     }
 
 // ---------------------------------------------------------------------------
-// From class MCSPAudioStream
-// Deactivates mic and speaker if the streams are active or they are
-// activating.
+// TmsHandler::StopStreams
+// Deactivates TMS call audio control streams. If streams are not started yet,
+// any pending request on TMS streams will be canceled.
 // ---------------------------------------------------------------------------
 //
 void TmsHandler::StopStreams()
     {
     CSPLOGSTRING(CSPINT, "TmsHandler::StopStreams");
-    gint status(TMS_RESULT_SUCCESS);
-    if (iTimer && IsMicAndSpeakerStarted())
-        {
-        CSPLOGSTRING(CSPINT, "TmsHandler::StopStreams Stopping");
-        iTimer->CancelNotify();
-        iTimeout = KTimeoutInitial;
-        status = iTmsUplink->Stop();
-        iUplinkStarted = FALSE;
-        status |= iTmsDnlink->Stop();
-        iDnlinkStarted = FALSE;
 
-        if (status != TMS_RESULT_SUCCESS)
-            {
-            status = TMS_RESULT_GENERAL_ERROR;
-            }
+    if (iTmsUplink)
+        {
+        iTmsUplink->Stop();
         }
-    CSPLOGSTRING2(CSPINT, "TmsHandler::StopStreams status %d", status);
+    if (iTmsDnlink)
+        {
+        iTmsDnlink->Stop();
+        }
+    iUplInitializing = EFalse;
+    iDnlInitializing = EFalse;
+    iStartAfterInitComplete = EFalse;
     }
 
 // ---------------------------------------------------------------------------
-// From class MCSPTimerObserver
-// Notify from CSPTimer that timeout passed. Try to start mic and
-// speaker again.
+// TmsHandler::AreStreamsStarted
+// Indicates whether both audio control streams have been started.
 // ---------------------------------------------------------------------------
 //
-void TmsHandler::TimerEvent()
+TBool TmsHandler::AreStreamsStarted()
     {
-    CSPLOGSTRING(CSPINT, "TmsHandler.TimerEvent" );
-    iTimeout *= KTimeoutMultiplier;
-    StartMicAndSpeaker();
+    TBool status(EFalse);
+
+    if (iTmsUplink && iTmsDnlink)
+        {
+        if (iTmsUplink->GetState() == TMS_STREAM_STARTED &&
+                iTmsDnlink->GetState() == TMS_STREAM_STARTED)
+            {
+            status = ETrue;
+            }
+        }
+    return status;
     }
 
 // ---------------------------------------------------------------------------
 // Constructor
 // ---------------------------------------------------------------------------
 //
-TmsHandler::TmsHandler() :
-    iTimeout(KTimeoutInitial)
+TmsHandler::TmsHandler()
     {
     }
 
@@ -170,337 +188,184 @@ TmsHandler::TmsHandler() :
 // Second phase constructor
 // ---------------------------------------------------------------------------
 //
-void TmsHandler::ConstructL()
+void TmsHandler::ConstructL(MTmsHandlerObserver& aObserver)
     {
     CSPLOGSTRING(CSPINT, "TmsHandler::ConstructL");
-    iTimer = CSPTimer::NewL();
-
-    if (CreateTMSCallControl())
-        {
-        User::LeaveIfError(TMS_RESULT_UNINITIALIZED_OBJECT);
-        }
+    iObserver = &aObserver;
+    User::LeaveIfError(CreateTMSCallControl());
     }
 
 // ---------------------------------------------------------------------------
 // TmsHandler::CreateTMSCallControl()
+// Allocates and initializes all TMS resources needed for call audio control.
 // ---------------------------------------------------------------------------
 //
-gint TmsHandler::CreateTMSCallControl()
+TInt TmsHandler::CreateTMSCallControl()
     {
+    CSPLOGSTRING(CSPINT, "TmsHandler::CreateTMSCallControl");
     TMSVer* v = NULL;
     TInt status;
     status = TMSFactory::CreateFactory(iFactory, *v);
 
-    __ASSERT_ALWAYS(iFactory, Panic( ECSPPanicBadHandle));
+    __ASSERT_ALWAYS(iFactory, Panic(ECSPPanicBadHandle));
 
     status = iFactory->CreateCall(TMS_CALL_CS, iTmsCall, 0);
 
-    status |= CreateUplink();
-    status |= CreateDownlink();
-    status |= CreateMicSource();
-    status |= AddMicSourceToStream();
-    status |= CreateModemSink();
-    status |= AddModemSinkToStream();
-    status |= CreateModemSource();
-    status |= AddModemSourceToStream();
-    status |= CreateSpeakerSink();
-    status |= AddSpeakerSinkToStream();
-    status |= OpenDownlink();
-
-    return status;
-    }
-
-// ---------------------------------------------------------------------------
-// Resets timer
-// ---------------------------------------------------------------------------
-//
-void TmsHandler::AudioStreamsStarted()
-    {
-    CSPLOGSTRING(CSPINT, "TmsHandler::AudioStreamsStarted" );
-    iTimeout = KTimeoutInitial;
-    iTimer->CancelNotify();
-    }
-
-// ---------------------------------------------------------------------------
-// Starts timer
-// ---------------------------------------------------------------------------
-//
-void TmsHandler::StartTimer()
-    {
-    CSPLOGSTRING(CSPINT, "TmsHandler::StartTimer" );
-    iTimer->NotifyAfter(iTimeout, *this);
-    }
-
-// ---------------------------------------------------------------------------
-// Starts mic and speaker
-// ---------------------------------------------------------------------------
-//
-void TmsHandler::StartMicAndSpeaker()
-    {
-    // if speaker and mic is active then activation does not cause any actions.
-    gint status(TMS_RESULT_SUCCESS);
-
-    if (iTmsUplink)
-        {
-        status = iTmsUplink->Start();
-        }
-    CSPLOGSTRING2( CSPINT, "TmsHandler::StartMicAndSpeaker status %d", status );
-    }
-
-// ---------------------------------------------------------------------------
-// Indicated if mic and speaker are started or starting up.
-// ---------------------------------------------------------------------------
-//
-TBool TmsHandler::IsMicAndSpeakerStarted()
-    {
-    return (iUplinkStarted || iDnlinkStarted);
-    }
-
-// ----------------------------------------------------------------------------
-// CreateUplink
-// ----------------------------------------------------------------------------
-//
-gint TmsHandler::CreateUplink()
-    {
-    CSPLOGSTRING(CSPINT, "TmsHandler::CreateUplink");
-    gint status(TMS_RESULT_SUCCESS);
-    if (iTmsCall)
+    if (iTmsCall && status == TMS_RESULT_SUCCESS)
         {
         status = iTmsCall->CreateStream(TMS_STREAM_UPLINK, iTmsUplink);
+        status |= iTmsCall->CreateStream(TMS_STREAM_DOWNLINK, iTmsDnlink);
+        status |= iFactory->CreateSource(TMS_SOURCE_MIC, iTmsMicSource);
+        status |= iFactory->CreateSink(TMS_SINK_MODEM, iTmsModemSink);
+        status |= iFactory->CreateSource(TMS_SOURCE_MODEM, iTmsModemSource);
+        status |= iFactory->CreateSink(TMS_SINK_SPEAKER, iTmsSpeakerSink);
         }
-    return status;
-    }
-
-// ----------------------------------------------------------------------------
-// CreateDownlink
-// ----------------------------------------------------------------------------
-//
-gint TmsHandler::CreateDownlink()
-    {
-    CSPLOGSTRING(CSPINT, "TmsHandler::CreateDownlink");
-    gint status(TMS_RESULT_SUCCESS);
-
-    if (iTmsCall)
-        {
-        status = iTmsCall->CreateStream(TMS_STREAM_DOWNLINK, iTmsDnlink);
-        }
-    return status;
-    }
-
-// ----------------------------------------------------------------------------
-// OpenUplink
-// ----------------------------------------------------------------------------
-//
-gint TmsHandler::OpenUplink()
-    {
-    CSPLOGSTRING(CSPINT, "TmsHandler::OpenUplink");
-    gint status = TMS_RESULT_SUCCESS;
-
-    if (iTmsUplink)
-        {
-        status = iTmsUplink->AddObserver(*this, NULL);
-        if (status == TMS_RESULT_SUCCESS)
-            {
-            status = iTmsUplink->Init();
-            }
-        }
-    return status;
-    }
-
-// ----------------------------------------------------------------------------
-// OpenDownlink
-// ----------------------------------------------------------------------------
-//
-gint TmsHandler::OpenDownlink()
-    {
-    CSPLOGSTRING(CSPINT, "TmsHandler::OpenDownlink");
-    gint status = TMS_RESULT_SUCCESS;
-
-    if (iTmsDnlink)
-        {
-        status = iTmsDnlink->AddObserver(*this, NULL);
-        if (status == TMS_RESULT_SUCCESS)
-            {
-            status = iTmsDnlink->Init();
-            }
-        }
-    return status;
-    }
-
-// ----------------------------------------------------------------------------
-// CreateModemSource
-// ----------------------------------------------------------------------------
-//
-gint TmsHandler::CreateModemSource()
-    {
-    gint status(TMS_RESULT_SUCCESS);
-
-    if (iFactory && !iTmsModemSource)
-        {
-        status = iFactory->CreateSource(TMS_SOURCE_MODEM, iTmsModemSource);
-        }
-    return status;
-    }
-
-// ----------------------------------------------------------------------------
-// AddModemSourceToStream
-// ----------------------------------------------------------------------------
-//
-gint TmsHandler::AddModemSourceToStream()
-    {
-    gint status(TMS_RESULT_SUCCESS);
-    if (iTmsDnlink && iTmsModemSource)
-        {
-        status = iTmsDnlink->AddSource(iTmsModemSource);
-        }
-    return status;
-    }
-
-// ----------------------------------------------------------------------------
-// CreateModemSink
-// ----------------------------------------------------------------------------
-//
-gint TmsHandler::CreateModemSink()
-    {
-    gint status(TMS_RESULT_SUCCESS);
-
-    if (iFactory && !iTmsModemSink)
-        {
-        status = iFactory->CreateSink(TMS_SINK_MODEM, iTmsModemSink);
-        }
-    return status;
-    }
-
-// ----------------------------------------------------------------------------
-// AddModemSinkToStream
-// ----------------------------------------------------------------------------
-//
-gint TmsHandler::AddModemSinkToStream()
-    {
-    gint status(TMS_RESULT_SUCCESS);
-    if (iTmsUplink && iTmsModemSink)
-        {
-        status = iTmsUplink->AddSink(iTmsModemSink);
-        }
-    return status;
-    }
-
-// ----------------------------------------------------------------------------
-// CreateMicSource
-// ----------------------------------------------------------------------------
-//
-gint TmsHandler::CreateMicSource()
-    {
-    gint status(TMS_RESULT_SUCCESS);
-
-    if (iFactory && !iTmsMicSource)
-        {
-        status = iFactory->CreateSource(TMS_SOURCE_MIC, iTmsMicSource);
-        }
-    return status;
-    }
-
-// ----------------------------------------------------------------------------
-// AddMicSourceToStream
-// ----------------------------------------------------------------------------
-//
-gint TmsHandler::AddMicSourceToStream()
-    {
-    gint status(TMS_RESULT_SUCCESS);
-    if (iTmsUplink && iTmsMicSource)
+    if (iTmsUplink && iTmsMicSource && iTmsModemSink &&
+            status == TMS_RESULT_SUCCESS)
         {
         status = iTmsUplink->AddSource(iTmsMicSource);
+        status |= iTmsUplink->AddSink(iTmsModemSink);
+        status |= iTmsUplink->AddObserver(*this, NULL);
+        status |= iTmsUplink->Init(KStreamInitRetry);
+        }
+    if (iTmsDnlink && iTmsModemSource && iTmsSpeakerSink &&
+            status == TMS_RESULT_SUCCESS)
+        {
+        status = iTmsDnlink->AddSource(iTmsModemSource);
+        status |= iTmsDnlink->AddSink(iTmsSpeakerSink);
+        status |= iTmsDnlink->AddObserver(*this, NULL);
+        status |= iTmsDnlink->Init(KStreamInitRetry);
+        }
+    if (status == TMS_RESULT_SUCCESS)
+        {
+        iUplInitializing = ETrue;
+        iDnlInitializing = ETrue;
+        }
+    else
+        {
+        status = KErrCancel; // Convert to Symbian error and cancel
         }
     return status;
     }
 
 // ----------------------------------------------------------------------------
-// CreateSpeakerSink
+// TmsHandler::ProcessUplinkStreamChangeEvent
+// Processes Uplink stream state change events.
 // ----------------------------------------------------------------------------
 //
-gint TmsHandler::CreateSpeakerSink()
+void TmsHandler::ProcessUplinkStreamChangeEvent(TInt aState)
     {
-    gint status(TMS_RESULT_SUCCESS);
-
-    if (iFactory && !iTmsSpeakerSink)
+    CSPLOGSTRING(CSPINT, "TmsHandler::ProcessUplinkStreamChangeEvent");
+    switch (aState)
         {
-        status = iFactory->CreateSink(TMS_SINK_SPEAKER, iTmsSpeakerSink);
+        case TMS_STREAM_INITIALIZED:
+            iUplInitializing = EFalse;
+            if (iStartAfterInitComplete)
+                {
+                iStartAfterInitComplete = EFalse;
+                TInt status = StartStreams();
+                if (status != TMS_RESULT_SUCCESS)
+                    {
+                    iObserver->AudioStreamsError(status);
+                    }
+                }
+            break;
+        case TMS_STREAM_UNINITIALIZED:
+            // As result of Deinit() or error
+            iUplInitializing = EFalse;
+            iStartAfterInitComplete = EFalse;
+            break;
+        case TMS_STREAM_PAUSED:
+            break;
+        case TMS_STREAM_STARTED:
+            if (AreStreamsStarted())
+                {
+                iObserver->AudioStreamsStarted();
+                }
+            break;
+        default:
+            break;
         }
-    return status;
     }
 
 // ----------------------------------------------------------------------------
-// AddSpeakerSinkToStream
+// TmsHandler::ProcessDownlinkStreamChangeEvent
+// Processes Downlink stream state change events.
 // ----------------------------------------------------------------------------
 //
-gint TmsHandler::AddSpeakerSinkToStream()
+void TmsHandler::ProcessDownlinkStreamChangeEvent(TInt aState)
     {
-    gint status(TMS_RESULT_SUCCESS);
-    if (iTmsDnlink && iTmsSpeakerSink)
+    CSPLOGSTRING(CSPINT, "TmsHandler::ProcessDownlinkStreamChangeEvent");
+    switch (aState)
         {
-        status = iTmsDnlink->AddSink(iTmsSpeakerSink);
+        case TMS_STREAM_INITIALIZED:
+            iDnlInitializing = EFalse;
+            if (iStartAfterInitComplete)
+                {
+                iStartAfterInitComplete = EFalse;
+                TInt status = StartStreams();
+                if (status != TMS_RESULT_SUCCESS)
+                    {
+                    iObserver->AudioStreamsError(status);
+                    }
+                }
+            break;
+        case TMS_STREAM_UNINITIALIZED:
+            // As result of Deinit() or error
+            iDnlInitializing = EFalse;
+            iStartAfterInitComplete = EFalse;
+            break;
+        case TMS_STREAM_PAUSED:
+            break;
+        case TMS_STREAM_STARTED:
+            if (AreStreamsStarted())
+                {
+                iObserver->AudioStreamsStarted();
+                }
+            break;
+        default:
+            break;
         }
-    return status;
     }
 
 // TMS CALLBACKS
 
 // ----------------------------------------------------------------------------
 // TmsHandler::TMSStreamEvent
+// From TMSStreamObserver
+// TMS call audio stream control event handler.
 // ----------------------------------------------------------------------------
 //
 void TmsHandler::TMSStreamEvent(const TMSStream& stream, TMSSignalEvent event)
     {
     CSPLOGSTRING2(CSPINT, "TmsHandler::TMSStreamEvent status %d", event.reason);
 
-    TMSStreamType strmType = const_cast<TMSStream&>(stream).GetStreamType();
+    TMSStreamType strmType = const_cast<TMSStream&> (stream).GetStreamType();
 
-    if (strmType == TMS_STREAM_UPLINK &&
-            event.type == TMS_EVENT_STREAM_STATE_CHANGED)
+    if (strmType == TMS_STREAM_UPLINK)
         {
-        switch (event.curr_state)
+        if (event.type == TMS_EVENT_STREAM_STATE_CHANGED)
             {
-            case TMS_STREAM_INITIALIZED:
-                //notify stream ready state
-                break;
-            case TMS_STREAM_UNINITIALIZED:
-                //notify initialization error
-                break;
-            case TMS_STREAM_PAUSED:
-                break;
-            case TMS_STREAM_STARTED:
-                iUplinkStarted = TRUE;
-                iTmsDnlink->Start();
-                break;
-            default:
-                break;
+            ProcessUplinkStreamChangeEvent(event.curr_state);
+            }
+        else if (event.type == TMS_EVENT_STREAM_STATE_CHANGE_ERROR)
+            {
+#ifndef __WINS__
+            Panic( ECSPPanicAudioStreamInitFailure );
+#endif
             }
         }
-    else if (strmType == TMS_STREAM_DOWNLINK &&
-            event.type == TMS_EVENT_STREAM_STATE_CHANGED)
+    else if (strmType == TMS_STREAM_DOWNLINK)
         {
-        switch (event.curr_state)
+        if (event.type == TMS_EVENT_STREAM_STATE_CHANGED)
             {
-            case TMS_STREAM_INITIALIZED:
-                {
-                if ((iTmsCall->GetCallType() == TMS_CALL_CS)
-                        && (!iUplinkStarted))
-                    {
-                    OpenUplink();
-                    }
-                //notify stream ready state
-                }
-                break;
-            case TMS_STREAM_UNINITIALIZED:
-                //notify initialization error
-                break;
-            case TMS_STREAM_PAUSED:
-                break;
-            case TMS_STREAM_STARTED:
-                iDnlinkStarted = TRUE;
-                break;
-            default:
-                break;
+            ProcessDownlinkStreamChangeEvent(event.curr_state);
+            }
+        else if (event.type == TMS_EVENT_STREAM_STATE_CHANGE_ERROR)
+            {
+#ifndef __WINS__
+            Panic( ECSPPanicAudioStreamInitFailure );
+#endif
             }
         }
     }

@@ -467,6 +467,8 @@ private:
     */
     void removeDialpad();
     
+    void clearDialpad();
+    
     /*!
         \fn void PhoneUIQtViewAdapter::addToConference()
         

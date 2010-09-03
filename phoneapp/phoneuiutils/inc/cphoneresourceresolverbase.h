@@ -86,12 +86,8 @@ class CPhoneResourceResolverBase :
         // Feature variation
         enum TVariationFlags
             {
-            //Flag to indicate whether on screen dialer is supported.
-            EOnscreenDialer = 1,
-            //Flag to indicate whether on touch call handling is supported.
-            ETouchCallHandling = 2,
             //Flag to indicate whether videocallmenu is supported.
-            EVideoCallMenu = 4
+            EVideoCallMenu = 1
             };
         TInt iVariationFlags;
         

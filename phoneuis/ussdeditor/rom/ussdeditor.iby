@@ -22,7 +22,6 @@
 
 file=ABI_DIR\BUILD_DIR\ussdeditor.exe                  SHARED_LIB_DIR\ussdeditor.exe
 data=ZSYSTEM\install\ussdeditor_stub.sis               system\install\ussdeditor_stub.sis
-data=DATAZ_\resource\apps\ussdeditor.rsc               resource\apps\ussdeditor.rsc
 data=ZPRIVATE\10003a3f\import\apps\ussdeditor_reg.rsc  private\10003a3f\import\apps\ussdeditor_reg.rsc
 
 #endif

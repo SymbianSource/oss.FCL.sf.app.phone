@@ -32,22 +32,21 @@ EXPORTS
 	_ZN5Tools14videoSupportedEv @ 31 NONAME
 	_ZN5Tools16staticMetaObjectE @ 32 NONAME DATA 16
 	_ZN5Tools19getStaticMetaObjectEv @ 33 NONAME
-	_ZN5Tools20errorCodeTextMappingEiR7QString @ 34 NONAME
-	_ZNK17CpSettingsWrapper10metaObjectEv @ 35 NONAME
-	_ZNK17CpSettingsWrapper13isOngoingCallEv @ 36 NONAME
-	_ZNK17CpSettingsWrapper14isPhoneOfflineEv @ 37 NONAME
-	_ZNK17CpSettingsWrapper15readCenrepValueElm @ 38 NONAME
-	_ZNK17CpSettingsWrapper15readPubSubValueElm @ 39 NONAME
-	_ZNK17CpSettingsWrapper16readCenrepStringElm @ 40 NONAME
-	_ZNK17CpSettingsWrapper16writeCenrepValueElmRK8QVariant @ 41 NONAME
-	_ZNK17CpSettingsWrapper22forbiddenIconSupportedEv @ 42 NONAME
-	_ZNK17CpSettingsWrapper23numberGroupingSupportedEv @ 43 NONAME
-	_ZNK19CpPhoneLocalisation10metaObjectEv @ 44 NONAME
-	_ZNK5Tools10metaObjectEv @ 45 NONAME
-	_ZTI17CpSettingsWrapper @ 46 NONAME
-	_ZTI19CpPhoneLocalisation @ 47 NONAME
-	_ZTI5Tools @ 48 NONAME
-	_ZTV17CpSettingsWrapper @ 49 NONAME
-	_ZTV19CpPhoneLocalisation @ 50 NONAME
-	_ZTV5Tools @ 51 NONAME
+	_ZNK17CpSettingsWrapper10metaObjectEv @ 34 NONAME
+	_ZNK17CpSettingsWrapper13isOngoingCallEv @ 35 NONAME
+	_ZNK17CpSettingsWrapper14isPhoneOfflineEv @ 36 NONAME
+	_ZNK17CpSettingsWrapper15readCenrepValueElm @ 37 NONAME
+	_ZNK17CpSettingsWrapper15readPubSubValueElm @ 38 NONAME
+	_ZNK17CpSettingsWrapper16readCenrepStringElm @ 39 NONAME
+	_ZNK17CpSettingsWrapper16writeCenrepValueElmRK8QVariant @ 40 NONAME
+	_ZNK17CpSettingsWrapper22forbiddenIconSupportedEv @ 41 NONAME
+	_ZNK17CpSettingsWrapper23numberGroupingSupportedEv @ 42 NONAME
+	_ZNK19CpPhoneLocalisation10metaObjectEv @ 43 NONAME
+	_ZNK5Tools10metaObjectEv @ 44 NONAME
+	_ZTI17CpSettingsWrapper @ 45 NONAME
+	_ZTI19CpPhoneLocalisation @ 46 NONAME
+	_ZTI5Tools @ 47 NONAME
+	_ZTV17CpSettingsWrapper @ 48 NONAME
+	_ZTV19CpPhoneLocalisation @ 49 NONAME
+	_ZTV5Tools @ 50 NONAME
 

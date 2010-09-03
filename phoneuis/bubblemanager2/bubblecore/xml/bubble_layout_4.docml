@@ -6,12 +6,9 @@
             </widget>
             <widget name="eb:groupBox" type="HbGroupBox">            
 		            <widget name="eb:bubbleHeading"  role="HbGroupBox:contentWidget" type="BubbleHeadingWidget">
-		                <integer name="lines" value="2"/>
+		                <integer name="lineCount" value="2"/>
 		            </widget>
 		        </widget>    
-            <widget name="eb:cipheringIcon" type="HbLabel">
-                <sizehint height="var(hb-param-graphic-size-secondary)" width="var(hb-param-graphic-size-secondary)" type="FIXED"/>
-            </widget>                        
             <widget name="eb:centerButton" type="BubbleButton">
                 <sizehint height="9.0un" type="FIXED"/>
                 <sizehint width="24.5un" type="PREFERRED"/>
@@ -33,7 +30,7 @@
     </widget>
 
     <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
-        <integer name="lines" value="2"/>
+        <integer name="lineCount" value="2"/>
     </widget>
 
     <layout type="anchor" widget="content">
@@ -72,7 +69,7 @@
     </widget>
 
     <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
-        <integer name="lines" value="1"/>
+        <integer name="lineCount" value="1"/>
     </widget>
 
     <layout type="anchor" widget="content">

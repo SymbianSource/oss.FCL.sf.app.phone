@@ -60,6 +60,7 @@ extern bool m_showNoteCalled;
 extern bool m_removeGlobalWaitNoteCalled;
 extern bool m_ordinalPositionCalled;
 extern bool m_sendToBackgroundCalled;
+extern bool m_phoneVisibleReturnValue;
 
 #define PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
@@ -117,7 +118,7 @@ public:
         {m_dialpadVisibilityCalled = true;
     return m_isDialpadVisible; }
     QString dialpadText() {return m_dialpadText;};
-    void clearDialpad() {};
+    void clearDialpad() { m_clearDialpadCalled = true; };
     void clearAndHideDialpad() { m_clearAndHideDialpadCalled = true;};
     void bringToForeground() {};
     void setMenuActions(const QList<PhoneAction*>& ) { m_setMenuActionsCalled = true;};
@@ -269,6 +270,7 @@ private:
     bool m_showDialpadCalled;
     bool m_hideDialpadCalled;
     bool m_dialpadVisibilityCalled;
+    bool m_clearDialpadCalled;
     bool m_clearAndHideDialpadCalled;
     bool m_ExpandConferenceCalled;
     bool m_setMenuActionsCalled;
@@ -1099,14 +1101,16 @@ void TestPhoneUIQtViewAdapter::removeAllCallHeaders()
 void TestPhoneUIQtViewAdapter::testRemoveDialpad ()
 {
     m_clearAndHideDialpadCalled = false;
-
     m_adapter->ExecuteCommandL(EPhoneViewRemoveNumberEntry);
-    QVERIFY( m_clearAndHideDialpadCalled == true );
-    
+    QVERIFY( m_clearAndHideDialpadCalled == true );   
     m_clearAndHideDialpadCalled = false;
 
+    m_clearDialpadCalled = false;
+    m_phoneVisibleReturnValue = true;
     m_adapter->ExecuteCommandL(EPhoneViewClearNumberEntryContent);
-    QVERIFY( m_clearAndHideDialpadCalled == true );
+    QVERIFY( m_clearDialpadCalled == true );
+    m_phoneVisibleReturnValue = false;
+    m_clearDialpadCalled = false;
 }
 
 void TestPhoneUIQtViewAdapter::testGetDialpadStringLength ()
@@ -1324,11 +1328,13 @@ void TestPhoneUIQtViewAdapter::testSetFlags()
     m_adapter->ExecuteCommand(EPhoneViewSetIhfFlag,&param);
     m_adapter->ExecuteCommand(EPhoneViewSetMuteFlag,&param);
     m_adapter->ExecuteCommand(EPhoneViewSetBluetoothAvailableFlag,&param);
+    m_adapter->ExecuteCommand(EPhoneViewSetSoftRejectDimmed,&param);
 
     QVERIFY(m_phoneButtonFlags & PhoneUIQtButtonsController::Ihf);
     QVERIFY(m_phoneButtonFlags & PhoneUIQtButtonsController::Mute);
     QVERIFY(m_phoneButtonFlags & PhoneUIQtButtonsController::Btaa);
     QVERIFY(m_phoneButtonFlags & PhoneUIQtButtonsController::BluetoothAvailable);
+    QVERIFY(m_phoneButtonFlags & PhoneUIQtButtonsController::DisableSoftReject);
 }
 
 void TestPhoneUIQtViewAdapter::testCaptureEndKey()

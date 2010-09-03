@@ -127,7 +127,7 @@ void CSPEtelDtmfMonitor::RunL()
             {
             // Unknown event
             CSPLOGSTRING3( CSPERROR, 
-                "CSPEtelDtmfMonitor::RunL: Unknown event = %¨d, type = %d", 
+                "CSPEtelDtmfMonitor::RunL: Unknown event = %d, type = %d", 
                     iEventData.iEvent, iEventData.iType );
             
             // Refresh and return (no observer notfiying).

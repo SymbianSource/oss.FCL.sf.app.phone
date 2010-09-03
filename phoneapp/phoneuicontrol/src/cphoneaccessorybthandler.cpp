@@ -101,46 +101,33 @@ TBool CPhoneAccessoryBTHandler::SetHandsfreeModeL( TBool aHandsfreeMode )
 void CPhoneAccessoryBTHandler::ShowBTAddressL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneAccessoryBTHandler::ShowBTAddressL( ) ");
-    if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ))
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewClearNumberEntryContent );                      
-        }
-    else
-        {
-        // Remove number entry from screen
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );   
-        }
-     
-    // Get BT address
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewClearNumberEntryContent );
+    
     TBuf<KPhoneBtAddressTextLength> addressBuffer;
-
-    CPhoneCenRepProxy::Instance()->GetString(             
+    CPhoneCenRepProxy::Instance()->GetString( 
         KCRUidBluetoothLocalDeviceAddress,
         KBTLocalDeviceAddress,
         addressBuffer );
-    
     // BT address was empty. BT is not turned on.
     if ( addressBuffer.Length() == 0 )
         {
-        __PHONELOG( EBasic, EPhoneControl, "CPhoneAccessoryBTHandler::ShowBTAddressL.NoAddress" );
+        __PHONELOG( EBasic, 
+                EPhoneControl, 
+                "CPhoneAccessoryBTHandler::ShowBTAddressL.NoAddress" );
         }
-
     // So we got the address. Now we need the localised text:
     HBufC* buf = StringLoader::LoadLC( 
         CPhoneMainResourceResolver::Instance()->
         ResolveResourceID( EPhonePhoneBtDevAddress ) , 
         addressBuffer );
-        
     TPhoneCmdParamNote noteParam;
     noteParam.SetType( EPhoneNoteCustom );
     noteParam.SetResourceId( CPhoneMainResourceResolver::Instance()->
         ResolveResourceID( EPhoneInformationWaitNote ) );
     noteParam.SetText( *buf );
-
-    // Display note
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNote, &noteParam );
     
-    CleanupStack::PopAndDestroy( buf );               
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNote, &noteParam );
+    CleanupStack::PopAndDestroy( buf );
     }    
 
 // -----------------------------------------------------------
@@ -152,21 +139,13 @@ void CPhoneAccessoryBTHandler::ShowBTAddressL()
 void CPhoneAccessoryBTHandler::ShowBTLoopbackL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneAccessoryBTHandler::ShowBTLoopbackL( ) ");
-    if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ))
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewClearNumberEntryContent );                      
-        }
-    else
-        {
-        // Remove number entry from screen
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );   
-        }
-    TInt btLoopback( EBTDutOff );
-
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewClearNumberEntryContent );
     // Get current status of BT loopback
-    TInt err = RProperty::Get( KPSUidBluetoothDutMode, KBTDutEnabled, 
-        btLoopback );
-
+    TInt btLoopback( EBTDutOff );
+    TInt err = RProperty::Get( 
+            KPSUidBluetoothDutMode, 
+            KBTDutEnabled, 
+            btLoopback );
     // If loopback was disabled enable it. According to current knowledge
     // disabling BT test loop is not possible. If error getting the value
     // assume that it is disabled.
@@ -181,15 +160,12 @@ void CPhoneAccessoryBTHandler::ShowBTLoopbackL()
             btLoopback = EBTDutOn;
             }
         }
-
-    HBufC* btLoopbackString( NULL );
-
     // Get localised text according to setting status
+    HBufC* btLoopbackString( NULL );
     btLoopbackString = StringLoader::LoadLC( 
         CPhoneMainResourceResolver::Instance()->
         ResolveResourceID( btLoopback == EBTDutOn ? 
         EPhoneBtLoopbackEnabled : EPhoneBtLoopbackDisabled ) );
-
     TPhoneCmdParamNote noteParam;
     noteParam.SetType( EPhoneNoteCustom );
     noteParam.SetResourceId( CPhoneMainResourceResolver::Instance()->
@@ -197,9 +173,7 @@ void CPhoneAccessoryBTHandler::ShowBTLoopbackL()
     noteParam.SetText( *btLoopbackString );
     noteParam.SetTone( CAknNoteDialog::EConfirmationTone );
 
-    // Display note
     iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNote, &noteParam );
-
     CleanupStack::PopAndDestroy( btLoopbackString );
     }
 
@@ -214,12 +188,9 @@ void CPhoneAccessoryBTHandler::ShowBTActivatedL()
     HBufC* buf = StringLoader::LoadLC( 
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( EPhoneInfoBTAccActivated ) );
-    
     TPhoneCmdParamNote noteParam;
     noteParam.SetType( EPhoneNoteConfirmation );
     noteParam.SetText( *buf );
-
-    // Display note
     iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNote, &noteParam );
     CleanupStack::PopAndDestroy( buf );
     }
@@ -232,25 +203,16 @@ TBool CPhoneAccessoryBTHandler::DoSetHandsfreeModeL(
         TBool aHandsfreeMode, TPEAudioOutput aAudioOutput )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneAccessoryBTHandler::DoSetHandsfreeModeL( ) ");
-    __ASSERT_DEBUG( iStateMachine->PhoneEngineInfo(), 
-        Panic( EPhoneCtrlInvariant ));
- 
-    TBool allowed;
+    __ASSERT_DEBUG( iStateMachine->PhoneEngineInfo(), Panic( EPhoneCtrlInvariant ));
+    TBool allowed(EFalse);
     // Only toggle the handsfree mode if there is no wired accessory connected
     if( iStateMachine->PhoneEngineInfo()->AudioOutput() != EPEWiredAudioAccessory )
         {
-        TBool showNote = aHandsfreeMode || 
-            !FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling );
-
-        iStateMachine->PhoneEngineInfo()->SetAudioOutputCommand( 
-            aAudioOutput, showNote );
-        iStateMachine->SendPhoneEngineMessage( 
-            MPEPhoneModel::EPEMessageSetAudioOutput );
+        iStateMachine->PhoneEngineInfo()->
+                SetAudioOutputCommand( aAudioOutput, aHandsfreeMode );
+        iStateMachine->
+                SendPhoneEngineMessage( MPEPhoneModel::EPEMessageSetAudioOutput );
         allowed = ETrue; 
-        }
-    else
-        {
-        allowed = EFalse;   
         }
     return allowed;
     }

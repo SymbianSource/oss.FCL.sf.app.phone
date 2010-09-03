@@ -33,7 +33,6 @@
 #include "qtphonelog.h"
 #include <xqappmgr.h>
 #include <xqservicerequest.h>
-#include <xqcallinfo.h>
 #include <xqpublishandsubscribeutils.h>
 #include <xqrequestinfo.h>
 #include <xqaiwdecl.h>
@@ -84,33 +83,21 @@ void DialerWidget::startDialer()
     PHONE_TRACE
 #ifdef Q_OS_SYMBIAN
     PHONE_DEBUG("DialerWidget::startDialer");
-    
-    QList<CallInfo> calls;
-    QScopedPointer<XQCallInfo> callInfo(XQCallInfo::create());
-    callInfo->getCalls(calls);
+
     QList<QVariant> args;
     QString service;
     QString interface;
     QString operation;
 
-    if (0 < calls.count()) {
-        PHONE_DEBUG("call ongoing, bring Telephone to foreground");
-        service = "phoneui";
-        interface = "com.nokia.symbian.IStart";
-        operation = "start(int)";
-        int openDialer(0);
-        args << openDialer;
-    } else {
-        PHONE_DEBUG("no calls, open Dialer");
-        service = "logs";
-        interface = XQI_LOGS_VIEW;
-        operation = XQOP_LOGS_SHOW;
-        QVariantMap map;
-        map.insert(XQLOGS_VIEW_INDEX, QVariant(int(XQService::LogsViewAll)));
-        map.insert(XQLOGS_SHOW_DIALPAD, QVariant(true));
-        map.insert(XQLOGS_DIALPAD_TEXT, QVariant(QString()));
-        args.append(QVariant(map));
-    }
+    PHONE_DEBUG("open Dialer");
+    service = "logs";
+    interface = XQI_LOGS_VIEW;
+    operation = XQOP_LOGS_SHOW;
+    QVariantMap map;
+    map.insert(XQLOGS_VIEW_INDEX, QVariant(int(XQService::LogsViewAll)));
+    map.insert(XQLOGS_SHOW_DIALPAD, QVariant(true));
+    map.insert(XQLOGS_DIALPAD_TEXT, QVariant(QString()));
+    args.append(QVariant(map));
 
     XQApplicationManager appManager;
     QScopedPointer<XQAiwRequest> request(appManager.create(service, interface, operation, false));

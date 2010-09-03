@@ -3,7 +3,7 @@
     <widget name="content" type="HbWidget">
         <widget name="expandedBubble" type="BubbleContainerWidget">
             <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
-                <integer name="lines" value="3"/>
+                <integer name="lineCount" value="3"/>
             </widget>
             <widget name="eb:callImage" type="BubbleImageWidget">
                 <bool name="keepSquareShape" value="TRUE"/>

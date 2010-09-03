@@ -7,7 +7,7 @@
         </widget>        
         <widget name="expandedBubble" type="BubbleContainerWidget">
             <widget name="eb:bubbleHeading" type="BubbleHeadingWidget">
-                <integer name="lines" value="3"/>
+                <integer name="lineCount" value="3"/>
             </widget>
             <widget name="eb:callImage" type="BubbleImageWidget">
                 <bool name="keepSquareShape" value="TRUE"/>
@@ -35,7 +35,7 @@
     </widget>		
     
     <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
-        <integer name="lines" value="2"/>
+        <integer name="lineCount" value="2"/>
     </widget>    
 
     <layout type="anchor" widget="content">
@@ -80,7 +80,7 @@
     </widget>		
         
     <widget name="cb:bubbleHeading" type="BubbleHeadingWidget">
-        <integer name="lines" value="1"/>
+        <integer name="lineCount" value="1"/>
     </widget>
 
     <layout type="anchor" widget="content">

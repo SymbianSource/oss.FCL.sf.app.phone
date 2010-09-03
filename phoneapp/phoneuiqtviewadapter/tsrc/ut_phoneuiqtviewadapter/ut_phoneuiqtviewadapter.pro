@@ -25,11 +25,11 @@ CONFIG += qtestlib
 
 symbian {
 
-    INCLUDEPATH += \epoc32\include\platform\mw \
-                   \epoc32\include\platform \
-                   \epoc32\include\platform\app \
-	                 \epoc32\include\mw \
-                   \sf\app\phone\inc \
+    INCLUDEPATH += /epoc32/include/platform/mw \
+                   /epoc32/include/platform \
+                   /epoc32/include/platform/app \
+                   /epoc32/include/mw \
+                   /sf/app/phone/inc \
                    ../../../phoneuiutils/inc/ \
                    ../../../phonemediatorcenter/inc/ \
                    ../../../phoneuiview2/inc \

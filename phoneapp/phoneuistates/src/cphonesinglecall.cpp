@@ -65,8 +65,6 @@ EXPORT_C CPhoneSingleCall::CPhoneSingleCall(
 
 // -----------------------------------------------------------
 // CPhoneSingleCall::~CPhoneSingleCall()
-// Destructor
-// (other items were commented in a header).
 // -----------------------------------------------------------
 //
 EXPORT_C CPhoneSingleCall::~CPhoneSingleCall()
@@ -75,45 +73,41 @@ EXPORT_C CPhoneSingleCall::~CPhoneSingleCall()
 
 // -----------------------------------------------------------
 // CPhoneSingleCall::ConstructL()
-// Constructor
-// (other items were commented in a header).
 // -----------------------------------------------------------
 //
 EXPORT_C void CPhoneSingleCall::ConstructL()
     {
     CPhoneGsmInCall::ConstructL();
     
-    // Re-enable global notes
     TPhoneCmdParamBoolean globalNotifierParam;
     globalNotifierParam.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
-
-    TPhoneCmdParamBoolean holdFlag;
-    holdFlag.SetBoolean( EFalse );
-    // Fetch active call's id from view    
+    
     TPhoneCmdParamCallStateData callStateData;
     callStateData.SetCallState( EPEStateConnected );
     iViewCommandHandle->HandleCommandL(
         EPhoneViewGetCallIdByState, &callStateData );
-            
+    
+    TPhoneCmdParamBoolean holdFlag;
+    holdFlag.SetBoolean( EFalse );
+    // No connected call, 
     if( callStateData.CallId() == KErrNotFound )
         {
         holdFlag.SetBoolean( ETrue );
-        // No connected call, find the hold call
-        callStateData.SetCallState( EPEStateHeld );                    
+        //find the held call.
+        callStateData.SetCallState( EPEStateHeld );
         iViewCommandHandle->HandleCommandL(
             EPhoneViewGetCallIdByState, &callStateData );
-            
+        // No held call.
         if ( callStateData.CallId() == KErrNotFound ) 
             {
-            // No hold call, find the disconnected call
-            callStateData.SetCallState( EPEStateDisconnecting );                    
+            // find the disconnected call.
+            callStateData.SetCallState( EPEStateDisconnecting );
             iViewCommandHandle->HandleCommandL(
             EPhoneViewGetCallIdByState, &callStateData );    
             }
         }
-
     iCallId = callStateData.CallId();
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
       
@@ -151,8 +145,7 @@ EXPORT_C void CPhoneSingleCall::HandleKeyMessageL(
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleCall::HandleKeyMessageL()");
     switch ( aCode )
         {
-        // send-key
-        case EKeyYes:
+        case EKeyYes: // send-key
             if( IsNumberEntryUsedL() )
                 {
                 if ( IsVideoCallActiveL() )
@@ -168,9 +161,7 @@ EXPORT_C void CPhoneSingleCall::HandleKeyMessageL(
                                             
                     if (  iStateMachine->PhoneEngineInfo()->PhoneNumberIsServiceCode() ||
                           phoneNumber->Des().Length() < KPhoneValidPhoneNumberLength )
-                        {  
-                        // Send a manual control sequence by providing number 
-                        // information with dial command
+                        {
                         CallFromNumberEntryL();
                         }
                     else
@@ -182,18 +173,16 @@ EXPORT_C void CPhoneSingleCall::HandleKeyMessageL(
                     }
                 else
                     {
-                    // Provide number information with dial command
                     CallFromNumberEntryL();
                     }
                 }
             else
                 {
-                ToggleHoldL();                    
+                ToggleHoldL();
                 }
             break;
             
         default:
-            // do base operation
             CPhoneGsmInCall::HandleKeyMessageL( aMessage, aCode );
             break;
         }
@@ -255,7 +244,6 @@ EXPORT_C TBool CPhoneSingleCall::HandleCommandL( TInt aCommand )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleCall::HandleCommandL()");
     TBool commandStatus = ETrue;
-
     switch( aCommand )
         {
         /* Flow through */           
@@ -264,18 +252,8 @@ EXPORT_C TBool CPhoneSingleCall::HandleCommandL( TInt aCommand )
             ToggleHoldL();
             break;
             
-        case EPhoneInCallCmdNewCall:
-            break;
-            
-        case EPhoneInCallCmdNewCallCall:
-            break;
-
         case EPhoneInCallCmdSwitchToVideo:
             SwitchToVideoL();
-            break;
-            
-        case EPhoneInCallCmdSwitchToVoice:
-            SwitchToVoiceL();
             break;
             
         case EPhoneCmdYesSwitchToVideo:
@@ -286,30 +264,34 @@ EXPORT_C TBool CPhoneSingleCall::HandleCommandL( TInt aCommand )
             break;
         
         /* Flow through */ 
+        case EPhoneInCallCmdNewCall:
+        case EPhoneInCallCmdNewCallCall:
+        case EPhoneInCallCmdSwitchToVoice:
         case EPhoneCmdNoSwitchToVideo:
         case EPhoneCmdNoSwitchToVoice:
             break;        
                 
         case EPhoneCmdYesSwitchToVoice:
-            // Set current call id
+            // Set current call id.
             iStateMachine->SetCallId( iCallId );
-                        if( IsVideoCall( iCallId ) )
-                        {
-                           // Video call can be released only after we get response to VT Shutdown Command
-                           CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( KMediatorVideoTelephonyDomain,
-                                                                                      KCatPhoneToVideotelCommands, 
-                                                                                      EVtCmdReleaseDataport,
-                                                                                      TVersion( KPhoneToVideotelCmdVersionMajor,
-                                                                                            KPhoneToVideotelCmdVersionMinor, 
-                                                                                            KPhoneToVideotelCmdVersionBuild ),
-                                                                                      KNullDesC8,
-                                                                                      CPhoneSwitchToVideoOrVoiceCommand::NewL( *iStateMachine ) );
-                        }
-                        else
-                        {
-                          iStateMachine->SendPhoneEngineMessage(
-                              CPEPhoneModelIF::EPEMessageSwitchToVideoOrVoice );                    
-                        }
+            if( IsVideoCall( iCallId ) )
+                {
+                // Video call can be released only after we get response to VT Shutdown Command
+                CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( 
+                       KMediatorVideoTelephonyDomain,
+                       KCatPhoneToVideotelCommands, 
+                       EVtCmdReleaseDataport,
+                       TVersion( KPhoneToVideotelCmdVersionMajor,
+                             KPhoneToVideotelCmdVersionMinor, 
+                             KPhoneToVideotelCmdVersionBuild ),
+                       KNullDesC8,
+                       CPhoneSwitchToVideoOrVoiceCommand::NewL( *iStateMachine ) );
+                }
+            else
+                {
+                iStateMachine->SendPhoneEngineMessage(
+                  CPEPhoneModelIF::EPEMessageSwitchToVideoOrVoice );
+                }
             break;
 
         case EPhoneVideoSharing:
@@ -318,16 +300,16 @@ EXPORT_C TBool CPhoneSingleCall::HandleCommandL( TInt aCommand )
             {
             TPhoneCmdParamInteger command;
             command.SetInteger( aCommand );
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendAiwCommand, 
-                &command );                
+            iViewCommandHandle->ExecuteCommandL( 
+                    EPhoneViewSendAiwCommand, 
+                    &command );
             }
-            break;           
+            break;
             
         default:
             commandStatus = CPhoneGsmInCall::HandleCommandL( aCommand );
             break;
         }
-
     return commandStatus;
     }
 
@@ -338,16 +320,6 @@ EXPORT_C TBool CPhoneSingleCall::HandleCommandL( TInt aCommand )
 EXPORT_C TInt CPhoneSingleCall::CallId() const
     {
     return iCallId;
-    }
-
-// -----------------------------------------------------------
-// CPhoneSingleCall::OpenVideoCallMenuBarL
-// -----------------------------------------------------------
-//
-void CPhoneSingleCall::OpenVideoCallMenuBarL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleCall::OpenVideoCallMenuBarL()");
-                   
     }
     
 // -----------------------------------------------------------
@@ -374,16 +346,10 @@ void CPhoneSingleCall::HandleHeldL( TInt aCallId )
  
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewUpdateBubble, aCallId, &callHeaderParam );
-       
-    // Set Hold flag to view
+    
     TPhoneCmdParamBoolean holdFlag;
     holdFlag.SetBoolean( ETrue );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-        
-    if ( !FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
-        { 
-        HandleHoldNoteL( aCallId , ETrue );
-        }
 
     UpdateInCallCbaL();
     SetTouchPaneButtons( EPhoneIncallHeldButtons );
@@ -397,8 +363,6 @@ void CPhoneSingleCall::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::HandleConnectedL()");
-    
-    // Show bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
     callHeaderParam.SetCallState( EPEStateConnected );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
@@ -410,14 +374,8 @@ void CPhoneSingleCall::HandleConnectedL( TInt aCallId )
         
     if ( holdFlag.Boolean() )
         {
-        // Update hold flag to view
         holdFlag.SetBoolean( EFalse );
         iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-        
-        if ( !FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) )
-            {
-            HandleHoldNoteL( aCallId , EFalse );
-            }
         }
 
     UpdateInCallCbaL();  
@@ -462,19 +420,14 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::HandleIncomingL()");
-    
     BeginUiUpdateLC();
     
+    // Get allow waiting call header param value.
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
+    AllowShowingOfWaitingCallHeaderL( dialerParam );
     
-    // Get allow waiting call header param value.
-    AllowShowingOfWaitingCallHeaderL( dialerParam );    
-
-    // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
-    
-    // Show incoming call buttons
     SetTouchPaneButtons( EPhoneWaitingCallButtons ); 
     
     if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
@@ -509,7 +462,6 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveQuery );
         }
     
-    // Go to incoming state
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
     iStateMachine->ChangeState( EPhoneStateWaitingInSingle );        
     }
@@ -524,17 +476,14 @@ void CPhoneSingleCall::DisplayIncomingCallL(
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::DisplayIncomingCallL()");
-
     // Cannot delete active note, e.g. New call query, 
     // but show waiting note with or without caller name
-    if ( IsAnyQueryActiveL() || 
-        ( !aCommandParam.Boolean() && iOnScreenDialer ) )
+    if ( IsAnyQueryActiveL() || !aCommandParam.Boolean() )
         {
-        CallWaitingNoteL( aCallId );        
+        CallWaitingNoteL( aCallId );
         }
     else
         {
-        // Remove any phone dialogs if they are displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
         }
     
@@ -546,16 +495,12 @@ void CPhoneSingleCall::DisplayIncomingCallL(
         EPhoneViewSetNeedToSendToBackgroundStatus,
         &booleanParam );
 
-    // Bring Phone app in the foreground
     TPhoneCmdParamInteger uidParam;
     uidParam.SetInteger( KUidPhoneApplication.iUid );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewBringAppToForeground,
         &uidParam );
-
-    // Set Phone as the top application
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetTopApplication,
         &uidParam );
-
     DisplayHeaderForCallComingInL( aCallId, ETrue ); //waiting call 
     }    
 // -----------------------------------------------------------
@@ -567,18 +512,11 @@ void CPhoneSingleCall::HandleDiallingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::HandleDiallingL()");
     BeginUiUpdateLC();
-    
     SetNumberEntryVisibilityL(EFalse);
-
-    // Display call setup 
     DisplayCallSetupL( aCallId );
-    
-    // Show incoming call buttons
     SetTouchPaneButtons( EPhoneCallSetupAndSingleButtons );
-
     EndUiUpdate();
-
-    // Go to call setup state
+    
     UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
     iStateMachine->ChangeState( EPhoneStateCallSetupInSingle );
     }
@@ -591,20 +529,12 @@ void CPhoneSingleCall::DisplayCallSetupL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::DisplayCallSetupL()");
-
-    // Remove dialogs if necessary
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-
-    // Capture keys when the phone is dialling
-    CaptureKeysDuringCallNotificationL( ETrue );
-
-    // Force telephony to the foreground
     TPhoneCmdParamInteger uidParam;
     uidParam.SetInteger( KUidPhoneApplication.iUid );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewBringAppToForeground,
         &uidParam );
 
-    // Display call setup header
     DisplayHeaderForOutgoingCallL( aCallId );
     }
 
@@ -616,14 +546,12 @@ void CPhoneSingleCall::SwitchToVideoL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::SwitchToVideoL()");
-
     if( FeatureManager::FeatureSupported( KFeatureIdCsVideoTelephony ) )
         {        
         TInt networkMode( CPhonePubSubProxy::Instance()->Value( KPSUidNetworkInfo,
             KNWTelephonyNetworkMode ) );
         TBool restoreOngoing( CPhonePubSubProxy::Instance()->Value( KUidSystemCategory,
             conn::KUidBackupRestoreKey ));
-        
         if ( networkMode != ENWNetworkModeWcdma )
             {
             // We aren't in 3G, video call not possible
@@ -631,28 +559,15 @@ void CPhoneSingleCall::SwitchToVideoL()
             }
         else if ( restoreOngoing & ( conn::EBURRestoreFull | conn::EBURRestorePartial ))
             {
-            // MC restore ongoing
             SendGlobalInfoNoteL( EPhoneInformationVideoCallNotAllowedDuringRestoreNote );
             }
         else
             {
             iSwitchToVideoQuery = ETrue;
-            //ShowQueryL( EPhoneSwitchToVideoQuery );
             iSwitchToVideoQuery = EFalse;
             }    
         }
     }
 
-// -----------------------------------------------------------
-// CPhoneSingleCall::SwitchToVoiceL
-// -----------------------------------------------------------
-//
-void CPhoneSingleCall::SwitchToVoiceL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneSingleCall::SwitchToVoiceL()");
-    
-    //ShowQueryL( EPhoneSwitchToVoiceQuery );
-    }
 
 // End of File

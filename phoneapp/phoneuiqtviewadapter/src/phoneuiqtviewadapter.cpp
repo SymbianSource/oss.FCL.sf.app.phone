@@ -124,7 +124,7 @@ PhoneUIQtViewAdapter::PhoneUIQtViewAdapter (PhoneUIQtViewIF &view, QObject *pare
             m_speakerAsDefaultButton = true;
         }    
     }
-
+    
 }
 
 PhoneUIQtViewAdapter::~PhoneUIQtViewAdapter ()
@@ -182,8 +182,10 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId)
         removeAllCallHeaders();
         break;
     case EPhoneViewRemoveNumberEntry:
-    case EPhoneViewClearNumberEntryContent: // Fall through
         removeDialpad();
+        break;
+    case EPhoneViewClearNumberEntryContent: 
+        clearDialpad();
         break;
     case EPhoneViewAddToConference:
         addToConference();
@@ -511,6 +513,14 @@ void PhoneUIQtViewAdapter::ExecuteCommand (TPhoneViewCommandId aCmdId, TPhoneCom
         }
     }
     break;
+    case EPhoneViewSetSoftRejectDimmed: {
+        TPhoneCmdParamBoolean *param = static_cast<TPhoneCmdParamBoolean *>(aCommandParam);
+
+        PhoneResourceAdapter::Instance()->buttonsController()->
+                setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject, 
+                               param->Boolean());
+        }
+        break;
     case EPhoneViewStopCapturingKey: {
         TPhoneCmdParamKeyCapture *captureParam = 
                 static_cast<TPhoneCmdParamKeyCapture *>(aCommandParam);        
@@ -557,11 +567,13 @@ void PhoneUIQtViewAdapter::keyReleased(QKeyEvent */*event*/)
 void PhoneUIQtViewAdapter::handleWindowActivated()
 {
     m_indicatorController->disableActiveCallIndicator();
+    m_view.captureKey(Qt::Key_Yes, true);
 }
 
 void PhoneUIQtViewAdapter::handleWindowDeactivated()
 {
     m_indicatorController->enableActiveCallIndicator();
+    m_view.captureKey(Qt::Key_Yes, false);
 }
 
 void PhoneUIQtViewAdapter::setTopApplication (TPhoneCommandParam *commandParam)
@@ -628,7 +640,10 @@ void PhoneUIQtViewAdapter::createCallHeader(
     if (1 == m_bubbleWrapper->bubbles().keys().count()) {
         setHidden(false);
     }
-    m_indicatorController->setActiveCallData();
+    if( EPECallTypeVideo != data.CallType() ){
+        m_indicatorController->setActiveCallData();
+    }
+    
 }
 
 void PhoneUIQtViewAdapter::createEmergencyCallHeader(
@@ -690,8 +705,9 @@ void PhoneUIQtViewAdapter::updateCallHeaderRemoteInfo (int callId, TPhoneCommand
          m_bubbleWrapper->setDivert (bubble, data.Diverted ());
          m_bubbleWrapper->bubbleManager ().endChanges ();
      }
-     m_indicatorController->setActiveCallData();
-
+     if ( EPECallTypeVideo != data.CallType() ) {
+         m_indicatorController->setActiveCallData();
+     }
 }
 
 void PhoneUIQtViewAdapter::updateCallHeaderRemoteInfoAndLabel (int callId, TPhoneCommandParam *commandParam)
@@ -1172,6 +1188,16 @@ void PhoneUIQtViewAdapter::getDialpadStringLength(
 void PhoneUIQtViewAdapter::removeDialpad()
 {
     m_view.clearAndHideDialpad();
+}
+
+void PhoneUIQtViewAdapter::clearDialpad()
+{
+    // After the sending of SS strings the view stays in Dialer.
+    if (!m_visibilityHandler->phoneVisible()){ 
+        m_appLauncher->launchLogs( XQService::LogsViewAll, true,QString(""));
+    }else{
+        m_view.clearDialpad();
+    }
 }
 
 void PhoneUIQtViewAdapter::addToConference()

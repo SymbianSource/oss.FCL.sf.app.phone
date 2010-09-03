@@ -32,6 +32,7 @@
 bool m_bringToForegroundCalled;
 bool m_sendToBackgroundCalled;
 bool m_ordinalPositionCalled;
+bool m_phoneVisibleReturnValue;
 
 /*!
     PhoneVisibilityHandler::PhoneVisibilityHandler.
@@ -44,7 +45,7 @@ PhoneVisibilityHandler::PhoneVisibilityHandler(PhoneUIQtViewIF &view, QObject *p
     m_carModeEnabled(false),
     m_hideDeviceDialogs(false)
 {
-
+    m_phoneVisibleReturnValue = false;
 }
 
 
@@ -86,7 +87,7 @@ void PhoneVisibilityHandler::hideDeviceDialogs(bool hide)
 bool PhoneVisibilityHandler::phoneVisible()
 {
     m_ordinalPositionCalled = true;
-    return false;
+    return m_phoneVisibleReturnValue;
 }
 
 /*!

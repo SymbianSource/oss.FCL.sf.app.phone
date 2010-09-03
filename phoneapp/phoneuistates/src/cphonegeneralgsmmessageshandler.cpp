@@ -79,10 +79,9 @@ CPhoneGeneralGsmMessagesHandler* CPhoneGeneralGsmMessagesHandler::NewL(
     MPhoneState& aActiveState )
     {
     CPhoneGeneralGsmMessagesHandler* self = new( ELeave ) 
-        CPhoneGeneralGsmMessagesHandler( aStateMachine, 
+            CPhoneGeneralGsmMessagesHandler( aStateMachine, 
                                          aViewCommandHandle,
                                          aActiveState );
-    
     return self;
     }
 
@@ -96,7 +95,6 @@ void CPhoneGeneralGsmMessagesHandler::HandlePhoneEngineMessageL(
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneGeneralGsmMessagesHandler::HandlePhoneEngineMessageL()" );
-
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageCallBarred:
@@ -121,8 +119,8 @@ void CPhoneGeneralGsmMessagesHandler::HandlePhoneEngineMessageL(
                 EBasic, 
                 EPhoneUIStates,
                 "CPhoneGeneralGsmMessagesHandler::EPEMessageIssuedSSRequest" );
-            break;
             }
+            break;
             
         case MEngineMonitor::EPEMessageIssuingSSRequest:
             {
@@ -130,41 +128,19 @@ void CPhoneGeneralGsmMessagesHandler::HandlePhoneEngineMessageL(
                 EBasic, 
                 EPhoneUIStates,
                 "CPhoneGeneralGsmMessagesHandler::EPEMessageIssuingSSRequest" );
-                    
             iStateMachine.SendPhoneEngineMessage( MPEPhoneModel::EPEMessageEndDTMF );
-             
-            // Remove number entry from screen
-            if ( !FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) &&
-                 iViewCommandHandle.HandleCommandL( 
-                     EPhoneViewGetNumberEntryIsVisibleStatus ) == 
-                     EPhoneViewResponseSuccess )  
-                {            
-                iViewCommandHandle.ExecuteCommandL( 
-                    EPhoneViewRemoveNumberEntry );
-                }
-            else if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) )
-                {
-                iViewCommandHandle.ExecuteCommandL( 
-                    EPhoneViewClearNumberEntryContent );
-                }
-
-            // Enable global notes
+            iViewCommandHandle.ExecuteCommandL( 
+                EPhoneViewClearNumberEntryContent );
+            
             TPhoneCmdParamBoolean globalNotifierParam;
             globalNotifierParam.SetBoolean( EFalse );
             iViewCommandHandle.ExecuteCommandL( 
                 EPhoneViewSetGlobalNotifiersDisabled,
                 &globalNotifierParam );
-            
-            // Get active call count
-            TPhoneCmdParamInteger activeCallCount;
-            iViewCommandHandle.ExecuteCommandL(
-                EPhoneViewGetCountOfActiveCalls, &activeCallCount );
-            
-            // Remove phoneumber query
             iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveQuery );
-            break;
             }
-
+            break;
+            
         case MEngineMonitor::EPEMessageTempClirActivationUnsuccessful:
             SendGlobalErrorNoteL( EPhoneSSNotifCLIRSupprReject, ETrue );
             break;
@@ -195,7 +171,6 @@ void CPhoneGeneralGsmMessagesHandler::SendGlobalInfoNoteL(
     if ( CPhonePubSubProxy::Instance()->Value( 
             KPSUidUikon, KUikGlobalNotesAllowed ) == 1 )
         {
-        // Re-enable global notes
         TPhoneCmdParamBoolean globalNotifierParam;
         globalNotifierParam.SetBoolean( EFalse );
         iViewCommandHandle.ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
@@ -224,9 +199,7 @@ void CPhoneGeneralGsmMessagesHandler::HandleIncomingCallForwardedL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneGeneralGsmMessagesHandler::HandleIncomingCallForwardedL()" );
-    
     iActiveState.SetDivertIndication( ETrue );
-    
     }
 
 // ---------------------------------------------------------
@@ -239,11 +212,9 @@ void CPhoneGeneralGsmMessagesHandler::SendGlobalErrorNoteL(
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneGeneralGsmMessagesHandler::SendGlobalErrorNoteL()" );
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
-
     if ( CPhonePubSubProxy::Instance()->Value( 
             KPSUidUikon, KUikGlobalNotesAllowed ) == 1 )
         {
-        // Re-enable global notes
         TPhoneCmdParamBoolean globalNotifierParam;
         globalNotifierParam.SetBoolean( EFalse );
         iViewCommandHandle.ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,

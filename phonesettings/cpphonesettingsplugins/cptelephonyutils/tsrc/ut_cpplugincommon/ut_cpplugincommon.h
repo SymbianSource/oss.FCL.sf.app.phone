@@ -46,7 +46,6 @@ private slots:
     
     void t_voipSupported();
     void t_videoSupported();
-    void t_errorCodeTextMapping();
     
     void t_readVtVideoSending();
     void t_writeVtVideoSending();
