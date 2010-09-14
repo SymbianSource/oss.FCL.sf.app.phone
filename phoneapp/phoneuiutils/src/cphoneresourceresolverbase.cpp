@@ -22,6 +22,7 @@
 #include <avkon.rsg>
 #include <featmgr.h>
 #include <telephonyvariant.hrh>
+#include <coreapplicationuisdomainpskeys.h>
 
 #include "phoneui.pan"
 #include "cphoneresourceresolverbase.h"
@@ -30,6 +31,7 @@
 #include "phonerssbase.h"
 #include "phonelogger.h"
 #include "cphonecenrepproxy.h"
+#include "cphonepubsubproxy.h"
 
 #include <phoneui.rsg>
 #include <callhandlingui.rsg>
@@ -62,6 +64,11 @@ EXPORT_C CPhoneResourceResolverBase::CPhoneResourceResolverBase():
     if ( FeatureManager::FeatureSupported( KFeatureIdVideocallMenuVisibility ) )
         {
         iVariationFlags |= EVideoCallMenu;
+        }
+
+    if ( FeatureManager::FeatureSupported( KFeatureIdFfEntryPointForVideoShare ) )
+        {
+        iVariationFlags |= EVideoShareEntryPoint;
         }
     }
 
@@ -119,6 +126,15 @@ EXPORT_C TBool CPhoneResourceResolverBase::IsTelephonyFeatureSupported( TInt aFe
     {
     return CPhoneCenRepProxy::Instance()->IsTelephonyFeatureSupported( aFeatureId );
     }
+
+TBool CPhoneResourceResolverBase::ShowVideoShareButton() const
+    {
+    return ( iVariationFlags & EVideoShareEntryPoint ) &&
+           CPhonePubSubProxy::Instance()->Value
+              ( KPSUidCoreApplicationUIs, KCoreAppUIsVideoSharingIndicator )
+                 == ECoreAppUIsVideoSharingIndicatorOn;
+    }
+
 // -----------------------------------------------------------------------------
 // CPhoneResourceResolverBase::ResolveResourceID
 // Empty implementation, because there isn't common phoneapp.rss file.
@@ -1363,7 +1379,14 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             break;
 
         case EPhoneIncallButtons:
-            retVal = R_PHONEUI_INCALL_BUTTONS;
+            if ( ShowVideoShareButton() )
+                {
+                retVal = R_PHONEUI_INCALL_VIDEO_SHARE_BUTTONS;
+                }
+            else
+                {
+                retVal = R_PHONEUI_INCALL_BUTTONS;
+                }
             break;
 
         case EPhoneIncallVideoShareButtons:

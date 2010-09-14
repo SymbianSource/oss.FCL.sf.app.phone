@@ -720,6 +720,20 @@ NONSHARABLE_CLASS( MPEEngineInfo )
          */
         virtual const TDesC& CallBackAddress() const = 0;
         
+        /**
+        * Sets the protocol spesific error code
+        * @param aError is the error code from Etel.
+        * @return None.
+        */
+        virtual void SetProtocolError( TInt aError, TInt aCallId ) = 0; 
+        
+        /**
+        * Gets the protocol spesific error code
+        * @param aCallId is the call identification number.
+        * @return TInt.
+        */
+        virtual TInt ProtocolError( const TInt aCallId ) const = 0; 
+        
     }; // MPEEngineInfo
     
 #endif      //MPEENGINEINFO_H

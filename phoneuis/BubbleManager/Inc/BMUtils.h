@@ -431,21 +431,6 @@ class BubbleUtils
             CEikImage*& aBubble );
             
         /**
-        * Makes bubble image transparent based on given 
-        * 9-piece mask frame.
-        * @since 3.1
-        * @param aFrameID Skin id for frame.
-        * @param aOuterRect Outer rectangle.
-        * @param aInnerRect Inner rectangle.
-        * @param aBubble Bubble image.
-        */
-        static void AddTransparencyToBubbleImageL(
-            const TAknsItemID& aFrameID,
-            const TRect& aOuterRect,
-            const TRect& aInnerRect,    
-            CEikImage*& aBubble );
-            
-        /**
         * Adds call object image to bubble image.
         * @since 3.1
         * @param aCOImage Image.

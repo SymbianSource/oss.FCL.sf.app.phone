@@ -324,13 +324,13 @@ void CPhoneConferenceAndSingle::HandleConnectedConferenceL()
     holdFlag.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
     
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewUpdateBubble, KConferenceCallId, &callHeaderParam );
     
     SetTouchPaneButtons( EPhoneConferenceAndHeldSingleButtons );
     
-    EndUiUpdate();          
+    TransitionHandlerL().EndUiUpdate();
     }
 
 
@@ -359,13 +359,13 @@ void CPhoneConferenceAndSingle::HandleHeldConferenceL()
          
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateMaxConfMemberFlag );
 
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
      
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewUpdateBubble, KConferenceCallId, &callHeaderParam );
         
     SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );    
-    EndUiUpdate();     
+    TransitionHandlerL().EndUiUpdate();
     }
 
 // -----------------------------------------------------------
@@ -420,7 +420,7 @@ void CPhoneConferenceAndSingle::HandleAddedConferenceMemberL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleAddedConferenceMemberL");
     
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
         
     // Update conference bubble
     iViewCommandHandle->ExecuteCommandL( EPhoneViewAddToConference );
@@ -430,7 +430,7 @@ void CPhoneConferenceAndSingle::HandleAddedConferenceMemberL( TInt aCallId )
     SetTouchPaneButtons( EPhoneConferenceButtons );
     SetTouchPaneButtonEnabled( EPhoneInCallCmdPrivate );
     
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
 
     TPhoneCmdParamBoolean conferenceAndSingleFlag;
     conferenceAndSingleFlag.SetBoolean( EFalse );
@@ -460,10 +460,7 @@ void CPhoneConferenceAndSingle::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
             "CPhoneConferenceAndSingle::HandleIncomingL");
-    IsNumberEntryUsedL() ? 
-        BeginTransEffectLC( ECallUiAppear ) :
-        BeginTransEffectLC( ENumberEntryOpen );
-    BeginUiUpdateLC();  
+    TransitionHandlerL().IncomingCallUiUpdateLC();
     
     // Hide the number entry if it exists
     if ( IsNumberEntryUsedL() )
@@ -471,10 +468,9 @@ void CPhoneConferenceAndSingle::HandleIncomingL( TInt aCallId )
         SetNumberEntryVisibilityL( EFalse );
         }
     
+    // Get allow waiting call header param value.
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
-    
-    // Get allow waiting call header param value.
     AllowShowingOfWaitingCallHeaderL( dialerParam );
     
     // Close conference list
@@ -489,20 +485,17 @@ void CPhoneConferenceAndSingle::HandleIncomingL( TInt aCallId )
     SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
 
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
-        
-    // Display incoming call
+    
     DisplayIncomingCallL( aCallId, dialerParam  );
-
-    EndUiUpdate();
-    EndTransEffect();
+    TransitionHandlerL().EndUiUpdateAndEffect();
+    
     TPhoneCmdParamBoolean conferenceAndSingleFlag;
     conferenceAndSingleFlag.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetConferenceAndSingleFlag, 
-    	&conferenceAndSingleFlag );
-    
-    // Go to Conference And Single And Waiting state
+            &conferenceAndSingleFlag );
+
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
-    iStateMachine->ChangeState( EPhoneStateConferenceAndSingleAndWaiting );                
+    iStateMachine->ChangeState( EPhoneStateConferenceAndSingleAndWaiting );
     }
 
 // -----------------------------------------------------------
@@ -535,7 +528,7 @@ void CPhoneConferenceAndSingle::HandleIdleL( TInt aCallId )
     else
         {       
         // Remove call
-        BeginUiUpdateLC(); 
+        TransitionHandlerL().BeginUiUpdateLC(); 
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
 
 	    TPhoneCmdParamBoolean conferenceAndSingleFlag;
@@ -556,10 +549,7 @@ void CPhoneConferenceAndSingle::HandleIdleL( TInt aCallId )
 	        
 	        UpdateCbaL( EPhoneCallHandlingInCallCBA );
 	        }
-      
-
-        EndUiUpdate();
-
+        TransitionHandlerL().EndUiUpdate();
         iStateMachine->ChangeState( EPhoneStateConference );
         }
     

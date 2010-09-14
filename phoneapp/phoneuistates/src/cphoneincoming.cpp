@@ -165,9 +165,9 @@ EXPORT_C void CPhoneIncoming::HandlePhoneEngineMessageL(
                
                // Prevent execution of CPhoneStateIncoming::HandleIdleL, only remove
                // the call bubble
-               BeginUiUpdateLC();
+               TransitionHandlerL().BeginUiUpdateLC();
                iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-               EndUiUpdate();
+               TransitionHandlerL().EndUiUpdate();
 
                iWaitingCallId = KErrNotFound;
                }
@@ -193,16 +193,12 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneIncoming::HandleIncomingL()");
-    
     TPhoneCmdParamCallStateData callState;
     callState.SetCallState( EPEStateConnected );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCallIdByState, &callState );
     TInt connectedCall = callState.CallId(); 
     
-    IsNumberEntryUsedL() ? 
-        BeginTransEffectLC( ECallUiAppear ) :
-        BeginTransEffectLC( ENumberEntryOpen );
-    BeginUiUpdateLC();
+    TransitionHandlerL().IncomingCallUiUpdateLC();
     
     // Hide the number entry if it exists
     if ( IsNumberEntryUsedL() )
@@ -212,7 +208,6 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
-    
     AllowShowingOfWaitingCallHeaderL( dialerParam );
       
     // Close fast swap window if it's displayed
@@ -235,11 +230,8 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
         }
     
     SetToolbarDimming( EFalse );
-    // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
-
-    EndUiUpdate();
-    EndTransEffect();
+    TransitionHandlerL().EndUiUpdateAndEffect();
 
     if ( connectedCall > KErrNotFound )
         {

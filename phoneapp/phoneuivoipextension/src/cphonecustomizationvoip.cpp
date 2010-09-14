@@ -851,8 +851,6 @@ void CPhoneCustomizationVoip::InsertInternetCallMenuItemL(
 
     HBufC* phoneNumber = PhoneNumberFromEntryLC();
 
-    TInt index(KErrNotFound);
-
     // If number entry is empty don't add internet call option 
     if ( phoneNumber->Length() )
         {

@@ -140,8 +140,8 @@
 
 // Kastor effect IDs, aknskincontent/101f84b9.sel
 // These effects cannot be used for internal transitions (Call UI<->Dialer)
-const TInt KTouchDialerOpenEffect  = 3;
-const TInt KTouchDialerCloseEffect = 5;
+const TInt KTouchPhoneUiOpenEffect  = 3;
+const TInt KTouchPhoneUiCloseEffect = 5;
 
 const TInt KTouchCallUiOpenEffect  = 1000;
 const TInt KTouchCallUiCloseEffect = 1001;
@@ -3849,11 +3849,11 @@ void CPhoneViewController::HandleTransitionEffect(
     switch ( aType )
         {
         case EPhoneTransEffectDialerCreate:
-        case EPhoneTransEffectDialerOpen:
-            useEffect = KTouchDialerOpenEffect;
+        case EPhoneTransEffectPhoneUiOpen:
+            useEffect = KTouchPhoneUiOpenEffect;
             break;
-        case EPhoneTransEffectDialerClose:
-            useEffect = KTouchDialerCloseEffect;
+        case EPhoneTransEffectPhoneUiClose:
+            useEffect = KTouchPhoneUiCloseEffect;
             break;
         case EPhoneTransEffectAppStartFromDialer:
             useEffect = AknTransEffect::EApplicationStart;
@@ -4126,7 +4126,7 @@ TBool CPhoneViewController::CanTransEffectBeUsed(
     /* In case transition is from idle to dialer or to incoming call 
     show transition effects as well. */
     else if ( isIdleInForeground && 
-              ( aType == EPhoneTransEffectDialerOpen ||
+              ( aType == EPhoneTransEffectPhoneUiOpen ||
                 aType == EPhoneTransEffectCallUiAppear ) )
         {
         okToUseEffect = ETrue;
@@ -4135,7 +4135,7 @@ TBool CPhoneViewController::CanTransEffectBeUsed(
     when call is created from some other then phone app for example logs or from phonebook*/
     else if ( !isPhoneForeground && 
               !isIdleInForeground && 
-              ( aType == EPhoneTransEffectDialerOpen ||
+              ( aType == EPhoneTransEffectPhoneUiOpen ||
                 aType == EPhoneTransEffectCallUiAppear ) )
         {
         okToUseEffect = ETrue;
@@ -4154,7 +4154,7 @@ TBool CPhoneViewController::IsOkToUseThisTypeOfEffectInsidePhoneApp(
     switch ( aType )
         {
         case EPhoneTransEffectDialerCreate:
-        case EPhoneTransEffectDialerOpen:
+        case EPhoneTransEffectPhoneUiOpen:
             okToUse = !iDialerActive;
             break;
         case EPhoneTransEffectAppStartFromDialer:
@@ -4162,7 +4162,7 @@ TBool CPhoneViewController::IsOkToUseThisTypeOfEffectInsidePhoneApp(
             break;
         /* No need to check dialer activity below because effects are 
         common to callhandling/dialer */
-        case EPhoneTransEffectDialerClose:
+        case EPhoneTransEffectPhoneUiClose:
         case EPhoneTransEffectCallUiAppear:
         case EPhoneTransEffectCallUiDisappear:
             okToUse = ETrue;

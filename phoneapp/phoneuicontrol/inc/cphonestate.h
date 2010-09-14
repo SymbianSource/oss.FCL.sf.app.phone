@@ -30,29 +30,18 @@
 #include "mphonestate.h"
 #include "mphoneviewcommandhandle.h"
 #include "cphonecbamanager.h"
+#include "tphonecmdparamtranseffect.h"
+#include "tphonetransitionhandler.h"
 
 // FORWARD DECLARATIONS
 class MPhoneState;
 class MPhoneStateMachine;
 class CPhoneCallHeaderManager;
+class TPhoneTransitionHandler;
 class CPhoneTimer;
 class TPhoneCmdParamCallHeaderData;
 class MPhoneCustomization;
 class CPhoneNumberEntryManager;
-
-enum TStateTransEffectType
-    {
-    ENoneType,
-    ECallUiAppear,
-    ECallUiDisappear,
-    // These effect types can be used only when NE is opened/closed
-    // when some other app than phone is visible on the foreground/
-    // background.
-    // These cannot be used for internal transitions (=call ui<->dialer).
-    ENumberEntryOpen,
-    ENumberEntryClose,
-    ENumberEntryCreate
-    };
 
 // CLASS DECLARATION
 
@@ -238,20 +227,6 @@ class CPhoneState :
         * Handles Long hash key press
         */
         IMPORT_C void HandleLongHashL();
-
-        /**
-        * Informs view to start Transition effect if effect
-        * type is feasible for current state.
-        * @param aType a transition effect, default none
-        * EndTransEffect() must be called when update is done.
-        */
-        IMPORT_C void BeginTransEffectLC( TStateTransEffectType aType = ENoneType );
-
-        /**
-        * Informs view to complete Transition effect
-        */
-        IMPORT_C void EndTransEffect();
-
         /**
         * Checks whether customized dialer view is active,
         * @return ETrue if customized dialer is active
@@ -348,6 +323,12 @@ class CPhoneState :
         * @param CEikonEnv handle
         */
         IMPORT_C virtual void SetEikonEnv( CEikonEnv* aEnv );
+		
+        /**
+        * Getter for TPhoneTransitionHandler instance.
+        * @return TPhoneTransitionHandler handle
+        */    
+        IMPORT_C TPhoneTransitionHandler& TransitionHandlerL();
 
     public: // NumberEntry functions.
 
@@ -372,7 +353,7 @@ class CPhoneState :
         /**
         * Close and and clear number entry.
         */
-        IMPORT_C void CloseClearNumberEntryAndLoadEffectL( TStateTransEffectType aType );
+        IMPORT_C void CloseClearNumberEntryAndLoadEffectL( TPhoneTransEffectType aType );
 
     protected:
 
@@ -636,18 +617,7 @@ class CPhoneState :
         * in number entry.
         */
         IMPORT_C virtual void OnlyHashInNumberEntryL();
-
-        /**
-        * Informs view that UI is being updated (call bubble or number editor).
-        * EndUiUpdate() must be called when update is done.
-        */
-        IMPORT_C void BeginUiUpdateLC();
-
-        /**
-        * Informs view that UI update is completed.
-        */
-        IMPORT_C void EndUiUpdate();
-
+        
         /*
         * Checks if necessary to show call termination note
         *
@@ -1030,18 +1000,6 @@ class CPhoneState :
             TPhoneCmdParamCallHeaderData* aCallHeaderData );
 
         /**
-        * TCleanupOperation to call EndUiUpdate(), if leave occurs
-        * after BeginUiUpdate().
-        */
-        static void UiUpdateCleanup(TAny* aThis );
-
-        /**
-        * TCleanupOperation to call EndTransEffect, if leave occurs
-        * after BeginTransEffect().
-        */
-        static void EffectCleanup(TAny* aThis );
-
-        /**
         * Gets volume level from ui control.
         */
         TInt GetVolumeLevel();
@@ -1094,7 +1052,7 @@ class CPhoneState :
          */
         void SendDtmfKeyEventL( const TKeyEvent& aKeyEvent,
                 TEventCode aEventCode  );
-
+        
         /*
          * Creates call header manager if needed.
         */
@@ -1193,6 +1151,9 @@ class CPhoneState :
 
         // Call header manager.
         CPhoneCallHeaderManager* iCallHeaderManager;
+        
+        // Call header manager.
+        TPhoneTransitionHandler* iTransitionHandler;
 
         // Number entry manager
         CPhoneNumberEntryManager* iNumberEntryManager;

@@ -1394,9 +1394,9 @@ void CPhoneBubbleWrapper::RemoveFromConferenceL( TInt aCallId )
             RemoveConferenceL();
             }
 
-	    iBubbleManager->RemoveCallHeader( bubble );
-	    iMapping->RemoveFromMapping( aCallId );
-	    iBubbleManager->EndChanges();
+        iBubbleManager->RemoveCallHeader( bubble );
+        iMapping->RemoveFromMapping( aCallId );
+        iBubbleManager->EndChanges();
         }
     }
 

@@ -497,15 +497,11 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::HandleIncomingL()");
-    
     CPhonePubSubProxy::Instance()->ChangePropertyValue(
                     KPSUidScreenSaver,
                     KScreenSaverAllowScreenSaver,
                     EPhoneScreensaverNotAllowed );
-    IsNumberEntryUsedL() ? 
-        BeginTransEffectLC( ECallUiAppear ) :
-        BeginTransEffectLC( ENumberEntryOpen );
-    BeginUiUpdateLC();
+    TransitionHandlerL().IncomingCallUiUpdateLC();
     
     // Hide the number entry if it exists
     if ( IsNumberEntryUsedL() )
@@ -513,23 +509,20 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
         SetNumberEntryVisibilityL( EFalse );    
         }
     
+    // Get allow waiting call header param value.
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
-    
-    // Get allow waiting call header param value.
     AllowShowingOfWaitingCallHeaderL( dialerParam );    
 
     // Close fast swap window if it's displayed
     EikonEnv()->DismissTaskList();
 
     // Show incoming call buttons
-    SetTouchPaneButtons( EPhoneWaitingCallButtons );    
-
-    // Display incoming call
+    SetTouchPaneButtons( EPhoneWaitingCallButtons );
+    
     DisplayIncomingCallL( aCallId, dialerParam );
-
-    EndUiUpdate();
-    EndTransEffect();
+    TransitionHandlerL().EndUiUpdateAndEffect();
+    
     // This query is required to dismiss
     // Operation cannot be completed in waiting and single state
     if ( iSwitchToVideoQuery )

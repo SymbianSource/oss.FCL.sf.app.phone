@@ -204,7 +204,7 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetup::HandleConnectingL()");
     
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     UpdateRemoteInfoDataL ( aCallId );
     
@@ -230,7 +230,7 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
 
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
         
     // Set Hold flag to view EFalse that dtmf menu item not delete
     TPhoneCmdParamBoolean holdFlag;
@@ -251,7 +251,7 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleAndCallSetup::HandleConnectedL()");
     
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     // Show bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -276,9 +276,8 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
 
     SetTouchPaneButtons( EPhoneTwoSinglesButtons );
     
-    EndUiUpdate();        
+    TransitionHandlerL().EndUiUpdate();
     
-     // Go to two singles state
     UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
     iStateMachine->ChangeState( EPhoneStateTwoSingles );
     
@@ -291,7 +290,7 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
 void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetup::HandleIdleL()");
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     // Find out do we have single or outgoing call left
@@ -329,7 +328,7 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
         UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
         iStateMachine->ChangeState( EPhoneStateCallSetup );
         }
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     }
 
 // -----------------------------------------------------------

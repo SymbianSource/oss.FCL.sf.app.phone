@@ -372,7 +372,7 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
     if( iSingleCallId == aCallId )
         {
         // Idle message came for active call
-        BeginUiUpdateLC();
+        TransitionHandlerL().BeginUiUpdateLC();
 
         // Remove call
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
@@ -423,14 +423,14 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
             // Play ringtone
             SetRingingTonePlaybackL( callStateData.CallId() );
             }
-        EndUiUpdate();
+        TransitionHandlerL().EndUiUpdate();
         SetToolbarDimming( ETrue );
 
         iStateMachine->ChangeState( EPhoneStateIncoming );
         }
     else
         {
-        BeginUiUpdateLC();
+        TransitionHandlerL().BeginUiUpdateLC();
 
         // Remove call
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
@@ -473,7 +473,7 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
             }
         
         SetTouchPaneButtons( EPhoneIncallButtons );
-        EndUiUpdate();
+        TransitionHandlerL().EndUiUpdate();
         // CBA updates in above if-else conditions
         iStateMachine->ChangeState( EPhoneStateSingle );
         }
@@ -583,7 +583,7 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL() ");
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     UpdateRemoteInfoDataL ( aCallId );
     // Show bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -618,7 +618,7 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
         }
     
     SetTouchPaneButtons( EPhoneTwoSinglesButtons );
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     // CBA updates in above if-else conditions
     iStateMachine->ChangeState( EPhoneStateTwoSingles );
     }

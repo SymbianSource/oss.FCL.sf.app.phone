@@ -428,7 +428,7 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
 
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
 
     // Update bubble content
     UpdateRemoteInfoDataL( aCallId );
@@ -439,7 +439,7 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
         
-    EndUiUpdate();                
+    TransitionHandlerL().EndUiUpdate();
 
     // Set call waiting cba
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
@@ -507,15 +507,13 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToCallSetupAndWaitingL( TInt
     holdFlag.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );       
 
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     SetTouchPaneButtons( EPhoneCallSetupButtons );
     SetToolbarDimming( ETrue );
     SetToolbarButtonLoudspeakerEnabled();
     
-    EndUiUpdate();
-    
-    // Go to Call Setup And Waiting state
+    TransitionHandlerL().EndUiUpdate();
     // No need to update cbas
     iStateMachine->ChangeState( EPhoneStateCallSetupAndWaiting );
     }
@@ -548,12 +546,11 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToSingleAndWaitingL( TInt aC
     holdFlag.SetBoolean( ETrue );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
 
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
     
-    EndUiUpdate();
-    // Go to Single And Waiting state  
+    TransitionHandlerL().EndUiUpdate();
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );  
     iStateMachine->ChangeState( EPhoneStateWaitingInSingle );        
     }
@@ -582,13 +579,12 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToSingleAndAlertingL( TInt a
     holdFlag.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
 
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     SetTouchPaneButtons( EPhoneCallSetupButtons );
     
-    EndUiUpdate();
-	// Go to Single And Alerting state
-	UpdateCbaL( EPhoneCallHandlingInCallCBA );
+    TransitionHandlerL().EndUiUpdate();
+    UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateAlertingInSingle );        
     }
 
@@ -600,15 +596,13 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL( TInt /*aCallI
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
 	    "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesL()");
-
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
     SetTouchPaneButtons( EPhoneTwoSinglesButtons );
     
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
 
-    // Go to two singles state 
     UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
     iStateMachine->ChangeState( EPhoneStateTwoSingles );                     
     }
@@ -622,12 +616,12 @@ void CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL( TIn
     __LOGMETHODSTARTEND( EPhoneUIStates, 
 	    "CPhoneSingleAndCallSetupAndWaiting::StateChangeToTwoSinglesAndWaitingL()");
 
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
     SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
     
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
 
     // Go to two singles state and waiting
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );

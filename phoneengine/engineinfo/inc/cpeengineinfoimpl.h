@@ -647,6 +647,20 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
           * @see MPEEngineInfo::CallBackAddress
           */
           const TDesC& CallBackAddress() const;
+          
+          /**
+          * Sets the protocol spesific error code
+          * @param aError is the error code from Etel.
+          * @return None.
+          */
+          void SetProtocolError( TInt aError, TInt aCallId ); 
+           
+          /**
+          * Gets the protocol spesific error code
+          * @param aCallId is the call identification number.
+          * @return TInt.
+          */
+          TInt ProtocolError( const TInt aCallId ) const; 
 
     // Functions from MPEDataStore (reading values)
     public:

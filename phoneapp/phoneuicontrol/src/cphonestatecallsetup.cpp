@@ -98,6 +98,12 @@ EXPORT_C void CPhoneStateCallSetup::ConstructL()
                         KScreenSaverAllowScreenSaver,
                         EPhoneScreensaverNotAllowed );
         }
+    
+    if ( IsKeyLockOn() )
+        {
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewDisableKeyLockWithoutNote );
+        }
+    
     }
 
 // -----------------------------------------------------------
@@ -570,12 +576,10 @@ void CPhoneStateCallSetup::CancelDTMFSendingL()
 //
 void CPhoneStateCallSetup::HandleConnectedL( TInt aCallId )
     {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleConnectedL()");        
-
-    // Close menu bar, if it is displayed
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleConnectedL()");
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
         
     // Remove the number entry if it isn't DTMF dialer
     if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
@@ -597,11 +601,9 @@ void CPhoneStateCallSetup::HandleConnectedL( TInt aCallId )
 
     SetToolbarDimming( EFalse );
 
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     
-    // Go to single state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );    
-
     iStateMachine->ChangeState( EPhoneStateSingle );
     }
 
@@ -615,13 +617,15 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
     if ( !NeedToReturnToForegroundAppL() &&
          IsNumberEntryUsedL() )
         {
-        BeginTransEffectLC( ECallUiDisappear );
+        TransitionHandlerL().
+                BeginTransEffectLC( EPhoneTransEffectCallUiDisappear );
         }
     else 
         {
-        BeginTransEffectLC( ENumberEntryOpen );
+        TransitionHandlerL().
+                BeginTransEffectLC( EPhoneTransEffectPhoneUiOpen );
         }
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     // Disable the volume display
     iViewCommandHandle->ExecuteCommandL( EPhoneViewHideNaviPaneAudioVolume );
@@ -664,8 +668,7 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
         DisplayIdleScreenL();
         }
         
-    EndUiUpdate();
-    EndTransEffect(); 
+    TransitionHandlerL().EndUiUpdateAndEffect();
     // No need update cba
     iStateMachine->ChangeState( EPhoneStateIdle );
     }

@@ -196,7 +196,7 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         // Close menu bar, if it is displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
-        CPhoneState::BeginUiUpdateLC();
+        TransitionHandlerL().BeginUiUpdateLC();
             
         // Show bubble
         TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -205,7 +205,7 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
             &callHeaderParam );
 
         SetTouchPaneButtons( EPhoneTwoSinglesButtons );
-        EndUiUpdate();
+        TransitionHandlerL().EndUiUpdate();
               
         // Set Hold flag to view
         TPhoneCmdParamBoolean holdFlag;
@@ -240,8 +240,7 @@ void CPhoneSingleAndAlerting::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleAndAlerting::HandleIdleL()");
-    
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
@@ -277,8 +276,7 @@ void CPhoneSingleAndAlerting::HandleIdleL( TInt aCallId )
         UpdateCbaL( EPhoneCallHandlingInCallCBA );
         iStateMachine->ChangeState( EPhoneStateAlerting );
         }
-
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     }
 
 // -----------------------------------------------------------

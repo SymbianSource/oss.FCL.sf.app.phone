@@ -73,13 +73,23 @@ class CPhoneResourceResolverBase :
         IMPORT_C CPhoneResourceResolverBase();
         
         /**
-        * Checkes whether a certain feature is on / or not.
+        * Checks whether a certain feature is on / or not.
         * @param aFeatureId
         * @return TBool supported /not supported
         */ 
         IMPORT_C virtual TBool IsTelephonyFeatureSupported( TInt aFeatureId ) const;
+
+    private:
+        /**
+        * Checks whether the Video Share button should be shown,
+        * i.e., if the appropriate feature flag is enabled *and*
+        * Video Sharing is currently available
+        * @param None
+        * @return TBool show / don't show
+        */
+        TBool ShowVideoShareButton() const;
     
-   protected:
+    protected:
        TInt iResourceOffset;     
 
     private:
@@ -90,8 +100,10 @@ class CPhoneResourceResolverBase :
             EOnscreenDialer = 1,
             //Flag to indicate whether on touch call handling is supported.
             ETouchCallHandling = 2,
-            //Flag to indicate whether videocallmenu is supported.
-            EVideoCallMenu = 4
+            //Flag to indicate whether video call menu is supported.
+            EVideoCallMenu = 4,
+            //Flag to indicate whether entry point for video share is supported.
+            EVideoShareEntryPoint = 8
             };
         TInt iVariationFlags;
 		

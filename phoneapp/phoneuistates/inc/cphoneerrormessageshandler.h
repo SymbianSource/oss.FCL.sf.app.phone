@@ -114,6 +114,11 @@ class CPhoneErrorMessagesHandler : public CBase,
         * Return ETrue if voice call.
         */
         TBool IsVoiceCall( const TInt aCallId ) const;
+        
+        /**
+         * Variation for error notes KTelephonyLVFlagClearCodeCustomization
+         */
+        TInt ResourceVariation() const;
  
     protected:
 		
@@ -123,6 +128,8 @@ class CPhoneErrorMessagesHandler : public CBase,
 		MPhoneViewCommandHandle* iViewCommandHandle;
 		
 		MPhoneStateMachine* iStateMachine;
+		
+		TInt iCallId;
 	          
     };
 

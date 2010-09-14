@@ -265,7 +265,7 @@ void CPhoneConferenceAndWaiting::HandleConnectedL( TInt aCallId )
 void CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL()");
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     UpdateRemoteInfoDataL ( aCallId );
     if ( IsConferenceBubbleInSelectionMode() )
@@ -291,7 +291,7 @@ void CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt
     SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
     SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
     
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     // CBA updates in above if-else conditions
     iStateMachine->ChangeState( EPhoneStateConferenceAndSingle );
     }
@@ -316,7 +316,7 @@ void CPhoneConferenceAndWaiting::HandleIdleL( TInt aCallId )
     
     if( iRingingCallId == aCallId )
         {
-        BeginUiUpdateLC();
+        TransitionHandlerL().BeginUiUpdateLC();
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
             
@@ -351,7 +351,7 @@ void CPhoneConferenceAndWaiting::HandleIdleL( TInt aCallId )
             {
             SetTouchPaneButtons( EPhoneConferenceButtons );    
             }
-        EndUiUpdate();
+        TransitionHandlerL().EndUiUpdate();
         // CBA updates in above if-else conditions
         iStateMachine->ChangeState( EPhoneStateConference );
         }
@@ -376,7 +376,7 @@ void CPhoneConferenceAndWaiting::HandleIdleL( TInt aCallId )
 void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndWaiting::HandleConferenceIdleL()");
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     TPhoneCmdParamInteger activeCallCount;
@@ -449,7 +449,7 @@ void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
           // come earlier than idle for conference member
            break;
         }
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     }
 
 // -----------------------------------------------------------
@@ -494,7 +494,7 @@ void CPhoneConferenceAndWaiting::HandleWentOneToOneL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndWaiting::HandleWentOneToOneL()");
 
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     // Update conference bubble
     iViewCommandHandle->ExecuteCommandL(
@@ -523,7 +523,7 @@ void CPhoneConferenceAndWaiting::HandleWentOneToOneL( TInt aCallId )
         // Go to Conference And Single And Waiting state
         iStateMachine->ChangeState( EPhoneStateConferenceAndSingleAndWaiting );  
         }
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     }
 
 // End of File

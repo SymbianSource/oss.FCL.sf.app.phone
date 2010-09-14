@@ -12,7 +12,10 @@
             </notEqual>
         </or>
         <actions>
-            <!-- do nothing -->
+            <!-- Publish context that indicates that silence ringing tone is not active -->
+            <publishContext define='true'>
+                <contextRef source='Feature' type='SilenceRingingTone.Active' value='false'/>
+            </publishContext>
         </actions>
     </if>
 

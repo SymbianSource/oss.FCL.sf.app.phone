@@ -474,6 +474,16 @@ public:
      * Returns transfer call back flag.
      */
     TBool DoCallBackRequest() const;
+    
+    /**
+     * Sets protocol spesific error code
+     */
+    void SetProtocolError( TInt aError );
+    
+    /**
+     * Gets protocol spesific error code
+     */
+    TInt ProtocolError() const;
 
 private:
     
@@ -649,6 +659,11 @@ private:
      * Flag which indicates if call back request is needed
      */
     TBool iDoCallBackRequest;
+    
+    /**
+     * Protocol specific error
+     */
+    TInt iProtocolSpesificErrorCode;
     };
 
 #endif // C_CPECALLINFO_H

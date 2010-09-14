@@ -297,7 +297,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndWaitingAndCallSetup::HandleConnectingL");
     
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     UpdateRemoteInfoDataL ( aCallId );
 
@@ -322,7 +322,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectingL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
     
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
         
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );    
     }
@@ -336,7 +336,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectedL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndWaitingAndCallSetup::HandleConnectedL");
     
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     UpdateRemoteInfoDataL ( aCallId );
     
@@ -358,7 +358,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectedL( TInt aCallId )
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );    
     SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     
     // Go to Conference And Single And Waiting state
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );  
@@ -385,7 +385,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL");
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
@@ -431,7 +431,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL()
             iStateMachine->ChangeState( EPhoneStateCallSetupAndWaiting );
             }
         }
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     }
 
 // -----------------------------------------------------------
@@ -481,7 +481,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleIdleL( TInt aCallId )
             }            
         else
             {
-            BeginUiUpdateLC();
+            TransitionHandlerL().BeginUiUpdateLC();
             TPhoneCmdParamCallStateData callStateData;
             callStateData.SetCallState( EPEStateRinging );
             iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
@@ -509,7 +509,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleIdleL( TInt aCallId )
                 UpdateCbaL( EPhoneCallHandlingInCallCBA );                  
                 iStateMachine->ChangeState( EPhoneStateConferenceAndCallSetup );
                 }
-            EndUiUpdate();
+            TransitionHandlerL().EndUiUpdate();
             }
         }
     }

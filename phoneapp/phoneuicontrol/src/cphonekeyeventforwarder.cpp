@@ -160,14 +160,7 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventL(
         {
         // Convert event. Use already converted iKeyPressedDown.
         TKeyEvent keyEvent = aKeyEvent;
-        if ( keyEvent.iScanCode == EStdKeyApplication0 )
-            {
-            keyEvent.iCode = EKeyApplication0;
-            }
-        else
-            {
-            keyEvent.iCode = iKeyPressedDown;
-            }
+        keyEvent.iCode = iKeyPressedDown;
         
         // Do not handle dtmf tone if the type is EEventKey but we are not
         // expecting key up event. This happens if the key up event has been
@@ -540,8 +533,8 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyDownBeforeControlStackL(
             EPhoneViewIsDisplayingMenuOrDialog ) == 
             EPhoneViewResponseSuccess ) || ( iMenu && iMenu->IsDisplayed() );
 
-
-    return ( EKeyWasNotConsumed );
+    // Consume dialer simulated key events, pass others on
+    return ( IsKeySimulatedByTouchDialer( aKeyEvent ) ? EKeyWasConsumed : EKeyWasNotConsumed );
     }
 
 // -----------------------------------------------------------
@@ -653,7 +646,18 @@ TKeyResponse CPhoneKeyEventForwarder::HandleEventKeyUpBeforeControlStackL(
     iPreviousScanCode = iScanCode;
 
     // Consume dialer simulated key events, pass others on
-    return EKeyWasNotConsumed;
+    TKeyResponse retValue = IsKeySimulatedByTouchDialer( aKeyEvent ) ? EKeyWasConsumed : EKeyWasNotConsumed;
+    
+    // If event is consumed, reset key specific state variables. Otherwise they may disturb
+    // handling of coming key events originating from a different key.
+    if ( retValue == EKeyWasConsumed )
+        {
+        iKeyPressedDown = EKeyNull;
+        iScanCode = EStdKeyNull; 
+        iDisplayingMenuOrDialogOnEventKeyDown = EFalse;
+        }
+    
+    return retValue;
     }
 
 // ---------------------------------------------------------
@@ -741,18 +745,16 @@ void CPhoneKeyEventForwarder::ConvertKeyCodeL( TUint& aCode,
         TBool numMode = iViewCommandHandle->HandleCommandL(
               EPhoneViewIsNumberEntryNumericMode ) == EPhoneViewResponseSuccess;
         TBool simulatedByDialer = IsKeySimulatedByTouchDialer( aKeyEvent );
-    
+        
+        TUint numCode( EKeyNull );
+        
         if ( iQwertyHandler->IsQwertyInput() && numMode && !simulatedByDialer )
             {
-            TUint numCode = iQwertyHandler->NumericKeyCode( aKeyEvent );
-            if ( numCode )
-                {
-                aCode = numCode;
-                }
-            else
-                {
-                aCode = aKeyEvent.iScanCode;
-                }
+            numCode = iQwertyHandler->NumericKeyCode( aKeyEvent );
+            }
+        if ( numCode )
+            {
+            aCode = numCode;
             }
         else 
             {

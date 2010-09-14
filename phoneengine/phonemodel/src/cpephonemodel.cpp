@@ -43,6 +43,7 @@
 // CONSTANTS
 const TInt KDriveProfile ( 6 );
 const TInt KPECallTimerOff = 0;
+const TInt KTimesToSplitValue = 16;
 
 // ==================== LOCAL FUNCTIONS ====================
 
@@ -96,6 +97,8 @@ void CPEPhoneModel::ConstructL()
     TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::ConstructL: 5" );
     iActiveStarter->StartUp();
     TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::ConstructL: 6" );
+    // Reserve needed callinfo and remoteinfo from heap.
+    iCallInfo = new ( ELeave ) RMobileCall::TMobileCallInfoV3;
     }// ConstructL
 
 // -----------------------------------------------------------------------------
@@ -145,6 +148,7 @@ CPEPhoneModel::~CPEPhoneModel()
     delete iCallHandling;
     delete iExternalDataHandler;
     delete iCallStackCutter;
+    delete iCallInfo;
 
     if ( iActiveStarter )
         {
@@ -967,6 +971,7 @@ void CPEPhoneModel::SendMessage(
             "PE cpephonemodel::sendmessage > iEngineMonitor.HandleError: messageName=%s, CallId=%d",
         messageName2.Ptr( ), aCallId );
         #endif
+        SetCallError( aCallId );
         TPEErrorInfo errorInfo;
     	errorInfo.iErrorCode = errorCode;
     	errorInfo.iCallId = aCallId;
@@ -979,6 +984,7 @@ void CPEPhoneModel::SendMessage(
             KTAERROR, 
             "PE cpephonemodel::sendmessage > iEngineMonitor.HandleError: messageName=EPEMessageCallHandlingError, CallId=%d"
         , aCallId );
+        SetCallError( aCallId );
 	    TPEErrorInfo errorInfo = iEngineInfo->ErrorInfo();
     	errorInfo.iCallId = aCallId;
     	errorInfo.iErrorType = EPECcp;
@@ -996,6 +1002,7 @@ void CPEPhoneModel::SendMessage(
         TEFLOGSTRING( 
             KTAERROR, 
             "PE cpephonemodel::sendmessage > iEngineMonitor.HandleError: messageName=EPEMessageServiceHandlingError" );
+        SetCallError( aCallId );
         TPEErrorInfo errorInfo = iEngineInfo->ErrorInfo();
         errorInfo.iCallId = aCallId;
         errorInfo.iErrorType = EPECch;
@@ -1505,4 +1512,25 @@ TInt CPEPhoneModel::CallBackMessageSend( TAny* aSelf )
     return KErrNone;
     }
 
+// -----------------------------------------------------------------------------
+// SetCallError
+// -----------------------------------------------------------------------------
+//
+void CPEPhoneModel::SetCallError( TInt aCallId )
+    {
+    TInt callError = KErrNone;
+    if ( iCallHandling )
+        {
+        TInt err = iCallHandling->GetCallInfo( *iCallInfo, aCallId );
+        
+        if ( err == KErrNone && ( iCallInfo->iExitCode & 0xFFFF0000 ) &&
+                aCallId > KErrNotFound ) 
+            {
+            callError = ( iCallInfo->iExitCode >> KTimesToSplitValue ); 
+            //Set protocol spesific error code to EngineInfo
+            EngineInfo()->SetProtocolError( callError, aCallId );
+            }
+        }
+    }
+	
 // End of File

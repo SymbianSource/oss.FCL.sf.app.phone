@@ -18,7 +18,7 @@
 
 
 // INCLUDE FILES
-#include    <ECom/ECom.h>
+#include    <ecom/ecom.h>
 
 // CONSTANTS
 _LIT8( KCoUtlResolverData, "default" );

@@ -270,9 +270,9 @@ void CPhoneNumberEntryManager::HandleCreateNumberEntryL()
             else
                 {
                 // Effect is shown when dialer is created.
-                iState->BeginTransEffectLC( ENumberEntryCreate );
+                iState->TransitionHandlerL().BeginTransEffectLC( EPhoneTransEffectDialerCreate );
                 iViewCommandHandle.ExecuteCommandL( EPhoneViewCreateNumberEntry );
-                iState->EndTransEffect();
+                iState->TransitionHandlerL().EndTransEffect();
                 // Go to current state implementation
                 iCbaManager.UpdateInCallCbaL();
                 iState->UpdateInCallContextMenuL();

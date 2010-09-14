@@ -336,7 +336,9 @@ NONSHARABLE_CLASS(CDialerNumberEntry) :
         CEikAppUi* iAppUi;
         
         CIdle* iLateFocuser;
-
+        
+        // Allow or disallow usage of late focuser in different conditions. 
+        TBool iLateFocuserCanBeUsed;
     };
 
 #endif      // CDIALERNUMBERENTRY_H

@@ -147,6 +147,8 @@ class CPhoneConference : public CPhoneGsmInCall
         
         void MakeStateTransitionToIdleL();
         
+        TBool MakeTransitionToWaitingInSingleL();
+        
         void HandleDialingL( TInt aCallId );
               
         void CallFromNewCallQueryL();

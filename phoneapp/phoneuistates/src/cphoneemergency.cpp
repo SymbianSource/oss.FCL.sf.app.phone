@@ -445,7 +445,7 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
     emergencyHeaderParam.SetCipheringIndicatorAllowed(
         iStateMachine->PhoneEngineInfo()->SecureSpecified() );
 
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
 
     // Notify the view
     iViewCommandHandle->ExecuteCommandL(
@@ -461,7 +461,7 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
         aCallId,
         &headerParam );
 
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
 
     UpdateInCallCbaL();
     }
@@ -474,7 +474,7 @@ void CPhoneEmergency::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneEmergency::HandleConnectedL() ");
 
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
 
     TPhoneCmdParamCallHeaderData emergencyHeaderParam;
     emergencyHeaderParam.SetCallState( EPEStateConnected );
@@ -484,7 +484,7 @@ void CPhoneEmergency::HandleConnectedL( TInt aCallId )
         aCallId,
         &emergencyHeaderParam );
 
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     SetToolbarDimming( ETrue );
     UpdateInCallCbaL();
     }
@@ -624,7 +624,7 @@ void CPhoneEmergency::HandleKeyMessageL(
                     // Show not allowed note
                     SendGlobalErrorNoteL( EPhoneNoteTextNotAllowed );
                     }
-                else
+                else if ( !iStateMachine->SecurityMode()->IsSecurityMode() )
                     {
                     // Logs to open
                     CallFromNumberEntryL();

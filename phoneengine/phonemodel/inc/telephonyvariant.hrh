@@ -96,6 +96,13 @@
 #define KTelephonyLVFlagAdvancedENCheck 0x00000200
 
 /**
+* Clear Code Customization
+* When the flag is set, different notes are shown if call fails.
+* Requrement id: 414-7525.
+*/
+#define KTelephonyLVFlagClearCodeCustomization 0x00000400
+
+/**
 * KTelephonyLVFlagArbitraryVideoScaling defines if video player
 * implementation in the device support arbitrary scaling.
 * When the flag is set, arbitrary scaling is applied.

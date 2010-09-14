@@ -1,0 +1,225 @@
+/*
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:
+*     This is a localisation file for Phone
+*     A .loc file is the one and only place where the logical strings
+*     to be localised are defined.
+*
+*/
+
+
+// LOCALISATION STRINGS
+
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCUnassignedNumber.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_1 "Dialled number is unavailable -01-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCNoRouteToDestination.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_3 "Unavailable -03-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCOperatorDeterminedBarring.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_8 "Unavailable -08-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCUserBusy.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_17 "User busy"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCUserNotResponding.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_18 "No answer -18-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCCallRejected.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_21 "Unavailable -21-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCNumberChanged.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_22 "Dialled number is unavailable -22-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCDestinationOutOfOrder.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_27 "Unavailable -27-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCFacilityRejected.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_29 "Call ended -29-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCNetworkOutOfOrder.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_38 "Call ended -38-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCTemporaryFailure.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_41 "Call ended -41-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCSwitchingEquipmentCongestion.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_42 "Call ended -42-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCAccessInformationDiscarded.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_43 "Call ended -43-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCRequestedChannelNotAvailable.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_44 "Call ended -44-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCResourceNotAvailable.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_47 "Call ended -47-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCIncomingCallsBarredInCug.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_55 "Call ended -55-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCBearerCapabilityNotAuthorised.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_57 "Call ended -57-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCServiceNotAvailable.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_63 "Call ended -63-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCBearerServiceNotImplemented.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_65 "Call ended -65-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCRequestedFacilityNotImplemented.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_69 "Call ended -69-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCUserNotInCug.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_87 "Call ended -87-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCIncompatibleDestination.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_88 "Call ended -88-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCSemanticallyIncorrectMessage.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_95 "Call ended -95-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCUnspecifiedProtocolError.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_111 "Call ended -111-"
+
+// d: It is used in varied error note when
+// d: call termination cause is KErrGsmCCUnspecifiedInterworkingError.
+// l: popup_note_window
+// w:
+//
+#define qtn_var_cause_127 "Call ended -127-"
+
+// d: It is used in varied error note
+// l: popup_note_window
+// w:
+//
+#define qtn_var_number_unassigned_param "Dialled number is unavailable -%d-"
+
+// d: It is used in varied error note
+// l: popup_note_window
+// w:
+//
+#define qtn_var_unavailable_param "Unavailable -%d-"
+
+// d: It is used in varied error note
+// l: popup_note_window
+// w:
+//
+#define qtn_var_no_answer_param "No answer -%d-"
+
+// d: It is used in varied error note
+// l: popup_note_window
+// w:
+//
+#define qtn_var_call_ended_param "Call ended -%d-"
+
+
+

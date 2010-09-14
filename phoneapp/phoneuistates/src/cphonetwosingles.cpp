@@ -195,7 +195,7 @@ void CPhoneTwoSingles::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSingles::HandleIdleL()");
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
 
     // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
@@ -245,7 +245,7 @@ void CPhoneTwoSingles::HandleIdleL( TInt aCallId )
         default:
             break;
         }
-    EndUiUpdate(); 
+    TransitionHandlerL().EndUiUpdate(); 
     }
 
 // -----------------------------------------------------------
@@ -355,7 +355,7 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
         callLabelId, 
         CCoeEnv::Static() );
     callHeaderParam.SetCLIText( conferenceText, CBubbleManager::ERight );
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
     
     callHeaderParam.SetCiphering(
         iStateMachine->PhoneEngineInfo()->IsSecureCall( aCallId ) );
@@ -378,11 +378,9 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
 
     SetTouchPaneButtons( EPhoneConferenceButtons );
     SetTouchPaneButtonEnabled( EPhoneInCallCmdPrivate );
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
-    
-    // Go to conference state
     // No need for CBA update
     iStateMachine->ChangeState( EPhoneStateConference );
     }
@@ -394,17 +392,12 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
 void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneTwoSingles::HandleIncomingL()");
-    
+            "CPhoneTwoSingles::HandleIncomingL()");
     CPhonePubSubProxy::Instance()->ChangePropertyValue(
                     KPSUidScreenSaver,
                     KScreenSaverAllowScreenSaver,
                     EPhoneScreensaverNotAllowed );
-    
-    IsNumberEntryUsedL() ? 
-        BeginTransEffectLC( ECallUiAppear ) :
-        BeginTransEffectLC( ENumberEntryOpen );
-    BeginUiUpdateLC();
+    TransitionHandlerL().IncomingCallUiUpdateLC();
     
     // Hide the number entry if it exists
     if ( IsNumberEntryUsedL() )
@@ -412,27 +405,22 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
         SetNumberEntryVisibilityL( EFalse );    
         }
     
+    // Get allow waiting call header param value.
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
-    
-    // Get allow waiting call header param value.
     AllowShowingOfWaitingCallHeaderL( dialerParam );
     
     // Close fast swap window if it's displayed
     EikonEnv()->DismissTaskList();
 
-    // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
     
     // Set touch controls
     SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
-    
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
 
-    EndUiUpdate();
-    EndTransEffect();
+    TransitionHandlerL().EndUiUpdateAndEffect();
 
-    // Go to incoming state
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
     iStateMachine->ChangeState( EPhoneStateTwoSinglesAndWaiting );        
     }

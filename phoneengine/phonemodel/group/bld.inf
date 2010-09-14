@@ -42,6 +42,9 @@ PRJ_EXPORTS
 backup_registration.xml /epoc32/data/z/private/1000a86c/backup_registration.xml
 backup_registration.xml /epoc32/release/winscw/udeb/z/private/1000a86c/backup_registration.xml
 backup_registration.xml /epoc32/release/winscw/urel/z/private/1000a86c/backup_registration.xml
+backup_registration.xml /epoc32/data/z/private/100058b3/backup_registration.xml
+backup_registration.xml /epoc32/release/winscw/udeb/z/private/100058b3/backup_registration.xml
+backup_registration.xml /epoc32/release/winscw/urel/z/private/100058b3/backup_registration.xml
 
 // SIS stubs
 ../data/phonemodel_stub.sis         /epoc32/data/z/system/install/phonemodel_stub.sis

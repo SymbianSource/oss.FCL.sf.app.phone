@@ -115,6 +115,7 @@ void CUssdAppUi::HandleCommandL( TInt aCommand )
             {
             // Send string and exit the application
             HBufC* buffer = iAppContainer->Editor().GetTextInHBufL();
+            CleanupStack::PushL( buffer );
             __ASSERT_DEBUG(
                 buffer->Length() <= KUssdEditorMaxLenght ,
                 User::Invariant() );
@@ -125,9 +126,8 @@ void CUssdAppUi::HandleCommandL( TInt aCommand )
                 {
                 iComms->InformExitReason( EPhCltSendCompleted );
                 Exit();                
-                }         
-
-            delete buffer;
+                }  
+            CleanupStack::PopAndDestroy( buffer );
             break;
             }
 

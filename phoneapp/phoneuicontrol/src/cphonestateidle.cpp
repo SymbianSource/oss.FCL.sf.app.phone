@@ -420,11 +420,8 @@ EXPORT_C void CPhoneStateIdle::HandlePhoneEngineMessageL(
 void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::HandleIncomingL( ) ");
-
     HandleAudioAvailableOutputChangedL();
-    
     iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNaviPaneAudioVolume );
-
     SetRingingTonePlaybackL( aCallId );
     
     CPhonePubSubProxy::Instance()->ChangePropertyValue(
@@ -432,10 +429,7 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
         KScreenSaverAllowScreenSaver,
         EPhoneScreensaverNotAllowed );
     
-    IsNumberEntryUsedL() ? 
-        BeginTransEffectLC( ECallUiAppear ) :
-        BeginTransEffectLC( ENumberEntryOpen );
-    BeginUiUpdateLC();
+    TransitionHandlerL().IncomingCallUiUpdateLC();
     
     // Hide the number entry if it exists
     if ( IsNumberEntryUsedL() )
@@ -451,13 +445,9 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
     SetTouchPaneButtonEnabled( EPhoneCallComingCmdSilent );
     SetTouchPaneButtonEnabled( EPhoneInCallCmdHold );
     
-    // Display incoming call
     DisplayIncomingCallL( aCallId );
-
-    EndUiUpdate();
-    EndTransEffect();
+    TransitionHandlerL().EndUiUpdateAndEffect();
     
-    // Go to incoming state
     iCbaManager->UpdateIncomingCbaL( aCallId );
     UpdateSilenceButtonDimming();
     UpdateIncomingContextMenuL( aCallId );
@@ -465,7 +455,6 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
     SetToolbarDimming( ETrue );
     //request that dimmed toolbar is visible.
     iViewCommandHandle->HandleCommandL( EPhoneViewShowToolbar );
-    
     ChangeTo( EPhoneStateIncoming );
     }
 
@@ -500,6 +489,13 @@ EXPORT_C void CPhoneStateIdle::DoStateSpecificCallSetUpDefinitionsL()
     SetToolbarButtonLoudspeakerEnabled();
     SetToolbarButtonHandsetEnabled();
     SetToolbarButtonBTHFEnabled();
+
+    TPhoneCmdParamInteger uidParam;
+    uidParam.SetInteger( KUidPhoneApplication.iUid );
+
+    // Set Phone as the top application
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetTopApplication,
+       &uidParam );
     }
 
 // -----------------------------------------------------------
@@ -523,8 +519,8 @@ void CPhoneStateIdle::HandleConnectedL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewBringAppToForeground, 
             &uidParam );
         }
-    BeginTransEffectLC( ENumberEntryClose );
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginTransEffectLC( EPhoneTransEffectPhoneUiClose );
+    TransitionHandlerL().BeginUiUpdateLC();
     
     // Remove the number entry
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
@@ -539,10 +535,8 @@ void CPhoneStateIdle::HandleConnectedL( TInt aCallId )
     SetTouchPaneButtons( EPhoneIncallButtons );
     SetToolbarDimming( EFalse );
     
-    EndUiUpdate();
-    EndTransEffect();
+    TransitionHandlerL().EndUiUpdateAndEffect();
   
-    // Go to single state
     iCbaManager->UpdateCbaL( EPhoneCallHandlingInCallCBA );
     ChangeTo( EPhoneStateSingle );
     }
@@ -580,15 +574,15 @@ EXPORT_C TBool CPhoneStateIdle::HandleCommandL( TInt aCommand )
             break;
             
         case EPhoneCmdBack:
-            BeginTransEffectLC( ENumberEntryClose );
+            TransitionHandlerL().BeginTransEffectLC( EPhoneTransEffectPhoneUiClose );
             HandleBackCommandL();
-            EndTransEffect();
+            TransitionHandlerL().EndTransEffect();
             break;
         
         case EPhoneViewOpenNumberEntry:
-            BeginTransEffectLC( ENumberEntryOpen );
+            TransitionHandlerL().BeginTransEffectLC( EPhoneTransEffectPhoneUiOpen );
             commandStatus = CPhoneState::HandleCommandL( aCommand );
-            EndTransEffect();
+            TransitionHandlerL().EndTransEffect();
             break;
             
         default:
@@ -886,7 +880,7 @@ void CPhoneStateIdle::HandleIdleL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::HandleIdleL()" );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveAllCallHeaders );
-    CloseClearNumberEntryAndLoadEffectL( ECallUiDisappear );
+    CloseClearNumberEntryAndLoadEffectL( EPhoneTransEffectCallUiDisappear );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
     // Reset flag.
     SetCallInitialized( EFalse );
@@ -932,7 +926,7 @@ void CPhoneStateIdle::RemoveNumberEntryAndSetIdleToBackgroundIfNeededL()
     "CPhoneStateIdle::RemoveNumberEntryAndSetIdleToBackgroundIfNeededL( ) ");
     if ( IsNumberEntryUsedL() )
         {
-        BeginTransEffectLC( ECallUiAppear );
+        TransitionHandlerL().BeginTransEffectLC( EPhoneTransEffectCallUiAppear );
         /*NE should be removed because if speeddial dial is interupted during
         call setup phone should not return to NE/Dialler view.*/
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
@@ -944,7 +938,7 @@ void CPhoneStateIdle::RemoveNumberEntryAndSetIdleToBackgroundIfNeededL()
             iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSetIdleTopApplication );
             }
-        EndTransEffect();
+        TransitionHandlerL().EndTransEffect();
         }
     }
 
@@ -1107,7 +1101,7 @@ void CPhoneStateIdle::HandleEndKeyPressL( TPhoneKeyEventMessages aMessage )
 
                 if ( IsNumberEntryUsedL() )
                     {
-                    CloseClearNumberEntryAndLoadEffectL( ENumberEntryClose );
+                    CloseClearNumberEntryAndLoadEffectL( EPhoneTransEffectPhoneUiClose );
                     // If long end key event occures then all calls are terminated and
                     // dialer is closed, therefore tel.icon must be removed from FSW.
                     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateFSW );
@@ -1120,7 +1114,7 @@ void CPhoneStateIdle::HandleEndKeyPressL( TPhoneKeyEventMessages aMessage )
                 }
             else if ( IsNumberEntryUsedL() && TopAppIsDisplayedL() )
                 {
-                CloseClearNumberEntryAndLoadEffectL( ENumberEntryClose );
+                CloseClearNumberEntryAndLoadEffectL( EPhoneTransEffectPhoneUiClose );
                 }
             else if ( !TopAppIsDisplayedL() )
                 {

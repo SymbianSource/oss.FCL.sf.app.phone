@@ -23,6 +23,17 @@
 const TText KNameSeparatorChar = ' ';
 const TText KListFieldSeparatorChar = '\t';
 
+const TText KGraphicReplaceCharacter = ' ';
+
+// Zero Widthcharacters
+const TUint KZWSCharacter = 0x200B;
+const TUint KZWNJCharacter = 0x200C;
+const TUint KZWJCharacter = 0x200D;
+
+inline TBool ZWSCharacter( const TChar aChar );
+
+void ReplaceNonGraphicCharacters( TDes& aText, TText aChar );
+ 
 // -----------------------------------------------------------------------------
 // CreateContactStringLC
 //
@@ -37,14 +48,17 @@ HBufC* EasyDialingUtils::CreateContactStringLC(
     // first strip control chars from the names
     HBufC* firstName = aFirstName.AllocLC();
     TPtr fPtr = firstName->Des();
+    ReplaceNonGraphicCharacters( fPtr, KGraphicReplaceCharacter );
     AknTextUtils::StripCharacters( fPtr, KAknStripListControlChars );
 
     HBufC* lastName = aLastName.AllocLC();
     TPtr lPtr = lastName->Des();
+    ReplaceNonGraphicCharacters( lPtr, KGraphicReplaceCharacter );
     AknTextUtils::StripCharacters( lPtr, KAknStripListControlChars );
 
     HBufC* companyName = aCompanyName.AllocLC();
     TPtr cPtr = companyName->Des();
+    ReplaceNonGraphicCharacters( cPtr, KGraphicReplaceCharacter );
     AknTextUtils::StripCharacters( cPtr, KAknStripListControlChars );
 
     // Calculate string lenght. If first name and last name are missing, company name is duplicated.
@@ -98,4 +112,50 @@ HBufC* EasyDialingUtils::CreateContactStringLC(
     CleanupStack::PopAndDestroy( 3, firstName );
     CleanupStack::PushL( string );
     return string;
+    }
+
+/*
+ * ==============================================================================
+ * 
+ * Local functions
+ * 
+ * ==============================================================================
+ */
+
+/**
+ * Checkif the given char is a zero width character:
+ * ZeroWidth Space, Zero Width Non-Joiner
+ * orZero Width Joiner character
+ * @paramaChar Given character
+ *@return ETrue if aChar is zero width character.
+ *        EFalse if aChar is not specified zero width character.
+ */
+
+inline TBool ZWSCharacter( const TChar aChar )
+   {
+   const TChar zwsChar( KZWSCharacter );
+   const TChar zwnjChar( KZWNJCharacter );
+   const TChar zwjChar( KZWJCharacter );
+   return ( aChar == zwsChar ) || ( aChar == zwnjChar ) ||
+          ( aChar == zwjChar );
+}
+
+/**
+ * Replaces all non-graphic characters (!TChar::IsGraph()) in
+ * a string with the specified character.
+ **/
+
+void ReplaceNonGraphicCharacters( TDes& aText, TText aChar )
+   {
+   const TInt len = aText.Length();
+   for ( TInt i = 0; i <len; ++i )
+      {
+      if ( !TChar( aText[i] ).IsGraph() && !ZWSCharacter( aText[i] ) )
+          {
+          //If non-graphic char is specified in ZWSCharacter,
+          //it will not be replaced. Otherwise replace non-graphic
+          //character with aChar.
+          aText[i] = aChar;
+          }
+      }
     }

@@ -248,7 +248,7 @@ void CPhoneConferenceAndCallSetup::HandleConnectingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndCallSetup::HandleConnectingL()");
     
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
         
     UpdateRemoteInfoDataL ( aCallId );
     
@@ -282,7 +282,7 @@ void CPhoneConferenceAndCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );       
         
-    EndUiUpdate();        
+    TransitionHandlerL().EndUiUpdate();
     }
     
 // -----------------------------------------------------------
@@ -296,7 +296,7 @@ void CPhoneConferenceAndCallSetup::HandleConnectedL( TInt aCallId )
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
  
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
         
     // Show bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -316,7 +316,7 @@ void CPhoneConferenceAndCallSetup::HandleConnectedL( TInt aCallId )
     
     SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
     SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
-    EndUiUpdate(); 
+    TransitionHandlerL().EndUiUpdate(); 
     
     UpdateCbaL ( EPhoneCallHandlingNewCallSwapCBA );
    
@@ -381,8 +381,8 @@ void CPhoneConferenceAndCallSetup::HandleIdleL( TInt aCallId )
     else
         {
         // Remove  outgoing call 
-        BeginTransEffectLC( ENumberEntryOpen );
-        BeginUiUpdateLC();
+        TransitionHandlerL().BeginTransEffectLC( EPhoneTransEffectPhoneUiOpen );
+        TransitionHandlerL().BeginUiUpdateLC();
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
         CheckIfRestoreNEContentAfterDtmfDialer();
         if ( IsNumberEntryUsedL() )
@@ -392,8 +392,7 @@ void CPhoneConferenceAndCallSetup::HandleIdleL( TInt aCallId )
             }
             
         SetTouchPaneButtons( EPhoneConferenceButtons );
-        EndUiUpdate();
-        EndTransEffect(); 
+        TransitionHandlerL().EndUiUpdateAndEffect();
         UpdateCbaL( EPhoneCallHandlingInCallCBA );
         iStateMachine->ChangeState( EPhoneStateConference );
         }

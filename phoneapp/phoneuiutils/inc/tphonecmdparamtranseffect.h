@@ -37,17 +37,17 @@
 enum TPhoneTransEffectType
     {
     EPhoneTransEffectNone,
+    /* These two effects are for internal transitions(CallUi <-> Dialer) */
     EPhoneTransEffectCallUiAppear,
     EPhoneTransEffectCallUiDisappear,
-    // These 3 effect types can be used only when dialer is
-    // opened/closed when some other app than phone is visible 
-    // on the foreground/in the background.
-    // These cannot be used for internal transitions (=call ui<->dialer).
-    EPhoneTransEffectDialerOpen,
-    EPhoneTransEffectDialerClose,
+    /* These two effect types can be used only when CallUi or Dialer is 
+    opened/closed from some other app. These cannot be used for 
+    internal transitions between CallUi<->Dialer.*/
+    EPhoneTransEffectPhoneUiOpen,
+    EPhoneTransEffectPhoneUiClose,
     EPhoneTransEffectDialerCreate,
-    // For applying effect to external app launch done from dialer.
-    // Effects triggered by App FW don't work properly.
+    /* For applying effect to external app launch done from dialer.
+    Effects triggered by App FW don't work properly.*/
     EPhoneTransEffectAppStartFromDialer,
     EPhoneTransEffectStop
     };

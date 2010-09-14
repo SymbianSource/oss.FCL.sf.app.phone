@@ -173,8 +173,9 @@ void CDialerNumberEntry::SetFocus( TBool aFocus, TDrawNow aDrawNow )
     
     TBool vkbOpen = ( iEditor->AknEditorFlags() & EAknEditorFlagTouchInputModeOpened );
     
-    iLateFocuser->Cancel(); 
-    if ( aFocus && !vkbOpen )
+    iLateFocuser->Cancel();
+
+    if ( aFocus && !vkbOpen && iLateFocuserCanBeUsed )
         {
         // The setting of focus needs to be delayed, because otherwise
         // editors cursor is drawn first. Cursor can be seen clearly
@@ -191,6 +192,7 @@ void CDialerNumberEntry::SetFocus( TBool aFocus, TDrawNow aDrawNow )
         {       
         DoSetFocus( aFocus, aDrawNow );
         }
+
     DIALER_PRINT("numberentry::SetFocus>");
     }
     
@@ -227,7 +229,11 @@ void CDialerNumberEntry::DoSetFocus( TBool aFocus, TDrawNow aDrawNow )
     if ( aFocus != (iEditor-> IsFocused() ? ETrue : EFalse ) )
         {
         iEditor->SetFocus( aFocus );
-        }   
+        }
+
+    // Don't allow usage of late focuser until next layout change or Dialer launch
+    iLateFocuserCanBeUsed = EFalse;
+
     DIALER_PRINT("numberentry::DoSetFocus>");  
     }
 
@@ -575,6 +581,9 @@ void CDialerNumberEntry::SetLayout()
     
     HandleEditorFormatting();
     iEditor->DrawDeferred();
+    
+    // Allow usage of late focuser
+    iLateFocuserCanBeUsed = ETrue;
     }
 
 // ---------------------------------------------------------------------------

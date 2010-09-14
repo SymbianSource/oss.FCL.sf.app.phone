@@ -132,7 +132,7 @@ EXPORT_C void CPhoneAlerting::HandleKeyMessageL(
 
                 if ( IsNumberEntryUsedL() )
                     {
-                    CloseClearNumberEntryAndLoadEffectL( ENumberEntryClose );
+                    CloseClearNumberEntryAndLoadEffectL( EPhoneTransEffectPhoneUiClose );
                     }
                 if ( !TopAppIsDisplayedL() )
                     {
@@ -241,7 +241,7 @@ EXPORT_C void CPhoneAlerting::HandleConnectedL( TInt aCallId )
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
-    BeginUiUpdateLC();
+    TransitionHandlerL().BeginUiUpdateLC();
 
     // Update the single call
     UpdateSingleActiveCallL( aCallId );
@@ -250,7 +250,7 @@ EXPORT_C void CPhoneAlerting::HandleConnectedL( TInt aCallId )
 
     SetToolbarDimming( EFalse );
 
-    EndUiUpdate();
+    TransitionHandlerL().EndUiUpdate();
     
     // Go to single state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );    

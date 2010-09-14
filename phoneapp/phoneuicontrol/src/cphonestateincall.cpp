@@ -141,7 +141,15 @@ EXPORT_C void CPhoneStateInCall::HandleKeyMessageL(
             
 #ifdef RD_INTELLIGENT_TEXT_INPUT
         case EKeyEnter:
-            if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
+            {
+            TPhoneCmdParamInteger numberEntryCountParam;
+            iViewCommandHandle->ExecuteCommandL( 
+                 EPhoneViewGetNumberEntryCount,
+                 &numberEntryCountParam );
+            
+            TInt neLength( numberEntryCountParam.Integer() );
+                      
+            if ( iOnScreenDialer && IsDTMFEditorVisibleL() && neLength > 0 )
                 {
                 SendDtmfL();    
                 }
@@ -154,18 +162,13 @@ EXPORT_C void CPhoneStateInCall::HandleKeyMessageL(
                     }
                 else
                     {
-                    TPhoneCmdParamInteger numberEntryCountParam;
-                    iViewCommandHandle->ExecuteCommandL( 
-                           EPhoneViewGetNumberEntryCount,
-                           &numberEntryCountParam );
-                    
-                    TInt neLength( numberEntryCountParam.Integer() );
                     if ( neLength > 0 )
                        {
                        HandleCommandL( EPhoneNumberAcqCmdSendCommand );
                        }
                     }      
                 }
+            }
             break;
 #endif            
           
@@ -306,17 +309,10 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
     __LOGMETHODSTARTEND(EPhoneControl,  
         "CPhoneStateInCall::HandleIdleL()" );
     __ASSERT_DEBUG( aCallId >= 0, Panic( EPhoneCtrlParameterNotInitialized ) );
+    TransitionHandlerL().IdleCallUiUpdateLC();
+    
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewHideToolbar );
-    if (  IsNumberEntryUsedL() )
-        {
-        BeginTransEffectLC( ECallUiDisappear );
-        }
-    else 
-        {
-        BeginTransEffectLC( ENumberEntryClose );
-        }
-    BeginUiUpdateLC();
     SetDefaultFlagsL();
         
     if ( IsNumberEntryUsedL() )
@@ -354,8 +350,7 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
         }
         
     DeleteTouchPaneButtons();
-    EndUiUpdate();
-    EndTransEffect();
+    TransitionHandlerL().EndUiUpdateAndEffect();
     DisplayCallTerminationNoteL();
     iStateMachine->ChangeState( EPhoneStateIdle );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewHideToolbar );
@@ -611,13 +606,14 @@ EXPORT_C TBool CPhoneStateInCall::HandleCommandL( TInt aCommand )
     switch( aCommand )
         {
         case EPhoneInCallCmdDialer:
-            BeginTransEffectLC( ECallUiDisappear );
+            TransitionHandlerL().
+                BeginTransEffectLC( EPhoneTransEffectCallUiDisappear );
             if ( !IsNumberEntryUsedL() )
                 {
                 CreateNumberEntryL();
                 }
             SetNumberEntryVisibilityL( ETrue ); 
-            EndTransEffect();
+            TransitionHandlerL().EndTransEffect();
           break;
           
         case EPhoneCmdOptions:
@@ -851,10 +847,11 @@ EXPORT_C TBool CPhoneStateInCall::HandleCommandL( TInt aCommand )
        case EPhoneViewOpenCallHandling:
             if ( iOnScreenDialer && IsNumberEntryUsedL() )
                 {
-                BeginTransEffectLC( ECallUiAppear );
+                TransitionHandlerL().
+                        BeginTransEffectLC( EPhoneTransEffectCallUiAppear );
                 // Remove number entry from screen
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-                EndTransEffect();
+                TransitionHandlerL().EndTransEffect();
                 HandleNumberEntryClearedL();
                 }
             commandStatus = CPhoneState::HandleCommandL( aCommand );        
@@ -929,7 +926,8 @@ EXPORT_C void CPhoneStateInCall::LaunchNewCallQueryL()
     if ( iOnScreenDialer )
         {
         //In touch, just activate dialer
-        BeginTransEffectLC( ECallUiDisappear );
+        TransitionHandlerL().
+                BeginTransEffectLC( EPhoneTransEffectCallUiDisappear );
         if ( IsNumberEntryUsedL() )
             {
             SetNumberEntryVisibilityL(ETrue);   
@@ -939,7 +937,7 @@ EXPORT_C void CPhoneStateInCall::LaunchNewCallQueryL()
             CreateNumberEntryL();
             SetNumberEntryVisibilityL(ETrue); 
             }
-        EndTransEffect();
+        TransitionHandlerL().EndTransEffect();
         }
     else
         {
@@ -1558,7 +1556,7 @@ void CPhoneStateInCall::HandleEndKeyPressL( TPhoneKeyEventMessages aMessage )
                 }
             else
                 {    
-                CloseClearNumberEntryAndLoadEffectL( ENumberEntryClose );
+                CloseClearNumberEntryAndLoadEffectL( EPhoneTransEffectPhoneUiClose );
                 }
             }
 
@@ -1652,14 +1650,7 @@ EXPORT_C void CPhoneStateInCall::HandlePropertyChangedL(
     if ( aCategory == KPSUidCoreApplicationUIs &&
          aKey == KCoreAppUIsVideoSharingIndicator )
         {
-        if ( aValue == ECoreAppUIsVideoSharingIndicatorOn )
-            {
-            SetTouchPaneButtons( EPhoneIncallVideoShareButtons );
-            }
-        else
-            {
-            SetTouchPaneButtons( EPhoneIncallButtons );
-            }
+        SetTouchPaneButtons( EPhoneIncallButtons );
         }
     else
         {
