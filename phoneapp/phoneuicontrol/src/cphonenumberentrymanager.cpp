@@ -43,7 +43,7 @@
 #include "mphonesecuritymodeobserver.h"
 
 const TInt  KPhoneKeyStart            = 33;
-const TInt  KPhoneKeyEnd              = 127;
+const TInt  KPhoneKeyEnd              = 129;
 
 const TInt KKeyCtrlA( 1 );
 const TInt KKeyCtrlC( 3 );
@@ -433,7 +433,8 @@ void CPhoneNumberEntryManager::KeyEventForExistingNumberEntryL(
     else if( aKeyEvent.iCode == EKeyLeftArrow ||
            aKeyEvent.iCode == EKeyRightArrow ||
            aKeyEvent.iCode == EKeyUpArrow ||
-           aKeyEvent.iCode == EKeyDownArrow )
+           aKeyEvent.iCode == EKeyDownArrow ||
+           aKeyEvent.iCode == EKeySpace )
            {
            iViewCommandHandle.HandleCommandL(
                EPhoneViewSendKeyEventToNumberEntry, &keyEventParam );

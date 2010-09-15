@@ -2311,6 +2311,16 @@ EXPORT_C void CPhoneViewController::HandleSecurityModeChanged( TBool aIsEnabled 
         appKeyCaptureParam.SetCaptureType( EPhoneKeyAllEvents );
 
         iKeyCaptureController->StopCapturingKey( &appKeyCaptureParam );
+        
+        // Uncapture the Camera key for sure, if it exists
+        if ( !iSecurityMode && FeatureManager::FeatureSupported( KFeatureIdCamera ) )
+            {
+            TPhoneCmdParamKeyCapture cameraKeyCaptureParam;
+            cameraKeyCaptureParam.SetKey( EStdKeyDevice7 );
+            cameraKeyCaptureParam.SetKeyCode( EKeyDevice7 );
+            cameraKeyCaptureParam.SetCaptureType( EPhoneKeyAllEvents );
+            iKeyCaptureController->StopCapturingKey( &cameraKeyCaptureParam );
+            }
         }
     }
 
