@@ -47,3 +47,6 @@ symbian {
 # Input
 SOURCES += main.cpp
 
+
+
+symbian:MMP_RULES += SMPSAFE

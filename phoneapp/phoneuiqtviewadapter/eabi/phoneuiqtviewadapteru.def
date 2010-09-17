@@ -13,46 +13,46 @@ EXPORTS
 	_ZN20PhoneResourceAdapterD2Ev @ 12 NONAME
 	_ZN20PhoneUIQtViewAdapter10SetHiddenLEb @ 13 NONAME
 	_ZN20PhoneUIQtViewAdapter10convertKeyE8TKeyCodeRN2Qt3KeyE @ 14 NONAME
-	_ZN20PhoneUIQtViewAdapter10idleAppUidEv @ 15 NONAME
-	_ZN20PhoneUIQtViewAdapter11callsExistsEii @ 16 NONAME
-	_ZN20PhoneUIQtViewAdapter11keyReleasedEP9QKeyEvent @ 17 NONAME
+	_ZN20PhoneUIQtViewAdapter11callsExistsEii @ 15 NONAME
+	_ZN20PhoneUIQtViewAdapter11keyReleasedEP9QKeyEvent @ 16 NONAME
+	_ZN20PhoneUIQtViewAdapter11onFocusLostEv @ 17 NONAME
 	_ZN20PhoneUIQtViewAdapter11openDialpadEv @ 18 NONAME
 	_ZN20PhoneUIQtViewAdapter11qt_metacallEN11QMetaObject4CallEiPPv @ 19 NONAME
 	_ZN20PhoneUIQtViewAdapter11qt_metacastEPKc @ 20 NONAME
 	_ZN20PhoneUIQtViewAdapter11setCallMenuEv @ 21 NONAME
 	_ZN20PhoneUIQtViewAdapter12FetchContentEv @ 22 NONAME
-	_ZN20PhoneUIQtViewAdapter12callHoldFlagEP18TPhoneCommandParam @ 23 NONAME
+	_ZN20PhoneUIQtViewAdapter12clearDialpadEv @ 23 NONAME
 	_ZN20PhoneUIQtViewAdapter12isConferenceEP18TPhoneCommandParam @ 24 NONAME
 	_ZN20PhoneUIQtViewAdapter12openContactsEv @ 25 NONAME
 	_ZN20PhoneUIQtViewAdapter12setAudioPathEP18TPhoneCommandParam @ 26 NONAME
 	_ZN20PhoneUIQtViewAdapter13callIdByStateEP18TPhoneCommandParam @ 27 NONAME
 	_ZN20PhoneUIQtViewAdapter13dialpadClosedEv @ 28 NONAME
-	_ZN20PhoneUIQtViewAdapter13removeDialpadEv @ 29 NONAME
-	_ZN20PhoneUIQtViewAdapter14ExecuteCommandEi @ 30 NONAME
-	_ZN20PhoneUIQtViewAdapter14ExecuteCommandEiP18TPhoneCommandParam @ 31 NONAME
-	_ZN20PhoneUIQtViewAdapter14HandleCommandLEi @ 32 NONAME
-	_ZN20PhoneUIQtViewAdapter14HandleCommandLEiP18TPhoneCommandParam @ 33 NONAME
-	_ZN20PhoneUIQtViewAdapter14setDialpadMenuEv @ 34 NONAME
-	_ZN20PhoneUIQtViewAdapter14showGlobalNoteEP18TPhoneCommandParam @ 35 NONAME
-	_ZN20PhoneUIQtViewAdapter15ExecuteCommandLEi @ 36 NONAME
-	_ZN20PhoneUIQtViewAdapter15ExecuteCommandLEiP18TPhoneCommandParam @ 37 NONAME
-	_ZN20PhoneUIQtViewAdapter15ExecuteCommandLEii @ 38 NONAME
-	_ZN20PhoneUIQtViewAdapter15ExecuteCommandLEiiP18TPhoneCommandParam @ 39 NONAME
-	_ZN20PhoneUIQtViewAdapter15ExecuteCommandLEiiR7TDesC16 @ 40 NONAME
-	_ZN20PhoneUIQtViewAdapter15activeCallCountEP18TPhoneCommandParam @ 41 NONAME
-	_ZN20PhoneUIQtViewAdapter15addToConferenceEv @ 42 NONAME
-	_ZN20PhoneUIQtViewAdapter15convertDurationEi @ 43 NONAME
-	_ZN20PhoneUIQtViewAdapter15setCallHoldFlagEP18TPhoneCommandParam @ 44 NONAME
-	_ZN20PhoneUIQtViewAdapter15setTouchButtonsEP18TPhoneCommandParam @ 45 NONAME
-	_ZN20PhoneUIQtViewAdapter16conferenceCallIdEiP18TPhoneCommandParam @ 46 NONAME
-	_ZN20PhoneUIQtViewAdapter16createCallHeaderEiP18TPhoneCommandParam @ 47 NONAME
-	_ZN20PhoneUIQtViewAdapter16setExpandActionsEv @ 48 NONAME
-	_ZN20PhoneUIQtViewAdapter16staticMetaObjectE @ 49 NONAME DATA 16
-	_ZN20PhoneUIQtViewAdapter17bringToForegroundEv @ 50 NONAME
-	_ZN20PhoneUIQtViewAdapter17hideDeviceDialogsEP18TPhoneCommandParam @ 51 NONAME
-	_ZN20PhoneUIQtViewAdapter17setMuteIndicationEP18TPhoneCommandParam @ 52 NONAME
-	_ZN20PhoneUIQtViewAdapter17setToolbarButtonsEP18TPhoneCommandParam @ 53 NONAME
-	_ZN20PhoneUIQtViewAdapter17setTopApplicationEP18TPhoneCommandParam @ 54 NONAME
+	_ZN20PhoneUIQtViewAdapter13onFocusGainedEv @ 29 NONAME
+	_ZN20PhoneUIQtViewAdapter13removeDialpadEv @ 30 NONAME
+	_ZN20PhoneUIQtViewAdapter13setEngineInfoEP13MPEEngineInfo @ 31 NONAME
+	_ZN20PhoneUIQtViewAdapter14ExecuteCommandEi @ 32 NONAME
+	_ZN20PhoneUIQtViewAdapter14ExecuteCommandEiP18TPhoneCommandParam @ 33 NONAME
+	_ZN20PhoneUIQtViewAdapter14HandleCommandLEi @ 34 NONAME
+	_ZN20PhoneUIQtViewAdapter14HandleCommandLEiP18TPhoneCommandParam @ 35 NONAME
+	_ZN20PhoneUIQtViewAdapter14setDialpadMenuEv @ 36 NONAME
+	_ZN20PhoneUIQtViewAdapter14showGlobalNoteEP18TPhoneCommandParam @ 37 NONAME
+	_ZN20PhoneUIQtViewAdapter15ExecuteCommandLEi @ 38 NONAME
+	_ZN20PhoneUIQtViewAdapter15ExecuteCommandLEiP18TPhoneCommandParam @ 39 NONAME
+	_ZN20PhoneUIQtViewAdapter15ExecuteCommandLEii @ 40 NONAME
+	_ZN20PhoneUIQtViewAdapter15ExecuteCommandLEiiP18TPhoneCommandParam @ 41 NONAME
+	_ZN20PhoneUIQtViewAdapter15ExecuteCommandLEiiR7TDesC16 @ 42 NONAME
+	_ZN20PhoneUIQtViewAdapter15activeCallCountEP18TPhoneCommandParam @ 43 NONAME
+	_ZN20PhoneUIQtViewAdapter15addToConferenceEv @ 44 NONAME
+	_ZN20PhoneUIQtViewAdapter15convertDurationEi @ 45 NONAME
+	_ZN20PhoneUIQtViewAdapter15setTouchButtonsEP18TPhoneCommandParam @ 46 NONAME
+	_ZN20PhoneUIQtViewAdapter16conferenceCallIdEiP18TPhoneCommandParam @ 47 NONAME
+	_ZN20PhoneUIQtViewAdapter16createCallHeaderEi @ 48 NONAME
+	_ZN20PhoneUIQtViewAdapter16setExpandActionsEv @ 49 NONAME
+	_ZN20PhoneUIQtViewAdapter16staticMetaObjectE @ 50 NONAME DATA 16
+	_ZN20PhoneUIQtViewAdapter17bringToForegroundEv @ 51 NONAME
+	_ZN20PhoneUIQtViewAdapter17hideDeviceDialogsEP18TPhoneCommandParam @ 52 NONAME
+	_ZN20PhoneUIQtViewAdapter17setMuteIndicationEP18TPhoneCommandParam @ 53 NONAME
+	_ZN20PhoneUIQtViewAdapter17setToolbarButtonsEP18TPhoneCommandParam @ 54 NONAME
 	_ZN20PhoneUIQtViewAdapter19getStaticMetaObjectEv @ 55 NONAME
 	_ZN20PhoneUIQtViewAdapter20expandedBubbleCallIdEP18TPhoneCommandParam @ 56 NONAME
 	_ZN20PhoneUIQtViewAdapter20getNumberFromDialpadEP18TPhoneCommandParam @ 57 NONAME
@@ -60,23 +60,23 @@ EXPORTS
 	_ZN20PhoneUIQtViewAdapter20setCommonButtonFlagsEv @ 59 NONAME
 	_ZN20PhoneUIQtViewAdapter20setDialpadVisibilityEP18TPhoneCommandParam @ 60 NONAME
 	_ZN20PhoneUIQtViewAdapter21handleWindowActivatedEv @ 61 NONAME
-	_ZN20PhoneUIQtViewAdapter21updateCallHeaderStateEiP18TPhoneCommandParam @ 62 NONAME
+	_ZN20PhoneUIQtViewAdapter21updateCallHeaderStateEi @ 62 NONAME
 	_ZN20PhoneUIQtViewAdapter21writeAudioVolumeLevelEP18TPhoneCommandParam @ 63 NONAME
-	_ZN20PhoneUIQtViewAdapter22createConferenceBubbleEiP18TPhoneCommandParam @ 64 NONAME
+	_ZN20PhoneUIQtViewAdapter22createConferenceBubbleEi @ 64 NONAME
 	_ZN20PhoneUIQtViewAdapter22getDialpadStringLengthEP18TPhoneCommandParam @ 65 NONAME
 	_ZN20PhoneUIQtViewAdapter22removeConferenceBubbleEv @ 66 NONAME
 	_ZN20PhoneUIQtViewAdapter22setBubbleSelectionFlagEv @ 67 NONAME
 	_ZN20PhoneUIQtViewAdapter23handleWindowDeactivatedEv @ 68 NONAME
 	_ZN20PhoneUIQtViewAdapter24removeCallFromConferenceEi @ 69 NONAME
 	_ZN20PhoneUIQtViewAdapter24setPrivateFromConferenceEi @ 70 NONAME
-	_ZN20PhoneUIQtViewAdapter25createEmergencyCallHeaderEiP18TPhoneCommandParam @ 71 NONAME
-	_ZN20PhoneUIQtViewAdapter25handleCipheringInfoChangeEiP18TPhoneCommandParam @ 72 NONAME
+	_ZN20PhoneUIQtViewAdapter25createEmergencyCallHeaderEi @ 71 NONAME
+	_ZN20PhoneUIQtViewAdapter25handleCipheringInfoChangeEi @ 72 NONAME
 	_ZN20PhoneUIQtViewAdapter25setAudioVolumeSliderValueEP18TPhoneCommandParam @ 73 NONAME
 	_ZN20PhoneUIQtViewAdapter25setParticipantListActionsEv @ 74 NONAME
-	_ZN20PhoneUIQtViewAdapter26updateCallHeaderRemoteInfoEiP18TPhoneCommandParam @ 75 NONAME
+	_ZN20PhoneUIQtViewAdapter26updateCallHeaderRemoteInfoEi @ 75 NONAME
 	_ZN20PhoneUIQtViewAdapter27getSelectedConferenceMemberEP18TPhoneCommandParam @ 76 NONAME
 	_ZN20PhoneUIQtViewAdapter31setExpandedConferenceCallHeaderEv @ 77 NONAME
-	_ZN20PhoneUIQtViewAdapter34updateCallHeaderRemoteInfoAndLabelEiP18TPhoneCommandParam @ 78 NONAME
+	_ZN20PhoneUIQtViewAdapter34updateCallHeaderRemoteInfoAndLabelEi @ 78 NONAME
 	_ZN20PhoneUIQtViewAdapter7setMenuEv @ 79 NONAME
 	_ZN20PhoneUIQtViewAdapter8openLogsEP18TPhoneCommandParam @ 80 NONAME
 	_ZN20PhoneUIQtViewAdapter8showNoteEP18TPhoneCommandParam @ 81 NONAME
@@ -111,5 +111,4 @@ EXPORTS
 	_ZThn8_N20PhoneUIQtViewAdapter15ExecuteCommandLEiiR7TDesC16 @ 110 NONAME
 	_ZThn8_N20PhoneUIQtViewAdapterD0Ev @ 111 NONAME
 	_ZThn8_N20PhoneUIQtViewAdapterD1Ev @ 112 NONAME
-	_ZN20PhoneUIQtViewAdapter12clearDialpadEv @ 113 NONAME
 

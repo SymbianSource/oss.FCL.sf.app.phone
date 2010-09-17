@@ -57,3 +57,6 @@ SOURCES += phoneuiqtbuttonscontroller_stub.cpp
 SOURCES += phonecommandextensionwrapper_stub.cpp
 SOURCES += unit_tests.cpp
 
+
+
+symbian:MMP_RULES += SMPSAFE

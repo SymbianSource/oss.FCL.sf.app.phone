@@ -669,12 +669,7 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
         * @return Transfer target address set with SetTransferTargetCommand
         */
         virtual const TPEPhoneNumber& TransferTargetCommand() const = 0;
-        
-        /**
-        * Returns switch to operation status.
-        */
-        virtual TBool IsSwitchToOperationOngoing() const = 0;
-        
+                
         /**
         * Checks if given state can be found.
         * @param aCallState state to be checked.
@@ -717,6 +712,18 @@ NONSHARABLE_CLASS( MPEEngineInfo ) : public MPECallSettersIF
         */
         virtual void SetOutgoingCallBarringActivated( 
                 TBool aActivated ) = 0;
+        
+        /**
+        * Sets incoming call forwarded flag.
+        * @param aForwarded is call forwarded
+        */
+        virtual void SetIncomingCallForwarded( 
+                TBool aForwarded, TInt aCallId ) = 0;
+
+        /**
+         * Returns incoming call forwarded flag.
+         */
+        virtual TBool IncomingCallForwarded( TInt aCallId ) const = 0;
         
     }; // MPEEngineInfo
     

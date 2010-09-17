@@ -810,9 +810,7 @@ public:
         EPEMessageStopDTMFSending,
         EPEMessageStopTonePlay,
         EPEMessageAutomaticAnswerOff,       //UI sends when soft reject is needed
-        EPEMessageTerminateAllConnections,
-        EPEMessageSetSwitchToCallFlag,
-        EPEMessageSwitchToVideoOrVoice,
+        EPEMessageTerminateAllConnections,                
         EPEMessageSatCallRequestCompleted,
         EPEMessageClientDialEmergency,
         EPEMessageReplaceActive,

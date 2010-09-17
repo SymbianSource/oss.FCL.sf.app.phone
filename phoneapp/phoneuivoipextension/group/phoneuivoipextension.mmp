@@ -28,6 +28,8 @@ CAPABILITY CAP_GENERAL_DLL
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
 
+VERSION 10.0
+
 TARGET          phoneuivoipextension.dll
 TARGETTYPE      dll
 
@@ -93,3 +95,6 @@ LIBRARY         serviceselector.lib
 // <-- QT PHONE END -->
 LIBRARY         ws32.lib
 
+
+
+SMPSAFE

@@ -34,3 +34,6 @@ HEADERS += ../../../bubblecore/src/bubblebutton.h
 SOURCES += ut_bubblebutton.cpp \
            ../../../bubblecore/src/bubblebutton.cpp
 
+
+
+symbian:MMP_RULES += SMPSAFE

@@ -37,3 +37,6 @@ symbian {
     
     LIBS += -lphoneservices -lxqservice -lxqserviceutil    
 } 
+
+
+symbian:MMP_RULES += SMPSAFE

@@ -323,11 +323,7 @@ enum TPhoneRssBase
 
     EPhoneBtLoopbackEnabled,
     EPhoneBtLoopbackDisabled,
-
-    EPhoneLineBlockingNote,
-
-    EPhoneSwitchToVideoQuery,
-    EPhoneSwitchToVoiceQuery,
+    
     EPhoneSimRejected,
     EPhoneSimUnaccepted,
     EPhoneSimRemoved,

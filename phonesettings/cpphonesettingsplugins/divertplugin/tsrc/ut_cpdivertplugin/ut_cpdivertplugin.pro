@@ -67,3 +67,6 @@ SOURCES += ../../../tsrc/mocks/mock_psetcalldivertingwrapper.cpp \
            ../../../tsrc/mocks/mock_cpplugincommon.cpp \
            ../../../tsrc/mocks/mock_psuinotes.cpp \
            ../../../tsrc/mocks/mock_psetwrapper.cpp 
+
+
+symbian:MMP_RULES += SMPSAFE

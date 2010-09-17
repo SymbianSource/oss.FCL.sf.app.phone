@@ -28,8 +28,7 @@ enum PhoneMenuCommands
     PhoneInCallCmdEndAllCalls,
     PhoneInCallCmdTransfer,
     PhoneInCallCmdSendMessage,
-    PhoneInCallShareVideo,
-    PhoneInCallCmdSwitchToVideo,
+    PhoneInCallShareVideo,    
     PhoneInCallCmdHandoverToWlan,
     PhoneInCallCmdHandoverToGsm,
     

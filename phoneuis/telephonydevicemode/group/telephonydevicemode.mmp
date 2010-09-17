@@ -25,6 +25,7 @@ VENDORID VID_DEFAULT
 TARGET          telephonydevicemode.dll
 TARGETTYPE      DLL
 UID             0x1000008d 0x1020299B
+VERSION         10.0
 
 SOURCEPATH      ../src
 SOURCE          cteldmhandlerimpl.cpp
@@ -43,3 +44,6 @@ LIBRARY         avkon.lib
 LIBRARY         telephonyaudiorouting.lib
 LIBRARY         centralrepository.lib
 // End of File
+
+
+SMPSAFE

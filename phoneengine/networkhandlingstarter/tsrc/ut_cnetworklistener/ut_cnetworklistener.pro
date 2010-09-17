@@ -57,3 +57,5 @@ SOURCES += ../mocks/mock_psetcontainer.cpp
 SOURCES += ../mocks/mock_cpsetrefreshhandler.cpp
 HEADERS += ../mocks/mock_cpsetrefreshhandler.h
 SOURCES += ../mocks/mock_psetnetwork.cpp
+
+symbian:MMP_RULES += SMPSAFE

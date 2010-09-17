@@ -40,3 +40,6 @@ RESOURCES += bubbletest2.qrc
 # Libraries
 unix:!symbian LIBS += -L../../bubblecore
 LIBS += -lbubblemanager2
+
+
+symbian:MMP_RULES += SMPSAFE

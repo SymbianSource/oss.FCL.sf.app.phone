@@ -32,3 +32,6 @@ SOURCES += ut_bubbleconferenceheader.cpp \
            ../../../bubblecore/src/bubbleheader.cpp \
            ../../../bubblecore/src/bubbleconferenceheader.cpp
 
+
+
+symbian:MMP_RULES += SMPSAFE

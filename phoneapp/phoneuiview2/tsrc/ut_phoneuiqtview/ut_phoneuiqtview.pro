@@ -65,3 +65,6 @@ SOURCES += ../../src/phoneuiqtview.cpp \
            hbvolumesliderpopup_stub.cpp \
            qsysteminfo_stub.cpp 
            
+
+
+symbian:MMP_RULES += SMPSAFE

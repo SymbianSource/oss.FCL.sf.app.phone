@@ -39,37 +39,6 @@ class MPhoneSystemEvents
         virtual ~MPhoneSystemEvents(){};
 
         /**
-        * From CEikAppUi. For Idle indicator
-        */
-        virtual void HandleSystemEventL( const TWsEvent& aEvent ) = 0;
-
-        /**
-        * From CAknAppUi, indicates when app ui is on the foreground.
-        * @param aForeground It is true if app is on the foreground.
-        */
-        virtual void HandleForegroundEventL( TBool aForeground ) = 0;
-
-        /**
-        * Indicates when the Phone app is in the foreground.
-        */
-        virtual void HandlePhoneForegroundEventL() = 0;
-        
-        /**
-        * Indicates when the Phone app is is losing focus.
-        */
-        virtual void HandlePhoneFocusLostEventL() = 0;
-        
-        /**
-        * Indicates when the Idle app is in the foreground.
-        */
-        virtual void HandleIdleForegroundEventL() = 0;
-
-        /**
-        * Indicates when the keylock events
-        */
-        virtual void HandleKeyLockEnabled( TBool aKeylockEnabled ) = 0;
-
-        /**
         * Handles startup of the phone application 
         */
         virtual void HandlePhoneStartupL() = 0;
@@ -85,14 +54,6 @@ class MPhoneSystemEvents
             const TUint aKey,
             const TInt aValue ) = 0;
 
-        /**
-        * Handle the change of the setting from Central Repository
-        * @param aUid identifing the central repository UID.
-        * @param aId central repository ID.
-        */
-        virtual void HandleCenRepChangeL( 
-            const TUid& aUid,
-            const TUint aId ) = 0;
     };
 
 #endif      // __MPHONESYSTEMEVENTS_H   

@@ -128,9 +128,9 @@ void CPhoneSingleAndAlerting::HandleKeyMessageL(
     switch ( aCode )
         {
         case EKeyYes: // send-key
-            if ( CPhoneState::IsNumberEntryUsedL() )
+            if ( iNumberEntryManager->IsNumberEntryUsedL() )
                 {
-                CallFromNumberEntryL();
+                iNumberEntryManager->CallFromNumberEntryL();
                 }
             else
                 {
@@ -150,7 +150,7 @@ void CPhoneSingleAndAlerting::HandleKeyMessageL(
                 DisconnectOutgoingCallL();
                 }
                 
-            if ( IsNumberEntryUsedL() )
+            if ( iNumberEntryManager->IsNumberEntryUsedL() )
                 {
                 iViewCommandHandle->ExecuteCommandL( 
                       EPhoneViewRemoveNumberEntry );
@@ -180,38 +180,18 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         
     if( callStateData.CallId() == aCallId )
         {
-        TPhoneCmdParamBoolean booleanParam;
-        booleanParam.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-
         BeginUiUpdateLC();
         
-        TPhoneCmdParamCallHeaderData callHeaderParam;
-        callHeaderParam.SetCallState( EPEStateConnected );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
-            &callHeaderParam );
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
 
-        SetTouchPaneButtons( EPhoneTwoSinglesButtons );
+        UpdateUiCommands();
         EndUiUpdate();
-        
-        TPhoneCmdParamBoolean holdFlag;
-        holdFlag.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-        
-        UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
+
         iStateMachine->ChangeState( EPhoneStateTwoSingles );
         }
     else
         {
-        TPhoneCmdParamCallHeaderData callHeaderParam;
-        callHeaderParam.SetCallState( EPEStateConnected );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
-            &callHeaderParam );  
-            
-        TPhoneCmdParamBoolean holdFlag;
-        holdFlag.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );  
         }    
     }
 // -----------------------------------------------------------
@@ -224,44 +204,22 @@ void CPhoneSingleAndAlerting::HandleIdleL( TInt aCallId )
         "CPhoneSingleAndAlerting::HandleIdleL()");
     BeginUiUpdateLC();
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-
-    if ( !TopAppIsDisplayedL() )
-        {
-        // Continue displaying current app but set up the 
-        // idle screen in the background
-        SetupIdleScreenInBackgroundL();
-        }
         
     TPhoneCmdParamInteger countParam;
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCountOfActiveCalls, &countParam);
     
     if ( countParam.Integer() )
         {
-        SetTouchPaneButtons( EPhoneIncallButtons );
-        TPhoneCmdParamBoolean holdFlag;
-        holdFlag.SetBoolean( ETrue );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-        UpdateCbaL( EPhoneCallHandlingInCallCBA );
+        UpdateUiCommands();
         iStateMachine->ChangeState( EPhoneStateSingle );
         }
     else
         {
         DisplayCallTerminationNoteL();
-        SetTouchPaneButtons( EPhoneCallSetupButtons );
-        UpdateCbaL( EPhoneCallHandlingInCallCBA );
+        UpdateUiCommands();
         iStateMachine->ChangeState( EPhoneStateAlerting );
         }
     EndUiUpdate();
-    }
-
-// -----------------------------------------------------------
-// CPhoneSingleAndAlerting::UpdateInCallCbaL
-// -----------------------------------------------------------
-//
-void CPhoneSingleAndAlerting::UpdateInCallCbaL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneSingleAndAlerting::UpdateInCallCbaL() ");
-    UpdateCbaL( EPhoneCallHandlingInCallCBA );
     }
         
 // End of File

@@ -16,7 +16,6 @@
 #
 
 TEMPLATE = app
-TARGET = 
 TARGET.UID3 = 0xEFF8FEA4
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -24,25 +23,23 @@ CONFIG += hb
 CONFIG += qtestlib
 DEFINES += BUILD_XQPLUGINS_DLL
 
-symbian {
+INCLUDEPATH += \epoc32\include\platform\mw \
+               \epoc32\include\platform \
+               \epoc32\include\platform\app \
+                 \epoc32\include\mw \
+               \sf\app\phone\inc \
+               ../../../phoneuiutils/inc/ \
+               ../../../phonemediatorcenter/inc/ \
+               ../../../phoneuiview2/inc \
+               ../../../../inc \
+               ../../../phoneui2/srcdata \
+               ../../../../tsrc/common
 
-    INCLUDEPATH += \epoc32\include\platform\mw \
-                   \epoc32\include\platform \
-                   \epoc32\include\platform\app \
-	                 \epoc32\include\mw \
-                   \sf\app\phone\inc \
-                   ../../../phoneuiutils/inc/ \
-                   ../../../phonemediatorcenter/inc/ \
-                   ../../../phoneuiview2/inc \
-                   ../../../../inc \
-                   ../../../phoneui2/srcdata
+HEADERS += /epoc32/include/mw/xqpluginloader.h
 
-	HEADERS += /epoc32/include/mw/xqpluginloader.h
-
-    TARGET.CAPABILITY = ALL -TCB
-    DEFINES += FT_SYMBIAN_INTEGRATION
-    DEFINES += BUILD_PHONEUIQTVIEWADAPTER
-}
+TARGET.CAPABILITY = ALL -TCB
+DEFINES += FT_SYMBIAN_INTEGRATION
+DEFINES += BUILD_PHONEUIQTVIEWADAPTER
 
 # Input
 HEADERS += ../../inc/phonecommandextensionwrapper.h
@@ -52,3 +49,6 @@ SOURCES += menuextension_stub.cpp
 SOURCES += xqpluginloader_stub.cpp
 SOURCES += unit_tests.cpp
 
+INCLUDE(../../../../tsrc/common/phonetest.pri)
+
+symbian:MMP_RULES += SMPSAFE

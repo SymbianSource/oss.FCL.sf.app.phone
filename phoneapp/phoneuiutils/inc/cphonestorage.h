@@ -39,43 +39,7 @@ public:
     IMPORT_C static CPhoneStorage* NewL();
 
     IMPORT_C virtual ~CPhoneStorage();
-    
-    /**
-     * AppendBlockedKeysListL.
-     *
-     * @since S60 v5.0
-     */
-    IMPORT_C void AppendBlockedKeysListL( TStdScanCode aScanCode );
-    
-    /**
-     * GetBlockedKeyList.
-     *
-     * @since S60 v5.0
-     */
-    IMPORT_C const RArray<TInt>& GetBlockedKeyList() const;
-
-    /**
-     * ResetBlockedKeysList.
-     *
-     * @since S60 v5.0
-     */
-    IMPORT_C void ResetBlockedKeysList();
-
-    /**
-     * IsBlockedKeysListEmpty.
-     */
-    IMPORT_C TBool IsBlockedKeysListEmpty();
-
-    /**
-     * SetScreenLocked.
-     */
-    IMPORT_C void SetScreenLocked( TBool aLocked );
-    
-    /**
-     * IsScreenLocked.
-     */
-    IMPORT_C TBool IsScreenLocked();
-    
+        
     /**
      * SetNeedToEnableKeylock.
      */
@@ -93,13 +57,7 @@ private:
     void ConstructL();
     
 private: // data
-
-     // Blocked key list
-     RArray<TInt> iBlockedKeysScanCode;
-     
-     // Is touch screen locked there is an incoming call
-     TBool iIsScreenLocked;
-     
+    
      // ETrue, if keylock must enable when call ends
      TBool iNeedToEnableKeylock;
     };

@@ -26,3 +26,4 @@ SUBDIRS += ut_phoneuiqtbuttonscontroller
 SUBDIRS += ut_phoneuiqtviewadapter
 SUBDIRS += ut_phonevisibilityhandler
 SUBDIRS += ut_telephonyservice
+SUBDIRS += ut_phoneindicatorcontroller

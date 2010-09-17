@@ -128,7 +128,6 @@ void CPhoneStateStartup::HandlePEConstructionReadyL( TInt /*aCallId*/ )
             CreateAndShowNoteAfterIdle(); 
             }
         SetDefaultFlagsL();
-        iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
         iStateMachine->ChangeState( EPhoneStateIdle );
         }
     }
@@ -196,7 +195,6 @@ EXPORT_C void CPhoneStateStartup::HandlePhoneStartupL()
             CreateAndShowNoteAfterIdle(); 
             }
         SetDefaultFlagsL();
-        iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
         iStateMachine->ChangeState( EPhoneStateIdle );
         }
     }

@@ -26,7 +26,7 @@ DEFAULT
 PRJ_EXPORTS
 
 // Stub SIS files:
-../group/phoneuistates_stub.sis                 /epoc32/data/z/system/install/phoneuistates_stub.sis
+../rom/phoneuistates_stub.sis                 /epoc32/data/z/system/install/phoneuistates_stub.sis
 
 PRJ_MMPFILES
 phoneuistates.mmp

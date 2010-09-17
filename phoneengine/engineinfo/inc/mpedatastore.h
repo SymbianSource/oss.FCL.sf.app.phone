@@ -765,25 +765,7 @@ NONSHARABLE_CLASS( MPEDataStore )
         * @return None.
         */
         virtual CCCECallParameters& CallParameters() = 0;
-        
-        /**
-        * Sets switch to  number to TPECallCommandInfo-structure
-        * @param aPhoneNumber is the phone number
-        */
-        virtual void SetSwitchToNumberCommand( const TPEPhoneNumber& aPhoneNumber ) = 0;
-        
-        /**
-        * Gets switch to number
-        * @return Reference to TPEPhoneNumber, containing the phone number.
-        */
-        virtual const TPEPhoneNumber& SwitchToNumberCommand() const = 0;
-        
-        /**
-        * Sets switch to operation status.
-        * @param aValue switch to operation status.
-        */
-        virtual void SetIsSwitchToOperationOngoing( const TBool aValue ) = 0;
-        
+                
         /**
          * Sets call index of a call.
          * @param aCallIndex Call index

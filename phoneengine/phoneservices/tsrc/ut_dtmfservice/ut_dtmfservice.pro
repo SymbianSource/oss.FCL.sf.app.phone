@@ -25,17 +25,18 @@ CONFIG += qtestlib
 
 symbian {
 
-    INCLUDEPATH += \epoc32\include\platform \
-                   \epoc32\include\platform\mw \
-                   \epoc32\include\mw \
+    INCLUDEPATH += /epoc32/include/platform \
+                   /epoc32/include/platform/mw \
+                   /epoc32/include/mw \
                    ../../../phoneuiutils/inc \
                    ../../../phoneuicontrol/inc \
                    ../../../phoneuiqtviewadapter/src \
-                   ../../../../inc
+                   ../../../../inc \
+                   ../../../../tsrc/common
 
-    LIBS += -lxqservice \
-            -lxqserviceutil \
-            -lphoneuicontrol
+    LIBS += -lphoneuicontrol \
+            -lsymbianmock \
+            -lmocklib
 
     TARGET.CAPABILITY = ALL -TCB
 }
@@ -44,3 +45,12 @@ symbian {
 HEADERS += ../../inc/dtmfservice.h
 SOURCES += unit_tests.cpp
 SOURCES += ../../src/dtmfservice.cpp
+
+# Mocks
+SOURCES += ../../tsrc/shared/mock_xqrequestinfo.cpp
+HEADERS += /epoc32/include/mw/xqserviceprovider.h
+# make mock_xqserviceprovider.cpp build
+DEFINES += XQ_BUILD_XQSERVICE_LIB DEFINES XQ_BUILD_XQSERVICEUTIL_LIB
+SOURCES += ../../tsrc/shared/mock_xqserviceprovider.cpp
+
+symbian:MMP_RULES += SMPSAFE

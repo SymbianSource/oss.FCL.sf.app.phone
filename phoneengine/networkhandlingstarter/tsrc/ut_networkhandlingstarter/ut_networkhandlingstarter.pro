@@ -49,3 +49,5 @@ SOURCES += ../mocks/mock_networkhandlingstarter_p.cpp \
            ../mocks/mock_tstasksettings.cpp
 
 
+
+symbian:MMP_RULES += SMPSAFE

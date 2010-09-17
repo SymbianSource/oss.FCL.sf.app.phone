@@ -26,6 +26,7 @@ symbian {
     TARGET.UID3 = 0x20029F86
     DEFINES += FT_SYMBIAN_INTEGRATION
     DEFINES += BUILD_PHONEUIQTVIEWADAPTER
+    VERSION = 10.0
     
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     INCLUDEPATH += ../../inc \
@@ -50,9 +51,11 @@ symbian {
         -llockclient \
         -ltelephonyservice \
         -lapgrfx \
-        -lavkon \
         -lws32 \
-        -lcone
+        -lcone \
+        -lengineinfo \
+        -lphonestringloader \
+        -lbafl
         
     defFiles = "$${LITERAL_HASH}ifdef WINS" \
         "DEFFILE bwins/phoneuiqtviewadapter.def" \
@@ -62,13 +65,17 @@ symbian {
     
     MMP_RULES += defFiles
 
-    #qcrml export
+#qcrml export
     BLD_INF_RULES.prj_exports += "./conf/carmode.qcrml  c:/resource/qt/crml/carmode.qcrml "
     crml.sources = ./conf/carmode.qcrml
     crml.path = c:/resource/qt/crml
     DEPLOYMENT += crml
 
+    BLD_INF_RULES.prj_exports += "./rom/phoneuiqtviewadapter_stub.sis /epoc32/data/z/system/install/phoneuiqtviewadapter_stub.sis"
 }
 
 # Input
 include(phoneuiqtviewadapter.pri)
+
+
+symbian:MMP_RULES += SMPSAFE

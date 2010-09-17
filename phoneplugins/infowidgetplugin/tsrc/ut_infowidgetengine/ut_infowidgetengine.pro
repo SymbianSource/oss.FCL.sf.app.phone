@@ -57,3 +57,6 @@ SOURCES += ../mocks/mock_xqsettingsmanager.cpp \
            ../mocks/mock_infowidgetsathandler.cpp \
            ../mocks/mock_rsatservice.cpp 
            
+
+
+symbian:MMP_RULES += SMPSAFE

@@ -42,3 +42,6 @@ symbian {
 HEADERS += phoneresourceadapter.h
 SOURCES += ../../src/stringloader.cpp
 SOURCES += unit_tests.cpp
+
+
+symbian:MMP_RULES += SMPSAFE

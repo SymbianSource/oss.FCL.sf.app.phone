@@ -16,36 +16,39 @@
 #
 
 TEMPLATE = app
-TARGET = 
 TARGET.UID3 = 0xEDA69234
 DEPENDPATH += .
 INCLUDEPATH += .
 CONFIG += hb
 CONFIG += qtestlib
 
-symbian {
-
-    INCLUDEPATH += \epoc32\include\platform\mw \
-                   \epoc32\include\platform \
-                   \epoc32\include\platform\app \
-                   ../../../phoneuiutils/inc/ \
-                   ../../../phoneuiview2/inc \
-                   ../../../../inc \
-                   ../../../phoneui2/srcdata
+INCLUDEPATH += \epoc32\include\platform\mw \
+               \epoc32\include\platform \
+               \epoc32\include\platform\app \
+               ../../../phoneuiutils/inc/ \
+               ../../../phoneuiview2/inc \
+               ../../../../inc \
+               ../../../phoneui2/srcdata \
+               ../../../../tsrc/common
 
    
-    LIBS += -lphoneuiutils \
-            -lxqservice \
-            -lxqserviceutil 
+LIBS += -lphoneuiutils \
+        -lxqservice \
+        -lxqserviceutil \
+        -lmocklib \
+        -lsymbianmock        
 
-    TARGET.CAPABILITY = ALL -TCB
-    DEFINES += FT_SYMBIAN_INTEGRATION
-    DEFINES += BUILD_PHONEUIQTVIEWADAPTER
-}
+TARGET.CAPABILITY = ALL -TCB
+DEFINES += FT_SYMBIAN_INTEGRATION
+DEFINES += BUILD_PHONEUIQTVIEWADAPTER
 
 # Input
 HEADERS += ../../inc/telephonyservice.h
-SOURCES += ../../src/telephonyservice.cpp
 HEADERS += ../../inc/phoneuiqtviewadapter.h
-SOURCES += phoneuiqtviewadapter_stub.cpp
+SOURCES += ../../src/telephonyservice.cpp
+SOURCES += ../../../../tsrc/mocks/phoneuiqtviewadapter/mock_phoneuiqtviewadapter.cpp
 SOURCES += unit_tests.cpp
+
+include(../../../../tsrc/common/phonetest.pri)
+
+symbian:MMP_RULES += SMPSAFE

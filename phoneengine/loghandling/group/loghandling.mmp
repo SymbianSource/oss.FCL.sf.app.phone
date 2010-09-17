@@ -23,6 +23,7 @@ TARGET          loghandling.dll
 TARGETTYPE      dll
 UID             0x10000079 0x1000A830
 VENDORID        VID_DEFAULT
+VERSION         10.0
 
 CAPABILITY      CAP_GENERAL_DLL
 
@@ -63,3 +64,5 @@ BASEADDRESS 0x10040000
 END
 
 #endif // RD_PHONE_NG
+
+SMPSAFE

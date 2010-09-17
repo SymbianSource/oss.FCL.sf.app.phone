@@ -22,12 +22,15 @@
 #include <xqserviceutil.h>
 
 #include "hbphonemainwindow.h"
+#include "phoneapplication.h"
 
 
 int main (int argc, char *argv[])
 {
-    HbApplication app (argc, argv, Hb::NoSplash);
+    PhoneApplication app(argc, argv, Hb::NoSplash);
     HbPhoneMainWindow window;
+    QObject::connect(&app,SIGNAL(focusLost()),&window,SLOT(onFocusLost()));
+    QObject::connect(&app,SIGNAL(focusGained()),&window,SLOT(onFocusGained()));
     XQServiceUtil::toBackground( true );
     return app.exec ();
 }

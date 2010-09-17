@@ -16,12 +16,12 @@
 #
 
 TEMPLATE = app
-TARGET = 
 TARGET.UID3 = 0xE37686c5
 DEPENDPATH += . \
     ../../src
 INCLUDEPATH += . \
-    ../../inc
+    ../../inc \
+    ../../../../tsrc/common
 CONFIG += hb
 CONFIG += qtestlib
 symbian:
@@ -35,3 +35,5 @@ else:win32:DESTDIR = ./
 SOURCES += unit_tests.cpp \
     ../../src/phoneuiqtbuttonscontroller.cpp
 HEADERS += ../../inc/phoneuiqtbuttonscontroller.h
+
+include(../../../../tsrc/common/phonetest.pri)

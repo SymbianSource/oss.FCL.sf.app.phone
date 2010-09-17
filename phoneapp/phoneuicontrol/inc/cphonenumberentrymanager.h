@@ -21,12 +21,10 @@
 
 //INCLUDES
 #include <e32base.h>
-
-#include "cphonestate.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparamkeyevent.h"
 
-class CPhoneCbaManager;
+class CPhoneUiCommandManager;
 class MPhoneViewCommandHandle;
 class MPhoneStateMachine;
 class MPhoneCustomization;
@@ -40,7 +38,6 @@ class CEikonEnv;
  * @since S60 v9.1
  */
 NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
-                                             
     {
     public:
         
@@ -50,7 +47,7 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
         * @param aStateMachine: a state machine
         * @param aViewCommandHandle: Handle to the PhoneUIView.
         * @param aCustomization: Handle to customization.
-        * @param aCbaManager: Handle to cphonecbamanager.
+        * @param aUiCommandManager: Handle to cphoneuicommandmanager.
         * @return CPhoneNumberEntryManager* object  
         */
         static CPhoneNumberEntryManager* NewL(
@@ -58,7 +55,7 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
                     MPhoneViewCommandHandle& aViewCommandHandle,
                     MPhoneStateMachine& aStateMachine,
                     MPhoneCustomization* aCustomization,
-                    CPhoneCbaManager& aCbaManager );
+                    CPhoneUiCommandManager& aUiCommandManager );
         /**
         * Destructor.
         */
@@ -69,7 +66,7 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
         /**
         * Stores the number entry content to the cache
         */
-        void StoreNumberEntryContentL();
+        IMPORT_C void StoreNumberEntryContentL();
         
 
         /**
@@ -77,12 +74,12 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
         * @param None
         * @return boolean value indicating that number entry content is stored
         */
-        TBool IsNumberEntryContentStored();
+        IMPORT_C TBool IsNumberEntryContentStored();
         
         /**
         * Clears the number entry content cache
         */        
-        void ClearNumberEntryContentCache();
+        IMPORT_C void ClearNumberEntryContentCache();
         
         /**
         * Set Number Entry visibility.
@@ -91,53 +88,60 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
         *                 EFalse if numberentry isnt wanted to be shown
         *                 (Note EFalse doesnt affect to CBA's)
         */
-        void SetNumberEntryVisibilityL( TPhoneCmdParamBoolean aVisible );
+        IMPORT_C void SetNumberEntryVisibilityL( TBool aVisible );
         
         /**
         * Check if number entry is used
         * @return boolean value indicating that number entry is used
         */
-        TBool IsNumberEntryUsedL() const;
+        IMPORT_C TBool IsNumberEntryUsedL() const;
         
         /**
         * Check if number entry is visible
         * @return boolean value indicating that number entry is visible
         */
-        TBool IsNumberEntryVisibleL() const;
+        IMPORT_C TBool IsNumberEntryVisibleL() const;
         
         /**
          * Returns phone number from the phone number entry.
          * @return  Phone number
          */
-        HBufC* PhoneNumberFromEntryLC() const;
-        
-        
-        /**
-        * Returns ETrue if alphanumeric characters are supported.
-        * @param aKeyEvent Key event.
-        * @return ETrue if alphanumeric chars are supported.
-        */
-        TBool IsAlphanumericSupportedAndCharInput(
-                const TKeyEvent& aKeyEvent ) const;
-        
-        /**
-        * Handle state-specific behaviour when number entry is cleared
-        */
-        void HandleNumberEntryClearedL();
+        IMPORT_C HBufC* PhoneNumberFromEntryLC() const;
         
         /**
          * Internal number entry handling methods.
          */
-        void NumberEntryClearL() const;
-        
-    private:
+        IMPORT_C void NumberEntryClearL() const;
         
         /**
-        * Checks is given key contains numeric charaters or if customization is used
-        * alphanumeir letters
+         * Returns request status, if return value is true then number
+         * entry visibility was set according to aVisibility if false
+         * then nothing was done.
+         */
+        IMPORT_C TBool SetVisibilityIfNumberEntryUsedL( TBool aVisibility );
+        
+        /**
+         * Request causes number entry removal only if visibility is false.
+         */
+        IMPORT_C void RemoveNumberEntryIfVisibilityIsFalseL();
+        
+        /**
+         * Cache is cleared if there is some content in store.
+         */
+        IMPORT_C void ClearNumberEntryContentCacheIfContentStored();
+        
+        /**
+        * Create call if in numberentry more that 2 number and Send key
+        * Send manual control sequence
+        * if 1-2 number in numberentry and Send key
         */
-        TBool IsValidAlphaNumericKey( const TKeyEvent& aKeyEvent,
-                TEventCode aEventCode );
+        IMPORT_C void CallFromNumberEntryL();
+        
+        /**
+        * Checks whether customized dialer view is active,
+        * @return ETrue if customized dialer is active
+        */
+        IMPORT_C TBool IsCustomizedDialerVisibleL() const;
     
     private:
     
@@ -149,7 +153,7 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
                 MPhoneViewCommandHandle& aViewCommandHandle,
                 MPhoneStateMachine& aStateMachine,
                 MPhoneCustomization* aCustomization,
-                CPhoneCbaManager& aCbaManager );
+                CPhoneUiCommandManager& aUiCommandManager );
         
         /**
         * Symbian constructor
@@ -162,8 +166,7 @@ NONSHARABLE_CLASS( CPhoneNumberEntryManager ) :  public CBase
         MPhoneViewCommandHandle& iViewCommandHandle;
         MPhoneStateMachine& iStateMachine;
         MPhoneCustomization* iCustomization;
-        CPhoneCbaManager& iCbaManager;
-        
+        CPhoneUiCommandManager& iUiCommandManager;
                 
         /**
         * Cache for the number entry content

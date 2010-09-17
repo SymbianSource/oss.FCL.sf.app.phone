@@ -51,3 +51,6 @@ SOURCES += ../../src/phonenotecontroller.cpp
 HEADERS += ../../inc/phoneglobalnotes.h
 SOURCES += ../../src/phoneglobalnotes.cpp
 SOURCES += unit_tests.cpp
+
+
+symbian:MMP_RULES += SMPSAFE

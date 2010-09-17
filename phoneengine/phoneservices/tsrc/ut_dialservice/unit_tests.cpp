@@ -16,15 +16,24 @@
 */
 
 #include <QtTest/QtTest>
-
-//#include <hbglobal_p.h>
 #include <featmgr.h>
 #include <settingsinternalcrkeys.h>
 #include <xqsettingsmanager.h>
+#include <e32capability.h>
+
+#include <csmcmockcontext.h>
+#include <smcdefaultvalue.h>
+#include <msmcmockspecbuilder.h>
+#include <smcobjecttotypemapper.h>
+#include <mockservice.h>
+
 #include "dialservice.h"
+#include "qtestmains60.h"
 
 bool m_featureManagerReturnValue;
 int m_featureManagerRequestedFeatureSupport;
+
+typedef QSet<int> IntegerSet;
 
 TBool FeatureManager::FeatureSupported(TInt aFeature)
 {
@@ -32,7 +41,7 @@ TBool FeatureManager::FeatureSupported(TInt aFeature)
     return m_featureManagerReturnValue;
 }
 
-class TestDialService : public QObject, public MPECallControlIF, public MPECallSettersIF
+class TestDialService : public QObject, public MPECallControlIF, public MPECallSettersIF, public MockService
 {
     Q_OBJECT
 public:
@@ -66,10 +75,8 @@ private slots:
     void testDialVoip2();
     void testDialVoipService();
     void testDialVoipService2();
-//    void testExecuteKeySequence ();
-//    void testPlayDTMFTone ();
-//    void testStopDTMFPlay ();
-
+    void testDialNoCaps();
+    
 private:
     DialService *m_DialService; // class under test
     bool m_setPhoneNumberCalled;
@@ -86,6 +93,7 @@ private:
     bool m_setServiceIdCalled;
     int m_serviceId;
     ushort keyValue;
+    XQRequestInfo m_XQRequestInfoMock;
 };
 
 TestDialService::TestDialService ()
@@ -106,6 +114,13 @@ void TestDialService::cleanupTestCase ()
 
 void TestDialService::init ()
 {
+    initialize();
+    IntegerSet caps;
+    caps.insert(ECapabilityNetworkServices);
+    caps.insert(ECapabilityNetworkControl);
+    SmcDefaultValue<IntegerSet>::SetL(caps);
+    SmcDefaultValue<XQRequestInfo>::SetL(m_XQRequestInfoMock);
+       
     m_setPhoneNumberCalled = false;
     m_setCallTypeCommandCalled = false;
     m_handleDialCallCalled = false;
@@ -123,6 +138,9 @@ void TestDialService::init ()
 
 void TestDialService::cleanup ()
 {
+    SmcDefaultValue<IntegerSet>::Reset();
+    SmcDefaultValue<XQRequestInfo>::Reset();
+    reset();
     delete m_DialService;
 }
 
@@ -173,6 +191,8 @@ TInt TestDialService::HandleDialServiceCall( const TBool aClientCall )
     m_clientCall = aClientCall;
     return KErrNone;
 }
+
+// Test cases
 
 void TestDialService::testDial()
 {
@@ -303,29 +323,39 @@ void TestDialService::testDialVoipService2()
     QVERIFY (m_clientCall == false);
 }
 
-/*
-void TestDialService::testExecuteKeySequence()
-{
-    m_DialService->executeKeySequence(QString("*#0000#"));
-    QString keySequence((QChar*)m_phoneNumber.Ptr(), m_phoneNumber.Length());
-    QVERIFY (m_setPhoneNumberCalled == true);
-    QCOMPARE (keySequence, QString("*#0000#"));
-}
+void TestDialService::testDialNoCaps()
+    {
+    QSet<int> caps;
+    caps.insert(ECapabilityNetworkControl);
+    expect( "XQRequestInfo::clientCapabilities" ).
+        returns(caps).
+        times(4);
+    int ret = m_DialService->dial(QString("0501234567"));
+    QVERIFY (ret == KErrPermissionDenied);
+    ret = m_DialService->dial(QString("0501234567"), 3127);
+    QVERIFY (ret == KErrPermissionDenied);
+    ret = m_DialService->dialVideo(QString("0501234567"));
+    QVERIFY (ret == KErrPermissionDenied);
+    ret = m_DialService->dialVideo(QString("0501234567"), 3127);
+    QVERIFY (ret == KErrPermissionDenied);
 
-void TestDialService::testPlayDTMFTone()
-{
-    QChar six('6');
-    m_DialService->playDTMFTone(six);
-    QVERIFY (m_setKeyCodeCalled == true);
-    QCOMPARE (keyValue, six.unicode());
-    QVERIFY (m_handlePlayDTMFLCalled == true);
-}
+    reset();
+    QSet<int> caps2;
+    caps2.insert(ECapabilityNetworkServices);
+    expect( "XQRequestInfo::clientCapabilities" ).
+        returns(caps2).
+        times(4);
+    ret = m_DialService->dialVoip(QString("0501234567"));
+    QVERIFY (ret == KErrPermissionDenied);
+    ret = m_DialService->dialVoip(QString("0501234567"), 3127);
+    QVERIFY (ret == KErrPermissionDenied);
+    ret = m_DialService->dialVoipService(QString("0501234567"), 3);
+    QVERIFY (ret == KErrPermissionDenied);
+    ret = m_DialService->dialVoipService(QString("0501234567"), 3, 3127);
+    QVERIFY (ret == KErrPermissionDenied);
+    
+    QVERIFY( verify() );
+    }
 
-void TestDialService::testStopDTMFPlay()
-{
-    m_DialService->stopDTMFPlay();
-    QVERIFY (m_handleEndDTMFCalled == true);
-}
-*/
-QTEST_MAIN(TestDialService)
+QTEST_MAIN_S60(TestDialService)
 #include "unit_tests.moc"

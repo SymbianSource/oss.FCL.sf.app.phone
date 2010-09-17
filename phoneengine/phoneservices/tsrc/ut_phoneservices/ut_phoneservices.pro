@@ -47,3 +47,6 @@ HEADERS += ../../inc/dtmfservicedepricated.h
 HEADERS += ../../inc/urischemehandlerservice.h
 SOURCES += ../../src/phoneservices.cpp
 SOURCES += unit_tests.cpp
+
+
+symbian:MMP_RULES += SMPSAFE

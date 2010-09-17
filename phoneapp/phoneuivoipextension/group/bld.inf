@@ -22,7 +22,7 @@ PRJ_PLATFORMS
 DEFAULT
 
 PRJ_EXPORTS
-../group/phoneuivoipextension_stub.sis          /epoc32/data/z/system/install/phoneuivoipextension_stub.sis
+../rom/phoneuivoipextension_stub.sis          /epoc32/data/z/system/install/phoneuivoipextension_stub.sis
 
 PRJ_MMPFILES
 phoneuivoipextension.mmp

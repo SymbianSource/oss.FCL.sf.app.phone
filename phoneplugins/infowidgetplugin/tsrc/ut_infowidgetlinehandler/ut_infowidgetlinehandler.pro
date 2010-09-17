@@ -45,3 +45,6 @@ SOURCES += ../../infowidget/src/infowidgetlinehandler.cpp
 
 # mocks needed for testing
 #SOURCES += ../mocks/mock_networkhandlingproxy.cpp
+
+
+symbian:MMP_RULES += SMPSAFE

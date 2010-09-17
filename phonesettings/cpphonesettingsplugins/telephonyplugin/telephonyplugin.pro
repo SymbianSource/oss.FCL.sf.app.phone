@@ -32,10 +32,10 @@ LIBS += -lcpframework \
 
 
 # Input
-HEADERS += src/cptelephonyplugin.h  \
-			src/cptelephonypluginview.h
+HEADERS += src/cptelephonyplugin.h \
+           src/cptelephonypluginview.h
 SOURCES += src/cptelephonyplugin.cpp \
-		   src/cptelephonypluginview.cpp
+           src/cptelephonypluginview.cpp
 
 include(../cpplugincommon.pri)
 
@@ -44,8 +44,7 @@ symbian: {
         -lxqsettingsmanager
         
     TARGET.UID3 = 0X20029F23
+    VERSION = 10.0
 }
 
-
-
-
+BLD_INF_RULES.prj_exports += "./rom/cptelephonyplugin_stub.sis /epoc32/data/z/system/install/cptelephonyplugin_stub.sis"

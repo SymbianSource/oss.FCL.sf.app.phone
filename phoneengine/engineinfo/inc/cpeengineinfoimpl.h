@@ -49,8 +49,7 @@ NONSHARABLE_STRUCT( TPECallCommandInfo )                  // For Mobile Originat
     TPECallOrigin iCallOrigin;              // Origin of the attempted call (Phone, client or SAT)
     RMobileCall::TMobileCallIdRestriction iIdRestrict; // Call Id restriction setting to be used for this call
     TPEPhoneNumber iEmergencyNumber;        // For checking is this number emergency number.
-    TPEUserToUserInfo iUserToUserInfo;      // User to user information.
-    TPEPhoneNumber iSwitchToNumber;         // Dialed Phonenumber, set by client
+    TPEUserToUserInfo iUserToUserInfo;      // User to user information.    
     TPEPhoneNumber iTransferToAddress;      // Unattended transfer target address   
     TInt iForwardToAddressIndex;            // Array index for a address to be forwarded
     };
@@ -86,8 +85,7 @@ NONSHARABLE_STRUCT( TPEBasicInfo )                         // Contains informati
     TPESimState iSimState;
     TPESSCommandInfo iSSCommandInfo;        // Contains information of the Suplementary Services command.
     TBool iSecureSpecified;                 // Secure specified status
-    TName iDataPortName;                    // the name of data port currently on-loan
-    TBool iSwitchToOngoing;                 // Switch to operation status
+    TName iDataPortName;                    // the name of data port currently on-loan    
     TBool iOutgoingBarringActivated;        // Outgoing barring activated 
     };
 
@@ -512,18 +510,7 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          */
          TInt ErrorCode() const;
          
-         /**
-         * Sets switch to  number to TPECallCommandInfo-structure
-         * @param aPhoneNumber is the phone number
-         */
-         void SetSwitchToNumberCommand( const TPEPhoneNumber& aPhoneNumber );
-         
-         /**
-         * Gets switch to number
-         * @return Reference to TPEPhoneNumber, containing the phone number.
-         */
-         const TPEPhoneNumber& SwitchToNumberCommand() const;
-         
+                  
          /**
           * Returns transfer target from the last received unattended transfer 
           * request or KNullDesC if transfer target is not available.
@@ -585,17 +572,7 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
          * address.
          */
          const TPEPhoneNumber& TransferTargetCommand() const;
-         
-         /**
-         * Sets switch to operation status.
-         * @param aValue switch to operation status.
-         */
-         void SetIsSwitchToOperationOngoing( const TBool aValue );
-         
-         /**
-         * Returns switch to operation status.
-         */
-         TBool IsSwitchToOperationOngoing() const;         
+                 
          
          /**
           * From base class MPEEngineInfo
@@ -1547,7 +1524,18 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         */
         void SetOutgoingCallBarringActivated( 
                 TBool aActivated );
-          
+        
+        /**
+        * Sets incoming call forwarded flag.
+        * @param aForwarded is call forwarded
+        */
+        void SetIncomingCallForwarded( TBool aForwarded, TInt aCallId );
+
+        /**
+         * Returns incoming call forwarded flag.
+         */
+        TBool IncomingCallForwarded( TInt aCallId ) const;
+        
     private:
           /**
         * C++ default constructor.

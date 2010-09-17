@@ -39,12 +39,6 @@ class MPhoneLockInfo
         * @return is autolock set on (ETrue) or off (EFalse)
         */
         virtual TBool IsAutoLockOn() const = 0;
-
-        /**
-        * Fetches keylock information - is it set on or not
-        * @return is keylock set on (ETrue) or off (EFalse)
-        */
-        virtual TBool IsKeyLockOn() const = 0;
         
     };
 

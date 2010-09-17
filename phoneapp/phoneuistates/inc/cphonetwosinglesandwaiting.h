@@ -53,10 +53,6 @@ class CPhoneTwoSinglesAndWaiting : public CPhoneTwoSingles
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
 
-        virtual void HandleKeyEventL( 
-            const TKeyEvent& aKeyEvent,
-            TEventCode aEventCode );
-        
         /**
         * A message handling function for Phone Engine messages
         * @param aMessage Message from Phone Engine
@@ -96,8 +92,6 @@ class CPhoneTwoSinglesAndWaiting : public CPhoneTwoSingles
         virtual void ConstructL();
         
         virtual void HandleConnectedConferenceL( TInt aCallId );
-        
-        virtual void UpdateInCallCbaL();
         
      private:
 

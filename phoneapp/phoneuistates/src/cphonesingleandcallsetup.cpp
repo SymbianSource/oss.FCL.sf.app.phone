@@ -133,10 +133,10 @@ void CPhoneSingleAndCallSetup::HandleKeyMessageL(
         {
         // send-key
         case EKeyYes:
-            if ( CPhoneState::IsNumberEntryUsedL() )
+            if ( iNumberEntryManager->IsNumberEntryUsedL() )
                 {
                 // send a manual control sequence
-                CPhoneState::CallFromNumberEntryL();    
+                iNumberEntryManager->CallFromNumberEntryL();
                 }
             else
                 {
@@ -216,28 +216,13 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
 
-    // Remove the number entry if it isn't DTMF dialer
-    if ( !IsNumberEntryVisibleL() )
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-        }
+    iNumberEntryManager->RemoveNumberEntryIfVisibilityIsFalseL();
 
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-    callHeaderParam.SetCallState( EPEStateConnecting );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
-        &callHeaderParam );
-
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
+    UpdateUiCommands();
     EndUiUpdate();
-        
-    // Set Hold flag to view EFalse that dtmf menu item not delete
-    TPhoneCmdParamBoolean holdFlag;
-    holdFlag.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-
-    SetTouchPaneButtons( EPhoneCallSetupAndSingleButtons );
     
     // Go to alerting state
-    UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateAlertingInSingle );
     }
 
@@ -253,28 +238,19 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
     BeginUiUpdateLC();
     
     // Show bubble
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-    callHeaderParam.SetCallState( EPEStateConnected );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
-        &callHeaderParam );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
     
     // Remove the number entry if it isn't DTMF dialer
-    if ( !IsNumberEntryVisibleL() )
+    if ( !iNumberEntryManager->IsNumberEntryVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
     
-    // Set Hold flag to view
-    TPhoneCmdParamBoolean holdFlag;
-    holdFlag.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-
-    SetTouchPaneButtons( EPhoneTwoSinglesButtons );
+    UpdateUiCommands();
     
     EndUiUpdate();        
     
      // Go to two singles state
-    UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
     iStateMachine->ChangeState( EPhoneStateTwoSingles );
     
     }
@@ -299,33 +275,19 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
         
     if( activeCallCount.Integer() )
         {
-        if ( IsNumberEntryUsedL() )
-            {
-            // Show the number entry if it exists
-            SetNumberEntryVisibilityL(ETrue);
-            }
-        else
-            {
-            // Set incall CBAs
-            UpdateCbaL( EPhoneCallHandlingInCallCBA );    
-            }
-            
-        SetTouchPaneButtons( EPhoneIncallButtons );    
+        iNumberEntryManager->SetVisibilityIfNumberEntryUsedL(ETrue);
+        UpdateUiCommands();
         iStateMachine->ChangeState( EPhoneStateSingle ); 
         }
     else
         {
-        // Display call termination note, if necessary
         DisplayCallTerminationNoteL();
 
         // Single call was terminated
-        SetTouchPaneButtons( EPhoneCallSetupButtons );
+        UpdateUiCommands();
         SetToolbarButtonLoudspeakerEnabled();
-        // Update call setup CBAs
-        UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
         iStateMachine->ChangeState( EPhoneStateCallSetup );
         }
-        
     EndUiUpdate();
     }
 

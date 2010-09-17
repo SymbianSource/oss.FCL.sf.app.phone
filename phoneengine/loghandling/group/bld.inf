@@ -27,7 +27,7 @@ PRJ_EXPORTS
 ../inc/mpeloghandling.h              |../../inc/mpeloghandling.h
 
 // SIS stubs
-../data/loghandling_stub.sis        /epoc32/data/z/system/install/loghandling_stub.sis
+../rom/loghandling_stub.sis        /epoc32/data/z/system/install/loghandling_stub.sis
 
 PRJ_MMPFILES
 loghandling.mmp

@@ -25,6 +25,8 @@ CAPABILITY CAP_GENERAL_DLL
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
 
+VERSION 10.0
+
 TARGET          phoneuiutils.dll
 TARGETTYPE      dll
 UID             0x1000008d 0x101F4D0F
@@ -101,3 +103,6 @@ LIBRARY         ws32.lib
 LIBRARY         efsrv.lib
 #endif
 LIBRARY         charconv.lib
+
+
+SMPSAFE

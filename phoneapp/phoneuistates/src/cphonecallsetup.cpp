@@ -160,14 +160,11 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommand( EPhoneViewHsToForegroundAfterCall,
         &booleanParam );
     
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-    callHeaderParam.SetCallState( EPEStateConnecting );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
-        &callHeaderParam );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId);
 
     SetToolbarButtonLoudspeakerEnabled();
+    UpdateUiCommands();
     EndUiUpdate();
-    UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateAlerting );
     }
 

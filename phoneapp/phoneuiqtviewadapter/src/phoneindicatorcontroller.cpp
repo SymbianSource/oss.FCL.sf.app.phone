@@ -69,6 +69,10 @@ PhoneIndicatorController::PhoneIndicatorController(
                 this, SLOT(updateDivertIndicator(XQSettingsKey, 
                         QVariant)));
     
+    fetchMissedCalls(
+            m_setManager->readItemValue(
+                    PhoneIndicatorControllerKeys::missedCallsSettingsKey).toInt());
+    
     m_setManager->startMonitoring( PhoneIndicatorControllerKeys::missedCallsSettingsKey );
     m_setManager->startMonitoring( PhoneIndicatorControllerKeys::unconditionalCFKey, 
             XQSettingsManager::TypeByteArray);
@@ -84,7 +88,6 @@ PhoneIndicatorController::PhoneIndicatorController(
         updateDiverIndicator(cfStatus & KCFVoiceForwarded);
     }
 #endif
-    
     connect(&m_indicator,SIGNAL(userActivated(QString,QVariantMap)),
             this,SLOT(handleInteraction(QString,QVariantMap)));
 }
@@ -104,12 +107,14 @@ PhoneIndicatorController::~PhoneIndicatorController()
 
 void PhoneIndicatorController::setActiveCallData()
 {
+    PHONE_TRACE
     m_cli = hbTrId("txt_phone_dblist_ongoing_call");
-    m_callImage = "qtg_mono_call";//QString::fromUtf16 (icon.Ptr (), icon.Length ());
+    m_callImage = "qtg_mono_call";
 }
 
 void PhoneIndicatorController::clearActiveCallData()
 {
+    PHONE_TRACE
     m_cli.clear();
     m_callImage.clear();
     disableActiveCallIndicator();
@@ -117,6 +122,7 @@ void PhoneIndicatorController::clearActiveCallData()
 
 void PhoneIndicatorController::enableActiveCallIndicator()
 {
+    PHONE_TRACE
     if (!m_cli.isEmpty()){
         QString indicatorType(indicatorName(PhoneActiveCallIndicator));
         QVariantMap parameters;
@@ -133,6 +139,7 @@ void PhoneIndicatorController::enableActiveCallIndicator()
 }
 void PhoneIndicatorController::disableActiveCallIndicator()
 {
+    PHONE_TRACE
     QString indicatorType(indicatorName(PhoneActiveCallIndicator));
     m_indicator.deactivate(indicatorType);
 }
@@ -141,29 +148,17 @@ void PhoneIndicatorController::updateMissedCallIndicator(
         const XQSettingsKey &key, const QVariant &value)
 { 
 #ifdef Q_OS_SYMBIAN
-
+    PHONE_TRACE
     if (compareKeys(key, PhoneIndicatorControllerKeys::missedCallsSettingsKey) ){
-        if ( value.toInt() == 0 ){
-            QString indicatorType(indicatorName(PhoneMissedCallIndicator));
-            m_indicator.deactivate(indicatorType);
-            delete m_missedCallsFilter;
-            m_missedCallsFilter = NULL;
-            delete m_logsModel;
-            m_logsModel = NULL;
-        } else {
-            if(!m_logsModel){
-                m_logsModel = new LogsModel(LogsModel::LogsFullModel);
-            }
-            if(!m_missedCallsFilter){
-                m_missedCallsFilter = new LogsFilter(LogsFilter::Missed);
-                connect( m_missedCallsFilter, 
-                    SIGNAL(rowsInserted(const QModelIndex &, int, int )),
-                        this, SLOT(setMissedallIndicatorData()));
-                m_missedCallsFilter->setSourceModel(m_logsModel);
-            }
-            m_missedCallsFilter->setMaxSize(value.toInt() + 1);            
-        }
-    }
+        QString indicatorType(indicatorName(PhoneMissedCallIndicator));
+        m_indicator.deactivate(indicatorType);
+        // deleting null pointer has no effect.
+        delete m_missedCallsFilter;
+        m_missedCallsFilter = NULL;
+        delete m_logsModel;
+        m_logsModel = NULL;
+        fetchMissedCalls(value.toInt());
+    }   
 #endif  
 }
 
@@ -188,7 +183,7 @@ void PhoneIndicatorController::updateDivertIndicator(
 void PhoneIndicatorController::setMissedallIndicatorData()
 {
 #ifdef Q_OS_SYMBIAN
-
+    PHONE_TRACE
     QString indicatorType(indicatorName(PhoneMissedCallIndicator));
     
     int missedCallCount = m_setManager->readItemValue( 
@@ -225,10 +220,7 @@ void PhoneIndicatorController::setMissedallIndicatorData()
                     iconName );
         }
         m_indicator.activate(indicatorType, parameters);
-    } else {
-        m_indicator.deactivate( indicatorType );
     }
-   
 #endif
 }
 
@@ -283,7 +275,7 @@ void PhoneIndicatorController::handleInteraction(QString /*type*/,QVariantMap da
                 service = "logs";
                 interface = XQI_LOGS_VIEW;
                 operation = XQOP_LOGS_SHOW;
-                map.insert(XQLOGS_VIEW_INDEX , QVariant((int)XQService::LogsViewAll));
+                map.insert(XQLOGS_VIEW_INDEX , QVariant((int)XQService::LogsViewMissed));
                 map.insert(XQLOGS_SHOW_DIALPAD, QVariant(false));
                 map.insert(XQLOGS_DIALPAD_TEXT, QVariant(QString()));
                 args.append(QVariant(map));
@@ -311,7 +303,25 @@ void PhoneIndicatorController::handleInteraction(QString /*type*/,QVariantMap da
             return;       
         }   
         m_request->setArguments(args);
-        m_request->send();    
-        
+        m_request->send();
+    }
+}
+
+void PhoneIndicatorController::fetchMissedCalls(int count)
+{
+    PHONE_TRACE1(count)
+    
+    if(count > 0 ){
+        if(!m_logsModel){
+            m_logsModel = new LogsModel(LogsModel::LogsFullModel);
+        }
+        if(!m_missedCallsFilter){
+            m_missedCallsFilter = new LogsFilter(LogsFilter::Missed);
+            connect( m_missedCallsFilter, 
+                SIGNAL(rowsInserted(const QModelIndex &, int, int )),
+                    this, SLOT(setMissedallIndicatorData()));
+            m_missedCallsFilter->setSourceModel(m_logsModel);
+        }
+        m_missedCallsFilter->setMaxSize(count + 1);
     }
 }

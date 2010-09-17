@@ -21,6 +21,7 @@
 
 #include <data_caging_paths_for_iby.hrh>
 
-file=ABI_DIR/BUILD_DIR/bubblemanager2.dll       SHARED_LIB_DIR/bubblemanager2.dll
+file=ABI_DIR/BUILD_DIR/bubblemanager2.dll   SHARED_LIB_DIR/bubblemanager2.dll
+data=ZSYSTEM\install\bubblecore_stub.sis    System\Install\bubblecore_stub.sis
 
 #endif // __BUBBLEMANAGER_IBY__

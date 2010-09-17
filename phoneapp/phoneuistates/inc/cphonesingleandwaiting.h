@@ -61,8 +61,8 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
         /**
         * Handles user selected UI commands.
         * @param aCommand - selected command
-        */    
-        TBool HandleCommandL( TInt aCommand );  
+        */
+        TBool HandleCommandL( TInt aCommand );
             
     protected:
 
@@ -96,16 +96,6 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
 
-        virtual void HandleKeyEventL( 
-            const TKeyEvent& aKeyEvent,
-            TEventCode aEventCode );
-        
-        /**
-        * Sets correct in call CBAs.
-        */
-        virtual void UpdateInCallCbaL();
-        
-            
      private:
      
         /**
@@ -142,13 +132,7 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
         * Handles received dialing message from Phone Engine.
         * @param aCallId - call id that received the event
         */ 
-        void HandleDiallingL( TInt aCallId );
-        
-        /**
-        * Sets up all call setup to display.
-        * @param aCallId - call id to set up
-        */ 
-        void DisplayCallSetupL( TInt aCallId );
+        void HandleDialingL( TInt aCallId );
         
         /**
         *  Handles received EPEMessageDisconnecting message from Phone Engine.
@@ -160,6 +144,11 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
         *  Handles received EPhoneCmdUpdateUiControls command.
         */
         void UpdateUiControlsL();
+        
+        /**
+         * Updates call bubble and ui commands
+         */
+        void UpdateBubbleAndUICommandsL( TInt aCallId );
         
     private: //Data
             

@@ -33,3 +33,6 @@ SOURCES += ut_bubblepartlistmodel.cpp \
            ../../../bubblecore/src/bubbleparticipantlistmodel.cpp
 
 
+
+
+symbian:MMP_RULES += SMPSAFE

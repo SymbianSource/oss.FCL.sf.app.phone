@@ -23,7 +23,7 @@ PRJ_PLATFORMS
 DEFAULT
 
 PRJ_EXPORTS
-../group/phonemediatorcenter_stub.sis          /epoc32/data/z/system/install/phonemediatorcenter_stub.sis
+../rom/phonemediatorcenter_stub.sis          /epoc32/data/z/system/install/phonemediatorcenter_stub.sis
 
 PRJ_MMPFILES
 phonemediatorcenter.mmp

@@ -23,6 +23,8 @@ CAPABILITY ALL -TCB
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
 
+VERSION 10.0
+
 TARGET          phoneringingtoneplayer.dll
 TARGETTYPE      dll
 UID             0x1000008d 0x2002134E
@@ -70,3 +72,6 @@ LIBRARY         mediatorclient.lib
 LIBRARY         audiooutputrouting.lib  // Ringingtone output
 LIBRARY         platformenv.lib         // PathInfo
 LIBRARY         cone.lib
+
+
+SMPSAFE

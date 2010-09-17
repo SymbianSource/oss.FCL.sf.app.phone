@@ -53,3 +53,6 @@ symbian {
     
     LIBS += -lmocklib -lsymbianmock# -lxqservice
 }
+
+
+symbian:MMP_RULES += SMPSAFE

@@ -29,3 +29,12 @@ HbPhoneMainWindow::~HbPhoneMainWindow ()
     delete mHouseHold;
 }
 
+void HbPhoneMainWindow::onFocusLost()
+{
+    emit focusLost();
+}
+void HbPhoneMainWindow::onFocusGained()
+{
+    emit focusGained();
+}
+

@@ -38,41 +38,9 @@ class MPhoneSystemEventHandler
         virtual ~MPhoneSystemEventHandler(){};
 
         /**
-        * From CEikAppUi. For Idle indicator
-        */
-        virtual void HandleSystemEventL( const TWsEvent& aEvent ) = 0;
-
-        /**
-        * From CAknAppUi, indicates when app ui is on the foreground.
-        * @param aForeground It is true if app is on the foreground.
-        */
-        virtual void HandleForegroundEventL( TBool aForeground ) = 0;
-
-        /**
-        * Indicates when the Phone app is in the foreground.
-        */
-        virtual void HandlePhoneForegroundEventL() = 0;
-
-        /**
-        * Indicates when the Idle app is in the foreground.
-        */
-        virtual void HandleIdleForegroundEventL() = 0;
-
-        /**
-        * Indicates when the Phone app is is losing focus.
-        */
-        virtual void HandlePhoneFocusLostEventL() = 0;
-
-        /**
         * Handles startup of the phone application 
         */
         virtual void HandlePhoneStartupL() = 0;
-
-        /**
-        * Indicates when the keylock events
-        */
-        virtual void HandleKeyLockEnabled( TBool aKeylockEnabled ) = 0;
-        
     };
 
 #endif      // __MPHONESYSTEMEVENTHANDLER_H   

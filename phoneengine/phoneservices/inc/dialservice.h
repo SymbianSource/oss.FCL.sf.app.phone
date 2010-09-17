@@ -16,7 +16,7 @@
 *
 *            Example usage:
 *            QString service("phoneui");
-*            QString interface(""com.nokia.symbian.ICallDial");
+*            QString interface("com.nokia.symbian.ICallDial");
 *            QString operation("dial(QString)"); // choose appropriate operation
 *            XQApplicationManager appManager;
 *            QScopedPointer<XQAiwRequest> request(appManager.create(service, interface, operation, false));
@@ -31,8 +31,6 @@
 *            if (request->send(retValue)) {
 *               //error
 *            }
-*
-*            Note:
 *            
 */
 

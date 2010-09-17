@@ -25,6 +25,8 @@ TARGET.CAPABILITY = ALL -TCB
 TARGET.UID3 = 0x10005998
 TARGET.VID = VID_DEFAULT
 
+VERSION = 10.0
+
 INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 INCLUDEPATH += ../../inc 
                    
@@ -75,10 +77,7 @@ BLD_INF_RULES.prj_exports += \
  "./rom/phonecntfinder.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(phonecntfinder.iby)"
  
 BLD_INF_RULES.prj_exports += \
- "./data/phonecntfinder_stub.sis /epoc32/data/z/system/install/phonecntfinder_stub.sis"
+ "./rom/phonecntfinder_stub.sis /epoc32/data/z/system/install/phonecntfinder_stub.sis"
 
 
-
-    
-
-
+symbian:MMP_RULES += SMPSAFE

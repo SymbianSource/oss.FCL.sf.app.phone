@@ -18,8 +18,6 @@
 
 // INCLUDE FILES
 #include    "cphonekeys.h"
-#include    <aknkeys.h>
-#include    <AknUtils.h>
 #include    "phonelogger.h"
 
 // CONSTANTS
@@ -38,8 +36,7 @@ EXPORT_C TBool CPhoneKeys::IsNumberKey(
     // Convert key code to western.
     TBuf<1> buffer; // one character
     buffer.Append( aKeyEvent.iCode );
-    AknTextUtils::ConvertDigitsTo( buffer, EDigitTypeWestern );
-
+   
     TBool result = EFalse;
 
     switch ( buffer[ 0 ] ) // first char

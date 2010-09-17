@@ -28,6 +28,8 @@ symbian: {
     TARGET.CAPABILITY = CAP_APPLICATION
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.UID3 = 0x2002E67A
+    VERSION = 10.0
+    
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     LIBS += -lnetworkhandling
     LIBS += -lxqservice
@@ -39,7 +41,8 @@ symbian: {
 
     BLD_INF_RULES.prj_exports +=  \
      "./rom/networkhandlingstarter.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(networkhandlingstarter.iby)"
-     
+    BLD_INF_RULES.prj_exports +=  \
+    "./rom/networkhandlingstarter_stub.sis    /epoc32/data/z/system/install/networkhandlingstarter_stub.sis"
     RSS_RULES += "hidden = KAppIsHidden;"
 }
 
@@ -55,3 +58,6 @@ SOURCES += ./src/cnetworklistener.cpp
 CONFIG += service
 SERVICE.FILE = service_conf.xml
 SERVICE.OPTIONS = embeddable
+
+
+symbian:MMP_RULES += SMPSAFE

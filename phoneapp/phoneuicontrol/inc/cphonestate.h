@@ -22,27 +22,19 @@
 
 // INCLUDES
 #include <w32std.h>
+#include <eikenv.h>
 #include <remconcoreapitargetobserver.h>
 #include <MProfileEngine.h>
 #include "mphonestate.h"
 #include "mphoneviewcommandhandle.h"
-#include "cphonecbamanager.h"
+#include "cphoneuicommandmanager.h"
+#include "cphonenumberentrymanager.h"
 
 // FORWARD DECLARATIONS
 class MPhoneState;
 class MPhoneStateMachine;
-class CPhoneCallHeaderManager;
 class TPhoneCmdParamCallHeaderData;
 class MPhoneCustomization;
-class CPhoneNumberEntryManager;
-
-enum TStateTransEffectType
-    {
-    ENoneType,
-    ENumberEntryOpen,
-    ENumberEntryClose,
-    ENumberEntryCreate
-    };
 
 // CLASS DECLARATION
 
@@ -55,7 +47,12 @@ class CPhoneState :
     public MPhoneState
     {
     public:
-
+        
+        enum TNumberEntrySetRule
+            {
+            ESetNEVisibilityFalse,
+            ECheckIfNEUsedBeforeSettingVisibilityFalse
+            };
         /**
         * Constructor
         */
@@ -65,7 +62,7 @@ class CPhoneState :
             MPhoneCustomization* aCustomization);
 
         /**
-        * Creates CbaManager instance.
+        * Creates UiCommandManager instance.
         */
         IMPORT_C void BaseConstructL();
 
@@ -111,38 +108,6 @@ class CPhoneState :
             TEventCode aEventCode );
 
         /**
-        * From CEikAppUi. For Idle indicator
-        */
-        IMPORT_C virtual void HandleSystemEventL(
-            const TWsEvent& aEvent );
-
-        /**
-        * From CAknAppUi, indicates when app ui is on the foreground.
-        * @param aForeground It is true if app is on the foreground.
-        */
-        IMPORT_C virtual void HandleForegroundEventL( TBool aForeground );
-
-        /**
-        * Indicates when the Phone app is in the foreground.
-        */
-        IMPORT_C virtual void HandlePhoneForegroundEventL();
-
-        /**
-        * Indicates when the Phone app is losing focus.
-        */
-        IMPORT_C virtual void HandlePhoneFocusLostEventL();
-
-        /**
-        * Indicates when the Idle app is in the foreground.
-        */
-        IMPORT_C virtual void HandleIdleForegroundEventL();
-
-        /**
-        * Indicates when the keylock events
-        */
-        IMPORT_C virtual void HandleKeyLockEnabled( TBool aKeylockEnabled );
-
-        /**
         * Handles startup of the phone application
         */
         IMPORT_C virtual void HandlePhoneStartupL();
@@ -157,15 +122,6 @@ class CPhoneState :
             const TUid& aCategory,
             const TUint aKey,
             const TInt aValue );
-
-        /**
-        * Handle the change of the setting from Central Repository
-        * @param aUid identifing the central repository UID.
-        * @param aId central repository ID.
-        */
-        IMPORT_C virtual void HandleCenRepChangeL(
-            const TUid& aUid,
-            const TUint aId );
 
         /**
         * Handles commands.
@@ -194,21 +150,6 @@ class CPhoneState :
             TRemConCoreApiButtonAction aButtonAct);
 
         /**
-        * Setter for divert indication showing in bubble.
-        * @param aDivertIndication ETrue to show divert indication,
-        *          EFalse to not. Usually setting EFalse isn't necessary
-        *         as it's a default value in bubble creation.
-        */
-        IMPORT_C virtual void SetDivertIndication(
-            const TBool aDivertIndication );
-
-        /**
-        * Checks whether customized dialer view is active,
-        * @return ETrue if customized dialer is active
-        */
-        IMPORT_C TBool IsCustomizedDialerVisibleL() const;
-
-        /**
          * Plays DTMF tone for key event
          * */
         IMPORT_C void HandleDtmfKeyToneL( const TKeyEvent& aKeyEvent,
@@ -233,42 +174,6 @@ class CPhoneState :
                 TBool aNotificationDialog = EFalse );
 
         /**
-         * Get blocked key list
-         * @returns RArray<TInt>& lsit of blocked keys 
-         */
-        IMPORT_C const RArray<TInt>& GetBlockedKeyList() const;
-
-        /**
-         * Disable HW Keys if needed
-         */
-        IMPORT_C void DisableHWKeysL();
-
-        /**
-         * Disable Call UI
-         */
-        IMPORT_C void DisableCallUIL();
-
-        /**
-         * Enable Call UI
-         */
-        IMPORT_C void EnableCallUIL();
-
-        /**
-         * Disable HW Keys and Call UI if needed
-         */
-        IMPORT_C void CheckDisableHWKeysAndCallUIL();
-
-        /**
-         * Handle hold switch key event when there is an incoming or waiting call
-         */
-        IMPORT_C void HandleHoldSwitchL();
-        
-        /**
-         * Enable HW Keys and Call UI if needed
-         */
-        IMPORT_C void CheckEnableHWKeysAndCallUIL();
-        
-        /**
         * Fetches autolock information - is it set on or not
         * @return is autolock set on (ETrue) or off (EFalse)
         */
@@ -279,43 +184,46 @@ class CPhoneState :
         * @return ETrue if is sim ok, otherwise EFalse
         **/
         IMPORT_C TBool IsSimOk();
-
-        /**
-        * Checks Svivel state.
-        * @return ETrue if swivel is closed.
-        */
-        IMPORT_C TBool IsSwivelClosed() const;
-
-        /**
-        * Check if note, query or blockingDialog is visible
-        * @return boolean value indicating that note, query or
-        * blocking dialog is visible
-        */
-        IMPORT_C TBool IsAnyQueryActiveL();
-
-        /*
-        * If KFeatureIdFfSimlessOfflineSupport is undefined and
-        * UI shows note which will be closed by key event then
-        * method return ETrue otherwise EFalse.
-        */
-        TBool IsNoteDismissableL();
-
-        IMPORT_C void RetainPreviousKeylockStateL();
-        
-    public: // NumberEntry functions.
-
-        /**
-        * Check if number entry is used
-        * @return boolean value indicating that number entry is used
-        */
-        IMPORT_C virtual TBool IsNumberEntryUsedL();
-
-        /**
-        * Check if number entry is visible
-        * @return boolean value indicating that number entry is visible
-        */
-        IMPORT_C TBool IsNumberEntryVisibleL();
-
+          
+         /**
+         * Getter for CEikonEnv to avoid use of static system calls
+         * @return CEikonEnv handle
+         */
+         IMPORT_C CEikonEnv* EikonEnv() const;
+         
+         /**
+         * Setter for CEikonEnv to avoid use of static system calls
+         * @param CEikonEnv handle
+         */
+         IMPORT_C virtual void SetEikonEnv( CEikonEnv* aEnv );
+         
+         /**
+         * Dial CS voice call
+         */
+         IMPORT_C void DialVoiceCallL();
+         
+         /**
+         * Checks whether customized dialer view is active,
+         * @return ETrue if customized dialer is active
+         */
+         IMPORT_C TBool IsCustomizedDialerVisibleL() const;
+         
+         /**
+         * Handle state-specific behaviour when number entry is cleared
+         */
+         IMPORT_C virtual void HandleNumberEntryClearedL();
+         
+         /**
+         * Sets up call header.(removes phone dialogs, 
+         * sets dialer visibility according to aRule value and puts 
+         * phone on top of everything). Orders UiCommand manager to
+         * update CBS's etc.
+         * @param aCallId - call id to set up
+         * @param aRule - Number Entry visibility set option.
+         */ 
+          IMPORT_C void DisplayCallHeaderL( 
+                  TInt aCallId,
+                  TNumberEntrySetRule aRule );
     protected:
 
         /**
@@ -344,55 +252,16 @@ class CPhoneState :
         IMPORT_C void DialMultimediaCallL();
 
         /**
-        * Dial CS voice call
-        */
-        IMPORT_C void DialVoiceCallL();
-
-        /**
         * Disconnect call
         */
         IMPORT_C TBool DisconnectCallL();
-
-        /**
-        * Display idle screen
-        */
-        IMPORT_C void DisplayIdleScreenL();
 
         /**
         * Set up the Idle screen in the background for the cases
         * where the phone is no longer the top application (eg. end
         * call when an external app is being displayed)
         */
-        IMPORT_C void SetupIdleScreenInBackgroundL();
-
-        /**
-        * Display call header for call coming in ( the remote info data
-        * and picture is displayed immediately )
-        * @param aCallid call id
-        * @param aWaitingCall waiting call indication
-        */
-        IMPORT_C void DisplayHeaderForCallComingInL(
-            TInt aCallId,
-            TInt aWaitingCall );
-
-        /**
-        * Sets call header texts for call coming in
-        * @param aCallid call id
-        * @param aWaitingCall waiting call indication
-        * @param aCallHeaderData - Call header parameter into which the text
-        *                          will be set.
-        */
-        IMPORT_C void SetCallHeaderTextsForCallComingInL(
-            TInt aCallId,
-            TBool aWaitingCall,
-            TPhoneCmdParamCallHeaderData* aCallHeaderData );
-
-        /**
-        * Display call header for outgoing call (the phone number is initially
-        * displayed)
-        * @param aCallid call id
-        */
-        IMPORT_C void DisplayHeaderForOutgoingCallL( TInt aCallId );
+        IMPORT_C void RemoveDialogsAndSendPhoneToBackgroundL();
 
         /**
         * Update Single Active Call
@@ -405,13 +274,6 @@ class CPhoneState :
         * @param aCallid call id
         */
         IMPORT_C void UpdateRemoteInfoDataL( TInt aCallId );
-
-        /**
-        * Return remote info data
-        * @param aCallid call id
-        * @param aData the returned remote info data
-        */
-        IMPORT_C void GetRemoteInfoDataL( TInt aCallId, TDes& aData );
 
         /**
         * Show note
@@ -439,19 +301,6 @@ class CPhoneState :
             TInt aContentCbaResourceId,
             TDes* aDataText,
             TBool aSendKeyEnabled = EFalse );
-        
-        /**
-        * Check if the application needs to be sent to the background
-        * @return boolean value indicating that application needs to be
-        *  sent to the background
-        */
-        IMPORT_C TBool NeedToSendToBackgroundL() const;
-
-        /**
-        * Check if the top application is currently displayed in the foreground
-        * @return boolean value indicating that top app is displayed
-        */
-        IMPORT_C TBool TopAppIsDisplayedL() const;
 
         /**
         * Displays the call termination note, if required
@@ -517,23 +366,6 @@ class CPhoneState :
         IMPORT_C void ShowNumberBusyNoteL();
 
         /**
-        * Fetches keylock information - is it set on or not
-        * @return is keylock set on (ETrue) or off (EFalse)
-        */
-        IMPORT_C TBool IsKeyLockOn() const;
-
-        /**
-        * Informs Phone Engine Sat request completion
-        * @param aCallId a call id
-        */
-        IMPORT_C void CompleteSatRequestL( const TInt aCallId );
-
-        /**
-        * Sets the call header type used in the call bubble.
-        */
-        IMPORT_C void SetCallHeaderType( TInt aCallHeaderType );
-
-        /**
         * Informs view that UI is being updated (call bubble or number editor).
         * EndUiUpdate() must be called when update is done.
         */
@@ -553,13 +385,6 @@ class CPhoneState :
         IMPORT_C virtual TBool CheckIfShowCallTerminationNote( );
 
         /*
-        * Sets used touchpane buttons.
-        *
-        * @param touchpane resource id.
-        */
-        IMPORT_C void SetTouchPaneButtons( TInt aResourceId );
-
-        /*
         * Destroys touchpane buttons.
         */
         IMPORT_C void DeleteTouchPaneButtons();
@@ -569,12 +394,6 @@ class CPhoneState :
         * No active call
         */
         IMPORT_C void SetDefaultFlagsL();
-
-        /**
-        * Check if contact info available and
-        * shown waiting note with or without caller name
-        */
-        IMPORT_C void CallWaitingNoteL( TInt aCallId );
 
         /*
         * Sets ringtone playback.
@@ -592,84 +411,25 @@ class CPhoneState :
         * Opens soft reject message editor.
         */
         IMPORT_C virtual void OpenSoftRejectMessageEditorL();
-
-    protected: // NumberEntry functions.
-
-        /**
-        * Set Number Entry visibility.
-        * @param aVisible ETrue if numberentry is wanted to be shown
-        *                 (Note ETrue will set NE CBA's)
-        *                 EFalse if numberentry isnt wanted to be shown
-        *                 (Note EFalse doesnt affact to CBA's)
-        */
-        IMPORT_C void SetNumberEntryVisibilityL( const TBool aVisible );
-
-        /**
-        * Create call if in numberentry more that 2 number and Send key
-        * Send manual control sequence
-        * if 1-2 number in numberentry and Send key
-        */
-        IMPORT_C void CallFromNumberEntryL();
-
-        /**
-         * Returns phone number from the phone number entry.
-         * @return  Phone number
-         */
-        IMPORT_C HBufC* PhoneNumberFromEntryLC();
-
-        /**
-        * Check if number entry content is stored
-        * @return boolean value indicating that number entry content is stored
-        */
-        IMPORT_C TBool IsNumberEntryContentStored();
-
-        /**
-        * Stores the number entry content to the cache
-        */
-        IMPORT_C void StoreNumberEntryContentL();
-
-        /**
-        * Clears the number entry content cache
-        */
-        IMPORT_C void ClearNumberEntryContentCache();
-
-        /**
-         * Returns ETrue if alphanumeric characters are supported.
-         * @param aKeyEvent Key event.
-         * @return ETrue if alphanumeric chars are supported.
-         */
-         IMPORT_C TBool IsAlphanumericSupportedAndCharInput(
-                     const TKeyEvent& aKeyEvent );
-
-         /**
-         * Handle state-specific behaviour when number entry is cleared
-         */
-         IMPORT_C virtual void HandleNumberEntryClearedL();
-
-         /**
-         * Internal number entry handling methods.
-         */
-         void NumberEntryClearL();
-
-         /**
-         * Sets toolbar loudspeaker button enabled.
-         */
-         IMPORT_C void SetToolbarButtonLoudspeakerEnabled();
-         
-         /**
-         * Sets state of TitleBar Back button 
-         */
-         IMPORT_C void SetBackButtonActive( TBool aActive );
-
+        
     protected:
 
-       /**
-       * Returns updated remote information data.
-       * NOTE: This metohed is used when state receives
-       * EPEMessageRemotePartyInfoChanged from PhoneEngine.
-       * @param aCallId - Call Id.
-       */
-       TPhoneCmdParamCallHeaderData UpdateCallHeaderInfoL( TInt aCallId );
+        /**
+        * Sets toolbar loudspeaker button enabled.
+        */
+        IMPORT_C void SetToolbarButtonLoudspeakerEnabled();
+         
+        /**
+        * Sets state of TitleBar Back button 
+        */
+        IMPORT_C void SetBackButtonActive( TBool aActive );
+
+         /**
+         * Updates ui commands 
+         */
+         IMPORT_C void UpdateUiCommands();
+         
+    protected:
 
        /**
        * Checks if call is waiting, returns ETrue if call is waiting
@@ -746,11 +506,6 @@ class CPhoneState :
         void HandleCallSecureStatusChangeL( TInt aCallId );
 
         /**
-        * Handles change als line command
-        */
-        void ChangeAlsLineL();
-
-        /**
         * Active call id
         */
         TInt GetActiveCallIdL();
@@ -759,27 +514,12 @@ class CPhoneState :
         * Shows WLAN MAC address note
         */
         void ShowWlanMacAddressL();
-
-        /**
-        * Check if ALS line change is possible
-        */
-        TBool IsAlsLineChangePossible();
-
+        
         /**
         * A message handling function for message EPEMessageRemoteBusy
         * @param aCallId a call id
         */
         void HandleRemoteBusyL( const TInt aCallId );
-
-        /**
-        * Creates caller information. Sets CNAP, phone number, thumbnail image
-        * etc. into the call header parameter.
-        * @param aCallId - Call Id.
-        * @param aCallHeaderData - Call header parameter where modifications
-        *                          are made.
-        */
-        void CreateCallerInfoL( const TInt aCallId,
-            TPhoneCmdParamCallHeaderData* aCallHeaderData );
 
         /**
         * TCleanupOperation to call EndUiUpdate(), if leave occurs
@@ -814,32 +554,10 @@ class CPhoneState :
         void HandleSimStateChangedL();
 
         /*
-         * Checks is given key contains numeric charaters or if customization is used
-         * alphanumeir letters
-        */
-        TBool IsValidAlphaNumericKey( const TKeyEvent& aKeyEvent,
-                TEventCode aEventCode );
-
-        /*
          * Checks if keyevent is from dtmf key and sends it to phone-engine
          */
         void SendDtmfKeyEventL( const TKeyEvent& aKeyEvent,
                 TEventCode aEventCode  );
-
-        /*
-         * Creates call header manager if needed.
-        */
-        CPhoneCallHeaderManager* CallheaderManagerL();
-
-        /*
-        * Creates number entry content if needed.
-        */
-        CPhoneNumberEntryManager* NumberEntryManagerL();
-
-        /*
-        * Updated Cba when Swivel state changes.
-        */
-        void UpdateCbaSwivelStateChangedL();
 
         /**
         * Loads data commonengine stringloader.
@@ -847,7 +565,6 @@ class CPhoneState :
         * @param aResourceId - Resource id for text.
         */
         void LoadResource( TDes& aData, const TInt aResource ) const;
-
 
     protected:  // Data
 
@@ -871,39 +588,20 @@ class CPhoneState :
         MPhoneCustomization* iCustomization;
 
         // CBA key manager. Own.
-        CPhoneCbaManager* iCbaManager;
-
-    private:
-
-        /**
-         * Previously handled SIM card state.
-         */
-        TPESimState iPreviousSimState;
-
-        // Bitmap redraw counter
-        TInt iBitmapRedrawCounter;
-
-        // Internal variable for EikonEnv to avoid
-        // use of static system calls
-        CEikonEnv& iEnv;
-
-        // Call header manager.
-        CPhoneCallHeaderManager* iCallHeaderManager;
-
+        CPhoneUiCommandManager* iUiCommandManager;
+        
         // Number entry manager
         CPhoneNumberEntryManager* iNumberEntryManager;
 
-        // RingtoneSilenced flag.
-        // This is used to determine if the ringtone
-        // for incoming call is silenced. The information
-        // is used while updating softkeys in method
-        // UpdateIncomingCbaL only
-        TBool iRingtoneSilenced;
 
-        /**
-         * Handle to the Operator logo resource.
-         */
-        TInt iLogoHandle;
+    private:
+
+        // Previously handled SIM card state.
+        TPESimState iPreviousSimState;
+
+        // Internal variable for EikonEnv to avoid
+        // use of static system calls
+        CEikonEnv* iEnv; // Not owned
         };
 
 #endif // CPHONESTATE_H

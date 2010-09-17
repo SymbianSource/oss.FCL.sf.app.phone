@@ -36,3 +36,6 @@ SOURCES += ut_bubbleutils.cpp \
            ../../../bubblecore/src/bubblebutton.cpp
 
 
+
+
+symbian:MMP_RULES += SMPSAFE

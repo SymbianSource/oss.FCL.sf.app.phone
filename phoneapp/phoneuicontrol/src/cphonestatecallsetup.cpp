@@ -19,7 +19,6 @@
 // INCLUDES
 #include <featmgr.h>
 #include <StringLoader.h>
-#include <AknUtils.h>
 #include <mpeengineinfo.h>
 #include <mpeclientinformation.h>
 
@@ -191,27 +190,7 @@ EXPORT_C TBool CPhoneStateCallSetup::HandleCommandL( TInt aCommand )
 EXPORT_C void CPhoneStateCallSetup::HandleNumberEntryClearedL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleNumberEntryClearedL()" );
-    UpdateInCallCbaL();
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateCallSetup::UpdateInCallCbaL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneStateCallSetup::UpdateInCallCbaL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::UpdateInCallCbaL() ");
-    UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateCallSetup::UpdateCbaL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneStateCallSetup::UpdateCbaL( TInt aResource )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::UpdateCbaL() ");
-    iCbaManager->UpdateCbaL( aResource );   
+    UpdateUiCommands();
     }
 
 // -----------------------------------------------------------
@@ -222,7 +201,7 @@ EXPORT_C void CPhoneStateCallSetup::HandleKeyEventL(
     const TKeyEvent& aKeyEvent, TEventCode aEventCode )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleKeyEventL( ) ");
-    if ( !IsNumberEntryVisibleL() )
+    if ( !iNumberEntryManager->IsNumberEntryVisibleL() )
         {
         // Send the key events to the phone engine
         switch( aEventCode )
@@ -267,8 +246,6 @@ void CPhoneStateCallSetup::PlayKeySpecificDTMF( const TUint aCode )
     buffer.Append( aCode );
     __PHONELOG1( EBasic, EPhoneControl, "HandleKeyEventL(%S)", &buffer );
     // Convert key code to western.
-    AknTextUtils::ConvertDigitsTo( buffer, EDigitTypeWestern );
-    __PHONELOG1( EBasic, EPhoneControl, "ConvertDigitsTo(%S)", &buffer );
     TLex code( buffer ); 
     // Send the key press to the phone engine, if applicable
     iStateMachine->PhoneEngineInfo()->SetKeyCode( code.Peek() );
@@ -295,7 +272,7 @@ EXPORT_C void CPhoneStateCallSetup::HandleKeyMessageL(
                     MPEPhoneModel::EPEMessageTerminateAllConnections );
                 
                 // Remove number entry if long press
-                if ( IsNumberEntryUsedL() )
+                if ( iNumberEntryManager->IsNumberEntryUsedL() )
                     {
                     iViewCommandHandle->ExecuteCommandL( 
                         EPhoneViewRemoveNumberEntry );
@@ -471,15 +448,10 @@ void CPhoneStateCallSetup::CancelDTMFSendingL()
 void CPhoneStateCallSetup::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleConnectedL()");
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
     BeginUiUpdateLC();
     CPhoneState::UpdateSingleActiveCallL( aCallId );
-    SetTouchPaneButtons( EPhoneIncallButtons );
+    UpdateUiCommands();
     EndUiUpdate();
-    UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateSingle );
     }
 
@@ -500,7 +472,7 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     SetDefaultFlagsL();
     
-    if ( IsNumberEntryUsedL() )
+    if ( iNumberEntryManager->IsNumberEntryUsedL() )
         {
         iViewCommandHandle->ExecuteCommand(
                 EPhoneViewGetNumberFromEntry,
@@ -510,7 +482,7 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
         }    
     else
         {
-        DisplayIdleScreenL();
+        RemoveDialogsAndSendPhoneToBackgroundL();
         }
     EndUiUpdate();
     CleanupStack::PopAndDestroy( phoneNumber );
@@ -526,8 +498,7 @@ void CPhoneStateCallSetup::HandleAudioOutputChangedL()
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleAudioOutputChangedL( ) ");
     CPhoneState::HandleAudioOutputChangedL();
     // Update the call setup CBA
-    UpdateInCallCbaL();
-    SetTouchPaneButtons(0);
+    UpdateUiCommands();
     }
  
 // -----------------------------------------------------------

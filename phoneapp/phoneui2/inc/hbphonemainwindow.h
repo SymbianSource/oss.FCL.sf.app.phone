@@ -26,11 +26,19 @@ class PhoneUiHouseHold;
 
 class HbPhoneMainWindow: public HbMainWindow
     {
-
+    Q_OBJECT
 public:
 
     HbPhoneMainWindow(QWidget* parent = 0);
     ~HbPhoneMainWindow();
+    
+signals:
+    void focusLost();
+    void focusGained(); 
+    
+public slots:
+    void onFocusLost();
+    void onFocusGained();
 
 
 private: // data

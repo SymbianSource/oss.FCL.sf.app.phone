@@ -32,57 +32,20 @@ enum
     {
     // commands for all
     EPhoneCmdDoNothing = KPhoneCmdBase,
-    EPhoneCmdCancel,
     EPhoneCmdOptions,
-    EPhoneCmdOkOptions,
     EPhoneCmdBack,
     EPhoneCmdEnd,
-    EPhoneCmdEndAll,
-    EPhoneCmdIhfToggle,
-    EPhoneCmdNameDialer,
-    EPhoneLongMSKAnswer,
-    EPhoneLongSendActivateHandsfree,
-    EPhoneActivateForegroundReq, // doesn't leave
-    EPhoneCancelForegroundReq, // doesn't leave
-    EPhoneCmdToForeground, // doesn't leave
-    EPhoneCmdOk,
-    EPhoneCmdYes,
-    EPhoneCmdNo,
-    EPhoneCmdExit,
-    EPhoneCmdRedialQuit,
-    EPhoneCmdYesAlsLineChange,
-    EPhoneCmdNoAlsLineChange,
     EPhoneCmdYesBtDisconnectQuery,
     EPhoneCmdNoBtDisconnectQuery,
 
-    // commands for idle state.
-    EPhoneSoftkeyLeft,
-    EPhoneSoftkeyRight,
-    EPhoneIdleActivateNumberAcq,
-    EPhoneTogglEPhoneLines,
-    // for ShortcutManager
-    EPhoneSelectionKey,    // OK key
-    EPhoneScrollkeyLeft,
-    EPhoneScrollkeyUp,
-    EPhoneScrollkeyRight,
-    EPhoneScrollkeyDown,
-
     // commands for number acquisition.
-    EPhoneNumberAcqCmdPbkOperation,
     EPhoneNumberAcqCmdSave,
     EPhoneNumberAcqCmdAddToName,
     EPhoneNumberAcqCmdCall,
     EPhoneNumberAcqCmdVideoCall,
     EPhoneNumberAcqCmdSendCommand,
-    EPhoneNumberAcqCmdSendMessage,
-    EPhoneNumberAcqCmdHashCheck,  // NOT IN MENU.
     EPhoneNumberAcqSecurityDialer, // NOT IN MENU.
-
-    // CDMA specific
     EPhoneNumberAcqCmdAddToContacts,
-    EPhoneNumberAcqCmdInsertPause,
-    EPhoneNumberAcqCmdInsertTimedPause,
-    EPhoneNumberAcqCmdInsertHardPause,
     // commands for call coming in
     EPhoneCallComingCmdReject,
     EPhoneCallComingCmdAnswer,
@@ -91,20 +54,10 @@ enum
     EPhoneCallComingCmdSilent,
     EPhoneCallComingCmdOptions,
     EPhoneCallComingCmdAnswerWithHandsfree,
-    EPhoneCallComingLongMSKAnswer,
-    EPhoneCallComingCmdProcessSend, // NOT IN MENU
-    //        Soft Reject
     EPhoneCallComingCmdSoftReject,
-    // CDMA specific
-    EPhoneCallComingCmdIgnore,
-    EPhoneCallComingCmdHelp,
-
-    // commands for call setup
-    EPhoneCallSetupCmdEnd,
     // commands for incall
     EPhoneInCallCmdSwap,
     EPhoneInCallCmdAnswer,
-    EPhoneInCallCmdAnswerHandPortable,
     EPhoneInCallCmdReject,
     EPhoneInCallCmdHold,
     EPhoneInCallCmdUnhold,
@@ -134,10 +87,8 @@ enum
     EPhoneInCallCmdSendToCallerMenu,    
     EPhoneInCallCmdSendNew,
     EPhoneInCallCmdSendFile,
-    EPhoneInCallCmdProcessSend, // NOT IN MENU!
     EPhoneInCallCmdDrop,
     EPhoneInCallCmdPrivate,
-    EPhoneInCallCmdCbaJoin, // NOT IN MENU!
     EPhoneInCallCmdDialer,
     EPhoneInCallCmdContacts,
 
@@ -153,52 +104,14 @@ enum
 
     EPhoneInCallCmdConferenceHold, // JMK
     EPhoneInCallCmdConferenceUnhold, // JMK
-    EPhoneInCallCmdNewCallFind,
-    EPhoneInCallCmdNewCallCall,
     EPhoneInCallCmdGoToIdle,
     EPhoneInCallCmdParticipants,
     
-    // CDMA specific
-    EPhoneInCallCmdMulticall3WayCall,
-    EPhoneInCallCmdMulticallIgnore,
-    EPhoneInCallCmdFlash,
-    EPhoneInCallCmdHelp,
-    EPhoneInCallCmdEmergencyActivateIhf,
-    EPhoneInCallCmdEmergencyDeactivateIhf,
-    EPhoneInCallCmdEmergencyHandset,
-    EPhoneInCallPhoneInfo,
-    // CDMA Emergency specific
-    EPhoneEmergencyCmdYes,
-    EPhoneEmergencyCmdNo,
-    EPhoneEmergencyCmdExit,    //6121
-    // Settings GUI (commands useful to many GUI's)
-    EPhoneCmdSettingsUiOptions,
-    EPhoneCmdSettingsUiBack,
-    EPhoneCmdSettingsUiOpen,
-    EPhoneCmdSettingsUiExit,
-    // Settings GUI - Data Parameters GUI (commands specific to DataParameters)
-    EPhoneCmdDataParametersRestoreSettings,
-    EPhoneCmdRelease,   
+    EPhoneEmergencyCmdExit,         
     // DTMF specific
-    EPhoneCmdDtmfSearch,
     EPhoneCmdDtmfOk,
-    EPhoneInCallCmdDtmfListViewSearch,    
     // other commands
     EPhoneCmdWaitNoteOk,
-    EPhoneCmdVideoCallMemoryLowNoteDismissed,
-    EPhoneCmdSecurityInd, // NOT to leave
-    EPhoneInCallCmdSwitchToVideo,
-    EPhoneInCallCmdSwitchToVoice,
-    EPhoneCmdYesSwitchToVideo,
-    EPhoneCmdNoSwitchToVideo,
-    EPhoneCmdYesSwitchToVoice,
-    EPhoneCmdNoSwitchToVoice,    
-    EPhoneMediatorSetPhoneNumber,
-    EPhoneCmdCoverUiShowMultimediaRingingTone,
-    EPhoneInCallCmdLockKeypad,
-    EPhoneInCallCmdLockScreen,
-    EPhoneCmdYesVideoFailedNoMemorySwitchToVoice,
-    EPhoneCmdNoVideoFailedNoMemorySwitchToVoice,
     EPhoneInCallCmdSetVolumeLevel,
     
     //Dialer commands

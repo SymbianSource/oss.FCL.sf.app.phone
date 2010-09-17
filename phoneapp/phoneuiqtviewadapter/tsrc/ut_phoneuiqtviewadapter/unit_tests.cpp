@@ -24,7 +24,7 @@
 #include <hbmainwindow.h>
 #include <phoneappcommands.hrh>
 #include <hbmenu.h>
-//#include <hbglobal_p.h>
+#include "qtestmains60.h"
 #include "phoneuiqtviewadapter.h"
 #include "tphonecmdparaminteger.h"
 #include "tphonecmdparamaudiooutput.h"
@@ -61,6 +61,20 @@ extern bool m_removeGlobalWaitNoteCalled;
 extern bool m_ordinalPositionCalled;
 extern bool m_sendToBackgroundCalled;
 extern bool m_phoneVisibleReturnValue;
+extern bool m_createCallHeaderCalled;
+extern int m_createCallHeaderCallId;
+extern bool m_createEmergencyCallHeaderCalled;
+extern int m_updateCallHeaderCallId;
+extern int m_updateCallHeaderRemoteInfoCallId;
+extern int m_updateCallHeaderRemoteInfoAndLabelCallId;
+extern int m_handleCipheringInfoChangeCallId;
+extern int m_createConferenceBubbleCallId;
+extern bool m_removeAllCallHeadersCalled;
+extern bool m_removeConferenceBubbleCalled;
+extern int m_removeCallFromConferenceCallId;
+extern int m_setPrivateFromConferenceCallId;
+extern int m_removeCallHeaderCallId;
+extern bool m_isVoiceCall;
 
 #define PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
@@ -193,6 +207,8 @@ signals:
     void keyPressReleased(QKeyEvent *event);
     void windowActivated();
     void windowDeactivated();
+    void focusLost();
+    void focusGained();
 
 public slots:
     void initTestCase ();
@@ -201,17 +217,15 @@ public slots:
     void cleanup ();
     
 private slots:
-    void testEPhoneViewSetTopApplicationCommand ();
-    void testEPhoneViewSetIdleTopApplicationCommand ();
     void testEPhoneViewUpdateCallHeaderCallDurationCommand ();
     void testEPhoneViewCreateCallHeaderCommand ();
+    void testEPhoneViewCreateCallHeaderCommand2 ();
     void testEPhoneViewCreateEmergencyCallHeader ();
     void testEPhoneViewUpdateBubble ();
     void testEPhoneViewUpdateCallHeaderRemoteInfoData ();
     void testEPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel();
     void testCallIdByState ();
     void testSetToolbarButtons ();
-    void testHoldFlag ();
     void testEPhoneViewHideNaviPaneAudioVolume ();
     void testEPhoneViewSetNaviPaneAudioVolume ();
     void testEPhoneViewGetAudioVolumeLevel ();
@@ -307,6 +321,7 @@ void TestPhoneUIQtViewAdapter::init ()
     m_startChangesCalled = false;
     m_endChangesCalled = false;
     m_setCipheringCalled = false;
+    m_isVoiceCall = true;
 }
 
 void TestPhoneUIQtViewAdapter::cleanup ()
@@ -353,18 +368,6 @@ void TestPhoneUIQtViewAdapter::clearParticipantListActions()
     mParticipantListActions.clear();
 }
 
-void TestPhoneUIQtViewAdapter::testEPhoneViewSetTopApplicationCommand ()
-{
-    TPhoneCmdParamInteger intParam;
-    intParam.SetInteger (12345);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTopApplication, &intParam);
-}
-
-void TestPhoneUIQtViewAdapter::testEPhoneViewSetIdleTopApplicationCommand ()
-{
-    m_adapter->ExecuteCommandL (EPhoneViewSetIdleTopApplication);
-}
-
 void TestPhoneUIQtViewAdapter::testEPhoneViewUpdateCallHeaderCallDurationCommand ()
 {
     TPhoneCmdParamInteger time;
@@ -377,218 +380,67 @@ void TestPhoneUIQtViewAdapter::testEPhoneViewUpdateCallHeaderCallDurationCommand
 
 void TestPhoneUIQtViewAdapter::testEPhoneViewCreateCallHeaderCommand ()
 {
-    TPhoneCmdParamCallHeaderData callHeader;
-    callHeader.SetDiverted (ETrue);
-    callHeader.SetCallState (3);
-    callHeader.SetLabelText (_L("Foo"));
-    callHeader.SetCLIText (_L("Bar"), TPhoneCmdParamCallHeaderData::ERight);
-    callHeader.SetCNAPText (_L("CNAP"), TPhoneCmdParamCallHeaderData::ERight);
-    callHeader.SetCallType (3);
-    callHeader.SetCipheringIndicatorAllowed(true);
-    callHeader.SetCiphering(false);
-    m_adapter->ExecuteCommandL (EPhoneViewCreateCallHeader, 2, &callHeader);
-
-    QVERIFY (m_startChangesCalled == true);
+    int callId = 2;
+    m_createCallHeaderCalled = false;
+    m_adapter->ExecuteCommandL(EPhoneViewCreateCallHeader, callId);
 
     QVERIFY (m_createCallHeaderCalled == true);
-    QCOMPARE (m_createCallHeaderInt, 2);
+    QCOMPARE (m_createCallHeaderCallId, callId);
 
-    QVERIFY (m_setStateCalled == true); 
-    QCOMPARE (m_setStateCallId, 2);
-    QCOMPARE (m_setStateBubbleId, 1);
-    QCOMPARE (m_setStateCallState, 3); 
-    
-    QVERIFY (m_setLabelCalled == true);
-    QString labelText = QString::fromUtf16 (m_setLabelText->Ptr (), m_setLabelText->Length ());
-    QCOMPARE (m_setLabelBubbleId, 1);
-    QCOMPARE (labelText, QString("Foo"));
+}
 
-    QVERIFY (m_setCliCalled == true);
-    QString cliText = QString::fromUtf16 (m_setCliText->Ptr (), m_setCliText->Length ());
-    QCOMPARE (m_setCliBubbleId, 1);
-    QCOMPARE (cliText, QString("Bar"));
+void TestPhoneUIQtViewAdapter::testEPhoneViewCreateCallHeaderCommand2 ()
+{
+    m_isVoiceCall = false;
+    m_setActiveCallCalled = false;
+    m_adapter->ExecuteCommandL (EPhoneViewCreateCallHeader, 2 );
+
+    QVERIFY (m_setActiveCallCalled == false);
     
-    QVERIFY (m_setSecondaryCliCalled == true);
-    QString cnapText = QString::fromUtf16 (m_setSecondaryCliText->Ptr (), m_setSecondaryCliText->Length ());
-    QCOMPARE (m_setSecondaryCliBubbleId, 1);
-    QCOMPARE (cnapText, QString("CNAP"));
-    
-    QVERIFY (m_setCallTypeCalled == true);
-    QCOMPARE (m_setCallTypeBubbleId, 1);
-    QCOMPARE (m_setCallTypeType, 3);
-    
-    QVERIFY (m_setDivertCalled == true);
-    QVERIFY (m_bubblewrapperbool == true);
-    QCOMPARE (m_bubblewrapperint, 1);
-    
-    QVERIFY (m_setCipheringCalled == true);
-    
-    QVERIFY (m_endChangesCalled == true);
-    
+    m_isVoiceCall = true;
+    m_adapter->ExecuteCommandL (EPhoneViewCreateCallHeader, 2 );
     QVERIFY (m_setActiveCallCalled == true);
-    
-    
 }
 
 void TestPhoneUIQtViewAdapter::testEPhoneViewCreateEmergencyCallHeader ()
 {
-    TPhoneCmdParamEmergencyCallHeaderData callHeader;
-    callHeader.SetLabelText (_L("Attempting"));
-    callHeader.SetHeaderText (_L("emergency") );
-    m_adapter->ExecuteCommandL (EPhoneViewCreateEmergencyCallHeader, 2, &callHeader);
-    callHeader.SetCipheringIndicatorAllowed(true);
-    callHeader.SetCiphering(false);    
+    int callId = 9;
+    m_createEmergencyCallHeaderCalled = false;
+    m_adapter->ExecuteCommandL (EPhoneViewCreateEmergencyCallHeader, callId);
 
-    QVERIFY (m_startChangesCalled == true);
-
-    QVERIFY (m_createCallHeaderCalled == true);
-    QCOMPARE (m_createCallHeaderInt, 2);
-
-    QVERIFY (m_setLabelCalled == true);
-    QString labelText = QString::fromUtf16 (m_setLabelText->Ptr (), m_setLabelText->Length ());
-    QCOMPARE (m_setLabelBubbleId, 1);
-    QCOMPARE (labelText, QString("Attempting"));
-
-    QVERIFY (m_setCliCalled == true);
-    QString cliText = QString::fromUtf16 (m_setCliText->Ptr (), m_setCliText->Length ());
-    QCOMPARE (m_setCliBubbleId, 1);
-    QCOMPARE (cliText, QString("emergency"));
-    
-    QVERIFY (m_setCipheringCalled == true);
-    
-    QVERIFY (m_endChangesCalled == true);
-    
-    QVERIFY (m_setActiveCallCalled == true);
+    QVERIFY(m_createEmergencyCallHeaderCalled == true);
+    QCOMPARE(callId, m_createCallHeaderCallId);
 }
 
-void TestPhoneUIQtViewAdapter::testEPhoneViewUpdateBubble ()
+void TestPhoneUIQtViewAdapter::testEPhoneViewUpdateBubble()
 {
-    // Bubble id will return -1
-    m_bubble_id = -1;
-    
-    TPhoneCmdParamCallHeaderData callHeader;
-    callHeader.SetCallState (2);
-    callHeader.SetLabelText (_L("Foo2"));
-    callHeader.SetDiverted (EFalse);
-    m_adapter->ExecuteCommandL (EPhoneViewUpdateBubble, 3, &callHeader);
-    QVERIFY (m_startChangesCalled == false);
-    
-    //Test with available bubble id
-    m_bubble_id = -2;
-    
-    m_adapter->ExecuteCommandL (EPhoneViewUpdateBubble, 3, &callHeader);
-    
-    QVERIFY (m_startChangesCalled == true);
-    
-    QVERIFY (m_bubbleIdCalled == true);
-    QCOMPARE (m_bubbleIdCallId, 3);
+    int callId = 4;
+    m_adapter->ExecuteCommandL(EPhoneViewUpdateBubble, callId);
 
-    QVERIFY (m_setStateCalled == true); 
-    QCOMPARE (m_setStateCallId, 3);
-    QCOMPARE (m_setStateBubbleId, 2);
-    QCOMPARE (m_setStateCallState, 2); 
+    QCOMPARE (callId, m_updateCallHeaderCallId);
 
-    QVERIFY (m_setLabelCalled == true);
-    QString labelText = QString::fromUtf16 (m_setLabelText->Ptr (), m_setLabelText->Length ());
-    QCOMPARE (m_setLabelBubbleId, 2);
-    QCOMPARE (labelText, QString("Foo2"));
-
-    QVERIFY (m_setDivertCalled == true);
-    QVERIFY (m_bubblewrapperbool == false);
-    QCOMPARE (m_bubblewrapperint, 2);
-
-    QVERIFY (m_endChangesCalled == true);	
 }
 
-void TestPhoneUIQtViewAdapter::testEPhoneViewUpdateCallHeaderRemoteInfoData ()
+void TestPhoneUIQtViewAdapter::testEPhoneViewUpdateCallHeaderRemoteInfoData()
 {
-    // Bubble id will return -1
-    m_bubble_id = -1;
-    TPhoneCmdParamCallHeaderData callHeader;
-    callHeader.SetCLIText (_L("Bar3"), TPhoneCmdParamCallHeaderData::ERight);
-    callHeader.SetCNAPText (_L("CNAP3"), TPhoneCmdParamCallHeaderData::ERight);
-    callHeader.SetDiverted (ETrue);
-    m_adapter->ExecuteCommandL (EPhoneViewUpdateCallHeaderRemoteInfoData, 4, &callHeader);
-    QVERIFY (m_startChangesCalled == false);
-    
-    //Test with available bubble id
-    m_bubble_id = -2;
-    
-    m_adapter->ExecuteCommandL (EPhoneViewUpdateCallHeaderRemoteInfoData, 4, &callHeader);
-    
-    QVERIFY (m_startChangesCalled == true);
+    int callId = 3;
+    m_adapter->ExecuteCommandL(EPhoneViewUpdateCallHeaderRemoteInfoData, callId);
 
-    QVERIFY (m_bubbleIdCalled == true);
-    QCOMPARE (m_bubbleIdCallId, 4);
+    QCOMPARE(m_updateCallHeaderRemoteInfoCallId, callId);
 
-    QVERIFY (m_setCliCalled == true);
-    QString cliText = QString::fromUtf16 (m_setCliText->Ptr (), m_setCliText->Length ());
-    QCOMPARE (m_setCliBubbleId, 2);
-    QCOMPARE (cliText, QString("Bar3"));
-
-    QVERIFY (m_setSecondaryCliCalled == true);
-    QString cnapText = QString::fromUtf16 (m_setSecondaryCliText->Ptr (), m_setSecondaryCliText->Length ());
-    QCOMPARE (m_setSecondaryCliBubbleId, 2);
-    QCOMPARE (cnapText, QString("CNAP3"));
-
-    QVERIFY (m_setDivertCalled == true);
-    QVERIFY (m_bubblewrapperbool == true);
-    QCOMPARE (m_bubblewrapperint, 2);
-
-    QVERIFY (m_endChangesCalled == true);	
 }
 
 void TestPhoneUIQtViewAdapter::testEPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel ()
 {
-    // Bubble id will return -1
-    m_bubble_id = -1;
-    TPhoneCmdParamCallHeaderData callHeader;
-    callHeader.SetLabelText (_L("Foo4"));
-    callHeader.SetCLIText (_L("Bar4"), TPhoneCmdParamCallHeaderData::ERight);
-    callHeader.SetCNAPText (_L("CNAP4"), TPhoneCmdParamCallHeaderData::ERight);
-    callHeader.SetDiverted (ETrue);
-    m_adapter->ExecuteCommandL (EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel, 4, &callHeader);
+    int callId = 3;
+    m_adapter->ExecuteCommandL(EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel, callId);
 
-    QVERIFY (m_startChangesCalled == false);
-    
-    
-    //Test with available bubble id
-    m_bubble_id = -2;    
-    m_adapter->ExecuteCommandL (EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel, 4, &callHeader);
-
-    QVERIFY (m_startChangesCalled == true);
-
-    QVERIFY (m_bubbleIdCalled == true);
-    QCOMPARE (m_bubbleIdCallId, 4);
-
-    QVERIFY (m_setLabelCalled == true);
-    QString labelText = QString::fromUtf16 (m_setLabelText->Ptr (), m_setLabelText->Length ());
-    QCOMPARE (m_setLabelBubbleId, 2);
-    QCOMPARE (labelText, QString("Foo4"));
-
-    QVERIFY (m_setCliCalled == true);
-    QString cliText = QString::fromUtf16 (m_setCliText->Ptr (), m_setCliText->Length ());
-    QCOMPARE (m_setCliBubbleId, 2);
-    QCOMPARE (cliText, QString("Bar4"));
-
-    QVERIFY (m_setSecondaryCliCalled == true);
-    QString cnapText = QString::fromUtf16 (m_setSecondaryCliText->Ptr (), m_setSecondaryCliText->Length ());
-    QCOMPARE (m_setSecondaryCliBubbleId, 2);
-    QCOMPARE (cnapText, QString("CNAP4"));
-
-    QVERIFY (m_setDivertCalled == true);
-    QVERIFY (m_bubblewrapperbool == true);
-    QCOMPARE (m_bubblewrapperint, 2);
-
-    QVERIFY (m_endChangesCalled == true);   
+    QCOMPARE(m_updateCallHeaderRemoteInfoAndLabelCallId, callId);
 }
 
 void TestPhoneUIQtViewAdapter::testCallIdByState ()
 {
-    TPhoneCmdParamCallHeaderData callHeader;
     TPhoneCmdParamCallStateData data;
-    callHeader.SetCallState (EPEStateConnected);
-    m_adapter->ExecuteCommandL (EPhoneViewUpdateBubble, 0, &callHeader);
     data.SetCallState (EPEStateConnected);
     m_adapter->HandleCommandL (EPhoneViewGetCallIdByState, &data);
     QCOMPARE (data.CallId(), 0);
@@ -599,30 +451,13 @@ void TestPhoneUIQtViewAdapter::testSetToolbarButtons ()
     m_toolbarActionCount = 0;
     TPhoneCmdParamInteger intParam;
     intParam.SetInteger (R_PHONEUI_CALLHANDLING_INCOMINGCALL_CBA);
-    m_adapter->ExecuteCommandL (EPhoneViewUpdateCba, &intParam);
+    m_adapter->ExecuteCommand (EPhoneViewUpdateCba, &intParam);
     QCOMPARE(m_toolbarActionCount,2);
 
     m_toolbarActionCount = 0;
     intParam.SetInteger (R_PHONEUI_DIALER_CBA);
-    m_adapter->ExecuteCommandL (EPhoneViewUpdateCba, &intParam);
+    m_adapter->ExecuteCommand (EPhoneViewUpdateCba, &intParam);
     QCOMPARE(m_toolbarActionCount,4);
-}
-
-void TestPhoneUIQtViewAdapter::testHoldFlag ()
-{
-    TPhoneCmdParamBoolean boolParam;
-    m_adapter->ExecuteCommandL (EPhoneViewGetHoldFlag, &boolParam);
-    QCOMPARE ((bool)boolParam.Boolean (), false);
-
-    boolParam.SetBoolean (ETrue);
-    m_adapter->ExecuteCommandL (EPhoneViewSetHoldFlag, &boolParam);
-    m_adapter->ExecuteCommandL (EPhoneViewGetHoldFlag, &boolParam);
-    QCOMPARE ((bool)boolParam.Boolean (), true);
-    
-    boolParam.SetBoolean (EFalse);
-    m_adapter->ExecuteCommandL (EPhoneViewSetHoldFlag, &boolParam);
-    m_adapter->ExecuteCommandL (EPhoneViewGetHoldFlag, &boolParam);
-    QCOMPARE ((bool)boolParam.Boolean (), false);
 }
 
 void TestPhoneUIQtViewAdapter::testEPhoneViewHideNaviPaneAudioVolume ()
@@ -674,21 +509,16 @@ void TestPhoneUIQtViewAdapter::testExecuteCommandLwithCmdIdAndCallId ()
     // Default
     m_adapter->ExecuteCommandL (0, 0);
 
-    m_adapter->ExecuteCommandL (EPhoneViewRemoveCallHeader, 0);
-    QVERIFY (m_startChangesCalled == true);
-    QVERIFY (m_endChangesCalled == true);
+    int callId = 5;
+    m_adapter->ExecuteCommandL (EPhoneViewRemoveCallHeader, callId);
+    QCOMPARE(m_removeCallHeaderCallId, callId);
     
-    m_removeCallFromConference = false;
-    m_adapter->ExecuteCommandL (EPhoneViewRemoveFromConference, 0);   
-    QVERIFY (m_startChangesCalled == true);
-    QVERIFY (m_endChangesCalled == true);
-    QVERIFY (m_removeCallFromConference == true);
+    m_adapter->ExecuteCommandL(EPhoneViewRemoveFromConference, callId);   
+    QCOMPARE(m_removeCallFromConferenceCallId, callId);
     
-    m_removeCallFromConference = false;
-    m_adapter->ExecuteCommandL (EPhoneViewPrivateFromConference, 0);   
-    QVERIFY (m_startChangesCalled == true);
-    QVERIFY (m_endChangesCalled == true); 
-    QVERIFY (m_removeCallFromConference == true);      
+    m_adapter->ExecuteCommandL (EPhoneViewPrivateFromConference, callId);   
+    QCOMPARE(m_setPrivateFromConferenceCallId, callId);
+    
 }
 
 void TestPhoneUIQtViewAdapter::testExecuteCommandLwithCmdIdAndCmdParam ()
@@ -705,7 +535,7 @@ void TestPhoneUIQtViewAdapter::testExecuteCommandLwithCmdIdAndCmdParam ()
     
     // Get expand bubble call id
     TPhoneCmdParamInteger intParam;
-    m_adapter->ExecuteCommandL (EPhoneViewGetExpandedBubbleCallId, &intParam);
+    m_adapter->ExecuteCommand (EPhoneViewGetExpandedBubbleCallId, &intParam);
     QCOMPARE ((int)intParam.Integer(), -1);
     
     m_callStateMap.insert(0, EPEStateConnected);
@@ -713,7 +543,7 @@ void TestPhoneUIQtViewAdapter::testExecuteCommandLwithCmdIdAndCmdParam ()
     m_callStateMap.insert(1, EPEStateHeld);
     m_bubblesMap.insert(1, 1);  
     
-    m_adapter->ExecuteCommandL (EPhoneViewGetExpandedBubbleCallId, &intParam);
+    m_adapter->ExecuteCommand (EPhoneViewGetExpandedBubbleCallId, &intParam);
     QCOMPARE ((int)intParam.Integer(), 1);
     
     m_callStateMap.clear();
@@ -730,13 +560,13 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     //Connected call
     m_callStateMap.insert(0, EPEStateConnected);
     m_bubblesMap.insert(0, 0);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);    
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);    
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdMute));
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdEndThisActiveCall));
     
     //Emergency
     boolParam.SetBoolean(true);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(false == m_actionMap.value(0)->contains(EPhoneInCallCmdMute));
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdEndThisActiveCall));
     
@@ -744,7 +574,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     boolParam.SetBoolean(false);
     m_callStateMap.insert(1, EPEStateHeld);
     m_bubblesMap.insert(1, 1);    
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdMute));
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdEndThisActiveCall));
     QVERIFY(m_actionMap.value(1)->contains(EPhoneInCallCmdMute));
@@ -759,7 +589,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     boolParam.SetBoolean(false);
     m_callStateMap.insert(1, EPEStateRinging);
     m_bubblesMap.insert(1, 1);    
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdMute));
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdEndThisActiveCall));
     QVERIFY(m_actionMap.value(1)->contains(EPhoneCallComingCmdReject));
@@ -773,7 +603,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     boolParam.SetBoolean(false);
     m_callStateMap.insert(1, EPEStateRinging);
     m_bubblesMap.insert(1, 1);    
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdMute));
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdEndThisActiveCall));
     QVERIFY(m_actionMap.value(1)->contains(EPhoneCallComingCmdReject));
@@ -785,7 +615,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     m_bubblesMap.clear();
     m_callStateMap.insert(0, EPEStateIdle);
     m_bubblesMap.insert(0, 0);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(0==m_actionMap.keys().size());
     clearBubbleCommands(0);
     
@@ -794,7 +624,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     m_bubblesMap.clear();
     m_callStateMap.insert(0, EPEStateConferenceIdle);
     m_bubblesMap.insert(0, 0);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(0==m_actionMap.keys().size());
     clearBubbleCommands(0);
     
@@ -803,7 +633,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     m_bubblesMap.clear();
     m_callStateMap.insert(0, EPEStateDisconnecting);
     m_bubblesMap.insert(0, 0);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(0==m_actionMap.keys().size());
     clearBubbleCommands(0);
     
@@ -812,7 +642,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     m_bubblesMap.clear();
     m_callStateMap.insert(0, EPEStateDialing);
     m_bubblesMap.insert(0, 0);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(2==m_actionMap.value(0)->size());
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdMute));
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdEndThisOutgoingCall));
@@ -823,7 +653,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     m_bubblesMap.clear();
     m_callStateMap.insert(0, EPEStateRinging);
     m_bubblesMap.insert(0, 0);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(2==m_actionMap.value(0)->size());
     QVERIFY(m_actionMap.value(0)->contains(EPhoneCallComingCmdAnswer));
     QVERIFY(m_actionMap.value(0)->contains(EPhoneCallComingCmdReject));
@@ -834,7 +664,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     m_bubblesMap.clear();
     m_callStateMap.insert(0, EPEStateConnecting);
     m_bubblesMap.insert(0, 0);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(2==m_actionMap.value(0)->size());
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdMute));
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdEndThisOutgoingCall));
@@ -845,7 +675,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     m_bubblesMap.clear();
     m_callStateMap.insert(0, EPEStateConnectedConference);
     m_bubblesMap.insert(0, 0);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(2==m_actionMap.value(0)->size());
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdMute));
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdEndThisActiveCall));
@@ -853,7 +683,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     // Conference and held
     m_callStateMap.insert(1, EPEStateHeld);
     m_bubblesMap.insert(1, 1);    
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdMute));
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdEndThisActiveCall));
     QVERIFY(m_actionMap.value(1)->contains(EPhoneInCallCmdMute));
@@ -867,7 +697,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     m_bubblesMap.clear();
     m_callStateMap.insert(0, EPEStateHeldConference);
     m_bubblesMap.insert(0, 0);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(2==m_actionMap.value(0)->size());
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdEndThisActiveCall));
     QVERIFY(m_actionMap.value(0)->contains(EPhoneInCallCmdMute));
@@ -879,7 +709,7 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     m_bubblesMap.clear();
     m_callStateMap.insert(0, EPEStateUnknown);
     m_bubblesMap.insert(0, 0);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(0==m_actionMap.keys().size());
     clearBubbleCommands(0);
     
@@ -888,47 +718,21 @@ void TestPhoneUIQtViewAdapter::testSetTouchButtons ()
     m_bubblesMap.clear();
     m_callStateMap.insert(0, 100);
     m_bubblesMap.insert(0, 0);
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(0==m_actionMap.keys().size());
     clearBubbleCommands(0);
 }
 
 void TestPhoneUIQtViewAdapter::testCreateConferenceBubble ()
 {
-    m_callStateMap.clear();
-    m_bubblesMap.clear();
-    m_callStateMap.insert(0, EPEStateConnected);
-    m_bubblesMap.insert(0, 0);
-    m_callStateMap.insert(1, EPEStateHeld);
-    m_bubblesMap.insert(1, 1);  
- 
-    //Create conference
-    TPhoneCmdParamCallHeaderData callHeader;
-    callHeader.SetCallState (2);
-    callHeader.SetLabelText (_L("Foo2"));
-    callHeader.SetDiverted (EFalse);
-    callHeader.SetCipheringIndicatorAllowed(true);
-    callHeader.SetCiphering(false);
+    int callId = 8;
     
-    m_adapter->ExecuteCommandL (EPhoneViewCreateConference, 3, &callHeader);    
-    QVERIFY (m_creataConferenceCalled == true);
-    QVERIFY (mParticipantListActions.count()==2);
-    QVERIFY (mParticipantListActions.at(0)==EPhoneInCallCmdPrivate);
-    QVERIFY (mParticipantListActions.at(1)==EPhoneInCallCmdDrop);
-    
-    //
-    TPhoneCmdParamBoolean  conferenceDataValue;
-    m_adapter->ExecuteCommandL (EPhoneViewGetCallExistsInConference, 0, &conferenceDataValue);
-    QVERIFY (conferenceDataValue.Boolean() == true);
+    m_adapter->ExecuteCommandL(EPhoneViewCreateConference, callId);    
+    QCOMPARE(m_createConferenceBubbleCallId, callId);
     
     m_adapter->ExecuteCommandL(EPhoneViewRemoveConferenceBubble);
-    QVERIFY (m_removeConferenceCalled == true);
-    QVERIFY (mParticipantListActions.count()==0);
-    
-    m_adapter->ExecuteCommandL (EPhoneViewGetCallExistsInConference, 0, &conferenceDataValue);
-    QVERIFY (conferenceDataValue.Boolean() == false);
-    
-    QVERIFY (m_setCipheringCalled == true);
+    QVERIFY(m_removeConferenceBubbleCalled);
+
 }
 
 void TestPhoneUIQtViewAdapter::testHandleCommandL ()
@@ -940,9 +744,7 @@ void TestPhoneUIQtViewAdapter::testHandleCommandL ()
     /*QVERIFY( EPhoneViewResponseFailed == m_adapter->HandleCommandL (
             EPhoneViewGetNumberEntryIsUsedStatus) );*/ 
     QVERIFY( EPhoneViewResponseFailed == m_adapter->HandleCommandL (
-            EPhoneIsCustomizedDialerVisible) ); 
-    QVERIFY( EPhoneViewResponseFailed == m_adapter->HandleCommandL (
-            EPhoneViewGetNeedToSendToBackgroundStatus) );
+            EPhoneIsCustomizedDialerVisible) );
     
     //Default handling for coverage
     QVERIFY( EPhoneViewResponseSuccess == m_adapter->HandleCommandL (0) ); 
@@ -1039,7 +841,7 @@ void TestPhoneUIQtViewAdapter::testSetExpandActions()
     m_bubblesMap.insert(1, 1);
     m_expandAction.clear();
     
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(m_expandAction.contains(0));        
     QVERIFY(m_expandAction[0]==EPhoneCmdUpdateUiControls);
     QVERIFY(m_expandAction.contains(1));        
@@ -1073,29 +875,10 @@ void TestPhoneUIQtViewAdapter::testDialpadVisibility ()
 }
 
 void TestPhoneUIQtViewAdapter::removeAllCallHeaders()
-{
-    m_removeConferenceCalled = false;
-    m_removeCallHeaderCalled = false;
-    m_conferenceCallList.clear();
-    m_conferenceCallList.append(0);
-    m_conferenceCallList.append(1);
-    
-    m_bubblesMap.clear();
-    m_bubblesMap.insert(0,0);
-    m_bubblesMap.insert(1,1);
-    m_bubblesMap.insert(2,2);
-    m_bubblesMap.insert(7,3);
-    
-    m_callStateMap.clear();
-    m_callStateMap.insert(0,0);
-    m_callStateMap.insert(1,1);
-    m_callStateMap.insert(2,2);
-    m_callStateMap.insert(7,3);
-    
-    m_adapter->ExecuteCommandL(EPhoneViewRemoveAllCallHeaders);
-    
-    QVERIFY(m_removeConferenceCalled);
-    QVERIFY(m_removeCallHeaderCalled);
+{   
+    m_removeAllCallHeadersCalled = false;
+    m_adapter->ExecuteCommandL(EPhoneViewRemoveAllCallHeaders);   
+    QVERIFY(m_removeAllCallHeadersCalled);
 }
 
 void TestPhoneUIQtViewAdapter::testRemoveDialpad ()
@@ -1172,19 +955,19 @@ void TestPhoneUIQtViewAdapter::testSetMenuActions()
     TPhoneCmdParamBoolean boolParam;
     boolParam.SetBoolean( false );
     
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam); 
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam); 
     
     QVERIFY(m_setMenuActionsCalled);
     
     m_setMenuActionsCalled = false;
     m_isDialpadVisible = true;
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(m_setMenuActionsCalled);
     
     m_dialpadText = QString("");
     m_setMenuActionsCalled = false;
     m_isDialpadVisible = true;
-    m_adapter->ExecuteCommandL (EPhoneViewSetTouchPaneButtons, &boolParam);
+    m_adapter->ExecuteCommand(EPhoneViewSetTouchPaneButtons, &boolParam);
     QVERIFY(m_setMenuActionsCalled);
     
     connect(this, SIGNAL(dialpadAboutToClose()), m_adapter, SLOT(dialpadClosed()));
@@ -1269,18 +1052,9 @@ void TestPhoneUIQtViewAdapter::testHsToForegroundAfterCall()
 
 void TestPhoneUIQtViewAdapter::testCipheringInfoChange()
 {
-	m_bubble_id = 1;
-    TPhoneCmdParamCallHeaderData callHeader;
-    callHeader.SetCipheringIndicatorAllowed(true);
-    callHeader.SetCiphering(false);
-    m_adapter->ExecuteCommandL (EPhoneViewCipheringInfoChange, 1, &callHeader);
-    QVERIFY (m_startChangesCalled == true);
-    QVERIFY (m_setCipheringCalled == true);
-    QVERIFY (m_endChangesCalled == true);
-    m_setCipheringCalled = false;
-	m_bubble_id = -1;
-    m_adapter->ExecuteCommandL (EPhoneViewCipheringInfoChange, -1, &callHeader);
-    QVERIFY (m_setCipheringCalled == false);
+	int callId = 2;
+    m_adapter->ExecuteCommandL(EPhoneViewCipheringInfoChange, callId);   
+    QCOMPARE(m_handleCipheringInfoChangeCallId, callId);
 }
 
 void TestPhoneUIQtViewAdapter::testSetHidden()
@@ -1299,13 +1073,12 @@ void TestPhoneUIQtViewAdapter::testBeginEndUiUpdate()
 
 void TestPhoneUIQtViewAdapter::testIndicatorController()
 {
-    connect( this, SIGNAL(windowActivated()), m_adapter, SLOT(handleWindowActivated()));
-    connect( this, SIGNAL(windowDeactivated()), m_adapter, SLOT(handleWindowDeactivated()));
-    emit windowActivated();
-    QVERIFY( m_disableCallIndCalled );
-    emit windowDeactivated();
+    connect( this, SIGNAL(focusLost()), m_adapter, SLOT(onFocusLost()));
+    connect( this, SIGNAL(focusGained()), m_adapter, SLOT(onFocusGained()));
+    emit focusLost();
     QVERIFY( m_enableCallIndCalled );
-    
+    emit focusGained();
+    QVERIFY( m_disableCallIndCalled );
 }
 
 void TestPhoneUIQtViewAdapter::testOpenLogs()

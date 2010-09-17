@@ -62,10 +62,6 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
             
-        virtual void HandleKeyEventL(
-            const TKeyEvent& aKeyEvent,
-            TEventCode aEventCode );
-
         /**
         * Handles user selected UI commands.
         * @param aCommand - selected command
@@ -87,9 +83,6 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
         */
         virtual void ConstructL();
         
-        virtual void UpdateInCallCbaL();
-        
-        
      private:
      
          void HandleConnectedL( TInt aCallId );
@@ -100,7 +93,7 @@ class CPhoneConferenceAndWaiting : public CPhoneConference
                   
          void MakeStateTransitionToConferenceAndSingleL( TInt aCallId );
          
-         void HandleDiallingL( TInt aCallId );
+         void HandleDialingL( TInt aCallId );
          
          void HandleWentOneToOneL( TInt aCallId );
          

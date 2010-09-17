@@ -21,30 +21,15 @@
 #include <QSignalSpy>
 #include <xqservicerequest.h>
 #include <hbmenu.h>
+#include <mockservice.h>
 
 #include "telephonyservice.h"
 #include "phoneuiqtviewif.h"
 #include "phoneuiqtviewadapter.h"
+#include "tphonecmdparaminteger.h"
+#include "qtestmains60.h"
 
-extern bool phoneAppStart;
-extern bool inCallDialerStart;
-
-#define PHONE_QT_NOTE_CONTROLLER_TEST_MAIN(TestObject) \
-int main(int argc, char *argv[]) \
-{ \
-    HbApplication app(argc, argv); \
-    TestObject tc; \
-    QResource::registerResource("../hbcore.rcc"); \
-    int ret = QTest::qExec(&tc, argc, argv); \
-    /* Core dump if HbIconLoader instance is not destroyed before the application instance. */ \
-    /* HbIconLoader uses QCoreApplication::aboutToQuit() signal to destroy itself. */ \
-    /* app.exec() where the signal is normally emitted is not called here. */ \
-    /* So, invoking the signal explicitly. */ \
-    QMetaObject::invokeMethod(&app, "aboutToQuit", Qt::DirectConnection); \
-    return ret; \
-}
-
-class TestTelephonyService : public QObject,  public PhoneUIQtViewIF
+class TestTelephonyService : public QObject, PhoneUIQtViewIF, MockService
 {
     Q_OBJECT
 public:
@@ -86,7 +71,7 @@ public: // PhoneUIQtViewIF
         void setMenuActions(const QList<PhoneAction*>& ){};
         void shutdownPhoneApp() {};
         void setBackButtonVisible(bool ) {};        
-        HbMenu &menuReference() { return mMenu; };
+        HbMenu &menuReference() {};
         void captureKey(Qt::Key , bool ) {};
         void setRestrictedMode(bool ) {};
         
@@ -102,9 +87,8 @@ private slots:
     void startInCallDialer ();
     
 private:
+    PhoneUIQtViewAdapter* m_viewAdapter;
     TelephonyService *m_service; // class under test
-    PhoneUIQtViewAdapter *m_viewstub; // stub test
-    HbMenu mMenu;
 };
 
 TestTelephonyService::TestTelephonyService ()
@@ -117,27 +101,24 @@ TestTelephonyService::~TestTelephonyService ()
 
 void TestTelephonyService::initTestCase ()
 {
-    m_viewstub = new PhoneUIQtViewAdapter (*this);
-    m_service = new TelephonyService(m_viewstub, this);
+    m_viewAdapter = new PhoneUIQtViewAdapter(*this);
+    m_service = new TelephonyService(m_viewAdapter, this);
 }
 
 void TestTelephonyService::cleanupTestCase ()
 {
-    if (m_viewstub) {
-    delete m_viewstub;
-    }
-    
-    if (m_service) {
+    delete m_viewAdapter;
     delete m_service;
-    }
 }
 
 void TestTelephonyService::init ()
 {
+    initialize();
 }
 
 void TestTelephonyService::cleanup ()
 {
+    reset();
 }
 
 void TestTelephonyService::testConstructionDestruction ()
@@ -147,23 +128,21 @@ void TestTelephonyService::testConstructionDestruction ()
 
 void TestTelephonyService::startPhoneApp ()
 {
-    phoneAppStart = false;
-    inCallDialerStart = false;
-    int phoneApp(0);
+    int phoneApp(0);    
+    EXPECT( PhoneUIQtViewAdapter, ExecuteCommandL ).with<TPhoneViewCommandId>( EPhoneViewBringPhoneAppToForeground );
     m_service->start(phoneApp);
-    QVERIFY (phoneAppStart == true);
-    QVERIFY (inCallDialerStart == false);
+    QVERIFY(verify());
 }
 
 void TestTelephonyService::startInCallDialer ()
 {
-    phoneAppStart = false;
-    inCallDialerStart = false;
     int dialer(1);
+    
+    EXPECT( PhoneUIQtViewAdapter, ExecuteCommandL ).with( EPhoneViewOpenDialer );
+    EXPECT( PhoneUIQtViewAdapter, ExecuteCommandL ).with<TPhoneViewCommandId>( EPhoneViewBringPhoneAppToForeground );
     m_service->start(dialer);
-    QVERIFY (phoneAppStart == true);
-    QVERIFY (inCallDialerStart == true);
+    QVERIFY(verify());
 }
 
-PHONE_QT_NOTE_CONTROLLER_TEST_MAIN(TestTelephonyService)
+QTEST_MAIN_S60(TestTelephonyService)
 #include "unit_tests.moc"

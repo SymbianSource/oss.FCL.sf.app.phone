@@ -18,7 +18,6 @@
 
 // INCLUDE FILES
 #include <bautils.h>
-#include <AknUtils.h>
 #include "phoneresourceids.h"
 #include <data_caging_path_literals.hrh>
 #include "cphoneresourceresolvervoip.h"
@@ -265,8 +264,7 @@ TInt CPhoneResourceResolverVoIP::ResolveResourceID(
             retVal = R_PHONEUI_VOIP_QUERY_HEADER_MOVED_PERMANENTLY;
             break;
         case EPhoneVoIPMovedPermanentlySoftkeys:
-            //retVal = R_PHONE_VOIP_SOFTKEYS_OK_END_CALL;
-            retVal = R_AVKON_SOFTKEYS_OK_CANCEL;
+            retVal = R_PHONE_VOIP_SOFTKEYS_OK_END_CALL;
             break;
         case EPhoneVoIPMultipleChoicesListQuery:
             retVal = R_PHONE_VOIP_MULTIPLE_CHOICES_LIST_QUERY;

@@ -52,6 +52,7 @@ private slots:
 private:
     void updateDiverIndicator(bool activeDiverts);
     inline bool compareKeys(const XQSettingsKey &first, const XQSettingsKey &second);
+    void fetchMissedCalls(int count);
     
 private:
     HbIndicator         m_indicator;
@@ -63,6 +64,8 @@ private:
     QString             m_callImage;
     XQAiwRequest*       m_request;
     PhoneVisibilityHandler& m_phoneVisibilityHandler;
+    
+    friend class UT_PhoneIndicatorController;
     };
 
 #endif /* PHONEINDICATORCONTROLLER_H_ */

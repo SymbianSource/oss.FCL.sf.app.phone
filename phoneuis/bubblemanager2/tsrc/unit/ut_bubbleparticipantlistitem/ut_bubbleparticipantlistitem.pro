@@ -38,3 +38,6 @@ SOURCES += ut_bubbleparticipantlistitem.cpp \
            ../../../bubblecore/src/bubbleconferenceheader.cpp \
            ../../../bubblecore/src/bubblebutton.cpp
 
+
+
+symbian:MMP_RULES += SMPSAFE

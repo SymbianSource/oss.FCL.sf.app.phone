@@ -26,7 +26,7 @@ DEFAULT
 PRJ_EXPORTS
 
 // Stub SIS files:
-../group/phoneuiutils_stub.sis                  /epoc32/data/z/system/install/phoneuiutils_stub.sis
+../rom/phoneuiutils_stub.sis                  /epoc32/data/z/system/install/phoneuiutils_stub.sis
 
 // Singleton UIDs used in Telephony thread
 ../inc/telinternalsingletonuids.h               |../../../inc/telinternalsingletonuids.h

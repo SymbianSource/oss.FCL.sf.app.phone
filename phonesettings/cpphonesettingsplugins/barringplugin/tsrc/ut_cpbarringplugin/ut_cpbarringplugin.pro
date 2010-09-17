@@ -51,3 +51,6 @@ SOURCES += ../../src/cpbarringplugin.cpp
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cpbarringplugingroup.cpp
+
+
+symbian:MMP_RULES += SMPSAFE

@@ -65,9 +65,6 @@ class MPhoneKeyEvents
 
         virtual void HandleDtmfKeyToneL( const TKeyEvent& aKeyEvent,
                         TEventCode aEventCode ) = 0;
-        
-        virtual TBool IsAlphanumericSupportedAndCharInput( 
-                const TKeyEvent& aKeyEvent ) = 0 ;
 };
 
 #endif // __MPHONEKEYEVENTS_H

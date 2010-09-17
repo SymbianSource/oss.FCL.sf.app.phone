@@ -21,7 +21,6 @@
 
 #include <data_caging_paths_for_iby.hrh>
 
-data=DATAZ_\RESOURCE_FILES_DIR\PhoneClient.rsc RESOURCE_FILES_DIR\PhoneClient.rsc
 data=DATAZ_\RESOURCE_FILES_DIR\PhoneServer.rsc RESOURCE_FILES_DIR\PhoneServer.rsc
 
 S60_APP_RESOURCE(phoneui)

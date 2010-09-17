@@ -95,17 +95,7 @@ void CPhoneStateIncomingVoIP::HandleAudioPlayStoppedL()
         "CPhoneStateIncomingVoIP::HandleAudioPlayStoppedL()" );
     
     // Update the CBA
-    if ( iStateMachine->PhoneEngineInfo()->
-            CallType( iRingingCallId ) == EPECallTypeVoIP )
-        {
-        TInt resourceId = EPhoneCallHandlingIncomingRejectCBA;
-        
-        iCbaManager->SetCbaL( resourceId );
-        }
-    else
-        {
-        CPhoneIncoming::HandleAudioPlayStoppedL();    
-        }
+    CPhoneIncoming::HandleAudioPlayStoppedL();    
     }
 
 // End of File

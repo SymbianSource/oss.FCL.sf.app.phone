@@ -49,3 +49,6 @@ symbian {
 
 RESOURCES += ut_bubbleimagemanager.qrc
 
+
+
+symbian:MMP_RULES += SMPSAFE

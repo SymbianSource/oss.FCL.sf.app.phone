@@ -89,11 +89,6 @@ class CPhoneSingleAndAlerting : public CPhoneAlerting
         */
         void HandleIdleL( TInt aCallId );
         
-        /**
-        * Update InCallCba 
-        */
-        virtual void UpdateInCallCbaL();
-        
     };
 
 #endif // CPhoneSingleAndAlerting_H

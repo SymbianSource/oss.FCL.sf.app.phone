@@ -148,7 +148,7 @@ void CPhoneStateIdleVoIP::HandleSendCommandL()
     __LOGMETHODSTARTEND( 
         PhoneUIVoIPExtension, "CPhoneStateIdleVoIP::HandleSendCommandL()" );
     
-    HBufC* phoneNumber = PhoneNumberFromEntryLC();
+    HBufC* phoneNumber = iNumberEntryManager->PhoneNumberFromEntryLC();
      
     if ( !IsSimOk() || IsEmergencyNumber( *phoneNumber ) )
         {
@@ -190,7 +190,8 @@ void CPhoneStateIdleVoIP::HandleDialingL( TInt aCallId )
 
     if( iStateMachine->PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP )
         {
-        SetCallHeaderType( EPECallTypeVoIP );       
+        //TODO
+        //SetCallHeaderType( EPECallTypeVoIP );       
         }
 
     CPhoneIdle::HandleDialingL( aCallId );

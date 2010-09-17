@@ -21,11 +21,10 @@ PRJ_PLATFORMS
 DEFAULT
 
 PRJ_EXPORTS
-
-telephonydevicemode_stub.sis   /epoc32/data/z/system/install/telephonydevicemode_stub.sis
+../rom/telephonydevicemode_stub.sis     /epoc32/data/z/system/install/telephonydevicemode_stub.sis
 
 // IBY files
-../rom/telephonydevicemode.iby      CORE_APP_LAYER_IBY_EXPORT_PATH(telephonydevicemode.iby)
+../rom/telephonydevicemode.iby          CORE_APP_LAYER_IBY_EXPORT_PATH(telephonydevicemode.iby)
  
 PRJ_MMPFILES
 ../group/telephonydevicemode.mmp

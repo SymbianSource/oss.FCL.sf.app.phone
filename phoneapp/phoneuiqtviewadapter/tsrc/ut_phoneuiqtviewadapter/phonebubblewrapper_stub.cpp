@@ -25,7 +25,6 @@ bool m_setLabelCalled;
 bool m_setCliCalled;
 bool m_setSecondaryCliCalled;
 bool m_setCallTypeCalled;
-bool m_createCallHeaderCalled;
 int m_createCallHeaderInt;
 int m_setStateCallId;
 int m_setStateBubbleId;
@@ -63,7 +62,6 @@ PhoneBubbleWrapper::PhoneBubbleWrapper (BubbleManagerIF& bubble, QObject *parent
     m_setCliCalled = false;
     m_setSecondaryCliCalled = false;
     m_setCallTypeCalled = false;
-    m_createCallHeaderCalled = false;
     m_createCallHeaderInt = false;
     m_setStateCallId = -1;
     m_setStateBubbleId = -1;
@@ -99,7 +97,6 @@ int PhoneBubbleWrapper::callId (int state)
 
 int PhoneBubbleWrapper::createCallHeader (int callId) 
 {
-    m_createCallHeaderCalled = true;
     m_createCallHeaderInt = callId;
     return 1; 
 }

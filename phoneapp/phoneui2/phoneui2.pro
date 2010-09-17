@@ -28,6 +28,7 @@ symbian {
     TARGET.VID = VID_DEFAULT
     TARGET.EPOCHEAPSIZE = 0x1000 0xA00000
     DEFINES += FT_SYMBIAN_INTEGRATION
+    VERSION = 10.0
 
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     INCLUDEPATH += ../../inc \
@@ -35,7 +36,8 @@ symbian {
                    ../phoneuicontrol/inc \
                    ../phoneuiutils/inc \
                    ../phoneuiqtviewadapter/inc \
-                   ../phoneuiview2/inc
+                   ../phoneuiview2/inc \ 
+                   ../phoneringingtoneplayer/inc
 
     LIBS += -lphoneengine \
             -lphoneuiutils \
@@ -44,7 +46,6 @@ symbian {
             -lphoneuiqtview \
             -lxqserviceutil \
             -lfeatmgr \
-            -lavkon \
             -lcone \
             -leikcore
 
@@ -52,23 +53,28 @@ symbian {
        "$${LITERAL_HASH}include <platform_paths.hrh>" \
        "./rom/phoneui.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(phoneui.iby)" \
        "./rom/phoneuiresources.iby    LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(phoneuiresources.iby)"
-
-       RSS_RULES += "hidden = KAppIsHidden;"
+      BLD_INF_RULES.prj_exports += "./rom/phoneui_stub.sis /epoc32/data/z/system/install/phoneui_stub.sis"
+      RSS_RULES += "hidden = KAppIsHidden;"
 }
 
 HEADERS += ./inc/hbphonemainwindow.h \
            ./inc/phoneuikeyeventadapter.h \
            ./inc/phoneuicommandadapter.h \
            ./inc/phoneuihousehold.h \
-           ./inc/phoneuihousehold_p.h
+           ./inc/phoneuihousehold_p.h \
+           ./inc/phoneapplication.h
 
 SOURCES   += ./src/main.cpp \
              ./src/phoneuikeyeventadapter.cpp \
              ./src/phoneuicommandadapter.cpp \
              ./src/hbphonemainwindow.cpp \
              ./src/phoneuihousehold.cpp \
-             ./src/phoneuihousehold_p.cpp
+             ./src/phoneuihousehold_p.cpp \
+             ./src/phoneapplication.cpp
 
 CONFIG += service
 SERVICE.FILE = service_conf.xml
 
+
+
+symbian:MMP_RULES += SMPSAFE

@@ -35,18 +35,6 @@ class MPhoneStorage
         */
         virtual ~MPhoneStorage() {};
 
-        virtual void AppendBlockedKeysListL( TStdScanCode aScanCode ) = 0;
-        
-        virtual const RArray<TInt>& GetBlockedKeyList() const = 0;
-        
-        virtual void ResetBlockedKeysList() = 0;
-        
-        virtual TBool IsBlockedKeysListEmpty() = 0;
-        
-        virtual void SetScreenLocked( TBool aLocked ) = 0;
-        
-        virtual TBool IsScreenLocked() = 0;
-        
         virtual TBool NeedToEnableKeylock() = 0;
         
         virtual void SetNeedToEnableKeylock( TBool aEnableKeylock ) = 0;

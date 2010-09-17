@@ -72,3 +72,5 @@ SOURCES += ../../../tsrc/mocks/mock_cpnetworkplugin.cpp \
            
 SOURCES += ../../src/cpnetworkpluginform.cpp 
            
+
+symbian:MMP_RULES += SMPSAFE

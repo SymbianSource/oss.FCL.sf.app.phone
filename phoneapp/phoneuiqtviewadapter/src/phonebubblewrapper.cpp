@@ -15,7 +15,6 @@
 *
 */
 
-#include <hbaction.h>
 #include <pevirtualengine.h>
 
 #include "bubblemanagerif.h"

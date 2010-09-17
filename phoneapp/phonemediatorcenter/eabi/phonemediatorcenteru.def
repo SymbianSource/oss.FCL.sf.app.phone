@@ -7,29 +7,26 @@ EXPORTS
 	_ZN21CPhoneMediatorFactory15MediatorMessageEii @ 6 NONAME
 	_ZN21CPhoneMediatorFactory6SenderEv @ 7 NONAME
 	_ZN21CPhoneMediatorFactory8InstanceEv @ 8 NONAME
-	_ZN33CPhoneSwitchToVideoOrVoiceCommand4NewLER25MPhoneEngineMessageSender @ 9 NONAME
+	_ZN34CPhoneContinueEmergencyCallCommand4NewLER25MPhoneEngineMessageSender @ 9 NONAME
 	_ZN36CPhoneTerminateAllConnectionsCommand4NewLER25MPhoneEngineMessageSender @ 10 NONAME
-	_ZNK20CPhoneMediatorSender9SendEventEii @ 11 NONAME
-	_ZNK20CPhoneMediatorSender9SendEventEiiR18TPhoneCommandParam @ 12 NONAME
-	_ZTI20CPhoneMediatorSender @ 13 NONAME ; #<TI>#
-	_ZTI20CPhoneReleaseCommand @ 14 NONAME ; #<TI>#
-	_ZTI21CPhoneDataPortMessage @ 15 NONAME ; #<TI>#
-	_ZTI21CPhoneMediatorFactory @ 16 NONAME ; #<TI>#
-	_ZTI28CPhoneMediatorMessageFactory @ 17 NONAME ; #<TI>#
-	_ZTI29CPhoneMediatorCommandListener @ 18 NONAME ; #<TI>#
-	_ZTI33CPhoneSwitchToVideoOrVoiceCommand @ 19 NONAME ; #<TI>#
-	_ZTI36CPhoneTerminateAllConnectionsCommand @ 20 NONAME ; #<TI>#
-	_ZTV20CPhoneMediatorSender @ 21 NONAME ; #<VT>#
-	_ZTV20CPhoneReleaseCommand @ 22 NONAME ; #<VT>#
-	_ZTV21CPhoneDataPortMessage @ 23 NONAME ; #<VT>#
-	_ZTV21CPhoneMediatorFactory @ 24 NONAME ; #<VT>#
-	_ZTV28CPhoneMediatorMessageFactory @ 25 NONAME ; #<VT>#
-	_ZTV29CPhoneMediatorCommandListener @ 26 NONAME ; #<VT>#
-	_ZTV33CPhoneSwitchToVideoOrVoiceCommand @ 27 NONAME ; #<VT>#
-	_ZTV36CPhoneTerminateAllConnectionsCommand @ 28 NONAME ; #<VT>#
-	_ZNK20CPhoneMediatorSender9SendEventEi @ 29 NONAME
-	_ZNK20CPhoneMediatorSender9SendEventEiiPK7TDesC16 @ 30 NONAME
-	_ZN34CPhoneContinueEmergencyCallCommand4NewLER25MPhoneEngineMessageSender @ 31 NONAME
-	_ZTI34CPhoneContinueEmergencyCallCommand @ 32 NONAME ; #<TI>#
-	_ZTV34CPhoneContinueEmergencyCallCommand @ 33 NONAME ; #<VT>#
+	_ZNK20CPhoneMediatorSender9SendEventEi @ 11 NONAME
+	_ZNK20CPhoneMediatorSender9SendEventEii @ 12 NONAME
+	_ZNK20CPhoneMediatorSender9SendEventEiiPK7TDesC16 @ 13 NONAME
+	_ZNK20CPhoneMediatorSender9SendEventEiiR18TPhoneCommandParam @ 14 NONAME
+	_ZTI20CPhoneMediatorSender @ 15 NONAME
+	_ZTI20CPhoneReleaseCommand @ 16 NONAME
+	_ZTI21CPhoneDataPortMessage @ 17 NONAME
+	_ZTI21CPhoneMediatorFactory @ 18 NONAME
+	_ZTI28CPhoneMediatorMessageFactory @ 19 NONAME
+	_ZTI29CPhoneMediatorCommandListener @ 20 NONAME
+	_ZTI34CPhoneContinueEmergencyCallCommand @ 21 NONAME
+	_ZTI36CPhoneTerminateAllConnectionsCommand @ 22 NONAME
+	_ZTV20CPhoneMediatorSender @ 23 NONAME
+	_ZTV20CPhoneReleaseCommand @ 24 NONAME
+	_ZTV21CPhoneDataPortMessage @ 25 NONAME
+	_ZTV21CPhoneMediatorFactory @ 26 NONAME
+	_ZTV28CPhoneMediatorMessageFactory @ 27 NONAME
+	_ZTV29CPhoneMediatorCommandListener @ 28 NONAME
+	_ZTV34CPhoneContinueEmergencyCallCommand @ 29 NONAME
+	_ZTV36CPhoneTerminateAllConnectionsCommand @ 30 NONAME
 

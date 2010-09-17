@@ -1290,6 +1290,9 @@ void CPECallHandling::InitVoiceCall( MCCECall& aNewCall )
             }
         iModel.DataStore()->SetCallSecureStatus( IsSecureCall( callData->GetCallId() ), callData->GetCallId() );
         iModel.DataStore()->SetSecureSpecified( callData->SecureSpecified() );
+        RMobileCall::TMobileCallInfoV3 callInfo;
+        GetCallInfo(callInfo, callData->GetCallId());
+        iModel.DataStore()->SetIncomingCallForwarded( callInfo.iForwarded, callData->GetCallId() );
         }
     else
         {

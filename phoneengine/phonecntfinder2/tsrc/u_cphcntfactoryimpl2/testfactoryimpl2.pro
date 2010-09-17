@@ -58,3 +58,6 @@ TARGET.UID3 = 0xe38991fe
 
 
 
+
+
+symbian:MMP_RULES += SMPSAFE

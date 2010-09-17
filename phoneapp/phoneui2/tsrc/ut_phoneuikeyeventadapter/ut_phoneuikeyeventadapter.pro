@@ -43,3 +43,6 @@ SOURCES += ../../src/phoneuikeyeventadapter.cpp \
            unit_tests.cpp \
            cphoneuicontroller_stub.cpp
            
+
+
+symbian:MMP_RULES += SMPSAFE

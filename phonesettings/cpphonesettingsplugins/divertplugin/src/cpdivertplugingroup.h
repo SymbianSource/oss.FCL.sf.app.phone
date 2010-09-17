@@ -60,6 +60,11 @@ class CpDivertPluginGroup : public CpSettingFormItemData
     public:
         DivertRequest request;
         CpDivertItemData *item;
+        
+        bool operator==(const CpDivertRequestQueueItem& aItem) const{
+            return (this->item == aItem.item) &
+                    (this->request == aItem.request);
+        }
     };
 
     
@@ -246,7 +251,9 @@ private:   // data
     CpItemDataHelper &m_helper;
 
     int m_timerId;
-
+    
+    PsServiceGroup m_serviceGroup;
+    
     CpDivertQuery *m_activateDivertPopUp;
 };
 

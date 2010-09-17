@@ -478,6 +478,17 @@ public:
     */
     TInt ProtocolError() const; 
     
+    /**
+    * Sets incoming call forwarded flag.
+    * @param aForwarded is call forwarded
+    */
+    void SetIncomingCallForwarded( TBool aForwarded );
+
+    /**
+     * Returns incoming call forwarded flag.
+     */
+    TBool IncomingCallForwarded() const;
+    
 private:
     
     /**
@@ -652,6 +663,11 @@ private:
      * Protocol error code.
      */
     TInt iProtocolError;
+    
+    /**
+     * Incoming call forwarded flag.
+     */
+    TInt iIncomingCallForwarded;
     };
 
 #endif // C_CPECALLINFO_H

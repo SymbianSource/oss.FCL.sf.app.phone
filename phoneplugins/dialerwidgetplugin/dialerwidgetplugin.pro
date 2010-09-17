@@ -8,6 +8,7 @@
 # Nokia Corporation - initial contribution.
 # Contributors:
 # Description:
+
 TEMPLATE = lib
 CONFIG += plugin \
     hb \
@@ -19,7 +20,6 @@ win32:PLUGIN_SUBDIR = /hsresources/import/widgetregistry/20022F44
 symbian:PLUGIN_SUBDIR = /private/20022F35/import/widgetregistry/20022F44
 TARGET_DIR = /private/20022F35/import/widgetregistry/20022F7E  
 
-LIBS += -lhswidgetmodel
 DEPENDPATH += ./inc \
     ./src
 INCLUDEPATH += ./inc \
@@ -27,12 +27,12 @@ INCLUDEPATH += ./inc \
 symbian: { 
     LIBS += -lxqservice \
         -lxqserviceutil \
-        -lxqsettingsmanager \
-        -llogsengine
+        -lxqsettingsmanager
     TARGET.UID3 = 0x20022F44
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.CAPABILITY = ALL \
         -TCB
+    VERSION = 10.0
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     
     BLD_INF_RULES.prj_exports +=  \
@@ -61,4 +61,9 @@ INCLUDEPATH += $$MOC_DIR
 plugin:!isEmpty(PLUGIN_SUBDIR):DESTDIR = $$OUTPUT_DIR/$$PLUGIN_SUBDIR
 include(dialerwidgetplugin.pri)
 exportResources(./resource/*.manifest, $$PLUGIN_SUBDIR)
-RESOURCES += dialerwidgetpluging.qrc
+RESOURCES += dialerwidgetplugin.qrc
+
+BLD_INF_RULES.prj_exports += \
+ "./rom/dialerwidgetplugin_stub.sis /epoc32/data/z/system/install/dialerwidgetplugin_stub.sis"
+
+symbian:MMP_RULES += SMPSAFE

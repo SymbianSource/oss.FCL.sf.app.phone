@@ -23,6 +23,7 @@ TARGET          silenceactionplugin.dll
 TARGETTYPE      PLUGIN
 UID             0x10009D8D KSilenceActionPluginDllUid
 CAPABILITY      ALL -TCB
+VERSION         10.0
 
 SOURCEPATH      ../src
 SOURCE          main.cpp
@@ -50,3 +51,6 @@ LIBRARY         cfservices.lib
 #ifdef LOGGING_MODE_FILE
 LIBRARY         flogger.lib
 #endif
+
+
+SMPSAFE

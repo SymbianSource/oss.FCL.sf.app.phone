@@ -69,3 +69,5 @@ SOURCES += ../../../tsrc/mocks/mock_cpcallsplugin.cpp \
            ../../../tsrc/mocks/mock_psetnetworkwrapper.cpp \
            ../../../tsrc/mocks/mock_psetwrapper.cpp \
            ../../../tsrc/mocks/mock_sssettingswrapper.cpp
+
+symbian:MMP_RULES += SMPSAFE

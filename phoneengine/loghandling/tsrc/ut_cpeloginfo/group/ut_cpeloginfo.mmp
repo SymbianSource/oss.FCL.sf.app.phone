@@ -61,3 +61,6 @@ LIBRARY             centralrepository.lib
 LIBRARY             ecom.lib
 LIBRARY             serviceprovidersettings.lib
 //LIBRARY             symbianmock.lib
+
+
+SMPSAFE

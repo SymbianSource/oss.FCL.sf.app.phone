@@ -39,3 +39,6 @@ SOURCES += ut_bubbleimagewidget.cpp \
 
 RESOURCES += ut_bubbleimagewidget.qrc
 
+
+
+symbian:MMP_RULES += SMPSAFE

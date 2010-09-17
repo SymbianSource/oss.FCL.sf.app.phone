@@ -50,3 +50,6 @@ SOURCES += ../../src/cpcallsplugin.cpp
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cpcallsplugingroup.cpp \
+
+
+symbian:MMP_RULES += SMPSAFE

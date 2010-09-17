@@ -25,6 +25,7 @@ UID                     0x1000008d 0x200194FD
 
 CAPABILITY              CAP_GENERAL_DLL
 VENDORID                VID_DEFAULT
+VERSION                 10.0
 
 SOURCEPATH              ../src
 SOURCE                  cpeservicehandling.cpp
@@ -42,3 +43,6 @@ LIBRARY                 euser.lib
 // <-- QT PHONE END -->
 LIBRARY                 flogger.lib     // for logging
 
+
+
+SMPSAFE

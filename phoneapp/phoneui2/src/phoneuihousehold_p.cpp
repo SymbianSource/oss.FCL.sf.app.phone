@@ -22,7 +22,6 @@
 #include <HbTranslator>
 #include <telremotepartyinformationpskeys.h>
 #include <telinformationpskeys.h>
-#include <UikonInternalPSKeys.h>
 #include <startupdomainpskeys.h>
 #include <featmgr.h>        // for FeatureManager
 #include <hbmainwindow.h>
@@ -75,51 +74,31 @@ TInt PhoneUiHouseHoldPrivate::DoStartupSignalL( TAny* aAny )
             appUi->DoStartupSignalSecurityL();
 }
 
+
 TInt PhoneUiHouseHoldPrivate::DoStartupSignalIdleL()
     {
-    TBool idleReached = EFalse;
-    
-    // Check if Idle application has been started.
-    const TInt idleUid = 0x20022F35;
-    PHONE_DEBUG2("phoneui::DoStartupSignalIdleL() idleUID=", idleUid);
-    
-    if ( idleUid != 0 && idleUid != KErrNotFound )
+    PHONE_DEBUG("phoneui::DoStartupSignalIdleL()");
+    // Idle application has already started
+    if ( !( iAppsReady & EPhoneIdleStartedUp ) )
         {
-        // Idle application has already started
-        if ( !( iAppsReady & EPhoneIdleStartedUp ) )
-            {
-            PHONE_DEBUG("phoneui::DoStartupSignalIdleL() Idle App started ");
-            iAppsReady += EPhoneIdleStartedUp;
-            
-            // Remove Phone application from Fast Swap Window.
-//            iPhoneViewController->SetHiddenL( ETrue );
-            
-            // Set Idle's UID to PubSub.
-            CPhonePubSubProxy::Instance()->ChangePropertyValue(
-                KPSUidUikon,
-                KUikVideoCallTopApp,
-                idleUid );
-                
-            // hack to make sure EPhonePhase1Ok is set - to be fixed properly
-            idleReached = true;
-            PHONE_DEBUG("phoneui::DoStartupSignalIdleL() Phone and Idle apps have both been started");    
-            CPhonePubSubProxy::Instance()->ChangePropertyValue(
-                KPSUidStartup,
-                KPSPhonePhase1Ok,
-                EPhonePhase1Ok );
-            }
-        }
-
-    if ( idleReached )
-        {
-        PHONE_DEBUG("phoneui::DoStartupSignalIdleL() Idle reached!");
-        // Now err == KErrNone and it means that
-        // we have succeeded in signalling.
+        PHONE_DEBUG("phoneui::DoStartupSignalIdleL() Idle App started ");
+        iAppsReady += EPhoneIdleStartedUp;
+        
+        // Remove Phone application from Fast Swap Window.
+        //    iPhoneViewController->SetHiddenL( ETrue );
+        
+        // Avkon removal            
+        // hack to make sure EPhonePhase1Ok is set - to be fixed properly
+       
+        PHONE_DEBUG("phoneui::DoStartupSignalIdleL() Phone and Idle apps have both been started");    
+        CPhonePubSubProxy::Instance()->ChangePropertyValue(
+            KPSUidStartup,
+            KPSPhonePhase1Ok,
+            EPhonePhase1Ok );
+        
         CPhoneRecoverySystem::Instance()->EnablePreconditionL();
-
         // Update the Phone light idle flag
         iLightIdleReached = ETrue;
-
         // Notify the UI controller that the phone is ready
         iPhoneUIController->HandlePhoneStartupL();
         }
@@ -131,7 +110,6 @@ TInt PhoneUiHouseHoldPrivate::DoStartupSignalIdleL()
         // try again at a later time.
         User::Leave( KErrNotReady );
         }
-
     return KErrNone;
     }
 
@@ -190,6 +168,7 @@ void PhoneUiHouseHoldPrivate::ConstructL()
     PhoneUIQtView *view = new PhoneUIQtView(m_window);
     iViewAdapter = new PhoneUIQtViewAdapter(*view);
     iPhoneUIController = CPhoneUIController::NewL(iViewAdapter);
+    iViewAdapter->setEngineInfo(iPhoneUIController->EngineInfo());
     
     m_window.addView (view);
     m_window.setCurrentView (view);
@@ -204,14 +183,16 @@ void PhoneUiHouseHoldPrivate::ConstructL()
                      Qt::QueuedConnection); // async to enable deletion of widget during signal handling
     QObject::connect(view, SIGNAL(windowActivated()), iViewAdapter, SLOT(handleWindowActivated()));
     QObject::connect(view, SIGNAL(windowDeactivated()), iViewAdapter, SLOT(handleWindowDeactivated()));
-    
+    QObject::connect(&m_window, SIGNAL(focusLost()),iViewAdapter, SLOT(onFocusLost()));
+    QObject::connect(&m_window, SIGNAL(focusGained()),iViewAdapter, SLOT(onFocusGained()));
     QObject::connect(iViewAdapter->noteController(), SIGNAL(command (int)), 
                      iCommandAdapter, SLOT(handleCommand (int))); 
     
     // Disable default Send key functionality in application framework 
-    CAknAppUi *appUi = static_cast<CAknAppUi*>(CEikonEnv::Static()->AppUi());
-    appUi->SetKeyEventFlags( CAknAppUiBase::EDisableSendKeyShort | 
-                             CAknAppUiBase::EDisableSendKeyLong );
+    // avkon removal
+//    CAknAppUi *appUi = static_cast<CAknAppUi*>(CEikonEnv::Static()->AppUi());
+//    appUi->SetKeyEventFlags( CAknAppUiBase::EDisableSendKeyShort | 
+//                             CAknAppUiBase::EDisableSendKeyLong );
     
     // CLI Name.
     TInt err = RProperty::Define( 
@@ -228,15 +209,6 @@ void PhoneUiHouseHoldPrivate::ConstructL()
         RProperty::EText,
         KPhoneReadPolicy,
         KPhoneWritePolicy );
-
-    // Define the top application system property
-    err = RProperty::Define( 
-        KPSUidUikon,
-        KUikVideoCallTopApp,
-        RProperty::EInt,
-        KPhoneReadPolicy,
-        KPhoneWritePolicy );
-
 
     // Startup event signalling
     // Define the telephony application system property 
@@ -332,7 +304,7 @@ void PhoneUiHouseHoldPrivate::ConstructL()
     // Update the Apps ready flag
     iAppsReady += EPhoneStartedUp;
 
-     HbMainWindow *main = hbInstance->allMainWindows().at(0);
+    HbMainWindow *main = hbInstance->allMainWindows().at(0);
     RWindow *win = static_cast<RWindow *>(main->effectiveWinId()->DrawableWindow());
 
     CEikonEnv* env = CEikonEnv::Static();

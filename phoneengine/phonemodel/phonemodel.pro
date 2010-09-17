@@ -27,6 +27,7 @@ symbian {
     TARGET.UID3 = 0x1000A86C
     TARGET.VID = VID_DEFAULT
     TARGET.CAPABILITY = ALL -TCB
+    VERSION = 10.0
     
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE  \
                    $$OS_LAYER_GLIB_SYSTEMINCLUDE
@@ -179,6 +180,7 @@ for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$headers.pa
 BLD_INF_RULES.prj_exports += \
  "$${LITERAL_HASH}include <platform_paths.hrh>" \
  "./rom/phonengengine.iby    CORE_APP_LAYER_IBY_EXPORT_PATH(phonengengine.iby)"
+BLD_INF_RULES.prj_exports += "./conf/ci_s60telephony.confml APP_LAYER_CONFML(ci_s60telephony.confml)"
 BLD_INF_RULES.prj_exports += "./conf/s60telephony.confml APP_LAYER_CONFML(s60telephony.confml)"
 BLD_INF_RULES.prj_exports += "./conf/s60telephony_japan.confml CONFML_EXPORT_PATH(s60telephony_japan.confml,japan)"
 BLD_INF_RULES.prj_exports += "./conf/s60telephony_101f87e3.crml APP_LAYER_CRML(s60telephony_101f87e3.crml)"
@@ -195,4 +197,6 @@ BLD_INF_RULES.prj_exports += "./data/backup_registration.xml /epoc32/release/win
 BLD_INF_RULES.prj_exports += "./data/backup_registration.xml /epoc32/release/winscw/urel/z/private/1000a86c/backup_registration.xml"
 
 #Stub sis
-BLD_INF_RULES.prj_exports += "./data/phonemodel_stub.sis /epoc32/data/z/system/install/phonemodel_stub.sis"
+BLD_INF_RULES.prj_exports += "./rom/phonemodel_stub.sis /epoc32/data/z/system/install/phonemodel_stub.sis"
+
+symbian:MMP_RULES += SMPSAFE

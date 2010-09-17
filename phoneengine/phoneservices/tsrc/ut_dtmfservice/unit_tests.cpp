@@ -16,11 +16,17 @@
 */
 
 #include <QtTest/QtTest>
-
-//#include <hbglobal_p.h>
+#include <csmcmockcontext.h>
+#include <smcdefaultvalue.h>
+#include <msmcmockspecbuilder.h>
+#include <smcobjecttotypemapper.h>
+#include <mockservice.h>
 #include "dtmfservice.h"
+#include "qtestmains60.h"
 
-class TestDTMFService : public QObject, public MPECallControlIF, public MPECallSettersIF
+typedef QSet<int> IntegerSet;
+
+class TestDTMFService : public QObject, public MPECallControlIF, public MPECallSettersIF, public MockService
 {
     Q_OBJECT
 public:
@@ -46,6 +52,7 @@ public:
 private slots:
     void testPlayDTMFTone ();
     void testStopDTMFPlay ();
+    void testPlayDTMFTone_nocaps();
 
 private:
     DTMFService *m_dtmfService; // class under test
@@ -62,6 +69,7 @@ private:
     bool m_setKeyCodeCalled;
     bool m_handlePlayDtmfLeave;
     ushort keyValue;
+    XQRequestInfo m_XQRequestInfoMock;
 };
 
 TestDTMFService::TestDTMFService ()
@@ -82,6 +90,13 @@ void TestDTMFService::cleanupTestCase ()
 
 void TestDTMFService::init ()
 {
+    initialize();
+    IntegerSet caps;
+    caps.insert(ECapabilityNetworkServices);
+    caps.insert(ECapabilityNetworkControl);
+    SmcDefaultValue<IntegerSet>::SetL(caps);
+    SmcDefaultValue<XQRequestInfo>::SetL(m_XQRequestInfoMock);
+
     m_setPhoneNumberCalled = false;
     m_setCallTypeCommandCalled = false;
     m_handleDialCallCalled = false;
@@ -98,6 +113,9 @@ void TestDTMFService::init ()
 
 void TestDTMFService::cleanup ()
 {
+    SmcDefaultValue<IntegerSet>::Reset();
+    SmcDefaultValue<XQRequestInfo>::Reset();
+    reset();
     delete m_dtmfService;
 }
 
@@ -151,6 +169,8 @@ TInt TestDTMFService::HandleDialServiceCall( const TBool aClientCall )
     return KErrNone;
 }
 
+// Test cases
+
 void TestDTMFService::testPlayDTMFTone()
 {
     QChar six('6');
@@ -172,5 +192,22 @@ void TestDTMFService::testStopDTMFPlay()
     QVERIFY (m_handleEndDTMFCalled == true);
 }
 
-QTEST_MAIN(TestDTMFService)
+void TestDTMFService::testPlayDTMFTone_nocaps()
+{
+    QSet<int> caps;
+    expect( "XQRequestInfo::clientCapabilities" ).
+        returns(caps).
+        times(2);
+    QChar six('6');
+    int ret = m_dtmfService->playDTMFTone(six);
+    QVERIFY (ret == KErrPermissionDenied);
+    ret = m_dtmfService->stopDTMFPlay();
+    QVERIFY (ret == KErrPermissionDenied);
+    
+    QVERIFY( verify() );
+}
+
+
+QTEST_MAIN_S60(TestDTMFService)
 #include "unit_tests.moc"
+

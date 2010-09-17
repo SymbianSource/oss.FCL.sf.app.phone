@@ -24,7 +24,7 @@ symbian {
     TARGET.CAPABILITY = ALL -TCB
     TARGET.EPOCALLOWDLLDATA =1
     DEFINES += BUILD_PHONESERVICES
-    
+    VERSION = 10.0
     INCLUDEPATH += ../../inc \
                    ../phonemodel/inc
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
@@ -52,3 +52,6 @@ headers.sources = $$PHONESERVICES_API_HEADERS
 headers.path = |../../inc
 # This is for new exporting system coming in garden
 for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$headers.path/$$basename(header)"       
+
+BLD_INF_RULES.prj_exports += \
+ "./rom/phoneservices_stub.sis /epoc32/data/z/system/install/phoneservices_stub.sis"

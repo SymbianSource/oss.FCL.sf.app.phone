@@ -20,7 +20,8 @@
 TARGET          engineinfo.dll
 TARGETTYPE      dll
 UID             0x1000008D 0x10207904
-VENDORID            VID_DEFAULT
+VENDORID        VID_DEFAULT
+VERSION         10.0
 
 CAPABILITY      CAP_GENERAL_DLL
 
@@ -42,3 +43,5 @@ SYSTEMINCLUDE   ../../../inc       // Telephony internal headers
 LIBRARY         euser.lib
 LIBRARY         bafl.lib           // Descriptor arrays
 LIBRARY         cce.lib
+
+SMPSAFE

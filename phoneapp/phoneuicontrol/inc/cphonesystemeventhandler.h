@@ -24,7 +24,6 @@
 #include <e32base.h>
 #include "mphonesystemeventhandler.h"
 #include "mphonepubsubobserver.h"
-#include "mphonecenrepobserver.h"
 
 // FORWARD DECLARATIONS
 class MPhoneStateMachine;
@@ -35,8 +34,7 @@ class MPhoneStateMachine;
 class CPhoneSystemEventHandler : 
     public CBase, 
     public MPhoneSystemEventHandler,
-    public MPhonePubSubObserver,
-    public MPhoneCenRepObserver
+    public MPhonePubSubObserver
     {
     public:
 
@@ -53,19 +51,7 @@ class CPhoneSystemEventHandler :
 
     public: // From MPhoneSystemEvents
 
-        void HandleSystemEventL( const TWsEvent& aEvent );
-
-        void HandleForegroundEventL( TBool aForeground );
-
-        void HandlePhoneForegroundEventL();
-
-        void HandleIdleForegroundEventL();
-
         void HandlePhoneStartupL();
-        
-        void HandlePhoneFocusLostEventL();
-
-        void HandleKeyLockEnabled( TBool aKeylockEnabled );
         
     public: // From MPhonePubSubObserver
 
@@ -79,18 +65,6 @@ class CPhoneSystemEventHandler :
             const TUid& aCategory,
             const TUint aKey,
             const TInt aValue );
-
-    public: // From MPhoneCenRepObserver
-
-        /**
-        * Handle the change of the setting from Central Repository
-        * @param aUid identifing the central repository UID.
-        * @param aId central repository ID.
-        */
-        virtual void HandleCenRepChangeL( 
-            const TUid& aUid,
-            const TUint aId );
-
     private:
 
         /**

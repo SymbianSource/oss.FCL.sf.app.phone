@@ -20,6 +20,7 @@
 #include <HbGlobal>
 #include <mockservice.h>
 #include <settingsinternalcrkeys.h>
+#include "qtestmains60.h"
 #include "phoneapplauncher.h"
 #include "phonemessagecontroller.h"
 #include "tphonecmdparamsfidata.h"
@@ -156,12 +157,5 @@ void UT_PhoneMessageController::t_openSoftRejectEditorUserDefinedText()
 }
 
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication(argc, argv);
-    UT_PhoneMessageController tc;
-    int ret = QTest::qExec(&tc, argc, argv); \
-    return ret;
-}
-
+QTEST_MAIN_S60(UT_PhoneMessageController)
 #include "unit_tests.moc"

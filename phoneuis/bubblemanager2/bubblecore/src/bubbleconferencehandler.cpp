@@ -190,8 +190,7 @@ void BubbleConferenceHandler::handleItemSelected(
 {
     Q_UNUSED(previous);
 
-    if (current.isValid()) {
-        Q_ASSERT( mHeader != 0 );
+    if (current.isValid() && mHeader!=0) {
         // need to cast constness away
         BubbleConferenceHeader& mutableHeader =
             const_cast<BubbleConferenceHeader&>(*mHeader);

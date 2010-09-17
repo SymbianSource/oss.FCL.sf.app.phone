@@ -49,3 +49,5 @@ HEADERS += ../../infowidget/inc/infowidget.h
 SOURCES += ../mocks/mock_infowidget.cpp
 SOURCES += ../mocks/mock_qserviceplugininterface.cpp
 SOURCES += ../mocks/mock_qserviceinterfacedescriptor.cpp
+
+symbian:MMP_RULES += SMPSAFE

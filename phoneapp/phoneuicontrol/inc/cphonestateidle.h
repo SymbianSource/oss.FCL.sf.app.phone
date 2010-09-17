@@ -133,12 +133,6 @@ class CPhoneStateIdle : public CPhoneState
         IMPORT_C void DisplayIncomingCallL( TInt aCallId );
 
         /**
-        * Display Call Setup
-        * @param aCallid call id
-        */
-        IMPORT_C void DisplayCallSetupL( TInt aCallId );
-
-        /**
         * By default EPOC constructor is private.
         */
         IMPORT_C CPhoneStateIdle( 
@@ -227,6 +221,12 @@ class CPhoneStateIdle : public CPhoneState
         TBool RestoreOngoing();
 
         void HandleVoiceCallCommandL();
+        
+        /**
+       * Changes state to aState and resets iBubbleInitialized
+       * value to false.
+       */
+       void ChangeTo( TInt aState );
          
     private:
     

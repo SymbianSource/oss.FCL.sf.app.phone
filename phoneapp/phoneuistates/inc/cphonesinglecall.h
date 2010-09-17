@@ -65,7 +65,6 @@ class CPhoneSingleCall : public CPhoneGsmInCall
             
         IMPORT_C virtual TBool HandleCommandL( TInt aCommand );
 
-
     protected:
 
         /**
@@ -96,23 +95,12 @@ class CPhoneSingleCall : public CPhoneGsmInCall
         
         void HandleIncomingL( TInt aCallId );
         
-        void DisplayIncomingCallL( 
-            TInt aCallId, 
-            const TPhoneCmdParamBoolean aCommandParam );
+        void HandleDialingL( TInt aCallId );
         
-        void HandleDiallingL( TInt aCallId );
-                
-        void DisplayCallSetupL( TInt aCallId );
-        
-        void SwitchToVideoL();
-    
     private:
     
         // Call id information.
         TInt iCallId;
-        
-        // Status of query
-        TBool iSwitchToVideoQuery;
         
     };
 

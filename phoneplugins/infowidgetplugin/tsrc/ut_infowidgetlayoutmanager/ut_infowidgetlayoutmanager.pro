@@ -46,3 +46,6 @@ SOURCES += ../mocks/mock_hbstyle.cpp
 SOURCES += ../mocks/mock_hbinstance.cpp
 #SOURCES += ../mocks/mock_qfontmetrics.cpp
 RESOURCES = ../../infowidgetplugin.qrc
+
+
+symbian:MMP_RULES += SMPSAFE

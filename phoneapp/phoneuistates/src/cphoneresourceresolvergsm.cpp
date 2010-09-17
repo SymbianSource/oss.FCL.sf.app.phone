@@ -20,7 +20,6 @@
 #include <bautils.h>
 #include <eikenv.h>
 #include <avkon.rsg>
-#include <AknUtils.h>
 #include <featmgr.h>
 
 #include "cphoneresourceresolvergsm.h"
@@ -39,7 +38,8 @@
 // might leave.
 // -----------------------------------------------------------------------------
 //
-EXPORT_C CPhoneResourceResolverGSM::CPhoneResourceResolverGSM(): iEnv( *CEikonEnv::Static() )
+EXPORT_C CPhoneResourceResolverGSM::CPhoneResourceResolverGSM(): 
+    iEnv( *CEikonEnv::Static() ) // codescanner::performance::eikonenvstatic
     {
     }
 

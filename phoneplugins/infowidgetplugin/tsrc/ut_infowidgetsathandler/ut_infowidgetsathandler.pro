@@ -47,3 +47,5 @@ SOURCES += ../../infowidget/src/infowidgetsathandler.cpp
 SOURCES += ../mocks/mock_rsatservice.cpp  \
            ../mocks/mock_RSatSession.cpp  \
            ../mocks/mock_infowidgetsathandler_p.cpp
+
+symbian:MMP_RULES += SMPSAFE

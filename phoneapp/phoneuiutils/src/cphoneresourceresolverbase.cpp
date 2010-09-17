@@ -44,7 +44,7 @@
 // -----------------------------------------------------------------------------
 //
 EXPORT_C CPhoneResourceResolverBase::CPhoneResourceResolverBase():
-    iEnv( *CEikonEnv::Static() )
+    iEnv( *CEikonEnv::Static() ) // codescanner::performance::eikonenvstatic
     {
     if ( FeatureManager::FeatureSupported( KFeatureIdVideocallMenuVisibility ) )
         {
@@ -933,18 +933,7 @@ EXPORT_C TInt CPhoneResourceResolverBase::ResolveResourceID(
             retVal = R_PHONE_BT_LOOPBACK_DISABLED_STRING;
             break;
 
-        case EPhoneLineBlockingNote:
-            retVal = R_PHONE_LINE_BLOCKING_NOTE;
-            break;
-
-        case EPhoneSwitchToVideoQuery:
-            retVal = R_PHONE_INCALL_QUERY_SWITCH_TO_VIDEO;
-            break;
-
-        case EPhoneSwitchToVoiceQuery:
-            retVal = R_PHONE_INCALL_QUERY_SWITCH_TO_VOICE;
-            break;
-
+            
         case EPhoneInformationNoNetworkSupportForVideoCallNote:
             retVal =  R_PHONE_INCALL_INFO_NO_NETWORK_SUPPORT;
             break;

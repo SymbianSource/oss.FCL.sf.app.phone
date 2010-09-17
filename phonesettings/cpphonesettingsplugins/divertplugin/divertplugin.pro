@@ -49,6 +49,7 @@ symbian: {
     TARGET.UID3 = 0X20029F25
     LIBS += -lxqsysinfo \
         -lxqsettingsmanager
+    VERSION = 10.0
 }
 
-
+BLD_INF_RULES.prj_exports += "./rom/cpdivertplugin_stub.sis /epoc32/data/z/system/install/cpdivertplugin_stub.sis"

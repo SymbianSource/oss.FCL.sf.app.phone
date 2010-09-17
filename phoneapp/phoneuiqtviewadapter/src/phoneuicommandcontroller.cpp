@@ -187,11 +187,7 @@ QList<int> PhoneUiCommandController::menuCommands(
     // No menu items if an emergency call ongoing.
     if (false == isEmergencyCall) {
         switch(callStates.values().count()) {
-        case 1: {
-            // No logical string for switch to video option	
-            /*if (callStates.values().contains(EPEStateConnected)) {
-                commands.append(PhoneInCallCmdSwitchToVideo);
-            }*/
+        case 1: {            
         }
         break;
         case 2: {
@@ -211,7 +207,15 @@ QList<int> PhoneUiCommandController::menuCommands(
         }
         break;
         case 3: {
-            commands.append(PhoneInCallCmdEndAllCalls);    
+            commands.append(PhoneInCallCmdEndAllCalls);
+            
+            if (callStates.values().contains(EPEStateConnected) &&
+                callStates.values().contains(EPEStateHeld) &&
+                callStates.values().contains(EPEStateRinging)) {
+                if (sameServices) {
+                    commands.append(PhoneInCallCmdTransfer);
+                }
+            }
         }
         break;
         default:
@@ -253,10 +257,7 @@ int PhoneUiCommandController::mapCommand(int command) const
         break;     
     case PhoneInCallCmdTransfer:
         ret = EPhoneInCallCmdTransfer;
-        break;    
-    case PhoneInCallCmdSwitchToVideo:
-        ret = EPhoneInCallCmdSwitchToVideo;
-        break;  
+        break;
     case PhoneInCallCmdHandoverToWlan:
         ret = EPhoneCmdHandoverToWlan;
         break;

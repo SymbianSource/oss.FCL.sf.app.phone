@@ -79,8 +79,6 @@ class CPhoneConferenceAndWaitingAndCallSetup : public CPhoneConference
         * ConstructL()
         */
         virtual void ConstructL();   
-
-        virtual void UpdateInCallCbaL();
         
         virtual void HandleConferenceIdleL();
         

@@ -20,6 +20,8 @@
  
 #include <data_caging_paths_for_iby.hrh>
 
-file=ABI_DIR\UREL\phoneindicatorplugin.dll               SHARED_LIB_DIR\phoneindicatorplugin.dll 
+file=ABI_DIR\UREL\phoneindicatorplugin.dll                                      SHARED_LIB_DIR\phoneindicatorplugin.dll 
 data=\epoc32\data\z\resource\plugins\indicators\phoneindicatorplugin.qtplugin   \resource\plugins\indicators\phoneindicatorplugin.qtplugin
+data=ZSYSTEM\install\phoneindicatorplugin_stub.sis                              System\Install\phoneindicatorplugin_stub.sis
+
 #endif

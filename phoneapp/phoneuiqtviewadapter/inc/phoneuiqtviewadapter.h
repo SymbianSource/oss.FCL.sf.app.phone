@@ -43,6 +43,8 @@ class QKeyEvent;
 class PhoneIndicatorController;
 class PhoneVisibilityHandler;
 class PhoneAppLauncher;
+class MPEEngineInfo;
+class PhoneCallHeaderManager;
 
 class PHONEUIQTVIEWADAPTER_EXPORT PhoneUIQtViewAdapter : 
     public QObject, 
@@ -149,6 +151,12 @@ public: // From MPhoneViewCommandHandle
     */
     PhoneNoteController* noteController() const;
 
+    /*!
+        \fn void PhoneUIQtViewAdapter::setEngineInfo ()
+        
+        Sets engine info.
+    */
+    void setEngineInfo(MPEEngineInfo* engineInfo);
 
 private slots:
 
@@ -181,64 +189,64 @@ private slots:
     */
     void handleWindowDeactivated();
     
+    /*!
+       \ fn void PhoneUIQtViewAdapter::onFocusLost();
+     
+         This method is called when the foreground application changes.
+     */
+    void onFocusLost();
+    
+    /*!
+       \ fn void PhoneUIQtViewAdapter::onFocusGained();
+       
+       This method is called when the foreground application changes.
+     */
+    void onFocusGained();
+    
 private:
 
     /*!
-        \fn void PhoneUIQtViewAdapter::setTopApplication (TPhoneCommandParam *)
+        \fn int PhoneUIQtViewAdapter::createCallHeader()
         
-        This method is called when EPhoneViewSetTopApplication or
-        EPhoneViewSetIdleTopApplication command is received.
+        This method creates new call header by call id.
     */
-    void setTopApplication (TPhoneCommandParam *commandParam);
-    
-    /*!
-        \fn int PhoneUIQtViewAdapter::idleAppUid()
-        
-        This method fetches Idle application's Id from PubSub and returns it.
-    */
-    int idleAppUid();
+    void createCallHeader(int callId);
 
     /*!
         \fn int PhoneUIQtViewAdapter::createCallHeader()
         
-        This method creates new call header.
+        This method creates new emergency call header.
     */
-    void createCallHeader (int callId, TPhoneCommandParam *commandParam);
-    
-    /*!
-        \fn int PhoneUIQtViewAdapter::createCallHeader()
-        
-        This method creates new call header.
-    */
-    void createEmergencyCallHeader (int callId, TPhoneCommandParam *commandParam);
+    void createEmergencyCallHeader(int callId);
 
     /*!
         \fn int PhoneUIQtViewAdapter::updateCallHeader()
         
         This method updates call state information in call header.
     */
-    void updateCallHeaderState (int callId, TPhoneCommandParam *commandParam);
+    void updateCallHeaderState(int callId);
     
     /*!
         \fn int PhoneUIQtViewAdapter::updateCallHeaderRemoteInfo()
         
         This method updates remote information in call header.
     */
-    void updateCallHeaderRemoteInfo (int callId, TPhoneCommandParam *commandParam);
-    
+    void updateCallHeaderRemoteInfo(int callId);
+     
+
     /*!
         \fn int PhoneUIQtViewAdapter::updateCallHeaderRemoteInfo()
         
         This method updates remote information in call header and label.
     */
-    void updateCallHeaderRemoteInfoAndLabel (int callId, TPhoneCommandParam *commandParam);    
-
+    void updateCallHeaderRemoteInfoAndLabel(int callId);  
+    
     /*!
         \fn int PhoneUIQtViewAdapter::handleCipheringInfoChange()
         
         This method updates ciphering indicators.
     */
-    void handleCipheringInfoChange(int callId, TPhoneCommandParam *commandParam);    
+    void handleCipheringInfoChange(int callId);
     
     /*!
         \fn int PhoneUIQtViewAdapter::callIdByState()
@@ -264,21 +272,6 @@ private:
         This method sets buttons to toolbar.        
     */
     void setToolbarButtons (TPhoneCommandParam *commandParam);
-    
-    /*!
-        \fn void PhoneUIQtViewAdapter::setCallHoldFlag (TPhoneCmdParam *commandParam)
-        
-        This method sets flag telling is the call hold or not.
-    */
-    void setCallHoldFlag (TPhoneCommandParam *commandParam);
-    
-    /*!
-        \fn void PhoneUIQtViewAdapter::callHoldFlag (TPhoneCmdParam *commandParam)
-        
-        This method retrieves flag telling is the call hold or not and writes
-        it into given command parameter.
-    */
-    void callHoldFlag (TPhoneCommandParam *commandParam);
 
     /*!
         \fn void PhoneUIQtViewAdapter::writeAudioVolumeLevel (TPhoneCmdParam *commandParam)
@@ -330,14 +323,14 @@ private:
         This method opens dialpad.
     */
     void openDialpad();
-    
+
     /*!
         \fn int PhoneUIQtViewAdapter::createConference()
         
         This method creates conference bubble.
     */
-    void createConferenceBubble(int callId, TPhoneCommandParam *commandParam);
-
+    void createConferenceBubble(int callId);
+    
     /*!
         \fn int PhoneUIQtViewAdapter::conferenceCallId()
         
@@ -564,12 +557,15 @@ private:
     PhoneUiCommandController *m_uiCommandController;
     PhoneMessageController *m_messageController;
     PhoneIndicatorController *m_indicatorController;
+    PhoneCallHeaderManager *m_phoneCallHeaderManager;
     bool m_dialpadAboutToClose;
     bool m_homeScreenToForeground;
 	PhoneVisibilityHandler *m_visibilityHandler;
 	PhoneAppLauncher *m_appLauncher;
 	bool m_clearDialpadOnClose;
 	bool m_speakerAsDefaultButton;
+	bool m_ringingTonePlaying;
+    MPEEngineInfo*  m_engineInfo;
 };
 
 #endif // PHONEUIQTVIEWADAPTER_H

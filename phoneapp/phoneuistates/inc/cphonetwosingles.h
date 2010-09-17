@@ -85,8 +85,6 @@ class CPhoneTwoSingles : public CPhoneGsmInCall
         
         IMPORT_C virtual void HandleConnectedConferenceL( TInt aCallId );
         
-        IMPORT_C virtual void UpdateInCallCbaL();
-        
         
     private:     
          
@@ -97,11 +95,6 @@ class CPhoneTwoSingles : public CPhoneGsmInCall
         void HandleHeldL( TInt aCallId );
                 
         void HandleIncomingL( TInt aCallId );
-        
-        void DisplayIncomingCallL( 
-            TInt aCallId, 
-            const TPhoneCmdParamBoolean aCommandParam );  
-        
     };
 
 #endif // CPHONETWOSINGLES_H

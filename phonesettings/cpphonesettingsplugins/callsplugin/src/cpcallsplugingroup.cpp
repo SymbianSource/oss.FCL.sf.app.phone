@@ -256,9 +256,9 @@ void CpCallsPluginGroup::createOwnVideoInReceivedCall()
     
     QStringList ownVideoSelections;
     ownVideoSelections
-        <<hbTrId("txt_phone_setlabel_own_video_in_val_show_automatic")
         <<hbTrId("txt_phone_setlabel_own_video_in_val_ask_first")
-        <<hbTrId("txt_phone_setlabel_own_video_in_val_dont_show");
+        <<hbTrId("txt_phone_setlabel_own_video_in_val_dont_show")
+        <<hbTrId("txt_phone_setlabel_own_video_in_val_show_automatic");
 
     m_OwnVideoInReceivedCall->setContentWidgetData(
         "items", QVariant(ownVideoSelections));

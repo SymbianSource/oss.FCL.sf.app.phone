@@ -19,7 +19,6 @@
 // INCLUDES
 #include <mpeengineinfo.h>
 #include <telephonydomainpskeys.h>
-#include <UikonInternalPSKeys.h>
 #include <ccpdefs.h>
 
 #include "phoneui.pan"
@@ -111,41 +110,39 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL(
     __LOGMETHODSTARTEND( EPhoneControl, 
         "CPhoneErrorMessagesHandler::SendGlobalInfoNoteL()" );
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
-    if ( CPhonePubSubProxy::Instance()->Value( 
-            KPSUidUikon, KUikGlobalNotesAllowed ) == 1 )
-        {
-        TPhoneCmdParamBoolean globalNotifierParam;
-        globalNotifierParam.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( 
-                EPhoneViewSetGlobalNotifiersDisabled,    
-                &globalNotifierParam );
-            
-        TPhoneCmdParamGlobalNote globalNoteParam;
-        PhoneNotificationType type = aNotificationDialog ? 
-                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
-        globalNoteParam.SetType( type );
-        globalNoteParam.SetNotificationDialog( aNotificationDialog );
+    
+    TPhoneCmdParamBoolean globalNotifierParam;
+    globalNotifierParam.SetBoolean( EFalse );
+    iViewCommandHandle->ExecuteCommandL( 
+            EPhoneViewSetGlobalNotifiersDisabled,    
+            &globalNotifierParam );
+        
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    PhoneNotificationType type = aNotificationDialog ? 
+            EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+    globalNoteParam.SetType( type );
+    globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
-        TInt resourceID( aResourceId );
-        TInt causeCode( KErrNotFound );
-        TBool notification( ETrue );
-        if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification ) )
-            {
-            globalNoteParam.SetNotificationDialog( notification );
-            globalNoteParam.SetCauseCode(causeCode);
-            globalNoteParam.SetTextResourceId( 
-                CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( resourceID ) );
-            }
-        else
-            {
-            globalNoteParam.SetTextResourceId( 
-                CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( aResourceId ) );
-            }
-        iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewShowGlobalNote, &globalNoteParam );
+    TInt resourceID( aResourceId );
+    TInt causeCode( KErrNotFound );
+    TBool notification( ETrue );
+    if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification ) )
+        {
+        globalNoteParam.SetNotificationDialog( notification );
+        globalNoteParam.SetCauseCode(causeCode);
+        globalNoteParam.SetTextResourceId( 
+            CPhoneMainResourceResolver::Instance()->
+            ResolveResourceID( resourceID ) );
         }
+    else
+        {
+        globalNoteParam.SetTextResourceId( 
+            CPhoneMainResourceResolver::Instance()->
+            ResolveResourceID( aResourceId ) );
+        }
+    iViewCommandHandle->ExecuteCommandL( 
+        EPhoneViewShowGlobalNote, &globalNoteParam );
+   
     }
  
 // ---------------------------------------------------------
@@ -158,41 +155,38 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL(
     __LOGMETHODSTARTEND( EPhoneControl, 
         "CPhoneErrorMessagesHandler::SendGlobalErrorNoteL()" );
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
-    if ( CPhonePubSubProxy::Instance()->Value( 
-            KPSUidUikon, KUikGlobalNotesAllowed ) == 1 )
-        {
-        TPhoneCmdParamBoolean globalNotifierParam;
-        globalNotifierParam.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( 
-             EPhoneViewSetGlobalNotifiersDisabled,
-            &globalNotifierParam );
-            
-        TPhoneCmdParamGlobalNote globalNoteParam;
-        PhoneNotificationType type = aNotificationDialog ? 
-                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
-        globalNoteParam.SetType( type );
-        globalNoteParam.SetNotificationDialog( aNotificationDialog );
+    TPhoneCmdParamBoolean globalNotifierParam;
+    globalNotifierParam.SetBoolean( EFalse );
+    iViewCommandHandle->ExecuteCommandL( 
+         EPhoneViewSetGlobalNotifiersDisabled,
+        &globalNotifierParam );
         
-        TInt resourceID( aResourceId );
-        TInt causeCode( KErrNotFound );
-        TBool notification( ETrue );
-        if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification ) )
-            {
-            globalNoteParam.SetNotificationDialog( notification );
-            globalNoteParam.SetCauseCode(causeCode);
-            globalNoteParam.SetTextResourceId( 
-                CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( resourceID ) );
-            }
-        else
-            {
-            globalNoteParam.SetTextResourceId( 
-                CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( aResourceId ) );
-            }
-        iViewCommandHandle->ExecuteCommandL(  
-            EPhoneViewShowGlobalNote, &globalNoteParam );
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    PhoneNotificationType type = aNotificationDialog ? 
+            EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+    globalNoteParam.SetType( type );
+    globalNoteParam.SetNotificationDialog( aNotificationDialog );
+    
+    TInt resourceID( aResourceId );
+    TInt causeCode( KErrNotFound );
+    TBool notification( ETrue );
+    if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification ) )
+        {
+        globalNoteParam.SetNotificationDialog( notification );
+        globalNoteParam.SetCauseCode(causeCode);
+        globalNoteParam.SetTextResourceId( 
+            CPhoneMainResourceResolver::Instance()->
+            ResolveResourceID( resourceID ) );
         }
+    else
+        {
+        globalNoteParam.SetTextResourceId( 
+            CPhoneMainResourceResolver::Instance()->
+            ResolveResourceID( aResourceId ) );
+        }
+    iViewCommandHandle->ExecuteCommandL(  
+        EPhoneViewShowGlobalNote, &globalNoteParam );
+    
     }
 
 // ---------------------------------------------------------
@@ -204,42 +198,38 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL(
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneErrorMessagesHandler::SendGlobalWarningNoteL( ) ");
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
-    if ( CPhonePubSubProxy::Instance()->Value( 
-            KPSUidUikon, KUikGlobalNotesAllowed ) == 1 || 
-            SimState() == EPESimReadable )
-        {
-        TPhoneCmdParamBoolean globalNotifierParam;
-        globalNotifierParam.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL(  
-            EPhoneViewSetGlobalNotifiersDisabled,
-            &globalNotifierParam );
-            
-        TPhoneCmdParamGlobalNote globalNoteParam;
-        PhoneNotificationType type = aNotificationDialog ? 
-                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
-        globalNoteParam.SetType( type );
-        globalNoteParam.SetNotificationDialog( aNotificationDialog );
+   
+    TPhoneCmdParamBoolean globalNotifierParam;
+    globalNotifierParam.SetBoolean( EFalse );
+    iViewCommandHandle->ExecuteCommandL(  
+        EPhoneViewSetGlobalNotifiersDisabled,
+        &globalNotifierParam );
+        
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    PhoneNotificationType type = aNotificationDialog ? 
+            EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+    globalNoteParam.SetType( type );
+    globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
-        TInt resourceID( aResourceId );
-        TInt causeCode( KErrNotFound );
-        TBool notification( ETrue );
-        if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification) )
-            {
-            globalNoteParam.SetNotificationDialog( notification );
-            globalNoteParam.SetCauseCode(causeCode);
-            globalNoteParam.SetTextResourceId( 
-                CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( resourceID ) );
-            }
-        else
-            {
-            globalNoteParam.SetTextResourceId( 
-                CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( aResourceId ) );
-            }
-        iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewShowGlobalNote, &globalNoteParam );
+    TInt resourceID( aResourceId );
+    TInt causeCode( KErrNotFound );
+    TBool notification( ETrue );
+    if ( iCauseCodeVariation && GetCauseCode( causeCode, resourceID, notification) )
+        {
+        globalNoteParam.SetNotificationDialog( notification );
+        globalNoteParam.SetCauseCode(causeCode);
+        globalNoteParam.SetTextResourceId( 
+            CPhoneMainResourceResolver::Instance()->
+            ResolveResourceID( resourceID ) );
         }
+    else
+        {
+        globalNoteParam.SetTextResourceId( 
+            CPhoneMainResourceResolver::Instance()->
+            ResolveResourceID( aResourceId ) );
+        }
+    iViewCommandHandle->ExecuteCommandL( 
+        EPhoneViewShowGlobalNote, &globalNoteParam );
     }
 
 // ---------------------------------------------------------

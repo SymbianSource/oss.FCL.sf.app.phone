@@ -113,7 +113,8 @@ void CPhoneStateCallSetupVoIP::HandleConnectingL( TInt aCallId )
 
     if( iStateMachine->PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP )
         {
-        SetCallHeaderType( EPECallTypeVoIP );   
+        //TODO
+        //SetCallHeaderType( EPECallTypeVoIP );   
         }
         
     CPhoneCallSetup::HandleConnectingL( aCallId );      

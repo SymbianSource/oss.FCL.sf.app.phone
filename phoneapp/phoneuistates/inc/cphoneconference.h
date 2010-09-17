@@ -92,18 +92,10 @@ class CPhoneConference : public CPhoneGsmInCall
         virtual void MakeStateTransitionToSingleL();
 
         virtual void HandleIncomingL( TInt aCallId );
-
-        virtual void DisplayIncomingCallL( 
-            TInt aCallId, 
-            const TPhoneCmdParamBoolean aCommandParam );
         
         virtual void HandleConferenceIdleL();
                         
         virtual void MakeStateTransitionToTwoSinglesL();
-
-        virtual void DisplayCallSetupL( TInt aCallId );
-        
-        virtual void UpdateInCallCbaL();
 
         void UpdateConferenceSecurityStatusL( TInt aCallId );
         
@@ -122,7 +114,7 @@ class CPhoneConference : public CPhoneGsmInCall
         
         void MakeStateTransitionToIdleL();
         
-        void HandleDiallingL( TInt aCallId );
+        void HandleDialingL( TInt aCallId );
         
         void HandleWentOneToOneL( TInt aCallId );
         

@@ -23,7 +23,7 @@
 #include <featmgr.h>
 #include <cpephonemodelif.h>
 #include <mpeengineinfo.h>
-#include <AknUtils.h>
+
 
 #include "cphoneemergency.h"
 #include "tphonecmdparamstring.h"
@@ -109,7 +109,7 @@ void CPhoneEmergency::HandleNumberEntryClearedL()
     {
     __LOGMETHODSTARTEND(EPhoneUIStates,
         "CPhoneEmergency::HandleNumberEntryClearedL()");
-    UpdateInCallCbaL();
+    UpdateUiCommands();
     }
 
 // -----------------------------------------------------------
@@ -213,6 +213,8 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
         iViewCommandHandle->ExecuteCommand( 
                 EPhoneViewStopCapturingKey, &captureParam );
 
+        SetBackButtonActive(ETrue);
+        
         const TBool isSimStateNotPresentWithSecurityMode = IsSimStateNotPresentWithSecurityModeEnabled();
         // Sim IS not ok when making emergency call from Pin query, no note
         if ( (!IsSimOk() && !iStartupInterrupted) || isSimStateNotPresentWithSecurityMode )
@@ -221,21 +223,22 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
             }
         else
             {
-            if ( !TopAppIsDisplayedL() || iDeviceLockOn  )
+            if ( iDeviceLockOn  )
                 {
                 // Continue displaying current app but set up the
                 // idle screen in the background
-                SetupIdleScreenInBackgroundL();
+                RemoveDialogsAndSendPhoneToBackgroundL();
                 }
 
-            else if ( IsNumberEntryContentStored() || IsNumberEntryUsedL() )
+            else if ( iNumberEntryManager->IsNumberEntryContentStored() || 
+                    iNumberEntryManager->IsNumberEntryUsedL() )
                 {
-                SetNumberEntryVisibilityL(ETrue);
+                iNumberEntryManager->SetNumberEntryVisibilityL(ETrue);
                 }
             
             else
                 {
-                DisplayIdleScreenL();
+                RemoveDialogsAndSendPhoneToBackgroundL();
                 }
 
             if ( iConnected )
@@ -259,17 +262,16 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
                 }
             
             // As long as security note is not shown with feature flag 
-            // KFeatureIdFfSimlessOfflineSupport undef it is ok to do SetupIdleScreenInBackgroundL.
-            if ( ( !IsNumberEntryUsedL() ) && 
+            // KFeatureIdFfSimlessOfflineSupport undef it is ok to do RemoveDialogsAndSendPhoneToBackgroundL.
+            if ( ( !iNumberEntryManager->IsNumberEntryUsedL() ) && 
                  !( IsSimStateNotPresentWithSecurityModeEnabled() && 
                     !FeatureManager::FeatureSupported( KFeatureIdFfSimlessOfflineSupport ) ) )
                 {
-                UpdateCbaL( EPhoneEmptyCBA );
                 TPhoneCmdParamBoolean securityMode;
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &securityMode );
                 if ( !securityMode.Boolean() )
                     {
-                    SetupIdleScreenInBackgroundL();
+                    RemoveDialogsAndSendPhoneToBackgroundL();
                     }
                 }
             iStateMachine->ChangeState( EPhoneStateIdle );
@@ -307,21 +309,8 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
         captureParam.SetKeyCode( EKeyNo );
         iViewCommandHandle->ExecuteCommand( EPhoneViewStartCapturingKey, &captureParam );
         
-        // Indicate that the Phone needs to be sent to the background if
-        // an application other than the top application is in the foreground
-        TPhoneCmdParamBoolean booleanParam;
-        booleanParam.SetBoolean( !TopAppIsDisplayedL() );
-        iViewCommandHandle->ExecuteCommandL(
-            EPhoneViewSetNeedToSendToBackgroundStatus,
-            &booleanParam );
-        
-        TPhoneCmdParamInteger uidParam;
-        uidParam.SetInteger( KUidPhoneApplication.iUid );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewBringAppToForeground,
-            &uidParam );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetTopApplication,
-            &uidParam );
-        if ( IsNumberEntryUsedL() )
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewBringPhoneAppToForeground );
+        if ( iNumberEntryManager->IsNumberEntryUsedL() )
             {
             // Remove number entry
             iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
@@ -331,44 +320,12 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveQuery );
         
         BeginUiUpdateLC();
-        
-        TPhoneCmdParamEmergencyCallHeaderData emergencyHeaderParam;
-        TBuf<KPhoneCallHeaderLabelMaxLength> headerText( KNullDesC );
-        StringLoader::Load(
-            headerText,
-            CPhoneMainResourceResolver::Instance()->ResolveResourceID(
-                EPhoneEmergencyCallHeader ),
-            CCoeEnv::Static() );
-        emergencyHeaderParam.SetHeaderText( headerText );
-
-        // Set call header ciphering status
-        emergencyHeaderParam.SetCiphering(
-            iStateMachine->PhoneEngineInfo()->IsSecureCall( aCallId ) );
-        emergencyHeaderParam.SetCipheringIndicatorAllowed(
-            iStateMachine->PhoneEngineInfo()->SecureSpecified() );
 
         // Notify the view
         iViewCommandHandle->ExecuteCommandL(
             EPhoneViewCreateEmergencyCallHeader,
-            aCallId,
-            &emergencyHeaderParam );
-
-        TPhoneCmdParamCallHeaderData headerParam;
-        headerParam.SetCallState( EPEStateDialing );
-        
-        StringLoader::Load(
-            headerText,
-            CPhoneMainResourceResolver::Instance()->ResolveResourceID(
-                    EPhoneAttemptingEmergencyText ),
-            CCoeEnv::Static() );
-        headerParam.SetLabelText( headerText );
-        
-        iViewCommandHandle->ExecuteCommandL(
-            EPhoneViewUpdateBubble,
-            aCallId,
-            &headerParam );
-
-        SetTouchPaneButtons( EPhoneEmergencyCallButtons );
+            aCallId );
+       
         SetBackButtonActive(EFalse);
         EndUiUpdate();
         UpdateSetupCbaL();
@@ -389,23 +346,15 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
           &globalNotifierParam );
     
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL(
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-    
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNote );
 
-    TPhoneCmdParamCallHeaderData headerParam;
-    headerParam.SetCallState( EPEStateConnecting );
     // Notify the view
     iViewCommandHandle->ExecuteCommandL(
         EPhoneViewUpdateBubble,
-        aCallId,
-        &headerParam );
+        aCallId );
 
     SetToolbarButtonLoudspeakerEnabled();
-    UpdateInCallCbaL();
+    UpdateUiCommands();
     }
 
 // -----------------------------------------------------------
@@ -416,25 +365,12 @@ void CPhoneEmergency::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneEmergency::HandleConnectedL() ");
     BeginUiUpdateLC();
-    TPhoneCmdParamCallHeaderData emergencyHeaderParam;
-    emergencyHeaderParam.SetCallState( EPEStateConnected );
     iViewCommandHandle->ExecuteCommandL(
         EPhoneViewUpdateBubble,
-        aCallId,
-        &emergencyHeaderParam );
+        aCallId );
     SetBackButtonActive(ETrue);
+    UpdateUiCommands();
     EndUiUpdate();
-    UpdateInCallCbaL();
-    }
-
-// -----------------------------------------------------------
-// CPhoneEmergency::UpdateInCallCbaL
-// -----------------------------------------------------------
-//
-void CPhoneEmergency::UpdateInCallCbaL()
-    {
-    __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneEmergency::UpdateInCallCbaL() ");
-    iCbaManager->SetCbaL( EPhoneCallHandlingEmergencyCBA );
     }
 
 // --------------------------------------------------------------
@@ -453,7 +389,7 @@ void CPhoneEmergency::HandleKeyMessageL(
             break;
 
         case EKeyYes: // send-key
-             if( IsNumberEntryVisibleL() )
+             if( iNumberEntryManager->IsNumberEntryVisibleL() )
                 {
                 TPhoneCmdParamInteger numberEntryCountParam;
                     iViewCommandHandle->ExecuteCommandL( 
@@ -466,7 +402,7 @@ void CPhoneEmergency::HandleKeyMessageL(
                     }
                 else
                     {
-                    CallFromNumberEntryL();
+                    iNumberEntryManager->CallFromNumberEntryL();
                     }
                 }
             else
@@ -612,10 +548,6 @@ void CPhoneEmergency::SendKeyEventL(
             __PHONELOG1( EBasic, EPhoneControl,
                 "CPhoneEmergency::SendKeyEventL(%S)",
                 &buffer );
-            AknTextUtils::ConvertDigitsTo( buffer, EDigitTypeWestern );
-            __PHONELOG1( EBasic, EPhoneControl,
-                "CPhoneEmergency::SendKeyEventL(%S)",
-                &buffer );
             TLex code( buffer );
             // Save the key code
             iStateMachine->PhoneEngineInfo()->SetKeyCode( code.Peek() );
@@ -641,15 +573,14 @@ void CPhoneEmergency::SendKeyEventL(
 //
 void CPhoneEmergency::HandleAudioOutputChangedL()
     {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneEmergency::HandleAudioOutputChangedL( ) ");
-    UpdateSetupCbaL();
-    SetTouchPaneButtons(0);
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneEmergency::HandleAudioOutputChangedL( ) ");    
     TPhoneCmdParamAudioOutput outputParam;
     outputParam.SetAudioOutput( 
             iStateMachine->PhoneEngineInfo()->AudioOutput() );
     iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewActivateAudioPathUIChanges,
             &outputParam );
+    UpdateUiCommands();
     }
 
 // -----------------------------------------------------------------------------
@@ -668,7 +599,7 @@ void CPhoneEmergency::SetStartupInterrupted( const TBool aStartupInterrupted )
 void CPhoneEmergency::UpdateSetupCbaL()
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneEmergency::UpdateSetupCbaL() ");
-   iCbaManager->SetCbaL( EPhoneCallHandlingEmergencyCBA );
+    UpdateUiCommands();
     }
 
 // -----------------------------------------------------------------------------

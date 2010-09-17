@@ -319,6 +319,10 @@ void CPEVideoCallHandling::InitCall( MCCECall& aCall )
         iModel.DataStore()->SetCallSecureStatus( callData->IsSecureCall(), callData->GetCallId() );
         iModel.DataStore()->SetSecureSpecified( callData->SecureSpecified() );
         
+        RMobileCall::TMobileCallInfoV3 callInfo;
+        GetCallInfo(callInfo, callData->GetCallId());
+        iModel.DataStore()->SetIncomingCallForwarded( callInfo.iForwarded, callData->GetCallId() );
+        
         const CCCPCallParameters& callParameters = aCall.Parameters();
         switch ( callParameters.CallType() )
             {

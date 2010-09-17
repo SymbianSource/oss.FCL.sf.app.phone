@@ -30,7 +30,7 @@ PRJ_EXPORTS
 
 
 // SIS stubs
-../data/audiohandling_stub.sis      /epoc32/data/z/system/install/audiohandling_stub.sis
+../rom/audiohandling_stub.sis      /epoc32/data/z/system/install/audiohandling_stub.sis
 
  
 PRJ_MMPFILES

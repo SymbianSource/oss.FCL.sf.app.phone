@@ -90,21 +90,6 @@ class CPhoneIncoming : public CPhoneStateIncoming
         */
         void HandleIncomingL( TInt aCallId );
         
-        /**
-        * Display Incoming Call
-        * @param aCallid call id
-        * @param aCommandParam
-        */
-        void DisplayIncomingCallL( 
-            TInt aCallId, 
-            const TPhoneCmdParamBoolean aCommandParam );
-        
-        /**
-        * Get allow waiting call header value.
-        * @param aCommandParam
-        */
-        void AllowShowingOfWaitingCallHeaderL( 
-            TPhoneCmdParamBoolean& aCommandParam );
     private:
         
         // call id of new waiting call

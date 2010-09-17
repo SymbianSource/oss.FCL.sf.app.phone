@@ -26,7 +26,6 @@
 #include <startupdomainpskeys.h>
 #include <coreapplicationuisdomainpskeys.h>
 #include <hwrmdomainpskeys.h>
-#include <UikonInternalPSKeys.h>
 
 #include  "phoneui.pan"
 #include  "phoneconstants.h"

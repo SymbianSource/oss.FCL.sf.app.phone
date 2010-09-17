@@ -19,7 +19,6 @@
 // INCLUDE FILES
 #include <telinformationpskeys.h>
 #include <telephonyvariant.hrh>
-#include <UikonInternalPSKeys.h>
 #include <startupdomainpskeys.h>
 #include <hwrmdomainpskeys.h>
 
@@ -75,28 +74,12 @@ void CPhoneSystemEventHandler::ConstructL()
         KPSUidCtsyCallInformation,
         KCTsyCallState,
         this );
-
-    // Set up notifications for displaying Telephony info on the title pane
-    CPhonePubSubProxy::Instance()->NotifyChangeL(
-        KPSUidTelInformation,
-        KTelDisplayInfo,
-        this );
-
+    
     // Set up notifications for Sim security state values.
     CPhonePubSubProxy::Instance()->NotifyChangeL(
         KPSUidStartup,
         KStartupSimSecurityStatus,
         this );
-
-    if ( CPhoneCenRepProxy::Instance()->IsTelephonyFeatureSupported(
-            KTelephonyLVFlagSwivelInDevice ))
-        {
-        // Set up notifications for Swivel state.
-        CPhonePubSubProxy::Instance()->NotifyChangeL(
-            KPSUidHWRM,
-            KHWRMGripStatus,
-            this );
-        }
     }
 
 // ---------------------------------------------------------
@@ -107,59 +90,6 @@ void CPhoneSystemEventHandler::ConstructL()
 //
 CPhoneSystemEventHandler::~CPhoneSystemEventHandler()
     {
-    }
-
-// ---------------------------------------------------------
-// CPhoneSystemEventHandler::HandleSystemEventL
-// ---------------------------------------------------------
-//
-void CPhoneSystemEventHandler::HandleSystemEventL( const TWsEvent& aEvent )
-    {
-    iStateMachine->State()->HandleSystemEventL( aEvent );
-    }
-
-// ---------------------------------------------------------
-// CPhoneSystemEventHandler::HandleForegroundEventL
-// ---------------------------------------------------------
-//
-void CPhoneSystemEventHandler::HandleForegroundEventL( TBool aForeground )
-    {
-    iStateMachine->State()->HandleForegroundEventL( aForeground );
-    }
-
-// ---------------------------------------------------------
-// CPhoneSystemEventHandler::HandlePhoneForegroundEventL
-// ---------------------------------------------------------
-//
-void CPhoneSystemEventHandler::HandlePhoneForegroundEventL()
-    {
-    iStateMachine->State()->HandlePhoneForegroundEventL();
-    }
-
- // ---------------------------------------------------------
-// CPhoneSystemEventHandler::HandlePhoneFocusLostEventL
-// ---------------------------------------------------------
-//
-void CPhoneSystemEventHandler::HandlePhoneFocusLostEventL()
-    {
-    iStateMachine->State()->HandlePhoneFocusLostEventL();
-    }
-// ---------------------------------------------------------
-// CPhoneSystemEventHandler::HandleIdleForegroundEventL
-// ---------------------------------------------------------
-//
-void CPhoneSystemEventHandler::HandleIdleForegroundEventL()
-    {
-    iStateMachine->State()->HandleIdleForegroundEventL();
-    }
-
-// ---------------------------------------------------------
-// CPhoneSystemEventHandler::HandleKeyLockEnabled
-// ---------------------------------------------------------
-//
-void CPhoneSystemEventHandler::HandleKeyLockEnabled( TBool aKeylockEnabled )
-    {
-    iStateMachine->State()->HandleKeyLockEnabled( aKeylockEnabled );
     }
 
 // ---------------------------------------------------------
@@ -181,17 +111,6 @@ void CPhoneSystemEventHandler::HandlePropertyChangedL(
     const TInt aValue )
     {
     iStateMachine->State()->HandlePropertyChangedL( aCategory, aKey, aValue );
-    }
-
-// -----------------------------------------------------------
-// CPhoneSystemEventHandler::HandleCenRepChangeL
-// -----------------------------------------------------------
-//
-void CPhoneSystemEventHandler::HandleCenRepChangeL(
-    const TUid& aUid,
-    const TUint aId )
-    {
-    iStateMachine->State()->HandleCenRepChangeL( aUid, aId );
     }
 
 //  End of File

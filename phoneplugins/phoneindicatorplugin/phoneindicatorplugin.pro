@@ -44,7 +44,8 @@ symbian {
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.CAPABILITY = ALL -TCB
     TARGET.UID3 = 0x2002E6B1
-
+    VERSION = 10.0
+    
     pluginstub.sources = phoneindicatorplugin.dll
     pluginstub.path = /resource/plugins/indicators
     DEPLOYMENT += pluginstub
@@ -58,6 +59,10 @@ symbian {
         c:/hb/include/hbwidgets \
         c:/hb/include/hbtools
 }
+
+BLD_INF_RULES.prj_exports += \
+ "./rom/phoneindicatorplugin_stub.sis /epoc32/data/z/system/install/phoneindicatorplugin_stub.sis"
+
 
 OUTPUT_DIR = $$PWD/bin
 SOURCE_DIR = $$PWD/inc
@@ -73,3 +78,6 @@ INCLUDEPATH += $$MOC_DIR
 include(phoneindicatorplugin.pri)
 
 
+
+
+symbian:MMP_RULES += SMPSAFE

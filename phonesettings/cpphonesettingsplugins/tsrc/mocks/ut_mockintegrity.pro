@@ -65,3 +65,7 @@ HEADERS += ../../callsplugin/src/*.h                            \
            /epoc32/include/mw/qsysteminfo.h
 
 SOURCES += *.cpp
+
+  
+
+symbian:MMP_RULES += SMPSAFE

@@ -53,3 +53,6 @@ HEADERS += /epoc32/include/platform/mw/xqsettingskey.h \
            /epoc32/include/platform/mw/xqsettingsmanager.h
 SOURCES += ../mocks/mock_xqsettingskey.cpp
 SOURCES += ../mocks/mock_xqsettingsmanager.cpp
+
+
+symbian:MMP_RULES += SMPSAFE

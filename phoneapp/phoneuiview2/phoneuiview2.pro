@@ -26,6 +26,7 @@ symbian {
     TARGET.UID3 = 0x101F4D18
     DEFINES += FT_SYMBIAN_INTEGRATION
     DEFINES += BUILD_PHONEUIQTVIEW
+    VERSION = 10.0
     
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     INCLUDEPATH += ../../inc \
@@ -45,7 +46,12 @@ symbian {
         "$${LITERAL_HASH}endif"
     
     MMP_RULES += defFiles
+
+    BLD_INF_RULES.prj_exports += "./rom/phoneuiqtview_stub.sis /epoc32/data/z/system/install/phoneuiqtview_stub.sis"
 }
 
 # Input
 include(phoneuiqtview.pri)
+
+
+symbian:MMP_RULES += SMPSAFE

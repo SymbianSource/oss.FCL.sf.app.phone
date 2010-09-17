@@ -54,3 +54,5 @@ SOURCES += ../../../tsrc/mocks/mock_cpplugincommon.cpp \
            ../../../tsrc/mocks/mock_hbicon.cpp \
            ../../../tsrc/mocks/mock_cpsettingformentryitemdata.cpp \
            ../../../tsrc/mocks/mock_qsysteminfo.cpp
+
+symbian:MMP_RULES += SMPSAFE

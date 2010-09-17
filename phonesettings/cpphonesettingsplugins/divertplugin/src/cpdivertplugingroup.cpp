@@ -345,14 +345,17 @@ void CpDivertPluginGroup::addToDivertingRequestQueue(
     CpDivertRequestQueueItem i;
     i.request = request;
     i.item = &item;
-    m_divertRequestQueue.enqueue(i);
-
-    if (m_divertRequestQueue.count() == 1) {
-        // Process if first item was added, process other later
-		disableDivertItems();
-        processDivertingRequestQueue();
+    
+    if(!m_divertRequestQueue.contains(i)){
+        m_divertRequestQueue.enqueue(i);
+    
+        if (m_divertRequestQueue.count() == 1) {
+            // Process if first item was added, process other later
+		    disableDivertItems();
+            processDivertingRequestQueue();
+        }
     }
-
+    
     DPRINT << ": OUT";
 }
 
@@ -682,6 +685,9 @@ void CpDivertPluginGroup::changeDivertingStateRequested(
         event = DeactivateDivert;
     }
     
+    m_serviceGroup = 
+            qvariant_cast<PsServiceGroup>(item.property("serviceGroup"));
+        
     addToDivertingRequestQueue(event, item);
     DPRINT << ": OUT";
 }
@@ -890,39 +896,50 @@ void CpDivertPluginGroup::updateDependentDivertOptions(bool fetchFromNetwork)
     DPRINT << ": IN";
     
     // all calls divert activation deactivates automatically other diverts
-    QVariant itemState = m_DataItemVoiceAllCalls->contentWidgetData("checkState");
-    if ((itemState.isValid()) && 
-        (itemState.toInt() == Qt::Checked) &&
-        (m_DataItemVoiceAllCalls->contentWidgetData("text") != "")) {
-        deactivateDependentDivertOption(m_DataItemVoiceIfBusy);
-        deactivateDependentDivertOption(m_DataItemVoiceIfNotAnswered);
-        deactivateDependentDivertOption(m_DataItemVoiceIfOutOfReach);
-    } else {
-        // Must query data for diverts depending on all calls divert, because 
-        // data may have been lost for registered diverts, which were 
-        // automatically deactivated due to the activation of all calls divert.
-        activateDependentDivertOption(m_DataItemVoiceIfBusy, fetchFromNetwork);
-        activateDependentDivertOption(m_DataItemVoiceIfNotAnswered, fetchFromNetwork);
-        activateDependentDivertOption(m_DataItemVoiceIfOutOfReach, fetchFromNetwork);
+    QVariant itemState = 
+        m_DataItemVoiceAllCalls->contentWidgetData("checkState");
+    if(ServiceGroupVoice & m_serviceGroup){   
+        if ((itemState.isValid()) && 
+            (itemState.toInt() == Qt::Checked) &&
+                (m_DataItemVoiceAllCalls->contentWidgetData("text") != "")) {
+            deactivateDependentDivertOption(m_DataItemVoiceIfBusy);
+            deactivateDependentDivertOption(m_DataItemVoiceIfNotAnswered);
+            deactivateDependentDivertOption(m_DataItemVoiceIfOutOfReach);
+        } else {
+            // Must query data for diverts depending on all calls divert,  
+            // because data may have been lost for registered diverts,  
+            // which were automatically deactivated due to the activation 
+            // of all calls divert.
+            activateDependentDivertOption(
+                    m_DataItemVoiceIfBusy, fetchFromNetwork);
+            activateDependentDivertOption(
+                    m_DataItemVoiceIfNotAnswered, fetchFromNetwork);
+            activateDependentDivertOption(
+                    m_DataItemVoiceIfOutOfReach, fetchFromNetwork);
+        }
     }
-    
-    // all calls divert activation deactivates automatically other diverts
-    itemState = m_DataItemVideoAllCalls->contentWidgetData("checkState");
-    if ((itemState.isValid()) && 
-        (itemState.toInt() == Qt::Checked) &&
-        (m_DataItemVideoAllCalls->contentWidgetData("text") != "")) {
-        deactivateDependentDivertOption(m_DataItemVideoIfBusy);
-        deactivateDependentDivertOption(m_DataItemVideoIfNotAnswered);
-        deactivateDependentDivertOption(m_DataItemVideoIfOutOfReach);
-    } else {
-        // Must query data for diverts depending on all calls divert, because 
-        // data may have been lost for registered diverts, which were 
-        // automatically deactivated due to the activation of all calls divert.
-        activateDependentDivertOption(m_DataItemVideoIfBusy, fetchFromNetwork);
-        activateDependentDivertOption(m_DataItemVideoIfNotAnswered, fetchFromNetwork);
-        activateDependentDivertOption(m_DataItemVideoIfOutOfReach, fetchFromNetwork);
+    if (ServiceGroupData & m_serviceGroup){
+        // all calls divert activation deactivates automatically other diverts
+        itemState = m_DataItemVideoAllCalls->contentWidgetData("checkState");
+        if ((itemState.isValid()) && 
+            (itemState.toInt() == Qt::Checked) &&
+            (m_DataItemVideoAllCalls->contentWidgetData("text") != "")) {
+            deactivateDependentDivertOption(m_DataItemVideoIfBusy);
+            deactivateDependentDivertOption(m_DataItemVideoIfNotAnswered);
+            deactivateDependentDivertOption(m_DataItemVideoIfOutOfReach);
+        } else {
+            // Must query data for diverts depending on all calls divert,  
+            // because data may have been lost for registered diverts,  
+            // which were automatically deactivated due to the activation 
+            // of all calls divert.
+            activateDependentDivertOption(
+                    m_DataItemVideoIfBusy, fetchFromNetwork);
+            activateDependentDivertOption(
+                    m_DataItemVideoIfNotAnswered, fetchFromNetwork);
+            activateDependentDivertOption(
+                    m_DataItemVideoIfOutOfReach, fetchFromNetwork);
+        }
     }
-    
     // update not available divert option
     updateNotAvailableDivertOption();
     

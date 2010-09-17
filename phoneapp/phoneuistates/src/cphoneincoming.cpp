@@ -188,115 +188,12 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCallIdByState, &callState );
     TInt connectedCall = callState.CallId(); 
     
-    BeginUiUpdateLC();
-    
-    TPhoneCmdParamBoolean dialerParam;
-    dialerParam.SetBoolean( ETrue );
-    AllowShowingOfWaitingCallHeaderL( dialerParam );
-      
-    // Close fast swap window if it's displayed
-    CEikonEnv::Static()->DismissTaskList();
-    
-    // If the 1st incoming call became Connected, this is waiting call
-    // If the 1st incoming call went just Idle, this is a normal call
-    if ( connectedCall > KErrNotFound )
-        {
-        SetTouchPaneButtons( EPhoneWaitingCallButtons );
-        }
-    else
-        {
-        SetTouchPaneButtons( EPhoneIncomingCallButtons );
-        }
-    
-    if ( KErrNotFound == connectedCall )
-        {
-        dialerParam.SetBoolean( EFalse );
-        }
-    
-    DisplayIncomingCallL( aCallId, dialerParam );
-    SetTouchPaneButtons( EPhoneWaitingCallButtons );
-
-    if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-            && !CPhoneCenRepProxy::Instance()->
-            IsTelephonyFeatureSupported( KTelephonyLVFlagAllowUnlockOnIncoming ) 
-            && ( IsKeyLockOn() || IsAutoLockOn() ) )
-        {
-        DisableCallUIL();
-        }
-    else
-        {
-        if ( IsKeyLockOn() )
-            {
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewDisableKeyLockWithoutNote );
-            }
-        }
-        
-    if( CPhoneCenRepProxy::Instance()->
-            IsTelephonyFeatureSupported( KTelephonyLVFlagDisableCallControlHardKeysWhileLocked ) 
-            && ( IsKeyLockOn() || IsAutoLockOn() ) )
-        {
-        DisableHWKeysL();
-        }
-        
-    EndUiUpdate();
+    DisplayCallHeaderL( aCallId, ECheckIfNEUsedBeforeSettingVisibilityFalse );
 
     if ( connectedCall > KErrNotFound )
         {
-        iCbaManager->UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
+        UpdateUiCommands();
         iStateMachine->ChangeState( EPhoneStateWaitingInSingle );   
-        }
-    }
-    
-// -----------------------------------------------------------
-// CPhoneIncoming::DisplayIncomingCallL
-// -----------------------------------------------------------
-//
-void CPhoneIncoming::DisplayIncomingCallL( 
-    TInt aCallId, 
-    const TPhoneCmdParamBoolean aCommandParam )
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneIncoming::DisplayIncomingCallL()");
-    // Cannot delete active note, e.g. New call query, 
-    // but show waiting note with or without caller name
-    if ( IsAnyQueryActiveL() || aCommandParam.Boolean() )
-        {
-        CallWaitingNoteL( aCallId );
-        }
-    else
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-        }
-    
-    // Indicate that the Phone needs to be sent to the background if
-    // an application other than the top application is in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( !TopAppIsDisplayedL() );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus,
-        &booleanParam );
-
-    TPhoneCmdParamInteger uidParam;
-    uidParam.SetInteger( KUidPhoneApplication.iUid );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewBringAppToForeground,
-        &uidParam );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetTopApplication,
-        &uidParam );
-
-    DisplayHeaderForCallComingInL( aCallId, ETrue ); //waiting call 
-    }    
-
-// -----------------------------------------------------------
-// CPhoneIncoming::AllowShowingOfWaitingCallHeaderL
-// -----------------------------------------------------------
-//
-void CPhoneIncoming::AllowShowingOfWaitingCallHeaderL( 
-    TPhoneCmdParamBoolean& aCommandParam )
-    {
-    __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneIncoming::AllowShowingOfWaitingCallHeaderL() ");
-    if ( aCommandParam.Boolean() && IsNumberEntryUsedL() )
-        {
-        SetNumberEntryVisibilityL(EFalse);
         }
     }
 

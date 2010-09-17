@@ -28,8 +28,7 @@
 // ---------------------------------------------------------------------------
 //
 CPhoneStorage::CPhoneStorage()
-    : iIsScreenLocked( EFalse ),
-    iNeedToEnableKeylock( EFalse )
+    : iNeedToEnableKeylock( EFalse )
     {
     __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneStorage::CPhoneStorage()");
     }
@@ -65,71 +64,6 @@ EXPORT_C CPhoneStorage* CPhoneStorage::NewL()
 EXPORT_C CPhoneStorage::~CPhoneStorage()
     {
     __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneStorage::~CPhoneStorage()");
-    iBlockedKeysScanCode.Reset();
-    iBlockedKeysScanCode.Close();
-    }
-
-// ---------------------------------------------------------------------------
-// CPhoneStorage::AppendBlockedKeysListL
-// ---------------------------------------------------------------------------
-//
-EXPORT_C void CPhoneStorage::AppendBlockedKeysListL( TStdScanCode aScanCode )
-    {
-    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneStorage::AppendBlockedKeysListL()");
-    iBlockedKeysScanCode.AppendL( aScanCode );
-    }
-
-// -----------------------------------------------------------
-// CPhoneStorage::GetBlockedKeyList
-// -----------------------------------------------------------
-//
-EXPORT_C const RArray<TInt>& CPhoneStorage::GetBlockedKeyList() const
-    {
-    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneStorage::GetBlockedKeyList()");
-    return iBlockedKeysScanCode;
-    }
-
-// -----------------------------------------------------------
-// CPhoneStorage::ResetBlockedKeysList
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneStorage::ResetBlockedKeysList()
-    {
-    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneStorage::ResetBlockedKeysList()");
-    iBlockedKeysScanCode.Reset();
-    }
-
-// -----------------------------------------------------------
-// CPhoneStorage::IsBlockedKeysListSet
-// -----------------------------------------------------------
-//
-EXPORT_C TBool CPhoneStorage::IsBlockedKeysListEmpty()
-    {
-    __LOGMETHODSTARTEND(EPhoneUIUtils, "CPhoneStorage::IsBlockedKeysListSet()");
-    TBool ret = ETrue;
-    if( iBlockedKeysScanCode.Count() )
-        {
-        ret = EFalse;
-        }
-    return ret;
-    }
-
-// -----------------------------------------------------------
-// CPhoneStorage::SetScreenLocked
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneStorage::SetScreenLocked( TBool aLocked )
-    {
-    iIsScreenLocked = aLocked;
-    }
-
-// -----------------------------------------------------------
-// CPhoneStorage::IsScreenLocked
-// -----------------------------------------------------------
-//
-EXPORT_C TBool CPhoneStorage::IsScreenLocked()
-    {
-    return iIsScreenLocked;
     }
 
 // -----------------------------------------------------------
@@ -140,7 +74,6 @@ EXPORT_C TBool CPhoneStorage::NeedToEnableKeylock()
     {
     return iNeedToEnableKeylock;
     }
-
 
 // -----------------------------------------------------------
 // CPhoneStorage::NeedToEnableKeylock

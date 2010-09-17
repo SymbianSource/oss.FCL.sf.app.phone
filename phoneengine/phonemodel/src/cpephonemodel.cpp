@@ -326,9 +326,7 @@ TPtrC CPEPhoneModel::NameByMessageToPhoneEngine(
         case CPEPhoneModelIF::EPEMessageSwapConference:
             return MESSAGE("EPEMessageSwapConference");
         case CPEPhoneModelIF::EPEMessageTransfer:
-            return MESSAGE("EPEMessageTransfer");
-        case CPEPhoneModelIF::EPEMessageSwitchToVideoOrVoice:
-            return MESSAGE("EPEMessageSwitchToVideoOrVoice");   
+            return MESSAGE("EPEMessageTransfer");           
 
         // Contact messages                       11400 - 11599
 
@@ -797,11 +795,7 @@ void CPEPhoneModel::HandleMessage(
             break;
         case CPEPhoneModelIF::EPEMessageSetALSLine:
             iCallHandling->SetActiveLine();
-            break;     
-        case CPEPhoneModelIF::EPEMessageSwitchToVideoOrVoice:
-            iEngineInfo->SetIsSwitchToOperationOngoing( ETrue );
-            errorCode = iMessageHandler->HandleSwitchToVideoOrVoice( iEngineInfo->CallId() );
-            break; 
+            break;
         case MPEPhoneModel::EPEMessageSatCallRequestCompleted: 
             iMessageHandler->HandleSatCallRequestCompleted();
             break;
@@ -1006,8 +1000,7 @@ void CPEPhoneModel::SendMessage(
             message = MEngineMonitor::EPEMessageDisconnecting;
             }
         else if ( message == MEngineMonitor::EPEMessageConnectingWithInband )
-            {
-            iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );
+            {            
             message = MEngineMonitor::EPEMessageConnecting;
             }
         #ifdef TEF_LOGGING_ENABLED
@@ -1047,10 +1040,7 @@ TInt CPEPhoneModel::ProcessMessage(
             break;
 
         case MEngineMonitor::EPEMessageIncoming:
-            TRAP( errorCode, iMessageHandler->HandleIncomingCallL( aCallId ) );
-            // Since it is possible that incoming call interrupts switch to operation
-            // we need to reset this value.
-            iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );
+            TRAP( errorCode, iMessageHandler->HandleIncomingCallL( aCallId ) );            
             break;
 
         case MEngineMonitor::EPEMessageAnswering:
@@ -1068,10 +1058,7 @@ TInt CPEPhoneModel::ProcessMessage(
                 
             break;
 
-        case MEngineMonitor::EPEMessageConnected:
-            // Switch to status needs to be set false here because some networks
-            // do not use connecting state.
-            iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );
+        case MEngineMonitor::EPEMessageConnected:            
             iEngineInfo->SetResumeHeldCall( ETrue, aCallId );
             if ( CallIdCheck::IsVoice( aCallId ))
                 {
@@ -1103,26 +1090,18 @@ TInt CPEPhoneModel::ProcessMessage(
                 // Video call : for video call logging and duration
                 errorCode = iMessageHandler->HandleVideoCallIdle( aCallId );
                 }
-            if ( errorCode == ECCPErrorNone && iEngineInfo->IsSwitchToOperationOngoing() )
-                {
-                errorCode = iMessageHandler->ContinueSwitchToCall( aCallId );
-                }
-            
+                        
             iEngineInfo->SetOutgoingCallBarringActivated( EFalse );
             break;
 
         case MEngineMonitor::EPEMessageRemoteBusy:
             if ( CallIdCheck::IsVoice( aCallId ))
-                {                
-                // Set video/voice boolean to false because error occured.
-                iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );
+                {
                 iMessageHandler->HandleCallHandlingError( aCallId, ETrue );                
                 }
             break;
 
-        case MEngineMonitor::EPEMessageCallHandlingError:
-            // Set video/voice boolean to false because error occured.
-            iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );
+        case MEngineMonitor::EPEMessageCallHandlingError:            
             iMessageHandler->HandleCallHandlingError( aCallId, EFalse );            
             break;
                 
@@ -1172,14 +1151,12 @@ TInt CPEPhoneModel::ProcessMessage(
             break;
 
         // MO call connecting.
-        case MEngineMonitor::EPEMessageConnecting:
-            iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );
+        case MEngineMonitor::EPEMessageConnecting:            
             iEngineInfo->SetInbandTone( ECCPRemoteAlerting );
             iAudioData->PlayInbandTone();
             break;   
         /*        
-        case MEngineMonitor::EPEMessageInitiatedEmergencyCall:
-            iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );
+        case MEngineMonitor::EPEMessageInitiatedEmergencyCall:            
             if ( iCallStackCutter )
                 {
                 delete iCallStackCutter;
@@ -1234,8 +1211,7 @@ TBool CPEPhoneModel::DelayMessageSending(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageInitiatedEmergencyCall:
-            {
-            iEngineInfo->SetIsSwitchToOperationOngoing( EFalse );  
+            {              
             sendingDelayed = ETrue;            
             }
             break;

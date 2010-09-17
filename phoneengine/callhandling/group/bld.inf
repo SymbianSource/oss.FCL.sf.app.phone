@@ -29,7 +29,7 @@ PRJ_EXPORTS
 ../inc/mpecall.h                    |../../inc/mpecall.h
 
 // SIS stubs
-../data/callhandling_stub.sis       /epoc32/data/z/system/install/callhandling_stub.sis
+../rom/callhandling_stub.sis       /epoc32/data/z/system/install/callhandling_stub.sis
 
 PRJ_MMPFILES
 callhandling.mmp

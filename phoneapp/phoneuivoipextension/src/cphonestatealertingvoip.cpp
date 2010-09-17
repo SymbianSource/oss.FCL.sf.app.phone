@@ -114,7 +114,8 @@ void CPhoneStateAlertingVoIP::HandleConnectedL( TInt aCallId )
 
     if( iStateMachine->PhoneEngineInfo()->CallType( aCallId ) == EPECallTypeVoIP )
         {
-        SetCallHeaderType( EPECallTypeVoIP );
+        //TODO
+        //SetCallHeaderType( EPECallTypeVoIP );
         }
 
     CPhoneAlerting::HandleConnectedL( aCallId );        

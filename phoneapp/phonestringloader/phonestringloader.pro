@@ -24,6 +24,7 @@ symbian {
     TARGET.EPOCALLOWDLLDATA =1
     TARGET.UID3 = 0x20029F85
     DEFINES += FT_SYMBIAN_INTEGRATION
+    VERSION = 10.0
     
     INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 
@@ -43,7 +44,11 @@ symbian {
         "$${LITERAL_HASH}endif"
     
     MMP_RULES += defFiles
+    BLD_INF_RULES.prj_exports += "./rom/phonestringloader_stub.sis /epoc32/data/z/system/install/phonestringloader_stub.sis"
 }
 
 # Input
 include(phonestringloader.pri)
+
+
+symbian:MMP_RULES += SMPSAFE

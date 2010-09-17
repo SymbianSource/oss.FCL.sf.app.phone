@@ -175,9 +175,10 @@ void CPhoneStateSingleVoIP::HandleKeyMessageL(
             &numberEntryCountParam );
             TInt neLength( numberEntryCountParam.Integer() );
                  
-            if( IsNumberEntryVisibleL() && neLength )
+            if( iNumberEntryManager->IsNumberEntryVisibleL() && 
+                    neLength )
                 {
-                if ( IsCustomizedDialerVisibleL()  )
+                if ( iNumberEntryManager->IsCustomizedDialerVisibleL()  )
                     {
                     return;
                     }
@@ -221,10 +222,10 @@ void CPhoneStateSingleVoIP::StartCallingL()
             }
         else
             {
-            if ( IsNumberEntryUsedL() )
+            if ( iNumberEntryManager->IsNumberEntryUsedL() )
                 {
                 // handle send key short press
-                HBufC* phoneNumber = PhoneNumberFromEntryLC();
+                HBufC* phoneNumber = iNumberEntryManager->PhoneNumberFromEntryLC();
                 
                 if ( !IsSimOk() )
                     {

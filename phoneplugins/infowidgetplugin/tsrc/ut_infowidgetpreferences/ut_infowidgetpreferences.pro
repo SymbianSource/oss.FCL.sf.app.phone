@@ -44,3 +44,6 @@ SOURCES += ./src/ut_infowidgetpreferences.cpp
 # code to be tested
 HEADERS += ../../infowidget/inc/infowidgetpreferences.h
 SOURCES += ../../infowidget/src/infowidgetpreferences.cpp
+
+
+symbian:MMP_RULES += SMPSAFE

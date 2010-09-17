@@ -16,34 +16,38 @@
 #
 
 TEMPLATE = app
-TARGET = 
 TARGET.UID3 = 0xEDA69235
 DEPENDPATH += .
 INCLUDEPATH += .
 CONFIG += hb
 CONFIG += qtestlib
 
-symbian {
+INCLUDEPATH += \epoc32\include\platform\mw \
+               \epoc32\include\platform \
+               \epoc32\include\platform\app \
+               ../../../phoneuiutils/inc/ \
+               ../../../phoneuiview2/inc \
+               ../../../../inc \
+               ../../../phoneui2/srcdata \
+               ../../../../tsrc/common
 
-    INCLUDEPATH += \epoc32\include\platform\mw \
-                   \epoc32\include\platform \
-                   \epoc32\include\platform\app \
-                   ../../../phoneuiutils/inc/ \
-                   ../../../phoneuiview2/inc \
-                   ../../../../inc \
-                   ../../../phoneui2/srcdata
+LIBS += -lphoneuiutils \
+         -lmocklib \
+        -lsymbianmock
 
-    LIBS += -lphoneuiutils
-    LIBS += -lphoneuiqtview
-
-    TARGET.CAPABILITY = ALL -TCB
-    DEFINES += FT_SYMBIAN_INTEGRATION
-    DEFINES += BUILD_PHONEUIQTVIEWADAPTER
-}
+TARGET.CAPABILITY = ALL -TCB
+DEFINES += FT_SYMBIAN_INTEGRATION
+DEFINES += BUILD_PHONEUIQTVIEWADAPTER
 
 # Input
 HEADERS += ../../inc/phoneresourceadapter.h
 SOURCES += ../../src/phoneresourceadapter.cpp
 HEADERS += ../../inc/phoneuiqtbuttonscontroller.h
 SOURCES += ../../src/phoneuiqtbuttonscontroller.cpp
+SOURCES += ../../../../tsrc/mocks/orbit/mock_hbicon.cpp
+SOURCES += ../../../../tsrc/mocks/phoneuiview2/mock_phoneaction.cpp
+SOURCES += ../../../../tsrc/mocks/orbit/mock_hbaction.cpp
 SOURCES += unit_tests.cpp
+
+include(../../../../tsrc/common/phonetest.pri)
+symbian:MMP_RULES += SMPSAFE

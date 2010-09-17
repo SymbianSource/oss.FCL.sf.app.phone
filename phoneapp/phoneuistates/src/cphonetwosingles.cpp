@@ -157,32 +157,8 @@ void CPhoneTwoSingles::HandleIdleL( TInt aCallId )
         {
         case EOneActiveCall:
             {   
-            if ( IsNumberEntryUsedL() )
-                {
-                SetNumberEntryVisibilityL(ETrue);
-                }
-            else
-                {
-                UpdateCbaL( EPhoneCallHandlingInCallCBA );
-                }
-            
-            TPhoneCmdParamCallStateData callStateData;  
-            callStateData.SetCallState( EPEStateHeld );
-            iViewCommandHandle->HandleCommandL(
-                EPhoneViewGetCallIdByState, &callStateData );
-            TInt holdCallId = callStateData.CallId();
-            
-            TPhoneCmdParamBoolean holdFlag;
-            if ( holdCallId < 0 )
-                {
-                holdFlag.SetBoolean( EFalse );
-                }
-            else
-                {
-                holdFlag.SetBoolean( ETrue );
-                }
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-            SetTouchPaneButtons( EPhoneIncallButtons );
+            iNumberEntryManager->SetVisibilityIfNumberEntryUsedL(ETrue);
+            UpdateUiCommands();
             iStateMachine->ChangeState( EPhoneStateSingle ); 
             }
             
@@ -206,14 +182,14 @@ EXPORT_C void CPhoneTwoSingles::HandleKeyMessageL(
         {
         case EKeyYes: // send-key
             {
-            if ( !IsNumberEntryVisibleL() )
+            if ( !iNumberEntryManager->IsNumberEntryVisibleL() )
                 {
                 iStateMachine->SendPhoneEngineMessage(
                     CPEPhoneModelIF::EPEMessageSwap );
                 }
             else
                 {
-                CallFromNumberEntryL();
+                iNumberEntryManager->CallFromNumberEntryL();
                 }
             break;    
             }
@@ -232,13 +208,8 @@ void CPhoneTwoSingles::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSingles::HandleConnectedL()");
-    
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-    callHeaderParam.SetCallState( EPEStateConnected );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
-        &callHeaderParam );
-    
-    SetTouchPaneButtons( EPhoneIncallButtons );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
+    UpdateUiCommands();
     }
     
 // -----------------------------------------------------------
@@ -249,23 +220,8 @@ void CPhoneTwoSingles::HandleHeldL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSingles::HandleHeldL()");
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-    callHeaderParam.SetCallState( EPEStateHeld );
-    
-    TBuf<KPhoneCallHeaderLabelMaxLength> labelText( KNullDesC );
-    TInt callLabelId = CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneCallOnHold );
-
-    StringLoader::Load( 
-        labelText, 
-        callLabelId, 
-        CCoeEnv::Static() );        
-    callHeaderParam.SetLabelText( labelText );
-    
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
-        &callHeaderParam );
-    
-    SetTouchPaneButtons( EPhoneIncallButtons );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
+    UpdateUiCommands();
     }
     
 // -----------------------------------------------------------
@@ -276,7 +232,7 @@ EXPORT_C void CPhoneTwoSingles::HandleNumberEntryClearedL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSingles::HandleNumberEntryClearedL()");
-    UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
+    UpdateUiCommands();
     }
 
 // -----------------------------------------------------------
@@ -287,44 +243,10 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSingles::HandleConnectedConferenceL()");
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-
-    TInt callLabelId;
-    TBuf<KPhoneCallHeaderLabelMaxLength> conferenceText( KNullDesC );
-    callLabelId = CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneCLIConferenceCall );
-
-    StringLoader::Load( 
-        conferenceText, 
-        callLabelId, 
-        CCoeEnv::Static() );
-    callHeaderParam.SetCLIText( conferenceText, TPhoneCmdParamCallHeaderData::ERight );
-    
-    callHeaderParam.SetCallState(EPEStateConnectedConference);
     BeginUiUpdateLC();
-    
-    callHeaderParam.SetCiphering(
-        iStateMachine->PhoneEngineInfo()->IsSecureCall( aCallId ) );
-        
-    callHeaderParam.SetCipheringIndicatorAllowed(
-        iStateMachine->PhoneEngineInfo()->SecureSpecified() );
-    
-    // Service identifier must be given so that service specific settings
-    // can be taken into account at phoneuiview.
-    callHeaderParam.SetServiceId( 
-        iStateMachine->PhoneEngineInfo()->ServiceId( aCallId ) );
-    
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewCreateConference, aCallId,
-        &callHeaderParam );
-
-    TPhoneCmdParamBoolean holdFlag;
-    holdFlag.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
-
-    SetTouchPaneButtons( EPhoneConferenceButtons );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewCreateConference, aCallId );
+    UpdateUiCommands();
     EndUiUpdate();
-    
-    UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateConference );
     }
 
@@ -335,73 +257,9 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
 void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneTwoSingles::HandleIncomingL()");
-    BeginUiUpdateLC();
-    
-    // Get allow waiting call header param value.
-    TPhoneCmdParamBoolean dialerParam;
-    dialerParam.SetBoolean( ETrue );
-    AllowShowingOfWaitingCallHeaderL( dialerParam );
-    
-    // Close fast swap window if it's displayed
-    CEikonEnv::Static()->DismissTaskList();
-    
-    DisplayIncomingCallL( aCallId, dialerParam );
-    CheckDisableHWKeysAndCallUIL();
-    SetTouchPaneButtons( EPhoneWaitingCallButtons );
-    EndUiUpdate();
-    
-    iCbaManager->SetCbaL( EPhoneCallHandlingIncomingRejectCBA );
+            "CPhoneTwoSingles::HandleIncomingL()");
+    DisplayCallHeaderL( aCallId, ECheckIfNEUsedBeforeSettingVisibilityFalse );
     iStateMachine->ChangeState( EPhoneStateTwoSinglesAndWaiting );
-    }
-
-// -----------------------------------------------------------
-// CPhoneTwoSingles::DisplayIncomingCallL
-// -----------------------------------------------------------
-//
-void CPhoneTwoSingles::DisplayIncomingCallL( 
-    TInt aCallId, 
-    const TPhoneCmdParamBoolean aCommandParam )
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates,
-         "CPhoneTwoSingles::DisplayIncomingCallL()"); 
-    // Cannot delete active note, e.g. New call query, 
-    // but show waiting note with or without caller name
-    if ( IsAnyQueryActiveL() || !aCommandParam.Boolean() )
-        {
-        CallWaitingNoteL( aCallId );
-        }
-    else
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-        }
-
-    // Indicate that the Phone needs to be sent to the background if
-    // an application other than the top application is in the foreground
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( !TopAppIsDisplayedL() );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus,
-        &booleanParam );
-
-    TPhoneCmdParamInteger uidParam;
-    uidParam.SetInteger( KUidPhoneApplication.iUid );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewBringAppToForeground,
-        &uidParam );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetTopApplication,
-        &uidParam );
-
-    CPhoneState::DisplayHeaderForCallComingInL( aCallId, ETrue ); //waiting call 
-    }
-    
-// -----------------------------------------------------------
-// CPhoneTwoSingles::UpdateInCallCbaL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneTwoSingles::UpdateInCallCbaL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneTwoSingles::UpdateInCallCbaL() ");
-    UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
     }
 
 // End of File

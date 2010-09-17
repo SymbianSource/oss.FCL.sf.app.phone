@@ -23,6 +23,7 @@
 
 // CONSTANTS 
 const QString KOtherNumber("otherNumber");
+const int KPhoneNumberLength = 100; //from psetconstants.h
 
 CpDivertQuery::CpDivertQuery(PSetCallDivertingWrapper &callDivertingWrapper) :
     m_callDivertingWrapper(callDivertingWrapper),
@@ -224,7 +225,8 @@ void CpDivertQuery::popUpNumberEditor(
     QScopedPointer<HbDialog> dialog(createDialog(heading));
 
     HbLineEdit *editor = new HbLineEdit(dialog.data());
-    editor->setInputMethodHints(Qt::ImhDialableCharactersOnly);    
+    editor->setInputMethodHints(Qt::ImhDialableCharactersOnly);
+    editor->setMaxLength(KPhoneNumberLength);
     //Ownership is transferred
     dialog->setContentWidget(editor);
     

@@ -25,8 +25,9 @@
 #include "mphoneviewcommandhandle.h"
 #include "mphonestatemachine.h"
 #include "mphonecustomization.h"
+#include "cphonestate.h"
 
-#include "cphonecbamanager.h"
+#include "cphoneuicommandmanager.h"
 #include "cphonepubsubproxy.h"
 #include "cphonekeys.h"
 #include "tphonecmdparamstring.h"
@@ -40,9 +41,6 @@
 #include "phoneappcommands.hrh"
 #include "phonelogger.h"
 
-const TInt  KPhoneKeyStart            = 33;
-const TInt  KPhoneKeyEnd              = 127;
-
 // ======== MEMBER FUNCTIONS ========
 
 // ---------------------------------------------------------------------------
@@ -54,27 +52,27 @@ CPhoneNumberEntryManager::CPhoneNumberEntryManager(
          MPhoneViewCommandHandle& aViewCommandHandle,
          MPhoneStateMachine& aStateMachine,
          MPhoneCustomization* aCustomization,
-         CPhoneCbaManager& aCbaManager )
+         CPhoneUiCommandManager& aUiCommandManager )
    : iState ( aState ),
      iViewCommandHandle ( aViewCommandHandle ),
      iStateMachine ( aStateMachine ),
      iCustomization ( aCustomization ),
-     iCbaManager ( aCbaManager ),
+     iUiCommandManager ( aUiCommandManager ),
      iEnv( *CEikonEnv::Static() )
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::CPhoneNumberEntryManager() ");
     }
 
- // ---------------------------------------------------------------------------
- // CPhoneNumberEntryManager::NewL
- // ---------------------------------------------------------------------------
- //
+// ---------------------------------------------------------------------------
+// CPhoneNumberEntryManager::NewL
+// ---------------------------------------------------------------------------
+//
 CPhoneNumberEntryManager* CPhoneNumberEntryManager::NewL( 
         CPhoneState* aState,
         MPhoneViewCommandHandle& aViewCommandHandle,
         MPhoneStateMachine& aStateMachine,
         MPhoneCustomization* aCustomization,
-        CPhoneCbaManager& aCbaManager )
+        CPhoneUiCommandManager& aUiCommandManager )
      {
      __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::NewL() ");
      CPhoneNumberEntryManager* self = new (ELeave) CPhoneNumberEntryManager(
@@ -82,7 +80,7 @@ CPhoneNumberEntryManager* CPhoneNumberEntryManager::NewL(
              aViewCommandHandle,
              aStateMachine,
              aCustomization,
-             aCbaManager );
+             aUiCommandManager );
      
      CleanupStack::PushL( self );
      self->ConstructL();
@@ -116,7 +114,7 @@ CPhoneNumberEntryManager::~CPhoneNumberEntryManager()
 // CPhoneNumberEntryManager::StoreNumberEntryContentL
 // -----------------------------------------------------------
 //
-void CPhoneNumberEntryManager::StoreNumberEntryContentL()
+EXPORT_C void CPhoneNumberEntryManager::StoreNumberEntryContentL()
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::StoreNumberEntryContentL( ) ");
     // Store the number entry content to cache
@@ -147,7 +145,7 @@ void CPhoneNumberEntryManager::StoreNumberEntryContentL()
 // CPhoneNumberEntryManager::IsNumberEntryContentStored
 // -----------------------------------------------------------
 //
-TBool CPhoneNumberEntryManager::IsNumberEntryContentStored()
+EXPORT_C TBool CPhoneNumberEntryManager::IsNumberEntryContentStored()
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::IsNumberEntryContentStored( ) ");
     return iNumberEntryContent ? ETrue : EFalse;
@@ -157,32 +155,37 @@ TBool CPhoneNumberEntryManager::IsNumberEntryContentStored()
 // CPhoneNumberEntryManager::ClearNumberEntryContentCache
 // -----------------------------------------------------------
 //
-void CPhoneNumberEntryManager::ClearNumberEntryContentCache()
+EXPORT_C void CPhoneNumberEntryManager::ClearNumberEntryContentCache()
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::ClearNumberEntryContentCache( ) ");
     delete iNumberEntryContent;
     iNumberEntryContent = NULL;
     }
-
  
 // -----------------------------------------------------------
 // CPhoneNumberEntryManager::SetNumberEntryVisibilityL
 // -----------------------------------------------------------
 //
-void CPhoneNumberEntryManager::SetNumberEntryVisibilityL( TPhoneCmdParamBoolean aVisible )
+EXPORT_C void CPhoneNumberEntryManager::SetNumberEntryVisibilityL( TBool aVisible )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::SetNumberEntryVisibilityL( ) ");
     __PHONELOG1( EBasic, EPhoneControl, 
             "CPhoneNumberEntryManager::SetNumberEntryVisibilityL : aVisible =%d", 
-            aVisible.Boolean() );
-    iViewCommandHandle.ExecuteCommandL( EPhoneViewSetNumberEntryVisible, &aVisible );
+            aVisible );
+    TPhoneCmdParamBoolean booleanParam;
+    booleanParam.SetBoolean( ETrue );
+    if ( !aVisible )
+        {
+        booleanParam.SetBoolean( EFalse );
+        }
+    iViewCommandHandle.ExecuteCommandL( EPhoneViewSetNumberEntryVisible, &booleanParam );
     }
 
 // -----------------------------------------------------------
 // CPhoneNumberEntryManager::IsNumberEntryUsedL
 // -----------------------------------------------------------
 //
-TBool CPhoneNumberEntryManager::IsNumberEntryUsedL() const
+EXPORT_C TBool CPhoneNumberEntryManager::IsNumberEntryUsedL() const
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::IsNumberEntryUsedL( ) ");
     return iViewCommandHandle.HandleCommandL(
@@ -194,7 +197,7 @@ TBool CPhoneNumberEntryManager::IsNumberEntryUsedL() const
 // CPhoneNumberEntryManager::IsNumberEntryVisibleL
 // -----------------------------------------------------------
 //
-TBool CPhoneNumberEntryManager::IsNumberEntryVisibleL() const
+EXPORT_C TBool CPhoneNumberEntryManager::IsNumberEntryVisibleL() const
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::IsNumberEntryVisibleL( ) ");
     return iViewCommandHandle.HandleCommandL(
@@ -206,7 +209,7 @@ TBool CPhoneNumberEntryManager::IsNumberEntryVisibleL() const
 // CPhoneNumberEntryManager::PhoneNumberFromEntryLC()
 // -----------------------------------------------------------
 //
-HBufC* CPhoneNumberEntryManager::PhoneNumberFromEntryLC() const
+EXPORT_C HBufC* CPhoneNumberEntryManager::PhoneNumberFromEntryLC() const
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::PhoneNumberFromEntryLC( ) ");
     HBufC* phoneNumber = HBufC::NewLC( KPhoneNumberEntryBufferSize );
@@ -219,66 +222,109 @@ HBufC* CPhoneNumberEntryManager::PhoneNumberFromEntryLC() const
     return phoneNumber;
     }
 
-// -----------------------------------------------------------------------------
-// CPhoneNumberEntryManager::IsValidAlphaNumericKey
-// Checks is the key event a number, a special character
-// or if VoIP is enabled some other character
-// -----------------------------------------------------------------------------
-//
-TBool CPhoneNumberEntryManager::IsValidAlphaNumericKey( 
-        const TKeyEvent& aKeyEvent,
-        TEventCode aEventCode )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::IsValidAlphaNumericKey( ) ");
-    TBool ret(EFalse);
-    const TBool numericKeyEntered( 
-            CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) );
-    // a numeric key (1,2,3,4,6,7,8,9,0,+,*,p,w )
-    // or
-    // a letter from fullscreen qwerty, miniqwerty or handwriting
-    // when voip is enabled.
-    if ( numericKeyEntered
-        || IsAlphanumericSupportedAndCharInput( aKeyEvent ) )
-        {
-        ret= ETrue;
-        }
-    return ret;
-    }
-
-// -----------------------------------------------------------------------------
-// CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput
-// -----------------------------------------------------------------------------
-//
-TBool CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput(
-        const TKeyEvent& aKeyEvent ) const
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput( ) ");
-    TBool ret = ( ( iCustomization &&
-                 iCustomization->AllowAlphaNumericMode() ) &&
-                 ( ( aKeyEvent.iScanCode >= KPhoneKeyStart &&
-                     aKeyEvent.iScanCode <= KPhoneKeyEnd ) ||
-                     aKeyEvent.iModifiers & EModifierSpecial ) );
-    __PHONELOG1( EBasic, EPhoneControl, 
-            "CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput: %d", ret );
-    return ret;
-    }
-
-// -----------------------------------------------------------
-// CPhoneNumberEntryManager::HandleNumberEntryClearedL
-// -----------------------------------------------------------
-//
-void CPhoneNumberEntryManager::HandleNumberEntryClearedL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::HandleNumberEntryClearedL( ) ");
-    }
-
 // ---------------------------------------------------------
 // CPhoneNumberEntryManager::NumberEntryClearL
 // ---------------------------------------------------------
 //
-void CPhoneNumberEntryManager::NumberEntryClearL() const
+EXPORT_C void CPhoneNumberEntryManager::NumberEntryClearL() const
     {
     __LOGMETHODSTARTEND( EPhoneControl, "CPhoneNumberEntryManager::NumberEntryClearL( ) ");
     iViewCommandHandle.ExecuteCommandL( EPhoneViewClearNumberEntryContent );
     }
 
+// -----------------------------------------------------------
+// CPhoneNumberEntryManager::SetVisibilityIfNumberEntryUsedL
+// -----------------------------------------------------------
+//
+EXPORT_C TBool CPhoneNumberEntryManager::SetVisibilityIfNumberEntryUsedL(
+        TBool aVisibility )
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, 
+            "CPhoneGsmInCall::SetVisibilityIfNumberEntryUsedL() ");
+    TBool retValue(EFalse);
+    if ( IsNumberEntryUsedL() )
+        {
+        TPhoneCmdParamBoolean booleanParam;
+        booleanParam.SetBoolean( EFalse );
+        if ( aVisibility )
+            {
+            booleanParam.SetBoolean( ETrue );
+            }
+        iViewCommandHandle.ExecuteCommandL( EPhoneViewSetNumberEntryVisible, &booleanParam );
+        __PHONELOG1( EBasic, EPhoneControl, 
+                    "SetVisibilityIfNumberEntryUsedL: %d", 
+                    aVisibility );
+        retValue = ETrue;
+        }
+    return retValue;
+    }
+
+// -----------------------------------------------------------
+// CPhoneNumberEntryManager::RemoveNumberEntryIfVisibilityIsFalseL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneNumberEntryManager::RemoveNumberEntryIfVisibilityIsFalseL()
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, 
+                "CPhoneNumberEntryManager::RemoveNumberEntryIfVisibilityIsFalseL() ");
+    // Remove the number entry if it isn't DTMF dialer
+    if ( !IsNumberEntryVisibleL() )
+        {
+        iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveNumberEntry );
+        }
+    }
+
+// -----------------------------------------------------------
+// CPhoneNumberEntryManager::RemoveNumberEntryIfVisibilityIsFalseL
+// -----------------------------------------------------------
+//
+EXPORT_C void CPhoneNumberEntryManager::ClearNumberEntryContentCacheIfContentStored()
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, 
+                    "CPhoneNumberEntryManager::ClearNumberEntryContentCacheIfContentStored() ");
+    if ( IsNumberEntryContentStored() )
+        {
+        ClearNumberEntryContentCache();
+        }
+    }
+
+// ---------------------------------------------------------
+// CPhoneNumberEntryManager::CallFromNumberEntryL
+// ---------------------------------------------------------
+//
+EXPORT_C void CPhoneNumberEntryManager::CallFromNumberEntryL()
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::CallFromNumberEntryL( ) ");
+    __ASSERT_DEBUG( iStateMachine.PhoneEngineInfo(), Panic( EPhoneCtrlInvariant ) );
+    if ( IsCustomizedDialerVisibleL() )
+        {
+        return;
+        }
+    HBufC* phoneNumber = PhoneNumberFromEntryLC();
+    iStateMachine.PhoneEngineInfo()->SetPhoneNumber( *phoneNumber );
+    if ( phoneNumber->Des().Length() < KPhoneValidPhoneNumberLength )
+        {
+        iViewCommandHandle.ExecuteCommandL( EPhoneViewRemoveNumberEntry );
+        iState->HandleNumberEntryClearedL();
+        }
+    CleanupStack::PopAndDestroy( phoneNumber );
+
+    if ( !iCustomization ||
+         !iCustomization->HandleCallFromNumberEntryL() )
+        {
+        // Customization didn't handle call. Dial voice call
+        // as normally
+        iState->DialVoiceCallL();
+        }
+    }
+
+// -----------------------------------------------------------
+// CPhoneState::IsCustomizedDialerVisibleL()
+// -----------------------------------------------------------
+//
+EXPORT_C TBool CPhoneNumberEntryManager::IsCustomizedDialerVisibleL() const
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::IsCustomizedDialerVisibleL( ) ");
+    return iViewCommandHandle.HandleCommandL(
+        EPhoneIsCustomizedDialerVisible ) == EPhoneViewResponseSuccess;
+    }

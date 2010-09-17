@@ -36,10 +36,13 @@ LIBS += -lcpframework \
 # Input
 HEADERS += inc/cpbarringplugin.h inc/cpbarringplugingroup.h
 SOURCES += src/cpbarringplugin.cpp src/cpbarringplugingroup.cpp
-		   
+
 
 include(../cpplugincommon.pri)
 
 symbian: {
     TARGET.UID3 = 0X20029F27
+    VERSION = 10.0
 }
+
+BLD_INF_RULES.prj_exports += "./rom/cpbarringplugin_stub.sis /epoc32/data/z/system/install/cpbarringplugin_stub.sis"

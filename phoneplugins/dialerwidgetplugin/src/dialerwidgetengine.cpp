@@ -40,6 +40,11 @@ bool DialerWidgetEngine::initialize()
     XQSettingsKey settingsKey( XQSettingsKey::TargetCentralRepository,
                 KCRUidLogs.iUid, KLogsNewMissedCalls );
     
+    m_missedCalls = m_settingsManager->readItemValue(settingsKey).toInt();
+    if ( m_missedCalls > 0){
+        emit missedCallsCountChanged(m_missedCalls);
+    }
+    
     if ( !connect( m_settingsManager,
                 SIGNAL( valueChanged(const XQSettingsKey & ,const QVariant &)),
                     this, SLOT(valueChanged(XQSettingsKey,

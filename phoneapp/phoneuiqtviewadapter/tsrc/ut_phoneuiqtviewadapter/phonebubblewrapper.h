@@ -30,7 +30,6 @@ extern bool m_setLabelCalled;
 extern bool m_setCliCalled;
 extern bool m_setSecondaryCliCalled;
 extern bool m_setCallTypeCalled;
-extern bool m_createCallHeaderCalled;
 extern int m_createCallHeaderInt;
 extern int m_setStateCallId;
 extern int m_setStateBubbleId;

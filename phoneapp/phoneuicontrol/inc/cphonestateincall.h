@@ -118,17 +118,6 @@ class CPhoneStateInCall : public CPhoneState
         * Search and release outgoingcall
         */
         IMPORT_C void DisconnectOutgoingCallL();
-        
-        /**
-        * Upadated CBAs Incall case
-        */
-        IMPORT_C virtual void UpdateInCallCbaL();
-        
-
-        /**
-        * Upadated CBAs
-        */
-        IMPORT_C virtual void UpdateCbaL( TInt aResource );
     
     private: // New functions
 
@@ -172,11 +161,6 @@ class CPhoneStateInCall : public CPhoneState
         * Sends command to view for launching DTMF list query
         */
         void LaunchDtmfListQueryL();
-              
-        /**
-        * Sends command to view for 'Lock keypad'
-        */
-        void LockKeypadL();
         
         /**
         * Update remote data and label to the call header.
@@ -184,9 +168,7 @@ class CPhoneStateInCall : public CPhoneState
         * @param aCallHeaderData - Call header parameters where modifications
         *                          are made.
         */
-        void UpdateRemoteInfoDataAndLabelL( 
-                TInt aCallId, 
-                TPhoneCmdParamCallHeaderData aCallHeaderParam );
+        void UpdateRemoteInfoDataAndLabelL( TInt aCallId );
         
         /**
         * Show dtmf text query

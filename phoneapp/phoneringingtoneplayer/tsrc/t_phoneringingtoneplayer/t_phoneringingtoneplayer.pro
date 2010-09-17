@@ -45,3 +45,6 @@ SOURCES   += t_phoneringingtoneplayer_reg.rss \
 RESOURCES +=
 
 symbian:TARGET.UID3 = 0xE87E453C
+
+
+symbian:MMP_RULES += SMPSAFE

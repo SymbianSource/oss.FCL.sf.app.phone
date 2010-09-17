@@ -90,40 +90,11 @@ class CPhoneGsmInCall : public CPhoneStateInCall
         * Bring call handling to foreground when moved to incoming state
         **/        
         void BringIncomingToForegroundL();
-       
-        /**
-        * Get allow waiting call header value.
-        */
-        void AllowShowingOfWaitingCallHeaderL( 
-            TPhoneCmdParamBoolean& aCommandParam );
-        
-        /**
-        * Indicates when the Phone app is in the foreground.
-        */    
-        IMPORT_C void HandlePhoneForegroundEventL();
-        
-        /**
-        * Show hold/connected note 
-        */
-        void HandleHoldNoteL( TInt aCallId, TBool aHold );
-        
-        
-        /**
-        * Setter for divert indication showing in bubble.
-        * @param aDivertIndication ETrue to show divert indication,
-        *        EFalse to not. Usually setting EFalse isn't necessary
-        *        as it's a default value in bubble creation.
-        */
-        IMPORT_C void SetDivertIndication(
-            const TBool aDivertIndication );
-        
+
     private:
     
         void ReplaceCallL();
-        /**
-        * Handles divert indication 
-        */
-        void HandeDivertIndicationL();
+
     };
 
 #endif // CPHONEGSMINCALL_H

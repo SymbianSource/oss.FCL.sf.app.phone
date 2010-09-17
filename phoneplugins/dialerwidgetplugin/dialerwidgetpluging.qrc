@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/data">
-    	<file>resource/dialerwidget.widgetml</file>
-    	<file>resource/dialerwidget.css</file>
-    </qresource>
-</RCC>

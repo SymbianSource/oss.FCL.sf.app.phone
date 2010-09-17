@@ -41,6 +41,7 @@ symbian: {
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.CAPABILITY = ALL \
         -TCB
+    VERSION = 10.0
     deploy.path = c:
     
     DEPLOYMENT += exportheaders  
@@ -71,3 +72,8 @@ plugin: !isEmpty(PLUGIN_SUBDIR): DESTDIR = $$OUTPUT_DIR/$$PLUGIN_SUBDIR
 include(infowidgetplugin.pri)
 
 exportResources(./resource/*.manifest, $$PLUGIN_SUBDIR)
+
+BLD_INF_RULES.prj_exports += \
+ "./rom/infowidgetplugin_stub.sis /epoc32/data/z/system/install/infowidgetplugin_stub.sis"
+
+symbian:MMP_RULES += SMPSAFE

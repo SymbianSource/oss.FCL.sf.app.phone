@@ -24,6 +24,8 @@ CAPABILITY CAP_GENERAL_DLL
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
 
+VERSION 10.0
+
 TARGET          phoneuicontrol.dll
 TARGETTYPE      dll
 UID             0x1000008d  0x101F4D0C
@@ -44,10 +46,8 @@ SOURCE          cphonestatestartup.cpp
 SOURCE          cphonesystemeventhandler.cpp
 SOURCE          cphoneuicontroller.cpp
 SOURCE          cphoneaccessorybthandler.cpp
-SOURCE          tphonecallheaderparam.cpp
-SOURCE          cphonecallheadermanager.cpp 
 SOURCE          cphonenumberentrymanager.cpp
-SOURCE          cphonecbamanager.cpp 
+SOURCE          cphoneuicommandmanager.cpp 
 
 /* Languages */
 LANG SC
@@ -74,7 +74,6 @@ LIBRARY         fbscli.lib
 LIBRARY         phonestringloader.lib
 LIBRARY         featmgr.lib // FeatureManager
 LIBRARY         connmon.lib // RConnectionMonitor
-LIBRARY         avkon.lib // AknTextUtils
 LIBRARY         hal.lib
 
 // RemCon
@@ -96,3 +95,6 @@ LIBRARY         serviceprovidersettings.lib
 LIBRARY         starterclient.lib
 
 LIBRARY         phonemediatorcenter.lib
+
+
+SMPSAFE

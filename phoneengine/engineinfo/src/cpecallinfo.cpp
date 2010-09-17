@@ -107,6 +107,7 @@ void CPECallInfo::Reset( TBool aIsConference )
     iForwardAddressChoices = NULL;
     iCallIndex = KPEInvalidCallIndex;
     iProtocolError = KErrNotFound;
+    iIncomingCallForwarded = EFalse;
     }
 
 // ---------------------------------------------------------------------------
@@ -667,6 +668,24 @@ void CPECallInfo::SetProtocolError( TInt aError )
 TInt CPECallInfo::ProtocolError() const
     {
     return iProtocolError;
+    }
+
+// -----------------------------------------------------------------------------
+// CPECallInfo::SetIncomingCallForwarded
+// -----------------------------------------------------------------------------
+//
+void CPECallInfo::SetIncomingCallForwarded( TBool aForwarded )
+    {
+    iIncomingCallForwarded = aForwarded;
+    }
+
+// -----------------------------------------------------------------------------
+// CPECallInfo::IncomingCallForwarded
+// -----------------------------------------------------------------------------
+//
+TBool CPECallInfo::IncomingCallForwarded() const
+    {
+    return iIncomingCallForwarded;
     }
 
 // End of File

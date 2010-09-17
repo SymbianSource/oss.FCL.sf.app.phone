@@ -39,4 +39,7 @@ include (cpnetworkplugin.pri)
 
 symbian: { 
     TARGET.UID3 = 0X20029F24
+    VERSION = 10.0
 }
+
+BLD_INF_RULES.prj_exports += "./rom/cpnetworkplugin_stub.sis /epoc32/data/z/system/install/cpnetworkplugin_stub.sis"

@@ -95,16 +95,6 @@ class CPhoneStateCallSetup : public CPhoneState
         */
         IMPORT_C virtual void ConstructL();
         
-        /**
-        * Upadated CBAs CallSetup case
-        */
-        IMPORT_C virtual void UpdateInCallCbaL();
-         
-        /**
-        * Upadated CBAs
-        */
-        IMPORT_C virtual void UpdateCbaL( TInt aResource );
-        
     private:
 
         /**

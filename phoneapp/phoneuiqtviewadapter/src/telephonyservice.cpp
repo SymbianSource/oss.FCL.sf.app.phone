@@ -39,17 +39,12 @@ void TelephonyService::start(const int serviceId)
     PHONE_DEBUG2("TelephonyService::start:", serviceId);
     switch (serviceId) {
         case 0: {
-            TPhoneCmdParamInteger uidParam;
-            uidParam.SetInteger( KUidPhoneApplication.iUid );
-            m_viewAdapter->ExecuteCommandL(EPhoneViewBringAppToForeground, &uidParam);
+            m_viewAdapter->ExecuteCommandL(EPhoneViewBringPhoneAppToForeground);
             break;
         }
         case 1: {
             m_viewAdapter->ExecuteCommandL( EPhoneViewOpenDialer );
-
-            TPhoneCmdParamInteger uidParam;
-            uidParam.SetInteger( KUidPhoneApplication.iUid );
-            m_viewAdapter->ExecuteCommandL(EPhoneViewBringAppToForeground, &uidParam);
+            m_viewAdapter->ExecuteCommandL(EPhoneViewBringPhoneAppToForeground);
             break;
         }
         default: {

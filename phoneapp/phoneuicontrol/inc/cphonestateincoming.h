@@ -73,11 +73,6 @@ class CPhoneStateIncoming : public CPhoneState
         * Handle state-specific behaviour when number entry is cleared
         */ 
         IMPORT_C void HandleNumberEntryClearedL();
-
-        /** 
-        * Handle keylock state change events
-        */ 
-        IMPORT_C void HandleKeyLockEnabled( TBool aKeylockEnabled );
         
     protected:
 
@@ -147,11 +142,6 @@ class CPhoneStateIncoming : public CPhoneState
         TInt GetNumberEntryNotVisibleMenuBar();
         
         /**
-        * Updates incoming CBA's
-        */
-        void UpdateInCallCbaL( TInt aCallId );
-        
-        /**
         * Show disconnected note
         */        
         void ShowDisconnectingL( TInt aCallId ); 
@@ -159,16 +149,16 @@ class CPhoneStateIncoming : public CPhoneState
         /**
         * Update remote data and label to the call header.
         * @param aCallId - Call Id.
-        * @param aCallHeaderData - Call header parameters where modifications
-        *                          are made.
         */
         void UpdateRemoteInfoDataAndLabelL( 
-                TInt aCallId, 
-                TPhoneCmdParamCallHeaderData aCallHeaderParam );
+                TInt aCallId );
        
     protected:
         // call id of ringing call
         TInt iRingingCallId;
+        
+        // True if call is disconnected otherwise false
+        TBool iCallDisconnected;
         
     };
 

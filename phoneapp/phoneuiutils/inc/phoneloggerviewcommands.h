@@ -84,16 +84,10 @@ public:
 		EPhoneViewSetListQueryString,
 		/** EPhoneViewRemoveQuery */
 		EPhoneViewRemoveQuery,
-		/** EPhoneViewSetTopApplication */
-		EPhoneViewSetTopApplication,
 		/** EPhoneViewBringAppToForeground */
 		EPhoneViewBringAppToForeground,
 		/** EPhoneViewSendToBackground */
 		EPhoneViewSendToBackground,
-		/** EPhoneViewSetNeedToSendToBackgroundStatus */
-		EPhoneViewSetNeedToSendToBackgroundStatus,
-		/** EPhoneViewGetNeedToSendToBackgroundStatus */
-		EPhoneViewGetNeedToSendToBackgroundStatus,
 		/** EPhoneViewGetTopApplicationIsDisplayedStatus */
 		EPhoneViewGetTopApplicationIsDisplayedStatus,
 		/** EPhoneViewGetForegroundApplication */
@@ -104,10 +98,6 @@ public:
 		EPhoneViewStopCapturingKey,
 		/** EPhoneViewSetGlobalNotifiersDisabled */
 		EPhoneViewSetGlobalNotifiersDisabled,
-		/** EPhoneViewGetHoldFlag */
-		EPhoneViewGetHoldFlag,
-		/** EPhoneViewSetHoldFlag */
-		EPhoneViewSetHoldFlag,
 		/** EPhoneViewOpenSingleItemFetchDialog */
 		EPhoneViewOpenSingleItemFetchDialog,
 		/** EPhoneViewRemovePhoneDialogs */
@@ -168,8 +158,6 @@ public:
 		EPhoneViewIsQuery,
 		/** EPhoneViewBringIdleToForeground */
 		EPhoneViewBringIdleToForeground,
-		/** EPhoneViewSetIdleTopApplication */
-		EPhoneViewSetIdleTopApplication,
 		/** EPhoneViewBeginUpdate */
 		EPhoneViewBeginUpdate,
 		/** EPhoneViewEndUpdate */
@@ -200,10 +188,6 @@ public:
 		EPhoneViewSendAiwCommand,
 		/** EPhoneViewCipheringInfoChangePlayTone */
 		EPhoneViewCipheringInfoChangePlayTone,
-		/** EPhoneViewDisableKeyLockWithoutNote */
-		EPhoneViewDisableKeyLockWithoutNote,
-		/** EPhoneViewGetKeyLockStatus */
-		EPhoneViewGetKeyLockStatus,
 		/** EPhoneViewRemoveGlobalWaitNote */
 		EPhoneViewRemoveGlobalWaitNote,
 		/** EPhoneViewSetPhoneCustomization */

@@ -138,39 +138,21 @@ void CPhoneCallSetupAndWaiting::HandleIdleL( TInt aCallId )
 
     if( callStateData.CallId() > KErrNotFound )
         {
-        TPhoneCmdParamCallHeaderData callHeaderParam;
-        callHeaderParam.SetCallState( EPEStateRinging );
-        SetCallHeaderTextsForCallComingInL( callStateData.CallId(), EFalse, &callHeaderParam );
-
         iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble,
-            callStateData.CallId(),
-            &callHeaderParam );
-
-        SetTouchPaneButtons( EPhoneIncomingCallButtons );
-        BringIncomingToForegroundL();
-        iCbaManager->UpdateIncomingCbaL( callStateData.CallId() );
+            callStateData.CallId() );
+        
+        BringIncomingToForegroundL();       
         SetRingingTonePlaybackL( callStateData.CallId() );
+        UpdateUiCommands();
         SetBackButtonActive(EFalse);
         iStateMachine->ChangeState( EPhoneStateIncoming );
         }
     else // waiting call was terminated.
         {
-        CPhoneState::SetTouchPaneButtons( EPhoneCallSetupButtons );
-        UpdateCbaL( EPhoneCallHandlingInCallCBA );
+        UpdateUiCommands();
         iStateMachine->ChangeState( EPhoneStateAlerting );
         }
     EndUiUpdate();
-    }
-
-// -----------------------------------------------------------
-// CPhoneCallSetupAndWaiting::UpdateInCallCbaL
-// -----------------------------------------------------------
-//
-void CPhoneCallSetupAndWaiting::UpdateInCallCbaL()
-    {
-    __LOGMETHODSTARTEND( EPhoneControl,
-        "CPhoneCallSetupAndWaiting::UpdateInCallCbaL() ");
-    UpdateCbaL( EPhoneCallHandlingIncomingRejectCBA );
     }
 
 // -----------------------------------------------------------
@@ -181,21 +163,11 @@ void CPhoneCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneCallSetupAndWaiting::HandleConnectedL() ");
     BeginUiUpdateLC();
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-    callHeaderParam.SetCallState( EPEStateConnected );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId,
-        &callHeaderParam );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
     
-    SetTouchPaneButtons( EPhoneWaitingCallButtons );
+    UpdateUiCommands();
     EndUiUpdate();
-    
-    if ( IsNumberEntryUsedL() )
-        {
-        TPhoneCmdParamBoolean booleanParam;
-        booleanParam.SetBoolean( ETrue );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetNumberEntryVisible, &booleanParam );
-        }
-    UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
+    iNumberEntryManager->SetVisibilityIfNumberEntryUsedL(ETrue);
     iStateMachine->ChangeState( EPhoneStateWaitingInSingle );
     }
 

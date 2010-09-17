@@ -31,6 +31,7 @@ UID                     0x10009D8D 0x102828E3
 
 CAPABILITY              CAP_ECOM_PLUGIN NetworkControl NetworkServices ReadDeviceData MultimediaDD
 VENDORID                VID_DEFAULT
+VERSION                 10.0
 
 #ifndef WINSCW 
 EpocAllowDllData
@@ -123,3 +124,6 @@ LIBRARY                 tmsapi.lib
 LIBRARY                 libglib.lib
 
 DEBUGLIBRARY            flogger.lib
+
+
+SMPSAFE

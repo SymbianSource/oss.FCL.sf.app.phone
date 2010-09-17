@@ -43,3 +43,6 @@ HEADERS += ../../inc/penetworkhandler.h
 
 SOURCES += ../../src/penetworkhandler.cpp \
            ./unit_tests.cpp
+
+
+symbian:MMP_RULES += SMPSAFE

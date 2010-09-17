@@ -23,7 +23,6 @@
 #include <spsettings.h>
 #include <spentry.h>
 #include <telephonydomainpskeys.h>
-#include <UikonInternalPSKeys.h>
 #include <aknnotedialog.h>
 #include "cphonevoiperrormessageshandler.h"
 #include "cphonemainerrormessageshandler.h"
@@ -390,26 +389,23 @@ void CPhoneVoIPErrorMessagesHandler::SendGlobalErrorNoteWithTextL(
         "CPhoneVoIPErrorMessagesHandler::SendGlobalErrorNoteL()" );
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
 
-    if ( CPhonePubSubProxy::Instance()->Value( 
-            KPSUidUikon, KUikGlobalNotesAllowed ) == 1 )
-        {
-        // Re-enable global notes
-        TPhoneCmdParamBoolean globalNotifierParam;
-        globalNotifierParam.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( 
-             EPhoneViewSetGlobalNotifiersDisabled,
-            &globalNotifierParam );
-            
-        TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetType( EPhoneMessageBoxInformation );
-        globalNoteParam.SetTextResourceId( 
-            CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( aResourceId ) );
-        globalNoteParam.SetText( aText );
 
-        iViewCommandHandle->ExecuteCommandL(  
-            EPhoneViewShowGlobalNote, &globalNoteParam );
-        } 
+    // Re-enable global notes
+    TPhoneCmdParamBoolean globalNotifierParam;
+    globalNotifierParam.SetBoolean( EFalse );
+    iViewCommandHandle->ExecuteCommandL( 
+         EPhoneViewSetGlobalNotifiersDisabled,
+        &globalNotifierParam );
+        
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    globalNoteParam.SetType( EPhoneMessageBoxInformation );
+    globalNoteParam.SetTextResourceId( 
+        CPhoneMainResourceResolver::Instance()->
+        ResolveResourceID( aResourceId ) );
+    globalNoteParam.SetText( aText );
+
+    iViewCommandHandle->ExecuteCommandL(  
+        EPhoneViewShowGlobalNote, &globalNoteParam );
     }
 
 // -----------------------------------------------------------

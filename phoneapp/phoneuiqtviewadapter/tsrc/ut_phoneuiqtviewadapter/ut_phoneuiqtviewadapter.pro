@@ -23,40 +23,37 @@ INCLUDEPATH += .
 CONFIG += hb
 CONFIG += qtestlib
 
-symbian {
+INCLUDEPATH += /epoc32/include/platform/mw \
+               /epoc32/include/platform \
+               /epoc32/include/platform/app \
+               /epoc32/include/mw \
+               /sf/app/phone/inc \
+               ../../../phoneuiutils/inc/ \
+               ../../../phonemediatorcenter/inc/ \
+               ../../../phoneuiview2/inc \
+               ../../../../inc \
+               ../../../phoneringingtoneplayer/inc \
+               ../../../phoneui2/srcdata \
+               ../../../../tsrc/common
 
-    INCLUDEPATH += /epoc32/include/platform/mw \
-                   /epoc32/include/platform \
-                   /epoc32/include/platform/app \
-                   /epoc32/include/mw \
-                   /sf/app/phone/inc \
-                   ../../../phoneuiutils/inc/ \
-                   ../../../phonemediatorcenter/inc/ \
-                   ../../../phoneuiview2/inc \
-                   ../../../../inc \
-                   ../../../phoneringingtoneplayer/inc \
-                   ../../../phoneui2/srcdata
 
+LIBS += -lphoneuiutils
+LIBS += -lPhoneRingingtonePlayer
+LIBS += -lphoneuiqtview
+LIBS += -lxqservice
+LIBS += -lxqserviceutil
+LIBS += -lxqplugins
+LIBS += -lserviceprovidersettings
+LIBS += -lakncapserverclient
+LIBS += -lxqsettingsmanager
+LIBS += -llogsengine
+LIBS += -lapgrfx
+LIBS += -lws32
+LIBS += -lcone
 
-    LIBS += -lphoneuiutils
-    LIBS += -lPhoneRingingtonePlayer
-    LIBS += -lphoneuiqtview
-    LIBS += -lxqservice
-    LIBS += -lxqserviceutil
-    LIBS += -lxqplugins
-    LIBS += -lserviceprovidersettings
-    LIBS += -lakncapserverclient
-    LIBS += -lxqsettingsmanager
-    LIBS += -llogsengine
-    LIBS += -lapgrfx
-    LIBS += -lavkon
-    LIBS += -lws32
-    LIBS += -lcone
-    
-    TARGET.CAPABILITY = ALL -TCB
-    DEFINES += FT_SYMBIAN_INTEGRATION
-    DEFINES += BUILD_PHONEUIQTVIEWADAPTER
-}
+TARGET.CAPABILITY = ALL -TCB
+DEFINES += FT_SYMBIAN_INTEGRATION
+DEFINES += BUILD_PHONEUIQTVIEWADAPTER
 
 # Input
 HEADERS += ../../inc/phoneuiqtviewadapter.h
@@ -74,6 +71,7 @@ SOURCES += ../../src/phonecommandextensionwrapper.cpp
 HEADERS += ../../inc/phonemessagecontroller.h
 SOURCES += ../../src/phonemessagecontroller.cpp
 HEADERS += ../../inc/phonevisibilityhandler.h
+HEADERS += ../../inc/phonecallheadermanager.h
 SOURCES += phonevisibilityhandler_stub.cpp
 HEADERS += phoneindicatorcontroller.h
 SOURCES += phoneindicatorcontroller_stub.cpp
@@ -83,8 +81,12 @@ SOURCES += phonebubblewrapper_stub.cpp
 SOURCES += cphoneringingtonecontroller_stub.cpp
 SOURCES += cphonemediatorfactory_stub.cpp
 SOURCES += cphonemediatorsender_stub.cpp
+SOURCES += phonecallheadermanager_stub.cpp
 SOURCES += phonenotecontroller_stub.cpp
 HEADERS += ../../inc/phoneapplauncher.h
 SOURCES += phoneapplauncher_stub.cpp
 SOURCES += unit_tests.cpp
 
+
+
+symbian:MMP_RULES += SMPSAFE

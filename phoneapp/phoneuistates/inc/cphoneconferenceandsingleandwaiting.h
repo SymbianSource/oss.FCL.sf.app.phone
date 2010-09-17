@@ -62,10 +62,6 @@ class CPhoneConferenceAndSingleAndWaiting : public CPhoneConferenceAndSingle
             TPhoneKeyEventMessages aMessage,
             TKeyCode aCode );
 
-        virtual void HandleKeyEventL( 
-            const TKeyEvent& aKeyEvent,
-            TEventCode aEventCode );
-        
     protected:
 
         /**
@@ -86,8 +82,6 @@ class CPhoneConferenceAndSingleAndWaiting : public CPhoneConferenceAndSingle
         virtual void HandleConferenceIdleL();
         
         virtual void HandleAddedConferenceMemberL( TInt aCallId );
-        
-        virtual void UpdateInCallCbaL();
         
         
      private:

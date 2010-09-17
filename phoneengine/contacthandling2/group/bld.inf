@@ -28,7 +28,7 @@ PRJ_EXPORTS
 ../inc/mpecontacthandling.h      |../../inc/mpecontacthandling.h
 
 // SIS stubs
-../data/contacthandling_stub.sis    /epoc32/data/z/system/install/contacthandling_stub.sis
+../rom/contacthandling_stub.sis    /epoc32/data/z/system/install/contacthandling_stub.sis
  
 PRJ_MMPFILES
 contacthandling.mmp

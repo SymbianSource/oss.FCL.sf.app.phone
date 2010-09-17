@@ -24,6 +24,7 @@
 #include <psetwrapper.h>
 #include <psetcallbarringwrapper.h>
 #include <psuinotes.h>
+#include <nwdefs.h>
 #include "cpbarringplugingroup.h"
 #include "cpplugincommon.h"
 #include "cppluginlogging.h"
@@ -517,12 +518,14 @@ void CpBarringPluginGroup::completeBarringStateChangeRequestHandling(
         QVariant checkState = m_clickedBarringItem->contentWidgetData("checkState");
         if (Qt::Checked == checkState.toInt()) {
             m_barringWrapper->enableBarring(
+                EAllTeleAndBearer,
                 ServiceGroupVoice,
                 qvariant_cast<PSetCallBarringWrapper::BarringType>(
                     m_clickedBarringItem->contentWidgetData("barringType")),
                 barringPassword);
         } else {
             m_barringWrapper->disableBarring(
+                EAllTeleAndBearer,
                 ServiceGroupVoice,
                 qvariant_cast<PSetCallBarringWrapper::BarringType>(
                     m_clickedBarringItem->contentWidgetData("barringType")),

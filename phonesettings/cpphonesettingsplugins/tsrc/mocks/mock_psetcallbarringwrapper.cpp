@@ -73,11 +73,14 @@ void PSetCallBarringWrapper::barringStatus(
 // -----------------------------------------------------------------------------
 //
 void PSetCallBarringWrapper::enableBarring(
+    int basicServiceGroup,
     PsServiceGroup serviceGroup,
     BarringType barringType,
     QString barringPassword)
     {
-    SMC_MOCK_METHOD3( void, int/*PsServiceGroup*/, static_cast<int>(serviceGroup), 
+    SMC_MOCK_METHOD4( void, 
+        int, basicServiceGroup, 
+        int/*PsServiceGroup*/, static_cast<int>(serviceGroup), 
         BarringType, barringType, QString, barringPassword )
     }
 
@@ -87,11 +90,14 @@ void PSetCallBarringWrapper::enableBarring(
 // -----------------------------------------------------------------------------
 //
 void PSetCallBarringWrapper::disableBarring(
+    int basicServiceGroup,
     PsServiceGroup serviceGroup,
     BarringType barringType,
     QString barringPassword)
     {
-    SMC_MOCK_METHOD3( void, int/*PsServiceGroup*/, static_cast<int>(serviceGroup), 
+    SMC_MOCK_METHOD4( void, 
+        int, basicServiceGroup, 
+        int/*PsServiceGroup*/, static_cast<int>(serviceGroup), 
         BarringType, barringType, QString, barringPassword )
     }
 

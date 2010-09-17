@@ -183,6 +183,10 @@ void BubbleParticipantListItem::handleItemStateChange(bool collapsed)
         itemView()->scrollTo(
             modelIndex(),
             HbAbstractItemView::EnsureVisible);
+
+        // group handles tap gesture, not propagate to list,
+        // current index must be updated here
+        itemView()->setCurrentIndex(modelIndex());
     }
 }
 

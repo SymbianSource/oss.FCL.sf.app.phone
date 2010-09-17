@@ -106,7 +106,13 @@ class CPhoneStateMachine :
         * Instantiates phone storage.
         * @return storage instance    
         */    
-        IMPORT_C MPhoneStorage* PhoneStorage();        
+        IMPORT_C MPhoneStorage* PhoneStorage();
+        
+        /**
+       * Getter for CEikonEnv to avoid use of static system calls
+       * @return CEikonEnv handle
+       */
+       IMPORT_C CEikonEnv* EikonEnv() const;
 
     protected:
 
@@ -148,6 +154,11 @@ class CPhoneStateMachine :
 
         // Phone's storage
         MPhoneStorage* iPhoneStorage;
+        
+        /** Internal variable for EikonEnv to avoid use of static system calls
+        * Not own.
+        */
+        CEikonEnv* iEnv;
     };
 
 #endif      // CPHONESTATEMACHINE_H

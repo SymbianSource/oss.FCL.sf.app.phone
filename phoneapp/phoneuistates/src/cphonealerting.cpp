@@ -106,9 +106,9 @@ EXPORT_C void CPhoneAlerting::HandleKeyMessageL(
     switch ( aCode )
         {
         case EKeyYes: // send-key
-            if ( IsNumberEntryUsedL() )
+            if ( iNumberEntryManager->IsNumberEntryUsedL() )
                 {
-                CallFromNumberEntryL();
+                iNumberEntryManager->CallFromNumberEntryL();
                 }
             else
                 {
@@ -122,19 +122,12 @@ EXPORT_C void CPhoneAlerting::HandleKeyMessageL(
                 {
                 iStateMachine->SendPhoneEngineMessage(
                     MPEPhoneModel::EPEMessageTerminateAllConnections ); 
-                if ( IsNumberEntryUsedL() )
+                if ( iNumberEntryManager->IsNumberEntryUsedL() )
                     {
                     iViewCommandHandle->ExecuteCommandL( 
                         EPhoneViewRemoveNumberEntry );
                     // Do state-specific operation when number entry is cleared
                     HandleNumberEntryClearedL();
-                    }
-                if ( !TopAppIsDisplayedL() )
-                    {
-                    TPhoneCmdParamInteger uidParam;
-                    uidParam.SetInteger( KUidPhoneApplication.iUid );
-                    iViewCommandHandle->ExecuteCommandL(
-                        EPhoneViewBringAppToForeground, &uidParam );
                     }
                 }
             else // handle short end key
@@ -220,15 +213,10 @@ EXPORT_C void CPhoneAlerting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneAlerting::HandleConnectedL()");
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
     BeginUiUpdateLC();
     UpdateSingleActiveCallL( aCallId );
-    SetTouchPaneButtons( EPhoneIncallButtons );
+    UpdateUiCommands();
     EndUiUpdate();
-    UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateSingle );
     }
 

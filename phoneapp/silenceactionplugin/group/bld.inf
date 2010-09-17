@@ -29,7 +29,7 @@ PRJ_EXPORTS
 ../data/silence.rul\
     /epoc32/data/z/private/10282bc4/rules/silence.rul
 
-../data/silenceactionplugin_stub.sis\
+../rom/silenceactionplugin_stub.sis\
     /epoc32/data/z/system/install/silenceactionplugin_stub.sis
     
 ../rom/silenceactionplugin.iby\

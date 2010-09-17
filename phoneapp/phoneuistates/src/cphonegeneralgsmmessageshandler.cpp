@@ -21,7 +21,6 @@
 #include <apgcli.h>
 #endif
 #include <mpeengineinfo.h>
-#include <UikonInternalPSKeys.h>
 #include <mccessobserver.h>
 #include <featmgr.h>
 #include <StringLoader.h>
@@ -102,7 +101,6 @@ void CPhoneGeneralGsmMessagesHandler::HandlePhoneEngineMessageL(
             break;
         
         case MEngineMonitor::EPEMessageIncCallIsForw:
-            HandleIncomingCallForwardedL();
             break;
             
         case MEngineMonitor::EPEMessageIncCallForwToC:
@@ -168,38 +166,24 @@ void CPhoneGeneralGsmMessagesHandler::SendGlobalInfoNoteL(
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneGeneralGsmMessagesHandler::SendGlobalInfoNoteL()" );
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
-    if ( CPhonePubSubProxy::Instance()->Value( 
-            KPSUidUikon, KUikGlobalNotesAllowed ) == 1 )
-        {
-        TPhoneCmdParamBoolean globalNotifierParam;
-        globalNotifierParam.SetBoolean( EFalse );
-        iViewCommandHandle.ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-            &globalNotifierParam );
-            
-        TPhoneCmdParamGlobalNote globalNoteParam;
-        PhoneNotificationType type = aNotificationDialog ? 
-                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
-        globalNoteParam.SetType( type );
-      
-        globalNoteParam.SetTextResourceId( 
-            CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( aResourceId ) );
-        globalNoteParam.SetNotificationDialog( aNotificationDialog );
+    
+    TPhoneCmdParamBoolean globalNotifierParam;
+    globalNotifierParam.SetBoolean( EFalse );
+    iViewCommandHandle.ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
+        &globalNotifierParam );
+        
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    PhoneNotificationType type = aNotificationDialog ? 
+            EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+    globalNoteParam.SetType( type );
+  
+    globalNoteParam.SetTextResourceId( 
+        CPhoneMainResourceResolver::Instance()->
+        ResolveResourceID( aResourceId ) );
+    globalNoteParam.SetNotificationDialog( aNotificationDialog );
 
-        iViewCommandHandle.ExecuteCommandL( 
-            EPhoneViewShowGlobalNote, &globalNoteParam );    
-        }
-    }
-
-// -----------------------------------------------------------
-// CPhoneGeneralGsmMessagesHandler::HandleIncomingCallForwardedL
-// -----------------------------------------------------------
-//
-void CPhoneGeneralGsmMessagesHandler::HandleIncomingCallForwardedL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneGeneralGsmMessagesHandler::HandleIncomingCallForwardedL()" );
-    iActiveState.SetDivertIndication( ETrue );
+    iViewCommandHandle.ExecuteCommandL( 
+        EPhoneViewShowGlobalNote, &globalNoteParam );    
     }
 
 // ---------------------------------------------------------
@@ -212,26 +196,23 @@ void CPhoneGeneralGsmMessagesHandler::SendGlobalErrorNoteL(
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneGeneralGsmMessagesHandler::SendGlobalErrorNoteL()" );
     __ASSERT_DEBUG( aResourceId, Panic( EPhoneCtrlParameterNotInitialized ) );
-    if ( CPhonePubSubProxy::Instance()->Value( 
-            KPSUidUikon, KUikGlobalNotesAllowed ) == 1 )
-        {
-        TPhoneCmdParamBoolean globalNotifierParam;
-        globalNotifierParam.SetBoolean( EFalse );
-        iViewCommandHandle.ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-            &globalNotifierParam );
-            
-        TPhoneCmdParamGlobalNote globalNoteParam;
-        PhoneNotificationType type = aNotificationDialog ? 
-                EPhoneNotificationDialog : EPhoneMessageBoxInformation;
-        globalNoteParam.SetType( type );
-        globalNoteParam.SetTextResourceId( 
-            CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( aResourceId ) );
-        globalNoteParam.SetNotificationDialog( aNotificationDialog );
+    TPhoneCmdParamBoolean globalNotifierParam;
+    globalNotifierParam.SetBoolean( EFalse );
+    iViewCommandHandle.ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
+        &globalNotifierParam );
         
-        iViewCommandHandle.ExecuteCommandL( 
-            EPhoneViewShowGlobalNote, &globalNoteParam );
-        }
+    TPhoneCmdParamGlobalNote globalNoteParam;
+    PhoneNotificationType type = aNotificationDialog ? 
+            EPhoneNotificationDialog : EPhoneMessageBoxInformation;
+    globalNoteParam.SetType( type );
+    globalNoteParam.SetTextResourceId( 
+        CPhoneMainResourceResolver::Instance()->
+        ResolveResourceID( aResourceId ) );
+    globalNoteParam.SetNotificationDialog( aNotificationDialog );
+    
+    iViewCommandHandle.ExecuteCommandL( 
+        EPhoneViewShowGlobalNote, &globalNoteParam );
+
     }
 
 // End of File

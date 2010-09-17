@@ -113,9 +113,9 @@ void CPhoneTwoSinglesAndWaiting::HandleKeyMessageL(
         {
         case EKeyYes: // send-key
             {
-            if( IsNumberEntryVisibleL() )
+            if( iNumberEntryManager->IsNumberEntryVisibleL() )
                 {
-                CallFromNumberEntryL();
+                iNumberEntryManager->CallFromNumberEntryL();
                 }
             else
                 {
@@ -130,22 +130,6 @@ void CPhoneTwoSinglesAndWaiting::HandleKeyMessageL(
         default:
             CPhoneTwoSingles::HandleKeyMessageL( aMessage, aCode );   
             break;
-        }
-    }
-
-// -----------------------------------------------------------
-// CPhoneTwoSinglesAndWaiting::HandleKeyEventL
-// -----------------------------------------------------------
-//
-void CPhoneTwoSinglesAndWaiting::HandleKeyEventL(
-    const TKeyEvent& aKeyEvent,
-    TEventCode /*aEventCode*/ )
-    {
-    if( EKeyDeviceF == aKeyEvent.iCode )
-        {
-        __PHONELOG( EBasic, EPhoneUIStates,
-            "CPhoneTwoSinglesAndWaiting::HandleKeyMessageL-deviceF" );
-        HandleHoldSwitchL();
         }
     }
 
@@ -165,7 +149,7 @@ void CPhoneTwoSinglesAndWaiting::HandlePhoneEngineMessageL(
             HandleIdleL( aCallId );
             break;
         case MEngineMonitor::EPEMessageConnected:
-            UpdateInCallCbaL();
+            UpdateUiCommands();
             CPhoneTwoSingles::HandlePhoneEngineMessageL( aMessage, aCallId );
             break;           
         default:
@@ -226,40 +210,10 @@ void CPhoneTwoSinglesAndWaiting::StateTransitionToTwoSinglesL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSinglesAndWaiting::StateTransitionToTwoSinglesL()");
-    if ( IsNumberEntryUsedL() )
-        {
-        if ( NeedToSendToBackgroundL() )
-            {
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-            UpdateCbaL( EPhoneCallHandlingInCallCBA );
-            }
-        else
-            {
-            SetNumberEntryVisibilityL(ETrue);
-            }
-        } 
-    else
-        {
-        // Set Two singles softkeys
-        UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
-        
-        // If numberentry is not open just check NeedToSendToBackgroundL and 
-        // sendbackround if needed.
-        if ( NeedToSendToBackgroundL() )
-            {
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-            }
-        }
-
-    if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-        && iStateMachine->PhoneStorage()->IsScreenLocked() )
-        {
-        EnableCallUIL();
-        }
+    iNumberEntryManager->SetVisibilityIfNumberEntryUsedL(ETrue);
     
-    iStateMachine->PhoneStorage()->ResetBlockedKeysList();
-    SetTouchPaneButtons( EPhoneTwoSinglesButtons );
-    iStateMachine->ChangeState( EPhoneStateTwoSingles );                     
+    UpdateUiCommands();
+    iStateMachine->ChangeState( EPhoneStateTwoSingles );
     }
 
 // -----------------------------------------------------------
@@ -270,20 +224,7 @@ void CPhoneTwoSinglesAndWaiting::StateTransitionToSingleAndWaitingL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSinglesAndWaiting::StateTransitionToSingleAndWaitingL()")
-    TPhoneCmdParamInteger callIdParam;
-    iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewGetExpandedBubbleCallId, &callIdParam );
-    
-    if ( callIdParam.Integer()!=iRingingCallId )
-        {
-        CPhoneGsmInCall::UpdateInCallCbaL();
-        } 
-    else 
-        {
-        UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
-        }
-    CheckDisableHWKeysAndCallUIL();
-    SetTouchPaneButtons( EPhoneWaitingCallButtons );
+    UpdateUiCommands();
     iStateMachine->ChangeState( EPhoneStateWaitingInSingle );
     }
 
@@ -296,64 +237,11 @@ void CPhoneTwoSinglesAndWaiting::HandleConnectedConferenceL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSinglesAndWaiting::HandleConnectedConferenceL()");
     BeginUiUpdateLC();
-    
-    TInt callLabelId;
-    TBuf<KPhoneCallHeaderLabelMaxLength> conferenceText( KNullDesC );
-    callLabelId = CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( EPhoneCLIConferenceCall );
-    StringLoader::Load( 
-        conferenceText, 
-        callLabelId, 
-        CCoeEnv::Static() );
-    
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-    callHeaderParam.SetCLIText( conferenceText, TPhoneCmdParamCallHeaderData::ERight );
-    callHeaderParam.SetCallState(EPEStateConnectedConference);
-    callHeaderParam.SetCiphering(
-        iStateMachine->PhoneEngineInfo()->IsSecureCall( aCallId ) );
-    callHeaderParam.SetCipheringIndicatorAllowed(
-        iStateMachine->PhoneEngineInfo()->SecureSpecified() );
-    // Service identifier must be given so that service specific settings
-    // can be taken into account at phoneuiview.
-    callHeaderParam.SetServiceId( 
-        iStateMachine->PhoneEngineInfo()->ServiceId( aCallId ) );
-    
-    CheckDisableHWKeysAndCallUIL();
 
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewCreateConference, aCallId,
-        &callHeaderParam );
-        
-    // Clear the flag
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-    
-    SetTouchPaneButtons( EPhoneWaitingCallButtons );
-    UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewCreateConference, aCallId );
+    UpdateUiCommands();
     EndUiUpdate();
     iStateMachine->ChangeState( EPhoneStateConferenceAndWaiting );
-    }
-    
-// -----------------------------------------------------------
-// CPhoneTwoSinglesAndWaiting::UpdateInCallCbaL
-// -----------------------------------------------------------
-//
-void CPhoneTwoSinglesAndWaiting::UpdateInCallCbaL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneTwoSinglesAndWaiting::UpdateInCallCbaL()");
-    TPhoneCmdParamInteger callIdParam;
-    iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewGetExpandedBubbleCallId, &callIdParam );
-    if ( callIdParam.Integer()!=iRingingCallId )
-        {
-        CPhoneGsmInCall::UpdateInCallCbaL();
-        } 
-    else 
-        {
-        iCbaManager->SetCbaL( EPhoneCallHandlingIncomingRejectCBA );
-        }
     }
 
 // -----------------------------------------------------------
@@ -364,7 +252,7 @@ void CPhoneTwoSinglesAndWaiting::HandleNumberEntryClearedL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSinglesAndWaiting::HandleNumberEntryClearedL()");
-    UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
+    UpdateUiCommands();
     }
 
 // -----------------------------------------------------------
@@ -397,7 +285,7 @@ TBool CPhoneTwoSinglesAndWaiting::HandleCommandL( TInt aCommand )
 void CPhoneTwoSinglesAndWaiting::UpdateUiControlsL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndWaiting::UpdateUiControlsL( ) ");
-    UpdateInCallCbaL();
+    UpdateUiCommands();
     }
 
 // End of File

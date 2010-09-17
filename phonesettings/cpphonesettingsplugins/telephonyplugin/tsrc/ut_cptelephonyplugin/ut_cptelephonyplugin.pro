@@ -48,3 +48,6 @@ SOURCES += ../../src/cptelephonyplugin.cpp
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cptelephonypluginview.cpp
+
+
+symbian:MMP_RULES += SMPSAFE

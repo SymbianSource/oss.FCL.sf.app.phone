@@ -79,8 +79,6 @@ class CPhoneSingleAndCallSetupAndWaiting : public CPhoneGsmInCall
         * ConstructL()
         */
         virtual void ConstructL();
-        
-        virtual void UpdateInCallCbaL();
             
      private:
      

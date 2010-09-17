@@ -16,28 +16,28 @@
 #
 
 TEMPLATE = app
-TARGET = 
 TARGET.UID3 = 0xEACF41FE
 DEPENDPATH += .
 INCLUDEPATH += .
-CONFIG += hb
 CONFIG += qtestlib
 
-symbian {
+INCLUDEPATH += /epoc32/include/platform/mw \
+               /epoc32/include/platform \
+               /epoc32/include/mw \
+               ../../../phoneuiutils/inc/ \
+               ../../../phoneuiview2/inc \
+               ../../../../inc \
+               ../../../../tsrc/common
 
-    INCLUDEPATH += \epoc32\include\platform\mw \
-                   \epoc32\include\platform \
-                   \epoc32\include\mw \
-                   ../../../phoneuiutils/inc/ \
-                   ../../../phoneuiview2/inc \
-                   ../../../../inc
+LIBS += -lphoneuiutils
 
-    LIBS += -lphoneuiutils
-
-    TARGET.CAPABILITY = ALL -TCB
-}
+TARGET.CAPABILITY = ALL -TCB
 
 # Input
 HEADERS += ../../inc/phonebubblewrapper.h
 SOURCES += ../../src/phonebubblewrapper.cpp
 SOURCES += unit_tests.cpp
+
+include(../../../../tsrc/common/phonetest.pri)
+
+symbian:MMP_RULES += SMPSAFE

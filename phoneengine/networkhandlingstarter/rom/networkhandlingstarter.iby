@@ -24,4 +24,6 @@ file=ABI_DIR\UREL\networkhandlingstarter.exe PROGRAMS_DIR\networkhandlingstarter
 data=DATAZ_\private\10003a3f\import\apps\networkhandlingstarter_reg.rsc \private\10003a3f\import\apps\networkhandlingstarter_reg.rsc
 data=DATAZ_\resource\apps\networkhandlingstarter.rsc \resource\apps\networkhandlingstarter.rsc
 
+data=ZSYSTEM\install\networkhandlingstarter_stub.sis   System\Install\networkhandlingstarter_stub.sis
+
 #endif

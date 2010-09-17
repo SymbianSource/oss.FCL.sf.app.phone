@@ -22,7 +22,7 @@ PRJ_PLATFORMS
 DEFAULT
 
 PRJ_EXPORTS
-
+../rom/phoneringingtoneplayer_stub.sis          /epoc32/data/z/system/install/phoneringingtoneplayer_stub.sis
 
 PRJ_MMPFILES
 phoneringingtoneplayer.mmp

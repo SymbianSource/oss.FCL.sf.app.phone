@@ -96,8 +96,6 @@ class CPhoneEmergency : public CPhoneGsmInCall
         */ 
         void HandleErrorL( const TPEErrorInfo& aErrorInfo );
         
-        virtual void UpdateInCallCbaL();
-        
         TBool HandleCommandL( TInt aCommand );
         
         void DisconnectEmergencyCallL();

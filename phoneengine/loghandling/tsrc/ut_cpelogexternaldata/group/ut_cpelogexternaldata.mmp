@@ -63,3 +63,5 @@ LIBRARY             bafl.lib                // Descriptor arrays
 LIBRARY             symbianmock.lib
 
 EPOCALLOWDLLDATA
+
+SMPSAFE

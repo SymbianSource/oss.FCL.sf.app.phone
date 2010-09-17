@@ -38,3 +38,6 @@ SOURCES += ut_bubbleheadingwidget.cpp \
            ../../../bubblecore/src/bubblebutton.cpp
 
 RESOURCES += ut_bubbleheadingwidget.qrc
+
+
+symbian:MMP_RULES += SMPSAFE

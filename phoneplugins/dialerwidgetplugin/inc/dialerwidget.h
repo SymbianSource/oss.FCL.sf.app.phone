@@ -18,8 +18,7 @@
 #ifndef DIALERWIDGET_H
 #define DIALERWIDGET_H
 
-#include <hswidget.h>
-
+#include <hbwidget.h>
 
 #ifndef HOMESCREEN_TEST
     #define HOMESCREEN_TEST_CLASS(aClassName)
@@ -38,13 +37,18 @@ class HbIconItem;
 class HbTextItem;
 class HbTouchArea;
 
-class DialerWidget : public HsWidget
+class DialerWidget : public HbWidget
 {
     Q_OBJECT
+    Q_PROPERTY(int badgeTextLenght READ badgeTextLenght)
+    Q_PROPERTY(QString layoutName READ layoutName)
 
 public:
     DialerWidget(QGraphicsItem* parent = 0, Qt::WindowFlags flags = 0);
     ~DialerWidget();
+
+    int badgeTextLenght() const;
+    QString layoutName() const;
     
 public slots:
     void startDialer();
@@ -57,26 +61,21 @@ public slots:
     
     // from engine
     void onEngineException(const int& exc);
-    
     void onMissedCallsCountChange(const int& count);
     
 signals:
     void error();
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void handleMouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    bool sceneEvent(QEvent *event);
-    StartResult onStart();
-    StopResult onStop();
-    SuspendResult onSuspend();
-    ResumeResult onResume();
-    
+    void gestureEvent(QGestureEvent *event);
+    QRectF boundingRect() const;
+    QPainterPath shape() const;
+
 private:    
     void createPrimitives();
     void setBackgroundToNormal();
-    void setBackgroundToPressed();    
+    void setBackgroundToPressed();
+    void setLayout(const QString& layoutName);
     
 private:
     
@@ -85,6 +84,7 @@ private:
     HbTextItem          *m_text;
     HbTouchArea         *m_touchArea;
     DialerWidgetEngine  *m_engine;
+    QString              m_layoutName;
     
     HOMESCREEN_TEST_FRIEND_CLASS(TestDialerWidgetPlugin)
 };

@@ -293,7 +293,7 @@ void CpNetworkPluginForm::networkModeStateChanged(int index)
         m_psetNetworkWrapper->getNetworkAccessMode();
         emit showGlobalNote(
             m_activeNoteId, 
-            emit hbTrId("Off-line, not allowed"), 
+            emit hbTrId("txt_phone_info_offline_not_allowed"), 
             HbMessageBox::MessageTypeWarning);
     } else if(m_cpSettingsWrapper->isOngoingCall()) {
         // ongoing call.
@@ -544,16 +544,16 @@ void CpNetworkPluginForm::networkReqestFailed(
     QString text;
     switch(error) {
         case PSetNetworkWrapper::ErrCauseCallActive:
-            text = hbTrId("txt_cp_info_active_calls_must_be_disconnected_befo");
+            text = hbTrId("txt_phone_info_active_calls_must_be_disconnected_befo");
             break;
         case PSetNetworkWrapper::ErrNoNetworkService:
-            text = hbTrId("txt_cp_info_no_operators_found");
+            text = hbTrId("txt_phone_info_no_operators_found");
             break;
         case PSetNetworkWrapper::ErrOfflineOpNotAllowed:
-            text = hbTrId("Off-line, not allowed");
+            text = hbTrId("txt_phone_info_offline_not_allowed");
             break;
         case PSetNetworkWrapper::ErrNoNetworkAccess:
-            text = hbTrId("txt_cp_info_no_access_to_selected_operators_netwo");
+            text = hbTrId("txt_phone_info_no_access_to_operators_network");
             break;
         default:
             break;
@@ -605,7 +605,7 @@ void CpNetworkPluginForm::handleSearchingNetworks(
         QObject::connect(
             PsUiNotes::instance(), SIGNAL(progressNoteCanceled()),
             this, SLOT(userCancel()));
-        emit showGlobalProgressNote(m_activeProgressNoteId, hbTrId("txt_cp_info_updating"));
+        emit showGlobalProgressNote(m_activeProgressNoteId, hbTrId("txt_phone_info_updating_operator_list"));
     } else {
         QObject::disconnect(
             PsUiNotes::instance(), SIGNAL(progressNoteCanceled()),
@@ -654,13 +654,14 @@ void CpNetworkPluginForm::handleNetworkChanged(
     QString text;
     switch (status){
         case PSetNetworkWrapper::RegisteredOnHomeNetwork:
-            text = hbTrId("Home network selected");
+            text = hbTrId("txt_phone_dpopinfo_home_network_selected");
             break;
-        case PSetNetworkWrapper::RegisteredRoaming: {
-            text = hbTrId("Selected network: ");
-            text.append(networkName(currentInfo));
-        }
-            break; 
+        case PSetNetworkWrapper::RegisteredRoaming:
+            text = hbTrId("txt_phone_dpopinfo_selected_network_l").arg(networkName(currentInfo));
+            break;
+        default:
+            text = hbTrId("txt_phone_info_result_unknown");
+            break;
     }
 
     emit showNotificationDialog(text);
@@ -677,7 +678,7 @@ void CpNetworkPluginForm::showManualSelectiondialog()
     DPRINT << ": IN";
     
     QScopedPointer<HbDialog> dialog(
-        createDialog(hbTrId("txt_cp_title_select_operator")));
+        createDialog(hbTrId("txt_phone_title_select_operator")));
     HbListWidget *list = new HbListWidget(dialog.data());
     //then insert found networks
     int itemsCount = m_networkInfoList->count();

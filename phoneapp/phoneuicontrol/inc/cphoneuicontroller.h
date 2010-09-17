@@ -84,33 +84,6 @@ class CPhoneUIController :
             TEventCode aEventCode );
 
         /**
-        * From CEikAppUi. For Idle indicator
-        */
-        IMPORT_C void HandleSystemEventL(
-            const TWsEvent& aEvent );
-
-        /**
-        * From CAknAppUi, indicates when app ui is on the foreground.
-        * @param aForeground It is true if app is on the foreground.
-        */
-        IMPORT_C void HandleForegroundEventL( TBool aForeground );
-
-        /**
-        * Indicates when the Phone app is in the foreground.
-        */
-        IMPORT_C virtual void HandlePhoneForegroundEventL();
-
-        /**
-        * Indicates when the Phone app is losing focus.
-        */
-        IMPORT_C virtual void HandlePhoneFocusLostEventL();
-        
-        /**
-        * Indicates when the Idle app is in the foreground.
-        */
-        IMPORT_C virtual void HandleIdleForegroundEventL();
-
-        /**
         * Handles startup of the phone application 
         */
         IMPORT_C void HandlePhoneStartupL();
@@ -130,12 +103,12 @@ class CPhoneUIController :
         *          (ETrue) or not (EFalse)
         */
         IMPORT_C TBool ProcessCommandL( TInt aCommand );
-
+      
         /**
-        * Handles keylock events
-        * @param aCommand It is the code of the command to be handled.
+        * Returns engine info.
+        * @returns Engine info
         */
-        IMPORT_C void HandleKeyLockEnabled( TBool aKeylockEnabled );
+        IMPORT_C MPEEngineInfo* EngineInfo();
         
     private:
         

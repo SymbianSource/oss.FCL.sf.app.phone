@@ -54,7 +54,7 @@ symbian: {
     TARGET.EPOCALLOWDLLDATA = 1 
     TARGET.CAPABILITY = CAP_GENERAL_DLL
     TARGET.UID3 = 0X20029F1F
-
+    VERSION = 10.0
     defFiles = \
     "$${LITERAL_HASH}ifdef WINS" \
         "DEFFILE bwins/cptelephonyutils.def" \
@@ -73,3 +73,5 @@ symbian: {
     DESTDIR = c:\hb\lib
     DLLDESTDIR = c:\hb\bin
 }
+
+BLD_INF_RULES.prj_exports += "./rom/cptelephonyutils_stub.sis /epoc32/data/z/system/install/cptelephonyutils_stub.sis"

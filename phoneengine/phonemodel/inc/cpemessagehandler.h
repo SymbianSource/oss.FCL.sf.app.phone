@@ -410,20 +410,7 @@ NONSHARABLE_CLASS( CPEMessageHandler )
         * @return possible error code from the CallHandling subsystem.
         */
         TInt HandleHoldCall( );
-
-        /**
-        * Handles video call switch to video or voice from phoneui 
-        */
-        TInt HandleSwitchToVideoOrVoice( const TInt aCallId ); 
         
-        /**
-        * Continue switch to video call or voice call.
-        * Calls dial method to create new video call or voice call 
-        * to same phonenumber.
-        * @param aCallId is the identification number of the call.
-        * @return possible error code from the CallHandling subsystem.
-        */
-        TInt ContinueSwitchToCall( const TInt aCallId );  
 
         /**
         * Handles idle state message from the CallHandling subsystem.

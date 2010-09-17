@@ -53,3 +53,5 @@ SOURCES += ../../../tsrc/mocks/mock_cppluginloader.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpbasesettingview.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpitemdatahelper.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpsettingformitemdata.cpp
+
+symbian:MMP_RULES += SMPSAFE

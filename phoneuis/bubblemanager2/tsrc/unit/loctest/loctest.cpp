@@ -116,6 +116,10 @@ void LocTest::testPortraitStrings()
 
     testLabel(bubbleId,"txt_phone_other_calling");
 
+    testLabel(bubbleId,"txt_phone_other_calling_video_call");
+
+    testLabel(bubbleId,"txt_phone_other_calling_1_call");
+
     testLabel(bubbleId,"txt_phone_other_attempting");
 
     // Second line texts, no indicators -> full width
@@ -214,6 +218,10 @@ void LocTest::testLandscapeStrings()
     testLabel(bubbleId,"txt_phone_other_attempting");
 
     testLabel(bubbleId,"txt_phone_other_calling");
+
+    testLabel(bubbleId,"txt_phone_other_calling_video_call");
+
+    testLabel(bubbleId,"txt_phone_other_calling_1_call");
 
     bubbleManager->startChanges();
     bubbleManager->setState( bubbleId, BubbleManager::Active );

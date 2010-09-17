@@ -51,89 +51,81 @@ _STLIT8(K24, "EPhoneViewRemoveGlobalNote");
 _STLIT8(K25, "EPhoneViewShowQuery");
 _STLIT8(K26, "EPhoneViewSetListQueryString");
 _STLIT8(K27, "EPhoneViewRemoveQuery");
-_STLIT8(K28, "EPhoneViewSetTopApplication");
-_STLIT8(K29, "EPhoneViewBringAppToForeground");
-_STLIT8(K30, "EPhoneViewSendToBackground");
-_STLIT8(K31, "EPhoneViewSetNeedToSendToBackgroundStatus");
-_STLIT8(K32, "EPhoneViewGetNeedToSendToBackgroundStatus");
-_STLIT8(K33, "EPhoneViewGetTopApplicationIsDisplayedStatus");
-_STLIT8(K34, "EPhoneViewGetForegroundApplication");
-_STLIT8(K35, "EPhoneViewStartCapturingKey");
-_STLIT8(K36, "EPhoneViewStopCapturingKey");
-_STLIT8(K37, "EPhoneViewSetGlobalNotifiersDisabled");
-_STLIT8(K38, "EPhoneViewGetHoldFlag");
-_STLIT8(K39, "EPhoneViewSetHoldFlag");
-_STLIT8(K40, "EPhoneViewOpenSingleItemFetchDialog");
-_STLIT8(K41, "EPhoneViewRemovePhoneDialogs");
-_STLIT8(K42, "EPhoneViewCreateConference");
-_STLIT8(K43, "EPhoneViewAddToConference");
-_STLIT8(K44, "EPhoneViewRemoveFromConference");
-_STLIT8(K45, "EPhoneViewPrivateFromConference");
-_STLIT8(K46, "EPhoneViewSelectedConfMember");
-_STLIT8(K47, "EPhoneViewGetCallIdByState");
-_STLIT8(K48, "EPhoneViewGetCountOfActiveCalls");
-_STLIT8(K49, "EPhoneViewSetNaviPaneAudioVolume");
-_STLIT8(K50, "EPhoneViewHideNaviPaneAudioVolume");
-_STLIT8(K51, "EPhoneViewGetIsConference");
-_STLIT8(K52, "EPhoneViewGetCallExistsInConference");
-_STLIT8(K53, "EPhoneViewRemoveAllCallHeaders");
-_STLIT8(K54, "EPhoneViewPlayRingTone");
-_STLIT8(K55, "EPhoneViewMuteRingTone");
-_STLIT8(K56, "EPhoneViewStopRingTone");
-_STLIT8(K57, "EPhoneViewMuteRingToneOnAnswer");
-_STLIT8(K58, "EPhoneViewCipheringInfoChange");
-_STLIT8(K59, "EPhoneViewCloseFSW");
-_STLIT8(K60, "EPhoneViewLaunchRfsDeep");
-_STLIT8(K61, "EPhoneViewLaunchRfsNormal");
-_STLIT8(K62, "EPhoneViewOpenSoftRejectEditor");
-_STLIT8(K63, "EPhoneViewSetSecurityMode");
-_STLIT8(K64, "EPhoneViewGetSecurityModeStatus");
-_STLIT8(K65, "EPhoneViewEnableKeyLock");
-_STLIT8(K66, "EPhoneViewEnableKeyLockWithoutNote");
-_STLIT8(K67, "EPhoneViewUpdateFSW");
-_STLIT8(K68, "EPhoneViewIsQuery");
-_STLIT8(K69, "EPhoneViewBringIdleToForeground");
-_STLIT8(K70, "EPhoneViewSetIdleTopApplication");
-_STLIT8(K71, "EPhoneViewBeginUpdate");
-_STLIT8(K72, "EPhoneViewEndUpdate");
-_STLIT8(K73, "EPhoneViewRemoveConferenceBubble");
-_STLIT8(K74, "EPhoneViewSetTouchPaneButtons");
-_STLIT8(K75, "EPhoneViewGetBlockingDialogStatus");
-_STLIT8(K76, "EPhoneViewIsNoteActive");
-_STLIT8(K77, "EPhoneViewOpenCallHandling");
-_STLIT8(K78, "EPhoneViewGetAudioVolumeLevel");
-_STLIT8(K79, "EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel");
-_STLIT8(K80, "EPhoneViewRemoveDtmfNote");
-_STLIT8(K81, "EPhoneViewSetEikonNotifiersDisabled");
-_STLIT8(K82, "EPhoneViewCancelAllNotications");
-_STLIT8(K83, "EPhoneViewDisableKeyLock");
-_STLIT8(K84, "EPhoneViewSendAiwCommand");
-_STLIT8(K85, "EPhoneViewCipheringInfoChangePlayTone");
-_STLIT8(K86, "EPhoneViewDisableKeyLockWithoutNote");
-_STLIT8(K87, "EPhoneViewGetKeyLockStatus");
-_STLIT8(K88, "EPhoneViewRemoveGlobalWaitNote");
-_STLIT8(K89, "EPhoneViewSetPhoneCustomization");
-_STLIT8(K90, "EPhoneViewSetViewCustomization");
-_STLIT8(K91, "EPhoneViewSetButtonCustomization");
-_STLIT8(K92, "EPhoneViewUpdateContactByString");
-_STLIT8(K93, "EPhoneViewAddContactByString");
-_STLIT8(K94, "EPhoneViewIsActiveNoteDissmissableByKeyEvent");
-_STLIT8(K95, "EPhoneViewEnableToolbarButton");
-_STLIT8(K96, "EPhoneViewHideToolbar");
-_STLIT8(K97, "EPhoneViewShowToolbar");
-_STLIT8(K98, "EPhoneViewGetExpandedBubbleCallId");
-_STLIT8(K99, "EPhoneViewOpenDialer");
-_STLIT8(K100, "EPhoneSetConferenceExpanded");
-_STLIT8(K101, "EPhoneAppShutDown");
-_STLIT8(K102, "EPhoneViewBackButtonActive");
-_STLIT8(K103, "EPhoneViewHsToForegroundAfterCall");
-_STLIT8(K104, "EPhoneViewOpenContacts");
-_STLIT8(K105, "EPhoneViewSetIhfFlag");
-_STLIT8(K106, "EPhoneViewSetMuteFlag");
-_STLIT8(K107, "EPhoneViewLaunchLogs");
-_STLIT8(K108, "EPhoneViewSetBlueToothFlag");
-_STLIT8(K109, "EPhoneViewSetBluetoothAvailableFlag");
-_STLIT8(K110, ", // Don't remove this, this should always be the last in list.");
+_STLIT8(K28, "EPhoneViewBringAppToForeground");
+_STLIT8(K29, "EPhoneViewSendToBackground");
+_STLIT8(K30, "EPhoneViewGetTopApplicationIsDisplayedStatus");
+_STLIT8(K31, "EPhoneViewGetForegroundApplication");
+_STLIT8(K32, "EPhoneViewStartCapturingKey");
+_STLIT8(K33, "EPhoneViewStopCapturingKey");
+_STLIT8(K34, "EPhoneViewSetGlobalNotifiersDisabled");
+_STLIT8(K35, "EPhoneViewOpenSingleItemFetchDialog");
+_STLIT8(K36, "EPhoneViewRemovePhoneDialogs");
+_STLIT8(K37, "EPhoneViewCreateConference");
+_STLIT8(K38, "EPhoneViewAddToConference");
+_STLIT8(K39, "EPhoneViewRemoveFromConference");
+_STLIT8(K40, "EPhoneViewPrivateFromConference");
+_STLIT8(K41, "EPhoneViewSelectedConfMember");
+_STLIT8(K42, "EPhoneViewGetCallIdByState");
+_STLIT8(K43, "EPhoneViewGetCountOfActiveCalls");
+_STLIT8(K44, "EPhoneViewSetNaviPaneAudioVolume");
+_STLIT8(K45, "EPhoneViewHideNaviPaneAudioVolume");
+_STLIT8(K46, "EPhoneViewGetIsConference");
+_STLIT8(K47, "EPhoneViewGetCallExistsInConference");
+_STLIT8(K48, "EPhoneViewRemoveAllCallHeaders");
+_STLIT8(K49, "EPhoneViewPlayRingTone");
+_STLIT8(K50, "EPhoneViewMuteRingTone");
+_STLIT8(K51, "EPhoneViewStopRingTone");
+_STLIT8(K52, "EPhoneViewMuteRingToneOnAnswer");
+_STLIT8(K53, "EPhoneViewCipheringInfoChange");
+_STLIT8(K54, "EPhoneViewCloseFSW");
+_STLIT8(K55, "EPhoneViewLaunchRfsDeep");
+_STLIT8(K56, "EPhoneViewLaunchRfsNormal");
+_STLIT8(K57, "EPhoneViewOpenSoftRejectEditor");
+_STLIT8(K58, "EPhoneViewSetSecurityMode");
+_STLIT8(K59, "EPhoneViewGetSecurityModeStatus");
+_STLIT8(K60, "EPhoneViewEnableKeyLock");
+_STLIT8(K61, "EPhoneViewEnableKeyLockWithoutNote");
+_STLIT8(K62, "EPhoneViewUpdateFSW");
+_STLIT8(K63, "EPhoneViewIsQuery");
+_STLIT8(K64, "EPhoneViewBringIdleToForeground");
+_STLIT8(K65, "EPhoneViewBeginUpdate");
+_STLIT8(K66, "EPhoneViewEndUpdate");
+_STLIT8(K67, "EPhoneViewRemoveConferenceBubble");
+_STLIT8(K68, "EPhoneViewSetTouchPaneButtons");
+_STLIT8(K69, "EPhoneViewGetBlockingDialogStatus");
+_STLIT8(K70, "EPhoneViewIsNoteActive");
+_STLIT8(K71, "EPhoneViewOpenCallHandling");
+_STLIT8(K72, "EPhoneViewGetAudioVolumeLevel");
+_STLIT8(K73, "EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel");
+_STLIT8(K74, "EPhoneViewRemoveDtmfNote");
+_STLIT8(K75, "EPhoneViewSetEikonNotifiersDisabled");
+_STLIT8(K76, "EPhoneViewCancelAllNotications");
+_STLIT8(K77, "EPhoneViewDisableKeyLock");
+_STLIT8(K78, "EPhoneViewSendAiwCommand");
+_STLIT8(K79, "EPhoneViewCipheringInfoChangePlayTone");
+_STLIT8(K80, "EPhoneViewRemoveGlobalWaitNote");
+_STLIT8(K81, "EPhoneViewSetPhoneCustomization");
+_STLIT8(K82, "EPhoneViewSetViewCustomization");
+_STLIT8(K83, "EPhoneViewSetButtonCustomization");
+_STLIT8(K84, "EPhoneViewUpdateContactByString");
+_STLIT8(K85, "EPhoneViewAddContactByString");
+_STLIT8(K86, "EPhoneViewIsActiveNoteDissmissableByKeyEvent");
+_STLIT8(K87, "EPhoneViewEnableToolbarButton");
+_STLIT8(K88, "EPhoneViewHideToolbar");
+_STLIT8(K89, "EPhoneViewShowToolbar");
+_STLIT8(K90, "EPhoneViewGetExpandedBubbleCallId");
+_STLIT8(K91, "EPhoneViewOpenDialer");
+_STLIT8(K92, "EPhoneSetConferenceExpanded");
+_STLIT8(K93, "EPhoneAppShutDown");
+_STLIT8(K94, "EPhoneViewBackButtonActive");
+_STLIT8(K95, "EPhoneViewHsToForegroundAfterCall");
+_STLIT8(K96, "EPhoneViewOpenContacts");
+_STLIT8(K97, "EPhoneViewSetIhfFlag");
+_STLIT8(K98, "EPhoneViewSetMuteFlag");
+_STLIT8(K99, "EPhoneViewLaunchLogs");
+_STLIT8(K100, "EPhoneViewSetBlueToothFlag");
+_STLIT8(K101, "EPhoneViewSetBluetoothAvailableFlag");
+_STLIT8(K102, ", // Don't remove this, this should always be the last in list.");
 
 // Intermediate
 const void * const KStringPointers[] =
@@ -239,16 +231,8 @@ const void * const KStringPointers[] =
 	(const void*)&K99,
 	(const void*)&K100,
 	(const void*)&K101,
-	(const void*)&K102,
-	(const void*)&K103,
-	(const void*)&K104,
-	(const void*)&K105,
-	(const void*)&K106,
-	(const void*)&K107,
-	(const void*)&K108,
-	(const void*)&K109,
-	(const void*)&K110
+	(const void*)&K102
 	};
 
-const TStringTable PhoneLoggerviewCommands::Table = {110, KStringPointers, EFalse};
+const TStringTable PhoneLoggerviewCommands::Table = {102, KStringPointers, EFalse};
 

@@ -48,3 +48,6 @@ SOURCES += ../../src/cellulardatasettings_s60.cpp
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cmmanager.cpp
+
+
+symbian:MMP_RULES += SMPSAFE

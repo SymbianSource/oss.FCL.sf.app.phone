@@ -58,3 +58,7 @@ SOURCES += ../mocks/mock_xqappmgr.cpp
 HEADERS += /epoc32/include/mw/xqaiwrequest.h
 SOURCES += ../mocks/mock_xqaiwrequest.cpp
 SOURCES += ../mocks/mock_hbtranslator.cpp
+
+
+
+symbian:MMP_RULES += SMPSAFE

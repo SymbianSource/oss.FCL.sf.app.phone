@@ -27,6 +27,8 @@ CAPABILITY CAP_GENERAL_DLL
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
 
+VERSION 10.0
+
 TARGET          phonemediatorcenter.dll
 TARGETTYPE      dll
 
@@ -39,7 +41,6 @@ SOURCE          cphonemediatorcommandlistener.cpp
 SOURCE          cphonemediatormessagefactory.cpp
 SOURCE          cphonemediatorsender.cpp
 SOURCE          cphonereleasecommand.cpp
-SOURCE          cphoneswitchtovideoorvoicecommand.cpp
 SOURCE          cphoneterminateallconnectionscommand.cpp
 SOURCE          cphonecontinueemergencycallcommand.cpp
 
@@ -66,3 +67,6 @@ LIBRARY         cone.lib
 
 // Mediator
 LIBRARY         mediatorclient.lib
+
+
+SMPSAFE

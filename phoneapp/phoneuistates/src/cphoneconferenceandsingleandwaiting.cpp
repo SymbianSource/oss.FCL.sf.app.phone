@@ -126,7 +126,7 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneConferenceAndSingleAndWaiting::HandleIdleL()");
     BeginUiUpdateLC();
-    SetTouchPaneButtons( EPhoneWaitingCallButtons );
+    UpdateUiCommands();
 
     TPhoneCmdParamBoolean conferenceExistsForCallId;
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCallExistsInConference,
@@ -190,9 +190,7 @@ void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndWait
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndWaitingL()");
-    SetTouchPaneButtons( EPhoneWaitingCallButtons );
-    CheckDisableHWKeysAndCallUIL();
-    UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
+    UpdateUiCommands();
     iStateMachine->ChangeState( EPhoneStateConferenceAndWaiting );
     }
 
@@ -205,35 +203,8 @@ void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSing
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSingleL()");
-    if( iStateMachine->PhoneStorage()->IsScreenLocked() )
-        {
-        EnableCallUIL();
-        }
-    iStateMachine->PhoneStorage()->ResetBlockedKeysList();
-
-    if ( IsNumberEntryUsedL() )
-        {
-        if ( NeedToSendToBackgroundL() )
-            {
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-            UpdateCbaL( EPhoneCallHandlingInCallCBA );
-            }
-        else
-            {
-            SetNumberEntryVisibilityL(ETrue);
-            }
-        }
-    else
-        {
-        UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
-        // If numberentry is not open just check NeedToSendToBackgroundL and
-        // sendbackround if needed.
-        if ( NeedToSendToBackgroundL() )
-            {
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-            }
-        }
-    SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
+    iNumberEntryManager->SetVisibilityIfNumberEntryUsedL( ETrue );
+    UpdateUiCommands();
     iStateMachine->ChangeState( EPhoneStateConferenceAndSingle );
     }
 
@@ -265,9 +236,9 @@ void CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL(
     switch ( aCode )
         {
         case EKeyYes: // send-key
-            if( IsNumberEntryVisibleL() )
+            if( iNumberEntryManager->IsNumberEntryVisibleL() )
                 {
-                CallFromNumberEntryL();
+                iNumberEntryManager->CallFromNumberEntryL();
                 }
             else
                 {
@@ -280,32 +251,6 @@ void CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL(
             CPhoneConferenceAndSingle::HandleKeyMessageL( aMessage, aCode );
             break;
         }
-    }
-
-// -----------------------------------------------------------
-// CPhoneConferenceAndSingleAndWaiting::HandleKeyEventL
-// -----------------------------------------------------------
-//
-void CPhoneConferenceAndSingleAndWaiting::HandleKeyEventL(
-    const TKeyEvent& aKeyEvent,
-    TEventCode /*aEventCode*/ )
-    {
-    if( EKeyDeviceF == aKeyEvent.iCode )
-        {
-        __PHONELOG( EBasic, EPhoneUIStates,
-            "CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL-deviceF" );
-        HandleHoldSwitchL();
-        }
-    }
-
-// -----------------------------------------------------------
-// CPhoneConferenceAndSingleAndWaiting::UpdateInCallCbaL
-// -----------------------------------------------------------
-//
-void CPhoneConferenceAndSingleAndWaiting::UpdateInCallCbaL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndSingleAndWaiting::UpdateInCallCbaL() ");
-    UpdateCbaL ( EPhoneCallHandlingCallWaitingCBA );
     }
 
 // -----------------------------------------------------------
@@ -327,42 +272,30 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
                 &callStateData );
             if ( callStateData.CallId() != KErrNotFound )
                 {
-                TPhoneCmdParamCallHeaderData callHeaderParam;
-                callHeaderParam.SetCallState( EPEStateRinging );
-                SetCallHeaderTextsForCallComingInL( callStateData.CallId(), EFalse, &callHeaderParam );
-
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble,
-                    callStateData.CallId(),
-                    &callHeaderParam );
+                    callStateData.CallId() );
                 
-                iCbaManager->UpdateIncomingCbaL( callStateData.CallId() );
-                CheckDisableHWKeysAndCallUIL();
-                SetTouchPaneButtons( EPhoneIncomingCallButtons );
                 SetRingingTonePlaybackL( callStateData.CallId() );
+                UpdateUiCommands();
                 SetBackButtonActive(EFalse);
                 iStateMachine->ChangeState( EPhoneStateIncoming );
                 }
             else
                 {
                 SetDefaultFlagsL();
-                UpdateCbaL( EPhoneEmptyCBA );
                 iStateMachine->ChangeState( EPhoneStateIdle );
                 }
             }
             break;
          case EOneActiveCall: // Go to Single And Waiting state
             {
-            UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
-            SetTouchPaneButtons( EPhoneWaitingCallButtons );
-            CheckDisableHWKeysAndCallUIL();
+            UpdateUiCommands();
             iStateMachine->ChangeState( EPhoneStateWaitingInSingle );
             }
             break;
          case ETwoActiveCalls: // Go to Two Singles And Waiting state
             {
-            UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
-            CheckDisableHWKeysAndCallUIL();
-            SetTouchPaneButtons( EPhoneWaitingCallButtons );
+            UpdateUiCommands();
             iStateMachine->ChangeState( EPhoneStateTwoSinglesAndWaiting );
             }
             break;

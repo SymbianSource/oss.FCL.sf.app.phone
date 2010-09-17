@@ -33,3 +33,6 @@ SOURCES += ut_bubblecontainerwidget.cpp \
            ../../../bubblecore/src/bubblecontainerwidget.cpp
 
 
+
+
+symbian:MMP_RULES += SMPSAFE

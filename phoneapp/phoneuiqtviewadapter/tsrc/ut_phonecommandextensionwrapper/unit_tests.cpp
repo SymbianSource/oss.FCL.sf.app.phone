@@ -24,6 +24,7 @@
 #include "phonecommandextensionwrapper.h"
 #include "pevirtualengine.h"
 #include "menuextension_stub.h"
+#include "qtestmains60.h"
 
 extern bool m_modifyMenuCommandListCalled;
 extern bool m_modifyPushButtonCommandListCalled;
@@ -32,22 +33,6 @@ extern bool m_addMenuActionsCalled;
 extern bool m_releaseMenuCalled;
 extern bool m_releaseCalled;
 extern bool m_useExtensionStub;
-
-#define PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestObject) \
-int main(int argc, char *argv[]) \
-    { \
-        HbApplication app(argc, argv); \
-        TestObject tc; \
-        QResource::registerResource("../hbcore.rcc"); \
-        int ret = QTest::qExec(&tc, argc, argv); \
-        /* Core dump if HbIconLoader instance is not destroyed before the application instance. */ \
-        /* HbIconLoader uses QCoreApplication::aboutToQuit() signal to destroy itself. */ \
-        /* app.exec() where the signal is normally emitted is not called here. */ \
-        /* So, invoking the signal explicitly. */ \
-        QMetaObject::invokeMethod(&app, "aboutToQuit", Qt::DirectConnection); \
-        return ret; \
-    }
-
 
 class TestPhoneCommandExtensionWrapper : public QObject
 {
@@ -266,5 +251,5 @@ void TestPhoneCommandExtensionWrapper::testGetCallInfo()
 }
 
 
-PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestPhoneCommandExtensionWrapper)
+QTEST_MAIN_S60(TestPhoneCommandExtensionWrapper)
 #include "unit_tests.moc"

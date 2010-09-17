@@ -75,3 +75,6 @@ LIBRARY                 platformenv.lib                 // PathInfo
 LIBRARY                 cone.lib
 
 EPOCALLOWDLLDATA
+
+
+SMPSAFE

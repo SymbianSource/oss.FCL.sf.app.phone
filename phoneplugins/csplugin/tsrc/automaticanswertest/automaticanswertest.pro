@@ -28,3 +28,6 @@ SOURCES += main.cpp \
            etelincomingcallmonitor.cpp
 FORMS += 
 RESOURCES += 
+
+
+symbian:MMP_RULES += SMPSAFE

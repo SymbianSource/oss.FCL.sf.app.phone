@@ -24,7 +24,7 @@ DEFAULT
 
 // Specify the source file followed by its destination here
 PRJ_EXPORTS
-../data/csplugin_stub.sis       /epoc32/data/z/system/install/csplugin_stub.sis
+../rom/csplugin_stub.sis       /epoc32/data/z/system/install/csplugin_stub.sis
 
 // IBY files
 #if defined(CORE_MW_LAYER_IBY_EXPORT_PATH)

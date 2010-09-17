@@ -69,6 +69,10 @@ CPhoneMediatorSender::CPhoneMediatorSender() :
 // Destructor
 CPhoneMediatorSender::~CPhoneMediatorSender()
     {
+    iEventSender->UnregisterEvent( KMediatorTelephonyDomain,
+                                   KCatEventsFromTelephony,
+                                   iGenericEvents ); 
+
     delete iCommandInitiator;
     iEvents.Close();
     iGenericEvents.Close(); 

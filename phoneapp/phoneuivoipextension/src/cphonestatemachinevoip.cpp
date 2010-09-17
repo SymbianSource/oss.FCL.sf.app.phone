@@ -157,6 +157,10 @@ MPhoneState* CPhoneStateMachineVoIP::State()
     if ( madeStateTransition )
         {
         iOldStateId = iNewStateId;
+        
+        // Needs to be set or any attempts to access eikon env handle
+        // will fail
+        iState->SetEikonEnv( EikonEnv() );
         }
 
     return iState;

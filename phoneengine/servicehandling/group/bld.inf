@@ -26,7 +26,7 @@ PRJ_EXPORTS
 ../inc/mpeservicehandling.h            |../../inc/mpeservicehandling.h
 
 // SIS stubs
-../data/servicehandling_stub.sis       /epoc32/data/z/system/install/servicehandling_stub.sis
+../rom/servicehandling_stub.sis       /epoc32/data/z/system/install/servicehandling_stub.sis
 
 PRJ_MMPFILES
 peservicehandling.mmp

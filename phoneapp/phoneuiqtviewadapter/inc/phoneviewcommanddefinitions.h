@@ -56,18 +56,13 @@ enum
     EPhoneViewShowQuery,
     EPhoneViewSetListQueryString, 
     EPhoneViewRemoveQuery,
-    EPhoneViewSetTopApplication,
-    EPhoneViewBringAppToForeground,
+    EPhoneViewBringPhoneAppToForeground,
     EPhoneViewSendToBackground,
-    EPhoneViewSetNeedToSendToBackgroundStatus, 
-    EPhoneViewGetNeedToSendToBackgroundStatus,
     EPhoneViewGetTopApplicationIsDisplayedStatus, 
     EPhoneViewGetForegroundApplication, 
     EPhoneViewStartCapturingKey,
     EPhoneViewStopCapturingKey,
     EPhoneViewSetGlobalNotifiersDisabled,
-    EPhoneViewGetHoldFlag,
-    EPhoneViewSetHoldFlag,
     EPhoneViewRemovePhoneDialogs,
     EPhoneViewCreateConference,
     EPhoneViewAddToConference,
@@ -86,7 +81,6 @@ enum
     EPhoneViewStopRingTone,
     EPhoneViewMuteRingToneOnAnswer,
     EPhoneViewCipheringInfoChange,
-    EPhoneViewCloseFSW, 
     EPhoneViewLaunchRfsDeep, 
     EPhoneViewLaunchRfsNormal, 
     EPhoneViewOpenSoftRejectEditor,
@@ -95,15 +89,11 @@ enum
     EPhoneViewEnableKeyLock, 
     EPhoneViewEnableKeyLockWithoutNote, 
     EPhoneViewUpdateFSW,
-    EPhoneViewIsQuery, 
     EPhoneViewBringIdleToForeground, 
-    EPhoneViewSetIdleTopApplication,  
     EPhoneViewBeginUpdate,
     EPhoneViewEndUpdate,
     EPhoneViewRemoveConferenceBubble,
     EPhoneViewSetTouchPaneButtons, 
-    EPhoneViewGetBlockingDialogStatus, 
-    EPhoneViewIsNoteActive, 
     EPhoneViewOpenCallHandling, 
     EPhoneViewGetAudioVolumeLevel,
     EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel,
@@ -114,9 +104,6 @@ enum
     EPhoneViewSendAiwCommand, 
     
     EPhoneViewCipheringInfoChangePlayTone, 
-    EPhoneViewDisableKeyLockWithoutNote, 
-    
-    EPhoneViewGetKeyLockStatus, 
     
     EPhoneViewRemoveGlobalWaitNote,
     EPhoneViewSetPhoneCustomization, 
@@ -125,8 +112,6 @@ enum
     
     EPhoneViewUpdateContactByString, 
     EPhoneViewAddContactByString, 
-    
-    EPhoneViewIsActiveNoteDissmissableByKeyEvent, 
     
     EPhoneViewEnableToolbarButton, 
     EPhoneViewHideToolbar, 
@@ -144,6 +129,7 @@ enum
     EPhoneViewSetBlueToothFlag,
     EPhoneViewSetBluetoothAvailableFlag,
     EPhoneViewSetSoftRejectDimmed,
+    EPhoneViewIsRingingTonePlaying,
     EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.
 };
 

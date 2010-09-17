@@ -41,7 +41,8 @@ EXPORT_C CPhoneStateMachine::CPhoneStateMachine(
     MPhoneViewCommandHandle* aViewCommandHandle ) :
     iOldStateId( EPhoneStateNull ),
     iNewStateId( EPhoneStateNull ),
-    iViewCommandHandle( aViewCommandHandle )
+    iViewCommandHandle( aViewCommandHandle ),
+    iEnv( CEikonEnv::Static() ) // codescanner::eikonenvstatic
     {
     __ASSERT_ALWAYS( aViewCommandHandle,
         Panic( EPhoneCtrlParameterNotInitialized ) );
@@ -196,6 +197,15 @@ EXPORT_C MPhoneStorage* CPhoneStateMachine::PhoneStorage()
         __ASSERT_ALWAYS( KErrNone == err, User::Invariant() );
         }
     return iPhoneStorage;
+    }
+
+// -----------------------------------------------------------
+// CPhoneStateMachine::EikonEnv
+// -----------------------------------------------------------
+//
+EXPORT_C CEikonEnv* CPhoneStateMachine::EikonEnv() const
+    {
+    return iEnv;
     }
 
 // End of File

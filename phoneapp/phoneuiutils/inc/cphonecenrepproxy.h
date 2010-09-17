@@ -269,7 +269,7 @@ class CPhoneCenRepProxy :
         void HandleNotify( 
             const TUid& aUid, 
             const TUint aId );
-
+        
     private:
 
         /**
@@ -277,12 +277,13 @@ class CPhoneCenRepProxy :
         * @return new instance.
         */
         static CPhoneCenRepProxy* NewL();
-        
+
+protected:        
         /**
         * C++ default constructor.
         */
-        CPhoneCenRepProxy();
-
+        CPhoneCenRepProxy();        
+        
         /**
         * By default Symbian OS constructor is private.
         */

@@ -49,3 +49,5 @@ SOURCES += ../../../tsrc/mocks/mock_cpnetworkpluginform.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpbasesettingview.cpp
 SOURCES += ../../../tsrc/mocks/mock_hbview.cpp
    
+
+symbian:MMP_RULES += SMPSAFE

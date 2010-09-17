@@ -81,8 +81,6 @@ class CPhoneConferenceAndCallSetup : public CPhoneConference
         */
         virtual void ConstructL();
         
-        virtual void UpdateInCallCbaL();
-        
         
      private:
      

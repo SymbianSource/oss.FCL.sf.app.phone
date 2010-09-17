@@ -68,10 +68,16 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
     switch (symbianResourceId) {
 	
     case R_PHONEUI_MTCAL_INCOMING_CALL:
+        {
+        PhoneAction *text = new PhoneAction;
+        text->setText(hbTrId("txt_phone_other_incoming_call"));
+        translatedActions[PhoneAction::Text] = text;
+        }
+        break;
     case R_PHONEUI_VIDEO_CALL_INCOMING:
         {
         PhoneAction *text = new PhoneAction;
-        text->setText (hbTrId("txt_phone_other_incoming_call"));
+        text->setText (hbTrId("txt_phone_other_incoming_video_call"));
         translatedActions [PhoneAction::Text] = text;
         }
         break;
@@ -98,8 +104,7 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         text->setText (hbTrId("txt_phone_other_waiting"));
         translatedActions [PhoneAction::Text] = text;
         }
-        break; 
-
+        break;
        
     case R_PHONEUI_TIME_DURAT_LONG_WITH_ZERO:
         {
@@ -109,59 +114,54 @@ QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int 
         // for formatting later on.
         text->setText ("%:0%H%:1%T%:2%S%:3");
         translatedActions [PhoneAction::Text] = text;
-        break;
         }
+        break;
         
     case R_PHONEUI_OUT_GOING_CALL:
-    case R_PHONEUI_OUT_GOING_VIDEO_CALL:
         {
         PhoneAction *text = new PhoneAction;
         text->setText (hbTrId("txt_phone_other_calling"));
         translatedActions [PhoneAction::Text] = text;
-        break;
         }
+        break;
+    case R_PHONEUI_OUT_GOING_VIDEO_CALL:
+        {
+        PhoneAction *text = new PhoneAction;
+        text->setText (hbTrId("txt_phone_other_calling_video_call"));
+        translatedActions [PhoneAction::Text] = text;
+        }
+        break;
         
     case R_PHONEUI_MTCAL_CLI_WITHHELD:
         {
         PhoneAction *text = new PhoneAction;
         text->setText (hbTrId("txt_phone_other_private_number"));
         translatedActions [PhoneAction::Text] = text;
-        break;
         }
+        break;
     case R_PHONEUI_MTCAL_CLI_UNKNOWN:
         {
         PhoneAction *text = new PhoneAction;
         text->setText (hbTrId("txt_phone_other_unknown_number"));
         translatedActions [PhoneAction::Text] = text;
-        break;
         }
-        
+        break;
     case R_PHONE_MTCAL_CLI_PAYPHONE:
         {
         PhoneAction *text = new PhoneAction;
         text->setText (hbTrId("Payphone number"));
         translatedActions [PhoneAction::Text] = text;
-        break;
         }
+        break;
 
     case R_PHONEUI_EMERGENCY_CALL_HEADER:
         {
         PhoneAction *text = new PhoneAction;
         text->setText (hbTrId("txt_phone_other_emergency_call"));
         translatedActions [PhoneAction::Text] = text;            
-        break;            
         }
-        
-    case R_PHONEUI_EMERGENCY_CALL_BUTTONS:
-        {
-        PhoneAction *button = new PhoneAction;
-        button->setText (hbTrId("txt_phone_button_end_call"));
-        button->setIcon (HbIcon("qtg_mono_end_call"));
-        button->setCommand (EPhoneCmdEnd);
-        translatedActions [PhoneAction::LeftButton] = button;
-        }
-        break;
-        
+        break;  
+     
     case R_PHONEUI_ATTEMPTING_EMERGENCY_CALL_TEXT:
         {
         PhoneAction *text = new PhoneAction;

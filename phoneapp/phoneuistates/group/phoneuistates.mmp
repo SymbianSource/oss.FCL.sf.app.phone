@@ -27,6 +27,8 @@ CAPABILITY CAP_GENERAL_DLL
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
 
+VERSION 10.0
+
 TARGET          phoneuistates.dll
 TARGETTYPE      dll
 
@@ -75,7 +77,6 @@ USERINCLUDE     ../../phonemediatorcenter/inc
 APP_LAYER_SYSTEMINCLUDE         // Application layer domain APIs
 SYSTEMINCLUDE   ../../../inc    // Telephony internal headers
 
-LIBRARY         avkon.lib // AknTextUtils
 LIBRARY         bafl.lib
 LIBRARY         phonestringloader.lib
 LIBRARY         cone.lib
@@ -100,3 +101,6 @@ LIBRARY         eikcore.lib
 LIBRARY         apgrfx.lib
 #endif
 
+
+
+SMPSAFE

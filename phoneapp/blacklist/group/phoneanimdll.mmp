@@ -26,6 +26,8 @@ TARGET          phoneanimdll.dll
 TARGETTYPE      ANI
 UID             0x10003B22 0x100059FE
 
+VERSION         10.0
+
 SOURCEPATH      ../src
 
 USERINCLUDE     ../inc
@@ -41,3 +43,6 @@ LIBRARY         customapi.lib
 
 
 // End of File
+
+
+SMPSAFE

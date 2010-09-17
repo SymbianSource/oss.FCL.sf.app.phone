@@ -94,13 +94,6 @@ class CPhoneGeneralGsmMessagesHandler : public CBase
         */
         void SendGlobalInfoNoteL( TInt aResourceId, 
                 TBool aNotificationDialog = EFalse );
-        
-        /**
-        * Shows divert indication or sets internal divert flag
-        * depending in which order we receive Incoming and 
-        * CallForwarded messages.
-        */
-        void HandleIncomingCallForwardedL();
 
         /**
         * Show global ErrorNote

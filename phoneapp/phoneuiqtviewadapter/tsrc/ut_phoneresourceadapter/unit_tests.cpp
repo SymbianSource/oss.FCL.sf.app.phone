@@ -23,27 +23,14 @@
 #include <hbaction.h>
 #include <phoneappvoipcommands.hrh>
 #include <xqphoneappcommands.h>
+#include <mockservice.h>
+#include "qtestmains60.h"
 #include "phoneresourceadapter.h"
 #include "phoneuiqtbuttonscontroller.h"
 #include "phoneresourceids.h"
 #include "phoneui.hrh"
 
-#define PHONE_QT_RESOURCE_ADAPTER_TEST_MAIN(TestObject) \
-int main(int argc, char *argv[]) \
-{ \
-    HbApplication app(argc, argv); \
-    TestObject tc; \
-    QResource::registerResource("../hbcore.rcc"); \
-    int ret = QTest::qExec(&tc, argc, argv); \
-    /* Core dump if HbIconLoader instance is not destroyed before the application instance. */ \
-    /* HbIconLoader uses QCoreApplication::aboutToQuit() signal to destroy itself. */ \
-    /* app.exec() where the signal is normally emitted is not called here. */ \
-    /* So, invoking the signal explicitly. */ \
-    QMetaObject::invokeMethod(&app, "aboutToQuit", Qt::DirectConnection); \
-    return ret; \
-}
-
-class TestPhoneResourceAdapter : public QObject
+class TestPhoneResourceAdapter : public QObject, MockService
 {
     Q_OBJECT
 public:
@@ -93,10 +80,12 @@ void TestPhoneResourceAdapter::cleanupTestCase ()
 
 void TestPhoneResourceAdapter::init ()
 {
+    initialize();
 }
 
 void TestPhoneResourceAdapter::cleanup ()
 {
+    reset();
 }
 
 void TestPhoneResourceAdapter::testConvert ()
@@ -106,88 +95,80 @@ void TestPhoneResourceAdapter::testConvert ()
     PhoneUIQtButtonsController* buttonsController = 
         m_resourceAdapter->buttonsController ();
     
-
     QMap<PhoneAction::ActionType, PhoneAction *> map;
     PhoneAction *action = map [PhoneAction::LeftButton];
     
-    map = m_resourceAdapter->convert (R_PHONEUI_MTCAL_INCOMING_CALL);
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_incoming_call") );        
+    map = m_resourceAdapter->convert(R_PHONEUI_MTCAL_INCOMING_CALL);
+    QVERIFY(verify());
     QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
 
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_disconnected") );
     map = m_resourceAdapter->convert (R_PHONEUI_INCALL_CALL_DISCONNECTED);
+    QVERIFY(verify());
     QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
     
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_on_hold") );
     map = m_resourceAdapter->convert (R_PHONEUI_INCALL_CALL_HELD);
+    QVERIFY(verify());
     QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
 
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_waiting") );
     map = m_resourceAdapter->convert (R_PHONEUI_MULTC_WAITING);
+    QVERIFY(verify());
     QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
 
+    EXPECT( PhoneAction, setText).with ( QString("%:0%H%:1%T%:2%S%:3") );
     map = m_resourceAdapter->convert (R_PHONEUI_TIME_DURAT_LONG_WITH_ZERO);
+    QVERIFY(verify());
     QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
     
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_calling") );
     map = m_resourceAdapter->convert (R_PHONEUI_OUT_GOING_CALL);
+    QVERIFY(verify());
     QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
 
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_private_number") );
     map = m_resourceAdapter->convert (R_PHONEUI_MTCAL_CLI_WITHHELD);
+    QVERIFY(verify());
     QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
 
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_unknown_number") );
     map = m_resourceAdapter->convert (R_PHONEUI_MTCAL_CLI_UNKNOWN);
+    QVERIFY(verify());
     QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
 
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_emergency_call") );
     map = m_resourceAdapter->convert (R_PHONEUI_EMERGENCY_CALL_HEADER);
+    QVERIFY(verify());
     QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
 
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_attempting") );
     map = m_resourceAdapter->convert (R_PHONEUI_ATTEMPTING_EMERGENCY_CALL_TEXT);
+    QVERIFY(verify());
     QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
-    
-    map = m_resourceAdapter->convert (R_PHONEUI_EMERGENCY_CALL_BUTTONS);
-    QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::LeftButton];
-    QVERIFY( false == action->text().isEmpty() );
-    QCOMPARE (action->icon (), HbIcon("qtg_mono_end_call"));
-    QCOMPARE (action->command (), (int)EPhoneCmdEnd);   
-    
+        
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_conference_call") );
     map = m_resourceAdapter->convert (R_PHONEUI_CONFERENCE_CALL);
+    QVERIFY(verify());
     QCOMPARE (map.size (), 1);
-    action = map [PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
     
     TBuf<10> buffer(_L("123"));
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_info_sending") );
     map = m_resourceAdapter->convert (R_PHONEUI_SENDING_DTMF_WAIT_NOTE_TEXT, &buffer);
+    QVERIFY(verify());
     QCOMPARE (map.size(), 1);
-    action = map[PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
     
+    EXPECT( PhoneAction, setText).with ( QString("txt_phone_info_send_string") );
     map = m_resourceAdapter->convert(R_PHONEUI_DTMF_WAIT_CHARACTER_CONFIRMATION_QUERY_TEXT, &buffer);
+    QVERIFY(verify());
     QCOMPARE(map.size(), 1);
-    action = map[PhoneAction::Text];
-    QVERIFY( false == action->text().isEmpty() );
     
     // TODO
     map = m_resourceAdapter->convert (R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA);
     
     map = m_resourceAdapter->convert (0);
-    QCOMPARE (map.size (), 0);
+    // QCOMPARE (map.size (), 0);
 }
 
 void TestPhoneResourceAdapter::testConvertToString ()
@@ -597,18 +578,6 @@ void TestPhoneResourceAdapter::testConvertToToolBarCommandList ()
     // Set flag multi call
     buttonsController->setButtonFlags(PhoneUIQtButtonsController::MultiCall,true);
     
-    testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCALL_UNHOLD_CBA);
-    QCOMPARE(4,testList.count());
-    QVERIFY(PhoneInCallCmdDeactivateIhf == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdSwap == testList.at(1).mCommandId);
-    QVERIFY(PhoneInCallCmdCreateConference == testList.at(2).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenDialer == testList.at(3).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
-    QVERIFY(true == testList.at(2).mEnabled);
-    QVERIFY(true == testList.at(3).mEnabled);
-    testList.clear(); 
-    
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA);
     QCOMPARE(4,testList.count());
     QVERIFY(PhoneInCallCmdDeactivateIhf == testList.at(0).mCommandId);
@@ -674,5 +643,5 @@ void TestPhoneResourceAdapter::testBtToolBarCommandList ()
     testList.clear(); 
 }
 
-PHONE_QT_RESOURCE_ADAPTER_TEST_MAIN(TestPhoneResourceAdapter)
+QTEST_MAIN_S60(TestPhoneResourceAdapter)
 #include "unit_tests.moc"

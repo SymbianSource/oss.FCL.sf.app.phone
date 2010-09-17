@@ -29,6 +29,8 @@ HEADERS += ./inc/phoneindicatorcontroller.h
 HEADERS += ./inc/phonevisibilityhandler.h
 HEADERS += ./inc/phoneapplauncher.h
 HEADERS += ./inc/phoneglobalnotes.h
+HEADERS += ./inc/phonecallheadermanager.h
+HEADERS += ./inc/phonecallheaderutil.h
 
 SOURCES += ./src/phoneuiqtviewadapter.cpp
 SOURCES += ./src/phoneuiqtbuttonscontroller.cpp
@@ -43,4 +45,6 @@ SOURCES += ./src/phoneindicatorcontroller.cpp
 SOURCES += ./src/phonevisibilityhandler.cpp
 SOURCES += ./src/phoneapplauncher.cpp
 SOURCES += ./src/phoneglobalnotes.cpp
+SOURCES += ./src/phonecallheadermanager.cpp
+SOURCES += ./src/phonecallheaderutil.cpp
 

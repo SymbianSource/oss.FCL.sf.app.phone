@@ -19,6 +19,7 @@
 #include <HbCheckBox>
 #include <psetwrapper.h>
 #include <psuinotes.h>
+#include <nwdefs.h>
 #include "ut_barringplugingroup.h"
 #include "qtestmains60.h"
 #include "cpitemdatahelper.h"
@@ -717,7 +718,7 @@ void UT_CpBarringPluginGroup::t_changeBarringStateRequested()
     EXPECT(PsUiNotes, showPasswordQueryDialog)
         .willOnce(invoke(setCurrentPasswordParams));
     EXPECT(PSetCallBarringWrapper, enableBarring)
-        .with(ServiceGroupVoice, 
+        .with(EAllTeleAndBearer, ServiceGroupVoice, 
             PSetCallBarringWrapper::BarringTypeAllOutgoing, KCurrentPassword);
     EXPECT(PsUiNotes, showGlobalProgressNote);
     
@@ -734,7 +735,7 @@ void UT_CpBarringPluginGroup::t_changeBarringStateRequested()
     EXPECT(PsUiNotes, showPasswordQueryDialog)
         .willOnce(invoke(setCurrentPasswordParams));
     EXPECT(PSetCallBarringWrapper, disableBarring)
-        .with(ServiceGroupVoice, 
+        .with(EAllTeleAndBearer, ServiceGroupVoice, 
             PSetCallBarringWrapper::BarringTypeAllOutgoing, KCurrentPassword);
     EXPECT(PsUiNotes, showGlobalProgressNote);
     

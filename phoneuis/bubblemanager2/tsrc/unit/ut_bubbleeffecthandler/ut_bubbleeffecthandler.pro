@@ -34,3 +34,6 @@ SOURCES += ut_bubbleeffecthandler.cpp \
 RESOURCES += ut_bubbleeffecthandler.qrc
 
 
+
+
+symbian:MMP_RULES += SMPSAFE

@@ -68,3 +68,5 @@ LIBRARY             serviceprovidersettings.lib
 LIBRARY             symbianmock.lib
 
 EPOCALLOWDLLDATA
+
+SMPSAFE

@@ -138,7 +138,7 @@ void CPhoneGsmInCall::HandlePhoneEngineMessageL(
             
             // Needed also in non-touch, if call waiting request (*43#) 
             // is sent during active call at least.
-            UpdateCbaL( EPhoneCallHandlingInCallCBA );
+            UpdateUiCommands();
 			}
 			break;
 			
@@ -226,7 +226,6 @@ void CPhoneGsmInCall::ReplaceCallL()
 void CPhoneGsmInCall::HandleColpNoteL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneGsmInCall::HandleColpNoteL() ");
-
     MPEEngineInfo* EngineInfo = CPhoneState::iStateMachine->PhoneEngineInfo();
     
     TPhoneCmdParamGlobalNote globalNoteParam;
@@ -239,7 +238,6 @@ void CPhoneGsmInCall::HandleColpNoteL( TInt aCallId )
 	        
     iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam );
-    
     }
 
 // -----------------------------------------------------------
@@ -249,19 +247,9 @@ void CPhoneGsmInCall::HandleColpNoteL( TInt aCallId )
 void CPhoneGsmInCall::BringIncomingToForegroundL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneGsmInCall::BringIncomingToForegroundL( ) ");
-
     // Remove any phone dialogs if they are displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-
-    // Bring Phone app in the foreground
-    TPhoneCmdParamInteger uidParam;
-    uidParam.SetInteger( KUidPhoneApplication.iUid );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewBringAppToForeground,
-        &uidParam );
-
-    // Set Phone as the top application
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetTopApplication,
-        &uidParam );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewBringPhoneAppToForeground );
     
     // Disable global notes when there is an incoming call
     TPhoneCmdParamBoolean globalNotifierParam;
@@ -273,127 +261,5 @@ void CPhoneGsmInCall::BringIncomingToForegroundL()
     
     }
 
-// -----------------------------------------------------------
-// CPhoneGsmInCall::AllowShowingOfWaitingCallHeaderL
-// -----------------------------------------------------------
-//
-void CPhoneGsmInCall::AllowShowingOfWaitingCallHeaderL( 
-    TPhoneCmdParamBoolean& aCommandParam )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneGsmInCall::AllowShowingOfWaitingCallHeaderL() ");
-
-    if ( aCommandParam.Boolean() && IsNumberEntryUsedL() )
-        {
-        SetNumberEntryVisibilityL(EFalse);
-        }
-    }
-
-// -----------------------------------------------------------
-// CPhoneGsmInCall::HandlePhoneForegroundEventL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneGsmInCall::HandlePhoneForegroundEventL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneGsmInCall::HandlePhoneForegroundEventL( ) ");
-     }
-
-// -----------------------------------------------------------
-// CPhoneGsmInCall::HandleHoldNoteL
-// -----------------------------------------------------------
-//
-void CPhoneGsmInCall::HandleHoldNoteL( 
-    TInt aCallId, TBool aHold )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneGsmInCall::HandleHoldNoteL( ) ");
-    TBuf< KPhoneContactNameMaxLength > holdText( KNullDesC );
-    TPhoneCmdParamGlobalNote globalNoteParam;
-    TInt resourceId(0);
-    
-    if( iStateMachine->PhoneEngineInfo()->RemoteName( aCallId ).Length() ||
-        iStateMachine->PhoneEngineInfo()->RemoteCompanyName( aCallId ).Length())
-        {
-        TInt resource( EPhoneInformationCallActivetedCli );
-        if ( aHold )
-            {
-            resource = EPhoneInformationCallOnHoldCli;    
-            }
-        GetRemoteInfoDataL ( aCallId, holdText );
-        resourceId = CPhoneMainResourceResolver::Instance()->
-            ResolveResourceID( resource );
-        globalNoteParam.SetTextResourceId( resourceId );    
-        }
-    else
-        {
-        TInt resource( EPhoneInformationCallActiveted );
-        if ( aHold )
-            {
-            resource = EPhoneInformationCallOnHoldNoCli;    
-            }
-        resourceId = CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( resource );
-                
-        HBufC* tmp = StringLoader::LoadL( resourceId, 
-            aCallId + 1 , CCoeEnv::Static() );
-
-        holdText = *tmp;
-        delete tmp;
-        tmp = NULL;  
-        }
-         
-    globalNoteParam.SetText( holdText ); 
-    globalNoteParam.SetType( EPhoneMessageBoxInformation );
-        
-    iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewShowGlobalNote, &globalNoteParam ); 
-    }
-
-
-// ---------------------------------------------------------
-// CPhoneGsmInCall::SetDivertIndication
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneGsmInCall::SetDivertIndication( const TBool aDivertIndication )
-    {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneGsmInCall::SetDivertIndication()");
-           
-    CPhoneState::SetDivertIndication( aDivertIndication );    
-    
-    TRAP_IGNORE( HandeDivertIndicationL() );
-    }
-
-// ---------------------------------------------------------
-// CPhoneGsmInCall::HandeDivertIndicationL
-// ---------------------------------------------------------
-//
-void CPhoneGsmInCall::HandeDivertIndicationL()
-    {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneGsmInCall::HandeDivertIndicationL()");
-       
-    TBuf< KPhoneContactNameMaxLength > remoteInfoText( KNullDesC );
-    TInt ringingCallId ( KErrNotFound );
-        
-    ringingCallId = GetRingingCallL();
-    
-    if( ringingCallId > KErrNotFound )
-       {
-       TPhoneCmdParamCallHeaderData divertData;
-    
-        divertData.SetDiverted( ETrue );
-       
-       GetRemoteInfoDataL( ringingCallId, remoteInfoText );
-       divertData.SetCLIText( 
-                  remoteInfoText,
-                  TPhoneCmdParamCallHeaderData::ERight );
-       
-       divertData.SetCiphering(
-           iStateMachine->PhoneEngineInfo()->IsSecureCall( ringingCallId ) );
-       divertData.SetCipheringIndicatorAllowed(
-           iStateMachine->PhoneEngineInfo()->SecureSpecified() );
-           
-       iViewCommandHandle->ExecuteCommandL( 
-           EPhoneViewUpdateCallHeaderRemoteInfoData, ringingCallId,
-           &divertData );
-        }
-    }
 
 // End of File

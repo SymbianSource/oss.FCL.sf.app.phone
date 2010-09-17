@@ -31,3 +31,6 @@ symbian {
 SOURCES += ut_bubbleheader.cpp \
            ../../../bubblecore/src/bubbleheader.cpp
 
+
+
+symbian:MMP_RULES += SMPSAFE

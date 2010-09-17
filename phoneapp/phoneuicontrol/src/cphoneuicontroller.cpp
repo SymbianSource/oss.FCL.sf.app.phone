@@ -226,56 +226,6 @@ EXPORT_C TKeyResponse CPhoneUIController::HandleKeyEventL(
     }
 
 // ---------------------------------------------------------
-// CPhoneUIController::HandleSystemEventL
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneUIController::HandleSystemEventL( const TWsEvent& aEvent )
-    {
-    __ASSERT_DEBUG( iSystemEventHandler, Panic( EPhoneCtrlInvariant ) );
-    iSystemEventHandler->HandleSystemEventL( aEvent );
-    }
-
-// ---------------------------------------------------------
-// CPhoneUIController::HandleForegroundEventL
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneUIController::HandleForegroundEventL( TBool aForeground )
-    {
-    __ASSERT_DEBUG( iSystemEventHandler, Panic( EPhoneCtrlInvariant ) );
-    iSystemEventHandler->HandleForegroundEventL( aForeground );
-    }
-
-// ---------------------------------------------------------
-// CPhoneUIController::HandlePhoneForegroundEventL
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneUIController::HandlePhoneForegroundEventL()
-    {
-    __ASSERT_DEBUG( iSystemEventHandler, Panic( EPhoneCtrlInvariant ) );
-    iSystemEventHandler->HandlePhoneForegroundEventL();
-    }
-
-// ---------------------------------------------------------
-// CPhoneUIController::HandlePhoneFocusLostEventL
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneUIController::HandlePhoneFocusLostEventL()
-    {
-    __ASSERT_DEBUG( iSystemEventHandler, Panic( EPhoneCtrlInvariant ) );
-    iSystemEventHandler->HandlePhoneFocusLostEventL();
-    }
-
-// ---------------------------------------------------------
-// CPhoneUIController::HandleIdleForegroundEventL
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneUIController::HandleIdleForegroundEventL()
-    {
-    __ASSERT_DEBUG( iSystemEventHandler, Panic( EPhoneCtrlInvariant ) );
-    iSystemEventHandler->HandleIdleForegroundEventL();
-    }
-
-// ---------------------------------------------------------
 // CPhoneUIController::HandlePhoneStartupL
 // ---------------------------------------------------------
 //
@@ -306,14 +256,13 @@ EXPORT_C TBool CPhoneUIController::ProcessCommandL( TInt aCommand )
     return iStateMachine->State()->ProcessCommandL( aCommand );
     }
 
-
 // ---------------------------------------------------------
-// CPhoneUIController::HandleKeyLockEnabled
+// CPhoneUIController::EngineInfo
 // ---------------------------------------------------------
 //
-EXPORT_C void CPhoneUIController::HandleKeyLockEnabled( TBool aKeylockEnabled )
+EXPORT_C MPEEngineInfo* CPhoneUIController::EngineInfo()
     {
-    iSystemEventHandler->HandleKeyLockEnabled( aKeylockEnabled );
+    return iEngineInfo;
     }
 
 // ---------------------------------------------------------

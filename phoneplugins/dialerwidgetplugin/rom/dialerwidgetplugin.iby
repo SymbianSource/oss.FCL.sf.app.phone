@@ -18,9 +18,10 @@
 #ifndef __DIALERWIDETPLUGIN_IBY__
 #define __DIALERWIDETPLUGIN_IBY__
 
-file=ABI_DIR\BUILD_DIR\dialerwidgetplugin.dll                                        	SHARED_LIB_DIR\dialerwidgetplugin.dll
-data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.qtplugin    	private\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.qtplugin
-data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.manifest    	private\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.manifest
-data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.xml          private\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.xml
+file=ABI_DIR\BUILD_DIR\dialerwidgetplugin.dll                                       SHARED_LIB_DIR\dialerwidgetplugin.dll
+data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.qtplugin   private\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.qtplugin
+data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.manifest   private\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.manifest
+data=ZPRIVATE\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.xml        private\20022f35\import\widgetregistry\20022F44\dialerwidgetplugin.xml
+data=ZSYSTEM\install\dialerwidgetplugin_stub.sis                                    System\Install\dialerwidgetplugin_stub.sis
 
 #endif //__DIALERWIDETPLUGIN_IBY__

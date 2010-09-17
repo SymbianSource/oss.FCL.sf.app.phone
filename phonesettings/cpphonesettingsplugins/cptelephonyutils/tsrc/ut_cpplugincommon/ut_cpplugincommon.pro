@@ -57,3 +57,6 @@ SOURCES += ../../../tsrc/mocks/mock_xqsettingskey.cpp \
            ../../../tsrc/mocks/mock_xqsettingsmanager.cpp \
            ../../../tsrc/mocks/mock_xqsysinfo.cpp \
            ../../../tsrc/mocks/mock_qsysteminfo.cpp
+
+
+symbian:MMP_RULES += SMPSAFE

@@ -22,6 +22,7 @@ TARGET          callhandling.dll
 TARGETTYPE      dll
 UID             0x1000008D 0x1000A82F
 VENDORID        VID_DEFAULT
+VERSION         10.0
 
 CAPABILITY      CAP_GENERAL_DLL
 
@@ -64,3 +65,6 @@ LANG            SC
 START WINS
 BASEADDRESS 0x10040000
 END
+
+
+SMPSAFE

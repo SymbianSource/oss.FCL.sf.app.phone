@@ -19,7 +19,7 @@
 #include <QtGui>
 #include <hbapplication.h>
 #include <QSignalSpy>
-//#include <hbglobal_p.h>
+#include "qtestmains60.h"
 #include "phoneuiqtbuttonscontroller.h"
 
 class TestPhoneUIQtButtonsController : public QObject
@@ -278,5 +278,5 @@ void TestPhoneUIQtButtonsController::setFlags(bool hold, bool ihf, bool wired, b
     m_buttonsCtrl->setButtonFlags(PhoneUIQtButtonsController::Btaa,btaa);    
 }
 
-QTEST_MAIN(TestPhoneUIQtButtonsController)
+QTEST_MAIN_S60(TestPhoneUIQtButtonsController)
 #include "unit_tests.moc"

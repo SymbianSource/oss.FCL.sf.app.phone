@@ -25,27 +25,33 @@
 #include <HbTextItem>
 #include <HbTouchArea>
 #include <HbInstantFeedback>
-#include "dialerwidgetengine.h"
+#include <HbTapGesture>
+
 #include "dialerwidget.h"
-#include "qtphonelog.h"
 
 #ifdef Q_OS_SYMBIAN
-#include "qtphonelog.h"
-#include <xqappmgr.h>
-#include <xqservicerequest.h>
-#include <xqpublishandsubscribeutils.h>
-#include <xqrequestinfo.h>
-#include <xqaiwdecl.h>
+    #include "dialerwidgetengine.h"
+    #include "qtphonelog.h"
+    #include <xqappmgr.h>
+    #include <xqservicerequest.h>
+    #include <xqpublishandsubscribeutils.h>
+    #include <xqrequestinfo.h>
+    #include <xqaiwdecl.h>
+#else
+    #define PHONE_TRACE
 #endif
 
-namespace
-{
-    const char KDialerWidgetIconNormal[] = "qtg_graf_hs_dialer_normal";
-    const char KDialerWidgetIconPressed[] = "qtg_graf_hs_dialer_pressed";
-    const char KMissedCallShortcutBadge[] = "qtg_fr_shortcut_badge_bg";
-    const char KDialerWidgetWidgetml[] = ":/data/resource/dialerwidget.widgetml";
-    const char KDialerWidgetCss[] = ":/data/resource/dialerwidget.css";
-}
+const QLatin1String KDialerWidgetIconNormal("qtg_graf_hs_dialer_normal");
+const QLatin1String KDialerWidgetIconPressed("qtg_graf_hs_dialer_pressed");
+const QLatin1String KDialerWidgetMissedCallBadge("qtg_fr_shortcut_badge_bg");
+const QLatin1String KDialerWidgetWidgetml(":/resource/dialerwidget.widgetml");
+const QLatin1String KDialerWidgetCss(":/resource/dialerwidget.css");
+const QLatin1String KDialerWidgetNormalLayout("normal");
+const QLatin1String KDialerWidgetMissedCallLayout("missed_call");
+const int KDialerWidgetMaxBadgeTextLenght = 2; // displayable
+// update corresponding values also in css side
+const qreal KDialerWidgetNormalSize = 12.0; // unit
+const qreal KDialerWidgetMissedCallSize = 12.75; // unit
 
 /*!
     \class DialerWidget
@@ -59,11 +65,20 @@ namespace
     Constructs dialer widget with given \a parent and given window \a flags.
 */
 DialerWidget::DialerWidget(QGraphicsItem *parent, Qt::WindowFlags flags)
-  : HsWidget(parent, flags),
-    m_background(0), m_badgeBackground(0), m_text(0), m_touchArea(0),
+  : HbWidget(parent, flags),
+    m_background(0),
+    m_badgeBackground(0),
+    m_text(0),
+    m_touchArea(0),
     m_engine(0)
 {   
-    PHONE_TRACE 
+    PHONE_TRACE
+    createPrimitives();
+
+    HbStyleLoader::registerFilePath(KDialerWidgetWidgetml);
+    HbStyleLoader::registerFilePath(KDialerWidgetCss);
+
+    setLayout(KDialerWidgetNormalLayout);
 }
 
 /*!
@@ -71,6 +86,24 @@ DialerWidget::DialerWidget(QGraphicsItem *parent, Qt::WindowFlags flags)
 */
 DialerWidget::~DialerWidget()
 {
+    HbStyleLoader::unregisterFilePath(KDialerWidgetWidgetml);
+    HbStyleLoader::unregisterFilePath(KDialerWidgetCss);
+}
+
+/*!
+    Lenght of badge text.
+*/
+int DialerWidget::badgeTextLenght() const
+{
+    return m_text->text().length();
+}
+
+/*!
+    Layout name.
+*/
+QString DialerWidget::layoutName() const
+{
+    return m_layoutName;
 }
 
 /*!
@@ -82,14 +115,12 @@ void DialerWidget::startDialer()
 {
     PHONE_TRACE
 #ifdef Q_OS_SYMBIAN
-    PHONE_DEBUG("DialerWidget::startDialer");
 
     QList<QVariant> args;
     QString service;
     QString interface;
     QString operation;
 
-    PHONE_DEBUG("open Dialer");
     service = "logs";
     interface = XQI_LOGS_VIEW;
     operation = XQOP_LOGS_SHOW;
@@ -106,6 +137,7 @@ void DialerWidget::startDialer()
         return;
     }
     request->setArguments(args);
+    request->setSynchronous(false);
     bool ret = request->send();
     PHONE_TRACE2("request sent successfully:", ret);
 #endif
@@ -115,27 +147,26 @@ void DialerWidget::startDialer()
 void DialerWidget::onInitialize()
 {
     PHONE_TRACE
+#ifdef Q_OS_SYMBIAN
     QT_TRY{
-        // basic ui
-        createPrimitives();
-        Q_ASSERT(HbStyleLoader::registerFilePath(KDialerWidgetWidgetml));
-        Q_ASSERT(HbStyleLoader::registerFilePath(KDialerWidgetCss));
         // Engine construction is 2 phased 
         m_engine = new DialerWidgetEngine();
         connect(m_engine, SIGNAL( exceptionOccured(const int&) )
                 ,this, SLOT( onEngineException(const int&) ) );
+        
+        connect( m_engine, SIGNAL(missedCallsCountChanged(const int&)),
+                        this, SLOT(onMissedCallsCountChange(const int&)));
         
         if(!m_engine->initialize()){
             //engine construction failed. Give up.
             emit error();
             return;
             }
-        connect( m_engine, SIGNAL(missedCallsCountChanged(const int&)),
-                this, SLOT(onMissedCallsCountChange(const int&)));
-    }
+        }
     QT_CATCH(...){
         emit error();
     }
+#endif
 }
 
 /*!
@@ -146,7 +177,6 @@ void DialerWidget::onInitialize()
 void DialerWidget::onShow()
 {
     PHONE_TRACE
-    updatePrimitives();
 }
 
 /*!
@@ -159,11 +189,14 @@ void DialerWidget::onHide()
     PHONE_TRACE
 }
 
+/*!
+    \fn void DialerWidget::onUninitialize()
+
+    Uninitializes the widget
+*/
 void DialerWidget::onUninitialize()
 {
     PHONE_TRACE
-    HbStyleLoader::unregisterFilePath(KDialerWidgetWidgetml);
-    HbStyleLoader::unregisterFilePath(KDialerWidgetCss);
 }
 
 void DialerWidget::onEngineException(const int& exc)
@@ -174,113 +207,104 @@ void DialerWidget::onEngineException(const int& exc)
 
 void DialerWidget::onMissedCallsCountChange(const int& count)
 {
-    m_text->setText( QLocale::system().toString(count));
-    if ( count ){
-        m_text->setVisible(true);
+    if (count){
+        QString newText = QLocale::system().toString(count);
+
+        if (newText.length()>KDialerWidgetMaxBadgeTextLenght) {
+            newText = QLatin1String("*");
+        }
+
+        bool doRepolish = (m_text->text().length() != newText.length());
+
         m_badgeBackground->setVisible(true);
+
+        m_text->setText(newText);
+
+        m_text->setVisible(true);
+
+        if (doRepolish) {
+            repolish();
+        }
+
+        setLayout(KDialerWidgetMissedCallLayout);
     } else {
-        m_text->setVisible(false);
         m_badgeBackground->setVisible(false);
+
+        m_text->setVisible(false);
+
+        setLayout(KDialerWidgetNormalLayout);
     }
 }
 
-void DialerWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void DialerWidget::gestureEvent(QGestureEvent *event)
 {
-    PHONE_TRACE;
-    Q_UNUSED(event)
-    setBackgroundToPressed();
-}
-
-void DialerWidget::handleMouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (contains(event->pos())) {
-        setBackgroundToPressed();
-    } else {
-        setBackgroundToNormal();
+    HbTapGesture *gesture = qobject_cast<HbTapGesture *>(event->gesture(Qt::TapGesture));
+    if (gesture) {
+        switch (gesture->state()) {
+            case Qt::GestureStarted:
+                setBackgroundToPressed();
+                break;            
+            case Qt::GestureCanceled:
+                setBackgroundToNormal();
+                break;
+            case Qt::GestureFinished:
+                setBackgroundToNormal();
+                if (gesture->tapStyleHint() == HbTapGesture::Tap) {
+                    HbInstantFeedback::play(HbFeedback::Basic);
+                    startDialer();
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
 
-void DialerWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+QRectF DialerWidget::boundingRect() const
 {
-    PHONE_TRACE;
-    Q_UNUSED(event);
-    HbInstantFeedback::play(HbFeedback::Basic);
-    setBackgroundToNormal();
-    startDialer();    
+    return childrenBoundingRect();
 }
 
-bool DialerWidget::sceneEvent(QEvent *event)
+QPainterPath DialerWidget::shape() const
 {
-    if (event->type() == QEvent::UngrabMouse) {
-        setBackgroundToNormal();
-    }
-
-    return HsWidget::sceneEvent(event);;
-}
-
-HsWidget::StartResult DialerWidget::onStart()
-{
-    return StartResultRunning;
-}
-HsWidget::StopResult DialerWidget::onStop()
-{
-    return StopResultFinished;
-}
-HsWidget::SuspendResult DialerWidget::onSuspend()
-{
-    return SuspendResultSuspended;
-}
-HsWidget::ResumeResult DialerWidget::onResume()
-{
-    return ResumeResultRunning;
+    QPainterPath path;
+    path.addRect(boundingRect());
+    return path;
 }
 
 void DialerWidget::createPrimitives()
 {   
-    setPreferredSize(100,100);
     // Background
     if (!m_background) {
         HbFrameDrawer *drawer = new HbFrameDrawer(
             KDialerWidgetIconNormal, HbFrameDrawer::OnePiece);
         m_background = new HbFrameItem(drawer, this);
         style()->setItemName(m_background, QLatin1String("background"));
-        m_background->moveBy(0,10);
-        m_background->resize(81,81);
     }
     
     // Badge background
     if (!m_badgeBackground) {
         HbFrameDrawer *badgedrawer = new HbFrameDrawer(
-            KMissedCallShortcutBadge, HbFrameDrawer::ThreePiecesHorizontal);
+            KDialerWidgetMissedCallBadge, HbFrameDrawer::ThreePiecesHorizontal);
         m_badgeBackground = new HbFrameItem(badgedrawer, this);
-        style()->setItemName(m_background, QLatin1String("badgeBackground"));
-        m_badgeBackground->resize(20,20);
-        m_badgeBackground->moveBy(70,0);
-        m_badgeBackground->setVisible(true);
+        style()->setItemName(m_badgeBackground, QLatin1String("badgeBackground"));
         m_badgeBackground->setVisible( false );
     }
 
     // Text
     if (!m_text) {
         m_text = new HbTextItem(this);
-        style()->setItemName(m_text, QLatin1String("text"));
-        m_text->resize(20,20);
-        m_text->moveBy(76,0);
-        m_text->setVisible(true);
-        HbFontSpec *textFont = new HbFontSpec(HbFontSpec::Primary);
-        textFont->setTextHeight(3*HbDeviceProfile::current().unitValue());
-        m_text->setFontSpec(*textFont);
-        m_text->setText("0");
-        m_text->setVisible( false);
+        style()->setItemName(m_text, QLatin1String("badgeText"));
+        m_text->setVisible(false);
     }
 
-    // Touch Area
+    // Touch area
     if (!m_touchArea) {
         m_touchArea = new HbTouchArea(this);
-        m_touchArea->installEventFilter(this);
-        style()->setItemName(m_touchArea, QLatin1String("touch_area"));
-        m_touchArea->moveBy(0,10);
-        m_touchArea->resize(81,81);
+        m_touchArea->setFlag(QGraphicsItem::ItemIsFocusable);
+        style()->setItemName(m_touchArea, QLatin1String("touchArea"));
+        setFiltersChildEvents(true);
+        m_touchArea->grabGesture(Qt::TapGesture);
     }
 }
 
@@ -300,3 +324,25 @@ void DialerWidget::setBackgroundToPressed()
     }
 }
 
+void DialerWidget::setLayout(const QString& layoutName)
+{
+    if (layoutName==m_layoutName) {
+        return;
+    }
+
+    qreal unit = HbDeviceProfile::profile(this).unitValue();
+
+    prepareGeometryChange();
+
+    if (layoutName==KDialerWidgetMissedCallLayout) {
+        resize(KDialerWidgetMissedCallSize*unit,
+               KDialerWidgetMissedCallSize*unit);
+    } else {
+        resize(KDialerWidgetNormalSize*unit,
+               KDialerWidgetNormalSize*unit);
+    }
+
+    m_layoutName = layoutName;
+
+    repolish();
+}

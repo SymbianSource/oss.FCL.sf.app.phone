@@ -147,7 +147,7 @@ EXPORT_C void CPhoneStateIncoming::HandleNumberEntryClearedL()
     {
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::HandleNumberEntryClearedL ()" );
-    iCbaManager->UpdateIncomingCbaL( iRingingCallId );
+    UpdateUiCommands();
     }
 
 // -----------------------------------------------------------
@@ -170,8 +170,7 @@ EXPORT_C void CPhoneStateIncoming::HandleKeyMessageL(
                 {
                 iStateMachine->SendPhoneEngineMessage(
                     MPEPhoneModel::EPEMessageTerminateAllConnections );
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewCloseFSW );
-                if ( CPhoneState::IsNumberEntryUsedL() )
+                if ( iNumberEntryManager->IsNumberEntryUsedL() )
                     {
                     iViewCommandHandle->ExecuteCommandL(
                         EPhoneViewRemoveNumberEntry );
@@ -188,7 +187,7 @@ EXPORT_C void CPhoneStateIncoming::HandleKeyMessageL(
             break;
             
         case EKeyYes: // send-key
-            if( CPhoneState::IsNumberEntryVisibleL() )
+            if( iNumberEntryManager->IsNumberEntryVisibleL() )
                 {
                 HandleSendL();
                 }
@@ -205,12 +204,6 @@ EXPORT_C void CPhoneStateIncoming::HandleKeyMessageL(
                 }
             break;
 
-        case EKeyDeviceF:
-            __PHONELOG( EBasic, EPhoneUIStates,
-                "CPhoneConferenceAndSingleAndWaiting::HandleKeyMessageL-deviceF" );
-            HandleHoldSwitchL();
-            break;
-            
         default:
             break;
         }
@@ -222,7 +215,7 @@ EXPORT_C void CPhoneStateIncoming::HandleKeyMessageL(
 //
 void CPhoneStateIncoming::HandleSendL()
     {
-    HBufC* phoneNumber = PhoneNumberFromEntryLC();
+    HBufC* phoneNumber = iNumberEntryManager->PhoneNumberFromEntryLC();
     TPtr ptr( phoneNumber->Des() );
 
     iStateMachine->PhoneEngineInfo()->SetPhoneNumber( ptr );
@@ -234,7 +227,7 @@ void CPhoneStateIncoming::HandleSendL()
         {
         // Send a manual control sequence by providing number
         // information with dial command
-        CPhoneState::CallFromNumberEntryL();
+        iNumberEntryManager->CallFromNumberEntryL();
         }
     else
         {
@@ -262,6 +255,11 @@ EXPORT_C void CPhoneStateIncoming::HandlePhoneEngineMessageL(
 
         case MEngineMonitor::EPEMessageConnected:
             HandleConnectedL( aCallId );
+            break;
+            
+        case MEngineMonitor::EPEMessageDisconnecting:
+            iCallDisconnected = ETrue;
+            CPhoneState::HandlePhoneEngineMessageL( aMessage, aCallId );
             break;
 
         case MEngineMonitor::EPEMessageInValidEmergencyNumber:
@@ -294,7 +292,10 @@ EXPORT_C void CPhoneStateIncoming::HandlePhoneEngineMessageL(
             break;
         
         case MEngineMonitor::EPEMessageRemotePartyInfoChanged:
-            UpdateRemoteInfoDataAndLabelL( aCallId, UpdateCallHeaderInfoL( aCallId ) );
+            if(!iCallDisconnected)
+                {
+                UpdateRemoteInfoDataAndLabelL( aCallId );
+                }
             break;
             
         default:
@@ -308,15 +309,13 @@ EXPORT_C void CPhoneStateIncoming::HandlePhoneEngineMessageL(
 // -----------------------------------------------------------
 //
 void CPhoneStateIncoming::UpdateRemoteInfoDataAndLabelL( 
-        TInt aCallId, 
-        TPhoneCmdParamCallHeaderData aCallHeaderParam )
+        TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl,
             "CPhoneStateIncoming::UpdateRemoteInfoDataAndLabelL ()" );
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel, 
-        aCallId,
-        &aCallHeaderParam );
+        aCallId );
     }
 
 // -----------------------------------------------------------
@@ -333,32 +332,16 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
         &globalNotifierParam );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
         &globalNotifierParam );
-    
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
-    
-    // For keeping video call on top!
-    if( IsVideoCall( aCallId ) && !IsAutoLockOn() )
-        {
-        TPhoneCmdParamBoolean booleanParam;
-        booleanParam.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL(
-            EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
-        }
 
-    if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-         && iStateMachine->PhoneStorage()->IsScreenLocked() )
-        {
-        EnableCallUIL();
-        }
-    iStateMachine->PhoneStorage()->ResetBlockedKeysList();
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
+
     BeginUiUpdateLC();
     UpdateSingleActiveCallL( aCallId );
 
-    SetTouchPaneButtons( EPhoneIncallButtons );
+    UpdateUiCommands();
     SetBackButtonActive(ETrue);
     EndUiUpdate();
 
-    iCbaManager->UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateSingle );
     }
 
@@ -370,11 +353,7 @@ EXPORT_C void CPhoneStateIncoming::HandleAudioPlayStoppedL()
     {
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::HandleAudioPlayStoppedL ()" );
-    iCbaManager->SetRingtoneSilencedStatus( ETrue );
-    TInt resourceId = iCbaManager->SoftRejectStatus() ? 
-                            EPhoneCallHandlingIncomingSoftRejectCBA:
-                            EPhoneCallHandlingIncomingRejectCBA;
-    iCbaManager->SetCbaL( resourceId );
+    UpdateUiCommands();
     }
 
 // -----------------------------------------------------------
@@ -386,12 +365,6 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::HandleIdleL ()" );
     BeginUiUpdateLC();
-    if( FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke ) 
-        && iStateMachine->PhoneStorage()->IsScreenLocked() )
-        {
-        EnableCallUIL();
-        }
-    iStateMachine->PhoneStorage()->ResetBlockedKeysList();
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
@@ -403,34 +376,15 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
             &globalNotifierParam );
     SetDefaultFlagsL();
     
-     if ( IsNumberEntryUsedL() )
+     if ( !iNumberEntryManager->SetVisibilityIfNumberEntryUsedL( ETrue ) )
         {
-        if ( NeedToSendToBackgroundL() )
-            {
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-            iCbaManager->SetCbaL( EPhoneNumberAcqCBA );
-            }
-        else
-            {
-            SetNumberEntryVisibilityL(ETrue);
-            }
-        }
-    else if ( NeedToSendToBackgroundL() )
-        {
-        // Continue displaying current app but set up the
-        // idle screen in the background.
-        SetupIdleScreenInBackgroundL();
-        }
-    else
-        {
-        DisplayIdleScreenL();
+        RemoveDialogsAndSendPhoneToBackgroundL();
         }
  
     DeleteTouchPaneButtons();
     SetBackButtonActive(ETrue);
     
     EndUiUpdate();
-    iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
     iStateMachine->ChangeState( EPhoneStateIdle );
     }
 
@@ -500,7 +454,6 @@ void CPhoneStateIncoming::AnswerCallL()
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::AnswerCallL ()" );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMuteRingToneOnAnswer );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewCloseFSW );
     iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageAnswer );
     }
 
@@ -513,7 +466,6 @@ void CPhoneStateIncoming::DisconnectWaitingCallL()
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::DisconnectWaitingCallL ()" );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewCloseFSW );
 
     // The ringing call might have changed
     TPhoneCmdParamCallStateData callStateData;
@@ -547,6 +499,8 @@ void CPhoneStateIncoming::DisconnectWaitingCallL()
         iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageRelease );
         }
     ShowDisconnectingL( iRingingCallId );
+    
+    iCallDisconnected = ETrue;
     }
 
 // -----------------------------------------------------------
@@ -561,7 +515,7 @@ void CPhoneStateIncoming::OpenSoftRejectMessageL()
     iStateMachine->SendPhoneEngineMessage(
         MPEPhoneModel::EPEMessageStopTonePlay );
     
-    iCbaManager->SetSoftRejectStatus( EFalse );
+    iUiCommandManager->SetSoftRejectStatus( EFalse );
     
     // Re-enable global notes. Otherwise message editor is not opened.
     TPhoneCmdParamBoolean globalNotifierParam;
@@ -569,7 +523,7 @@ void CPhoneStateIncoming::OpenSoftRejectMessageL()
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
         &globalNotifierParam );
 
-    iCbaManager->SetCbaL( EPhoneCallHandlingIncomingSoftRejectCBA );
+    UpdateUiCommands();
 
     TPhoneCmdParamSfiData sfiDataParam;
     if ( iStateMachine->PhoneEngineInfo()->RemoteName( iRingingCallId ).Length() )
@@ -622,42 +576,9 @@ TInt CPhoneStateIncoming::GetNumberEntryNotVisibleMenuBar()
 void CPhoneStateIncoming::ShowDisconnectingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIncoming::ShowDisconnectingL( ) ");
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-    callHeaderParam.SetCallState( EPEStateDisconnecting );
-    TBuf<KPhoneCallHeaderLabelMaxLength> labelText( KNullDesC );
-    TInt callLabelId = CPhoneMainResourceResolver::Instance()->
-        ResolveResourceID( EPhoneInCallDisconnected );
-    StringLoader::Load( labelText, callLabelId, CCoeEnv::Static() );
-    callHeaderParam.SetLabelText( labelText );
 
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId,
-        &callHeaderParam );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId);
     }
 
-// ---------------------------------------------------------
-// CPhoneStateIncoming::HandleKeyLockEnabledL
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneStateIncoming::HandleKeyLockEnabled( TBool aKeylockEnabled )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIncoming::HandleKeyLockEnabledL( ) ");
-    if( !FeatureManager::FeatureSupported( KFeatureIdFfTouchUnlockStroke )
-        && CPhoneCenRepProxy::Instance()->
-            IsTelephonyFeatureSupported( KTelephonyLVFlagDisableCallControlHardKeysWhileLocked ) )
-        {
-        if( aKeylockEnabled )
-            {
-            if( iStateMachine->PhoneStorage()->IsBlockedKeysListEmpty() )
-                {
-                DisableHWKeysL();
-                }
-            }
-        else
-            {
-            // Reset blocked keys list
-            iStateMachine->PhoneStorage()->ResetBlockedKeysList();
-            }
-        }
-    }
 
 // End of File

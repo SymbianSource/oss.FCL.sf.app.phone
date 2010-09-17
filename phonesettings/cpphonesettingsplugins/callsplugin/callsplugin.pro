@@ -44,7 +44,10 @@ include(../cpplugincommon.pri)
 
 symbian: {
     TARGET.UID3 = 0X20029F26
+    VERSION = 10.0
     LIBS += -lxqsysinfo \
         -lxqsettingsmanager
 }
+
+BLD_INF_RULES.prj_exports += "./rom/cpcallsplugin_stub.sis /epoc32/data/z/system/install/cpcallsplugin_stub.sis"
 

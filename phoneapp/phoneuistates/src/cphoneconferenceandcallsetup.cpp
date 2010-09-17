@@ -190,21 +190,11 @@ void CPhoneConferenceAndCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
     
-    if ( !IsNumberEntryVisibleL() )
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-        }
+    iNumberEntryManager->RemoveNumberEntryIfVisibilityIsFalseL();
     
-    // Set Hold flag to view EFalse that IHF is on RSK not unhold
-    TPhoneCmdParamBoolean holdFlag;
-    holdFlag.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
     
-    UpdateCbaL( EPhoneCallHandlingInCallCBA );
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-    callHeaderParam.SetCallState( EPEStateConnecting );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
-        &callHeaderParam );
+    UpdateUiCommands();
     EndUiUpdate();        
     }
     
@@ -215,23 +205,13 @@ void CPhoneConferenceAndCallSetup::HandleConnectingL( TInt aCallId )
 void CPhoneConferenceAndCallSetup::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndCallSetup::HandleConnectedL()");
-    TPhoneCmdParamBoolean booleanParam;
-    booleanParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetNeedToSendToBackgroundStatus, &booleanParam );
     BeginUiUpdateLC();
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-    callHeaderParam.SetCallState( EPEStateConnected );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
-        &callHeaderParam );
+
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
     
-    if ( !IsNumberEntryVisibleL() )
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
-        }
-    SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
+    iNumberEntryManager->RemoveNumberEntryIfVisibilityIsFalseL();
+    UpdateUiCommands();
     EndUiUpdate(); 
-    UpdateCbaL ( EPhoneCallHandlingNewCallSwapCBA );
     iStateMachine->ChangeState( EPhoneStateConferenceAndSingle );
     }
 
@@ -286,36 +266,12 @@ void CPhoneConferenceAndCallSetup::HandleIdleL( TInt aCallId )
         // Remove  outgoing call 
         BeginUiUpdateLC();
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-         
-        if ( IsNumberEntryUsedL() )
-            {
-            SetNumberEntryVisibilityL(ETrue);
-            }
-            
-        SetTouchPaneButtons( EPhoneConferenceButtons );
+        iNumberEntryManager->SetVisibilityIfNumberEntryUsedL( ETrue );
+        UpdateUiCommands();
         EndUiUpdate();
-        UpdateCbaL( EPhoneCallHandlingInCallCBA );
         iStateMachine->ChangeState( EPhoneStateConference );
         }
     }
-   
-    
-// -----------------------------------------------------------
-// CPhoneConferenceAndCallSetup::UpdateInCallCbaL
-// -----------------------------------------------------------
-//
-void CPhoneConferenceAndCallSetup::UpdateInCallCbaL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndCallSetup::UpdateInCallCbaL() ");
-    if ( iAlerting )
-        {
-        UpdateCbaL( EPhoneCallHandlingInCallCBA );
-        }
-    else
-        {
-        UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
-        }
-    } 
 
 // -----------------------------------------------------------
 // CPhoneConferenceAndCallSetup:HandleConferenceIdleL
@@ -334,17 +290,13 @@ void CPhoneConferenceAndCallSetup::HandleConferenceIdleL()
 
     if ( callStateData.CallId() > KErrNotFound )
         {
-        // Set Hold flag to view EFalse that dtmf menu item not delete
-        TPhoneCmdParamBoolean holdFlag;
-        holdFlag.SetBoolean( EFalse );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetHoldFlag, &holdFlag );
         // Go to alerting and single state
-        UpdateCbaL( EPhoneCallHandlingInCallCBA );
+        UpdateUiCommands();
         iStateMachine->ChangeState( EPhoneStateAlertingInSingle );     
         }
     else
         {
-        UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
+        UpdateUiCommands();
         iStateMachine->ChangeState( EPhoneStateCallSetupInSingle );
         }
     }

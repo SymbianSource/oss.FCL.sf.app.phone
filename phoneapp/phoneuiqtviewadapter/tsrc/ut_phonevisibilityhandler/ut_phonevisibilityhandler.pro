@@ -56,3 +56,6 @@ HEADERS += \sf\mw\phonesrv\phonesrv_plat\call_information_api\inc\ccallinfoiter.
 SOURCES += cphonepubsubproxy_stub.cpp
 SOURCES += unit_tests.cpp
 
+
+
+symbian:MMP_RULES += SMPSAFE

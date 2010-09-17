@@ -91,8 +91,7 @@ CPEEngineInfoImpl::CPEEngineInfoImpl()
     iBasicInfo.iSSCommandInfo.group = RMobilePhone::EServiceUnspecified;
     iBasicInfo.iSimState = EPESimStatusUninitialized;
     iBasicInfo.iSecureSpecified = ETrue; 
-    iBasicInfo.iDataPortName = KNullDesC;
-    iBasicInfo.iSwitchToOngoing = EFalse;
+    iBasicInfo.iDataPortName = KNullDesC;    
     iConferenceCallInfo.iConferenceCallState = EPEStateConferenceIdle;
     iBasicInfo.iOutgoingBarringActivated = EFalse;
     //TODO remove after profile information is available
@@ -2077,18 +2076,6 @@ CCCECallParameters& CPEEngineInfoImpl::CallParameters()
     return *iCallParams;
     }
 
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::SetSwitchToNumberCommand
-// Sets switch to number
-// -----------------------------------------------------------------------------
-//
-void CPEEngineInfoImpl::SetSwitchToNumberCommand( 
-        const TPEPhoneNumber& aPhoneNumber )
-    {
-    __ASSERT_DEBUG( !( aPhoneNumber.Length() > KPEPhoneNumberMaxLength ),
-        Panic( EPEPanicExternalDataIdOutOfRange ) );
-    iCallCommandInfo.iSwitchToNumber = aPhoneNumber;
-    }
 
 // -----------------------------------------------------------------------------
 // From base class MPEDataStore
@@ -2110,16 +2097,6 @@ void CPEEngineInfoImpl::SetCallOrigin( TPECallOrigin aOrigin, TInt aCallId )
     {
     __ASSERT_DEBUG( iCurrentCalls.Count() > aCallId, Panic( EPEPanicCallIndexOutOfRange ) );
     return iCurrentCalls[ aCallId ]->SetCallOrigin( aOrigin ); 
-    }
-
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::SwitchToNumberCommand
-// Return the switch to number from the TPECallCommandInfo structure.
-// -----------------------------------------------------------------------------
-//
-const TPEPhoneNumber& CPEEngineInfoImpl::SwitchToNumberCommand() const
-    {
-    return iCallCommandInfo.iSwitchToNumber;
     }
 
 
@@ -2211,27 +2188,6 @@ const TPEPhoneNumber& CPEEngineInfoImpl::TransferTargetCommand() const
     return iCallCommandInfo.iTransferToAddress;
     }
 
-// -----------------------------------------------------------------------------
-// CPEEngineInfo::SetIsSwitchToOperationOngoing
-// (other items were commented in a header).
-// -----------------------------------------------------------------------------
-//
-void CPEEngineInfoImpl::SetIsSwitchToOperationOngoing( const TBool aValue )
-    {
-    TEFLOGSTRING2( KTAINT, "SetIsSwitchToOperationOngoing: %d", aValue );
-    iBasicInfo.iSwitchToOngoing = aValue;
-    }
-
-// -----------------------------------------------------------------------------
-// CPEEngineInfo::IsSwitchToOperationOngoing
-// (other items were commented in a header).
-// -----------------------------------------------------------------------------
-//
-TBool CPEEngineInfoImpl::IsSwitchToOperationOngoing() const
-    {
-    TEFLOGSTRING2( KTAINT, "IsSwitchToOperationOngoing: %d", iBasicInfo.iSwitchToOngoing );
-    return iBasicInfo.iSwitchToOngoing;
-    }
 
 // -----------------------------------------------------------------------------
 // CPEEngineInfo::CallOrigin
@@ -2638,6 +2594,35 @@ void CPEEngineInfoImpl::SetOutgoingCallBarringActivated(
         TBool aActivated )
     {
     iBasicInfo.iOutgoingBarringActivated = aActivated;
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::SetProtocolError
+// Sets the protocol spesific error code
+// -----------------------------------------------------------------------------
+//
+void CPEEngineInfoImpl::SetIncomingCallForwarded( TBool aForwarded, TInt aCallId )
+    {
+    if ( 0<=aCallId && aCallId<iCurrentCalls.Count() )
+        {
+        iCurrentCalls[ aCallId ]->SetIncomingCallForwarded( aForwarded );
+        }
+    }
+
+// -----------------------------------------------------------------------------
+// CPEEngineInfoImpl::IncomingCallForwarded
+// -----------------------------------------------------------------------------
+//
+TBool CPEEngineInfoImpl::IncomingCallForwarded( TInt aCallId ) const
+    {
+    TBool ret( EFalse );
+    
+    if ( 0<=aCallId && aCallId<iCurrentCalls.Count() )
+        {
+        ret = iCurrentCalls[ aCallId ]->IncomingCallForwarded();
+        }
+    
+    return ret;
     }
 
 // End of File

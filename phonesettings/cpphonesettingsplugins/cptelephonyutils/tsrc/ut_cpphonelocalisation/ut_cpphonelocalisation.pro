@@ -44,3 +44,6 @@ SOURCES += ../../src/cpphonelocalisation.cpp
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_qtranslator.cpp 
+
+
+symbian:MMP_RULES += SMPSAFE

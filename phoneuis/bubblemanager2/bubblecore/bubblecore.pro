@@ -25,6 +25,7 @@ symbian {
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.CAPABILITY = ALL -TCB
     TARGET.UID3 = 0x100058FF
+    VERSION = 10.0
     
     defFiles = \
     "$${LITERAL_HASH}ifdef WINS" \
@@ -35,6 +36,9 @@ symbian {
     MMP_RULES += defFiles
 
     LIBS += -lthumbnailmanagerqt
+    
+    BLD_INF_RULES.prj_exports += \
+    "./rom/bubblecore_stub.sis /epoc32/data/z/system/install/bubblecore_stub.sis"
 }
 else:win32 { 
     # Put it to Hb/lib because it is in path
@@ -50,3 +54,6 @@ DEFINES += BUILD_BUBBLEMANAGER
 include(src/bubblecore.pri)
 include(xml/bubbledocml.pri)
 RESOURCES += bubblecore.qrc
+
+
+symbian:MMP_RULES += SMPSAFE

@@ -27,6 +27,8 @@ PRJ_EXPORTS
 ../inc/cpeclientinformation.h         |../../inc/cpeclientinformation.h
 ../inc/mpedatastore.h                 |../../inc/mpedatastore.h
  
+../rom/engineinfo_stub.sis            /epoc32/data/z/system/install/engineinfo_stub.sis
+
 PRJ_MMPFILES
 engineinfo.mmp
 
