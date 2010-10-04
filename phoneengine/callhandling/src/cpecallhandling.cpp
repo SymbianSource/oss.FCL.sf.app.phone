@@ -96,7 +96,7 @@ CPECallHandling::CPECallHandling(
         iConvergedCallEngine( aConvergedCallEngine ),
         iDtmfInterface( aDtmfInterface ),
         iReplaceActive( EFalse ),
-        iDialRequest( EFalse )
+        iDialRequestCallId( KErrNotFound )
     {
     TEFLOGSTRING( KTAOBJECT, "CALL CPECallHandling::CPECallHandling()");
     }
@@ -240,7 +240,7 @@ void CPECallHandling::SendErrorMessage(
                 if( callData->GetCallState() == EPEStateIdle )
                     {
                     ReleaseCallObject( aCallId  );
-                    iDialRequest = EFalse;
+                    iDialRequestCallId = KErrNotFound;
                     }
                 }
             }
@@ -289,7 +289,7 @@ void CPECallHandling::SendMessage(
         {
         case MEngineMonitor::EPEMessageDialing:
             {
-            iDialRequest = EFalse;
+            iDialRequestCallId = KErrNotFound;
             CPESingleCall* callData = iCallArrayOwner->GetCallObject( aCallId );
             if( callData )
                 {
@@ -312,6 +312,11 @@ void CPECallHandling::SendMessage(
             }
         case MEngineMonitor::EPEMessageIdle:
             {
+            // If Idle is received to pending dial request, clear request
+            if ( aCallId == iDialRequestCallId )
+                {
+                iDialRequestCallId = KErrNotFound;
+                }
             HandleAutoResume();
             break;
             }
@@ -642,7 +647,7 @@ EXPORT_C TInt CPECallHandling::DialCall(
 
     // If there is allready video call, one dial in connecting, dialing or disconnecting state,
     // we just ignore new dial request and send KErrInUse back to UI
-    if( iDialRequest )
+    if( iDialRequestCallId != KErrNotFound )
         {
         // Dial request already send, waiting for dialing state.
         errorCode = KErrGeneral;
@@ -670,12 +675,12 @@ EXPORT_C TInt CPECallHandling::DialCall(
                 }
             
             TEFLOGSTRING( KTAINT, "CALL CPECallHandling::DialCall > Dial" );
-            iDialRequest = ETrue;
+            iDialRequestCallId = aCallId;
             errorCode = callData->Dial( aNumber );
             
             if ( errorCode != KErrNone )
                 {
-                iDialRequest = EFalse;
+                iDialRequestCallId = KErrNotFound;
                 // Dial failed: clean up
                 ReleaseCallObject( callData->GetCallId() );
                 TEFLOGSTRING2( KTAERROR, 

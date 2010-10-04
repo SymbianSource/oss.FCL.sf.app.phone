@@ -143,14 +143,11 @@ void CPEAudioDtmfTonePlayer::PlayDtmfTone(
     Cancel();
     Normalize( aTone ); 
 
-    // DTMF signalling.
-    if ( iDTMFPlayer )
-        {
-        TBuf<KBufSize> key; 
-        key.Append( aTone );
-        TEFLOGSTRING( KTAREQOUT, "AUD CPEAudioDtmfTonePlayer::PlayDtmfTone > CMMFDevSound::PlayDTMFStringL");
-        TRAP_IGNORE( iDTMFPlayer->PlayDTMFStringL( key ) ); 
-        }
+    TBuf<KBufSize> key; 
+    key.Append( aTone );
+    TEFLOGSTRING( KTAREQOUT, "AUD CPEAudioDtmfTonePlayer::PlayDtmfTone > CMMFDevSound::PlayDTMFStringL");
+    TRAP_IGNORE( iDTMFPlayer->PlayDTMFStringL( key ) ); 
+    
     }
 
 // -----------------------------------------------------------------------------

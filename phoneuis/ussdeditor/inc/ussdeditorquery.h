@@ -22,14 +22,14 @@
 // INCLUDES
 #include <hbinputdialog.h>
 
-class CUssdComms;
+class UssdComms;
 
 class UssdEditorQuery: public HbInputDialog
 {
     Q_OBJECT
 
 public:
-    UssdEditorQuery( CUssdComms &ussd, QGraphicsItem *parent = 0);
+    UssdEditorQuery( UssdComms &ussd, QGraphicsItem *parent = 0);
     ~UssdEditorQuery();
 
 private slots:
@@ -38,7 +38,7 @@ private slots:
     void updateButtonVisible( const QString &text );
 private:
     // From main.cpp
-    CUssdComms &mComms;
+    UssdComms &mComms;
 };
 
 #endif // USSDEDITORQUERY_H

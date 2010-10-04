@@ -23,7 +23,7 @@ INCLUDEPATH += .
 INCLUDEPATH +=../../../inc 
 INCLUDEPATH +=../../../cptelephonyutils/inc
 INCLUDEPATH += ../../../tsrc/common
-DEFINES += BUILD_CPTELEPHONYUTILS
+DEFINES += BUILD_TELEPHONYUTILS
 
 QT -= gui
 QT += testlib

@@ -37,7 +37,6 @@ inline TUint KTALOGMASK()
     }                           // User can change mask value to get different king of logging.
 
 #ifndef _DEBUG
-
 /***************************
 * Logging method variants:
 * 0 = No logging
@@ -48,13 +47,7 @@ inline TUint KTALOGMASK()
 #define TEF_LOGGING_METHOD      0   // UREL BUILD
 
 #else
-
-#ifdef __WINS__
-#define TEF_LOGGING_METHOD      0   // UDEB BUILD, WINS
-#else
-#define TEF_LOGGING_METHOD      2   // UDEB BUILD, HW
-#endif // __WINS__
-
+#define TEF_LOGGING_METHOD      2
 #endif // _DEBUG
 
 

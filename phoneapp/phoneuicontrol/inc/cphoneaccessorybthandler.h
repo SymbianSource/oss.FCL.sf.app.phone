@@ -44,7 +44,7 @@ NONSHARABLE_CLASS( CPhoneAccessoryBTHandler ) : public CBase
         * @return an instance of class CPhoneAccessoryBTHandler
         */
         static CPhoneAccessoryBTHandler* NewLC( MPhoneViewCommandHandle* aViewCommandHandle,
-            MPhoneStateMachine* aStateMachine, MPhoneNEClearedHandler* aNEClearedHandler );
+            MPhoneStateMachine* aStateMachine );
         
         /**
         * Destructor.
@@ -87,7 +87,7 @@ NONSHARABLE_CLASS( CPhoneAccessoryBTHandler ) : public CBase
         * C++ constructor.
         */
         CPhoneAccessoryBTHandler( MPhoneViewCommandHandle* aViewCommandHandle,
-            MPhoneStateMachine* aStateMachine, MPhoneNEClearedHandler* aNEClearedHandler );
+            MPhoneStateMachine* aStateMachine );
 
         /**
         * Set the handsfree mode
@@ -108,11 +108,6 @@ NONSHARABLE_CLASS( CPhoneAccessoryBTHandler ) : public CBase
         * Reference to State machine
         */
         MPhoneStateMachine* iStateMachine;
-
-        /**
-        * Reference to handler for Number Entry cleared event
-        */
-        MPhoneNEClearedHandler* iNEClearedHandler;
 
     };
 

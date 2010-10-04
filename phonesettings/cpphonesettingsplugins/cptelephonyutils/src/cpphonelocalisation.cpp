@@ -26,7 +26,7 @@ const char *TS_FILE_TELEPHONE_CP = "telephone_cp";
 const char *TS_FILE_COMMON = "common"; 
 
 /*!
-    \class CpPhoneLocalisation
+    \class PhoneLocalisation
     \brief Localisation utility class for 
            Telephony control panel plugins. 
 
@@ -34,15 +34,15 @@ const char *TS_FILE_COMMON = "common";
     needed translation files. 
     
     Takes ownership of the created QTranslator objects
-    and destroys them when CpPhoneLocalisation 
+    and destroys them when PhoneLocalisation 
     object is destructed. 
 */
 
 
 /*!
-    CpPhoneLocalisation::CpPhoneLocalisation() 
+    PhoneLocalisation::PhoneLocalisation() 
 */
-CpPhoneLocalisation::CpPhoneLocalisation(QObject *parent)
+PhoneLocalisation::PhoneLocalisation(QObject *parent)
  :QObject(parent)
 {
     DPRINT; 
@@ -50,9 +50,9 @@ CpPhoneLocalisation::CpPhoneLocalisation(QObject *parent)
 
 
 /*!
-    CpPhoneLocalisation::~CpPhoneLocalisation() 
+    PhoneLocalisation::~PhoneLocalisation() 
 */
-CpPhoneLocalisation::~CpPhoneLocalisation()
+PhoneLocalisation::~PhoneLocalisation()
 {
     DPRINT << ":IN"; 
     removeTranslators();
@@ -61,9 +61,9 @@ CpPhoneLocalisation::~CpPhoneLocalisation()
 
 
 /*!
-    CpPhoneLocalisation::installTranslator() 
+    PhoneLocalisation::installTranslator() 
 */
-bool CpPhoneLocalisation::installTranslator(
+bool PhoneLocalisation::installTranslator(
         TranslationFileId translationFileId)
 {
     DPRINT << ": IN";
@@ -106,9 +106,9 @@ bool CpPhoneLocalisation::installTranslator(
 
 
 /*!
-    CpPhoneLocalisation::removeTranslators()
+    PhoneLocalisation::removeTranslators()
 */
-void CpPhoneLocalisation::removeTranslators()
+void PhoneLocalisation::removeTranslators()
 {
     DPRINT << ": IN";
 

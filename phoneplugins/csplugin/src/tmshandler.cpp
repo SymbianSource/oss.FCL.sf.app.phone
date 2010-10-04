@@ -18,6 +18,7 @@
 #include <tmsfactory.h>
 #include <tmscall.h>
 #include <tmsstream.h>
+#include <tmsver.h>
 #include "tmshandler.h"
 #include "csplogger.h"
 #include "csppanic.pan"
@@ -203,9 +204,9 @@ void TmsHandler::ConstructL(MTmsHandlerObserver& aObserver)
 TInt TmsHandler::CreateTMSCallControl()
     {
     CSPLOGSTRING(CSPINT, "TmsHandler::CreateTMSCallControl");
-    TMSVer* v = NULL;
     TInt status;
-    status = TMSFactory::CreateFactory(iFactory, *v);
+    TMSVer v(2,0,0);
+    status = TMSFactory::CreateFactory(iFactory, v);
 
     __ASSERT_ALWAYS(iFactory, Panic(ECSPPanicBadHandle));
 
@@ -350,9 +351,7 @@ void TmsHandler::TMSStreamEvent(const TMSStream& stream, TMSSignalEvent event)
             }
         else if (event.type == TMS_EVENT_STREAM_STATE_CHANGE_ERROR)
             {
-#ifndef __WINS__
             Panic( ECSPPanicAudioStreamInitFailure );
-#endif
             }
         }
     else if (strmType == TMS_STREAM_DOWNLINK)
@@ -363,9 +362,7 @@ void TmsHandler::TMSStreamEvent(const TMSStream& stream, TMSSignalEvent event)
             }
         else if (event.type == TMS_EVENT_STREAM_STATE_CHANGE_ERROR)
             {
-#ifndef __WINS__
             Panic( ECSPPanicAudioStreamInitFailure );
-#endif
             }
         }
     }

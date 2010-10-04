@@ -480,27 +480,7 @@ EXPORT_C void CPhoneStateIdle::DisplayIncomingCallL( TInt aCallId )
     globalNotifierParam.SetBoolean( ETrue );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
-        &globalNotifierParam );
     iViewCommandHandle->ExecuteCommandL(EPhoneViewCreateCallHeader, aCallId);
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateIdle::HandleIdleForegroundEventL
-// -----------------------------------------------------------
-//
-EXPORT_C void CPhoneStateIdle::HandleIdleForegroundEventL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::HandleIdleForegroundEventL( ) ");
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewBringIdleToForeground );
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateIdle::HandlePhoneForegroundEventL
-// -----------------------------------------------------------
-
-EXPORT_C void CPhoneStateIdle::HandlePhoneForegroundEventL()
-    {
     }
 
 // -----------------------------------------------------------

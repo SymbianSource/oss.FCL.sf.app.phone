@@ -194,11 +194,8 @@ EXPORT_C void CPhoneSingleCall::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageHeld:
-            HandleHeldL( aCallId );
-            break;
-            
         case MEngineMonitor::EPEMessageConnected:
-            HandleConnectedL( aCallId );
+            UpdateCallHeaderAndUiCommandsL( aCallId );
             break;
 
         case MEngineMonitor::EPEMessageIncoming:
@@ -277,33 +274,6 @@ EXPORT_C TBool CPhoneSingleCall::HandleCommandL( TInt aCommand )
 EXPORT_C TInt CPhoneSingleCall::CallId() const
     {
     return iCallId;
-    }
-    
-// -----------------------------------------------------------
-// CPhoneSingleCall::HandleHeldL
-// -----------------------------------------------------------
-//
-void CPhoneSingleCall::HandleHeldL( TInt aCallId )
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneSingleCall::HandleHeldL()"); 
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewUpdateBubble, aCallId );
-
-    UpdateUiCommands();
-    }
-    
-// -----------------------------------------------------------
-// CPhoneSingleCall::HandleConnectedL
-// -----------------------------------------------------------
-//
-void CPhoneSingleCall::HandleConnectedL( TInt aCallId )
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneSingleCall::HandleConnectedL()");
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
- 
-    UpdateUiCommands();
     }
     
 // -----------------------------------------------------------

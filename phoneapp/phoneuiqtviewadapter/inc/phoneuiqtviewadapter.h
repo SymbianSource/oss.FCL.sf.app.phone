@@ -222,24 +222,9 @@ private:
     /*!
         \fn int PhoneUIQtViewAdapter::updateCallHeader()
         
-        This method updates call state information in call header.
+        This method updates call header.
     */
-    void updateCallHeaderState(int callId);
-    
-    /*!
-        \fn int PhoneUIQtViewAdapter::updateCallHeaderRemoteInfo()
-        
-        This method updates remote information in call header.
-    */
-    void updateCallHeaderRemoteInfo(int callId);
-     
-
-    /*!
-        \fn int PhoneUIQtViewAdapter::updateCallHeaderRemoteInfo()
-        
-        This method updates remote information in call header and label.
-    */
-    void updateCallHeaderRemoteInfoAndLabel(int callId);  
+    void updateCallHeader(int callId);
     
     /*!
         \fn int PhoneUIQtViewAdapter::handleCipheringInfoChange()

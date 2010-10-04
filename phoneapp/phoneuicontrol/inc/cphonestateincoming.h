@@ -145,20 +145,10 @@ class CPhoneStateIncoming : public CPhoneState
         * Show disconnected note
         */        
         void ShowDisconnectingL( TInt aCallId ); 
-        
-        /**
-        * Update remote data and label to the call header.
-        * @param aCallId - Call Id.
-        */
-        void UpdateRemoteInfoDataAndLabelL( 
-                TInt aCallId );
        
     protected:
         // call id of ringing call
         TInt iRingingCallId;
-        
-        // True if call is disconnected otherwise false
-        TBool iCallDisconnected;
         
     };
 

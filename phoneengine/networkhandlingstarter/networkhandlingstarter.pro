@@ -15,7 +15,9 @@
 #
 #
 
-CONFIG += hb mobility
+CONFIG += mobility
+load(hb.prf)
+symbian:CONFIG -= symbian_i18n   // to prevent compile warnings from non-existent ts files
 MOBILITY += systeminfo
 TEMPLATE = app
 TARGET = networkhandlingstarter

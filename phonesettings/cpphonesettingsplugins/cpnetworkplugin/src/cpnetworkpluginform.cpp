@@ -54,7 +54,7 @@ CpNetworkPluginForm::CpNetworkPluginForm(QGraphicsItem *parent) :
     mCellularSettings = QSharedPointer<CellularDataSettings>(new CellularDataSettings);
         
     QScopedPointer<HbDataFormModel> model(new HbDataFormModel);
-    QScopedPointer<CpSettingsWrapper> cpSettingsWrapperGuard(new CpSettingsWrapper);
+    QScopedPointer<SettingsWrapper> cpSettingsWrapperGuard(new SettingsWrapper);
 
     // #1 Read Network mode value from Cenrep
     model->appendDataFormItem(createNetworkModeItem());
@@ -953,7 +953,9 @@ void CpNetworkPluginForm::chageVisbilityOfManualNetworkSelection(bool visible)
     HbDataFormModel* formModel = qobject_cast<HbDataFormModel*>(model());
     if (formModel) {
         if (visible && !m_NetworkOperatorSelectionItemData) {
-            formModel->appendDataFormItem(createOperatorSelectionItem());
+            const int KOperatorSelectionItemIndex = 1;
+            formModel->insertDataFormItem(
+                KOperatorSelectionItemIndex, createOperatorSelectionItem());
         } else if (!visible && m_NetworkOperatorSelectionItemData) {
             removeConnection(
                 m_NetworkOperatorSelectionItemData, 

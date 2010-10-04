@@ -44,6 +44,8 @@ private slots:
 
     void testSizeHint();
 
+    void testDisplayEmergencyCallIcon();
+
 private:
     QString fileNameWithPath(const QString& fileName);    
 
@@ -111,6 +113,21 @@ void ut_BubbleImageWidget::testSizeHint()
     mImage->setKeepSquareShape(true);
     QSizeF hint = mImage->preferredSize();
     // ..
+}
+
+void ut_BubbleImageWidget::testDisplayEmergencyCallIcon()
+{
+    // override default avatar
+    mImage->setImageName("");
+    mImage->displayEmergencyCallIcon();
+    QVERIFY(mAvatar->isVisible());
+    QVERIFY(mImage->imageName()=="qtg_large_emergency_call");
+
+    // do not override image
+    mImage->setImageName(":/data/pixmap.png");
+    mImage->displayEmergencyCallIcon();
+    QVERIFY(!mAvatar->isVisible());
+    QVERIFY(mAvatar->iconName()=="");
 }
 
 BUBBLE_TEST_MAIN(ut_BubbleImageWidget)

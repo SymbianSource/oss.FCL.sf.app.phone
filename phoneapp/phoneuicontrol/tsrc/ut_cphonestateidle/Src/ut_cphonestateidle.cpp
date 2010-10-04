@@ -220,20 +220,6 @@ void ut_cphonestateidle::T_IdleEndKeyPressGeneratesCancelNotificationsL(  )
     EUNIT_ASSERT_EQUALS( KErrNone, iMockContext->VerifyExpectations() );
     }
 
-void ut_cphonestateidle::T_HandleIdleForegroundEventL(  )
-    {
-    iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommandL" ).
-            WithL( EPhoneViewBringIdleToForeground ).
-            TimesL(1);
-    iStateIdle->HandleIdleForegroundEventL();
-    EUNIT_ASSERT_EQUALS( KErrNone, iMockContext->VerifyExpectations() );
-    }
-
-void ut_cphonestateidle::T_HandlePhoneForegroundEventL(  )
-    {
-    iStateIdle->HandlePhoneForegroundEventL();
-    }
-
 void ut_cphonestateidle::T_HandleKeyMessageL(  )
     {
     _LIT( KPhoneNumber, "12345" );
@@ -504,21 +490,6 @@ EUNIT_TEST(
     "FUNCTIONALITY",
     SetupL, T_IdleEndKeyPressGeneratesCancelNotificationsL, Teardown)
     
-EUNIT_TEST(
-    "Test4 - T_HandleIdleForegroundEventL",
-    "CPhoneIdleState",
-    "Test4",
-    "FUNCTIONALITY",
-    SetupL, T_HandleIdleForegroundEventL, Teardown)
- 
-
-EUNIT_TEST(
-    "Test6 - HandlePhoneForegroundEventL",
-    "CPhoneIdleState",
-    "Test6",
-    "FUNCTIONALITY",
-    SetupL, T_HandlePhoneForegroundEventL, Teardown)
-
 EUNIT_TEST(
     "Test7 - HandleKeyMessageL",
     "CPhoneIdleState",

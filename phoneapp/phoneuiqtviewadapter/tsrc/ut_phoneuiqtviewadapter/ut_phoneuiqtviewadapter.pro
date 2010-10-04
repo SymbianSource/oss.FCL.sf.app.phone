@@ -16,7 +16,6 @@
 #
 
 TEMPLATE = app
-TARGET = 
 TARGET.UID3 = 0xEFF8FEA2
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -72,7 +71,7 @@ HEADERS += ../../inc/phonemessagecontroller.h
 SOURCES += ../../src/phonemessagecontroller.cpp
 HEADERS += ../../inc/phonevisibilityhandler.h
 HEADERS += ../../inc/phonecallheadermanager.h
-SOURCES += phonevisibilityhandler_stub.cpp
+SOURCES += ../../../../tsrc/stubs/phoneuiqtviewadapter/phonevisibilityhandler_stub.cpp
 HEADERS += phoneindicatorcontroller.h
 SOURCES += phoneindicatorcontroller_stub.cpp
 SOURCES += phoneuiqtbuttonscontroller_stub.cpp
@@ -88,5 +87,5 @@ SOURCES += phoneapplauncher_stub.cpp
 SOURCES += unit_tests.cpp
 
 
-
+include(../../../../tsrc/common/phoneuitest.pri)
 symbian:MMP_RULES += SMPSAFE

@@ -127,9 +127,8 @@ void ut_cphonesinglecall::Teardown(  )
 void ut_cphonesinglecall::T_HandleConnectedL( )
     {
     const TInt callId( 0 );
-    iMockContext->ExpectCallL("CPhoneState::UpdateUiCommands");
-    iMockContext->ExpectCallL("CPhoneViewCommandHandleMock::ExecuteCommandL").
-        WithL<TPhoneViewCommandId, TInt>(EPhoneViewUpdateBubble, callId);
+    iMockContext->ExpectCallL("CPhoneState::UpdateCallHeaderAndUiCommandsL").
+        WithL<TInt>(callId);
         
     iStateSingleCall->HandlePhoneEngineMessageL( MEngineMonitor::EPEMessageConnected, callId );   
     

@@ -96,11 +96,12 @@ void ut_cphoneconferenceandsingleandwaiting::Teardown(  )
 //  
 void ut_cphoneconferenceandsingleandwaiting::T_HandleConnectedL(  )
     {
-    
+    iMockContext->Reset();
+    iMockContext->ExpectCallL( "CPhoneState::UpdateCallHeaderAndUiCommandsL" ).
+             WithL<TInt> ( 2 );
     iStateConferenceAndSingleAndWaiting->HandlePhoneEngineMessageL( MEngineMonitor::EPEMessageConnected, 2 );
 
-    iViewCommandHandle->VerifyViewCommand( EPhoneViewUpdateBubble );
-    
+    EUNIT_ASSERT_EQUALS( KErrNone, iMockContext->VerifyExpectations() );
     }
 
 // -----------------------------------------------------------------------------

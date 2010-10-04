@@ -214,37 +214,13 @@ EXPORT_C void CPhoneStateInCall::HandlePhoneEngineMessageL(
             break;
         
         case MEngineMonitor::EPEMessageRemotePartyInfoChanged:
-            // If there is a waiting call then update header and label
-            // else forward message to CPhoneState.
-            if ( IsWaitingCallL( aCallId ) )
-                {
-                // Update remote info data and label.
-                UpdateRemoteInfoDataAndLabelL( aCallId );
-                }
-            else
-                {
-                CPhoneState::HandlePhoneEngineMessageL( aMessage, aCallId );
-                }
+            UpdateCallHeader( aCallId );
             break;
             
         default:
             CPhoneState::HandlePhoneEngineMessageL( aMessage, aCallId );
             break;
         }
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateInCall::UpdateRemoteInfoDataAndLabelL
-// -----------------------------------------------------------
-//
-void CPhoneStateInCall::UpdateRemoteInfoDataAndLabelL( 
-        TInt aCallId )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl,
-            "CPhoneStateInCall::UpdateRemoteInfoDataAndLabelL ()" );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel, 
-        aCallId );
     }
 
 // -----------------------------------------------------------

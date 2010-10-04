@@ -41,48 +41,48 @@ BasicServiceGroups Tools::convertEtelMobileServiceCode(int serviceCode)
     return Unknown;
 }
 
-CpSettingsWrapper::CpSettingsWrapper(QObject *parent): 
+SettingsWrapper::SettingsWrapper(QObject *parent): 
     QObject(parent)
 {
     DPRINT << "DUMMY WRAPPER";
 }
 
-CpSettingsWrapper::~CpSettingsWrapper()
+SettingsWrapper::~SettingsWrapper()
 {
     DPRINT << "DUMMY WRAPPER";
 }
 
-bool CpSettingsWrapper::showCallDuration()
+bool SettingsWrapper::showCallDuration()
 {
     DPRINT << "DUMMY WRAPPER";
     return 0;
 }
 
-int CpSettingsWrapper::setShowCallDuration(bool value)
+int SettingsWrapper::setShowCallDuration(bool value)
 {
     DPRINT << "DUMMY WRAPPER: value:" << value;
     return 0;
 }
 
-void CpSettingsWrapper::readSoftRejectText(QString &text, bool &userDefined)
+void SettingsWrapper::readSoftRejectText(QString &text, bool &userDefined)
 {
     DPRINT << "DUMMY WRAPPER: text:" << text << " ,userDefined:" << userDefined;
 }
 
-int CpSettingsWrapper::writeSoftRejectText(const QString &text, bool userDefined)
+int SettingsWrapper::writeSoftRejectText(const QString &text, bool userDefined)
 {
     DPRINT << "DUMMY WRAPPER: text:" << text << " ,userDefined:" << userDefined;
     return 0;
 }
 
-bool CpSettingsWrapper::numberGroupingSupported() const
+bool SettingsWrapper::numberGroupingSupported() const
 {
     DPRINT << "DUMMY WRAPPER";
     return true;
 }
 
 
-bool CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled()
+bool SettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled()
 {
     bool enabled = false;
     DPRINT << "DUMMY WRAPPER: enabled: " << enabled;
@@ -90,7 +90,7 @@ bool CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled()
 }
 
 
-bool CpSettingsWrapper::isPhoneOffline() const
+bool SettingsWrapper::isPhoneOffline() const
 {
     bool enabled = false;
     DPRINT << "DUMMY WRAPPER: enabled: " << enabled;
@@ -98,7 +98,7 @@ bool CpSettingsWrapper::isPhoneOffline() const
 }
 
 
-bool CpSettingsWrapper::isOngoingCall() const
+bool SettingsWrapper::isOngoingCall() const
 {
     bool ongoingCall = false;
     DPRINT << "DUMMY WRAPPER: ongoingCall: " << ongoingCall;

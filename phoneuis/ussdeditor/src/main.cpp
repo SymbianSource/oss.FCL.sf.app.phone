@@ -57,8 +57,8 @@ int main(int argc, char *argv[])
     window.addView(view);
     TFLOGSTRING("USSDEDITOR: main addView")
 
-    // Create CUssdComms - ussd client
-    CUssdComms *ussdComms = new CUssdComms(view);
+    // Create UssdComms - ussd client
+    UssdComms *ussdComms = new UssdComms(view);
     TFLOGSTRING("USSDEDITOR: main ussdComms")
 
     // Create HbInputDialog

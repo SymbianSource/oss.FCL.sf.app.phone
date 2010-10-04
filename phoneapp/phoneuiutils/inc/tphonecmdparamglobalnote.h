@@ -28,11 +28,21 @@
 #include "tphonecommandparam.h"
 
 // DATA TYPES
-enum PhoneNotificationType{
+enum TPhoneNotificationType
+    {
     EPhoneNotificationDialog = 0, // notify of a state change that does not require user input.
     EPhoneMessageBoxInformation,
     EPhoneMessageBoxWarning
-};
+    };
+
+enum TPhoneNotificationToneType
+    {
+    EPhoneNoTone = 0,
+    EPhoneInformationTone,
+    EPhoneWarningTone,
+    EPhoneConfirmationTone,
+    EPhoneErrorTone
+    };
 // CLASS DECLARATION
 
 /**
@@ -53,7 +63,7 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         * Sets the global note type.
         * @param aType is the global note type
         */
-        IMPORT_C void SetType( PhoneNotificationType aType );
+        IMPORT_C void SetType( TPhoneNotificationType aType );
 
         /**
         * Sets the text resource ID for the global note
@@ -89,10 +99,22 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         IMPORT_C void SetCauseCode( TInt aCauseCode );
         
         /**
+        * Sets tone type.
+        * @param aToneType Type of tone.
+        */
+        IMPORT_C void SetToneType( TPhoneNotificationToneType aCauseCode );
+             
+        /**
+        * Returns tone type.
+        * @return Type of tone.
+        */
+        IMPORT_C TPhoneNotificationToneType ToneType() const;
+        
+        /**
         * Returns the global note type
         * @return Returns the type
         */
-        IMPORT_C PhoneNotificationType Type() const;
+        IMPORT_C TPhoneNotificationType Type() const;
 
         /**
         * Returns the global note text resource ID.
@@ -129,7 +151,7 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         /**
         * Global note type
         */
-        PhoneNotificationType iType;
+        TPhoneNotificationType iType;
         
         /**
         * Global note text resource ID
@@ -155,6 +177,11 @@ class TPhoneCmdParamGlobalNote : public TPhoneUICommandParam
         * Cause code. 
         */
         TInt iCauseCode; 
+        
+        /**
+        * Notification tone type
+        */
+        TPhoneNotificationToneType iToneType;
     };
 
 #endif // __TPHONECMDPARAMGLOBALNOTE_H

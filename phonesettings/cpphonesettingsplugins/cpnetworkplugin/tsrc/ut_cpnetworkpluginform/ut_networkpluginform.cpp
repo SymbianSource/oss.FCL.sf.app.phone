@@ -19,6 +19,7 @@
 #include "qtestmains60ui.h"
 #include "cpitemdatahelper.h"
 #include "psetwrapper.h"
+#include "cpplugincommon.h"
 #define private public
 #include "cpnetworkpluginform.h"
 
@@ -64,15 +65,15 @@ void UT_CpNetworkPluginForm::init()
     QVERIFY(!m_networkPluginForm);
     CPsetContainer tmpPsetContainer;
     m_networkWrapper = new PSetNetworkWrapper(tmpPsetContainer);
-    expect("PSetWrapper::networkWrapper").returns(m_networkWrapper);
-    expect("PSetNetworkWrapper::isManualNetworkSelectionSupported").returns(true);
+    EXPECT(PSetWrapper, networkWrapper).returns(m_networkWrapper);
+    EXPECT(PSetNetworkWrapper, isManualNetworkSelectionSupported).returns(true);
     if(i) {
         m_NetworkSelectionMode = PSetNetworkWrapper::SelectionModeAutomatic;
     } else {
         m_NetworkSelectionMode = PSetNetworkWrapper::SelectionModeManual;
     }
     i++;
-    expect("PSetNetworkWrapper::getNetworkSelectionMode").willOnce(invoke(this, &updateNetworkSelectionMode));
+    EXPECT(PSetNetworkWrapper, getNetworkSelectionMode).willOnce(invoke(this, &updateNetworkSelectionMode));
     m_networkPluginForm = new CpNetworkPluginForm();
     QVERIFY(m_networkPluginForm);
 }
@@ -114,19 +115,19 @@ void UT_CpNetworkPluginForm::t_memleak()
  */
 void UT_CpNetworkPluginForm::t_networkModeStateChanged()
 {
-    expect("CpSettingsWrapper::isPhoneOffline").returns(false);
+    EXPECT(SettingsWrapper, isPhoneOffline).returns(false);
     m_networkPluginForm->networkModeStateChanged(0);
 
-    expect("CpSettingsWrapper::isPhoneOffline").returns(false);
+    EXPECT(SettingsWrapper, isPhoneOffline).returns(false);
     m_networkPluginForm->networkModeStateChanged(1);
 
-    expect("CpSettingsWrapper::isPhoneOffline").returns(false);
+    EXPECT(SettingsWrapper, isPhoneOffline).returns(false);
     m_networkPluginForm->networkModeStateChanged(2);
     
-    expect("CpSettingsWrapper::isPhoneOffline").returns(false);
+    EXPECT(SettingsWrapper, isPhoneOffline).returns(false);
     m_networkPluginForm->networkModeStateChanged(3);
     
-    expect("CpSettingsWrapper::isPhoneOffline").returns(true);
+    EXPECT(SettingsWrapper, isPhoneOffline).returns(true);
     m_networkPluginForm->networkModeStateChanged(0);
     
     QVERIFY(verify());
@@ -137,17 +138,17 @@ void UT_CpNetworkPluginForm::t_networkModeStateChanged()
  */
 void UT_CpNetworkPluginForm::t_operatorSelectionStateChanged()
 {
-    expect("CpSettingsWrapper::isPhoneOffline").returns(false);
+    EXPECT(SettingsWrapper, isPhoneOffline).returns(false);
     m_NetworkSelectionMode = PSetNetworkWrapper::SelectionModeAutomatic;
     expect("PSetNetworkWrapper::getNetworkSelectionMode").willOnce(invoke(this, &updateNetworkSelectionMode));
     m_networkPluginForm->operatorSelectionStateChanged();
 
-    expect("CpSettingsWrapper::isPhoneOffline").returns(false);
+    EXPECT(SettingsWrapper, isPhoneOffline).returns(false);
     m_NetworkSelectionMode = PSetNetworkWrapper::SelectionModeManual;
     expect("PSetNetworkWrapper::getNetworkSelectionMode").willOnce(invoke(this, &updateNetworkSelectionMode));
     m_networkPluginForm->operatorSelectionStateChanged();
     
-    expect("CpSettingsWrapper::isPhoneOffline").returns(true);
+    EXPECT(SettingsWrapper, isPhoneOffline).returns(true);
     m_networkPluginForm->operatorSelectionStateChanged();
     
     QVERIFY(verify());
@@ -178,7 +179,7 @@ void UT_CpNetworkPluginForm::t_availableNetworksGot()
     QList<PSetNetworkWrapper::NetworkInfo*> networkInfoList;
     networkInfoList.append(&temp);
     
-    expect("HbDialog::open");
+    EXPECT(HbDialog, open);
     m_networkPluginForm->availableNetworksGot(networkInfoList);
     
     QVERIFY(verify());
@@ -191,17 +192,17 @@ void UT_CpNetworkPluginForm::t_networkReqestFailed()
 {
     PSetNetworkWrapper::ErrorCode error(PSetNetworkWrapper::ErrCauseCallActive);
     PSetNetworkWrapper::RequestType type(PSetNetworkWrapper::RequestSetNetworkMode);
-    expect("PSetNetworkWrapper::getNetworkAccessMode");
+    EXPECT(PSetNetworkWrapper, getNetworkAccessMode);
     m_networkPluginForm->networkReqestFailed(error, type);
     
     error = PSetNetworkWrapper::ErrNoNetworkService;
     type = PSetNetworkWrapper::RequestSetNetworkMode;
-    expect("PSetNetworkWrapper::getNetworkAccessMode");
+    EXPECT(PSetNetworkWrapper, getNetworkAccessMode);
     m_networkPluginForm->networkReqestFailed(error, type);
     
     error = PSetNetworkWrapper::ErrOfflineOpNotAllowed;
     type = PSetNetworkWrapper::RequestSetNetworkMode;
-    expect("PSetNetworkWrapper::getNetworkAccessMode");
+    EXPECT(PSetNetworkWrapper, getNetworkAccessMode);
     m_networkPluginForm->networkReqestFailed(error, type);
     
     PSetNetworkWrapper::NetworkInfo temp;
@@ -210,7 +211,7 @@ void UT_CpNetworkPluginForm::t_networkReqestFailed()
     m_networkPluginForm->availableNetworksGot(networkInfoList);
     error = PSetNetworkWrapper::ErrNoNetworkAccess;
     type = PSetNetworkWrapper::RequestSetNetwork;
-    expect("HbDialog::open");
+    EXPECT(HbDialog, open);
     m_networkPluginForm->networkReqestFailed(error, type);
     
     QVERIFY(verify());
@@ -222,11 +223,11 @@ void UT_CpNetworkPluginForm::t_networkReqestFailed()
 void UT_CpNetworkPluginForm::t_userCancel()
 {
     m_NetworkSelectionMode = PSetNetworkWrapper::SelectionModeManual;
-    expect("PSetNetworkWrapper::getNetworkSelectionMode").willOnce(invoke(this, &updateNetworkSelectionMode));
+    EXPECT(PSetNetworkWrapper, getNetworkSelectionMode).willOnce(invoke(this, &updateNetworkSelectionMode));
     m_networkPluginForm->userCancel();
     
     m_NetworkSelectionMode = PSetNetworkWrapper::SelectionModeAutomatic;
-    expect("PSetNetworkWrapper::getNetworkSelectionMode").willOnce(invoke(this, &updateNetworkSelectionMode));
+    EXPECT(PSetNetworkWrapper, getNetworkSelectionMode).willOnce(invoke(this, &updateNetworkSelectionMode));
     m_networkPluginForm->userCancel();
     
     QVERIFY(verify());
@@ -279,7 +280,7 @@ void UT_CpNetworkPluginForm::t_handleNetworkChanged()
 void UT_CpNetworkPluginForm::t_primaryIconForNetwork()
 {
     QScopedPointer<PSetWrapper> wrapper(new PSetWrapper()); 
-    expect("PSetWrapper::networkWrapper").returns(wrapper.data()); 
+    EXPECT(PSetWrapper, networkWrapper).returns(wrapper.data()); 
     
     QScopedPointer<CpNetworkPluginFormAdapter> 
         formClassAdapter(new CpNetworkPluginFormAdapter());
@@ -288,47 +289,47 @@ void UT_CpNetworkPluginForm::t_primaryIconForNetwork()
     // Test: forbidden icon flag ON, mode: GSM, status: forbidden 
     currentInfo.m_access = PSetNetworkWrapper::AccessTypeGsm; 
     currentInfo.m_status = PSetNetworkWrapper::StatusForbidden; 
-    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    EXPECT(SettingsWrapper, forbiddenIconSupported).returns(true); 
     QString iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
     QCOMPARE(iconName, KIconGsmForbidden); 
     
     // Test: forbidden icon flag ON, mode: GSM, status: available
     currentInfo.m_access = PSetNetworkWrapper::AccessTypeGsm; 
     currentInfo.m_status = PSetNetworkWrapper::StatusAvailable; 
-    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    EXPECT(SettingsWrapper, forbiddenIconSupported).returns(true); 
     iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
     QCOMPARE(iconName, KIconGsmNotForbidden); 
     
     // Test: forbidden icon flag ON, mode: WCDMA, status: forbidden 
     currentInfo.m_access = PSetNetworkWrapper::AccessTypeWcdma; 
     currentInfo.m_status = PSetNetworkWrapper::StatusForbidden; 
-    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    EXPECT(SettingsWrapper, forbiddenIconSupported).returns(true); 
     iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
     QCOMPARE(iconName, KIconWcdmaForbidden); 
      
     // Test: forbidden icon flag ON, mode: WCDMA, status: available
     currentInfo.m_access = PSetNetworkWrapper::AccessTypeWcdma; 
     currentInfo.m_status = PSetNetworkWrapper::StatusAvailable; 
-    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    EXPECT(SettingsWrapper, forbiddenIconSupported).returns(true); 
     iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
     QCOMPARE(iconName, KIconWcdmaNotForbidden); 
 
     // Test: forbidden icon flag ON, mode: GSM and WCDMA, status: forbidden 
     currentInfo.m_access = PSetNetworkWrapper::AccessTypeGsmAndWcdma; 
     currentInfo.m_status = PSetNetworkWrapper::StatusForbidden; 
-    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    EXPECT(SettingsWrapper, forbiddenIconSupported).returns(true); 
     iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
     QCOMPARE(iconName, KIconGsmAndWcdmaForbidden); 
      
     // Test: forbidden icon flag ON, mode: GSM and WCDMA, status: available
     currentInfo.m_access = PSetNetworkWrapper::AccessTypeGsmAndWcdma; 
     currentInfo.m_status = PSetNetworkWrapper::StatusAvailable; 
-    expect("CpSettingsWrapper::forbiddenIconSupported").returns(true); 
+    EXPECT(SettingsWrapper,forbiddenIconSupported).returns(true); 
     iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
     QCOMPARE(iconName, KIconGsmAndWcdmaNotForbidden); 
     
     // Test: forbidden icon flag OFF
-    expect("CpSettingsWrapper::forbiddenIconSupported").returns(false);
+    EXPECT(SettingsWrapper, forbiddenIconSupported).returns(false);
     iconName = formClassAdapter->primaryIconForNetwork(currentInfo);
     QCOMPARE(iconName, QString("")); 
 }

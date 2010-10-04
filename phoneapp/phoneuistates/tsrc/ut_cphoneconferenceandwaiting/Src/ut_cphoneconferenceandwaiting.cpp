@@ -155,8 +155,8 @@ void ut_cphoneconferenceandwaiting::T_ConstructionL()
 //  
 void ut_cphoneconferenceandwaiting::T_HandleConnected_1L(  )
     {           
-    iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommandL" ).
-        WithL<TPhoneViewCommandId, TInt> ( EPhoneViewUpdateBubble, 2 );
+    iMockContext->ExpectCallL( "CPhoneState::UpdateCallHeaderAndUiCommandsL" ).
+        WithL<TInt> ( 2 );
     
     iMockContext->ExpectCallL( "CPhoneStateMachine::ChangeState" ).
         WithL<TInt> ( EPhoneStateConferenceAndSingle );
@@ -173,8 +173,8 @@ void ut_cphoneconferenceandwaiting::T_HandleConnected_1L(  )
 //  
 void ut_cphoneconferenceandwaiting::T_HandleConnected_2L(  )
     {
-    iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommandL" ).
-        WithL<TPhoneViewCommandId, TInt> ( EPhoneViewUpdateBubble, 0 );
+    iMockContext->ExpectCallL( "CPhoneState::UpdateCallHeader" ).
+        WithL<TInt> ( 0 );
 
     iStateConferenceAndWaiting->HandlePhoneEngineMessageL( MEngineMonitor::EPEMessageConnected, 0 );
 

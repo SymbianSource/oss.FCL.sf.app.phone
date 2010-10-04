@@ -145,13 +145,11 @@ void CPhoneStateUtilsVoip::DialVoIPL( const TDesC& aNumber, TUint aServiceId )
 // CPhoneStateUtilsVoip::IsVoipPreferredCall
 // ---------------------------------------------------------------------------
 //
-TBool CPhoneStateUtilsVoip::IsVoipPreferredCall( TUint& aServiceId )
+TBool CPhoneStateUtilsVoip::IsVoipPreferredCall( TUint& /*aServiceId*/ )
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneStateUtilsVoip::IsVoipPreferredCall" );
-    
     TBool isVoipPrefered( EFalse );
-    
     return isVoipPrefered;
     }
 

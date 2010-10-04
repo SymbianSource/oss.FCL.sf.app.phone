@@ -50,6 +50,7 @@ int PhoneBubbleWrapper::callId (int state)
 
 int PhoneBubbleWrapper::createCallHeader (int callId)
 {
+    PHONE_TRACE
     int bubble;
 
     if (!m_bubbles.contains (callId)) {
@@ -65,6 +66,7 @@ int PhoneBubbleWrapper::createCallHeader (int callId)
 
 void PhoneBubbleWrapper::removeCallHeader (int callId)
 {
+    PHONE_TRACE
     if (m_bubbles.contains (callId)) {
         m_bubbleManager.removeCallHeader (m_bubbles [callId]);
         m_bubbles.remove (callId);       
@@ -196,6 +198,7 @@ void PhoneBubbleWrapper::setCiphering(int bubble, bool indicatorAllowed, bool en
 
 int PhoneBubbleWrapper::activeCallCount()
 {
+    PHONE_TRACE
     int count(0);
     QMap<int, int> callStateList = callStates();
     
@@ -214,6 +217,7 @@ int PhoneBubbleWrapper::activeCallCount()
 
 QMap<int, int> PhoneBubbleWrapper::callStates() const 
 {
+    PHONE_TRACE
     QMap<int, int> ret;
     
     for (int i=0; i<m_callStates.size(); ++i) {
@@ -229,6 +233,7 @@ QMap<int, int> PhoneBubbleWrapper::callStates() const
 
 QMap<int, int> PhoneBubbleWrapper::bubbles() const
 {
+    PHONE_TRACE
     QMap<int, int> ret;
     
     for (int i=0; i<m_bubbles.size(); ++i) {
@@ -246,6 +251,7 @@ int PhoneBubbleWrapper::createConferenceBubble(
         const TDesC &labelText, 
         const TDesC &cliText)
 {
+    PHONE_TRACE
     int callId1;
     int callId2;
     int bubble = -1;
@@ -295,6 +301,7 @@ bool PhoneBubbleWrapper::conferenceCallId(int callId) const
 
 void PhoneBubbleWrapper::removeCallFromConference(int callId)
 {
+    PHONE_TRACE
     if (m_conferenceList.contains(callId)) {
         m_bubbleManager.startChanges();
         if(1<m_conferenceList.size()) {

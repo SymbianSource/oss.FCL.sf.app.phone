@@ -142,8 +142,13 @@ private:
     */
     void showDefaultQuery(TPhoneCmdParamQuery* params);
     
-    
-    void replaceDialogActions(HbDialog *dialog, QList<HbAction *> &actions);
+    /*!
+        \fn void replaceDialogActions()
+        
+        This method replaces dialog actions.
+    */    
+    void replaceDialogActions(HbDialog *dialog, 
+            QList<HbAction *> &actions, bool deleteOldActions = true);
     
 private:
     PhoneGlobalNotes *m_globalNotes;

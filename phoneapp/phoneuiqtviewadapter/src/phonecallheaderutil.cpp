@@ -16,15 +16,12 @@
 */
 
 
-#include <mpeclientinformation.h>
 #include <StringLoader.h>
 #include <bautils.h>
 
 #include "phonecallheaderutil.h"
-#include "tphonecmdparamboolean.h"
 #include "cphonemainresourceresolver.h"
 #include "phonerssbase.h"
-#include "phoneui.pan"
 #include "cphonecenrepproxy.h"
 #include "telephonyvariant.hrh"
 #include "phoneviewcommanddefinitions.h"
@@ -39,9 +36,10 @@
 PhoneCallHeaderUtil::PhoneCallHeaderUtil(
         MPEEngineInfo& engineInfo ) 
         : m_engineInfo( engineInfo),
-          iCallHeaderType( EPECallTypeUninitialized ),
-          iSetDivertIndication( EFalse ),
           iLabelText( NULL ),
+          iCliText( NULL ),
+          iSecondaryCliText( NULL ),
+          iCallerImage( NULL ),
           iEmergencyHeaderText( NULL ),
           iAttemptingEmergencyText( NULL )
     {
@@ -54,93 +52,13 @@ PhoneCallHeaderUtil::PhoneCallHeaderUtil(
 PhoneCallHeaderUtil::~PhoneCallHeaderUtil()
     {
     delete iLabelText;
-    
+    delete iCliText;
+    delete iSecondaryCliText;
+    delete iCallerImage;
     delete iEmergencyHeaderText;
-    
     delete iAttemptingEmergencyText;
     }
 
-// -----------------------------------------------------------
-// PhoneCallHeaderUtil::SetCallHeaderTexts
-// -----------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetCallHeaderTexts(
-    const TInt aCallId, 
-    const TBool aWaitingCall,
-    const TBool aVideoCall,
-    TPhoneCmdParamCallHeaderData* aCallHeaderData )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::SetCallHeaderTexts( ) ");
-    
-    TInt labelId(KPhoneRssCommonFirst);
-    
-    // Fetch engine info parameters.
-    const TBool auxLine( m_engineInfo.CallALSLine( aCallId ) == CCCECallParameters::ECCELineTypeAux );
-    const TBool cli( m_engineInfo.RemotePhoneNumber( aCallId ).Length());
-    const TBool cnap( m_engineInfo.RemotePartyName( aCallId ).Length());
-    const TInt numberType( m_engineInfo.RemotePhoneNumberType( aCallId ));
-    
-    __PHONELOG2( EBasic, EPhoneControl, "PhoneCallHeaderUtil::SetCallHeaderTexts - NumberType(%d), CLI(%d)", numberType, cli );
-    __PHONELOG2( EBasic, EPhoneControl, "PhoneCallHeaderUtil::SetCallHeaderTexts - CNAP(%d), AuxLine(%d)", cnap, auxLine );
-    
-    if ( !cli && !cnap && numberType != EPEPrivateNumber && numberType != EPEUnknownNumber )
-        {
-        if ( auxLine )
-            {
-            if ( aWaitingCall )
-                {
-                labelId = EPhoneIncomingLine2WaitingText; // waiting, line 2
-                }
-            else
-                {
-                labelId = EPhoneIncomingLine2Text; // on line 2
-                }
-            }
-        // If CLIR, but also network limitation(e.g. EPEUnknownNumber), then second line 
-        // should be empty in call bubble.
-        else
-            {
-            labelId = KPhoneRssCommonFirst; // No second line in call bubble
-            }
-        }
-    else  // Voice or video call with CLI or with CNAP.
-        {
-        if ( aWaitingCall )
-            {
-            if ( auxLine  )
-                {
-                labelId = EPhoneIncomingLine2WaitingText; // waiting, line 2
-                }
-            else
-                {
-                labelId = EPhoneCallWaitingLabel; // waiting
-                }
-            }
-        else // Mo other calls
-            {
-            if ( auxLine )
-                {
-                labelId = EPhoneIncomingLine2CallingText; // calling, line 2
-                }
-            else
-                {
-                // If CLIR, but not network limitation, then second line 
-                // (calling or video call) should be shown in call bubble.
-                if ( aVideoCall )
-                    {
-                    labelId = EPhoneVideoCallIncoming; // video call
-                    }
-                else
-                    {
-                    labelId = EPhoneIncomingCallLabel; // calling
-                    }
-                }
-            }
-        }
-    __PHONELOG1( EBasic, EPhoneControl, "PhoneCallHeaderUtil::SetCallHeaderTexts - labelId(%d)", labelId );
-    LoadCallHeaderTexts( labelId, aCallHeaderData );
-    }
- 
 // -----------------------------------------------------------
 // PhoneCallHeaderUtil::LabelText
 // -----------------------------------------------------------
@@ -174,16 +92,18 @@ const TDesC& PhoneCallHeaderUtil::LabelText( TInt aCallId )
             }
         case EPEStateRinging:
             {
-            TPhoneCmdParamCallHeaderData callHeaderData;
-            SetCallHeaderTexts(
-                aCallId, 
-                EFalse,
-                IsVideoCall( aCallId ),
-                &callHeaderData );           
-
-            if (callHeaderData.LabelText().Length())
+            SetCallHeaderLabelTextForRingingCall(aCallId);
+            break;
+            }
+        case EPEStateDialing:
+            {
+            if ( IsVideoCall(aCallId) )
                 {
-                iLabelText = callHeaderData.LabelText().Alloc();
+                iLabelText = LoadResource(EPhoneOutgoingVideoCallLabel);
+                }
+            else
+                {
+                iLabelText = LoadResource(EPhoneOutgoingCallLabel);
                 }
             break;
             }
@@ -192,6 +112,199 @@ const TDesC& PhoneCallHeaderUtil::LabelText( TInt aCallId )
         }
     
     return iLabelText ? *iLabelText : KNullDesC();
+    }
+
+// -----------------------------------------------------------
+// PhoneCallHeaderUtil::GetCliTexts
+// -----------------------------------------------------------
+//
+void PhoneCallHeaderUtil::GetCliTexts( 
+        TInt aCallId,
+        TDes& aCliText,
+        ClippingDirection &aCliClip,
+        TDes& aSecondaryCliText,
+        ClippingDirection &aSecondaryCliClip )
+    {
+    if ( aCallId == KEmergencyCallId )
+        {
+        // Set "Emergency call" as cli in emergency call.
+        aCliText = EmergencyHeaderText();
+        aCliClip = PhoneCallHeaderUtil::ERight;
+        }
+    else if ( aCallId == KConferenceCallId )
+        {
+        // No need for secondary cli in conference call.
+        GetCli( aCallId, aCliText, aCliClip );
+        }
+    else
+        {   
+        GetCli( aCallId, aCliText, aCliClip );
+        GetSecondaryCli( aCallId, aSecondaryCliText, aSecondaryCliClip );
+        }
+
+    }
+    
+// -----------------------------------------------------------
+// PhoneCallHeaderUtil::GetCli
+// -----------------------------------------------------------
+//
+void PhoneCallHeaderUtil::GetCli( TInt aCallId,
+        TDes& aCliText,
+        ClippingDirection &aClipping )
+    {
+    if (iCliText)
+        {
+        delete iCliText;
+        iCliText = NULL;
+        }
+    
+    if ( aCallId == KEmergencyCallId )
+        {
+        aCliText = EmergencyHeaderText();
+        aClipping = PhoneCallHeaderUtil::ERight;
+        return;
+        }
+    else if ( aCallId == KConferenceCallId )
+        {
+        iCliText = LoadResource(EPhoneCLIConferenceCall);
+        }
+    else if ( ( m_engineInfo.RemotePhoneNumber( aCallId ).Length() ) && 
+         ( !RemoteNameAvailable( aCallId ) ) )
+        {   
+        iCliText = m_engineInfo.RemotePhoneNumber( aCallId ).Alloc();  
+        aClipping = PhoneCallHeaderUtil::ELeft;
+        }
+    else
+        {
+        TBuf<KCntMaxTextFieldLength> remoteInfoText( KNullDesC ); 
+        GetRemoteInfoData( aCallId, remoteInfoText );
+        
+        iCliText = remoteInfoText.Alloc();
+        aClipping = PhoneCallHeaderUtil::ERight;
+        }
+    
+    aCliText = iCliText ? *iCliText : KNullDesC();
+    }
+
+// -----------------------------------------------------------
+// PhoneCallHeaderUtil::GetSecondaryCli
+// -----------------------------------------------------------
+//
+void PhoneCallHeaderUtil::GetSecondaryCli( TInt aCallId,
+        TDes& aSecondaryCliText,
+        ClippingDirection &aClipping )
+    {
+    if (iSecondaryCliText)
+        {
+        delete iSecondaryCliText;
+        iSecondaryCliText = NULL;
+        }
+    
+    if ( IsSecondaryCliAllowed( aCallId ) )
+        {
+        if (CPhoneCenRepProxy::Instance()->
+                IsTelephonyFeatureSupported( KTelephonyLVFlagUUS ) &&
+            m_engineInfo.RemotePartyName( aCallId ).Length() )
+            {
+            iSecondaryCliText = m_engineInfo.RemotePartyName( aCallId ).Alloc();
+            aClipping = PhoneCallHeaderUtil::ERight;
+            }
+        else
+            {
+            iSecondaryCliText = m_engineInfo.RemotePhoneNumber( aCallId ).Alloc();
+            aClipping = PhoneCallHeaderUtil::ELeft;
+            }
+        }
+    
+    aSecondaryCliText = iSecondaryCliText ? *iSecondaryCliText : KNullDesC();
+    }
+
+// -----------------------------------------------------------
+// PhoneCallHeaderUtil::RemotePhoneNumber
+// -----------------------------------------------------------
+//
+const TDesC& PhoneCallHeaderUtil::RemotePhoneNumber( TInt aCallId ) const
+    {
+    return m_engineInfo.RemotePhoneNumber( aCallId );
+    }
+
+// ---------------------------------------------------------------------------
+//  PhoneCallHeaderUtil::CallType
+// ---------------------------------------------------------------------------
+//
+TInt PhoneCallHeaderUtil::CallType( 
+        const TInt aCallId )
+    {
+    return  (TInt)m_engineInfo.CallType( aCallId );
+    }
+
+// ---------------------------------------------------------------------------
+//  PhoneCallHeaderUtil::ServiceId
+// ---------------------------------------------------------------------------
+//
+TInt PhoneCallHeaderUtil::ServiceId( 
+        const TInt aCallId )
+    {
+    return m_engineInfo.ServiceId( aCallId );
+    }
+
+// -----------------------------------------------------------
+// PhoneCallHeaderUtil::IsCallForwarded
+// -----------------------------------------------------------
+//
+TBool PhoneCallHeaderUtil::IsCallForwarded( TInt aCallId )
+    {
+    return m_engineInfo.IncomingCallForwarded(aCallId);
+    }
+
+// -----------------------------------------------------------
+// PhoneCallHeaderUtil::SecureSpecified
+// -----------------------------------------------------------
+//
+TBool PhoneCallHeaderUtil::SecureSpecified()
+    {
+    return m_engineInfo.SecureSpecified();
+    }
+
+// -----------------------------------------------------------
+// PhoneCallHeaderUtil::Ciphering
+// -----------------------------------------------------------
+//
+TBool PhoneCallHeaderUtil::Ciphering( TInt aCallId )
+    {
+    return m_engineInfo.IsSecureCall( aCallId );
+    }
+
+// -----------------------------------------------------------
+// PhoneCallHeaderUtil::CallState
+// -----------------------------------------------------------
+//
+TInt PhoneCallHeaderUtil::CallState( TInt aCallId ) const
+    {
+    return m_engineInfo.CallState(aCallId);
+    }
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::CallerImage
+// -----------------------------------------------------------------------------
+//     
+const TDesC& PhoneCallHeaderUtil::CallerImage( const TInt aCallId )
+    {
+    if (iCallerImage)
+        {
+        delete iCallerImage;
+        iCallerImage = NULL;
+        }
+    
+    // Set the call header picture data if it is available
+    if ( ( m_engineInfo.CallerImage( aCallId ).Length() > 0 )  && 
+         ( BaflUtils::FileExists( CCoeEnv::Static()->FsSession(), 
+                 m_engineInfo.CallerImage( aCallId ) ) ) )
+        {
+        iCallerImage = m_engineInfo.CallerImage( aCallId ).Alloc();
+        }
+
+    return iCallerImage ? *iCallerImage : KNullDesC();
     }
 
 // -----------------------------------------------------------
@@ -222,494 +335,148 @@ const TDesC& PhoneCallHeaderUtil::AttemptingEmergencyText()
     return iAttemptingEmergencyText ? *iAttemptingEmergencyText : KNullDesC();
     }
 
+// ---------------------------------------------------------------------------
+//  PhoneCallHeaderUtil::IsVoiceCall
+// ---------------------------------------------------------------------------
+//
+TBool PhoneCallHeaderUtil::IsVoiceCall(TInt aCallId) const
+    {
+    if( aCallId < 0 )
+        {
+        return ( m_engineInfo.CallTypeCommand()
+                    == EPECallTypeCSVoice ||
+                m_engineInfo.CallTypeCommand()
+                    == EPECallTypeVoIP );  
+        }
+    
+    return ( m_engineInfo.CallType( aCallId )
+                == EPECallTypeCSVoice ||
+             m_engineInfo.CallType( aCallId )
+                == EPECallTypeVoIP );
+    }
+
+// ---------------------------------------------------------------------------
+//  PhoneCallHeaderUtil::IsVideoCall
+// ---------------------------------------------------------------------------
+//
+TBool PhoneCallHeaderUtil::IsVideoCall(int aCallId ) const
+    {
+    if( aCallId < 0 )
+        {
+        return ( m_engineInfo.CallTypeCommand()
+            == EPECallTypeVideo );  
+        }
+    return ( m_engineInfo.CallType( aCallId )
+            == EPECallTypeVideo );
+    }
+
 // -----------------------------------------------------------
-// PhoneCallHeaderUtil::CallState
+// PhoneCallHeaderUtil::SetCallHeaderLabelTextForRingingCall
 // -----------------------------------------------------------
 //
-TInt PhoneCallHeaderUtil::CallState( TInt aCallId ) const
+void PhoneCallHeaderUtil::SetCallHeaderLabelTextForRingingCall( TInt aCallId )
     {
-    return m_engineInfo.CallState(aCallId);
-    }
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::SetCliParamatersL
-// -----------------------------------------------------------------------------
-// 
-void PhoneCallHeaderUtil::SetCliParamaters(
-        const TInt aCallId, 
-        TPhoneCmdParamCallHeaderData* aCallHeaderData )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::SetCliParamatersL( ) ");
+    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::CallHeaderLabelTextForRingingCall( ) ");
     
-    // Set call header number type
-    aCallHeaderData->SetNumberType( m_engineInfo.RemotePhoneNumberType( aCallId ) );
+    TInt labelId(0);
     
-    if ( ( m_engineInfo.RemotePhoneNumber( aCallId ).Length() ) && 
-         ( !ContactInfoAvailable( aCallId ) ) )
-        {
-        // Set phonenumber/URI as the CLI text for the call header      
-       aCallHeaderData->SetCLIText( m_engineInfo.RemotePhoneNumber( aCallId ),
-                 TPhoneCmdParamCallHeaderData::ELeft );
-            
-        // No contact name, use phonenumber when available.
-        aCallHeaderData->SetParticipantListCLI(
-                TPhoneCmdParamCallHeaderData::EPhoneParticipantCNAPText );
-        }
-    else
-        {
-        TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection cnapClippingDirection = TPhoneCmdParamCallHeaderData::ERight;
-        TBuf<KCntMaxTextFieldLength> remoteInfoText( KNullDesC );
- 
-        TBool secondaryCli = GetRemoteInfoData( aCallId, remoteInfoText );
-        cnapClippingDirection = TPhoneCmdParamCallHeaderData::ELeft;
+    // Fetch engine info parameters.
+    const TBool auxLine( m_engineInfo.CallALSLine( aCallId ) == CCCECallParameters::ECCELineTypeAux );
+    const TBool cli( m_engineInfo.RemotePhoneNumber( aCallId ).Length());
+    const TBool cnap( m_engineInfo.RemotePartyName( aCallId ).Length());
+    const TBool videoCall( IsVideoCall( aCallId ) );
+    const TBool waitingCall( IsWaitingCall( aCallId ) );
+    const TInt numberType( m_engineInfo.RemotePhoneNumberType( aCallId ));
 
-        aCallHeaderData->SetCLIText( remoteInfoText,  TPhoneCmdParamCallHeaderData::ERight );
-        
-        if (secondaryCli)
+    if ( !cli && !cnap && numberType != EPEPrivateNumber && numberType != EPEUnknownNumber )
+        {
+        if ( auxLine )
             {
-            aCallHeaderData->SetCNAPText( m_engineInfo.RemotePhoneNumber( aCallId ), 
-                cnapClippingDirection );
-            }
-        }
-    
-    SetCallerImage( aCallId, aCallHeaderData );
-
-    // Set the Caller text
-    if ( m_engineInfo.CallerText( aCallId ).Length() > 0 )
-        {
-        aCallHeaderData->SetCallerText( m_engineInfo.CallerText( aCallId ) );
-        }
-    }
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::SetCallerImage
-// -----------------------------------------------------------------------------
-//     
-void PhoneCallHeaderUtil::SetCallerImage( 
-        const TInt aCallId, 
-        TPhoneCmdParamCallHeaderData* aCallHeaderData )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::SetCallerImage( ) ");
-    // Set the call header picture data if it is available
-    if ( ( m_engineInfo.CallerImage( aCallId ).Length() > 0 )  && 
-         ( BaflUtils::FileExists( CCoeEnv::Static()->FsSession(), 
-                 m_engineInfo.CallerImage( aCallId ) ) ) )
-        {
-        aCallHeaderData->SetPicture( m_engineInfo.CallerImage( aCallId ) );
-        }
-    else
-        {
-        // Set the thumbnail picture data if it is available
-        aCallHeaderData->SetHasThumbnail( m_engineInfo.HasCallerThumbnail( aCallId ) );
-        CFbsBitmap* picture = m_engineInfo.CallerThumbnail( aCallId );
-        if ( picture )
-            {
-            aCallHeaderData->SetThumbnail( picture );
-            }
-        }
-    }
-
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::SetBasicCallHeaderParamsL
-// ---------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetBasicCallHeaderParams(
-        const TInt aCallId, 
-        TPhoneCmdParamCallHeaderData* aCallHeaderData )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::SetBasicCallHeaderParamsL( ) ");
-    // Set call header call state
-    aCallHeaderData->SetCallState( 
-            m_engineInfo.CallState( aCallId ) );
-
-    // Set call header type            
-    aCallHeaderData->SetCallType( GetCallType( aCallId, aCallHeaderData ) );
-    
-    // Set call header voice privacy status
-    aCallHeaderData->SetCiphering( 
-            m_engineInfo.IsSecureCall( aCallId ) );
-    aCallHeaderData->SetCipheringIndicatorAllowed( 
-            m_engineInfo.SecureSpecified() );
-    
-    //see service provider settings API
-    aCallHeaderData->SetServiceId(
-            m_engineInfo.ServiceId( aCallId ) );
-       
-    // Set contact link, see virtual phonebook API
-    aCallHeaderData->SetContactLink(
-            m_engineInfo.ContactLink( aCallId ) );
-       
-    // Set remote phone number
-    aCallHeaderData->SetRemotePhoneNumber(
-            m_engineInfo.RemotePhoneNumber( aCallId ) );
-    }
-
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::GetCallType
-// ---------------------------------------------------------------------------
-//
-TPECallType PhoneCallHeaderUtil::GetCallType( 
-        const TInt aCallId,
-        TPhoneCmdParamCallHeaderData* aCallHeaderData )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::GetCallType( ) ");
-    // Set call header type.
-    TPECallType callType = 
-            m_engineInfo.CallType( aCallId );
-    SetCallHeaderType( callType );
-    
-    if ( m_engineInfo.CallALSLine( aCallId ) 
-         == CCCECallParameters::ECCELineTypeAux )
-        {
-        aCallHeaderData->SetLine2( ETrue );
-        }
-
-    __PHONELOG1( EBasic, EPhoneControl, 
-                "PhoneCallHeaderUtil::GetCallType() - callType: %d ", 
-                callType )
-    return callType;
-    }
-
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::SetCallHeaderType
-// ---------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetCallHeaderType( 
-    TInt aCallHeaderType )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::SetCallHeaderType( ) ");
-    iCallHeaderType = aCallHeaderType;
-    __PHONELOG1( EBasic, EPhoneControl, 
-                    "PhoneCallHeaderUtil::SetCallHeaderType() - iCallHeaderType: %d ", 
-                    iCallHeaderType )
-    }
-
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::CallHeaderType
-// ---------------------------------------------------------------------------
-//
-TInt PhoneCallHeaderUtil::CallHeaderType() const
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::CallHeaderType( ) ");
-    __PHONELOG1( EBasic, EPhoneControl, 
-                        "PhoneCallHeaderUtil::CallHeaderType() - iCallHeaderType: %d ", 
-                        iCallHeaderType )
-    return iCallHeaderType;            
-    }
-
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::ContactInfoAvailable
-// ---------------------------------------------------------------------------
-//
-TBool PhoneCallHeaderUtil::ContactInfoAvailable( const TInt aCallId ) const
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::ContactInfoAvailable( ) ");
-    TBool contactAvailable = EFalse;
-    if ( ( m_engineInfo.RemoteName( aCallId ).Length() ) || 
-         ( m_engineInfo.RemoteCompanyName( aCallId ).Length() ) )
-        {
-        contactAvailable = ETrue;
-        }
-    return contactAvailable;
-    }
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::SetCliAndCnapParamatersL
-// -----------------------------------------------------------------------------
-// 
-void PhoneCallHeaderUtil::SetCliAndCnapParamaters(
-        const TInt aCallId, 
-        TPhoneCmdParamCallHeaderData* aCallHeaderData )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::SetCliAndCnapParamatersL( ) ");
-    TBuf<KCntMaxTextFieldLength> cnapText( KNullDesC );
-
-    // Set call header number type
-    aCallHeaderData->SetNumberType( m_engineInfo.RemotePhoneNumberType( aCallId ) );
-        
-    const MPEClientInformation& info = 
-            m_engineInfo.CallClientInformation( aCallId );
-
-    if ( ( m_engineInfo.RemotePhoneNumber( aCallId ).Length() ) && 
-         ( !ContactInfoAvailable( aCallId ) ) && 
-         ( !info.ShowNumber() ) )
-        {
-        // No contact info data available; use the phone number
-        aCallHeaderData->SetCLIText(
-                m_engineInfo.RemotePhoneNumber( aCallId ),
-                TPhoneCmdParamCallHeaderData::ELeft);
-        
-        // No contact name, use phonenumber when available.
-        aCallHeaderData->SetParticipantListCLI( 
-                TPhoneCmdParamCallHeaderData::EPhoneParticipantCNAPText );
-        }
-    else
-        {
-        TBuf<KCntMaxTextFieldLength> remoteInfoText( KNullDesC );
-        
-        GetRemoteInfoData( aCallId, remoteInfoText );
-        aCallHeaderData->SetCLIText( remoteInfoText, TPhoneCmdParamCallHeaderData::ERight );
-        }
-
-    // Fetch CNAP text and clipping direction
-    TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection cnapClippingDirection;
-    GetCNAPText( aCallId, cnapText, cnapClippingDirection );
-    
-    // Set CNAP data 
-    aCallHeaderData->SetCNAPText( cnapText, cnapClippingDirection );
-    
-    // Set caller image 
-    SetCallerImage( aCallId, aCallHeaderData );
-
-    // Set the Caller text
-    if ( m_engineInfo.CallerText( aCallId ).Length() > 0 )
-        {
-        aCallHeaderData->SetCallerText( m_engineInfo.CallerText( aCallId ) );
-        }        
-    
-    // Set the call header CNAP data ( Contains possible CNAP name or received skype identification ).
-    if ( IsFeatureSupported( KTelephonyLVFlagUUS, aCallId ) )
-        {
-        aCallHeaderData->SetCNAPText( m_engineInfo.RemotePartyName( aCallId ), 
-                TPhoneCmdParamCallHeaderData::ERight );
-        }
-    }
-
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::GetCNAPText
-// ---------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::GetCNAPText( 
-    const TInt aCallId,
-       TDes& aData, 
-       TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection& aDirection ) const
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::GetCNAPText( ) ");
-    
-    // Set clipping direction  
-    aDirection = TPhoneCmdParamCallHeaderData::ERight;
-    
-    // If it's not a private number show further info
-    if ( m_engineInfo.RemotePhoneNumberType( aCallId ) != 
-        EPEPrivateNumber )
-        {
-        if ( ( m_engineInfo.RemoteName( aCallId ).Length() ||
-               m_engineInfo.RemotePartyName( aCallId ).Length() || 
-               m_engineInfo.RemoteCompanyName( aCallId ).Length() ) &&
-               m_engineInfo.RemotePhoneNumber( aCallId ).Length() )
-            {
-            // Use the phone number for the CNAP display
-            aData.Copy( m_engineInfo.RemotePhoneNumber( aCallId ) );
-            
-            // Clipping direction for non-private number
-            aDirection = TPhoneCmdParamCallHeaderData::ELeft;
-            }
-        }
-    }
-
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::IsFeatureSupported
-// ---------------------------------------------------------------------------
-//
-TBool PhoneCallHeaderUtil::IsFeatureSupported( 
-        const TInt aFeatureKey, 
-        const TInt aCallId ) const
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::IsFeatureSupported( ) ");
-    TBool featureSupport(EFalse);
-    switch( aFeatureKey )
-        {
-        case KTelephonyLVFlagUUS:
-            {
-            if( ( CPhoneCenRepProxy::Instance()->IsTelephonyFeatureSupported( aFeatureKey ) ) &&
-                ( m_engineInfo.RemotePartyName( aCallId ).Length() ) )
+            if ( waitingCall )
                 {
-                featureSupport = ETrue;
+                labelId = EPhoneIncomingLine2WaitingText; // waiting, line 2
+                }
+            else
+                {
+                labelId = EPhoneIncomingLine2Text; // on line 2
                 }
             }
-            break;
-        default:
-            //Do nothing.
-            break;
-        }
-    __PHONELOG1( EBasic, EPhoneControl, 
-            "PhoneCallHeaderUtil::IsFeatureSupported() - featureSupport: %d ", 
-            featureSupport )
-    
-    return featureSupport;
-    }
-
-// ---------------------------------------------------------------------------
-// PhoneCallHeaderUtil::SetDivertIndicatorToCallHeader
-// ---------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetDivertIndicatorToCallHeader( 
-    const TInt aCallId, 
-    TPhoneCmdParamCallHeaderData* aCallHeaderData )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::SetDivertIndicatorToCallHeader( ) ");
-    if( m_engineInfo.IncomingCallForwarded( aCallId ) )
-        {
-        aCallHeaderData->SetDiverted( ETrue );
-        }
-    
-    if ( m_engineInfo.CallALSLine( aCallId ) == CCCECallParameters::ECCELineTypeAux )
-        {
-        __PHONELOG( EBasic, EPhoneControl, 
-                "PhoneCallHeaderUtil::SetDivertIndicatorToCallHeader - CallALSLine() == CCCECallParameters::ECCELineTypeAux");
-        aCallHeaderData->SetLine2( ETrue );    
-        }        
-    }
-
-// ---------------------------------------------------------------------------
-// PhoneCallHeaderUtil::SetDivertIndication
-// ---------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetDivertIndication( const TBool aDivertIndication )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::SetDivertIndication( ) ");
-    iSetDivertIndication = aDivertIndication;           
-    __PHONELOG1( EBasic, EPhoneControl, 
-                "PhoneCallHeaderUtil::SetDivertIndication() - iSetDivertIndication: %d ", 
-                iSetDivertIndication )
-    }
-
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::SetIncomingCallHeaderParams
-// ---------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetIncomingCallHeaderParams(
-        const TInt aCallId, 
-        const TBool aWaitingCall,
-        const TBool aVideoCall,
-        TPhoneCmdParamCallHeaderData* aCallHeaderData )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::SetIncomingCallHeaderParamsL( ) ");
-    // Set basic params must be called before update is called.
-    SetBasicCallHeaderParams( aCallId, aCallHeaderData );
-    
-    // Set call header labels
-    SetCallHeaderTexts( 
-            aCallId, 
-            aWaitingCall, 
-            aVideoCall, 
-            aCallHeaderData );
-    
-    SetCliAndCnapParamaters( aCallId, aCallHeaderData );
-    
-    // Set divert indication to call header if needed.
-    SetDivertIndicatorToCallHeader( aCallId, aCallHeaderData );
-    }
-
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::SetOutgoingCallHeaderParams
-// ---------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetOutgoingCallHeaderParams(
-        const TInt aCallId,
-        TPhoneCmdParamCallHeaderData* aCallHeaderData )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::SetOutgoingCallHeaderParams( ) ");
-    // Set basic params must be called before update is called.
-    SetBasicCallHeaderParams( aCallId, aCallHeaderData );
-    
-    // Set call header labels
-    if ( aCallHeaderData->CallType() == EPECallTypeVideo )
-        {
-        LoadCallHeaderTexts( 
-                EPhoneOutgoingVideoCallLabel, 
-                aCallHeaderData );
-        }
-    else
-        {
-        LoadCallHeaderTexts( 
-                EPhoneOutgoingCallLabel, 
-                aCallHeaderData );
-        }
-    
-    SetCliParamaters( aCallId, aCallHeaderData );
-    }
-
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::UpdateCallHeaderInfo
-// ---------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::UpdateCallHeaderInfo( 
-        const TInt aCallId,
-        const TBool aWaitingCall,
-        const TBool aVideoCall,
-        TPhoneCmdParamCallHeaderData* aCallHeaderData )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::UpdateCallHeaderInfoL( ) ");
-    TBuf<KCntMaxTextFieldLength> remoteInfoText( KNullDesC );
-    
-    // Set call header type
-    GetCallType( aCallId, aCallHeaderData );
-    
-    // Set CLI text for the call header
-    TBool secondaryCli = GetRemoteInfoData( aCallId, remoteInfoText );
-    if ( remoteInfoText != KNullDesC )
-        {
-        aCallHeaderData->SetCLIText( remoteInfoText, TPhoneCmdParamCallHeaderData::ERight );
-        if ( secondaryCli )
-            {
-            aCallHeaderData->SetCNAPText( m_engineInfo.
-                RemotePhoneNumber( aCallId ), TPhoneCmdParamCallHeaderData::ELeft );       
-            }
-        }
-    else
-        {
-        aCallHeaderData->SetCLIText( 
-            m_engineInfo.RemotePhoneNumber( aCallId ),
-                TPhoneCmdParamCallHeaderData::ELeft );
-        }
-
-    // If KTelephonyLVFlagUUS is enabled it will over write RemotePartyName setting.
-    // Contains possible CNAP name or received skype identification
-    if ( IsFeatureSupported( KTelephonyLVFlagUUS, aCallId ) )
-        {
-        TBuf<KCntMaxTextFieldLength> remotePartyName( KNullDesC );
-        remotePartyName.Copy( m_engineInfo.RemotePartyName( aCallId ) );
-       
-        if ( m_engineInfo.CallState( aCallId ) == EPEStateRinging )
-            {
-            // Set CNAP text  
-            aCallHeaderData->SetCNAPText( remotePartyName, TPhoneCmdParamCallHeaderData::ERight );
-            }
+        // If CLIR, but also network limitation(e.g. EPEUnknownNumber), then second line 
+        // should be empty in call bubble.
         else
             {
-            aCallHeaderData->SetCLIText( remotePartyName, TPhoneCmdParamCallHeaderData::ERight );
+            labelId = KPhoneRssCommonFirst; // No second line in call bubble
             }
-        }   
-    
-    // Set call header labels
-    SetCallHeaderTexts( 
-            aCallId, 
-            aWaitingCall, 
-            aVideoCall, 
-            aCallHeaderData );
-            
-    // Update caller image
-    SetCallerImage( 
-            aCallId, 
-            aCallHeaderData ); 
+        }
+    else  // Voice or video call with CLI or with CNAP.
+        {
+        if ( waitingCall )
+            {
+            if ( auxLine  )
+                {
+                labelId = EPhoneIncomingLine2WaitingText; // waiting, line 2
+                }
+            else
+                {
+                labelId = EPhoneCallWaitingLabel; // waiting
+                }
+            }
+        else // Mo other calls
+            {
+            if ( auxLine )
+                {
+                labelId = EPhoneIncomingLine2CallingText; // calling, line 2
+                }
+            else
+                {
+                // If CLIR, but not network limitation, then second line 
+                // (calling or video call) should be shown in call bubble.
+                if ( videoCall )
+                    {
+                    labelId = EPhoneVideoCallIncoming; // video call
+                    }
+                else
+                    {
+                    labelId = EPhoneIncomingCallLabel; // calling
+                    }
+                }
+            }
+        }
+    __PHONELOG1( EBasic, EPhoneControl, "PhoneCallHeaderUtil::SetCallHeaderTexts - labelId(%d)", labelId );
+    iLabelText = LoadResource(labelId) ;
     }
 
-
+// ---------------------------------------------------------------------------
+//  PhoneCallHeaderUtil::RemoteNameAvailable
+// ---------------------------------------------------------------------------
+//
+TBool PhoneCallHeaderUtil::RemoteNameAvailable( const TInt aCallId ) const
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "PhoneCallHeaderUtil::ContactInfoAvailable( ) ");
+    
+    TBool ret( m_engineInfo.RemoteName( aCallId ).Length() || 
+               m_engineInfo.RemoteCompanyName( aCallId ).Length() );
+    
+    if ( EFalse == ret && m_engineInfo.RemotePartyName( aCallId ).Length() )
+        {
+        ret = !CPhoneCenRepProxy::Instance()->
+                IsTelephonyFeatureSupported( KTelephonyLVFlagUUS );
+        }
+               
+    return ret;
+    }
 
 // ---------------------------------------------------------------------------
 //  PhoneCallHeaderUtil::GetRemoteInfoDataL
 // ---------------------------------------------------------------------------
 //
-TBool PhoneCallHeaderUtil::GetRemoteInfoData( 
+void PhoneCallHeaderUtil::GetRemoteInfoData( 
         const TInt aCallId, 
         TDes& aData ) const 
     {
     __LOGMETHODSTARTEND( EPhoneControl, "PhoneCallHeaderUtil::GetRemoteInfoDataL() ");
     __PHONELOG1( EBasic, EPhoneControl, "PhoneCallHeaderUtil::GetRemoteInfoDataL() - call id =%d ", aCallId);
-    
-    TBool secondaryCli(EFalse);
-        
+
     if ( aCallId == KEmergencyCallId )
         {
         // Set emergency label text
@@ -717,21 +484,17 @@ TBool PhoneCallHeaderUtil::GetRemoteInfoData(
         }
     else
         {
-        const RMobileCall::TMobileCallRemoteIdentityStatus identity = 
-                m_engineInfo.RemoteIdentity( aCallId );
         // Note next if-statements are in priority order so be careful if you change order
         // or add new if-statements.
         if ( m_engineInfo.RemoteName( aCallId ).Length() )
             {
             // Display the contact name if it is available
             aData.Copy( m_engineInfo.RemoteName( aCallId ) );
-            secondaryCli = ETrue;
             }
         else if ( m_engineInfo.RemotePartyName( aCallId ).Length() )
             {
             // Display the CNAP or UUS info if it is available.
             aData.Copy( m_engineInfo.RemotePartyName( aCallId ) );
-            secondaryCli = ETrue;
             }
         else if ( m_engineInfo.RemoteCompanyName( aCallId ).Length() )
             {
@@ -740,11 +503,14 @@ TBool PhoneCallHeaderUtil::GetRemoteInfoData(
             }
         else if ( m_engineInfo.CallDirection( aCallId ) == RMobileCall::EMobileTerminated )
             {
+            const RMobileCall::TMobileCallRemoteIdentityStatus identity = 
+                    m_engineInfo.RemoteIdentity( aCallId );
+            
             if ( EPEPrivateNumber == m_engineInfo.RemotePhoneNumberType( aCallId ) )
                 {
-                if ( EPECallTypeVoIP == CallHeaderType() )
+                if ( EPECallTypeVoIP == m_engineInfo.CallType( aCallId ) )
                     {
-                    // TODO LoadResource( aData, iManagerUtility.Customization()->CustomizeCallHeaderText() );
+                    // TODO voip LoadResource( aData, iManagerUtility.Customization()->CustomizeCallHeaderText() );
                     }
                 else
                     {
@@ -770,36 +536,59 @@ TBool PhoneCallHeaderUtil::GetRemoteInfoData(
                 aData.Copy( m_engineInfo.RemotePhoneNumber( aCallId ) );
                 }            
             }
-
         }
-    return secondaryCli;
     }
 
 // -----------------------------------------------------------
-// PhoneCallHeaderUtil::LoadCallHeaderTexts
+// PhoneCallHeaderUtil::IsSecondaryCliAllowed
 // -----------------------------------------------------------
 //
-void PhoneCallHeaderUtil::LoadCallHeaderTexts(
-    const TInt aLabelId, 
-    TPhoneCmdParamCallHeaderData* aCallHeaderData ) 
+TBool PhoneCallHeaderUtil::IsSecondaryCliAllowed( TInt aCallId )
     {
-    if ( aLabelId != EPhoneStringList )
+    TBool ret( ( aCallId != KEmergencyCallId && 
+               ( m_engineInfo.RemoteName( aCallId ).Length() ||
+                 m_engineInfo.RemotePartyName( aCallId ).Length() || 
+                 m_engineInfo.RemoteCompanyName( aCallId ).Length() ) &&
+                 m_engineInfo.RemotePhoneNumber( aCallId ).Length() ) );
+    
+    if ( ret && RMobileCall::EMobileTerminated == 
+            m_engineInfo.CallDirection( aCallId ) )
         {
-        TBuf<KPhoneCallHeaderLabelMaxLength> labelText( KNullDesC );
-        LoadResource( labelText, aLabelId );
-        aCallHeaderData->SetLabelText( labelText );
+        const RMobileCall::TMobileCallRemoteIdentityStatus identity = 
+                m_engineInfo.RemoteIdentity( aCallId );
+        
+        if ( m_engineInfo.RemotePhoneNumberType( aCallId ) ==  EPEPrivateNumber || 
+            identity == RMobileCall::ERemoteIdentityUnavailableNoCliCoinOrPayphone ||
+            identity == RMobileCall::ERemoteIdentityAvailableNoCliCoinOrPayphone ||
+            identity == RMobileCall::ERemoteIdentityUnknown )
+            {
+            ret = EFalse;
+            }
         }
+    
+    return ret;
     }
 
-// ---------------------------------------------------------------------------
-// PhoneCallHeaderUtil::LoadResource
-// ---------------------------------------------------------------------------
+// -----------------------------------------------------------
+// PhoneCallHeaderUtil::IsWaitingCall
+// -----------------------------------------------------------
 //
-void PhoneCallHeaderUtil::LoadResource( TDes& aData, const TInt aResource ) const
+TBool PhoneCallHeaderUtil::IsWaitingCall(int callId) const
     {
-    StringLoader::Load(  
-            aData, CPhoneMainResourceResolver::Instance()->ResolveResourceID( aResource ), 
-            CCoeEnv::Static() );
+    bool waiting( EFalse );
+    if ( callId >= 0 && 
+         m_engineInfo.CallState( callId ) == EPEStateRinging )
+        {
+        if ( m_engineInfo.CheckIfCallStateExists(EPEStateConnected) ||
+             m_engineInfo.CheckIfCallStateExists(EPEStateConnectedConference) ||
+             m_engineInfo.CheckIfCallStateExists(EPEStateDisconnecting) ||
+             m_engineInfo.CheckIfCallStateExists(EPEStateHeld) ||
+             m_engineInfo.CheckIfCallStateExists(EPEStateHeldConference) )
+            {
+            waiting = ETrue;
+            }
+        }
+    return waiting;
     }
 
 // ---------------------------------------------------------------------------
@@ -818,16 +607,14 @@ HBufC* PhoneCallHeaderUtil::LoadResource( const TInt aResource ) const
     }
 
 // ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::IsVideoCall
+// PhoneCallHeaderUtil::LoadResource
 // ---------------------------------------------------------------------------
 //
-TBool PhoneCallHeaderUtil::IsVideoCall(int aCallId ) const
+void PhoneCallHeaderUtil::LoadResource( TDes& aData, const TInt aResource ) const
     {
-    if( aCallId < 0 )
-        {
-        return ( m_engineInfo.CallTypeCommand()
-            == EPECallTypeVideo );  
-        }
-    return ( m_engineInfo.CallType( aCallId )
-            == EPECallTypeVideo );
+    StringLoader::Load(  
+            aData, CPhoneMainResourceResolver::Instance()->ResolveResourceID( aResource ), 
+            CCoeEnv::Static() );
     }
+
+

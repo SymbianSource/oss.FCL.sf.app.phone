@@ -28,125 +28,125 @@ const TInt KUssdEditorMaxLength = 182;
 
 // ============================ MEMBER FUNCTIONS ===============================
 // -----------------------------------------------------------------------------
-// CUssdComms::CUssdComms
+// UssdComms::UssdComms
 // Constructor.
 // -----------------------------------------------------------------------------
 //
-CUssdComms::CUssdComms(QObject *parent)
+UssdComms::UssdComms(QObject *parent)
     : QObject(parent),
       mUssd(NULL), 
       mErrorCode(static_cast<int>(EPhCltExitReasonUnknown))
 {
     // Default value - ETrue
     TRAP_IGNORE(mUssd = CPhCltUssdInt::NewL());
-    TFLOGSTRING("USSDEDITOR: CUssdComms::CUssdComms")
+    TFLOGSTRING("USSDEDITOR: UssdComms::UssdComms")
 }
 
 // -----------------------------------------------------------------------------
-// CUssdComms::~CUssdComms
-// ~CUssdComms.
+// UssdComms::~UssdComms
+// ~UssdComms.
 // -----------------------------------------------------------------------------
 //
-CUssdComms::~CUssdComms()
+UssdComms::~UssdComms()
 {
     if (mUssd){
         mErrorCode = mUssd->AppTerminating(
             static_cast<TPhCltUssdAppExitReason>(mErrorCode));
         delete mUssd;
         mUssd = NULL;
-        TFLOGSTRING2("USSDEDITOR: CUssdComms::~CUssdComms %d", mErrorCode)
+        TFLOGSTRING2("USSDEDITOR: UssdComms::~UssdComms %d", mErrorCode)
     }
-    TFLOGSTRING("USSDEDITOR: CUssdComms::~CUssdComms")
+    TFLOGSTRING("USSDEDITOR: UssdComms::~UssdComms")
 }
 
 // -----------------------------------------------------------------------------
-// CUssdComms::appStarting
+// UssdComms::appStarting
 // appStarting.
 // -----------------------------------------------------------------------------
 //
-void CUssdComms::appStarting()
+void UssdComms::appStarting()
 {
     mErrorCode = mUssd->AppStarting();
-    TFLOGSTRING("USSDEDITOR: CUssdComms::appStarting")
+    TFLOGSTRING("USSDEDITOR: UssdComms::appStarting")
 }
 
 // -----------------------------------------------------------------------------
-// CUssdComms::appTerminating
+// UssdComms::appTerminating
 // appTerminating.
 // -----------------------------------------------------------------------------
 //
-void CUssdComms::appTerminating()
+void UssdComms::appTerminating()
 {
     mErrorCode = mUssd->AppTerminating(EPhCltUserExit);
-    TFLOGSTRING("USSDEDITOR: CUssdComms::appTerminating")
+    TFLOGSTRING("USSDEDITOR: UssdComms::appTerminating")
 }
 
 // -----------------------------------------------------------------------------
-// CUssdComms::appToBackground
+// UssdComms::appToBackground
 // appToBackground.
 // -----------------------------------------------------------------------------
 //
-void CUssdComms::appToBackground()
+void UssdComms::appToBackground()
 {
     mErrorCode = mUssd->AppToBackground();
-    TFLOGSTRING("USSDEDITOR: CUssdComms::appToBackground")
+    TFLOGSTRING("USSDEDITOR: UssdComms::appToBackground")
 }
 
 // -----------------------------------------------------------------------------
-// CUssdComms::appToForeground
+// UssdComms::appToForeground
 // appToForeground.
 // -----------------------------------------------------------------------------
 //
-void CUssdComms::appToForeground()
+void UssdComms::appToForeground()
 {
     mErrorCode = mUssd->AppToForeground();
-    TFLOGSTRING("USSDEDITOR: CUssdComms::appToForeground")
+    TFLOGSTRING("USSDEDITOR: UssdComms::appToForeground")
 }
 
 // -----------------------------------------------------------------------------
-// CUssdComms::send
+// UssdComms::send
 // send.
 // -----------------------------------------------------------------------------
 //
-int CUssdComms::send( const QString& message )
+int UssdComms::send( const QString& message )
 {
     TBuf<KUssdEditorMaxLength> buf16;
     buf16.Copy((const TUint16*)message.constData(), message.length());
     mErrorCode = mUssd->SendUssd(buf16);
-    TFLOGSTRING("USSDEDITOR: CUssdComms::send")
+    TFLOGSTRING("USSDEDITOR: UssdComms::send")
     return mErrorCode;
 }
 
 // -----------------------------------------------------------------------------
-// CUssdComms::cancel
+// UssdComms::cancel
 // cancel.
 // -----------------------------------------------------------------------------
 //
-void CUssdComms::cancel()
+void UssdComms::cancel()
 {
     mUssd->SendUssdCancel();
-    TFLOGSTRING("USSDEDITOR: CUssdComms::cancel")
+    TFLOGSTRING("USSDEDITOR: UssdComms::cancel")
 }
 
 // -----------------------------------------------------------------------------
-// CUssdComms::errorCode
+// UssdComms::errorCode
 // errorCode.
 // -----------------------------------------------------------------------------
 //
-int CUssdComms::errorCode()
+int UssdComms::errorCode()
 {
-    TFLOGSTRING("USSDEDITOR: CUssdComms::send")
+    TFLOGSTRING("USSDEDITOR: UssdComms::send")
     return mErrorCode;
 }
 
 // -----------------------------------------------------------------------------
-// CUssdComms::informExitReason
+// UssdComms::informExitReason
 // informExitReason.
 // -----------------------------------------------------------------------------
 //
-void CUssdComms::informExitReason(int aExitReason)
+void UssdComms::informExitReason(int aExitReason)
 {
-    TFLOGSTRING2("USSDEDITOR: CUssdComms::informExitReason \
+    TFLOGSTRING2("USSDEDITOR: UssdComms::informExitReason \
         %d", aExitReason) 
     mErrorCode = aExitReason;
 }

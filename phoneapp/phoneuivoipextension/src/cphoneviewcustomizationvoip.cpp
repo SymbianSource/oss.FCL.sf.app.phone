@@ -143,11 +143,10 @@ void CPhoneViewCustomizationVoip::RemoveDialog()
 // ---------------------------------------------------------------------------
 //
 TBool CPhoneViewCustomizationVoip::SelectVoipService(
-        MPhoneViewBlockingDialogObserver& aBlockingObserver,
-        TPhoneCommandParam* aCommandParam )
+        MPhoneViewBlockingDialogObserver& /*aBlockingObserver*/,
+        TPhoneCommandParam* /*aCommandParam*/ )
     {
     __LOGMETHODSTARTEND( PhoneUIVoIPExtension, 
         "CPhoneViewCustomizationVoip::SelectVoipService" );
-    
     return ETrue;
     }

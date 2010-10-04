@@ -66,4 +66,5 @@ EXPORTS
 	?clearDialpad@PhoneUIQtView@@UAEXXZ @ 65 NONAME ; void PhoneUIQtView::clearDialpad(void)
 	?captureKey@PhoneUIQtView@@UAEXW4Key@Qt@@_N@Z @ 66 NONAME ; void PhoneUIQtView::captureKey(enum Qt::Key, bool)
 	?setRestrictedMode@PhoneUIQtView@@UAEX_N@Z @ 67 NONAME ; void PhoneUIQtView::setRestrictedMode(bool)
+	?updateMenuVisibility@PhoneUIQtView@@AAEXXZ @ 68 NONAME ; void PhoneUIQtView::updateMenuVisibility(void)
 

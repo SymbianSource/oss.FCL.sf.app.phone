@@ -16,7 +16,6 @@
 #
 
 TEMPLATE = app
-TARGET = 
 TARGET.UID3 = 0xEFF8FEA9
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -34,7 +33,8 @@ symbian {
                    ../../../phonemediatorcenter/inc/ \
                    ../../../phoneuiview2/inc \
                    ../../../../inc \
-                   ../../../phoneui2/srcdata
+                   ../../../phoneui2/srcdata \
+                   ../../../../tsrc/common
 
 
     LIBS += -lphoneuiutils
@@ -56,7 +56,8 @@ HEADERS += ../../inc/phonecommandextensionwrapper.h
 SOURCES += phoneuiqtbuttonscontroller_stub.cpp
 SOURCES += phonecommandextensionwrapper_stub.cpp
 SOURCES += unit_tests.cpp
+SOURCES += hb_stub.cpp
 
 
-
+include(../../../../tsrc/common/phonetest.pri)
 symbian:MMP_RULES += SMPSAFE

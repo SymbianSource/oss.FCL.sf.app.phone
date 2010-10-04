@@ -16,7 +16,6 @@
 #
 
 TEMPLATE = app
-TARGET = 
 TARGET.UID3 = 0xEFF8FFF2
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -24,7 +23,6 @@ CONFIG += hb
 CONFIG += qtestlib
 CONFIG += mobility
 MOBILITY = publishsubscribe
-
 symbian {
 
     INCLUDEPATH += \epoc32\include\platform\mw \
@@ -37,7 +35,8 @@ symbian {
                    ../../../phoneuiview2/inc \
                    ../../../../inc \
                    ../../../phoneringingtoneplayer/inc \
-                   ../../../phoneui2/srcdata
+                   ../../../phoneui2/srcdata \
+                   ../../../../tsrc/common
 
     LIBS += -ltelephonyservice
     LIBS += -lapgrfx
@@ -56,6 +55,6 @@ HEADERS += \sf\mw\phonesrv\phonesrv_plat\call_information_api\inc\ccallinfoiter.
 SOURCES += cphonepubsubproxy_stub.cpp
 SOURCES += unit_tests.cpp
 
-
+include(../../../../tsrc/common/phoneuitest.pri)
 
 symbian:MMP_RULES += SMPSAFE

@@ -151,7 +151,7 @@ pushd .
 call cd %1\group
 call sbs --config winscw_udeb.test --keepgoing CLEAN
 if [%INSTRUMENT%] EQU [TRUE] (
-call ctcwrap -2comp -n %PATH_TO_COVERAGE_DATA%\%1 -i d -C "EXCLUDE=*" -C "NO_EXCLUDE=%TESTED_SRC%" "%SBS_CALL%"
+call ctcwrap -n %PATH_TO_COVERAGE_DATA%\%1 -i d -C "EXCLUDE=*" -C "NO_EXCLUDE=%TESTED_SRC%" "%SBS_CALL%"
 ) else (
 call %SBS_CALL%
 )
@@ -191,7 +191,7 @@ goto end
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :CALCULATECOVERAGE
 echo Calculating coverage
-ctcpost %PATH_TO_COVERAGE_DATA%\*.sym | ctcmerge -i - -o profile.txt
+ctcpost %PATH_TO_COVERAGE_DATA%\*.sym -p - | ctcmerge -i - -o profile.txt
 call ctc2html -t 70 -i profile.txt -o \coverage_result -nsb
 goto end
 

@@ -325,10 +325,11 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL(
             EPhoneViewCreateEmergencyCallHeader,
             aCallId );
-       
+        
         SetBackButtonActive(EFalse);
-        EndUiUpdate();
+        
         UpdateSetupCbaL();
+        EndUiUpdate();
         }
     }
 // -----------------------------------------------------------
@@ -343,18 +344,12 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
     globalNotifierParam.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
-          &globalNotifierParam );
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNote );
 
-    // Notify the view
-    iViewCommandHandle->ExecuteCommandL(
-        EPhoneViewUpdateBubble,
-        aCallId );
+    UpdateCallHeaderAndUiCommandsL( aCallId );
 
     SetToolbarButtonLoudspeakerEnabled();
-    UpdateUiCommands();
     }
 
 // -----------------------------------------------------------
@@ -364,13 +359,8 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
 void CPhoneEmergency::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneEmergency::HandleConnectedL() ");
-    BeginUiUpdateLC();
-    iViewCommandHandle->ExecuteCommandL(
-        EPhoneViewUpdateBubble,
-        aCallId );
+    UpdateCallHeaderAndUiCommandsL( aCallId );
     SetBackButtonActive(ETrue);
-    UpdateUiCommands();
-    EndUiUpdate();
     }
 
 // --------------------------------------------------------------

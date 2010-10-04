@@ -199,28 +199,6 @@ EXPORT_C void CPhoneStateStartup::HandlePhoneStartupL()
         }
     }
 
-// ---------------------------------------------------------
-// CPhoneStateStartup::HandleIdleForegroundEventL
-// Phone should show security note asap. 
-// Active idle might be in front quite early if f.e. rejected SIM 
-// ---------------------------------------------------------
-//
-EXPORT_C void CPhoneStateStartup::HandleIdleForegroundEventL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateStartup::HandleIdleForegroundEventL( ) ");
-    TPhoneCmdParamBoolean isSecurityMode;      
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetSecurityModeStatus, &isSecurityMode );
-    if ( !isSecurityMode.Boolean() && !IsSimOk() )
-        {
-        TPhoneCmdParamBoolean securityMode;
-        securityMode.SetBoolean( ETrue );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewSetSecurityMode, &securityMode );
-        iCreateNote = CIdle::NewL( CActive::EPriorityHigh );
-        
-        CreateAndShowNoteAfterIdle(); 
-        }
-    }
-
 // -----------------------------------------------------------------------------
 // CPhoneStateStartup::CreateAndShowNoteAfterIdle
 //

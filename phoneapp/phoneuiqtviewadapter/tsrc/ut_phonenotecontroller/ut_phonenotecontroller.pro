@@ -16,7 +16,6 @@
 #
 
 TEMPLATE = app
-TARGET = 
 TARGET.UID3 = 0xEDA69234
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -31,10 +30,13 @@ symbian {
                    ../../../phoneuiutils/inc/ \
                    ../../../phoneuiview2/inc \
                    ../../../../inc \
-                   ../../../phoneui2/srcdata
+                   ../../../phoneui2/srcdata \
+                   ../../../../tsrc/common
 
     LIBS += -lphoneuiutils
     LIBS += -lphoneuiqtview
+    LIBS += -lxqsystemtoneservice
+    
 
     TARGET.CAPABILITY = ALL -TCB
     DEFINES += FT_SYMBIAN_INTEGRATION
@@ -52,5 +54,5 @@ HEADERS += ../../inc/phoneglobalnotes.h
 SOURCES += ../../src/phoneglobalnotes.cpp
 SOURCES += unit_tests.cpp
 
-
+include(../../../../tsrc/common/phoneuitest.pri)
 symbian:MMP_RULES += SMPSAFE

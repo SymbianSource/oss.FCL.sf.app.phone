@@ -139,7 +139,7 @@ call cd %1
 call qmake
 call sbs --config winscw_udeb --keepgoing CLEAN
 if [%INSTRUMENT%] EQU [TRUE] (
-call ctcwrap -2comp -n %PATH_TO_COVERAGE_DATA%\%1 -i d -C "EXCLUDE=*" -C "NO_EXCLUDE=%TESTED_SRC%" "%SBS_CALL%"
+call ctcwrap -n %PATH_TO_COVERAGE_DATA%\%1 -i d -C "EXCLUDE=*" -C "NO_EXCLUDE=%TESTED_SRC%" "%SBS_CALL%"
 ) else (
 call %SBS_CALL%
 )

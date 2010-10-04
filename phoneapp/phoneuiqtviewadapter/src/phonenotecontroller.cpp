@@ -152,7 +152,9 @@ void PhoneNoteController::showDtmfNote(TPhoneCmdParamNote* noteParam)
             QObject::connect(m_dtmfNote, SIGNAL(aboutToClose()), 
                              this, SLOT(removeMappings())); 
             
-            replaceDialogActions(m_dtmfNote, hbactions);
+            // Do not delete old actions, progress dialog has
+            // the ownership for the actions.
+            replaceDialogActions(m_dtmfNote, hbactions, false);
       
             m_dtmfNote->show();
         }
@@ -185,18 +187,22 @@ void PhoneNoteController::showDefaultQuery(TPhoneCmdParamQuery* params)
 }
 
 void PhoneNoteController::replaceDialogActions(
-        HbDialog *dialog, QList<HbAction *> &actions)
+        HbDialog *dialog, 
+        QList<HbAction *> &actions,
+        bool deleteOldActions)
 {
     PHONE_TRACE
     // Remove default actions
     foreach (QAction *action, dialog->actions()) {
         dialog->removeAction(action);
-        delete action;
+        if (deleteOldActions) {
+            delete action;
+        }
     }
     
     // Add new actions
     foreach (HbAction *newAction, actions) {
-        newAction->setParent(m_queryNote);
+        newAction->setParent(dialog);
         connect(newAction, SIGNAL(triggered()), m_signalMapper, SLOT(map()));
         m_signalMapper->setMapping(newAction, newAction->data().toInt());
         m_actions.append(newAction);

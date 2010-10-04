@@ -117,11 +117,8 @@ EXPORT_C void CPhoneTwoSingles::HandlePhoneEngineMessageL(
             break;
             
         case MEngineMonitor::EPEMessageConnected:
-            HandleConnectedL( aCallId );
-            break;
-            
         case MEngineMonitor::EPEMessageHeld:
-            HandleHeldL( aCallId );
+            UpdateCallHeaderAndUiCommandsL( aCallId );
             break;
             
         case MEngineMonitor::EPEMessageConnectedConference:
@@ -198,30 +195,6 @@ EXPORT_C void CPhoneTwoSingles::HandleKeyMessageL(
             CPhoneGsmInCall::HandleKeyMessageL( aMessage, aCode );   
             break;
         }
-    }
-    
-// -----------------------------------------------------------
-// CPhoneTwoSingles::HandleConnectedL
-// -----------------------------------------------------------
-//
-void CPhoneTwoSingles::HandleConnectedL( TInt aCallId )
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneTwoSingles::HandleConnectedL()");
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-    UpdateUiCommands();
-    }
-    
-// -----------------------------------------------------------
-// CPhoneTwoSingles::HandleHeldL
-// -----------------------------------------------------------
-//
-void CPhoneTwoSingles::HandleHeldL( TInt aCallId )
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneTwoSingles::HandleHeldL()");
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-    UpdateUiCommands();
     }
     
 // -----------------------------------------------------------

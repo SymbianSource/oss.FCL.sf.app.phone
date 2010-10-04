@@ -197,6 +197,8 @@ void DialerWidget::onHide()
 void DialerWidget::onUninitialize()
 {
     PHONE_TRACE
+    delete m_engine;
+    m_engine = 0;
 }
 
 void DialerWidget::onEngineException(const int& exc)

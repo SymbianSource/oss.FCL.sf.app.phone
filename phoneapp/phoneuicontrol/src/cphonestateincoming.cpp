@@ -258,7 +258,6 @@ EXPORT_C void CPhoneStateIncoming::HandlePhoneEngineMessageL(
             break;
             
         case MEngineMonitor::EPEMessageDisconnecting:
-            iCallDisconnected = ETrue;
             CPhoneState::HandlePhoneEngineMessageL( aMessage, aCallId );
             break;
 
@@ -292,30 +291,13 @@ EXPORT_C void CPhoneStateIncoming::HandlePhoneEngineMessageL(
             break;
         
         case MEngineMonitor::EPEMessageRemotePartyInfoChanged:
-            if(!iCallDisconnected)
-                {
-                UpdateRemoteInfoDataAndLabelL( aCallId );
-                }
+            UpdateCallHeader( aCallId );
             break;
             
         default:
             CPhoneState::HandlePhoneEngineMessageL( aMessage, aCallId );
             break;
         }
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateIncoming::UpdateRemoteInfoDataAndLabelL
-// -----------------------------------------------------------
-//
-void CPhoneStateIncoming::UpdateRemoteInfoDataAndLabelL( 
-        TInt aCallId )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl,
-            "CPhoneStateIncoming::UpdateRemoteInfoDataAndLabelL ()" );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel, 
-        aCallId );
     }
 
 // -----------------------------------------------------------
@@ -329,8 +311,6 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
     TPhoneCmdParamBoolean globalNotifierParam;
     globalNotifierParam.SetBoolean( EFalse );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
         &globalNotifierParam );
 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
@@ -369,11 +349,6 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
     
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewSetEikonNotifiersDisabled,
-            &globalNotifierParam );
     SetDefaultFlagsL();
     
      if ( !iNumberEntryManager->SetVisibilityIfNumberEntryUsedL( ETrue ) )
@@ -499,8 +474,6 @@ void CPhoneStateIncoming::DisconnectWaitingCallL()
         iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageRelease );
         }
     ShowDisconnectingL( iRingingCallId );
-    
-    iCallDisconnected = ETrue;
     }
 
 // -----------------------------------------------------------
@@ -517,12 +490,6 @@ void CPhoneStateIncoming::OpenSoftRejectMessageL()
     
     iUiCommandManager->SetSoftRejectStatus( EFalse );
     
-    // Re-enable global notes. Otherwise message editor is not opened.
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
-        &globalNotifierParam );
-
     UpdateUiCommands();
 
     TPhoneCmdParamSfiData sfiDataParam;

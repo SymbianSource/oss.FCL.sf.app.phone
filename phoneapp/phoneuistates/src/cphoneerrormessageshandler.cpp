@@ -118,7 +118,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL(
             &globalNotifierParam );
         
     TPhoneCmdParamGlobalNote globalNoteParam;
-    PhoneNotificationType type = aNotificationDialog ? 
+    TPhoneNotificationType type = aNotificationDialog ? 
             EPhoneNotificationDialog : EPhoneMessageBoxInformation;
     globalNoteParam.SetType( type );
     globalNoteParam.SetNotificationDialog( aNotificationDialog );
@@ -140,6 +140,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL(
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
         }
+    globalNoteParam.SetToneType( EPhoneInformationTone );
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewShowGlobalNote, &globalNoteParam );
    
@@ -162,7 +163,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL(
         &globalNotifierParam );
         
     TPhoneCmdParamGlobalNote globalNoteParam;
-    PhoneNotificationType type = aNotificationDialog ? 
+    TPhoneNotificationType type = aNotificationDialog ? 
             EPhoneNotificationDialog : EPhoneMessageBoxInformation;
     globalNoteParam.SetType( type );
     globalNoteParam.SetNotificationDialog( aNotificationDialog );
@@ -184,6 +185,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL(
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
         }
+    globalNoteParam.SetToneType( EPhoneErrorTone );
     iViewCommandHandle->ExecuteCommandL(  
         EPhoneViewShowGlobalNote, &globalNoteParam );
     
@@ -206,7 +208,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL(
         &globalNotifierParam );
         
     TPhoneCmdParamGlobalNote globalNoteParam;
-    PhoneNotificationType type = aNotificationDialog ? 
+        TPhoneNotificationType type = aNotificationDialog ? 
             EPhoneNotificationDialog : EPhoneMessageBoxInformation;
     globalNoteParam.SetType( type );
     globalNoteParam.SetNotificationDialog( aNotificationDialog );
@@ -228,6 +230,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL(
             CPhoneMainResourceResolver::Instance()->
             ResolveResourceID( aResourceId ) );
         }
+        globalNoteParam.SetToneType( EPhoneWarningTone );
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewShowGlobalNote, &globalNoteParam );
     }
@@ -435,7 +438,7 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                     }
                 else if ( IsVoiceCall( aErrorInfo.iCallId ))
                     {
-                    SendGlobalWarningNoteL( EPhoneNoteCalledNumberHasBarredIncomingCalls, ETrue );
+                    SendGlobalWarningNoteL( EPhoneNoteCallInfoCauseValue21, ETrue );
                     }
                 }
             break;
@@ -785,9 +788,16 @@ TBool CPhoneErrorMessagesHandler::GetCauseCode(
         case KErrGsmCCCallRejected:
             if ( !iStateMachine->PhoneEngineInfo()->IsOutgoingCallBarringActivated() )
                 {
-                aResourceId = EPhoneNoteCalledNumberHasBarredIncomingCalls;
+                if ( IsVideoCall( callId ) )
+                    {
+                    aResourceId = EPhoneNoteCalledNumberHasBarredIncomingCalls;
+                    aNotification = EFalse;
+                    }
+                else
+                    {
+                    aResourceId = EPhoneNoteCallInfoCauseValue21;           
+                    }
                 aCauseCode = 21;
-                aNotification = (EFalse == IsVideoCall( callId ));
                 }
             break;
             

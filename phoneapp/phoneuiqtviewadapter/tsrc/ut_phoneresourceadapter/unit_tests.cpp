@@ -24,7 +24,7 @@
 #include <phoneappvoipcommands.hrh>
 #include <xqphoneappcommands.h>
 #include <mockservice.h>
-#include "qtestmains60.h"
+#include "phonetestmain.h"
 #include "phoneresourceadapter.h"
 #include "phoneuiqtbuttonscontroller.h"
 #include "phoneresourceids.h"
@@ -643,5 +643,5 @@ void TestPhoneResourceAdapter::testBtToolBarCommandList ()
     testList.clear(); 
 }
 
-QTEST_MAIN_S60(TestPhoneResourceAdapter)
+PHONE_TEST_MAIN(TestPhoneResourceAdapter)
 #include "unit_tests.moc"

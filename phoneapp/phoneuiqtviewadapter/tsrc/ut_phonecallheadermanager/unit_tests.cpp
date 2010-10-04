@@ -23,7 +23,8 @@
 #include <mockservice.h>
 #include <cpeengineinfo.h>
 #include <pevirtualengine.h>
-#include "qtestmains60.h"
+#include "phoneconstants.h"
+#include "phonetestmain.h"
 #include "phonecallheadermanager.h"
 #include "phoneuiqtviewif_stub.h"
 #include "bubblemanagerif_stub.h"
@@ -47,14 +48,12 @@ private slots:
     void testCreateCallHeader();
     void testCreateEmergencyCallHeader();
     void testRemoveCallHeader();
-    void testUpdateCallHeaderState();
-    void testUpdateCallHeaderRemoteInfo();
-    void testUpdateCallHeaderRemoteInfoAndLabel();
+    void testUpdateCallHeader();
     void testHandleCipheringInfoChange();
     void testConferenceBubble();
     void testExpandedConferenceCallHeader();
     void testRemoveAllCallHeaders();
-    void testIsVideoCall();
+    void testIsVoiceCall();
 
 private:
     
@@ -110,7 +109,6 @@ void TestPhoneCallHeaderManager::testCreateCallHeader ()
     int callId = 1;
     iEngineInfo->SetCallState(EPEStateRinging, callId );
     
-    EXPECT( PhoneCallHeaderUtil, SetIncomingCallHeaderParams);
     EXPECT( PhoneBubbleWrapper, createCallHeader);
     mCallHeaderManager->createCallHeader(callId);
     QVERIFY(verify());
@@ -119,7 +117,6 @@ void TestPhoneCallHeaderManager::testCreateCallHeader ()
     mIsConferenceExpanded = true;
     mSetExpandedConferenceCalled = false;
     
-    EXPECT( PhoneCallHeaderUtil, SetOutgoingCallHeaderParams);
     mCallHeaderManager->createCallHeader(callId);
     QVERIFY(verify());
     QVERIFY(mSetExpandedConferenceCalled);
@@ -160,13 +157,13 @@ void TestPhoneCallHeaderManager::testRemoveCallHeader()
     reset();
 }
 
-void TestPhoneCallHeaderManager::testUpdateCallHeaderState()
+void TestPhoneCallHeaderManager::testUpdateCallHeader()
 {
     int callId = 1;
     int bubbleId = -1;
     EXPECT( PhoneBubbleWrapper, bubbleId).returns(bubbleId);
     EXPECT( PhoneBubbleWrapper, setState).times(0);
-    mCallHeaderManager->updateCallHeaderState(callId);
+    mCallHeaderManager->updateCallHeader(callId);
     QVERIFY(verify());
     reset();
     
@@ -174,45 +171,7 @@ void TestPhoneCallHeaderManager::testUpdateCallHeaderState()
 
     EXPECT( PhoneBubbleWrapper, bubbleId).returns(bubbleId);
     EXPECT( PhoneBubbleWrapper, setState).times(1);
-    mCallHeaderManager->updateCallHeaderState(callId);
-    QVERIFY(verify());
-    reset();
-}
-
-void TestPhoneCallHeaderManager::testUpdateCallHeaderRemoteInfo()
-{
-    int callId = 1;
-    int bubbleId = -1;
-    EXPECT( PhoneBubbleWrapper, bubbleId).returns(bubbleId);
-    EXPECT( PhoneBubbleWrapper, setCli).times(0);
-    mCallHeaderManager->updateCallHeaderRemoteInfo(callId);
-    QVERIFY(verify());
-    reset();
-    
-    bubbleId = 1;
-
-    EXPECT( PhoneBubbleWrapper, bubbleId).returns(bubbleId);
-    EXPECT( PhoneBubbleWrapper, setCli).times(1);
-    mCallHeaderManager->updateCallHeaderRemoteInfo(callId);
-    QVERIFY(verify());
-    reset();
-}
-
-void TestPhoneCallHeaderManager::testUpdateCallHeaderRemoteInfoAndLabel()
-{
-    int callId = 1;
-    int bubbleId = -1;
-    EXPECT( PhoneBubbleWrapper, bubbleId).returns(bubbleId);
-    EXPECT( PhoneBubbleWrapper, setLabel).times(0);
-    mCallHeaderManager->updateCallHeaderRemoteInfoAndLabel(callId);
-    QVERIFY(verify());
-    reset();
-    
-    bubbleId = 1;
-
-    EXPECT( PhoneBubbleWrapper, bubbleId).returns(bubbleId);
-    EXPECT( PhoneBubbleWrapper, setLabel).times(1);
-    mCallHeaderManager->updateCallHeaderRemoteInfoAndLabel(callId);
+    mCallHeaderManager->updateCallHeader(callId);
     QVERIFY(verify());
     reset();
 }
@@ -322,21 +281,13 @@ void TestPhoneCallHeaderManager::testRemoveAllCallHeaders()
     reset();
 }
 
-void TestPhoneCallHeaderManager::testIsVideoCall()
+void TestPhoneCallHeaderManager::testIsVoiceCall()
 {
-    iEngineInfo->SetCallTypeCommand(EPECallTypeVideo);
-    QVERIFY(mCallHeaderManager->isVideoCall( -1 ));
-    
-    iEngineInfo->SetCallTypeCommand(EPECallTypeVoIP);
-    QVERIFY(false == mCallHeaderManager->isVideoCall( -1 ));
-
-    int callId = 1;
-    iEngineInfo->SetCallType(EPECallTypeVoIP, callId);
-    QVERIFY(false == mCallHeaderManager->isVideoCall( callId ));
-    
-    iEngineInfo->SetCallType(EPECallTypeVideo, callId);
-    QVERIFY(mCallHeaderManager->isVideoCall( callId ));
+    EXPECT( PhoneCallHeaderUtil, IsVoiceCall).returns(true);
+    QVERIFY(mCallHeaderManager->isVoiceCall( 1 ));
+    QVERIFY(verify());
+    reset();
 }
 
-QTEST_MAIN_S60(TestPhoneCallHeaderManager)
+PHONE_TEST_MAIN(TestPhoneCallHeaderManager)
 #include "unit_tests.moc"

@@ -100,11 +100,12 @@ void ut_cphoneconference::Teardown(  )
 //  
 void ut_cphoneconference::T_HandleConnectedL(  )
     {
-    
+    iMockContext->Reset();
+    iMockContext->ExpectCallL( "CPhoneState::UpdateCallHeader" ).
+             WithL<TInt> ( 2 );
     iStateConference->HandlePhoneEngineMessageL( MEngineMonitor::EPEMessageConnected, 2 );
 
-    iViewCommandHandle->VerifyViewCommand( EPhoneViewUpdateBubble );
-    
+    EUNIT_ASSERT_EQUALS( KErrNone, iMockContext->VerifyExpectations() );
     }
 
 // -----------------------------------------------------------------------------

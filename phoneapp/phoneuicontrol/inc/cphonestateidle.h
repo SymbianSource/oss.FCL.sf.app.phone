@@ -101,16 +101,6 @@ class CPhoneStateIdle : public CPhoneState
         IMPORT_C virtual TBool ProcessCommandL( TInt aCommand );
 
         /**
-        * Indicates when the Idle app is in the foreground.
-        */
-        IMPORT_C virtual void HandleIdleForegroundEventL();
-
-        /**
-        * Indicates when the Phone app is in the foreground.
-        */
-        IMPORT_C virtual void HandlePhoneForegroundEventL();
-
-        /**
         * Indicates when the Phone app has lost focus.
         */
         IMPORT_C virtual void HandlePhoneFocusLostEventL();

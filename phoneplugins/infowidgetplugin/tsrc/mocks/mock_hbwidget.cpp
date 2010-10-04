@@ -88,10 +88,10 @@ void HbWidget::clearActions(  )
 // HbWidget::pluginBaseId
 // -----------------------------------------------------------------------------
 //
-int HbWidget::pluginBaseId(  ) const
+/*int HbWidget::pluginBaseId(  ) const
     {
     SMC_MOCK_METHOD0( int )
-    }
+    }*/
 
 
 // -----------------------------------------------------------------------------
@@ -414,11 +414,11 @@ void HbWidget::repolish(  )
 // HbWidget::setPluginBaseId
 // -----------------------------------------------------------------------------
 //
-void HbWidget::setPluginBaseId( 
+/*void HbWidget::setPluginBaseId( 
         int baseId )
     {
     SMC_MOCK_METHOD1( void, int, baseId )
-    }
+    }*/
 
 
 

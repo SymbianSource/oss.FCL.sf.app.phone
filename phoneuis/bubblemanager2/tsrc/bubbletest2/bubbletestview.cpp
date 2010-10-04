@@ -538,6 +538,8 @@ void BubbleTestView::setBubbleData(int bubble, BubbleManagerIF::PhoneCallState s
         if (mEmergencyCall->isChecked()) {
             bubbleManager().setCli( bubble, "emergency call", Qt::ElideRight );
             bubbleManager().setLabel( bubble, "Attempting", Qt::ElideRight );
+            bubbleManager().setCallFlag( bubble, BubbleManager::EmergencyCall, true);
+            bubbleManager().setCallObjectFromTheme(bubble);
         } else {
             if ( mContactName->isChecked() ) {
                 bubbleManager().setCli( bubble, "Bart Simpson", Qt::ElideRight );

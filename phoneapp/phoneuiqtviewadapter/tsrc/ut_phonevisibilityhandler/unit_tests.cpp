@@ -27,7 +27,9 @@
 #include <telinformationpskeys.h>
 #include <coreapplicationuisdomainpskeys.h>
 #include <ccallinfoiter.h>
+#include <ccallinformation.h>
 #include <keyguardaccessapi.h>
+#include <phoneuitestmain.h>
 #include "phoneuiqtviewif.h"
 #define private public
 #include "phonevisibilityhandler.h"
@@ -37,21 +39,12 @@ int m_callCount = 0;
 int g_keyGuardEnabled = false;
 int g_enableKeyGuardCalled = false;
 int g_disableKeyGuardCalled = false;
+CCallInformation* CCallInformation::NewL() {};
+CCallInfoIter * CCallInfoIter::NewL(class CCallInfos &) {};
 
-#define PHONE_TEST_MAIN(TestObject) \
-int main(int argc, char *argv[]) \
-    { \
-        HbApplication app(argc, argv); \
-        TestObject tc; \
-        QResource::registerResource("../hbcore.rcc"); \
-        int ret = QTest::qExec(&tc, argc, argv); \
-        /* Core dump if HbIconLoader instance is not destroyed before the application instance. */ \
-        /* HbIconLoader uses QCoreApplication::aboutToQuit() signal to destroy itself. */ \
-        /* app.exec() where the signal is normally emitted is not called here. */ \
-        /* So, invoking the signal explicitly. */ \
-        QMetaObject::invokeMethod(&app, "aboutToQuit", Qt::DirectConnection); \
-        return ret; \
-    }
+CCallInformation::CCallInformation() {}
+CCallInformation::~CCallInformation() {}
+CCallInfoIter& CCallInformation::GetCallsL( ){}
 
 TInt CCallInfoIter::Count() const
 {
@@ -183,7 +176,6 @@ void TestPhoneVisibilityHandler::cleanupTestCase ()
 
 void TestPhoneVisibilityHandler::init ()
 {
-
 }
 
 void TestPhoneVisibilityHandler::cleanup ()
@@ -427,5 +419,5 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
 }
 
 
-PHONE_TEST_MAIN(TestPhoneVisibilityHandler)
+PHONE_UITEST_MAIN(TestPhoneVisibilityHandler)
 #include "unit_tests.moc"

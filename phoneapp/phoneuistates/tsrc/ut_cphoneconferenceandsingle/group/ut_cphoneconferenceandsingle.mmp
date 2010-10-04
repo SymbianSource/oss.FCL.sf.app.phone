@@ -30,11 +30,13 @@ SOURCEPATH    ../../common
 SOURCE        cphonestatemachinestub.cpp
 SOURCE        cphonestateincallstub.cpp
 SOURCE        cphonegsmincallstub.cpp
-SOURCE        cphonestatestub.cpp
 SOURCE        stubs.cpp
 
 SOURCEPATH    ../../../../../internal/mocks/phoneapp/phoneuicontrol
 SOURCE        mock_cphonenumberentrymanager.cpp
+
+SOURCEPATH      ../../../../internal/mocks/phoneuicontrol
+SOURCE          mock_cphonestate.cpp
 
 SOURCEPATH    ../../../../internal/mocks/phoneuiutils
 SOURCE        mock_tphonetouchbuttonconfig.cpp

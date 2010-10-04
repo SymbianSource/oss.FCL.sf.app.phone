@@ -42,115 +42,6 @@ PhoneCallHeaderUtil::~PhoneCallHeaderUtil(  )
 
 
 // -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::SetIncomingCallHeaderParams
-// -----------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetIncomingCallHeaderParams( 
-        const TInt aCallId,
-        const TBool aWaitingCall,
-        const TBool aVideoCall,
-        TPhoneCmdParamCallHeaderData * aCallHeaderData )
-    {
-    SMC_MOCK_METHOD4( void, const TInt, aCallId, 
-        const TBool, aWaitingCall, 
-        const TBool, aVideoCall, 
-        TPhoneCmdParamCallHeaderData *, aCallHeaderData )
-    }
-
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::SetOutgoingCallHeaderParams
-// -----------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetOutgoingCallHeaderParams( 
-        const TInt aCallId,
-        TPhoneCmdParamCallHeaderData * aCallHeaderData )
-    {
-    SMC_MOCK_METHOD2( void, const TInt, aCallId, 
-        TPhoneCmdParamCallHeaderData *, aCallHeaderData )
-    }
-
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::UpdateCallHeaderInfo
-// -----------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::UpdateCallHeaderInfo( 
-        const TInt aCallId,
-        const TBool aWaitingCall,
-        const TBool aVideoCall,
-        TPhoneCmdParamCallHeaderData * aCallHeaderData )
-    {
-    SMC_MOCK_METHOD4( void, const TInt, aCallId, 
-        const TBool, aWaitingCall, 
-        const TBool, aVideoCall, 
-        TPhoneCmdParamCallHeaderData *, aCallHeaderData )
-    }
-
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::SetCallHeaderType
-// -----------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetCallHeaderType( 
-        TInt aCallHeaderType )
-    {
-    SMC_MOCK_METHOD1( void, TInt, aCallHeaderType )
-    }
-
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::CallHeaderType
-// -----------------------------------------------------------------------------
-//
-TInt PhoneCallHeaderUtil::CallHeaderType(  ) const
-    {
-    SMC_MOCK_METHOD0( TInt )
-    }
-
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::SetDivertIndication
-// -----------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetDivertIndication( 
-        const TBool aDivertIndication )
-    {
-    SMC_MOCK_METHOD1( void, const TBool, aDivertIndication )
-    }
-
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::GetRemoteInfoData
-// -----------------------------------------------------------------------------
-//
-TBool PhoneCallHeaderUtil::GetRemoteInfoData( 
-        const TInt aCallId,
-        TDes & aData ) const
-    {
-    SMC_MOCK_METHOD2( TBool, const TInt, aCallId, 
-        TDes &, aData )
-    }
-
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::SetCallHeaderTexts
-// -----------------------------------------------------------------------------
-//
-void PhoneCallHeaderUtil::SetCallHeaderTexts( 
-        const TInt aCallId,
-        const TBool aWaitingCall,
-        const TBool aVideoCall,
-        TPhoneCmdParamCallHeaderData * aCallHeaderData )
-    {
-    SMC_MOCK_METHOD4( void, const TInt, aCallId, 
-        const TBool, aWaitingCall, 
-        const TBool, aVideoCall, 
-        TPhoneCmdParamCallHeaderData *, aCallHeaderData )
-    }
-
-
-// -----------------------------------------------------------------------------
 // PhoneCallHeaderUtil::LabelText
 // -----------------------------------------------------------------------------
 //
@@ -158,6 +49,142 @@ const TDesC & PhoneCallHeaderUtil::LabelText(
         TInt aCallId )
     {
     SMC_MOCK_METHOD1( const TDesC &, TInt, aCallId )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::GetCliTexts
+// -----------------------------------------------------------------------------
+//
+void PhoneCallHeaderUtil::GetCliTexts( 
+        TInt aCallId,
+        TDes & aCliText,
+        ClippingDirection & aCliClip,
+        TDes & aSecondaryCliText,
+        ClippingDirection & aSecondaryCliClip )
+    {
+    SMC_MOCK_METHOD5( void, TInt, aCallId, 
+        TDes &, aCliText, 
+        ClippingDirection &, aCliClip, 
+        TDes &, aSecondaryCliText, 
+        ClippingDirection &, aSecondaryCliClip )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::GetCli
+// -----------------------------------------------------------------------------
+//
+void PhoneCallHeaderUtil::GetCli( 
+        TInt aCallId,
+        TDes & aCliText,
+        ClippingDirection & aClipping )
+    {
+    SMC_MOCK_METHOD3( void, TInt, aCallId, 
+        TDes &, aCliText, 
+        ClippingDirection &, aClipping )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::GetSecondaryCli
+// -----------------------------------------------------------------------------
+//
+void PhoneCallHeaderUtil::GetSecondaryCli( 
+        TInt aCallId,
+        TDes & aSecondaryCliText,
+        ClippingDirection & aClipping )
+    {
+    SMC_MOCK_METHOD3( void, TInt, aCallId, 
+        TDes &, aSecondaryCliText, 
+        ClippingDirection &, aClipping )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::RemotePhoneNumber
+// -----------------------------------------------------------------------------
+//
+const TDesC & PhoneCallHeaderUtil::RemotePhoneNumber( 
+        TInt aCallId ) const
+    {
+    SMC_MOCK_METHOD1( const TDesC &, TInt, aCallId )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::CallType
+// -----------------------------------------------------------------------------
+//
+TInt PhoneCallHeaderUtil::CallType( 
+        const TInt aCallId )
+    {
+    SMC_MOCK_METHOD1( TInt, const TInt, aCallId )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::ServiceId
+// -----------------------------------------------------------------------------
+//
+TInt PhoneCallHeaderUtil::ServiceId( 
+        const TInt aCallId )
+    {
+    SMC_MOCK_METHOD1( TInt, const TInt, aCallId )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::IsCallForwarded
+// -----------------------------------------------------------------------------
+//
+TBool PhoneCallHeaderUtil::IsCallForwarded( 
+        TInt aCallId )
+    {
+    SMC_MOCK_METHOD1( TBool, TInt, aCallId )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::SecureSpecified
+// -----------------------------------------------------------------------------
+//
+TBool PhoneCallHeaderUtil::SecureSpecified(  )
+    {
+    SMC_MOCK_METHOD0( TBool )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::Ciphering
+// -----------------------------------------------------------------------------
+//
+TBool PhoneCallHeaderUtil::Ciphering( 
+        TInt aCallId )
+    {
+    SMC_MOCK_METHOD1( TBool, TInt, aCallId )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::CallState
+// -----------------------------------------------------------------------------
+//
+TInt PhoneCallHeaderUtil::CallState( 
+        TInt aCallId ) const
+    {
+    SMC_MOCK_METHOD1( TInt, TInt, aCallId )
+    }
+
+
+// -----------------------------------------------------------------------------
+// PhoneCallHeaderUtil::CallerImage
+// -----------------------------------------------------------------------------
+//
+const TDesC & PhoneCallHeaderUtil::CallerImage( 
+        const TInt aCallId )
+    {
+    SMC_MOCK_METHOD1( const TDesC &, const TInt, aCallId )
     }
 
 
@@ -182,37 +209,24 @@ const TDesC & PhoneCallHeaderUtil::AttemptingEmergencyText(  )
 
 
 // -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::CallState
+// PhoneCallHeaderUtil::IsVoiceCall
 // -----------------------------------------------------------------------------
 //
-TInt PhoneCallHeaderUtil::CallState( 
+TBool PhoneCallHeaderUtil::IsVoiceCall( 
         TInt aCallId ) const
     {
-    SMC_MOCK_METHOD1( TInt, TInt, aCallId )
+    SMC_MOCK_METHOD1( TBool, TInt, aCallId )
     }
 
 
 // -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::LoadResource
+// PhoneCallHeaderUtil::IsVideoCall
 // -----------------------------------------------------------------------------
 //
-void PhoneCallHeaderUtil::LoadResource( 
-        TDes & aData,
-        const TInt aResource ) const
+TBool PhoneCallHeaderUtil::IsVideoCall( 
+        int aCallId ) const
     {
-    SMC_MOCK_METHOD2( void, TDes &, aData, 
-        const TInt, aResource )
-    }
-
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderUtil::LoadResource
-// -----------------------------------------------------------------------------
-//
-HBufC * PhoneCallHeaderUtil::LoadResource( 
-        const TInt aResource ) const
-    {
-    SMC_MOCK_METHOD1( HBufC *, const TInt, aResource )
+    SMC_MOCK_METHOD1( TBool, int, aCallId )
     }
 
 

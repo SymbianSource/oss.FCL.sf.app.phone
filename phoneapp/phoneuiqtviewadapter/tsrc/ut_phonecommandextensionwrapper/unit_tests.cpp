@@ -24,7 +24,7 @@
 #include "phonecommandextensionwrapper.h"
 #include "pevirtualengine.h"
 #include "menuextension_stub.h"
-#include "qtestmains60.h"
+#include "phonetestmain.h"
 
 extern bool m_modifyMenuCommandListCalled;
 extern bool m_modifyPushButtonCommandListCalled;
@@ -251,5 +251,5 @@ void TestPhoneCommandExtensionWrapper::testGetCallInfo()
 }
 
 
-QTEST_MAIN_S60(TestPhoneCommandExtensionWrapper)
+PHONE_TEST_MAIN(TestPhoneCommandExtensionWrapper)
 #include "unit_tests.moc"

@@ -169,7 +169,7 @@ void CPEConferenceCall::AddCallL
 // A conference call event has occurred.
 // -----------------------------------------------------------------------------
 //
-EXPORT_C void CPEConferenceCall::CallEventOccurred( 
+void CPEConferenceCall::CallEventOccurred( 
         const MCCEConferenceCallObserver::TCCEConferenceCallEvent aEvent,
         MCCECall* aReferredCall  )
     {
@@ -241,7 +241,7 @@ EXPORT_C void CPEConferenceCall::CallEventOccurred(
 // A conference call state has changed.
 // -----------------------------------------------------------------------------
 //
-EXPORT_C void CPEConferenceCall::CallStateChanged( 
+void CPEConferenceCall::CallStateChanged( 
          const MCCEConferenceCallObserver::TCCEConferenceCallState aState )
     {
     switch ( aState )
@@ -281,7 +281,7 @@ EXPORT_C void CPEConferenceCall::CallStateChanged(
 // Conference call capabilities have changed.
 // -----------------------------------------------------------------------------
 //
-EXPORT_C void CPEConferenceCall::CallCapsChanged( 
+void CPEConferenceCall::CallCapsChanged( 
         const MCCEConferenceCallObserver::TCCEConferenceCallCaps aCaps )
     {
     TEFLOGSTRING2( KTAREQEND, "CALL CPEConferenceCall::CallCapsChanged, caps: %d", aCaps );
@@ -294,7 +294,7 @@ EXPORT_C void CPEConferenceCall::CallCapsChanged(
 // 
 // -----------------------------------------------------------------------------
 //
-EXPORT_C void CPEConferenceCall::ErrorOccurred( TCCPConferenceCallError aError )
+void CPEConferenceCall::ErrorOccurred( TCCPConferenceCallError aError )
     {
     TEFLOGSTRING2( KTAERROR, "CALL CPEConferenceCall::ErrorOccurred, error: %d", aError );
     

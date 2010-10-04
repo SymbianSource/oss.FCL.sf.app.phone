@@ -86,16 +86,7 @@ class CPhoneConferenceAndSingle : public CPhoneConference
         
         virtual void HandleConferenceIdleL();
         
-        
      private:
-     
-         void HandleConnectedConferenceL();
-         
-         void HandleHeldConferenceL();
-         
-         void HandleConnectedL( TInt aCallId );
-         
-         void HandleHeldL( TInt aCallId );
          
          void JoinToConferenceL();
          

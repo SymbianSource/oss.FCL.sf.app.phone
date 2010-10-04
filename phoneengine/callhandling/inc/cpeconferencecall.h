@@ -58,7 +58,7 @@ class CPEConferenceCall
         /**
         * Two-phased constructor.
         */
-        IMPORT_C static CPEConferenceCall* NewL( 
+        static CPEConferenceCall* NewL( 
             MPEMessageSender& aOwner,
             CCCE& aConvergedCallEngine );
         
@@ -66,7 +66,7 @@ class CPEConferenceCall
         * Two-phased constructor.
         * Conference call is made outof telephony control
         */
-        IMPORT_C static CPEConferenceCall* NewL( 
+        static CPEConferenceCall* NewL( 
             MPEMessageSender& aOwner,
             MCCEConferenceCall& aCall );
             
@@ -107,7 +107,7 @@ class CPEConferenceCall
         * MCCEConferenceCall::RemoveCallL
         * Default value is NULL.
         */
-        IMPORT_C void CallEventOccurred( 
+        void CallEventOccurred( 
             const MCCEConferenceCallObserver::TCCEConferenceCallEvent aEvent,
             MCCECall* aReferredCall = NULL  );
     
@@ -116,7 +116,7 @@ class CPEConferenceCall
         *
         * @param aStateContains the state of the conference call
         */
-        IMPORT_C void CallStateChanged( 
+        void CallStateChanged( 
                      const MCCEConferenceCallObserver::TCCEConferenceCallState aState );
     
     
@@ -124,7 +124,7 @@ class CPEConferenceCall
         * Conference capabilities have changed.
         * @param aCaps Updated call control capabilities
         */
-        IMPORT_C void CallCapsChanged( 
+        void CallCapsChanged( 
                      const MCCEConferenceCallObserver::TCCEConferenceCallCaps aCaps );
 
         /**
@@ -139,7 +139,7 @@ class CPEConferenceCall
         *
         * @param aError Occurred error code. 
         */
-        IMPORT_C void ErrorOccurred( TCCPConferenceCallError aError );
+        void ErrorOccurred( TCCPConferenceCallError aError );
 
             
     public:   // New Functions

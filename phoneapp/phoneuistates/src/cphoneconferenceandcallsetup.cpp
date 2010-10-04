@@ -182,7 +182,6 @@ void CPhoneConferenceAndCallSetup::HandleConnectingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndCallSetup::HandleConnectingL()");
     BeginUiUpdateLC();
-    UpdateRemoteInfoDataL ( aCallId );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalNote );
     
     TPhoneCmdParamBoolean globalNotifierParam;
@@ -192,9 +191,8 @@ void CPhoneConferenceAndCallSetup::HandleConnectingL( TInt aCallId )
     
     iNumberEntryManager->RemoveNumberEntryIfVisibilityIsFalseL();
     
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-    
-    UpdateUiCommands();
+    UpdateCallHeaderAndUiCommandsL( aCallId );
+
     EndUiUpdate();        
     }
     
@@ -205,13 +203,8 @@ void CPhoneConferenceAndCallSetup::HandleConnectingL( TInt aCallId )
 void CPhoneConferenceAndCallSetup::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndCallSetup::HandleConnectedL()");
-    BeginUiUpdateLC();
-
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-    
+    UpdateCallHeaderAndUiCommandsL( aCallId );
     iNumberEntryManager->RemoveNumberEntryIfVisibilityIsFalseL();
-    UpdateUiCommands();
-    EndUiUpdate(); 
     iStateMachine->ChangeState( EPhoneStateConferenceAndSingle );
     }
 

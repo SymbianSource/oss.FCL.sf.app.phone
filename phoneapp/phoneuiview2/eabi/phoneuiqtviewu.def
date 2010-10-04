@@ -98,4 +98,5 @@ EXPORTS
 	_ZThn28_N13PhoneUIQtView10captureKeyEN2Qt3KeyEb @ 97 NONAME
 	_ZN13PhoneUIQtView17setRestrictedModeEb @ 98 NONAME
 	_ZThn28_N13PhoneUIQtView17setRestrictedModeEb @ 99 NONAME
+	_ZN13PhoneUIQtView20updateMenuVisibilityEv @ 100 NONAME
 

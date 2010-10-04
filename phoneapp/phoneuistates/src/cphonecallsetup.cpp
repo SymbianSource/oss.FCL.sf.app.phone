@@ -148,7 +148,6 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
     // should still be able to cancel the MO call before the call is connected.
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneCallSetup::HandleConnectingL()");
     BeginUiUpdateLC();
-    UpdateRemoteInfoDataL ( aCallId );
     
     TPhoneCmdParamBoolean globalNotifierParam;
     globalNotifierParam.SetBoolean( EFalse );
@@ -160,10 +159,9 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommand( EPhoneViewHsToForegroundAfterCall,
         &booleanParam );
     
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId);
+    UpdateCallHeaderAndUiCommandsL( aCallId);
 
     SetToolbarButtonLoudspeakerEnabled();
-    UpdateUiCommands();
     EndUiUpdate();
     iStateMachine->ChangeState( EPhoneStateAlerting );
     }

@@ -53,7 +53,7 @@ public:
     CpBaseSettingView *createSettingView(const QVariant &hint) const;
 
 private:
-    QScopedPointer<CpPhoneLocalisation> m_localisation;
+    QScopedPointer<PhoneLocalisation> m_localisation;
     QScopedPointer<CpNetworkStatus> m_networkStatus; 
 };
 

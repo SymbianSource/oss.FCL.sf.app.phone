@@ -113,7 +113,7 @@ NONSHARABLE_CLASS( CPEEngineInfoImpl )
         /**
         * Two-phased constructor.
         */
-        IMPORT_C static CPEEngineInfoImpl* NewL();
+        static CPEEngineInfoImpl* NewL();
         
         /**
         * Destructor.

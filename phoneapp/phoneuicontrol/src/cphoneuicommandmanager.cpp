@@ -255,7 +255,7 @@ TInt CPhoneUiCommandManager::RingingCallResource()
         }
     else if ( 2 == activeCallCount )
         {
-        ret = ret = EPhoneCallHandlingIncomingRejectCBA;
+        ret = EPhoneCallHandlingIncomingRejectCBA;
         }
     else
         {

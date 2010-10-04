@@ -31,7 +31,7 @@ class PSetWrapper;
 class PSetCliWrapper; 
 class SsSettingsWrapper; 
 class PSetCallWaitingWrapper;
-class CpSettingsWrapper;
+class SettingsWrapper;
 
 class CpCallsPluginGroup: public CpSettingFormItemData
 {
@@ -91,7 +91,7 @@ private:
     // Setting wrappers 
     PSetWrapper *m_pSetWrapper; 
     SsSettingsWrapper *m_ssSettingsWrapper; 
-    CpSettingsWrapper *m_cpSettingsWrapper;
+    SettingsWrapper *m_cpSettingsWrapper;
 
     // Not own
     PSetCliWrapper* m_cliWrapper;

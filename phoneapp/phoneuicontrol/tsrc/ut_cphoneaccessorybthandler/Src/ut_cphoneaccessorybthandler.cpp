@@ -99,8 +99,7 @@ void UT_CPhoneAccessoryBTHandler::SetupL(  )
     iCPhoneAccessoryBTHandler = 
         CPhoneAccessoryBTHandler::NewLC( 
         iViewCmdHandleMock,
-        iStateMachineMock,
-        this );
+        iStateMachineMock );
 
     }
 

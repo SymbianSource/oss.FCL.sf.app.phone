@@ -71,7 +71,7 @@ void UT_CpCallsPluginGroup::init()
     } else {
         b=0;
     }
-    EXPECT(CpSettingsWrapper, showCallDuration).returns(b);
+    EXPECT(SettingsWrapper, showCallDuration).returns(b);
     
     static int i=0;//No Errors
     if (i==0) {
@@ -81,11 +81,11 @@ void UT_CpCallsPluginGroup::init()
     }
     EXPECT(SsSettingsWrapper, get).returns(i); 
     
-    EXPECT(CpSettingsWrapper, readSoftRejectText);
+    EXPECT(SettingsWrapper, readSoftRejectText);
 
     if (qstrcmp(QTest::currentTestFunction(), 
         "t_handleCallWaitingGetStatusDistinguishEnabled") == 0) {
-        EXPECT(CpSettingsWrapper, isFeatureCallWaitingDistiquishNotProvisionedEnabled)
+        EXPECT(SettingsWrapper, isFeatureCallWaitingDistiquishNotProvisionedEnabled)
             .returns(true);
     }
     
@@ -101,18 +101,18 @@ void UT_CpCallsPluginGroup::t_showCallDurationStateChanged()
     bool bOngoing=true;
     bool bDuration=true;
     
-    EXPECT(CpSettingsWrapper, isOngoingCall).returns(bOngoing);
-    EXPECT(CpSettingsWrapper, showCallDuration).returns(bDuration);
+    EXPECT(SettingsWrapper, isOngoingCall).returns(bOngoing);
+    EXPECT(SettingsWrapper, showCallDuration).returns(bDuration);
     EXPECT(PsUiNotes, showGlobalNote);
     m_callspluginGroup->showCallDurationStateChanged();
     
     bDuration = false;
-    EXPECT(CpSettingsWrapper, isOngoingCall).returns(bOngoing);
-    EXPECT(CpSettingsWrapper, showCallDuration).returns(bDuration);
+    EXPECT(SettingsWrapper, isOngoingCall).returns(bOngoing);
+    EXPECT(SettingsWrapper, showCallDuration).returns(bDuration);
     m_callspluginGroup->showCallDurationStateChanged();
     
     bOngoing = false;
-    EXPECT(CpSettingsWrapper, isOngoingCall).returns(bOngoing);
+    EXPECT(SettingsWrapper, isOngoingCall).returns(bOngoing);
     m_callspluginGroup->showCallDurationStateChanged();
     
     QVERIFY(verify());
@@ -233,7 +233,7 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingError()
 void UT_CpCallsPluginGroup::t_softRejectTextChanged()
 {
     int iRet=0;
-    EXPECT(CpSettingsWrapper, writeSoftRejectText).returns(iRet);
+    EXPECT(SettingsWrapper, writeSoftRejectText).returns(iRet);
     m_callspluginGroup->softRejectTextChanged();
     
     QVERIFY(verify());
@@ -276,7 +276,7 @@ void UT_CpCallsPluginGroup::t_handleCallWaitingGetStatusDistinguishEnabled()
  */
 void UT_CpCallsPluginGroup::t_ownVideoInReceivedCallStateChanged()
 {
-    EXPECT(CpSettingsWrapper, writeVtVideoSending).times(3);
+    EXPECT(SettingsWrapper, writeVtVideoSending).times(3);
     m_callspluginGroup->ownVideoInReceivedCallStateChanged(0);
     m_callspluginGroup->ownVideoInReceivedCallStateChanged(1);
     m_callspluginGroup->ownVideoInReceivedCallStateChanged(2);

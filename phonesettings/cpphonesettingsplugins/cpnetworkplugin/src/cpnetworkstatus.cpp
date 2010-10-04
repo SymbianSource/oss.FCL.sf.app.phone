@@ -51,7 +51,7 @@ CpNetworkStatus::CpNetworkStatus() :
                     QSystemNetworkInfo::NetworkMode, 
                     QSystemNetworkInfo::NetworkStatus)));
 
-    m_cpSettingsWrapper = new CpSettingsWrapper;
+    m_cpSettingsWrapper = new SettingsWrapper;
 
     DPRINT << ": OUT";
 }

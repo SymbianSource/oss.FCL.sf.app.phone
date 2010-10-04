@@ -29,6 +29,7 @@ HEADERS += ..\..\inc\phoneuihousehold.h
 HEADERS += ..\..\inc\hbphonemainwindow.h
 
 SOURCES += phoneuihousehold_stub.cpp
+SOURCES += hbmainwindow_stub.cpp
 SOURCES += ut_phonemainwindow.cpp
 SOURCES += ..\..\src\hbphonemainwindow.cpp
 

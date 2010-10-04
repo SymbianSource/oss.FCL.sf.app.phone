@@ -39,7 +39,6 @@ enum
     EPhoneViewClearNumberEntryContent,
     EPhoneViewCreateCallHeader,
     EPhoneViewCreateEmergencyCallHeader,
-    EPhoneViewUpdateCallHeaderRemoteInfoData,
     EPhoneViewUpdateCallHeaderCallDuration,
     EPhoneViewRemoveCallHeader,
     EPhoneViewUpdateCba,
@@ -96,9 +95,7 @@ enum
     EPhoneViewSetTouchPaneButtons, 
     EPhoneViewOpenCallHandling, 
     EPhoneViewGetAudioVolumeLevel,
-    EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel,
     EPhoneViewRemoveDtmfNote,
-    EPhoneViewSetEikonNotifiersDisabled, 
     EPhoneViewCancelAllNotications,   
     EPhoneViewDisableKeyLock, 
     EPhoneViewSendAiwCommand, 
@@ -129,6 +126,7 @@ enum
     EPhoneViewSetBlueToothFlag,
     EPhoneViewSetBluetoothAvailableFlag,
     EPhoneViewSetSoftRejectDimmed,
+    EPhoneViewDisableDeviceLock,
     EPhoneViewIsRingingTonePlaying,
     EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.
 };

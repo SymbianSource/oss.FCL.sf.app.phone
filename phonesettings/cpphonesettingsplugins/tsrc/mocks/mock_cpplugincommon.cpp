@@ -21,10 +21,10 @@
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::CpSettingsWrapper
+// SettingsWrapper::SettingsWrapper
 // -----------------------------------------------------------------------------
 //
-CpSettingsWrapper::CpSettingsWrapper( 
+SettingsWrapper::SettingsWrapper( 
         QObject * parent ) : QObject( parent )
     {
     
@@ -32,30 +32,30 @@ CpSettingsWrapper::CpSettingsWrapper(
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::~CpSettingsWrapper
+// SettingsWrapper::~SettingsWrapper
 // -----------------------------------------------------------------------------
 //
-CpSettingsWrapper::~CpSettingsWrapper(  )
+SettingsWrapper::~SettingsWrapper(  )
     {
     
     }
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::showCallDuration
+// SettingsWrapper::showCallDuration
 // -----------------------------------------------------------------------------
 //
-bool CpSettingsWrapper::showCallDuration(  )
+bool SettingsWrapper::showCallDuration(  )
     {
     SMC_MOCK_METHOD0( bool )
     }
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::setShowCallDuration
+// SettingsWrapper::setShowCallDuration
 // -----------------------------------------------------------------------------
 //
-int CpSettingsWrapper::setShowCallDuration( 
+int SettingsWrapper::setShowCallDuration( 
         bool value )
     {
     SMC_MOCK_METHOD1( int, bool, value )
@@ -63,20 +63,20 @@ int CpSettingsWrapper::setShowCallDuration(
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::readVtVideoSending
+// SettingsWrapper::readVtVideoSending
 // -----------------------------------------------------------------------------
 //
-int CpSettingsWrapper::readVtVideoSending(  )
+int SettingsWrapper::readVtVideoSending(  )
     {
     SMC_MOCK_METHOD0( int )
     }
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::writeVtVideoSending
+// SettingsWrapper::writeVtVideoSending
 // -----------------------------------------------------------------------------
 //
-int CpSettingsWrapper::writeVtVideoSending( 
+int SettingsWrapper::writeVtVideoSending( 
         int value )
     {
     SMC_MOCK_METHOD1( int, int, value )
@@ -84,10 +84,10 @@ int CpSettingsWrapper::writeVtVideoSending(
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::readSoftRejectText
+// SettingsWrapper::readSoftRejectText
 // -----------------------------------------------------------------------------
 //
-void CpSettingsWrapper::readSoftRejectText( 
+void SettingsWrapper::readSoftRejectText( 
         QString & text, bool & userDefined )
     {
     //To improve coverage
@@ -103,10 +103,10 @@ void CpSettingsWrapper::readSoftRejectText(
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::writeSoftRejectText
+// SettingsWrapper::writeSoftRejectText
 // -----------------------------------------------------------------------------
 //
-int CpSettingsWrapper::writeSoftRejectText( 
+int SettingsWrapper::writeSoftRejectText( 
         const QString & text,
         bool userDefined )
     {
@@ -116,50 +116,50 @@ int CpSettingsWrapper::writeSoftRejectText(
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::numberGroupingSupported
+// SettingsWrapper::numberGroupingSupported
 // -----------------------------------------------------------------------------
 //
-bool CpSettingsWrapper::numberGroupingSupported(  ) const
+bool SettingsWrapper::numberGroupingSupported(  ) const
     {
     SMC_MOCK_METHOD0( bool )
     }
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled
+// SettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled
 // -----------------------------------------------------------------------------
 //
-bool CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled(  )
+bool SettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled(  )
     {
     SMC_MOCK_METHOD0( bool )
     }
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::isPhoneOffline
+// SettingsWrapper::isPhoneOffline
 // -----------------------------------------------------------------------------
 //
-bool CpSettingsWrapper::isPhoneOffline(  ) const
+bool SettingsWrapper::isPhoneOffline(  ) const
     {
     SMC_MOCK_METHOD0( bool )
     }
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::isOngoingCall
+// SettingsWrapper::isOngoingCall
 // -----------------------------------------------------------------------------
 //
-bool CpSettingsWrapper::isOngoingCall(  ) const
+bool SettingsWrapper::isOngoingCall(  ) const
     {
     SMC_MOCK_METHOD0( bool )
     }
 
 
 // -----------------------------------------------------------------------------
-// CpSettingsWrapper::forbiddenIconSupported
+// SettingsWrapper::forbiddenIconSupported
 // -----------------------------------------------------------------------------
 //
-bool CpSettingsWrapper::forbiddenIconSupported(  ) const
+bool SettingsWrapper::forbiddenIconSupported(  ) const
     {
     SMC_MOCK_METHOD0( bool )
     }

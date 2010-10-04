@@ -174,11 +174,11 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
 // CPhoneConferenceAndSingleAndWaiting::HandleAddedConferenceMemberL
 // -----------------------------------------------------------
 //
-void CPhoneConferenceAndSingleAndWaiting::HandleAddedConferenceMemberL( TInt aCallId )
+void CPhoneConferenceAndSingleAndWaiting::HandleAddedConferenceMemberL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingleAndWaiting::HandleAddedConferenceMemberL");
     iViewCommandHandle->ExecuteCommandL( EPhoneViewAddToConference );
-    UpdateConferenceSecurityStatusL( aCallId );
+    UpdateConferenceSecurityStatusL();
     MakeStateTransitionToConferenceAndWaitingL( KConferenceCallId );
     }
 
@@ -272,11 +272,8 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
                 &callStateData );
             if ( callStateData.CallId() != KErrNotFound )
                 {
-                iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble,
-                    callStateData.CallId() );
-                
+                UpdateCallHeaderAndUiCommandsL( callStateData.CallId() );
                 SetRingingTonePlaybackL( callStateData.CallId() );
-                UpdateUiCommands();
                 SetBackButtonActive(EFalse);
                 iStateMachine->ChangeState( EPhoneStateIncoming );
                 }

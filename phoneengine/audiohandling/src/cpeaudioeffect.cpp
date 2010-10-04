@@ -20,6 +20,7 @@
 #include <tmsfactory.h>
 #include <tmsglobalvoleffect.h>
 #include <tmsglobalgaineffect.h>
+#include <tmsver.h>
 #include "cpeaudioeffect.h"
 #include "pepanic.pan"
 
@@ -62,9 +63,9 @@ CPEAudioEffect::CPEAudioEffect()
 //
 void CPEAudioEffect::ConstructL(TMSEffectObserver& aObserver)
     {
-    TMSVer* v = NULL;
     TInt err(KErrNotFound);
-    TMSFactory::CreateFactory(iFactory, *v);
+    TMSVer v(2,0,0);
+    TMSFactory::CreateFactory(iFactory, v);
     if (iFactory)
         {
         err = iFactory->CreateEffect(TMS_EFFECT_GLOBAL_GAIN, iGlobalGain);
@@ -85,8 +86,11 @@ void CPEAudioEffect::ConstructL(TMSEffectObserver& aObserver)
 //
 CPEAudioEffect::~CPEAudioEffect()
     {
-    iFactory->DeleteEffect(iGlobalGain);
-    iFactory->DeleteEffect(iGlobalVol);
+    if ( iFactory != NULL )
+        {
+        iFactory->DeleteEffect ( iGlobalGain );
+        iFactory->DeleteEffect ( iGlobalVol );
+    }
     delete iFactory;
     }
 

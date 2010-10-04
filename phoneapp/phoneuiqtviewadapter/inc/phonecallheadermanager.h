@@ -76,23 +76,9 @@ public:
     /*!
         \fn int PhoneUIQtViewAdapter::updateCallHeader()
         
-        This method updates call state information in call header.
+        This method updates call header.
     */
-    void updateCallHeaderState(int callId);
-    
-    /*!
-        \fn int PhoneUIQtViewAdapter::updateCallHeaderRemoteInfo()
-        
-        This method updates remote information in call header.
-    */
-    void updateCallHeaderRemoteInfo (int callId);
-    
-    /*!
-        \fn int PhoneUIQtViewAdapter::updateCallHeaderRemoteInfo()
-        
-        This method updates remote information in call header and label.
-    */
-    void updateCallHeaderRemoteInfoAndLabel (int callId);    
+    void updateCallHeader(int callId);
     
     /*!
         \fn int PhoneUIQtViewAdapter::handleCipheringInfoChange()
@@ -149,20 +135,13 @@ public:
         
         This method checks is the call a voice call.
     */
-    bool isVoiceCall(int callId) const;
-    
-    /*!
-        \fn void PhoneUIQtViewAdapter::removeAllCallHeaders()
-        
-        This method checks is the call a video call.
-    */
-    bool isVideoCall( int callId ) const;
+    bool isVoiceCall(int callId);
     
 private:
     
-    bool isIncoming(int callId) const;
+    void setCommonCallHeaderData(int callId, int bubble);
     
-    bool isWaitingCall(int callId) const;
+    void sendVideoCallData(int callId);
     
     PhoneCallHeaderUtil *callHeaderUtil();
     

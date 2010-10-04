@@ -27,7 +27,7 @@
 #include "phoneuiqtviewif.h"
 #include "phoneuiqtviewadapter.h"
 #include "tphonecmdparaminteger.h"
-#include "qtestmains60.h"
+#include "phonetestmain.h"
 
 class TestTelephonyService : public QObject, PhoneUIQtViewIF, MockService
 {
@@ -144,5 +144,5 @@ void TestTelephonyService::startInCallDialer ()
     QVERIFY(verify());
 }
 
-QTEST_MAIN_S60(TestTelephonyService)
+PHONE_TEST_MAIN(TestTelephonyService)
 #include "unit_tests.moc"

@@ -43,11 +43,9 @@ const TInt KPhoneBtAddressTextLength = 64;
 
 CPhoneAccessoryBTHandler::CPhoneAccessoryBTHandler( 
     MPhoneViewCommandHandle* aViewCommandHandle,
-    MPhoneStateMachine* aStateMachine,
-    MPhoneNEClearedHandler* aNEClearedHandler ) :
+    MPhoneStateMachine* aStateMachine ) :
     iViewCommandHandle( aViewCommandHandle ),
-    iStateMachine( aStateMachine ),
-    iNEClearedHandler( aNEClearedHandler )
+    iStateMachine( aStateMachine )
     {
     }
 
@@ -59,11 +57,10 @@ CPhoneAccessoryBTHandler::CPhoneAccessoryBTHandler(
 //
 CPhoneAccessoryBTHandler* CPhoneAccessoryBTHandler::NewLC( 
     MPhoneViewCommandHandle* aViewCommandHandle,
-    MPhoneStateMachine* aStateMachine,
-    MPhoneNEClearedHandler* aNEClearedHandler )
+    MPhoneStateMachine* aStateMachine )
     {
     CPhoneAccessoryBTHandler* self = new (ELeave) CPhoneAccessoryBTHandler( 
-        aViewCommandHandle, aStateMachine, aNEClearedHandler );
+        aViewCommandHandle, aStateMachine );
     CleanupStack::PushL( self );
     return self;
     }

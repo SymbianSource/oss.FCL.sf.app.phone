@@ -78,7 +78,14 @@ private slots:
     void t_startMarquees();
     void t_stopMarquees();
     void t_marqueeNext(); 
-    
+
+    void t_setHomeZoneDisplay();
+    void t_setActiveLineDisplay();
+    void t_initializeCheckBoxStates();
+    void t_settingsEditingCancelled();
+    void t_settingsDialogClosed();
+    void t_settingsValidationFailed();
+
     /*
      * Not work from commmand prompt.
      */

@@ -253,6 +253,14 @@ class CPELogHandling : public CBase,
          */
         CPELogExtensionWrapper* CreateExtensionWrapperLC( 
             const TUid& aPluginUid ) const;
+      
+        /**
+         * Sets emergency call text to the log info's
+         * name field.
+         * @param   aLogInfo      Log info.
+         * @return  None.
+         */
+        void SetEmergencyCallName( CPELogInfo& aLogInfo );
         
     private: // data 
         // Reference to MPEPhoneModelInternal, also object owner

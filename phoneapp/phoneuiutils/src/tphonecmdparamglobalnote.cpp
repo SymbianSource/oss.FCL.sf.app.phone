@@ -36,7 +36,8 @@ EXPORT_C TPhoneCmdParamGlobalNote::TPhoneCmdParamGlobalNote():
     iText( KNullDesC ),
     iTimeout( 0 ),
     iNotificationDialog( EFalse ),
-    iCauseCode( KErrNotFound ) 
+    iCauseCode( KErrNotFound ),
+    iToneType( EPhoneNoTone )
     {
     iParamId = EPhoneParamIdGlobalNote;
     }
@@ -47,7 +48,7 @@ EXPORT_C TPhoneCmdParamGlobalNote::TPhoneCmdParamGlobalNote():
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C void TPhoneCmdParamGlobalNote::SetType( /*TAknGlobalNoteType*/ PhoneNotificationType aType )
+EXPORT_C void TPhoneCmdParamGlobalNote::SetType( /*TAknGlobalNoteType*/ TPhoneNotificationType aType )
    {
    iType = aType;   
    }
@@ -85,9 +86,9 @@ EXPORT_C void TPhoneCmdParamGlobalNote::SetText(
 // ---------------------------------------------------------
 //
 EXPORT_C void TPhoneCmdParamGlobalNote::SetTimeout( TInt aTimeout )
-{
+    {
     iTimeout = aTimeout;
-}
+    }
 
 // ---------------------------------------------------------
 // TPhoneCmdParamGlobalNote::SetNotificationDialog
@@ -97,9 +98,9 @@ EXPORT_C void TPhoneCmdParamGlobalNote::SetTimeout( TInt aTimeout )
 //
 EXPORT_C void TPhoneCmdParamGlobalNote::SetNotificationDialog( 
         TBool aNotificationDialog )
-{
+    {
     iNotificationDialog = aNotificationDialog;
-}
+    }
 
 // ---------------------------------------------------------
 // TPhoneCmdParamGlobalNote::SetCauseCode
@@ -109,9 +110,32 @@ EXPORT_C void TPhoneCmdParamGlobalNote::SetNotificationDialog(
 //
 EXPORT_C void TPhoneCmdParamGlobalNote::SetCauseCode( 
         TInt aCauseCode )
-{
+    {
     iCauseCode = aCauseCode;
-}
+    }
+
+// ---------------------------------------------------------
+// TPhoneCmdParamGlobalNote::SetToneType
+// Sets the tone type.
+// (other items were commented in a header).
+// ---------------------------------------------------------
+//
+EXPORT_C void TPhoneCmdParamGlobalNote::SetToneType( 
+   TPhoneNotificationToneType aToneType )
+    {
+    iToneType = aToneType;
+    }
+            
+// ---------------------------------------------------------
+// TPhoneCmdParamGlobalNote::ToneType
+// Returns the tone type.
+// (other items were commented in a header).
+// ---------------------------------------------------------
+//
+EXPORT_C TPhoneNotificationToneType TPhoneCmdParamGlobalNote::ToneType() const
+    {
+    return iToneType;
+    }
 
 // ---------------------------------------------------------
 // TPhoneCmdParamGlobalNote::Type
@@ -119,7 +143,7 @@ EXPORT_C void TPhoneCmdParamGlobalNote::SetCauseCode(
 // (other items were commented in a header).
 // ---------------------------------------------------------
 //
-EXPORT_C /*TAknGlobalNoteType*/ PhoneNotificationType TPhoneCmdParamGlobalNote::Type() const
+EXPORT_C /*TAknGlobalNoteType*/ TPhoneNotificationType TPhoneCmdParamGlobalNote::Type() const
    {
    return iType;
    }

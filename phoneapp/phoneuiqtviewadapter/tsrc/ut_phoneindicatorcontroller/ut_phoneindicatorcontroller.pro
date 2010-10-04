@@ -22,7 +22,8 @@ INCLUDEPATH += \epoc32\include\platform\mw \
     ../../../../inc \
     ../../../phoneuiutils/inc/ \
     ../../../phoneuiview2/inc \
-    ../../../../phoneplugins/phoneindicatorplugin/inc
+    ../../../../phoneplugins/phoneindicatorplugin/inc \
+    ../../../../tsrc/common
 LIBS += -lmocklib \
     -lsymbianmock \
     -lxqsettingsmanager \
@@ -36,7 +37,7 @@ DEFINES += BUILD_PHONEUIQTVIEWADAPTER
 HEADERS += ../../inc/phoneindicatorcontroller.h
 SOURCES += ../../src/phoneindicatorcontroller.cpp
 HEADERS += ../../inc/phonevisibilityhandler.h
-SOURCES += phonevisibilityhandler_stub.cpp
+SOURCES += ../../../../tsrc/stubs/phoneuiqtviewadapter/phonevisibilityhandler_stub.cpp
 HEADERS += phoneuiqtviewif_stub.h
 HEADERS += logsmodel.h
 SOURCES += logsmodel_stub.cpp
@@ -54,4 +55,4 @@ SOURCES += unit_tests.cpp
 
 # MOCKED DEPENDENCIES
 HEADERS += 
-include(../../../../tsrc/common/phonetest.pri)
+include(../../../../tsrc/common/phoneuitest.pri)

@@ -47,7 +47,9 @@ SOURCE          cphonesystemeventhandler.cpp
 SOURCE          cphoneuicontroller.cpp
 SOURCE          cphoneaccessorybthandler.cpp
 SOURCE          cphonenumberentrymanager.cpp
-SOURCE          cphoneuicommandmanager.cpp 
+SOURCE          cphoneuicommandmanager.cpp
+SOURCE          phonenoteutil.cpp 
+SOURCE          phoneaudioutil.cpp
 
 /* Languages */
 LANG SC

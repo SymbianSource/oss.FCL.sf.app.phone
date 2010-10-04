@@ -26,17 +26,12 @@ DialerWidgetEngine::DialerWidgetEngine():
 
 DialerWidgetEngine::~DialerWidgetEngine()
 {
-    delete m_settingsManager;
-    m_settingsManager = NULL;
 }
 
 bool DialerWidgetEngine::initialize()
 {
-#ifdef Q_OS_SYMBIAN
     m_settingsManager = new XQSettingsManager(this);
-    if ( !m_settingsManager ){
-        return false;
-    }
+
     XQSettingsKey settingsKey( XQSettingsKey::TargetCentralRepository,
                 KCRUidLogs.iUid, KLogsNewMissedCalls );
     
@@ -45,18 +40,14 @@ bool DialerWidgetEngine::initialize()
         emit missedCallsCountChanged(m_missedCalls);
     }
     
-    if ( !connect( m_settingsManager,
-                SIGNAL( valueChanged(const XQSettingsKey & ,const QVariant &)),
-                    this, SLOT(valueChanged(XQSettingsKey,
-                            QVariant)))){
-        return false;
-    }
+    connect( m_settingsManager,
+             SIGNAL( valueChanged(const XQSettingsKey & ,const QVariant &)),
+             this, SLOT(valueChanged(XQSettingsKey, QVariant)) );
     
     if(!m_settingsManager->startMonitoring( settingsKey )){
         return false;
     }
     
-#endif
     return true;
 }
 

@@ -45,6 +45,7 @@ APP_LAYER_SYSTEMINCLUDE         // Application layer domain APIs
 SYSTEMINCLUDE   ../../inc          // PhoneEngine private headers
 SYSTEMINCLUDE   ../../../inc    // Telephony internal headers
 SYSTEMINCLUDE   /epoc32/include/ecom
+SYSTEMINCLUDE   /epoc32/include/mw/hb/hbcore
 
 LIBRARY         customapi.lib
 LIBRARY         efsrv.lib
@@ -57,6 +58,8 @@ LIBRARY         logwrap.lib
 LIBRARY         centralrepository.lib
 LIBRARY         serviceprovidersettings.lib
 LIBRARY         ecom.lib
+LIBRARY         hbcore.lib
+	
 
 LANG            SC
 START WINS

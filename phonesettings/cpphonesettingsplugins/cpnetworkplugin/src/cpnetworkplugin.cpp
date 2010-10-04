@@ -32,12 +32,12 @@ CpNetworkPlugin::CpNetworkPlugin() :
     DPRINT << ": IN";
     
     // Create guarded objects
-    m_localisation.reset(new CpPhoneLocalisation); 
+    m_localisation.reset(new PhoneLocalisation); 
     m_networkStatus.reset(new CpNetworkStatus); 
     
     // Install required translations
     m_localisation->installTranslator(
-            CpPhoneLocalisation::
+            PhoneLocalisation::
             TranslationFileCommon);
     
     DPRINT << ": OUT";

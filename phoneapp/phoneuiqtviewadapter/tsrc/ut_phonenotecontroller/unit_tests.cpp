@@ -27,21 +27,8 @@
 #include "tphonecmdparamquery.h"
 #include "phoneresourceadapter.h"
 #include "phoneconstants.h"
+#include "phoneuitestmain.h"
 
-#define PHONE_QT_NOTE_CONTROLLER_TEST_MAIN(TestObject) \
-int main(int argc, char *argv[]) \
-{ \
-    HbApplication app(argc, argv); \
-    TestObject tc; \
-    QResource::registerResource("../hbcore.rcc"); \
-    int ret = QTest::qExec(&tc, argc, argv); \
-    /* Core dump if HbIconLoader instance is not destroyed before the application instance. */ \
-    /* HbIconLoader uses QCoreApplication::aboutToQuit() signal to destroy itself. */ \
-    /* app.exec() where the signal is normally emitted is not called here. */ \
-    /* So, invoking the signal explicitly. */ \
-    QMetaObject::invokeMethod(&app, "aboutToQuit", Qt::DirectConnection); \
-    return ret; \
-}
 
 class TestPhoneNoteController : public QObject
 {
@@ -350,5 +337,5 @@ void TestPhoneNoteController::testShowIndicationDialogThreeTimes ()
     QTest::qWait(20000);
 }
 
-PHONE_QT_NOTE_CONTROLLER_TEST_MAIN(TestPhoneNoteController)
+PHONE_UITEST_MAIN(TestPhoneNoteController)
 #include "unit_tests.moc"

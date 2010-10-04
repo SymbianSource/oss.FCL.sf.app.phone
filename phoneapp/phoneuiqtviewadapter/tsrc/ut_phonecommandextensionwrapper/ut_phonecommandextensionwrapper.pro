@@ -38,7 +38,6 @@ INCLUDEPATH += \epoc32\include\platform\mw \
 HEADERS += /epoc32/include/mw/xqpluginloader.h
 
 TARGET.CAPABILITY = ALL -TCB
-DEFINES += FT_SYMBIAN_INTEGRATION
 DEFINES += BUILD_PHONEUIQTVIEWADAPTER
 
 # Input
@@ -49,6 +48,6 @@ SOURCES += menuextension_stub.cpp
 SOURCES += xqpluginloader_stub.cpp
 SOURCES += unit_tests.cpp
 
-INCLUDE(../../../../tsrc/common/phonetest.pri)
+include(../../../../tsrc/common/phonetest.pri)
 
 symbian:MMP_RULES += SMPSAFE

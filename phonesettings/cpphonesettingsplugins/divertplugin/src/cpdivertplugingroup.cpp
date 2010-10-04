@@ -149,7 +149,7 @@ void CpDivertPluginGroup::createVoiceCallItems(CpSettingFormItemData *parent)
             DivertConditionUnconditional,
             ServiceGroupVoice,
             hbTrId("txt_phone_setlabel_all_calls"),
-            hbTrId("txt_phone_setlabel_all_calls"), false,
+            hbTrId("txt_phone_title_all_calls"), false,
             page);
     m_DataItemVoiceAllCalls->setObjectName("voiceAllCallsDataItem");
 
@@ -157,7 +157,7 @@ void CpDivertPluginGroup::createVoiceCallItems(CpSettingFormItemData *parent)
             DivertConditionBusy,
             ServiceGroupVoice,
             hbTrId("txt_phone_setlabel_if_busy"),
-            hbTrId("txt_phone_setlabel_if_busy"), false,
+            hbTrId("txt_phone_title_if_busy"), false,
             page);
     m_DataItemVoiceIfBusy->setObjectName("voiceIfBusyDataItem"); 
 
@@ -165,7 +165,7 @@ void CpDivertPluginGroup::createVoiceCallItems(CpSettingFormItemData *parent)
             DivertConditionNoReply,
             ServiceGroupVoice,
             hbTrId("txt_phone_setlabel_if_not_answered"),
-            hbTrId("txt_phone_setlabel_if_not_answered"), true,
+            hbTrId("txt_phone_title_if_not_answered"), true,
             page);
     m_DataItemVoiceIfNotAnswered->setObjectName("voiceIfNotAnsweredDataItem");
     
@@ -173,7 +173,7 @@ void CpDivertPluginGroup::createVoiceCallItems(CpSettingFormItemData *parent)
             DivertConditionNotReachable,
             ServiceGroupVoice,
             hbTrId("txt_phone_setlabel_if_out_of_reach"),
-            hbTrId("txt_phone_setlabel_if_out_of_reach"), false,
+            hbTrId("txt_phone_title_if_out_of_reach"), false,
             page);
     m_DataItemVoiceIfOutOfReach->setObjectName("voiceIfOutOfReachDataItem");
     
@@ -181,7 +181,7 @@ void CpDivertPluginGroup::createVoiceCallItems(CpSettingFormItemData *parent)
             DivertConditionAllConditionalCases,
             ServiceGroupVoice,
             hbTrId("txt_phone_setlabel_if_not_available"),
-            hbTrId("txt_phone_setlabel_if_not_available"), true,
+            hbTrId("txt_phone_title_if_not_available"), true,
             page);
     
     m_DataItemVoiceIfNotAvailable->setObjectName("voiceIfNotAvailableDataItem");
@@ -206,7 +206,7 @@ void CpDivertPluginGroup::createVideoCallItems(CpSettingFormItemData *parent)
             DivertConditionUnconditional,
             ServiceGroupData,
             hbTrId("txt_phone_setlabel_all_calls"),
-            hbTrId("txt_phone_setlabel_all_calls"), false,
+            hbTrId("txt_phone_title_all_calls"), false,
             page);
     m_DataItemVideoAllCalls->setObjectName("videoAllCallsDataItem");
 
@@ -214,7 +214,7 @@ void CpDivertPluginGroup::createVideoCallItems(CpSettingFormItemData *parent)
             DivertConditionBusy,
             ServiceGroupData,
             hbTrId("txt_phone_setlabel_if_busy"),
-            hbTrId("txt_phone_setlabel_if_busy"), false,
+            hbTrId("txt_phone_title_if_busy"), false,
             page);
     m_DataItemVideoIfBusy->setObjectName("videoIfBusyDataItem");
     
@@ -222,7 +222,7 @@ void CpDivertPluginGroup::createVideoCallItems(CpSettingFormItemData *parent)
             DivertConditionNoReply,
             ServiceGroupData,
             hbTrId("txt_phone_setlabel_if_not_answered"),
-            hbTrId("txt_phone_setlabel_if_not_answered"), true,
+            hbTrId("txt_phone_title_if_not_answered"), true,
             page);
     m_DataItemVideoIfNotAnswered->setObjectName("videoIfNotAnsweredDataItem");
     
@@ -230,7 +230,7 @@ void CpDivertPluginGroup::createVideoCallItems(CpSettingFormItemData *parent)
             DivertConditionNotReachable,
             ServiceGroupData,
             hbTrId("txt_phone_setlabel_if_out_of_reach"),
-            hbTrId("txt_phone_setlabel_if_out_of_reach"), false,
+            hbTrId("txt_phone_title_if_out_of_reach"), false,
             page);
     m_DataItemVideoIfOutOfReach->setObjectName("videoIfOutOfReachDataItem");
     
@@ -238,7 +238,7 @@ void CpDivertPluginGroup::createVideoCallItems(CpSettingFormItemData *parent)
             DivertConditionAllConditionalCases,
             ServiceGroupData,
             hbTrId("txt_phone_setlabel_if_not_available"),
-            hbTrId("txt_phone_setlabel_if_not_available"), true,
+            hbTrId("txt_phone_title_if_not_available"), true,
             page);
     
     m_DataItemVideoIfNotAvailable->setObjectName("videoIfNotAvailableDataItem");

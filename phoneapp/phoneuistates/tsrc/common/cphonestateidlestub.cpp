@@ -81,16 +81,6 @@ void CPhoneStateIdle::HandlePhoneFocusLostEventL()
     
     }
 
-void CPhoneStateIdle::HandlePhoneForegroundEventL()
-    {
-    
-    }
-
-void CPhoneStateIdle::HandleIdleForegroundEventL()
-    {
-    
-    }
-
 void CPhoneStateIdle::DialL( const TDesC& /*aNumber*/, 
     TPhoneNumberType /*aNumberType*/, TDialInitiationMethod /*aDialMethod*/ )
     {

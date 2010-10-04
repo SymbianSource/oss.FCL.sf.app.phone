@@ -139,16 +139,6 @@ class CPhoneSingleAndWaiting : public CPhoneGsmInCall
         * @param aCallId: the call id of the call
         */
         void HandleDisconnectingL( TInt aCallId );
-
-        /**
-        *  Handles received EPhoneCmdUpdateUiControls command.
-        */
-        void UpdateUiControlsL();
-        
-        /**
-         * Updates call bubble and ui commands
-         */
-        void UpdateBubbleAndUICommandsL( TInt aCallId );
         
     private: //Data
             

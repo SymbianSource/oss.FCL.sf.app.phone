@@ -206,8 +206,6 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
     
     BeginUiUpdateLC();
     
-    UpdateRemoteInfoDataL ( aCallId );
-    
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalNote );
     
     // Re-enable global notes
@@ -218,8 +216,7 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
 
     iNumberEntryManager->RemoveNumberEntryIfVisibilityIsFalseL();
 
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-    UpdateUiCommands();
+    UpdateCallHeaderAndUiCommandsL( aCallId );
     EndUiUpdate();
     
     // Go to alerting state
@@ -233,24 +230,15 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
 void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneSingleAndCallSetup::HandleConnectedL()");
-    
-    BeginUiUpdateLC();
-    
-    // Show bubble
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-    
+        "CPhoneSingleAndCallSetup::HandleConnectedL()");    
     // Remove the number entry if it isn't DTMF dialer
     if ( !iNumberEntryManager->IsNumberEntryVisibleL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
     
-    UpdateUiCommands();
+    UpdateCallHeaderAndUiCommandsL( aCallId );
     
-    EndUiUpdate();        
-    
-     // Go to two singles state
     iStateMachine->ChangeState( EPhoneStateTwoSingles );
     
     }

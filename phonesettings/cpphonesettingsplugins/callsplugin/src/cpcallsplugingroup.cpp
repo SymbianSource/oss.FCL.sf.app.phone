@@ -43,7 +43,7 @@ CpCallsPluginGroup::CpCallsPluginGroup(CpItemDataHelper &helper)
 {
     DPRINT << ": IN";
 
-    m_cpSettingsWrapper = new CpSettingsWrapper;
+    m_cpSettingsWrapper = new SettingsWrapper;
     m_pSetWrapper = new PSetWrapper; 
     DPRINT << "PSetWrapper created";
     
@@ -160,14 +160,14 @@ void CpCallsPluginGroup::createShowCallDurationItem()
     
     if (showCallDurationStatus) {
         m_DataItemShowCallDuration->setContentWidgetData(
-            "text", QVariant(hbTrId("txt_phone_setlabel_val_yes")));
+            "text", QVariant(hbTrId("txt_phone_setlabel_show_call_duration_val_on")));
         m_DataItemShowCallDuration->setContentWidgetData(
-            "additionalText", QVariant(hbTrId("txt_phone_setlabel_val_no")));
+            "additionalText", QVariant(hbTrId("txt_phone_setlabel_show_call_duration_val_off")));
     } else {
         m_DataItemShowCallDuration->setContentWidgetData(
-            "text", QVariant(hbTrId("txt_phone_setlabel_val_no")));
+            "text", QVariant(hbTrId("txt_phone_setlabel_show_call_duration_val_off")));
         m_DataItemShowCallDuration->setContentWidgetData(
-            "additionalText", QVariant(hbTrId("txt_phone_setlabel_val_yes")));
+            "additionalText", QVariant(hbTrId("txt_phone_setlabel_show_call_duration_val_on")));
     }
 
     DPRINT << ": OUT";
@@ -373,23 +373,23 @@ void CpCallsPluginGroup::showCallDurationStateChanged()
 
         if (showCallDurationStatus) {
             m_DataItemShowCallDuration->setContentWidgetData(
-                "text", QVariant(hbTrId("txt_phone_setlabel_val_yes")));
+                "text", QVariant(hbTrId("txt_phone_setlabel_show_call_duration_val_on")));
             m_DataItemShowCallDuration->setContentWidgetData(
-                "additionalText", QVariant(hbTrId("txt_phone_setlabel_val_no")));
+                "additionalText", QVariant(hbTrId("txt_phone_setlabel_show_call_duration_val_off")));
         } else {
             m_DataItemShowCallDuration->setContentWidgetData(
-                "text", QVariant(hbTrId("txt_phone_setlabel_val_no")));
+                "text", QVariant(hbTrId("txt_phone_setlabel_show_call_duration_val_off")));
             m_DataItemShowCallDuration->setContentWidgetData(
-                "additionalText", QVariant(hbTrId("txt_phone_setlabel_val_yes")));
+                "additionalText", QVariant(hbTrId("txt_phone_setlabel_show_call_duration_val_on")));
         }
         emit showGlobalNote(
             m_activeNoteId, 
             emit hbTrId("txt_phone_info_not_allowed"), 
             HbMessageBox::MessageTypeWarning);
     } else {
-        if (showCallDurationText == hbTrId("txt_phone_setlabel_val_yes")) {
+        if (showCallDurationText == hbTrId("txt_phone_setlabel_show_call_duration_val_on")) {
             m_cpSettingsWrapper->setShowCallDuration(true);
-        } else if (showCallDurationText == hbTrId("txt_phone_setlabel_val_no")){
+        } else if (showCallDurationText == hbTrId("txt_phone_setlabel_show_call_duration_val_off")){
             m_cpSettingsWrapper->setShowCallDuration(false);
         } else {
             DPRINT << "nothing done";

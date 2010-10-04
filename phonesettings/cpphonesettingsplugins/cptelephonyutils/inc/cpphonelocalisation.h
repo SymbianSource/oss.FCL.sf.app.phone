@@ -24,7 +24,7 @@
 // Forward declarations 
 class QTranslator; 
 
-class CPTELEPHONYUTILS_EXPORT CpPhoneLocalisation: public QObject
+class TELEPHONYUTILS_EXPORT PhoneLocalisation : public QObject
     {
     Q_OBJECT
     
@@ -37,8 +37,8 @@ public:
         
 public:
     
-    CpPhoneLocalisation(QObject *parent = NULL);
-    ~CpPhoneLocalisation();
+    PhoneLocalisation(QObject *parent = NULL);
+    ~PhoneLocalisation();
 
     bool installTranslator(TranslationFileId translationFileId);
     void removeTranslators();

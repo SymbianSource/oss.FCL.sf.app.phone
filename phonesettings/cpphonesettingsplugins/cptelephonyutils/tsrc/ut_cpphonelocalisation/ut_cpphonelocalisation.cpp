@@ -49,7 +49,7 @@ void UT_cpphonelocalisation::init()
 {
     initialize();
     
-    m_phoneLocalisation.reset(new CpPhoneLocalisation); 
+    m_phoneLocalisation.reset(new PhoneLocalisation); 
 }
 
 /*!
@@ -81,7 +81,7 @@ void UT_cpphonelocalisation::t_installTranslator()
     expect("QCoreApplication::installTranslator").times(1);
     
     m_phoneLocalisation->installTranslator(
-            CpPhoneLocalisation::TranslationFileCommon);
+            PhoneLocalisation::TranslationFileCommon);
     QVERIFY(m_phoneLocalisation->m_translators.count() == 1);
     QVERIFY(verify());
     
@@ -90,14 +90,14 @@ void UT_cpphonelocalisation::t_installTranslator()
         returns(false);
     expect("QCoreApplication::installTranslator").times(0);
     m_phoneLocalisation->installTranslator(
-            CpPhoneLocalisation::TranslationFileCommon);
+            PhoneLocalisation::TranslationFileCommon);
     QVERIFY(m_phoneLocalisation->m_translators.count() == 1);
     
     // Test: Unknown enum value
     QVERIFY(verify());
     expect("QCoreApplication::installTranslator").times(0);
     m_phoneLocalisation->installTranslator(
-            (CpPhoneLocalisation::TranslationFileId)2);
+            (PhoneLocalisation::TranslationFileId)2);
     QVERIFY(m_phoneLocalisation->m_translators.count() == 1);
     QVERIFY(verify());
     
@@ -106,7 +106,7 @@ void UT_cpphonelocalisation::t_installTranslator()
         returns(false);
     expect("QCoreApplication::installTranslator").times(0);
     m_phoneLocalisation->installTranslator(
-            CpPhoneLocalisation::TranslationFileTelephoneCp);
+            PhoneLocalisation::TranslationFileTelephoneCp);
     QVERIFY(verify());
  
 }
@@ -120,9 +120,9 @@ void UT_cpphonelocalisation::t_removeTranslators()
         returns(true);
     
     m_phoneLocalisation->installTranslator(
-            CpPhoneLocalisation::TranslationFileCommon); 
+            PhoneLocalisation::TranslationFileCommon); 
     m_phoneLocalisation->installTranslator(
-            CpPhoneLocalisation::TranslationFileTelephoneCp);
+            PhoneLocalisation::TranslationFileTelephoneCp);
     
     m_phoneLocalisation->removeTranslators(); 
     QVERIFY(m_phoneLocalisation->m_translators.count() == 0);

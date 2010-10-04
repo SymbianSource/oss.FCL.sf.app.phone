@@ -55,7 +55,9 @@ symbian {
         -lcone \
         -lengineinfo \
         -lphonestringloader \
-        -lbafl
+        -lbafl \
+        -lxqsystemtoneservice
+        
         
     defFiles = "$${LITERAL_HASH}ifdef WINS" \
         "DEFFILE bwins/phoneuiqtviewadapter.def" \

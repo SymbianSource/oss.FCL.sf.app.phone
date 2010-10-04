@@ -40,7 +40,6 @@ LIBS += -lphoneuiutils \
         -lengineinfo
 
 TARGET.CAPABILITY = ALL -TCB
-DEFINES += FT_SYMBIAN_INTEGRATION
 DEFINES += BUILD_PHONEUIQTVIEWADAPTER
 
 # Input
@@ -54,4 +53,4 @@ SOURCES += ../../../../tsrc/mocks/phoneuiqtviewadapter/mock_phonecallheaderutil.
 SOURCES += ../../../../tsrc/stubs/stubs.cpp
 SOURCES += unit_tests.cpp
 
-INCLUDE(../../../../tsrc/common/phonetest.pri)
+include(../../../../tsrc/common/phonetest.pri)

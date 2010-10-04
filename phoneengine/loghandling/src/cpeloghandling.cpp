@@ -32,6 +32,7 @@
 #include <pepanic.pan>
 #include <mpephonemodelinternal.h>
 #include <mpedatastore.h>
+#include <hbtextresolversymbian.h>
 #include "cpeloginfo.h"
 #include "cpelogextensionwrapper.h"
 
@@ -42,7 +43,9 @@
 /// None
 
 // CONSTANTS
-// None
+_LIT(KEmergencyText, "txt_phone_other_emergency_call");
+_LIT(KPhoneLocalisationFile, "telephone_");
+_LIT(KTsFilePath, "z:/resource/qt/translations/");
 
 // MACROS
 // None
@@ -117,8 +120,7 @@ CPELogHandling::CPELogHandling
         RFs& aFsSession        
         ) : iModel( aModel ),
             iDataStore( *( aModel.DataStore( ) ) ),
-            iFsSession( aFsSession ),
-            iLogEventUnderProcessing( NULL )
+            iFsSession( aFsSession )
     {
     TEFLOGSTRING( KTAOBJECT, "LOG CPELogHandling::CPELogHandling" );
     }
@@ -208,6 +210,11 @@ EXPORT_C TInt CPELogHandling::SaveCallEntry
                     }
                 // default logging strategy is used if error happens while using extension
                 UpdateLogInfoWithExtensionDataL( aCallId, *logInfo ) );
+            
+            if ( CPELogInfo::EPEEmergecyEvent == logInfo->EventType() )
+                {
+                SetEmergencyCallName( *logInfo );
+                }
             
             TRAP( errorCode, SaveCallInfoL( *logInfo ) );
             delete logInfo;
@@ -839,6 +846,27 @@ CPELogExtensionWrapper* CPELogHandling::CreateExtensionWrapperLC(
         const TUid& aPluginUid ) const
     {
     return CPELogExtensionWrapper::NewLC( aPluginUid );
+    }
+
+// -----------------------------------------------------------------------------
+// CPELogHandling::SetEmergencyCallName
+// -----------------------------------------------------------------------------
+//
+void CPELogHandling::SetEmergencyCallName( CPELogInfo& aLogInfo )
+    {
+    HBufC* emergencyText = NULL;
+
+    if ( HbTextResolverSymbian::Init( KPhoneLocalisationFile, KTsFilePath) )
+        {
+        TRAP_IGNORE( emergencyText = 
+                HbTextResolverSymbian::LoadL(KEmergencyText) );
+        }
+    
+    if ( emergencyText )
+        {
+        aLogInfo.SetName( emergencyText->Des().
+                Left( Min(emergencyText->Length(), KCntMaxTextFieldLength) ) );
+        }
     }
 
 // End of File

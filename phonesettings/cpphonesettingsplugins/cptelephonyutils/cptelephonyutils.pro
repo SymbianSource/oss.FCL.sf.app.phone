@@ -38,7 +38,7 @@ else: {
 
 TRANSLATIONS = telephone_cp.ts
 
-DEFINES += BUILD_CPTELEPHONYUTILS
+DEFINES += BUILD_TELEPHONYUTILS
 
 symbian: {
     load(data_caging_paths)

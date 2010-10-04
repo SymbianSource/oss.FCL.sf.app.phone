@@ -131,10 +131,8 @@ void ut_cphconfandwaitingandcallsetup::T_HandleConnectedL(  )
     TInt callId(2);
     TPhoneCmdParamCallHeaderData callHeaderParam;
     callHeaderParam.SetCallState( EPEStateConnected );
-    iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommandL" ).
-        WithL<TPhoneViewCommandId, TInt> ( 
-                EPhoneViewUpdateBubble, 
-                callId );
+    iMockContext->ExpectCallL( "CPhoneState::UpdateCallHeader" ).
+        WithL<TInt> ( callId );
           
     iStateConferenceAndCallSetupAndWaiting->HandlePhoneEngineMessageL( MEngineMonitor::EPEMessageConnected, callId );
     EUNIT_ASSERT_EQUALS( KErrNone, iMockContext->VerifyExpectations() );

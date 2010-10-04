@@ -21,7 +21,7 @@
 #include <QtTest/QtTest>
 #include <mockservice.h>
 
-class CpSettingsWrapper;
+class SettingsWrapper;
 
 class UT_CpPluginCommon : public QObject, MockService
 {
@@ -55,7 +55,7 @@ private slots:
     void t_isOngoingCall();
 
 private:
-    CpSettingsWrapper *mWrapper;
+    SettingsWrapper *mWrapper;
 
 };
 

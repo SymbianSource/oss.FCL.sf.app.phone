@@ -366,7 +366,7 @@ QString PhoneResourceAdapter::convertToString(
             break;
         case R_CALL_INFO_CAUSE_VALUE21:
             {
-            ret = hbTrId("txt_phone_info_request_rejected");
+            ret = hbTrId("txt_phone_info_call_rejected").arg(causeCode);
             }
             break;
         case R_CALL_INFO_CAUSE_VALUE22:

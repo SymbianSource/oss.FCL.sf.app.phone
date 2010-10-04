@@ -106,11 +106,6 @@ class CPhoneTwoSinglesAndWaiting : public CPhoneTwoSingles
         */ 
         void HandleNumberEntryClearedL();
         
-        /**
-        *  Handles received EPhoneCmdUpdateUiControls command.
-        */
-        void UpdateUiControlsL();
-        
         // call id of ringing call
         TInt iRingingCallId;
     };

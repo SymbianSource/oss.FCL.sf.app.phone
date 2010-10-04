@@ -20,6 +20,7 @@
 #include <QKeyEvent>
 #include "phoneuikeyeventadapter.h"
 #include "phoneconstants.h"
+#include "qtphonelog.h"
 
 PhoneUIKeyEventAdapter::PhoneUIKeyEventAdapter (MPhoneKeyEventHandler &keyEventHandler, QObject *parent) :
     QObject (parent), mHandler (keyEventHandler)
@@ -43,7 +44,9 @@ void PhoneUIKeyEventAdapter::keyReleased (QKeyEvent *event)
 
 void PhoneUIKeyEventAdapter::forwardKeyEvent(
         TEventCode symbianEventCode, QKeyEvent *event)
-{
+{   
+    
+    PHONE_TRACE
     TKeyEvent symbianKeyEvent;
     symbianKeyEvent.iCode = convertKeyCode(event);
     symbianKeyEvent.iRepeats = 0;

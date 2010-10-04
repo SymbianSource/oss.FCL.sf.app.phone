@@ -103,19 +103,10 @@ void CPhoneConferenceAndSingle::HandlePhoneEngineMessageL(
     switch ( aMessage )
         {
         case MEngineMonitor::EPEMessageConnectedConference:
-            HandleConnectedConferenceL();
-            break;
-            
         case MEngineMonitor::EPEMessageHeldConference:
-            HandleHeldConferenceL();
-            break;
-            
-        case MEngineMonitor::EPEMessageConnected:
-            HandleConnectedL( aCallId );
-            break;
-            
         case MEngineMonitor::EPEMessageHeld:
-            HandleHeldL( aCallId );
+        case MEngineMonitor::EPEMessageConnected:
+            UpdateCallHeaderAndUiCommandsL( aCallId );
             break;
             
         case MEngineMonitor::EPEMessageInValidEmergencyNumber:
@@ -173,70 +164,15 @@ TBool CPhoneConferenceAndSingle::HandleCommandL( TInt aCommand )
     }
 
 // -----------------------------------------------------------
-// CPhoneConferenceAndSingle::HandleConnectedConferenceL
-// -----------------------------------------------------------
-//
-void CPhoneConferenceAndSingle::HandleConnectedConferenceL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-            "CPhoneConferenceAndSingle::HandleConnectedConferenceL");
-    BeginUiUpdateLC();
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewUpdateBubble, 
-        KConferenceCallId );
-    UpdateUiCommands();
-    EndUiUpdate();
-    }
-
-// -----------------------------------------------------------
-// CPhoneConferenceAndSingle::HandleHeldConferenceL
-// 
-// one of the calls is on hold all the time, conference or single call
-// -----------------------------------------------------------
-//
-void CPhoneConferenceAndSingle::HandleHeldConferenceL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleHeldConferenceL");
-    BeginUiUpdateLC();
-    
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewUpdateBubble, KConferenceCallId );
-    UpdateUiCommands();
-    EndUiUpdate();
-    }
-
-// -----------------------------------------------------------
-// CPhoneConferenceAndSingle::HandleConnectedL
-// -----------------------------------------------------------
-//
-void CPhoneConferenceAndSingle::HandleConnectedL( TInt aCallId )
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleConnectedL");
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-    UpdateUiCommands();
-    }
-
-// -----------------------------------------------------------
-// CPhoneConferenceAndSingle::HandleHeldL
-// -----------------------------------------------------------
-//
-void CPhoneConferenceAndSingle::HandleHeldL( TInt aCallId )
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleHeldL");
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-    UpdateUiCommands();
-    }
-
-// -----------------------------------------------------------
 // CPhoneConferenceAndSingle::HandleAddedConferenceMemberL
 // -----------------------------------------------------------
 //
-void CPhoneConferenceAndSingle::HandleAddedConferenceMemberL( TInt aCallId )
+void CPhoneConferenceAndSingle::HandleAddedConferenceMemberL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneConferenceAndSingle::HandleAddedConferenceMemberL");
     BeginUiUpdateLC();
     iViewCommandHandle->ExecuteCommandL( EPhoneViewAddToConference );
-    UpdateConferenceSecurityStatusL( aCallId );
+    UpdateConferenceSecurityStatusL();
     UpdateUiCommands();
     EndUiUpdate();
     iStateMachine->ChangeState( EPhoneStateConference );

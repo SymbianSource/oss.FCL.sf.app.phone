@@ -114,6 +114,7 @@ class CPhoneStateInCall : public CPhoneState
         * @return call id otherwise KErrNotFound
         */
         IMPORT_C virtual TBool GetRingingCallL();
+        
         /**
         * Search and release outgoingcall
         */
@@ -161,14 +162,6 @@ class CPhoneStateInCall : public CPhoneState
         * Sends command to view for launching DTMF list query
         */
         void LaunchDtmfListQueryL();
-        
-        /**
-        * Update remote data and label to the call header.
-        * @param aCallId - Call Id.
-        * @param aCallHeaderData - Call header parameters where modifications
-        *                          are made.
-        */
-        void UpdateRemoteInfoDataAndLabelL( TInt aCallId );
         
         /**
         * Show dtmf text query

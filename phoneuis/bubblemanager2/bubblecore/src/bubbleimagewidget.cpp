@@ -34,7 +34,7 @@ BubbleImageWidget::BubbleImageWidget(
     : HbWidget(parent),
       mImageManager(imageManager),
       mDefaultAvatar(0),
-      mKeepSquareShape(0)
+      mKeepSquareShape(false)
 {
     setFlag(QGraphicsItem::ItemHasNoContents, false);
 
@@ -183,8 +183,12 @@ void BubbleImageWidget::setKeepSquareShape(bool keepSquare)
     updateGeometry();
 }
 
-
-
-
-
+void BubbleImageWidget::displayEmergencyCallIcon()
+{
+    // this method overrides default avatar set in setImageName()
+    if (mImageName.isEmpty()) {
+        mDefaultAvatar->setIconName(
+            QLatin1String("qtg_large_emergency_call"));
+    }
+}
 

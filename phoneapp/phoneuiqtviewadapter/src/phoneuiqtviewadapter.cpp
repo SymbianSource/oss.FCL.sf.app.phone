@@ -237,14 +237,8 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TInt aCa
         createCallHeader(aCallId);
         break;
     case EPhoneViewUpdateBubble:
-        updateCallHeaderState(aCallId);
+        updateCallHeader(aCallId);
         setExpandActions();
-        break;
-    case EPhoneViewUpdateCallHeaderRemoteInfoData:
-        updateCallHeaderRemoteInfo(aCallId);
-        break;
-    case EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel:
-        updateCallHeaderRemoteInfoAndLabel(aCallId);
         break;
     case EPhoneViewCreateConference:
         createConferenceBubble(aCallId);
@@ -595,27 +589,14 @@ void PhoneUIQtViewAdapter::createEmergencyCallHeader(int callId)
     m_indicatorController->setActiveCallData();
 }
 
-void PhoneUIQtViewAdapter::updateCallHeaderState(int callId)
+void PhoneUIQtViewAdapter::updateCallHeader(int callId)
 {
     PHONE_DEBUG("PhoneUIQtViewAdapter::updateCallHeaderState");
 
-    m_phoneCallHeaderManager->updateCallHeaderState(callId);
-}
-
-void PhoneUIQtViewAdapter::updateCallHeaderRemoteInfo(int callId)
-{
-    PHONE_DEBUG("PhoneUIQtViewAdapter::updateCallHeaderRemoteInfo");
-    m_phoneCallHeaderManager->updateCallHeaderRemoteInfo(callId);
-    
+    m_phoneCallHeaderManager->updateCallHeader(callId);
     if ( m_phoneCallHeaderManager->isVoiceCall(callId) ) {
          m_indicatorController->setActiveCallData();
     }
-}
-
-void PhoneUIQtViewAdapter::updateCallHeaderRemoteInfoAndLabel(int callId)
-{
-    PHONE_DEBUG("PhoneUIQtViewAdapter::updateCallHeaderRemoteInfoAndLabel");
-    m_phoneCallHeaderManager->updateCallHeaderRemoteInfoAndLabel(callId);
 }
 
 void PhoneUIQtViewAdapter::handleCipheringInfoChange(int callId)

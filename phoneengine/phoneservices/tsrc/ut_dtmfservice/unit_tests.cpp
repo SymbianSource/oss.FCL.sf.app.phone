@@ -22,7 +22,7 @@
 #include <smcobjecttotypemapper.h>
 #include <mockservice.h>
 #include "dtmfservice.h"
-#include "qtestmains60.h"
+#include "phonetestmain.h"
 
 typedef QSet<int> IntegerSet;
 
@@ -208,6 +208,6 @@ void TestDTMFService::testPlayDTMFTone_nocaps()
 }
 
 
-QTEST_MAIN_S60(TestDTMFService)
+PHONE_TEST_MAIN(TestDTMFService)
 #include "unit_tests.moc"
 

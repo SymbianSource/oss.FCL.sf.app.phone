@@ -125,15 +125,12 @@ void CPhoneConference::HandlePhoneEngineMessageL(
             break;
             
         case MEngineMonitor::EPEMessageHeldConference:
-            HandleHeldConferenceL( aCallId );
-            break;
-            
         case MEngineMonitor::EPEMessageConnectedConference:
-            HandleConnectedConferenceL();
+            UpdateCallHeaderAndUiCommandsL( aCallId );
             break;
 
         case MEngineMonitor::EPEMessageAddedConferenceMember:
-            UpdateConferenceSecurityStatusL( aCallId );
+            UpdateConferenceSecurityStatusL();
             break;
             
         case MEngineMonitor::EPEMessageWentOneToOne:
@@ -143,7 +140,7 @@ void CPhoneConference::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageHeld:
         case MEngineMonitor::EPEMessageConnected:
             {
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
+            UpdateCallHeader( aCallId );
             }
             break;
             
@@ -351,32 +348,6 @@ void CPhoneConference::HandleConferenceIdleL()
     }
 
 // -----------------------------------------------------------
-// CPhoneConference::HandleHeldConferenceL
-// -----------------------------------------------------------
-//
-void CPhoneConference::HandleHeldConferenceL( TInt aCallId )
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneConference::HandleHeldConferenceL()"); 
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewUpdateBubble, aCallId );
-    UpdateUiCommands();
-    }
-
-// -----------------------------------------------------------
-// CPhoneConference::HandleConnectedConferenceL
-// -----------------------------------------------------------
-//
-void CPhoneConference::HandleConnectedConferenceL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, 
-        "CPhoneConference::HandleConnectedConferenceL()");
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewUpdateBubble, KConferenceCallId );
-    UpdateUiCommands();
-    }
-
-// -----------------------------------------------------------
 // CPhoneConference::DropSelectedParticipantL
 // -----------------------------------------------------------
 //
@@ -537,11 +508,10 @@ void CPhoneConference::HandleWentOneToOneL( TInt aCallId )
 // CPhoneConference::UpdateConferenceSecurityStatusL
 // -----------------------------------------------------------
 //
-void CPhoneConference::UpdateConferenceSecurityStatusL( TInt aCallId )
+void CPhoneConference::UpdateConferenceSecurityStatusL( )
     {
-    __PHONELOG1( EBasic, EPhoneUIStates, 
-        "CPhoneConference::UpdateConferenceSecurityStatusL() - callId = %d", aCallId );
-
+    __LOGMETHODSTARTEND( EPhoneUIStates, 
+            "CPhoneConference::UpdateConferenceSecurityStatusL()");
     iViewCommandHandle->ExecuteCommandL( 
         EPhoneViewCipheringInfoChange,
         KPEConferenceCallID);

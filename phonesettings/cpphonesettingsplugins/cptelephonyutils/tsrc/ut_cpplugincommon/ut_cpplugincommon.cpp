@@ -48,7 +48,7 @@ void UT_CpPluginCommon::init()
 {
     initialize();
 
-    mWrapper = new CpSettingsWrapper();
+    mWrapper = new SettingsWrapper();
 }
 
 /*!

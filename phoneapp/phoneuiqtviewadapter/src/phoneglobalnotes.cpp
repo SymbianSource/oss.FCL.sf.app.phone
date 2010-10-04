@@ -1,5 +1,5 @@
 /*!
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -15,7 +15,6 @@
 */
 
 #include "phoneglobalnotes.h"
-#include "tphonecmdparamglobalnote.h"
 #include "tphonecmdparamquery.h"
 #include "phoneresourceadapter.h"
 #include "qtphonelog.h"
@@ -24,6 +23,8 @@
 #include <hbaction.h>
 #include <phoneappcommands.hrh>
 #include <hbstringutil.h>
+#include <xqsystemtoneservice.h>
+
 #include <restricted/hbdevicedialogsextensionsymbian_r.h>
 
 const TInt KCriticalLevel = 2;
@@ -31,11 +32,14 @@ const TInt KCriticalLevel = 2;
 PhoneGlobalNotes::PhoneGlobalNotes(QObject *parent) : 
     QObject(parent),
     m_timer(0),
+    m_toneService(0),
     m_queryCanceledCommand(-1),
     m_timeoutCommand(-1),
     iProgressDialog(0)
 {
     PHONE_TRACE
+    m_toneService = new XQSystemToneService(this);
+
     m_timer = new QTimer(this);
     m_timer->setSingleShot(true);
     connect(m_timer, SIGNAL(timeout()), SLOT(queryTimeout()));
@@ -82,6 +86,32 @@ QString PhoneGlobalNotes::globalNoteText(
     return ret;
 }
 
+void PhoneGlobalNotes::playToneIfNeeded(TPhoneNotificationToneType aTone)
+{
+    PHONE_TRACE
+    
+    if (aTone != EPhoneNoTone) {     
+        XQSystemToneService::ToneType toneType; 
+        switch( aTone ) {
+        case EPhoneInformationTone:
+            toneType = XQSystemToneService::InformationBeepTone; 
+            break;
+        case EPhoneConfirmationTone:
+            toneType = XQSystemToneService::ConfirmationBeepTone;
+            break;
+        case EPhoneWarningTone:
+            toneType = XQSystemToneService::WarningBeepTone;
+            break;
+        case EPhoneErrorTone:
+        default:
+            toneType = XQSystemToneService::ErrorBeepTone;
+            break;
+        }
+    
+    m_toneService->playTone(toneType); 
+    }
+}
+
 void PhoneGlobalNotes::showGlobalWaitNote(TPhoneCmdParamQuery* params)
 {
     PHONE_TRACE
@@ -125,8 +155,8 @@ void PhoneGlobalNotes::showDeviceMessageBox(
             // the end button several times we should show only one "not allowed"
             // note.
             if (noteString == QString::fromUtf16(
-                    iMessageBoxList.at(i)->Text().Ptr(), 
-                    iMessageBoxList.at(i)->Text().Length())) {
+                    iMessageBoxList.at(i)->m_messageBox->Text().Ptr(), 
+                    iMessageBoxList.at(i)->m_messageBox->Text().Length())) {
                 showNote = false;
                 break;
             }
@@ -143,12 +173,13 @@ void PhoneGlobalNotes::showDeviceMessageBox(
                 type = CHbDeviceMessageBoxSymbian::EWarning;
                 break;
             }
-            
+             
             TRAP_IGNORE(
                 ShowDeviceMessageBoxL(
                     type,
                     TPtrC16(noteString.utf16()),
-                    params->Timeout());
+                    params->Timeout(),
+                    params->ToneType());
             );
         }
     }    
@@ -168,8 +199,8 @@ void PhoneGlobalNotes::showDeviceNotificationDialog(
             // the end button several times we should show only one "not allowed"
             // note.
             if (noteString == QString::fromUtf16(
-                    iNotificationList.at(i)->Title().Ptr(), 
-                    iNotificationList.at(i)->Title().Length())) {
+                    iNotificationList.at(i)->m_notificationDialog->Title().Ptr(), 
+                    iNotificationList.at(i)->m_notificationDialog->Title().Length())) {
                 showNote = false;
                 break;
             }
@@ -179,7 +210,8 @@ void PhoneGlobalNotes::showDeviceNotificationDialog(
             TRAP_IGNORE(
                 ShowDeviceNotificationDialogL(
                     TPtrC16(noteString.utf16()),
-                    params->Timeout());
+                    params->Timeout(),
+                    params->ToneType());
             );
         }
     }        
@@ -204,12 +236,14 @@ void PhoneGlobalNotes::ShowGlobalWaitNoteL(
 void PhoneGlobalNotes::ShowDeviceMessageBoxL(
             CHbDeviceMessageBoxSymbian::TType aType,
             const TDesC16& aText,
-            TInt aTimeout)
+            TInt aTimeout,
+            TPhoneNotificationToneType aTone
+            )
 {
     CHbDeviceMessageBoxSymbian *d = CHbDeviceMessageBoxSymbian::NewL(
             aType, this);
     CleanupStack::PushL(d);
-    
+ 
     // Show top of security
     HbDeviceDialogsExtensionSymbian::SetShowLevel(d, KCriticalLevel);
     
@@ -222,18 +256,24 @@ void PhoneGlobalNotes::ShowDeviceMessageBoxL(
     }
     
     if (iMessageBoxList.count() == 0) {
+        playToneIfNeeded(aTone);
         // Show dialog only when there is no notifications ongoing.
         // Delete dialog if show fails.
         d->ShowL();
     }
     
-    iMessageBoxList.append(d);
+    MessageBoxData* data = NULL;
+    QT_TRYCATCH_LEAVING(data = new MessageBoxData());
+    data->m_messageBox = d;
+    data->m_tone = aTone;
+    
+    iMessageBoxList.append(data);
     CleanupStack::Pop(d);
 }
 
 
 void PhoneGlobalNotes::ShowDeviceNotificationDialogL(
-        const TDesC16& aTitle, TInt aTimeout)
+        const TDesC16& aTitle, TInt aTimeout, TPhoneNotificationToneType aTone)
 {
     CHbDeviceNotificationDialogSymbian *d = CHbDeviceNotificationDialogSymbian::NewL(this);
     CleanupStack::PushL(d);
@@ -250,12 +290,17 @@ void PhoneGlobalNotes::ShowDeviceNotificationDialogL(
     }
 
     if (iNotificationList.count() == 0) {
+        playToneIfNeeded(aTone);
         // Show dialog only when there is no notifications ongoing.
         // Delete dialog if show fails.
         d->ShowL();
     }
 
-    iNotificationList.append(d);
+    NotificationDialogData* data = NULL;
+    QT_TRYCATCH_LEAVING(data = new NotificationDialogData());
+    data->m_notificationDialog = d;
+    data->m_tone = aTone;
+    iNotificationList.append(data);
     CleanupStack::Pop(d);
 }
 
@@ -294,14 +339,16 @@ void PhoneGlobalNotes::NotificationDialogClosed(
         const CHbDeviceNotificationDialogSymbian* aDialog, TInt )
 {
     PHONE_TRACE
-    CHbDeviceNotificationDialogSymbian *notification = iNotificationList.takeFirst();
-    Q_ASSERT( notification == aDialog );
+    NotificationDialogData *notification = iNotificationList.takeFirst();
+    Q_ASSERT( notification->m_notificationDialog == aDialog );
+    Q_UNUSED(aDialog);
+    delete notification->m_notificationDialog;
     delete notification;
     
     if ( 0 < iNotificationList.size() ) {
         PHONE_DEBUG("PhoneGlobalNotes::show pending note");
-        CHbDeviceNotificationDialogSymbian *notificationTemp = iNotificationList[0];
-        TRAP_IGNORE( notificationTemp->ShowL() );
+        NotificationDialogData *notificationTemp = iNotificationList[0];
+        TRAP_IGNORE( notificationTemp->m_notificationDialog->ShowL() );
     }
 }
 
@@ -309,14 +356,16 @@ void PhoneGlobalNotes::MessageBoxClosed(const CHbDeviceMessageBoxSymbian* aMessa
         CHbDeviceMessageBoxSymbian::TButtonId )
 {
     PHONE_TRACE
-    CHbDeviceMessageBoxSymbian *messageBox = iMessageBoxList.takeFirst();
-    Q_ASSERT( messageBox == aMessageBox );
+    MessageBoxData *messageBox = iMessageBoxList.takeFirst();
+    Q_ASSERT( messageBox->m_messageBox == aMessageBox );
+    Q_UNUSED(aMessageBox);
+    delete messageBox->m_messageBox;
     delete messageBox;
     
     if ( 0 < iMessageBoxList.size() ) {
         PHONE_DEBUG("PhoneGlobalNotes::show pending note");
-        CHbDeviceMessageBoxSymbian *messageBoxTemp = iMessageBoxList[0];
-        TRAP_IGNORE( messageBoxTemp->ShowL() );
+        MessageBoxData *messageBoxTemp = iMessageBoxList[0];
+        TRAP_IGNORE( messageBoxTemp->m_messageBox->ShowL() );
     }
 }
 

@@ -33,14 +33,14 @@ CpTelephonyPlugin::CpTelephonyPlugin() :
     DPRINT << ": IN";
     
     // Set scoped pointer 
-    m_localisation.reset(new CpPhoneLocalisation(this)); 
+    m_localisation.reset(new PhoneLocalisation(this)); 
     
     // Install required translations
     m_localisation->installTranslator(
-            CpPhoneLocalisation::
+            PhoneLocalisation::
             TranslationFileCommon);
     m_localisation->installTranslator(
-            CpPhoneLocalisation::
+            PhoneLocalisation::
             TranslationFileTelephoneCp);
 
     DPRINT << ": OUT"; 

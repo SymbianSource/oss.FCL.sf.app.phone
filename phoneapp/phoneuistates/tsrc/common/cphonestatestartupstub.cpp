@@ -59,11 +59,6 @@ void CPhoneStateStartup::HandleKeyEventL(
    
     }
 
-void CPhoneStateStartup::HandleIdleForegroundEventL()
-    {
-    
-    }
-
 void CPhoneStateStartup::HandlePhoneStartupL()
     {
     

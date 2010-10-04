@@ -470,6 +470,8 @@ void mt_BubbleManager2::testEmergencyCall()
     bubbleManager->setCli( bubbleId, "emergency call", Qt::ElideRight );
     bubbleManager->setNumberType( bubbleId, BubbleManager::Mobile );
     bubbleManager->setLabel( bubbleId,"Attempting");
+    bubbleManager->setCallFlag(bubbleId, BubbleManager::EmergencyCall, true);
+    bubbleManager->setCallObjectFromTheme(bubbleId);
     HbAction action1("End call", this);
     action1.setSoftKeyRole(QAction::NegativeSoftKey);
     bubbleManager->clearActions(bubbleId);

@@ -97,14 +97,10 @@ class CPhoneConference : public CPhoneGsmInCall
                         
         virtual void MakeStateTransitionToTwoSinglesL();
 
-        void UpdateConferenceSecurityStatusL( TInt aCallId );
+        void UpdateConferenceSecurityStatusL();
         
         
      private:
-     
-        void HandleHeldConferenceL( TInt aCallId );
-         
-        void HandleConnectedConferenceL();
 
         void ToggleHoldL();
         

@@ -28,7 +28,7 @@
 #include <mockservice.h>
 
 #include "dialservice.h"
-#include "qtestmains60.h"
+#include "phonetestmain.h"
 
 bool m_featureManagerReturnValue;
 int m_featureManagerRequestedFeatureSupport;
@@ -357,5 +357,5 @@ void TestDialService::testDialNoCaps()
     QVERIFY( verify() );
     }
 
-QTEST_MAIN_S60(TestDialService)
+PHONE_TEST_MAIN(TestDialService)
 #include "unit_tests.moc"

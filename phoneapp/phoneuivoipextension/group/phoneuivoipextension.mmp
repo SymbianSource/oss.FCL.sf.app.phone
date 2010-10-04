@@ -89,7 +89,6 @@ LIBRARY         phoneuicontrol.lib
 LIBRARY         phoneuistates.lib
 LIBRARY         phoneuiutils.lib
 LIBRARY         serviceprovidersettings.lib
-LIBRARY         serviceselector.lib
 // <-- QT PHONE START -->
 //LIBRARY         vccuipropertyhandler.lib //For VCC Usage
 // <-- QT PHONE END -->

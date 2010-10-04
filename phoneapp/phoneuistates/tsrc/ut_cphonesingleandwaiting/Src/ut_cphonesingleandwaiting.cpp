@@ -166,9 +166,7 @@ void ut_cphonesingleandwaiting::Teardown(  )
 void ut_cphonesingleandwaiting::TestBubbleAndUICommandsAreUpdatedWhenCallIsPutToHoldL()
     {
     TInt callId( 1 );
-    iMockContext->ExpectCallL("CPhoneState::UpdateUiCommands");
-    iMockContext->ExpectCallL("CPhoneViewCommandHandleMock::ExecuteCommandL").
-        WithL<TPhoneViewCommandId,TInt>(EPhoneViewUpdateBubble, callId);
+    iMockContext->ExpectCallL("CPhoneState::UpdateCallHeaderAndUiCommandsL");
     
     iState->HandlePhoneEngineMessageL( MEngineMonitor::EPEMessageHeld, callId );
     EUNIT_ASSERT_EQUALS( KErrNone, iMockContext->VerifyExpectations() );
@@ -177,9 +175,7 @@ void ut_cphonesingleandwaiting::TestBubbleAndUICommandsAreUpdatedWhenCallIsPutTo
 void ut_cphonesingleandwaiting::TestBubbleAndUICommandsAreUpdatedWhenCallIsResumedL()
     {
     TInt callId( 0 );
-    iMockContext->ExpectCallL("CPhoneState::UpdateUiCommands");
-    iMockContext->ExpectCallL("CPhoneViewCommandHandleMock::ExecuteCommandL").
-        WithL<TPhoneViewCommandId,TInt>(EPhoneViewUpdateBubble, callId);
+    iMockContext->ExpectCallL("CPhoneState::UpdateCallHeaderAndUiCommandsL");
     
     iState->HandlePhoneEngineMessageL( MEngineMonitor::EPEMessageConnected, callId );
     EUNIT_ASSERT_EQUALS( KErrNone, iMockContext->VerifyExpectations() );

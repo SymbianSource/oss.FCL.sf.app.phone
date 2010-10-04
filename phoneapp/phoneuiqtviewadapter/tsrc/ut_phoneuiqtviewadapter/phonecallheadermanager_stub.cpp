@@ -100,19 +100,9 @@ void PhoneCallHeaderManager::removeCallHeader(int callId)
     m_removeCallHeaderCallId = callId;
 }
 
-void PhoneCallHeaderManager::updateCallHeaderState(int callId)
+void PhoneCallHeaderManager::updateCallHeader(int callId)
 {
     m_updateCallHeaderCallId = callId;
-}
-
-void PhoneCallHeaderManager::updateCallHeaderRemoteInfo(int callId)
-{
-    m_updateCallHeaderRemoteInfoCallId = callId;
-}
-
-void PhoneCallHeaderManager::updateCallHeaderRemoteInfoAndLabel (int callId)
-{
-    m_updateCallHeaderRemoteInfoAndLabelCallId = callId;
 }
 
 void PhoneCallHeaderManager::handleCipheringInfoChange(int callId)
@@ -159,31 +149,11 @@ void PhoneCallHeaderManager::removeAllCallHeaders()
 //  PhoneCallHeaderUtil::IsVoiceCall
 // ---------------------------------------------------------------------------
 //
-bool PhoneCallHeaderManager::isVoiceCall(int callId) const
+bool PhoneCallHeaderManager::isVoiceCall(int callId)
     {
     return m_isVoiceCall;
     }
 
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::IsVideoCall
-// ---------------------------------------------------------------------------
-//
-bool PhoneCallHeaderManager::isVideoCall(int callId) const
-    {
-    return false;
-    }
-
-bool PhoneCallHeaderManager::isIncoming(int callId) const
-    {
-    return false;
-    }
-
-bool PhoneCallHeaderManager::isWaitingCall(int callId) const
-    {
-    bool waiting( EFalse );
-
-    return waiting;
-    }
 
 PhoneCallHeaderUtil *PhoneCallHeaderManager::callHeaderUtil()
 {

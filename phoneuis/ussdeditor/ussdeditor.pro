@@ -39,13 +39,13 @@ INCLUDEPATH += MOC_DIR
 LIBS += -lphoneclient
 LIBS += -lflogger
 
-SOURCES += src\main.cpp
-SOURCES += src\ussdeditorquery.cpp
-SOURCES += src\ussdcomms.cpp 
+SOURCES += src/main.cpp
+SOURCES += src/ussdeditorquery.cpp
+SOURCES += src/ussdcomms.cpp 
 
-HEADERS += inc\ussdeditorquery.h 
-HEADERS += inc\ussdcomms.h
-HEADERS += inc\tflogger.h
+HEADERS += inc/ussdeditorquery.h 
+HEADERS += inc/ussdcomms.h
+HEADERS += inc/tflogger.h
 
 BLD_INF_RULES.prj_exports += "$${LITERAL_HASH}include <platform_paths.hrh>" \
                              "rom/ussdeditor.iby CORE_APP_LAYER_IBY_EXPORT_PATH(ussdeditor.iby)" \

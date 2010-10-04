@@ -23,6 +23,8 @@ INCLUDEPATH += .
 INCLUDEPATH += ../common
 INCLUDEPATH += ../../inc/
 INCLUDEPATH += ../../infowidget/inc/
+# the following is needed for a couple of hb mocks
+INCLUDEPATH += /sf/mw/hb/include/hbcore/private
 DEFINES += QT_NO_DEBUG_STREAM
 
 
@@ -65,5 +67,14 @@ SOURCES += ../mocks/mock_qgraphicslayout.cpp
 SOURCES += ../mocks/mock_hbframedrawer.cpp
 SOURCES += ../mocks/mock_hbframeitem.cpp
 SOURCES += ../mocks/mock_rsatservice.cpp
+SOURCES += ../mocks/mock_hbwidgetbase.cpp
+SOURCES += ../mocks/mock_hbtapgesture.cpp
+SOURCES += ../mocks/mock_qevent.cpp
+SOURCES += ../mocks/mock_qgesture.cpp
+SOURCES += ../mocks/mock_hbcheckbox.cpp
+SOURCES += ../mocks/mock_hbabstractbutton.cpp
+SOURCES += ../mocks/mock_qaction.cpp
+SOURCES += ../mocks/mock_hbaction.cpp
+SOURCES += ../mocks/mock_hbmessagebox.cpp
 
 symbian:MMP_RULES += SMPSAFE

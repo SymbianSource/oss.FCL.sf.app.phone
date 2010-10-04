@@ -375,6 +375,11 @@ private:
     */
     void createToolBarActions();
     
+    /*!
+        \fn void updateMenuVisibility()
+     */
+    void updateMenuVisibility();
+    
 private:
     HbMainWindow        &m_window;
     BubbleManager       *m_bubbleManager;
@@ -396,6 +401,7 @@ private:
     QList<Qt::Key>      m_keyCaptures;
     DialpadKeyHandler   *m_dialpadKeyHandler;
     bool                m_restrictedMode;
+    HbMenu              *m_optionsMenu;
 };
 
 #endif // PHONEUIQTVIEW_H

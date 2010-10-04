@@ -126,7 +126,7 @@ void CPhoneSingleAndWaiting::HandlePhoneEngineMessageL(
             break;
 
         case MEngineMonitor::EPEMessageHeld:
-            UpdateBubbleAndUICommandsL( aCallId );
+            UpdateCallHeaderAndUiCommandsL( aCallId );
             break;
 
         case MEngineMonitor::EPEMessageConnected:
@@ -197,7 +197,7 @@ TBool CPhoneSingleAndWaiting::HandleCommandL( TInt aCommand )
             break;
 
         case EPhoneCmdUpdateUiControls:
-            UpdateUiControlsL();
+            UpdateUiCommands();
             break;
 
         default:
@@ -299,8 +299,7 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
         // Display ringing bubble
         if ( callStateData.CallId() > KErrNotFound )
             {           
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble,
-                callStateData.CallId() );
+            UpdateCallHeaderAndUiCommandsL( callStateData.CallId() );
 
             if ( iNumberEntryManager->IsNumberEntryVisibleL() )
                 {
@@ -308,7 +307,6 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
                 }
             
             SetRingingTonePlaybackL( callStateData.CallId() );
-            UpdateUiCommands();
             BringIncomingToForegroundL();
             }
         SetBackButtonActive(EFalse);
@@ -350,7 +348,7 @@ void CPhoneSingleAndWaiting::HandleConnectedL( TInt aCallId )
         {
         // Connected message came for the hold call, we still
         // have the waiting call also
-        UpdateBubbleAndUICommandsL( aCallId );
+        UpdateCallHeaderAndUiCommandsL( aCallId );
         }
     else
         {
@@ -367,9 +365,7 @@ void CPhoneSingleAndWaiting::HandleUnholdL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::HandleUnholdL() ");
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-
-    UpdateUiCommands(); 
+    UpdateCallHeaderAndUiCommandsL( aCallId );
     }
 
 // -----------------------------------------------------------
@@ -380,20 +376,13 @@ void CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
         "CPhoneSingleAndWaiting::MakeStateTransitionToTwoSinglesL() ");
+    UpdateCallHeaderAndUiCommandsL( aCallId );
     
-    BeginUiUpdateLC();
-
-    UpdateRemoteInfoDataL ( aCallId );
-    
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-
     if ( iNumberEntryManager->IsNumberEntryUsedL() )
         {
         iNumberEntryManager->SetNumberEntryVisibilityL(ETrue);
         }
 
-    UpdateUiCommands();
-    EndUiUpdate();
     iStateMachine->ChangeState( EPhoneStateTwoSingles );
     }
 
@@ -436,30 +425,6 @@ EXPORT_C void CPhoneSingleAndWaiting::HandleErrorL( const TPEErrorInfo& aErrorIn
 void CPhoneSingleAndWaiting::HandleDisconnectingL( TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndWaiting::HandleDisconnectingL( ) ");
-    }
-
-// -----------------------------------------------------------
-// CPhoneSingleAndWaiting::UpdateUiControlsL
-// -----------------------------------------------------------
-//
-void CPhoneSingleAndWaiting::UpdateUiControlsL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndWaiting::UpdateUiControlsL( ) ");
-    UpdateUiCommands();
-    }
-
-// -----------------------------------------------------------
-// Updates bubble and ui commands
-// -----------------------------------------------------------
-//
-void CPhoneSingleAndWaiting::UpdateBubbleAndUICommandsL( 
-    TInt aCallId )
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates,
-        "CPhoneSingleAndWaiting::UpdateBubbleAndUICommandsL() ");
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-
-    UpdateUiCommands(); 
     }
 
 // End of File

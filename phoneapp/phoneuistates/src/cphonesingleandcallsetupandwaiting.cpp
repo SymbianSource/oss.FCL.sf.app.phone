@@ -317,14 +317,7 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
 
-    BeginUiUpdateLC();
-    UpdateRemoteInfoDataL( aCallId );
-    iViewCommandHandle->ExecuteCommandL( 
-            EPhoneViewUpdateBubble, 
-            aCallId );
-
-    UpdateUiCommands();
-    EndUiUpdate();
+    UpdateCallHeaderAndUiCommandsL( aCallId );
     }
 
 // -----------------------------------------------------------
@@ -336,7 +329,7 @@ void CPhoneSingleAndCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleAndCallSetupAndWaiting::HandleConnectedL()");
     
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
+    UpdateCallHeader( aCallId );
     
     iNumberEntryManager->RemoveNumberEntryIfVisibilityIsFalseL();
 

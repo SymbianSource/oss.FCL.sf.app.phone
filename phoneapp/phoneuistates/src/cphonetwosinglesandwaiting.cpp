@@ -267,7 +267,7 @@ TBool CPhoneTwoSinglesAndWaiting::HandleCommandL( TInt aCommand )
     switch( aCommand )
         {
         case EPhoneCmdUpdateUiControls:
-            UpdateUiControlsL();
+            UpdateUiCommands();
             break;
 
         default:
@@ -278,14 +278,5 @@ TBool CPhoneTwoSinglesAndWaiting::HandleCommandL( TInt aCommand )
     return commandStatus;
     }
 
-// -----------------------------------------------------------
-// CPhoneTwoSinglesAndWaiting::UpdateUiControlsL
-// -----------------------------------------------------------
-//
-void CPhoneTwoSinglesAndWaiting::UpdateUiControlsL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndWaiting::UpdateUiControlsL( ) ");
-    UpdateUiCommands();
-    }
 
 // End of File

@@ -206,7 +206,7 @@ void CPhoneConferenceAndWaiting::HandleConnectedL( TInt aCallId )
     else
         {
         // member of conference call which is on hold
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
+        UpdateCallHeader( aCallId );
         }   
     }
 
@@ -217,15 +217,9 @@ void CPhoneConferenceAndWaiting::HandleConnectedL( TInt aCallId )
 void CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL()");
-
-    BeginUiUpdateLC();
-    UpdateRemoteInfoDataL ( aCallId );
-    
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-    
+    UpdateCallHeaderAndUiCommandsL( aCallId ); 
     iNumberEntryManager->SetVisibilityIfNumberEntryUsedL( ETrue );
-    UpdateUiCommands();
-    EndUiUpdate();
+
     iStateMachine->ChangeState( EPhoneStateConferenceAndSingle );
     }
 
@@ -290,8 +284,7 @@ void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
         case ENoActiveCalls: // Go to incoming state
             {           
             BringIncomingToForegroundL(); 
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, 
-                iRingingCallId );
+            UpdateCallHeaderAndUiCommandsL( iRingingCallId );
             
             if ( iNumberEntryManager->IsNumberEntryVisibleL() )
                 {
@@ -299,7 +292,6 @@ void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
                 }
             
             SetRingingTonePlaybackL( iRingingCallId );
-            UpdateUiCommands();
             SetBackButtonActive(EFalse);
             iStateMachine->ChangeState( EPhoneStateIncoming );
             }

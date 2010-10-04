@@ -136,6 +136,7 @@ void PhoneAppLauncher::sendServiceRequest(
         const QList<QVariant> &arguments,
         const bool foreground)
 {
+    PHONE_TRACE
     int err = -1;
     TRAP_IGNORE(
         // Allow application launch only when device is unlocked
@@ -146,7 +147,7 @@ void PhoneAppLauncher::sendServiceRequest(
     )
     
     if ((err == KErrNone) || (err == KErrAlreadyExists)) {
-        PHONE_TRACE3(service, operation, arguments);
+        PHONE_DEBUG3(service, operation, arguments);
         XQApplicationManager appManager;
         QScopedPointer<XQAiwRequest> request( 
             service.isEmpty() ? 

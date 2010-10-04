@@ -88,8 +88,6 @@ void PhoneVisibilityHandler::bringToForeground()
         m_view.bringToForeground();
         adjustVisibility(BringForwards);
     }
-    
-
 }
 
 /*!
@@ -107,6 +105,7 @@ void PhoneVisibilityHandler::hideDeviceDialogs(bool hide)
  */
 bool PhoneVisibilityHandler::phoneVisible()
 {
+    PHONE_TRACE
     // Should we check if there is phone's devicedialogs visible?
     return (m_eikonEnv->RootWin().OrdinalPosition() == 0);
 }
@@ -116,8 +115,9 @@ bool PhoneVisibilityHandler::phoneVisible()
  */
 void PhoneVisibilityHandler::sendToBackground(bool homeScreenForeground)
 {
-    PHONE_TRACE2(": homeScreenForeground =", homeScreenForeground);
-    PHONE_TRACE2(": m_carModeEnabled =", m_carModeEnabled);
+    PHONE_TRACE4(": homeScreenForeground =", homeScreenForeground, 
+        ", m_carModeEnabled =", m_carModeEnabled);
+    
     if(m_carModeEnabled) {
         // Don't bring homescreen to foreground
         return;
@@ -125,11 +125,12 @@ void PhoneVisibilityHandler::sendToBackground(bool homeScreenForeground)
     
     enableKeyGuard();
     
+    bool setHsToForeground = homeScreenForeground && phoneVisible();
     // Send phone back on WSERV stack
     adjustVisibility(SendToBack);
     
     // Fetch homescreen to foreground if needed
-    if (homeScreenForeground) {
+    if (setHsToForeground) {
         _LIT(KPhoneHsAppName,"hsapplication");
         TApaTaskList taskList(m_eikonEnv->WsSession());
         TApaTask task = taskList.FindApp(KPhoneHsAppName);
@@ -159,6 +160,7 @@ void PhoneVisibilityHandler::HandlePropertyChangedL(const TUid& aCategory,
  */
 bool PhoneVisibilityHandler::disableKeyGuard()
 {
+    PHONE_TRACE
     TRAP_IGNORE(
         CKeyguardAccessApi* keyguardAccess = CKeyguardAccessApi::NewL( );
         if (!m_keyguardOnBeforeForeground) {
@@ -178,6 +180,7 @@ bool PhoneVisibilityHandler::disableKeyGuard()
  */
 void PhoneVisibilityHandler::enableKeyGuard()
 {
+    PHONE_TRACE
     if (phoneVisible() && m_keyguardOnBeforeForeground) {
         // If phone is visible return to previous keyguard status
         TRAP_IGNORE(
@@ -186,7 +189,6 @@ void PhoneVisibilityHandler::enableKeyGuard()
             delete keyguardAccess;
             );
     }
-    
     m_keyguardOnBeforeForeground = false;
 }
 
@@ -220,10 +222,7 @@ int PhoneVisibilityHandler::ongoingCalls()
  */
 void PhoneVisibilityHandler::adjustVisibility(AdjustAction action)
 {
-    PHONE_TRACE1(": START");
-    int ordinalPos = m_eikonEnv->RootWin().OrdinalPosition();
-    PHONE_TRACE2(": current pos:", ordinalPos);
-
+    PHONE_TRACE
     if (m_carModeEnabled || (action == SendToBack)) {
         PHONE_TRACE1(": SendPhoneToBackground");
         m_eikonEnv->RootWin().SetOrdinalPosition(-1, ECoeWinPriorityNeverAtFront);
@@ -252,13 +251,13 @@ void PhoneVisibilityHandler::adjustVisibility(AdjustAction action)
     } else {
         // Normalize visiblity after ie. device lock
         PHONE_TRACE1(": Normalize");
+        int ordinalPos = m_eikonEnv->RootWin().OrdinalPosition();
+        
         m_eikonEnv->RootWin().SetOrdinalPosition(ordinalPos, ECoeWinPriorityNormal);
         // Flush is needed here, because otherwise launching an application may fail
         // if done same time with normalization.
         m_eikonEnv->WsSession().Flush();        
     }
-
-    PHONE_TRACE1(": END");
 }
 
 void PhoneVisibilityHandler::carModeChanged()

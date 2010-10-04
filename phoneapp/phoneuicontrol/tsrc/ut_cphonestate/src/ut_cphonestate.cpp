@@ -324,14 +324,8 @@ void ut_cphonestate::T_ConstructionL(  )
  */
 void ut_cphonestate::T_DisplayCallTerminationNoteL( )
     {
-    
-    TPhoneCmdParamGlobalNote globalNoteParam;
-        globalNoteParam.SetType( EPhoneMessageBoxInformation );
    
-    iMockContext->ExpectCallL( "CPhoneViewController::ExecuteCommandL" ).
-        WithL<TPhoneViewCommandId, TPhoneCommandParam&> ( 
-                EPhoneViewShowGlobalNote, 
-                globalNoteParam );
+    iMockContext->ExpectCallL( "PhoneNoteUtil::SendGlobalNoteL" );
       
     iPhoneState->T_DisplayCallTerminationNoteL();
     
@@ -352,12 +346,7 @@ void ut_cphonestate::T_HandleKeyEventUpArrowNENotVisibleL( )
     keyEvent.iCode = EKeyUpArrow;
     keyEvent.iRepeats = 0;
     TEventCode eventCode(EEventKey);
-    iMockContext->ExpectCallL( "CPEEngineInfoImpl::AudioVolume" ).
-            ReturnsL( volume );
-    TPhoneCmdParamInteger volumeParam;
-    volumeParam.SetInteger( volume+1 );
-    iMockContext->ExpectCallL( "CPhoneViewController::ExecuteCommandL" ).
-        WithL<TPhoneViewCommandId, TPhoneCommandParam&> ( EPhoneViewSetNaviPaneAudioVolume, volumeParam );
+    iMockContext->ExpectCallL( "PhoneAudioUtil::IncreaseAudioVolumeL" );
          
     iPhoneState->HandleKeyEventL( keyEvent, eventCode );
      
@@ -378,12 +367,7 @@ void ut_cphonestate::T_HandleKeyEventDownArrowNENotVisibleL( )
     keyEvent.iCode = EKeyDownArrow;
     keyEvent.iRepeats = 0;
     TEventCode eventCode(EEventKey);
-    iMockContext->ExpectCallL( "CPEEngineInfoImpl::AudioVolume" ).
-            ReturnsL( volume );
-    TPhoneCmdParamInteger volumeParam;
-    volumeParam.SetInteger( volume-1 );
-    iMockContext->ExpectCallL( "CPhoneViewController::ExecuteCommandL" ).
-        WithL<TPhoneViewCommandId, TPhoneCommandParam&> ( EPhoneViewSetNaviPaneAudioVolume, volumeParam );
+    iMockContext->ExpectCallL( "PhoneAudioUtil::DecreaseAudioVolumeL" );
          
     iPhoneState->HandleKeyEventL( keyEvent, eventCode );
      
@@ -561,23 +545,7 @@ void ut_cphonestate::T_HandleDisconnectingL()
 void ut_cphonestate::T_HandleBTActivatedL()
     {        
     
-    iMockContext->ExpectCallL( "CPEEngineInfoImpl::AudioOutput" ).
-        ReturnsL( EPEBTAudioAccessory );
-    
-    const TPEAudioOutput audioOutput = EPEBTAudioAccessory;
-    const TPEAudioOutput previousOutput = EPEHandset;
-    TPEPhoneAudioRouteParameters routeParameters;
-    routeParameters.iAudioOutput = audioOutput;
-    routeParameters.iPreviousOutput = previousOutput;
-
-    iMockContext->ExpectCallL( "CPEEngineInfoImpl::RouteParameters" ).
-        ReturnsL( routeParameters );
-
-    iMockContext->ExpectCallL( "CPEEngineInfoImpl::AudioOutputAvailable" ).
-        WithL( EPEBTAudioAccessory ).
-        ReturnsL( ETrue );
-
-    iMockContext->ExpectCallL( "CPhoneAccessoryBTHandler::ShowBTActivatedL" );
+    iMockContext->ExpectCallL( "PhoneAudioUtil::HandleAudioOutputChangedL()" );
     
     iPhoneState->HandlePhoneEngineMessageL(
         MEngineMonitor::EPEMessageAudioOutputChanged, 
@@ -824,13 +792,6 @@ void ut_cphonestate::T_DisplayCallSetup_CheckIfNEUsedBeforeSettingVisibilityFals
         WithL( KCallId, KNullDesC() );
         
     iMockContext->ExpectCallL( "CPhoneCustomizationVoip::ModifyCallHeaderTexts" );
-  
-    
-    TPhoneCmdParamCallHeaderData callHeaderParam;
-
-    iMockContext->ExpectCallL( "CPhoneViewController::ExecuteCommandL" ).
-           WithL<TPhoneViewCommandId, TInt, TPhoneCommandParam&> ( EPhoneViewUpdateCallHeaderRemoteInfoData, 
-                   KCallId, callHeaderParam );
     
     iPhoneState->T_UpdateRemoteInfoDataL( KCallId );
     EUNIT_ASSERT_EQUALS( KErrNone, iMockContext->VerifyExpectations() );

@@ -138,12 +138,9 @@ void CPhoneCallSetupAndWaiting::HandleIdleL( TInt aCallId )
 
     if( callStateData.CallId() > KErrNotFound )
         {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble,
-            callStateData.CallId() );
-        
         BringIncomingToForegroundL();       
         SetRingingTonePlaybackL( callStateData.CallId() );
-        UpdateUiCommands();
+        UpdateCallHeaderAndUiCommandsL( callStateData.CallId() );
         SetBackButtonActive(EFalse);
         iStateMachine->ChangeState( EPhoneStateIncoming );
         }
@@ -162,11 +159,7 @@ void CPhoneCallSetupAndWaiting::HandleIdleL( TInt aCallId )
 void CPhoneCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneCallSetupAndWaiting::HandleConnectedL() ");
-    BeginUiUpdateLC();
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-    
-    UpdateUiCommands();
-    EndUiUpdate();
+    UpdateCallHeaderAndUiCommandsL( aCallId );
     iNumberEntryManager->SetVisibilityIfNumberEntryUsedL(ETrue);
     iStateMachine->ChangeState( EPhoneStateWaitingInSingle );
     }

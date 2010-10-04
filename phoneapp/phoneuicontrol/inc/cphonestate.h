@@ -273,8 +273,14 @@ class CPhoneState :
         * Update remote information data in the call header
         * @param aCallid call id
         */
-        IMPORT_C void UpdateRemoteInfoDataL( TInt aCallId );
+        IMPORT_C void UpdateCallHeader( TInt aCallId );
 
+        /**
+        * Updates call header and ui commands.
+        * @param aCallid call id
+        */
+        IMPORT_C void UpdateCallHeaderAndUiCommandsL( TInt aCallId );
+       
         /**
         * Show note
         * @param aResourceId resource id to be resolved
@@ -480,15 +486,6 @@ class CPhoneState :
             TEventCode aEventCode );
 
         /**
-        * Change Audio volume level
-        * @param aLevel New volume level.
-        * @param aUpdateControl Set ETrue if volume ui control
-        *                       needs to be updated.
-        */
-        void ChangeAudioVolumeL( TInt aLevel,
-                                 TBool aUpdateControl = ETrue );
-
-        /**
         * Handles EPEMessageInitiatedEmergency call message from Phone Engine.
         * @param aCallId - Caller id.
         */
@@ -506,31 +503,15 @@ class CPhoneState :
         void HandleCallSecureStatusChangeL( TInt aCallId );
 
         /**
-        * Active call id
-        */
-        TInt GetActiveCallIdL();
-
-        /**
         * Shows WLAN MAC address note
         */
         void ShowWlanMacAddressL();
-        
-        /**
-        * A message handling function for message EPEMessageRemoteBusy
-        * @param aCallId a call id
-        */
-        void HandleRemoteBusyL( const TInt aCallId );
 
         /**
         * TCleanupOperation to call EndUiUpdate(), if leave occurs
         * after BeginUiUpdate().
         */
         static void UiUpdateCleanup(TAny* aThis );
-
-        /**
-        * Gets volume level from ui control.
-        */
-        TInt GetVolumeLevel();
 
         /**
         * Shows video call specific out of memory note.

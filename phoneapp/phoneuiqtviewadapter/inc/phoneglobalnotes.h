@@ -1,5 +1,5 @@
 /*!
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,6 +21,7 @@
 #include <QObject>
 #include <QString>
 #include "tphonecmdparamnote.h"
+#include "tphonecmdparamglobalnote.h"
 #include "phoneaction.h"
 #include <hbdevicenotificationdialogsymbian.h>
 #include <hbdevicemessageboxsymbian.h>
@@ -34,6 +35,7 @@ class HbDeviceMessageBox;
 class HbDeviceNotificationDialog;
 class HbDeviceProgressDialog;
 class QTimer;
+class XQSystemToneService;
 
 class PhoneGlobalNotes : public QObject,
     public MHbDeviceNotificationDialogObserver,
@@ -101,6 +103,12 @@ private:
     */
     QString globalNoteText(TPhoneCommandParam *commandParam);
 
+    /*!
+        \fn QString playToneIfNeeded()
+        
+        This method plays note tone if needed.
+    */
+    void playToneIfNeeded(TPhoneNotificationToneType aTone);
 
 private: // Leaving symbian stuff
     void ShowGlobalWaitNoteL(
@@ -109,10 +117,13 @@ private: // Leaving symbian stuff
     void ShowDeviceMessageBoxL(
             CHbDeviceMessageBoxSymbian::TType aType,
             const TDesC16& aText,
-            TInt aTimeout);
+            TInt aTimeout,
+            TPhoneNotificationToneType aTone);
     
     void ShowDeviceNotificationDialogL(
-            const TDesC16& aTitle, TInt aTimeout);
+            const TDesC16& aTitle, 
+            TInt aTimeout, 
+            TPhoneNotificationToneType aTone);
     
     
 private slots:
@@ -137,14 +148,24 @@ private: // Symbian observers
     void ProgressDialogClosed(
             const CHbDeviceProgressDialogSymbian* aProgressDialog);
     
+    struct MessageBoxData{
+        CHbDeviceMessageBoxSymbian *m_messageBox;
+        int m_tone;
+    };
+    
+    struct NotificationDialogData{
+        CHbDeviceNotificationDialogSymbian *m_notificationDialog;
+        int m_tone;
+    };
 private:
 
     QTimer *m_timer;
+    XQSystemToneService *m_toneService;
     int m_queryCanceledCommand;
     int m_timeoutCommand;
     
-    QList<CHbDeviceNotificationDialogSymbian* > iNotificationList;
-    QList<CHbDeviceMessageBoxSymbian *> iMessageBoxList;
+    QList<NotificationDialogData*> iNotificationList;
+    QList<MessageBoxData*> iMessageBoxList;
     CHbDeviceProgressDialogSymbian *iProgressDialog;
 };
 

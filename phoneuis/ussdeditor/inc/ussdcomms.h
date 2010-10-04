@@ -23,13 +23,13 @@
 
 class CPhCltUssdInt;
 
-class CUssdComms: public QObject
+class UssdComms: public QObject
 {
     Q_OBJECT
 
 public:
-    CUssdComms(QObject* parent);
-    ~CUssdComms();
+    UssdComms(QObject* parent);
+    ~UssdComms();
 
 public slots:
     void appStarting();

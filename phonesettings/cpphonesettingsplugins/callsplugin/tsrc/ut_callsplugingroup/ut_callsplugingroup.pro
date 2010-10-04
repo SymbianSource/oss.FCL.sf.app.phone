@@ -24,7 +24,7 @@ INCLUDEPATH += ../../../cptelephonyutils/inc
 INCLUDEPATH += /sf/mw/phonesrv/cellular/telephonysettings/xqbindings/psetwrapper/src
 INCLUDEPATH += ../../../tsrc/common
 
-DEFINES += BUILD_CALLSPLUGIN BUILD_CPTELEPHONYUTILS \
+DEFINES += BUILD_CALLSPLUGIN BUILD_TELEPHONYUTILS \
            BUILD_PSETWRAPPER BUILD_SSSETTINGSWRAPPER BUILD_PSUINOTES
 
 QT -= gui

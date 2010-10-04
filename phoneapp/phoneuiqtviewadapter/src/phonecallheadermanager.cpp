@@ -31,6 +31,7 @@
 #include "cphonemediatorfactory.h"
 #include "cphonemediatorsender.h"
 #include "phoneviewcommanddefinitions.h"
+#include "qtphonelog.h"
 
 #include <bubblemanagerif.h>
 #include <pevirtualengine.h>
@@ -41,9 +42,9 @@
 
 
 inline Qt::TextElideMode clipToElide(
-    TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection clip)
+        PhoneCallHeaderUtil::ClippingDirection clip)
     {
-    return clip == TPhoneCmdParamCallHeaderData::ELeft ? 
+    return clip == PhoneCallHeaderUtil::ELeft ? 
                    Qt::ElideLeft : Qt::ElideRight;
     }
 
@@ -73,20 +74,7 @@ void PhoneCallHeaderManager::setEngineInfo(MPEEngineInfo* engineInfo)
 void PhoneCallHeaderManager::createCallHeader(
     int callId)
 {
-    TPhoneCmdParamCallHeaderData data;
-    
-    if (isIncoming(callId)) {
-        callHeaderUtil()->SetIncomingCallHeaderParams( 
-                callId, 
-                isWaitingCall(callId),
-                isVideoCall(callId),  
-                &data );
-    } else {
-        callHeaderUtil()->SetOutgoingCallHeaderParams(
-                callId,
-                &data);
-    }
-
+    PHONE_TRACE
     m_bubbleWrapper.bubbleManager().startChanges ();
 
     if (m_bubbleWrapper.bubbleManager().isConferenceExpanded())
@@ -95,25 +83,20 @@ void PhoneCallHeaderManager::createCallHeader(
         }
 
     int bubble = m_bubbleWrapper.createCallHeader(callId);
-    m_bubbleWrapper.setState(callId, bubble, data.CallState ());        
-    m_bubbleWrapper.setCli(bubble, data.CLIText(), clipToElide(data.CLITextClippingDirection()));
-    m_bubbleWrapper.setServiceId(callId, data.ServiceId());
-    m_bubbleWrapper.setSecondaryCli(bubble, data.CNAPText (), clipToElide(data.CNAPTextClippingDirection()));
-    m_bubbleWrapper.setLabel(bubble, data.LabelText ());
-    m_bubbleWrapper.setCallType(bubble, data.CallType ());
-    m_bubbleWrapper.setDivert(bubble, data.Diverted ());
-    m_bubbleWrapper.setCiphering(bubble, data.CipheringIndicatorAllowed(), data.Ciphering());
+    
+    setCommonCallHeaderData(callId, bubble);
 
-    if (data.Picture().Length()) {
+    const TDesC& callerImage(callHeaderUtil()->CallerImage(callId));
+    if (callerImage.Length()) {
         QString imagePath =
-            QString::fromUtf16(data.Picture().Ptr(),data.Picture().Length());
+            QString::fromUtf16(callerImage.Ptr(), callerImage.Length());
         m_bubbleWrapper.bubbleManager().setCallObjectImage(bubble,imagePath);
     } else {
         m_bubbleWrapper.bubbleManager().setCallObjectFromTheme(bubble);
     }
     m_bubbleWrapper.bubbleManager().endChanges ();
 
-    CPhoneMediatorFactory::Instance()->Sender()->SendEvent(EPhoneViewCreateCallHeader, callId, data);
+    sendVideoCallData(callId);
 }
 
 void PhoneCallHeaderManager::createEmergencyCallHeader(int callId)
@@ -123,7 +106,10 @@ void PhoneCallHeaderManager::createEmergencyCallHeader(int callId)
     m_bubbleWrapper.setLabel(bubble, callHeaderUtil()->AttemptingEmergencyText());
     m_bubbleWrapper.setCli (bubble, callHeaderUtil()->EmergencyHeaderText(), Qt::ElideRight);
     m_bubbleWrapper.setState(callId, bubble, EPEStateDialing);
-    m_bubbleWrapper.setCiphering(bubble, m_engineInfo->SecureSpecified(), m_engineInfo->ServiceId(callId));
+    m_bubbleWrapper.setCallType(bubble, callHeaderUtil()->CallType(callId));
+    m_bubbleWrapper.setCiphering(bubble, callHeaderUtil()->SecureSpecified(), callHeaderUtil()->Ciphering(callId));
+    m_bubbleWrapper.bubbleManager().setCallFlag(bubble, BubbleManagerIF::EmergencyCall, true);
+    m_bubbleWrapper.bubbleManager().setCallObjectFromTheme(bubble);
     m_bubbleWrapper.bubbleManager().endChanges ();
 
 }
@@ -140,68 +126,19 @@ void PhoneCallHeaderManager::removeCallHeader(int callId)
     m_bubbleWrapper.bubbleManager().endChanges();
 }
 
-void PhoneCallHeaderManager::updateCallHeaderState(int callId)
+void PhoneCallHeaderManager::updateCallHeader(int callId)
 {
-
     int bubble = m_bubbleWrapper.bubbleId(callId);
     if ( -1 != bubble ) {
         m_bubbleWrapper.bubbleManager ().startChanges ();
-        m_bubbleWrapper.setState(callId, bubble, callHeaderUtil()->CallState(callId));
-        m_bubbleWrapper.setLabel(bubble, callHeaderUtil()->LabelText(callId));
-        m_bubbleWrapper.setDivert(bubble, m_engineInfo->IncomingCallForwarded(callId));
+        setCommonCallHeaderData(callId, bubble);
         m_bubbleWrapper.bubbleManager().endChanges ();
     }
 }
 
-void PhoneCallHeaderManager::updateCallHeaderRemoteInfo(int callId)
-{
-
-    TPhoneCmdParamCallHeaderData data;
-
-     int bubble = m_bubbleWrapper.bubbleId(callId);
-     if ( -1 != bubble ) {
-         callHeaderUtil()->UpdateCallHeaderInfo( 
-                 callId, 
-                 isWaitingCall(callId),
-                 isVideoCall(callId),  
-                 &data );
-         
-         m_bubbleWrapper.bubbleManager().startChanges();
-         m_bubbleWrapper.setCli(bubble, data.CLIText(),
-             clipToElide(data.CLITextClippingDirection()));
-         m_bubbleWrapper.setSecondaryCli(bubble, data.CNAPText (),
-             clipToElide(data.CNAPTextClippingDirection()));
-         m_bubbleWrapper.setDivert(bubble, m_engineInfo->IncomingCallForwarded(callId));
-         m_bubbleWrapper.bubbleManager().endChanges ();
-     }
-
-}
-
-void PhoneCallHeaderManager::updateCallHeaderRemoteInfoAndLabel (int callId)
-{
-    TPhoneCmdParamCallHeaderData data;
-
-     int bubble = m_bubbleWrapper.bubbleId(callId);
-     if ( -1 != bubble ) {
-         callHeaderUtil()->UpdateCallHeaderInfo( 
-                 callId, 
-                 isWaitingCall(callId),
-                 isVideoCall(callId),  
-                 &data );
-         
-         m_bubbleWrapper.bubbleManager().startChanges ();
-         m_bubbleWrapper.setCli(bubble, data.CLIText (),
-             clipToElide(data.CLITextClippingDirection()));
-         m_bubbleWrapper.setSecondaryCli(bubble, data.CNAPText (),
-             clipToElide(data.CNAPTextClippingDirection()));
-         m_bubbleWrapper.setLabel(bubble, data.LabelText ());
-         m_bubbleWrapper.setDivert(bubble, data.Diverted ());
-         m_bubbleWrapper.bubbleManager().endChanges ();
-     }
-}
-
 void PhoneCallHeaderManager::handleCipheringInfoChange(int callId)
 {
+    PHONE_TRACE    
     if (callId == KPEConferenceCallID) {
         bool secure(true);
         for (int i=0; i<m_bubbleWrapper.conferenceCallList().count(); i++) {
@@ -233,10 +170,15 @@ void PhoneCallHeaderManager::handleCipheringInfoChange(int callId)
 void PhoneCallHeaderManager::createConferenceBubble(int callId)
 {
     m_bubbleWrapper.bubbleManager().startChanges();
-    TBuf<KPhoneCallHeaderLabelMaxLength> conferenceText( KNullDesC );
-    callHeaderUtil()->LoadResource(conferenceText, EPhoneCLIConferenceCall);
+
+    PhoneCallHeaderUtil::ClippingDirection clipping;
+    TBuf<KCntMaxTextFieldLength> cliText; 
+    callHeaderUtil()->GetCli(callId, cliText, clipping);
     int bubble = m_bubbleWrapper.createConferenceBubble(
-            callId, callHeaderUtil()->CallState(callId), callHeaderUtil()->LabelText(callId), conferenceText);
+            callId, 
+            callHeaderUtil()->CallState(callId), 
+            callHeaderUtil()->LabelText(callId), 
+            cliText );
     
     m_bubbleWrapper.setServiceId(callId, m_engineInfo->ServiceId(callId));
     m_bubbleWrapper.setCiphering(bubble, m_engineInfo->SecureSpecified(), m_engineInfo->IsSecureCall(callId));
@@ -299,6 +241,7 @@ void PhoneCallHeaderManager::setExpandedConferenceCallHeader()
 
 void PhoneCallHeaderManager::removeAllCallHeaders()
 {
+    PHONE_TRACE
     if (m_bubbleWrapper.conferenceCallList().size()) {
         removeConferenceBubble();
     }
@@ -322,56 +265,63 @@ void PhoneCallHeaderManager::removeAllCallHeaders()
 //  PhoneCallHeaderUtil::IsVoiceCall
 // ---------------------------------------------------------------------------
 //
-bool PhoneCallHeaderManager::isVoiceCall(int callId) const
+bool PhoneCallHeaderManager::isVoiceCall(int callId)
     {
-    if( callId < 0 )
-        {
-        return ( m_engineInfo->CallTypeCommand()
-                    == EPECallTypeCSVoice ||
-                m_engineInfo->CallTypeCommand()
-                    == EPECallTypeVoIP );  
-        }
+    return callHeaderUtil()->IsVoiceCall(callId);
+    }
+
+
+
+void PhoneCallHeaderManager::setCommonCallHeaderData(int callId, int bubble)
+    {
+    m_bubbleWrapper.setState(callId, bubble, 
+            callHeaderUtil()->CallState(callId));
     
-    return ( m_engineInfo->CallType( callId )
-                == EPECallTypeCSVoice ||
-             m_engineInfo->CallType( callId )
-                == EPECallTypeVoIP );
+    PhoneCallHeaderUtil::ClippingDirection cliClip;
+    PhoneCallHeaderUtil::ClippingDirection secondaryCliClip;
+    TBuf<KCntMaxTextFieldLength> cliText;
+    TBuf<KCntMaxTextFieldLength> secondaryCliText;
+    
+    callHeaderUtil()->GetCliTexts(callId, cliText, 
+            cliClip, secondaryCliText, secondaryCliClip );
+    
+    m_bubbleWrapper.setCli(bubble, cliText, clipToElide(cliClip));
+    m_bubbleWrapper.setSecondaryCli(bubble, 
+            secondaryCliText, clipToElide(secondaryCliClip));
+    
+    m_bubbleWrapper.setServiceId(callId, callHeaderUtil()->ServiceId(callId));
+    m_bubbleWrapper.setLabel(bubble, callHeaderUtil()->LabelText(callId));
+    m_bubbleWrapper.setCallType(bubble, callHeaderUtil()->CallType(callId));
+    
+    m_bubbleWrapper.bubbleManager().setCallFlag(
+            bubble, BubbleManagerIF::EmergencyCall, callId == KEmergencyCallId);
+    
+    m_bubbleWrapper.setDivert(bubble, 
+            callHeaderUtil()->IsCallForwarded(callId));
+    m_bubbleWrapper.setCiphering(bubble, callHeaderUtil()->SecureSpecified(), 
+            callHeaderUtil()->Ciphering(callId));
     }
 
-
-// ---------------------------------------------------------------------------
-//  PhoneCallHeaderUtil::IsVideoCall
-// ---------------------------------------------------------------------------
-//
-bool PhoneCallHeaderManager::isVideoCall(int callId) const
+void PhoneCallHeaderManager::sendVideoCallData(int callId)
     {
-    if( callId < 0 )
-        {
-        return ( m_engineInfo->CallTypeCommand()
-            == EPECallTypeVideo );  
-        }
-    return ( m_engineInfo->CallType( callId )
-            == EPECallTypeVideo );
-    }
+    TPhoneCmdParamCallHeaderData callHeaderParam;
+    
+    PhoneCallHeaderUtil::ClippingDirection clipping;
+    TBuf<KCntMaxTextFieldLength> cliText; 
+    callHeaderUtil()->GetCli(callId, cliText, clipping);
+    TPhoneCmdParamCallHeaderData::TPhoneTextClippingDirection clip = 
+            clipping == PhoneCallHeaderUtil::ERight ?
+                TPhoneCmdParamCallHeaderData::ERight :
+                TPhoneCmdParamCallHeaderData::ELeft;
+    
+    callHeaderParam.SetCLIText(cliText, clip);    
+    callHeaderParam.SetCallState(callHeaderUtil()->CallState(callId));
+    callHeaderParam.SetCallType(callHeaderUtil()->CallType(callId));
+    callHeaderParam.SetRemotePhoneNumber(
+            callHeaderUtil()->RemotePhoneNumber(callId));
 
-bool PhoneCallHeaderManager::isIncoming(int callId) const
-    {
-    return callId >= 0 && 
-           m_engineInfo->CallState( callId ) == EPEStateRinging;
-    }
-
-bool PhoneCallHeaderManager::isWaitingCall(int callId) const
-    {
-    bool waiting( EFalse );
-    if ( callId >= 0 && 
-         m_engineInfo->CallState( callId ) == EPEStateRinging )
-        {
-        if( m_bubbleWrapper.activeCallCount() > 0 )
-            {
-            waiting = ETrue;
-            }
-        }
-    return waiting;
+    CPhoneMediatorFactory::Instance()->Sender()->
+            SendEvent(EPhoneViewCreateCallHeader, callId, callHeaderParam);
     }
 
 PhoneCallHeaderUtil *PhoneCallHeaderManager::callHeaderUtil()

@@ -180,18 +180,12 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
         
     if( callStateData.CallId() == aCallId )
         {
-        BeginUiUpdateLC();
-        
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );
-
-        UpdateUiCommands();
-        EndUiUpdate();
-
+        UpdateCallHeaderAndUiCommandsL( aCallId );
         iStateMachine->ChangeState( EPhoneStateTwoSingles );
         }
     else
         {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId );  
+        UpdateCallHeader( aCallId );  
         }    
     }
 // -----------------------------------------------------------

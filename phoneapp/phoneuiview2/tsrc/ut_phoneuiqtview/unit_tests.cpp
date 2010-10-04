@@ -47,6 +47,8 @@ static const int KVOLUMECOMMAND = 5;
 
 bool m_qtimer_stop_called;
 QString m_networkName;
+bool m_take_menu_called;
+bool m_set_menu_called;
 
 #define PHONE_QT_VIEW_TEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
@@ -100,6 +102,7 @@ private slots:
     void testCaptureKey();
     void testRestrictedMode();
 
+
 private:
     int createCallHeader();
 
@@ -137,6 +140,8 @@ void TestPhoneUIQtView::cleanupTestCase ()
 void TestPhoneUIQtView::init ()
 {
     m_qtimer_stop_called = false;
+    m_take_menu_called = false;
+    m_set_menu_called = false;
 }
 
 void TestPhoneUIQtView::cleanup ()
@@ -378,6 +383,8 @@ void TestPhoneUIQtView::testSetMenuActions()
     QList<PhoneAction*> actions;
     m_view->setMenuActions(actions);
     
+    QVERIFY(m_take_menu_called);
+    
     PhoneAction* phoneAction = new PhoneAction; 
     phoneAction->setText(QString("test"));
     phoneAction->setCommand(1);
@@ -387,7 +394,9 @@ void TestPhoneUIQtView::testSetMenuActions()
     qDeleteAll(actions);
     actions.clear();
     
+    m_take_menu_called = false;
     m_view->setMenuActions(actions);
+    QVERIFY(m_take_menu_called);
 }
 
 //Private methods
@@ -473,6 +482,17 @@ void TestPhoneUIQtView::testRestrictedMode()
     QCOMPARE(upSpy.count(), 2);
     QCOMPARE(m_view->m_dialpad->isCallButtonEnabled(), true);
     QCOMPARE(m_view->m_backAction->isEnabled(), true);
+}
+
+HbMenu * HbView::takeMenu()
+{
+    m_take_menu_called = true; 
+    return 0;
+}
+
+void HbView::setMenu(HbMenu* menu)
+{
+    m_set_menu_called = true;
 }
 
 void HbView::setTitle (const QString &title)

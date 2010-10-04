@@ -21,10 +21,10 @@
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
-// CpPhoneLocalisation::CpPhoneLocalisation
+// PhoneLocalisation::PhoneLocalisation
 // -----------------------------------------------------------------------------
 //
-CpPhoneLocalisation::CpPhoneLocalisation( 
+PhoneLocalisation::PhoneLocalisation( 
         QObject * /*parent*/ )
     //:
     //QObject( /*parent*/ )
@@ -34,20 +34,20 @@ CpPhoneLocalisation::CpPhoneLocalisation(
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneLocalisation::~CpPhoneLocalisation
+// PhoneLocalisation::~PhoneLocalisation
 // -----------------------------------------------------------------------------
 //
-CpPhoneLocalisation::~CpPhoneLocalisation(  )
+PhoneLocalisation::~PhoneLocalisation(  )
     {
     
     }
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneLocalisation::installTranslator
+// PhoneLocalisation::installTranslator
 // -----------------------------------------------------------------------------
 //
-bool CpPhoneLocalisation::installTranslator( 
+bool PhoneLocalisation::installTranslator( 
         TranslationFileId translationFileId )
     {
     SMC_MOCK_METHOD1( bool, TranslationFileId, translationFileId )
@@ -55,10 +55,10 @@ bool CpPhoneLocalisation::installTranslator(
 
 
 // -----------------------------------------------------------------------------
-// CpPhoneLocalisation::removeTranslators
+// PhoneLocalisation::removeTranslators
 // -----------------------------------------------------------------------------
 //
-void CpPhoneLocalisation::removeTranslators(  )
+void PhoneLocalisation::removeTranslators(  )
     {
     SMC_MOCK_METHOD0( void )
     }

@@ -38,7 +38,7 @@ const TInt KUssdEditorMaxLength = 182;
 // Constructor.
 // -----------------------------------------------------------------------------
 //
-UssdEditorQuery::UssdEditorQuery(CUssdComms &ussd, QGraphicsItem *parent)
+UssdEditorQuery::UssdEditorQuery(UssdComms &ussd, QGraphicsItem *parent)
     :HbInputDialog(parent), mComms(ussd)
 {
     TFLOGSTRING("USSDEDITOR: UssdEditorQuery::UssdEditorQuery IN")
@@ -50,28 +50,20 @@ UssdEditorQuery::UssdEditorQuery(CUssdComms &ussd, QGraphicsItem *parent)
         lineEdit()->setMaxRows(KUssdMaxNumberOfEditorLines);
         lineEdit()->setText(QString());
 
-        // 0-9, *, +, #
-        lineEdit()->setInputMethodHints(Qt::ImhDialableCharactersOnly);
+        lineEdit()->setInputMethodHints(Qt::ImhEmailCharactersOnly);
 
         mComms.appStarting();
         // Disable Ok key by default
         actions().at(0)->setEnabled(false);
-        bool ret(false);
-        ret = connect(actions().at(0), SIGNAL(triggered(bool)),
+        connect(actions().at(0), SIGNAL(triggered(bool)),
                       this, SLOT(sendUssdString()));
-        TFLOGSTRING2("USSDEDITOR: UssdEditorQuery::UssdEditorQuery \
-            connect send %d", ret);  
         
-        ret = connect(lineEdit(), SIGNAL(textChanged(QString)),
+        connect(lineEdit(), SIGNAL(textChanged(QString)),
                       this, SLOT(updateButtonVisible(QString)));
-        TFLOGSTRING2("USSDEDITOR: UssdEditorQuery::UssdEditorQuery \
-            connect ok button %d", ret);
         
         // Connect cancel
-        ret = connect(actions().at(1), SIGNAL(triggered(bool)),
+        connect(actions().at(1), SIGNAL(triggered(bool)),
                       this, SLOT(cancelUssdString()));
-        TFLOGSTRING2("USSDEDITOR: UssdEditorQuery::UssdEditorQuery \
-            connect send %d", ret);
     }
     TFLOGSTRING("USSDEDITOR: UssdEditorQuery::UssdEditorQuery OUT")
 }

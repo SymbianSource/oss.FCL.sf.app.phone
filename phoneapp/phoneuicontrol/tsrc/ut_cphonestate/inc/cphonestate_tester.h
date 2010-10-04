@@ -100,7 +100,7 @@ void cphonestate_tester::T_ShowNumberBusyNoteL()
 
 void cphonestate_tester::T_UpdateRemoteInfoDataL( TInt aCallId )
     {
-    UpdateRemoteInfoDataL( aCallId );
+    UpdateCallHeader( aCallId );
     }
 
 void cphonestate_tester::T_StartShowSecurityNoteL()

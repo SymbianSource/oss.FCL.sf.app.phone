@@ -59,7 +59,7 @@ bool Tools::videoSupported()
     return XQSysInfo::isSupported(KFeatureIdCsVideoTelephony);
 }
 
-CpSettingsWrapper::CpSettingsWrapper(QObject *parent): 
+SettingsWrapper::SettingsWrapper(QObject *parent): 
     QObject(parent),
     m_settings(NULL),
     m_deviceInfo(NULL)
@@ -68,12 +68,12 @@ CpSettingsWrapper::CpSettingsWrapper(QObject *parent):
     m_deviceInfo = new QSystemDeviceInfo(this);
 }
 
-CpSettingsWrapper::~CpSettingsWrapper()
+SettingsWrapper::~SettingsWrapper()
 {
     
 }
 
-bool CpSettingsWrapper::showCallDuration()
+bool SettingsWrapper::showCallDuration()
 {
     bool showDuration; 
     if (CenrepKeyValueOn == readCenrepValue(KCRUidLogs.iUid, KLogsShowCallDuration).toInt()) {
@@ -86,7 +86,7 @@ bool CpSettingsWrapper::showCallDuration()
     return showDuration;
 }
 
-int CpSettingsWrapper::setShowCallDuration(bool value)
+int SettingsWrapper::setShowCallDuration(bool value)
 {
     int cenrepValue; 
     DPRINT << "show call duration:" << value;
@@ -99,19 +99,19 @@ int CpSettingsWrapper::setShowCallDuration(bool value)
     return writeCenrepValue(KCRUidLogs.iUid, KLogsShowCallDuration, cenrepValue );
 }
 
-int CpSettingsWrapper::readVtVideoSending()
+int SettingsWrapper::readVtVideoSending()
 {
     DPRINT << ": IN";
     return readCenrepValue(KCRUidTelephonySettings.iUid, KSettingsVTVideoSending).toInt();
 }
 
-int CpSettingsWrapper::writeVtVideoSending(int value)
+int SettingsWrapper::writeVtVideoSending(int value)
 {
     DPRINT << ": IN";
     return writeCenrepValue(KCRUidTelephonySettings.iUid, KSettingsVTVideoSending, value);
 }
 
-void CpSettingsWrapper::readSoftRejectText(QString &text, bool &userDefined )
+void SettingsWrapper::readSoftRejectText(QString &text, bool &userDefined )
 {
     if (SoftRejectTextDefault ==
         readCenrepValue(KCRUidTelephonySettings.iUid, KSettingsSoftRejectDefaultInUse ).toInt()) {
@@ -124,7 +124,7 @@ void CpSettingsWrapper::readSoftRejectText(QString &text, bool &userDefined )
     DPRINT << "text:" << text << " ,userDefined:" << userDefined;
 }
 
-int CpSettingsWrapper::writeSoftRejectText(const QString &text, bool userDefined )
+int SettingsWrapper::writeSoftRejectText(const QString &text, bool userDefined )
 {
     int err = writeCenrepValue(KCRUidTelephonySettings.iUid, KSettingsSoftRejectText, text);
     int cenrepValue; 
@@ -138,18 +138,18 @@ int CpSettingsWrapper::writeSoftRejectText(const QString &text, bool userDefined
     return err;
 }
 
- bool CpSettingsWrapper::numberGroupingSupported() const
+ bool SettingsWrapper::numberGroupingSupported() const
  {
      return readCenrepValue(KCRUidNumberGrouping.iUid, KNumberGrouping).toBool();
  }
  
- bool CpSettingsWrapper::forbiddenIconSupported() const
+ bool SettingsWrapper::forbiddenIconSupported() const
  {
      int keyValue = readCenrepValue(KCRUidTelVariation.iUid, KTelVariationFlags).toInt();
      return (KTelephonyLVFlagForbiddenIcon & keyValue);
  }
 
-QVariant CpSettingsWrapper::readCenrepValue(
+QVariant SettingsWrapper::readCenrepValue(
     const long int uid, const unsigned long int key) const
 {
     XQSettingsKey settingsKey(XQSettingsKey::TargetCentralRepository, uid, key);
@@ -158,7 +158,7 @@ QVariant CpSettingsWrapper::readCenrepValue(
     return ret;
 }
 
-QVariant CpSettingsWrapper::readPubSubValue(
+QVariant SettingsWrapper::readPubSubValue(
     const long int uid, const unsigned long int key) const
 {
     XQSettingsKey settingsKey(XQSettingsKey::TargetPublishAndSubscribe, uid, key);
@@ -167,7 +167,7 @@ QVariant CpSettingsWrapper::readPubSubValue(
     return ret;
 }
 
-QString CpSettingsWrapper::readCenrepString(
+QString SettingsWrapper::readCenrepString(
     const long int uid, const unsigned long int key) const
 {
     XQSettingsKey settingsKey(XQSettingsKey::TargetCentralRepository, uid, key);
@@ -176,7 +176,7 @@ QString CpSettingsWrapper::readCenrepString(
     return text;
 }
 
-int CpSettingsWrapper::writeCenrepValue(
+int SettingsWrapper::writeCenrepValue(
     const long int uid, const unsigned long int key, const QVariant &settingsKeyValue ) const
 {
     DPRINT << "uid:" << uid << ", key:" << key << ", settingsKeyValue:" << settingsKeyValue;
@@ -186,14 +186,14 @@ int CpSettingsWrapper::writeCenrepValue(
     return err;
 }
 
-bool CpSettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled()
+bool SettingsWrapper::isFeatureCallWaitingDistiquishNotProvisionedEnabled()
 {
     bool enabled = readCenrepValue(KCRUidPhoneSettings.iUid, KPSetCallWaiting).toBool();
     DPRINT << "enabled: " << enabled;
     return enabled;
 }
 
-bool CpSettingsWrapper::isPhoneOffline() const
+bool SettingsWrapper::isPhoneOffline() const
 {
     bool networkConnectionAllowed = readCenrepValue(KCRUidCoreApplicationUIs.iUid,
                                 KCoreAppUIsNetworkConnectionAllowed).toBool();
@@ -202,7 +202,7 @@ bool CpSettingsWrapper::isPhoneOffline() const
     return !networkConnectionAllowed;
 }
 
-bool CpSettingsWrapper::isOngoingCall() const
+bool SettingsWrapper::isOngoingCall() const
 {
     bool callOngoing(false);
     if (EPSCTsyCallStateNone < 

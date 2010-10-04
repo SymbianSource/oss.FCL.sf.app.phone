@@ -17,6 +17,7 @@
 #include <QDebug>
 #include <smcmockclassincludes.h>
 #include "hbstyle.h"
+#include <hbstyleprimitivedata.h>
 
 //needed for TSmcValue<HbStyleParameters &,100>Size()const
 class HbStyleParameters {};
@@ -50,12 +51,14 @@ HbStyle::~HbStyle(  )
 // HbStyle::createPrimitive
 // -----------------------------------------------------------------------------
 //
-QGraphicsItem * HbStyle::createPrimitive( 
-        HbStyle::Primitive primitive,
-        QGraphicsItem * parent ) const
+QGraphicsObject * HbStyle::createPrimitive( 
+        HbStyle::PrimitiveType primitiveType, 
+        const QString &itemName, 
+        QGraphicsObject *parent ) const
     {
-    SMC_MOCK_METHOD2( QGraphicsItem *, HbStyle::Primitive, primitive, 
-        QGraphicsItem *, parent )
+    SMC_MOCK_METHOD3( QGraphicsObject *, HbStyle::PrimitiveType, primitiveType,
+            const QString &, itemName,
+            QGraphicsObject *, parent )
     }
 
 
@@ -63,14 +66,14 @@ QGraphicsItem * HbStyle::createPrimitive(
 // HbStyle::updatePrimitive
 // -----------------------------------------------------------------------------
 //
-void HbStyle::updatePrimitive( 
-        QGraphicsItem * item,
-        HbStyle::Primitive primitive,
-        const QStyleOption * option ) const
+bool HbStyle::updatePrimitive( 
+        QGraphicsObject *primitive, 
+        const HbStylePrimitiveData *data, 
+        QGraphicsObject *parent ) const
     {
-    SMC_MOCK_METHOD3( void, QGraphicsItem *, item, 
-        HbStyle::Primitive, primitive, 
-        const QStyleOption *, option )
+    SMC_MOCK_METHOD3( bool, QGraphicsObject *, primitive, 
+        const HbStylePrimitiveData *, data, 
+        QGraphicsObject *, parent )
     }
 
 

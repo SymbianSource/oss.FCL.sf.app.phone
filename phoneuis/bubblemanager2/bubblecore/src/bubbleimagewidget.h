@@ -42,6 +42,8 @@ public:
     bool keepSquareShape() const;
     void setKeepSquareShape(bool keepSquare);
 
+    void displayEmergencyCallIcon();
+
 protected slots:
     void imageLoaded(QString imageFileName);
 

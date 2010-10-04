@@ -255,10 +255,7 @@ void CPhoneGsmInCall::BringIncomingToForegroundL()
     TPhoneCmdParamBoolean globalNotifierParam;
     globalNotifierParam.SetBoolean( ETrue );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
-        &globalNotifierParam );
-    
+        &globalNotifierParam );   
     }
 
 

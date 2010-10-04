@@ -70,11 +70,9 @@ CPhoneMediatorMessageFactory::~CPhoneMediatorMessageFactory()
 // ---------------------------------------------------------
 //
 MPhoneMediatorMessage* CPhoneMediatorMessageFactory::CreateMessageL( 
-    const TInt aMessage, TInt aCallId )
+    const TInt aMessage, TInt /*aCallId*/ )
     {
     __LOGMETHODSTARTEND( EPhoneMediatorCenter, "CPhoneMediatorMessageFactory::CreateMessageL( ) ");
-    __PHONELOG2( EBasic, EPhoneMediatorCenter, 
-        "CPhoneMediatorMessageFactory::CreateMessageL - aMessage=%d, aCallId=%d", aMessage, aCallId );
 
     MPhoneMediatorMessage* message = NULL;
 

@@ -299,7 +299,7 @@ void ut_cphoneerrormessageshandler::T_Global_ShowErrorSpecificNoteL(  )
     
     EUNIT_PRINT( _L( "CS Voice call and ECCPErrorCCCallRejected" ) );
      iMockContext->InitializeL();
-     VerifyNote( EPECallTypeCSVoice, ECCPErrorCCCallRejected, EPhoneNoteCalledNumberHasBarredIncomingCalls);
+     VerifyNote( EPECallTypeCSVoice, ECCPErrorCCCallRejected, EPhoneNoteCallInfoCauseValue21);
     iMockContext->Reset();
     
     EUNIT_PRINT( _L( "Video call and ECCPErrorNoAnswerForVideo" ) );

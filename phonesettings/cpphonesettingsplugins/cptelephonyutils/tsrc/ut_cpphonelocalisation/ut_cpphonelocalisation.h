@@ -21,7 +21,7 @@
 #include <QtTest/QtTest>
 #include <mockservice.h>
 
-class CpPhoneLocalisation; 
+class PhoneLocalisation; 
 
 class UT_cpphonelocalisation : public QObject, MockService
 {
@@ -39,7 +39,7 @@ private slots:
     void t_removeTranslators(); 
  
 private: 
-    QScopedPointer<CpPhoneLocalisation> m_phoneLocalisation; 
+    QScopedPointer<PhoneLocalisation> m_phoneLocalisation; 
     
 };
 

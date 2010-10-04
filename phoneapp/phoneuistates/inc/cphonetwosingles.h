@@ -89,10 +89,6 @@ class CPhoneTwoSingles : public CPhoneGsmInCall
     private:     
          
         void HandleIdleL( TInt aCallId );
-          
-        void HandleConnectedL( TInt aCallId );
-        
-        void HandleHeldL( TInt aCallId );
                 
         void HandleIncomingL( TInt aCallId );
     };

@@ -199,15 +199,6 @@ void CPhoneState::HandleChangedCallDurationL( TInt /*aCallId*/ )
     {
      
     }
-
-// -----------------------------------------------------------------------------
-// CPhoneState::HandleRemoteBusyL
-// -----------------------------------------------------------------------------
-//
-void CPhoneState::HandleRemoteBusyL( TInt /*aCallId*/ )
-    {
-  
-    }
     
 // -----------------------------------------------------------
 // CPhoneState::HandleDisconnectingL
@@ -332,14 +323,6 @@ void CPhoneState::IncreaseAudioVolumeL()
     {
     }        
 
-// -----------------------------------------------------------
-// CPhoneState::ChangeAudioVolumeL()
-// -----------------------------------------------------------
-//
-void CPhoneState::ChangeAudioVolumeL( TInt /*aLevel*/, TBool /*aUpdateControl*/ )
-    {
-    }
-
 // <-------------------------- COMMON STATE FUNCTIONS ------------------------>
 
 // -----------------------------------------------------------
@@ -387,13 +370,20 @@ void CPhoneState::UpdateSingleActiveCallL( TInt /*aCallId*/ )
 
 
 // -----------------------------------------------------------
-// CPhoneState::UpdateRemoteInfoDataL
+// CPhoneState::UpdateCallHeader
 // -----------------------------------------------------------
 //
-void CPhoneState::UpdateRemoteInfoDataL( TInt /*aCallId*/ )
+void CPhoneState::UpdateCallHeader( TInt /*aCallId*/ )
     {
     }
 
+// -----------------------------------------------------------
+// CPhoneState::UpdateCallHeaderAndUiCommandsL
+// -----------------------------------------------------------
+//
+void CPhoneState::UpdateCallHeaderAndUiCommandsL( TInt /*aCallId*/ )
+    {
+    }
 
 // -----------------------------------------------------------
 // CPhoneState::ShowNoteL
@@ -468,15 +458,6 @@ void CPhoneState::HandleInitiatedEmergencyCallL( TInt /*aCallId*/ )
     }
 
 void CPhoneState::HandleCallSecureStatusChangeL( TInt /*aCallId*/ )
-    {
-   
-    }
-
-// ---------------------------------------------------------
-// CPhoneState::GetActiveCallIdL()
-// ---------------------------------------------------------
-//
-TInt CPhoneState::GetActiveCallIdL()
     {
    
     }
@@ -621,15 +602,6 @@ void CPhoneState::SetDefaultFlagsL()
     {    
     }
 
-// -----------------------------------------------------------
-// CPhoneState::GetVolumeLevel
-// -----------------------------------------------------------
-//
-TInt CPhoneState::GetVolumeLevel()
-    {                                        
-    }
-
- 
 // -----------------------------------------------------------------------------
 // CPhoneState::SimSecurityStatus
 // -----------------------------------------------------------------------------

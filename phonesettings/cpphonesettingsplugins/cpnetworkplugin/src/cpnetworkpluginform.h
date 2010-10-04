@@ -25,7 +25,7 @@
 #include <hbmessagebox.h>
 
 class HbDataFormModelItem;
-class CpSettingsWrapper;
+class SettingsWrapper;
 class PSetWrapper;
 class HbListWidget;
 class PSetNetworkWrapper;
@@ -106,7 +106,7 @@ private:
     int m_activeProgressNoteId;
     // Own
     PSetWrapper *m_pSetWrapper;
-    CpSettingsWrapper *m_cpSettingsWrapper;
+    SettingsWrapper *m_cpSettingsWrapper;
     QSharedPointer<CellularDataSettings> mCellularSettings;
     HbDialog *m_dialog; 
     

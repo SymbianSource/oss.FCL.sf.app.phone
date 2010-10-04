@@ -43,6 +43,7 @@
 #include "phoneindicatorcontroller.h"
 #include "phoneindicators.h"
 #include "hbindicatorstubhelper.h"
+#include "phoneuitestmain.h"
 
 
 extern bool m_logsModelCreated;
@@ -51,21 +52,6 @@ extern bool m_aiwRequestCreated;
 extern bool m_aiwRequestSended;
 extern int m_modelMaxSize;
 extern bool m_bringToForegroundCalled;
-
-#define PHONE_QT_INDICATOR_CONTROLLER_TEST_MAIN(TestObject) \
-int main(int argc, char *argv[]) \
-{ \
-    HbApplication app(argc, argv); \
-    TestObject tc; \
-    QResource::registerResource("../hbcore.rcc"); \
-    int ret = QTest::qExec(&tc, argc, argv); \
-    /* Core dump if HbIconLoader instance is not destroyed before the application instance. */ \
-    /* HbIconLoader uses QCoreApplication::aboutToQuit() signal to destroy itself. */ \
-    /* app.exec() where the signal is normally emitted is not called here. */ \
-    /* So, invoking the signal explicitly. */ \
-    QMetaObject::invokeMethod(&app, "aboutToQuit", Qt::DirectConnection); \
-    return ret; \
-}
 
 class UT_PhoneIndicatorController : public QObject, public MockService
 {
@@ -239,6 +225,6 @@ void UT_PhoneIndicatorController::t_handleInteraction2()
     QVERIFY(m_aiwRequestSended);
 }
 
-PHONE_QT_INDICATOR_CONTROLLER_TEST_MAIN(UT_PhoneIndicatorController)
+PHONE_UITEST_MAIN(UT_PhoneIndicatorController)
 #include "unit_tests.moc"
 

@@ -82,9 +82,12 @@ void BubbleExpandedHandler::readBubbleHeader(
 
     mHeading->readBubbleHeader(header);
 
-    if (!mHeader->callImage().isEmpty() ||
+    if (!header.callImage().isEmpty() ||
         header.showDefaultAvatar()) {
         mImage->setImageName(header.callImage());
+        if (header.callFlags()&BubbleManagerIF::EmergencyCall) {
+            mImage->displayEmergencyCallIcon();
+        }
         mImage->show();
     } else {
         mImage->hide();

@@ -17,7 +17,7 @@
 
 #include <QtTest/QtTest>
 #include <mockservice.h>
-#include "qtestmains60.h"
+#include "phonetestmain.h"
 #include "phonecallheaderutil.h"
 #include "pevirtualengine.h"
 #include "cpeengineinfo.h"
@@ -59,18 +59,15 @@ public slots:
     void cleanup (); 
     
 private slots:
-    void testSetIncomingCallHeaderParams();
-    void testSetOutgoingCallHeaderParams();
-    void testUpdateCallHeaderInfo();
-    void testSetCallHeaderType();
-    void testSetDivertIndication();
-    void testGetRemoteInfoData();
-    void testSetCallHeaderTexts();
     void testLabelText();
+    void testGetCliTexts();
+    void testGetRemoteInfoData();
+    void testEngineInfo();
+    void testIsVoiceCall();
+    void testIsVideoCall();
+    void testCallHeaderLabelTextForRingingCall();
     void testEmergencyHeaderText();
     void testAttemptingEmergencyText();
-    void testCallState();            
-    void testLoadResource();
     
 private:
     CPEEngineInfo* m_engineInfo;
@@ -117,153 +114,274 @@ void TestPhoneCallHeaderUtil::cleanup ()
     reset();
 }
 
-void TestPhoneCallHeaderUtil::testSetIncomingCallHeaderParams()
+void TestPhoneCallHeaderUtil::testLabelText()
 {
-    TPhoneCmdParamCallHeaderData data;       
-    
     const int callId = 1;
-    const int serviceId = 100;
-    _LIT(KPhoneNumber,"123456");
-    _LIT(KCallerImage,"image.jpg");
+    QVERIFY( m_util->LabelText(1) == KNullDesC() );
     
-    m_engineInfo->SetCallState(EPEStateRinging, callId);
     m_engineInfo->SetCallType(EPECallTypeCSVoice, callId);
-    m_engineInfo->SetCallSecureStatus(EFalse, callId);
-    m_engineInfo->SetSecureSpecified(ETrue);
-    m_engineInfo->SetServiceId(callId, serviceId);
-    m_engineInfo->SetRemotePhoneNumber(KPhoneNumber(), callId);
-    m_engineInfo->SetRemotePhoneNumberType(EPEMobileNumber, callId);
-    m_engineInfo->SetCallerImage(KCallerImage(), callId);
-    m_engineInfo->SetIncomingCallForwarded(ETrue, callId);
     
-    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneIncomingCallLabel);    
-    m_util->SetIncomingCallHeaderParams(callId,EFalse,EFalse,&data);
+    m_engineInfo->SetCallState(EPEStateHeld, callId);       
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneCallOnHold);
+    TBuf<100> label = m_util->LabelText(1);
     QVERIFY(verify());
+    reset();
     
-    QVERIFY(data.CallState()==EPEStateRinging);
-    QVERIFY(data.CallType()==EPECallTypeCSVoice);
-    QVERIFY(data.Ciphering()==EFalse);
-    QVERIFY(data.CipheringIndicatorAllowed()==ETrue);
-    QVERIFY(data.ServiceId()==serviceId);
-    QVERIFY(data.RemotePhoneNumber()==KPhoneNumber);
-    QVERIFY(data.NumberType()==EPEMobileNumber);
-    QVERIFY(data.Picture()==KCallerImage);
-    QVERIFY(data.Diverted()==ETrue);
-}
-
-void TestPhoneCallHeaderUtil::testSetOutgoingCallHeaderParams()
-{
-    TPhoneCmdParamCallHeaderData data;
+    m_engineInfo->SetCallState(EPEStateHeldConference, callId);
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneCallOnHold);
+    label = m_util->LabelText(1);
+    QVERIFY(verify());
+    reset();
     
-    const int callId = 1;
-    const int serviceId = 100;
-    _LIT(KPhoneNumber,"123456");
-    _LIT(KCallerImage,"image.jpg");
+    m_engineInfo->SetCallState(EPEStateDisconnecting, callId);
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneInCallDisconnected);
+    label = m_util->LabelText(1);
+    QVERIFY(verify());
+    reset();
+    
+    m_engineInfo->SetCallState(EPEStateConnectedConference, callId);
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneCLIConferenceCall);
+    label = m_util->LabelText(1);
+    QVERIFY(verify());
+    reset();
     
     m_engineInfo->SetCallState(EPEStateDialing, callId);
-    m_engineInfo->SetCallType(EPECallTypeCSVoice, callId);
-    m_engineInfo->SetCallSecureStatus(EFalse, callId);
-    m_engineInfo->SetSecureSpecified(ETrue);
-    m_engineInfo->SetServiceId(callId, serviceId);
-    m_engineInfo->SetRemotePhoneNumber(KPhoneNumber(), callId);
-    m_engineInfo->SetRemotePhoneNumberType(EPEMobileNumber, callId);
-    m_engineInfo->SetCallerImage(KCallerImage(), callId);
-    
-    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneOutgoingCallLabel);    
-    m_util->SetOutgoingCallHeaderParams(callId,&data);
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneOutgoingCallLabel);
+    label = m_util->LabelText(1);
     QVERIFY(verify());
+    reset();
     
-    QVERIFY(data.CallState()==EPEStateDialing);
-    QVERIFY(data.CallType()==EPECallTypeCSVoice);
-    QVERIFY(data.Ciphering()==EFalse);
-    QVERIFY(data.CipheringIndicatorAllowed()==ETrue);
-    QVERIFY(data.ServiceId()==serviceId);
-    QVERIFY(data.RemotePhoneNumber()==KPhoneNumber);
-    QVERIFY(data.NumberType()==EPEMobileNumber);
-    QVERIFY(data.Picture()==KCallerImage);
+    m_engineInfo->SetCallType(EPECallTypeVideo, callId);
+    m_engineInfo->SetCallState(EPEStateDialing, callId);
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneOutgoingVideoCallLabel);
+    label = m_util->LabelText(1);
+    QVERIFY(verify());
+    reset();
 }
 
-void TestPhoneCallHeaderUtil::testUpdateCallHeaderInfo()
+void TestPhoneCallHeaderUtil::testGetCliTexts()
 {
-    TPhoneCmdParamCallHeaderData data;
-    
     const int callId = 1;
-    const int serviceId = 100;
+    const int conferenceCallId = 8;
+    const int emergencyCallId = 7;
     _LIT(KPhoneNumber,"123456");
-    _LIT(KCallerImage,"image.jpg");
+    _LIT(KPhoneRemoteName,"test_name");
+    
+    TBuf<100> cliText;
+    PhoneCallHeaderUtil::ClippingDirection cliClip;
+    TBuf<100> secondaryCliText;
+    PhoneCallHeaderUtil::ClippingDirection secondaryCliClip;
+    
     
     m_engineInfo->SetRemotePhoneNumber(KPhoneNumber(), callId);
-    m_engineInfo->SetRemotePhoneNumberType(EPEMobileNumber, callId);
-    m_engineInfo->SetRemoteIdentity(RMobileCall::ERemoteIdentityAvailable, callId);
-    m_engineInfo->SetCallerImage(KCallerImage(), callId);
+
+    m_util->GetCliTexts(callId,cliText, cliClip, secondaryCliText, secondaryCliClip);
+    QVERIFY(cliText == KPhoneNumber());
+    QVERIFY(cliClip == PhoneCallHeaderUtil::ELeft);
+    QVERIFY(secondaryCliText == KNullDesC());
     
-    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneIncomingCallLabel);    
-    m_util->UpdateCallHeaderInfo(1,0,0,&data);
+    m_engineInfo->SetRemoteName(KPhoneRemoteName(), callId);
+    
+    m_util->GetCliTexts(callId,cliText, cliClip, secondaryCliText, secondaryCliClip);
+    QVERIFY(cliText == KPhoneRemoteName());
+    QVERIFY(cliClip == PhoneCallHeaderUtil::ERight);
+    QVERIFY(secondaryCliText == KPhoneNumber());
+    QVERIFY(secondaryCliClip == PhoneCallHeaderUtil::ELeft);
+    
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneCLIConferenceCall);
+    m_util->GetCliTexts(conferenceCallId,cliText, cliClip, secondaryCliText, secondaryCliClip);
     QVERIFY(verify());
+    reset();
     
-    QVERIFY(data.CLIText()==KPhoneNumber);
-    QVERIFY(data.Picture()==KCallerImage);          
-}
-
-void TestPhoneCallHeaderUtil::testSetCallHeaderType()
-{
-    m_util->SetCallHeaderType(EPECallTypeCSVoice);
-    QVERIFY(m_util->CallHeaderType()==EPECallTypeCSVoice);
-}
-
-void TestPhoneCallHeaderUtil::testSetDivertIndication()
-{
-    m_util->SetDivertIndication(ETrue);
+    secondaryCliText = KNullDesC();
+    m_util->GetCliTexts(emergencyCallId,cliText, cliClip, secondaryCliText, secondaryCliClip);
+    QVERIFY( secondaryCliText == KNullDesC() );
+    QVERIFY( cliClip == PhoneCallHeaderUtil::ERight );
+    
+    m_util->GetSecondaryCli(emergencyCallId, secondaryCliText, secondaryCliClip);
+    QVERIFY( secondaryCliText == KNullDesC() );
+    
+    m_util->GetCli(emergencyCallId, cliText, cliClip);
+    QVERIFY( secondaryCliText == KNullDesC() );
 }
 
 void TestPhoneCallHeaderUtil::testGetRemoteInfoData()
 {
-    TBuf<100> buf;
     const int callId = 1;
+    const int conferenceCallId = 8;
+    const int emergencyCallId = 7;
     _LIT(KPhoneNumber,"123456");
-    
-    m_engineInfo->SetRemotePhoneNumber(KPhoneNumber(), callId);
-    m_engineInfo->SetRemotePhoneNumberType(EPEMobileNumber, callId);
-    m_engineInfo->SetCallDirection(RMobileCall::EMobileTerminated, callId);
-    m_engineInfo->SetRemoteIdentity(RMobileCall::ERemoteIdentityAvailable, callId);
-    
-    m_util->GetRemoteInfoData(callId,buf);
-    QVERIFY(buf==KPhoneNumber());
-}
-
-void TestPhoneCallHeaderUtil::testSetCallHeaderTexts()
-{
-    TPhoneCmdParamCallHeaderData data;    
-    
-    const int callId = 1;
-    const int serviceId = 100;
-    _LIT(KPhoneNumber,"123456");
+    _LIT(KPhoneRemoteName,"test_remotename");
+    _LIT(KPhoneRemotePartyName,"test_remotepartyname");
+    _LIT(KPhoneRemoteCompanyName,"test_remotecompanyname");
+    TBuf<100> cliText;
+    PhoneCallHeaderUtil::ClippingDirection cliClip;
         
     m_engineInfo->SetRemotePhoneNumber(KPhoneNumber(), callId);
-    m_engineInfo->SetRemotePhoneNumberType(EPEMobileNumber, callId);
-    m_engineInfo->SetALSLine(CCCECallParameters::ECCELineTypePrimary);
-    
-    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneIncomingCallLabel);
-    m_util->SetCallHeaderTexts(1,0,0,&data);
+    m_engineInfo->SetRemoteName(KPhoneRemoteName(), callId);
 
-    QVERIFY(verify());                
+    m_util->GetCli(callId,cliText, cliClip);
+    QVERIFY(cliText == KPhoneRemoteName());
+    QVERIFY(cliClip == PhoneCallHeaderUtil::ERight);
+    
+    m_engineInfo->SetRemoteName(KNullDesC(), callId);
+    m_engineInfo->SetRemotePartyName(KPhoneRemotePartyName(), callId);
+    m_util->GetCli(callId,cliText, cliClip);
+    QVERIFY(cliText == KPhoneRemotePartyName());
+    QVERIFY(cliClip == PhoneCallHeaderUtil::ERight);
+    
+    m_engineInfo->SetRemotePartyName(KNullDesC(), callId);
+    m_engineInfo->SetRemoteCompanyName(KPhoneRemoteCompanyName(), callId);
+    m_util->GetCli(callId,cliText, cliClip);
+    QVERIFY(cliText == KPhoneRemoteCompanyName());
+    QVERIFY(cliClip == PhoneCallHeaderUtil::ERight);
+    
+    m_engineInfo->SetRemoteCompanyName(KNullDesC(), callId);
+    m_engineInfo->SetRemotePhoneNumber(KNullDesC(), callId);
+    m_engineInfo->SetCallDirection(RMobileCall::EMobileTerminated , callId);
+    m_engineInfo->SetRemotePhoneNumberType( EPEPrivateNumber, callId);
+       
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneCLIWithheld);
+    m_util->GetCli(callId,cliText, cliClip);
+    QVERIFY(verify());
+    reset();
+    
+    m_engineInfo->SetRemotePhoneNumberType( EPEMobileNumber, callId);
+    m_engineInfo->SetRemoteIdentity(
+            RMobileCall::ERemoteIdentityUnavailableNoCliCoinOrPayphone, callId);
+    
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneCLIPayphone);
+    m_util->GetCli(callId,cliText, cliClip);
+    QVERIFY(verify());
+    reset();
+    
+    m_engineInfo->SetRemoteIdentity(
+            RMobileCall::ERemoteIdentityAvailableNoCliCoinOrPayphone, callId);
+    
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneCLIPayphone);
+    m_util->GetCli(callId,cliText, cliClip);
+    QVERIFY(verify());
+    reset();
+    
+    m_engineInfo->SetRemoteIdentity(
+            RMobileCall::ERemoteIdentityUnknown, callId);
+    
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneCallCLIUnknown);
+    m_util->GetCli(callId,cliText, cliClip);
+    QVERIFY(verify());
+    reset();
 }
 
-void TestPhoneCallHeaderUtil::testLabelText()
+void TestPhoneCallHeaderUtil::testEngineInfo()
 {
     const int callId = 1;
-   
-    m_engineInfo->SetCallState(EPEStateHeld, callId);
+    _LIT(KPhoneNumber,"123456");
+    m_engineInfo->SetRemotePhoneNumber(KPhoneNumber(),callId);
+    QVERIFY(m_util->RemotePhoneNumber(callId)==KPhoneNumber());
+    
+    m_engineInfo->SetCallType(EPECallTypeCSVoice, callId);
+    QVERIFY(m_util->CallType(callId)==EPECallTypeCSVoice);
+    
+    m_engineInfo->SetServiceId(callId, 1);
+    QVERIFY(m_util->ServiceId(callId)==1);
+    
+    m_engineInfo->SetIncomingCallForwarded(true,callId);
+    QVERIFY(m_util->IsCallForwarded(callId)==true);
+    
+    m_engineInfo->SetSecureSpecified(true);
+    QVERIFY(m_util->SecureSpecified()==true);
+    
+    m_engineInfo->SetCallSecureStatus(true, callId);
+    QVERIFY(m_util->Ciphering(callId)==true);
+    
+    QVERIFY(m_util->CallerImage(callId)==KNullDesC());
+    
+    m_engineInfo->SetCallState(EPEStateDialing,callId);
+    QVERIFY(m_util->CallState(callId)==EPEStateDialing);    
+}
+
+
+void TestPhoneCallHeaderUtil::testIsVoiceCall()
+{
+    const int callId = 1;
+    const int invalidCallId = -1;
+    
+    m_engineInfo->SetCallType(EPECallTypeCSVoice, callId);
+    QVERIFY(true == m_util->IsVoiceCall(callId));
+    
+    m_engineInfo->SetCallType(EPECallTypeVoIP, callId);
+    QVERIFY(true == m_util->IsVoiceCall(callId));
+    
+    m_engineInfo->SetCallType(EPECallTypeVideo, callId);
+    QVERIFY(false == m_util->IsVoiceCall(callId));
+    
+    m_engineInfo->SetCallTypeCommand(EPECallTypeCSVoice);
+    QVERIFY(true == m_util->IsVoiceCall(invalidCallId));
+    
+    m_engineInfo->SetCallTypeCommand(EPECallTypeVoIP);
+    QVERIFY(true == m_util->IsVoiceCall(invalidCallId));
+    
+    m_engineInfo->SetCallTypeCommand(EPECallTypeVideo);
+    QVERIFY(false == m_util->IsVoiceCall(invalidCallId));
+}
+
+void TestPhoneCallHeaderUtil::testIsVideoCall()
+{
+    const int callId = 1;
+    const int invalidCallId = -1;
+    
+    m_engineInfo->SetCallType(EPECallTypeCSVoice, callId);
+    QVERIFY(false == m_util->IsVideoCall(callId));
+    
+    m_engineInfo->SetCallType(EPECallTypeVideo, callId);
+    QVERIFY(true == m_util->IsVideoCall(callId));
+    
+    m_engineInfo->SetCallTypeCommand(EPECallTypeCSVoice);
+    QVERIFY(false == m_util->IsVideoCall(invalidCallId));
+    
+    m_engineInfo->SetCallTypeCommand(EPECallTypeVideo);
+    QVERIFY(true == m_util->IsVideoCall(invalidCallId));
+}
+
+void TestPhoneCallHeaderUtil::testCallHeaderLabelTextForRingingCall()
+{
+    const int callId = 1;
+    
     m_engineInfo->SetCallType(EPECallTypeCSVoice, callId);
     
+    m_engineInfo->SetCallState(EPEStateRinging, callId);       
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneIncomingCallLabel);
     TBuf<100> label = m_util->LabelText(1);
-    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneCallOnHold);
+    QVERIFY(verify());
+    reset();
+    
+    m_engineInfo->SetCallType(EPECallTypeVideo, callId);
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneVideoCallIncoming);
+    label = m_util->LabelText(1);
+    QVERIFY(verify());
+    reset();
+    
+    m_engineInfo->SetCallType(EPECallTypeCSVoice, callId);
+    m_engineInfo->SetCallState(EPEStateConnected, 2);
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(EPhoneCallWaitingLabel);
+    label = m_util->LabelText(1);
+    QVERIFY(verify());
+    reset();
+    
+    m_engineInfo->SetCallState(EPEStateIdle, 2);
+    m_engineInfo->SetRemotePhoneNumberType(EPEMobileNumber, callId);
+    m_engineInfo->SetRemotePhoneNumber(KNullDesC(), callId);
+    m_engineInfo->SetRemotePartyName(KNullDesC(), callId);
+    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(KPhoneRssCommonFirst);
+    label = m_util->LabelText(1);
+    QVERIFY(verify());
+    reset();
 }
 
 void TestPhoneCallHeaderUtil::testEmergencyHeaderText()
 {
     _LIT( KResourceText, "emergency" );
-    HBufC* text = KResourceText().AllocLC();
+    HBufC* text = KResourceText().AllocL();
     EXPECT(StringLoader,LoadL).returns<HBufC*>(0);
     QVERIFY(m_util->EmergencyHeaderText()==KNullDesC);
     verify();
@@ -275,7 +393,7 @@ void TestPhoneCallHeaderUtil::testEmergencyHeaderText()
 void TestPhoneCallHeaderUtil::testAttemptingEmergencyText()
 {
     _LIT( KResourceText, "attempting" );
-    HBufC* text = KResourceText().AllocLC();
+    HBufC* text = KResourceText().AllocL();
     EXPECT(StringLoader,LoadL).returns<HBufC*>(0);
     QVERIFY(m_util->AttemptingEmergencyText()==KNullDesC);
     verify();
@@ -284,30 +402,5 @@ void TestPhoneCallHeaderUtil::testAttemptingEmergencyText()
     verify();
 }
 
-void TestPhoneCallHeaderUtil::testCallState()
-{
-    m_engineInfo->SetCallState(EPEStateDialing,1);
-    QVERIFY(m_util->CallState(1)==EPEStateDialing);    
-}
-
-void TestPhoneCallHeaderUtil::testLoadResource()
-{
-    TBuf<100> buf;
-    
-    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(1).returns(1);
-    EXPECT(StringLoader,Load).willOnce(invoke(simulateStringLoad));
-    m_util->LoadResource(buf,1);
-    QVERIFY(verify());
-    QVERIFY(buf==KSimulatedStringLoaderString());
-    
-    _LIT( KResourceText, "resource" );
-    HBufC* text = KResourceText().AllocLC();
-    EXPECT(CPhoneMainResourceResolver,ResolveResourceID).with(1).returns(1);
-    EXPECT(StringLoader,LoadL).returns(text);   
-    HBufC* ret = m_util->LoadResource(1);
-    QVERIFY(ret==text);
-    delete text;
-}
-
-QTEST_MAIN_S60(TestPhoneCallHeaderUtil)
+PHONE_TEST_MAIN(TestPhoneCallHeaderUtil)
 #include "unit_tests.moc"

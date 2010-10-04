@@ -47,7 +47,7 @@ const TUint32 KTelDisplayInfo =  0x00000002;
 * This can be used for setting and requesting
 * Car Mode status.
 *****************************************************************************/
-const TUid KPSUidTelCarMode = {0x102029A8};
+const TUid KPSUidTelCarMode = {0x102078EC};
 
 /**
 * Indicates the car mode setting

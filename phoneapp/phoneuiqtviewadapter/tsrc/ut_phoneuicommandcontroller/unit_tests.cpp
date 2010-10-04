@@ -29,6 +29,7 @@
 #include "phoneresourceids.h"
 #include "phoneresourceadapter.h"
 #include "phoneuiqtbuttonscontroller.h"
+#include "phonetestmain.h"
 
 extern bool m_setActions;
 extern bool m_setInvalidCommand;
@@ -37,21 +38,6 @@ extern bool m_setInvalidButtonCommands;
 extern bool m_setInvalidToolBarCommands;
 extern bool m_setCustomToolBarCommands;
 extern int m_phoneButtonFlags;
-
-#define PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestObject) \
-int main(int argc, char *argv[]) \
-    { \
-        HbApplication app(argc, argv); \
-        TestObject tc; \
-        QResource::registerResource("../hbcore.rcc"); \
-        int ret = QTest::qExec(&tc, argc, argv); \
-        /* Core dump if HbIconLoader instance is not destroyed before the application instance. */ \
-        /* HbIconLoader uses QCoreApplication::aboutToQuit() signal to destroy itself. */ \
-        /* app.exec() where the signal is normally emitted is not called here. */ \
-        /* So, invoking the signal explicitly. */ \
-        QMetaObject::invokeMethod(&app, "aboutToQuit", Qt::DirectConnection); \
-        return ret; \
-    }
 
 
 class TestPhoneUiCommandController : public QObject, public PhoneUIQtViewIF, public BubbleManagerIF
@@ -95,7 +81,7 @@ public:
     void setMenuActions(const QList<PhoneAction*>& ) { m_setMenuActionsCalled = true;};
     void shutdownPhoneApp() {};
     void setBackButtonVisible(bool ) {};
-    HbMenu &menuReference(){return m_menu;};
+    HbMenu &menuReference(){ HbMenu* menu = NULL; return *menu;};
     void captureKey(Qt::Key , bool ) {};
     
     // From BubbleManagerIF
@@ -200,8 +186,6 @@ private:
     bool m_setMenuActionsCalled;
     bool m_isDialpadVisible;
     QString m_dialpadText;
-    HbMenu m_menu;
-
 };
 
 TestPhoneUiCommandController::TestPhoneUiCommandController ()
@@ -826,5 +810,5 @@ void TestPhoneUiCommandController::testToolBarActionsForCall()
     QVERIFY(4==actions.count());
 }
 
-PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestPhoneUiCommandController)
+PHONE_TEST_MAIN(TestPhoneUiCommandController)
 #include "unit_tests.moc"

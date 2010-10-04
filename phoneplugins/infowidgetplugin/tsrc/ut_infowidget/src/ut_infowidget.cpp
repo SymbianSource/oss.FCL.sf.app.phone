@@ -28,12 +28,15 @@
 #include <hbframedrawer.h>
 #include "ut_infowidget.h"
 #include "qtestmains60.h"
+#include <HbTapGesture>
+#include <HbAction>
+
+// mocked dependencies
+#include "infowidgetpreferences.h"
 
 #define private friend class UT_InfoWidget;private
 #include "infowidget.h"
 
-// mocked dependencies
-#include "infowidgetpreferences.h"
 
 const QString KPreferenceOn("On"); 
 const QString KPreferenceOff("Off"); 
@@ -88,8 +91,11 @@ void UT_InfoWidget::init()
     SmcDefaultValue<InfoWidgetLayoutManager::DisplayRole>::SetL(
         InfoWidgetLayoutManager::InfoDisplay);
     m_infoWidget = new InfoWidget();
+    // Give time for Qt & Orbit method calls invoked in InfoWidget's
+    // constructor to complete.
+    //QTest::qWait(300);
     SmcDefaultValue<QString>::SetL("");
-    
+
     QVERIFY(verify());
 }
 
@@ -773,13 +779,112 @@ void UT_InfoWidget::t_timerEvent()
  */
 void UT_InfoWidget::t_gestureEvent()
 {
-    QList<QGesture> gestures; 
-    //QScopedPointer<QGestureEvent> event(new QGestureEvent); 
-    //void gestureEvent(QGestureEvent *event); 
-    m_infoWidget->gestureEvent(NULL);  
+    QList<QGesture *> gestures;
+    HbTapGesture gesture;
+    gestures.append(&gesture);
+    QGestureEvent event(gestures); 
+
+    EXPECT(QGestureEvent, gesture).returns(&gesture);
+    EXPECT(QGesture, state).returns(Qt::GestureFinished);
+    EXPECT(HbTapGesture, tapStyleHint).returns(HbTapGesture::Tap);
+    EXPECT(InfoWidgetLayoutManager, currentDisplayRole).returns(
+        InfoWidgetLayoutManager::InfoDisplay);
+    m_infoWidget->gestureEvent(&event);
+    QVERIFY(verify());
+
+    EXPECT(QGestureEvent, gesture).returns(&gesture);
+    EXPECT(QGesture, state).returns(Qt::GestureFinished);
+    EXPECT(HbTapGesture, tapStyleHint).returns(HbTapGesture::Tap);
+    EXPECT(InfoWidgetLayoutManager, currentDisplayRole).returns(
+        InfoWidgetLayoutManager::SettingsDialog);
+    m_infoWidget->gestureEvent(&event);
+    QVERIFY(verify());
+
+    EXPECT(QGestureEvent, gesture).returns(&gesture);
+    EXPECT(QGesture, state).returns(Qt::GestureFinished);
+    EXPECT(HbTapGesture, tapStyleHint).returns(HbTapGesture::TapAndHold);
+    m_infoWidget->gestureEvent(&event);
+    QVERIFY(verify());
+
+    EXPECT(QGestureEvent, gesture).returns(&gesture);
+    EXPECT(QGesture, state).returns(Qt::NoGesture);
+    m_infoWidget->gestureEvent(&event);
+    QVERIFY(verify());
+
+    EXPECT(QGestureEvent, gesture).returns<HbTapGesture *>(0);
+    m_infoWidget->gestureEvent(&event);
     QVERIFY(verify());
 }
 
+void UT_InfoWidget::t_setHomeZoneDisplay()
+{
+    m_infoWidget->setHomeZoneDisplay(QString(""));
+}
 
+void UT_InfoWidget::t_setActiveLineDisplay()
+{
+    m_infoWidget->setActiveLineDisplay(QString(""));
+}
+
+void UT_InfoWidget::t_initializeCheckBoxStates()
+{
+    EXPECT(InfoWidgetLayoutManager, getWidget).returns<QGraphicsWidget *>(0);
+    EXPECT(InfoWidgetLayoutManager, getWidget).returns<QGraphicsWidget *>(0);
+    EXPECT(InfoWidgetLayoutManager, getWidget).returns<QGraphicsWidget *>(0);
+    m_infoWidget->initializeCheckBoxStates();
+    QVERIFY(verify());
+
+    HbCheckBox box;
+
+    EXPECT(InfoWidgetLayoutManager, getWidget).returns(&box);
+    EXPECT(InfoWidgetPreferences, isPreferenceSet).returns(true);
+    EXPECT(HbAbstractButton, setChecked);
+    EXPECT(InfoWidgetLayoutManager, getWidget).returns(&box);
+    EXPECT(InfoWidgetPreferences, isPreferenceSet).returns(true);
+    EXPECT(HbAbstractButton, setChecked);
+    EXPECT(InfoWidgetLayoutManager, getWidget).returns(&box);
+    EXPECT(InfoWidgetPreferences, isPreferenceSet).returns(true);
+    EXPECT(HbAbstractButton, setChecked);
+    m_infoWidget->initializeCheckBoxStates();
+    QVERIFY(verify());
+}
+
+void UT_InfoWidget::t_settingsEditingCancelled()
+{
+    m_infoWidget->settingsEditingCancelled();
+}
+
+void UT_InfoWidget::t_settingsDialogClosed()
+{
+    EXPECT(InfoWidgetLayoutManager, layoutInfoDisplay).returns<QGraphicsWidget *>(0);
+    m_infoWidget->settingsDialogClosed(0);
+    QVERIFY(verify());
+
+    HbAction action;
+    EXPECT(QAction, text).returns(hbTrId("txt_common_button_ok"));
+    EXPECT(InfoWidgetLayoutManager, layoutInfoDisplay).returns<QGraphicsWidget *>(0);
+    m_infoWidget->settingsDialogClosed(&action);
+    QVERIFY(verify());
+
+    EXPECT(QAction, text).returns(hbTrId("txt_common_button_cancel"));
+    EXPECT(InfoWidgetLayoutManager, layoutInfoDisplay).returns<QGraphicsWidget *>(0);
+    m_infoWidget->settingsDialogClosed(&action);
+    QVERIFY(verify());
+
+    EXPECT(QAction, text).returns(hbTrId("blah"));
+    EXPECT(InfoWidgetLayoutManager, layoutInfoDisplay).returns<QGraphicsWidget *>(0);
+    m_infoWidget->settingsDialogClosed(&action);
+    QVERIFY(verify());
+
+}
+
+void UT_InfoWidget::t_settingsValidationFailed()
+{
+    m_infoWidget->m_initialized = true;
+    m_infoWidget->settingsValidationFailed();
+
+    m_infoWidget->m_initialized = false;
+    m_infoWidget->settingsValidationFailed();
+}
 
 QTEST_MAIN_S60(UT_InfoWidget)

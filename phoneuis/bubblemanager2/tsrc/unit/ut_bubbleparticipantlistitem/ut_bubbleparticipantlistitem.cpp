@@ -54,6 +54,7 @@ void ut_BubbleParticipantListItem::initTestCase()
         static_cast<BubbleParticipantListItem*>(mItem);
     item->updateChildItems();
     mMainWindow->show();
+    QTest::qWait(300); // Give HbMainWindow time to complete show() function call.
 }
 
 void ut_BubbleParticipantListItem::cleanupTestCase()

@@ -191,12 +191,10 @@ void ut_cphoneemergency::T_HandleConnectingL(  )
     globalNotifierParam.SetBoolean( EFalse );
     iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommandL" ).
        WithL<TPhoneViewCommandId, TPhoneCommandParam&> ( EPhoneViewSetGlobalNotifiersDisabled, globalNotifierParam );
-    iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommandL" ).
-       WithL<TPhoneViewCommandId, TPhoneCommandParam&> ( EPhoneViewSetEikonNotifiersDisabled, globalNotifierParam );
     
     TInt callID(0);
-    iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommandL" ).
-        WithL<TPhoneViewCommandId, TInt> ( EPhoneViewUpdateBubble, callID );
+    iMockContext->ExpectCallL( "CPhoneState::UpdateCallHeaderAndUiCommandsL" ).
+        WithL<TInt> ( callID );
 
     iStateEmergency->HandlePhoneEngineMessageL( MEngineMonitor::EPEMessageConnecting, 0 );
     EUNIT_ASSERT_EQUALS( KErrNone, iMockContext->VerifyExpectations() );
@@ -233,8 +231,8 @@ void ut_cphoneemergency::T_HandleConnectedL(  )
     {
     
     TInt callID(0);
-    iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommandL" ).
-        WithL<TPhoneViewCommandId, TInt> ( EPhoneViewUpdateBubble, callID );
+    iMockContext->ExpectCallL( "CPhoneState::UpdateCallHeaderAndUiCommandsL" ).
+        WithL<TInt> ( callID );
 
     //first callsetup runs connecting before connected
     iStateEmergency->HandlePhoneEngineMessageL( MEngineMonitor::EPEMessageConnected, 0 );
@@ -307,16 +305,13 @@ void ut_cphoneemergency::T_EmergencyCallSetup_HandleEPEMessageConnectedL()
     globalNotifierParam.SetBoolean( EFalse );
     iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommandL" ).
             WithL<TPhoneViewCommandId, TPhoneCommandParam&> ( EPhoneViewSetGlobalNotifiersDisabled, globalNotifierParam );
-    iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommandL" ).
-            WithL<TPhoneViewCommandId, TPhoneCommandParam&> ( EPhoneViewSetEikonNotifiersDisabled, globalNotifierParam );
     
-    iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommandL" ).
-            WithL<TPhoneViewCommandId, TInt> ( EPhoneViewUpdateBubble, 0 );
+    iMockContext->ExpectCallL( "CPhoneState::UpdateCallHeaderAndUiCommandsL" ).
+        WithL<TInt> ( 0 );
         
     iMockContext->ExpectCallL( "CPhoneState::SetToolbarButtonLoudspeakerEnabled" ).
             TimesL(1);
 
-    iMockContext->ExpectCallL( "CPhoneState::UpdateUiCommands" );
     
     //first callsetup runs connecting before connected
     iStateEmergency->HandlePhoneEngineMessageL( MEngineMonitor::EPEMessageConnected, 0 );

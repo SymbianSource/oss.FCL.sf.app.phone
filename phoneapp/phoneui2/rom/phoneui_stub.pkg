@@ -27,6 +27,6 @@
 :"Nokia"
 
 "" - "z:\sys\bin\phoneui.exe"
-"" - "z:\resource\apps\phoneui.rsc"
+"" - "z:\resource\apps\phoneui.r*"
 "" - "z:\private\10003a3f\import\apps\phoneui_reg.rsc"
 

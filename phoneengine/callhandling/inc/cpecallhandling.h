@@ -675,7 +675,7 @@ class CPECallHandling
         // ReplaceActive       
         TBool iReplaceActive;
         // Status of dial, before dialing state
-        TBool iDialRequest;
+        TBool iDialRequestCallId;
 
         /**
          * CCE observer.

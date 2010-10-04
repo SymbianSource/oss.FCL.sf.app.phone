@@ -86,10 +86,6 @@ class CPhoneSingleCall : public CPhoneGsmInCall
         */
         IMPORT_C TInt CallId() const;
     private:
-    
-        void HandleHeldL( TInt aCallId );
-        
-        void HandleConnectedL( TInt aCallId );
         
         void ToggleHoldL();
         

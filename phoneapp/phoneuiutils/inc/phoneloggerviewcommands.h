@@ -50,8 +50,6 @@ public:
 		EPhoneViewCreateCallHeader,
 		/** EPhoneViewCreateEmergencyCallHeader */
 		EPhoneViewCreateEmergencyCallHeader,
-		/** EPhoneViewUpdateCallHeaderRemoteInfoData */
-		EPhoneViewUpdateCallHeaderRemoteInfoData,
 		/** EPhoneViewUpdateCallHeaderCallDuration */
 		EPhoneViewUpdateCallHeaderCallDuration,
 		/** EPhoneViewRemoveCallHeader */
@@ -154,8 +152,6 @@ public:
 		EPhoneViewEnableKeyLockWithoutNote,
 		/** EPhoneViewUpdateFSW */
 		EPhoneViewUpdateFSW,
-		/** EPhoneViewIsQuery */
-		EPhoneViewIsQuery,
 		/** EPhoneViewBringIdleToForeground */
 		EPhoneViewBringIdleToForeground,
 		/** EPhoneViewBeginUpdate */
@@ -166,20 +162,12 @@ public:
 		EPhoneViewRemoveConferenceBubble,
 		/** EPhoneViewSetTouchPaneButtons */
 		EPhoneViewSetTouchPaneButtons,
-		/** EPhoneViewGetBlockingDialogStatus */
-		EPhoneViewGetBlockingDialogStatus,
-		/** EPhoneViewIsNoteActive */
-		EPhoneViewIsNoteActive,
 		/** EPhoneViewOpenCallHandling */
 		EPhoneViewOpenCallHandling,
 		/** EPhoneViewGetAudioVolumeLevel */
 		EPhoneViewGetAudioVolumeLevel,
-		/** EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel */
-		EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel,
 		/** EPhoneViewRemoveDtmfNote */
 		EPhoneViewRemoveDtmfNote,
-		/** EPhoneViewSetEikonNotifiersDisabled */
-		EPhoneViewSetEikonNotifiersDisabled,
 		/** EPhoneViewCancelAllNotications */
 		EPhoneViewCancelAllNotications,
 		/** EPhoneViewDisableKeyLock */
@@ -200,8 +188,6 @@ public:
 		EPhoneViewUpdateContactByString,
 		/** EPhoneViewAddContactByString */
 		EPhoneViewAddContactByString,
-		/** EPhoneViewIsActiveNoteDissmissableByKeyEvent */
-		EPhoneViewIsActiveNoteDissmissableByKeyEvent,
 		/** EPhoneViewEnableToolbarButton */
 		EPhoneViewEnableToolbarButton,
 		/** EPhoneViewHideToolbar */

@@ -49,7 +49,7 @@ void PhoneUiCommandController::setCallMenuActions(
         QMap<int,int> callStates, QMap<int,int> serviceIds, 
         int serviceId, int expandedCallId )
 {
-    PHONE_DEBUG("PhoneMenuController::setCallMenuActions");
+    PHONE_TRACE
     releaseMenu();
     
     PhoneCommandExtensionWrapper *extension = commandExtension(serviceId);
@@ -93,6 +93,7 @@ QMap<PhoneAction::ActionType, PhoneAction *>
         int serviceId,
         int callId)
 {
+    PHONE_TRACE
     QMap<PhoneAction::ActionType, PhoneAction *> translatedActions;
     QList<int> commands = buttonCommandList(
             callState, emergencyCall, callStates.values());
@@ -134,6 +135,7 @@ QList<PhoneAction *> PhoneUiCommandController::toolBarActions(
         int serviceId,
         int callId)
 {
+    PHONE_TRACE
     QList<PhoneAction *> actions;
     
     //Set tool bar button flags
@@ -179,7 +181,7 @@ QList<PhoneAction *> PhoneUiCommandController::toolBarActions(
 QList<int> PhoneUiCommandController::menuCommands(
         QMap<int,int> callStates, QMap<int,int> serviceIds ) const
 {
-    PHONE_DEBUG("PhoneMenuController::menuCommands");
+    PHONE_TRACE
     QList<int> commands;
     bool sameServices = areServicesSame(callStates,serviceIds);
     bool isEmergencyCall = emergencyCall(callStates);
@@ -282,6 +284,7 @@ PhoneCommandExtensionWrapper *PhoneUiCommandController::commandExtension(
 TUid PhoneUiCommandController::ResolveImplementationUidL( 
         TUint32 aServiceId, TServicePropertyName aPropertyName ) const
     {
+    PHONE_TRACE
     TUid implUid = { 0 };
     CSPEntry* entry = CSPEntry::NewLC();
 
@@ -309,6 +312,7 @@ TUid PhoneUiCommandController::ResolveImplementationUidL(
 PhoneCommandExtensionWrapper 
     *PhoneUiCommandController::CommandExtensionL( TUint aServiceId )
 {
+    PHONE_TRACE
     TUid pluginUid = ResolveImplementationUidL( aServiceId, 
         EPropertyCallMenuHandlerPluginId );
     
@@ -337,7 +341,7 @@ PhoneCommandExtensionWrapper
 
 void PhoneUiCommandController::releaseMenu()
 {
-    PHONE_DEBUG("PhoneMenuController::setDialpadMenuActions");
+    PHONE_TRACE
     for (int i=0;i<m_customMenuActions.count();i++) {
         m_view.menuReference().removeAction(m_customMenuActions.at(i));
     }
@@ -458,6 +462,7 @@ QList<int> PhoneUiCommandController::buttonCommandList(
         bool emergencyCall,
         QList<int> callStates) const
 {
+    PHONE_TRACE
     QList<int> ret;
     
     switch( callState ) {

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -157,7 +157,7 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
 {
     //except user cancels
     
-    appendAction("txt_phone_setlabel_all_calls", selectAction, "Cancel");
+    appendAction("txt_phone_title_all_calls", selectAction, "Cancel");
     EXPECT(PSetCallDivertingWrapper, getDefaultNumbers);
     m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData("text", "");
     m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData(
@@ -167,7 +167,7 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     QVERIFY(verify());
     
     //except user selects vmb
-    appendAction("txt_phone_setlabel_all_calls", selectItem, "txt_phone_setlabel_voice_mbx");
+    appendAction("txt_phone_title_all_calls", selectItem, "txt_phone_list_to_voice_mailbox");
     EXPECT(PSetCallDivertingWrapper, getDefaultNumbers);
     EXPECT(PSetCallDivertingWrapper, queryVoiceMailBoxNumber).willOnce(invoke(fillNumber)).returns(0);
     EXPECT(SsSettingsWrapper, get);
@@ -195,7 +195,7 @@ void UT_CpDivertPlugin::t_changeDivertingStateRequested()
     m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData("text", "");
     m_divertpluginGroup->m_DataItemVoiceAllCalls->setContentWidgetData(
         "checkState", Qt::Checked);
-    appendAction("txt_phone_setlabel_all_calls", selectItem, "0401234567");
+    appendAction("txt_phone_title_all_calls", selectItem, "0401234567");
     EXPECT(PSetCallDivertingWrapper,getDefaultNumbers);
     EXPECT(SsSettingsWrapper,get);
     EXPECT(PSetCallDivertingWrapper,setCallDiverting);
@@ -316,8 +316,8 @@ void UT_CpDivertPlugin::t_itemShown()
 void UT_CpDivertPlugin::t_popUpTimerQuery()
 {
     const QString delayLnString("txt_phone_list_ln_seconds");
-        
-    appendAction("txt_phone_setlabel_if_not_answered", selectItem, "txt_phone_list_enter_number_manually");
+    
+    appendAction("txt_phone_title_if_not_answered", selectItem, "txt_phone_list_enter_number_manually");
     appendAction("txt_phone_info_number", insertText, "12345");
     appendAction("txt_phone_info_number", selectAction, "OK");
     appendAction("txt_phone_title_delay", selectItem, delayLnString);

@@ -51,7 +51,8 @@ public:
         Muted          = 0x20,
         Diverted       = 0x40,
         Video          = 0x80,
-        VoIPCall       = 0x100
+        VoIPCall       = 0x100,
+        EmergencyCall  = 0x200
         };
     Q_DECLARE_FLAGS(PhoneCallFlags, PhoneCallFlag)
 

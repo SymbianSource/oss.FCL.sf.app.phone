@@ -31,7 +31,7 @@ using namespace QtMobility;
     \class Tools
     \brief The static functionality.
  */
-class CPTELEPHONYUTILS_EXPORT Tools : public QObject
+class TELEPHONYUTILS_EXPORT Tools : public QObject
 {
     Q_OBJECT
 
@@ -52,12 +52,12 @@ public:
     \class SettingsWrapper
     \brief Wraps central repository and P&S dependency.
  */
-class CPTELEPHONYUTILS_EXPORT CpSettingsWrapper : public QObject
+class TELEPHONYUTILS_EXPORT SettingsWrapper : public QObject
 {
     Q_OBJECT
 public:
-    CpSettingsWrapper(QObject *parent = NULL);
-    ~CpSettingsWrapper();
+    SettingsWrapper(QObject *parent = NULL);
+    ~SettingsWrapper();
 public:
     /*!
       Show call duration setting

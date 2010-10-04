@@ -64,7 +64,7 @@ class CPEContactMatch
         * @param aDataStore, handle to internal engine info interface
         * @return an instance of class CPEContactMatch
         */
-        IMPORT_C static CPEContactMatch* NewL(
+        static CPEContactMatch* NewL(
             CPEContactHandling& aOwner,
             MPEDataStore& aDataStore );
         
@@ -145,7 +145,6 @@ class CPEContactMatch
         */
         TInt LoadThumbnail( const CPhCntContactId& aContactId, const TInt aCallId );
 
-  
 
     private:    // Data
 

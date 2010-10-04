@@ -71,12 +71,7 @@ class CPhoneStateStartup : public CPhoneState
         */
         IMPORT_C virtual void HandlePhoneStartupL();
 
-        /**
-         * Indicates when the Idle app is in the foreground.
-         */
-        IMPORT_C virtual void HandleIdleForegroundEventL();
-
-        protected:
+    protected:
 
         /**
         * ConstructL()

@@ -24,7 +24,6 @@
 #include <hbmainwindow.h>
 #include <phoneappcommands.hrh>
 #include <hbmenu.h>
-#include "qtestmains60.h"
 #include "phoneuiqtviewadapter.h"
 #include "tphonecmdparaminteger.h"
 #include "tphonecmdparamaudiooutput.h"
@@ -43,6 +42,7 @@
 #include "tphonecmdparamglobalnote.h"
 #include "tphonecmdparamstring.h"
 #include "phoneindicatorcontroller.h"
+#include "phoneuitestmain.h"
 
 extern int m_phoneButtonFlags;
 extern bool m_EPhoneViewMuteRingToneOnAnswer_called;
@@ -75,21 +75,6 @@ extern int m_removeCallFromConferenceCallId;
 extern int m_setPrivateFromConferenceCallId;
 extern int m_removeCallHeaderCallId;
 extern bool m_isVoiceCall;
-
-#define PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestObject) \
-int main(int argc, char *argv[]) \
-    { \
-        HbApplication app(argc, argv); \
-        TestObject tc; \
-        QResource::registerResource("../hbcore.rcc"); \
-        int ret = QTest::qExec(&tc, argc, argv); \
-        /* Core dump if HbIconLoader instance is not destroyed before the application instance. */ \
-        /* HbIconLoader uses QCoreApplication::aboutToQuit() signal to destroy itself. */ \
-        /* app.exec() where the signal is normally emitted is not called here. */ \
-        /* So, invoking the signal explicitly. */ \
-        QMetaObject::invokeMethod(&app, "aboutToQuit", Qt::DirectConnection); \
-        return ret; \
-    }
 
 // Own assert initialization  
 /*void qt_assert(const char *assertion, const char *file, int line)
@@ -222,8 +207,6 @@ private slots:
     void testEPhoneViewCreateCallHeaderCommand2 ();
     void testEPhoneViewCreateEmergencyCallHeader ();
     void testEPhoneViewUpdateBubble ();
-    void testEPhoneViewUpdateCallHeaderRemoteInfoData ();
-    void testEPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel();
     void testCallIdByState ();
     void testSetToolbarButtons ();
     void testEPhoneViewHideNaviPaneAudioVolume ();
@@ -419,23 +402,6 @@ void TestPhoneUIQtViewAdapter::testEPhoneViewUpdateBubble()
 
     QCOMPARE (callId, m_updateCallHeaderCallId);
 
-}
-
-void TestPhoneUIQtViewAdapter::testEPhoneViewUpdateCallHeaderRemoteInfoData()
-{
-    int callId = 3;
-    m_adapter->ExecuteCommandL(EPhoneViewUpdateCallHeaderRemoteInfoData, callId);
-
-    QCOMPARE(m_updateCallHeaderRemoteInfoCallId, callId);
-
-}
-
-void TestPhoneUIQtViewAdapter::testEPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel ()
-{
-    int callId = 3;
-    m_adapter->ExecuteCommandL(EPhoneViewUpdateCallHeaderRemoteInfoDataAndLabel, callId);
-
-    QCOMPARE(m_updateCallHeaderRemoteInfoAndLabelCallId, callId);
 }
 
 void TestPhoneUIQtViewAdapter::testCallIdByState ()
@@ -1137,5 +1103,5 @@ void TestPhoneUIQtViewAdapter::testCaptureEndKey()
     QVERIFY(m_capturedKey == Qt::Key_0);
 }
 
-PHONE_QT_VIEW_ADAPTER_TEST_MAIN(TestPhoneUIQtViewAdapter)
+PHONE_UITEST_MAIN(TestPhoneUIQtViewAdapter)
 #include "unit_tests.moc"

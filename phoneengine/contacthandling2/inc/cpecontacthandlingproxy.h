@@ -66,7 +66,7 @@ class CPEContactHandlingProxy
         /**
         * Destructor.
         */
-        IMPORT_C virtual ~CPEContactHandlingProxy();
+        virtual ~CPEContactHandlingProxy();
 
     public:
         /**

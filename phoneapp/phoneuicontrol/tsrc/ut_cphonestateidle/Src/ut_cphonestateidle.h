@@ -63,8 +63,6 @@ NONSHARABLE_CLASS( ut_cphonestateidle )
          void T_IdlePhoneFocusLost_DiallerNotUsedL();
          void T_IdlePhoneFocusLost_DiallerUsedL();
          void T_IdleEndKeyPressGeneratesCancelNotificationsL();
-         void T_HandleIdleForegroundEventL();
-         void T_HandlePhoneForegroundEventL();
          void T_HandleKeyMessageL();
          void T_HandleKeyMessageL_AppKeyL();
          void T_HandleKeyMessageL_AppKeyL_SecurityModeOff();

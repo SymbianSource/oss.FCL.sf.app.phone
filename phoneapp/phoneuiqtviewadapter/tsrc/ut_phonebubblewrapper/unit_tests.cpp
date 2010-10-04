@@ -18,7 +18,7 @@
 #include <QtTest/QtTest>
 #include <QtGui>
 #include <QSignalSpy>
-#include "qtestmains60.h"
+#include "phonetestmain.h"
 #include "phonebubblewrapper.h"
 #include "bubblemanagerif.h"
 #include "pevirtualengine.h"
@@ -549,5 +549,5 @@ void TestPhoneBubbleWrapper::testSetServiceId()
     
 }
 
-QTEST_MAIN_S60(TestPhoneBubbleWrapper)
+PHONE_TEST_MAIN(TestPhoneBubbleWrapper)
 #include "unit_tests.moc"

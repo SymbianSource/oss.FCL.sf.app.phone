@@ -56,7 +56,7 @@ public:
     
 private: 
     
-    QScopedPointer<CpPhoneLocalisation> m_localisation; 
+    QScopedPointer<PhoneLocalisation> m_localisation; 
 };
 
 #endif /* CPTELEPHONYPLUGIN_H */
