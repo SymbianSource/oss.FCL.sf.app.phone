@@ -25,23 +25,33 @@
 #include <remconcoreapitargetobserver.h>
 #include <MProfileEngine.h>
 #include <bmbubblemanager.h>
-#include <eikenv.h>
 
 #include "mphonestate.h"
 #include "mphoneviewcommandhandle.h"
 #include "cphonecbamanager.h"
-#include "tphonecmdparamtranseffect.h"
-#include "tphonetransitionhandler.h"
 
 // FORWARD DECLARATIONS
 class MPhoneState;
 class MPhoneStateMachine;
 class CPhoneCallHeaderManager;
-class TPhoneTransitionHandler;
 class CPhoneTimer;
 class TPhoneCmdParamCallHeaderData;
 class MPhoneCustomization;
 class CPhoneNumberEntryManager;
+
+enum TStateTransEffectType
+    {
+    ENoneType,
+    ECallUiAppear,
+    ECallUiDisappear,
+    // These effect types can be used only when NE is opened/closed
+    // when some other app than phone is visible on the foreground/
+    // background.
+    // These cannot be used for internal transitions (=call ui<->dialer).
+    ENumberEntryOpen,
+    ENumberEntryClose,
+    ENumberEntryCreate
+    };
 
 // CLASS DECLARATION
 
@@ -224,9 +234,32 @@ class CPhoneState :
             TRemConCoreApiButtonAction aButtonAct);
 
         /**
+        * Setter for divert indication showing in bubble.
+        * @param aDivertIndication ETrue to show divert indication,
+        *          EFalse to not. Usually setting EFalse isn't necessary
+        *         as it's a default value in bubble creation.
+        */
+        IMPORT_C virtual void SetDivertIndication(
+            const TBool aDivertIndication );
+
+        /**
         * Handles Long hash key press
         */
         IMPORT_C void HandleLongHashL();
+
+        /**
+        * Informs view to start Transition effect if effect
+        * type is feasible for current state.
+        * @param aType a transition effect, default none
+        * EndTransEffect() must be called when update is done.
+        */
+        IMPORT_C void BeginTransEffectLC( TStateTransEffectType aType = ENoneType );
+
+        /**
+        * Informs view to complete Transition effect
+        */
+        IMPORT_C void EndTransEffect();
+
         /**
         * Checks whether customized dialer view is active,
         * @return ETrue if customized dialer is active
@@ -311,24 +344,6 @@ class CPhoneState :
         * to inherinting classes.
         */ 
         IMPORT_C virtual void DoStateSpecificCallSetUpDefinitionsL();
-        
-        /**
-        * Getter for CEikonEnv to avoid use of static system calls
-        * @return CEikonEnv handle
-        */
-        IMPORT_C CEikonEnv* EikonEnv() const;
-        
-        /**
-        * Setter for CEikonEnv to avoid use of static system calls
-        * @param CEikonEnv handle
-        */
-        IMPORT_C virtual void SetEikonEnv( CEikonEnv* aEnv );
-		
-        /**
-        * Getter for TPhoneTransitionHandler instance.
-        * @return TPhoneTransitionHandler handle
-        */    
-        IMPORT_C TPhoneTransitionHandler& TransitionHandlerL();
 
     public: // NumberEntry functions.
 
@@ -353,7 +368,7 @@ class CPhoneState :
         /**
         * Close and and clear number entry.
         */
-        IMPORT_C void CloseClearNumberEntryAndLoadEffectL( TPhoneTransEffectType aType );
+        IMPORT_C void CloseClearNumberEntryAndLoadEffectL( TStateTransEffectType aType );
 
     protected:
 
@@ -617,7 +632,18 @@ class CPhoneState :
         * in number entry.
         */
         IMPORT_C virtual void OnlyHashInNumberEntryL();
-        
+
+        /**
+        * Informs view that UI is being updated (call bubble or number editor).
+        * EndUiUpdate() must be called when update is done.
+        */
+        IMPORT_C void BeginUiUpdateLC();
+
+        /**
+        * Informs view that UI update is completed.
+        */
+        IMPORT_C void EndUiUpdate();
+
         /*
         * Checks if necessary to show call termination note
         *
@@ -719,14 +745,6 @@ class CPhoneState :
         * @param aCallId - call id to set up
         */ 
          IMPORT_C void DisplayCallSetupL( TInt aCallId );
-         
-         /**
-          * Sets the flag wether the foreground application
-          * needs to be brought foreground after the phone
-          * goes idle 
-          */
-         IMPORT_C void SetNeedToReturnToForegroundAppStatusL( 
-             TBool aNeedToReturn );
 
     protected: // NumberEntry functions.
 
@@ -789,51 +807,65 @@ class CPhoneState :
         IMPORT_C virtual  void HandleNumberEntryEdited();
 
         /**
-         * Returns ETrue if alphanumeric characters are supported.
-         * @param aKeyEvent Key event.
-         * @return ETrue if alphanumeric chars are supported.
-         */
-         IMPORT_C TBool IsAlphanumericSupportedAndCharInput(
-                     const TKeyEvent& aKeyEvent );
+        * Returns ETrue if alphanumeric characters are supported.
+        * @param aKeyEvent Key event.
+        * @return ETrue if alphanumeric chars are supported.
+        */
+        IMPORT_C TBool IsAlphanumericSupportedAndCharInput(
+                 const TKeyEvent& aKeyEvent );
 
-         /**
-         * Handle state-specific behaviour when number entry is cleared
-         */
-         IMPORT_C virtual void HandleNumberEntryClearedL();
+        /**
+        * Handle state-specific behaviour when number entry is cleared
+        */
+        IMPORT_C virtual void HandleNumberEntryClearedL();
 
-         /**
-         * Internal number entry handling methods.
-         */
-         void NumberEntryClearL();
-         
-		  
-         /**
-         * Dims silence touch button if call is not alerting.
-         * @param None
-         */
-         IMPORT_C void UpdateSilenceButtonDimming();
+        /**
+        * Internal number entry handling methods.
+        */
+        void NumberEntryClearL();
 
-         /**
-         * Sets toolbar dimming.
-         * @param aDimmed ETrue if dimmed
-         */
-         IMPORT_C void SetToolbarDimming( TBool aDimmed );
+        /**
+        * Dims silence touch button if call is not alerting.
+        * @param None
+        */
+        IMPORT_C void UpdateSilenceButtonDimming();
 
-         /**
-         * Sets toolbar loudspeaker button enabled.
-         */
-         IMPORT_C void SetToolbarButtonLoudspeakerEnabled();
+        /**
+        * Sets toolbar dimming.
+        * @param aDimmed ETrue if dimmed
+        */
+        IMPORT_C void SetToolbarDimming( TBool aDimmed );
 
-         /**
-         * Sets toolbar handset button enabled.
-         */
-         IMPORT_C void SetToolbarButtonHandsetEnabled();
+        /**
+        * Sets toolbar loudspeaker button enabled.
+        */
+        IMPORT_C void SetToolbarButtonLoudspeakerEnabled();
 
-         /**
-         * Sets Bluetooth handsfree button enabled.
-         */
-         IMPORT_C void SetToolbarButtonBTHFEnabled();  
-         
+        /**
+        * Sets toolbar handset button enabled.
+        */
+        IMPORT_C void SetToolbarButtonHandsetEnabled();
+
+        /**
+        * Enables global notifiers.
+        */
+        IMPORT_C void EnableGlobalNotifiersL();
+
+        /**
+        * Disables global notifiers.
+        */
+        IMPORT_C void DisableGlobalNotifiersL();
+
+        /**
+        * Enables Eikon notifiers.
+        */
+        IMPORT_C void EnableEikonNotifiersL();
+
+        /**
+        * Disables Eikon notifiers.
+        */
+        IMPORT_C void DisableEikonNotifiersL();
+
     protected:
 
        /**
@@ -870,6 +902,11 @@ class CPhoneState :
        *                                EPEStateConnecting
        */
        TBool IsAnyConnectedCalls();
+
+       /**
+       * Checks if all startup related queries and graphics have been displayed.
+       */
+       TBool AllStartupQueriesDisplayed();
 
     private:
 
@@ -1000,6 +1037,18 @@ class CPhoneState :
             TPhoneCmdParamCallHeaderData* aCallHeaderData );
 
         /**
+        * TCleanupOperation to call EndUiUpdate(), if leave occurs
+        * after BeginUiUpdate().
+        */
+        static void UiUpdateCleanup(TAny* aThis );
+
+        /**
+        * TCleanupOperation to call EndTransEffect, if leave occurs
+        * after BeginTransEffect().
+        */
+        static void EffectCleanup(TAny* aThis );
+
+        /**
         * Gets volume level from ui control.
         */
         TInt GetVolumeLevel();
@@ -1052,7 +1101,7 @@ class CPhoneState :
          */
         void SendDtmfKeyEventL( const TKeyEvent& aKeyEvent,
                 TEventCode aEventCode  );
-        
+
         /*
          * Creates call header manager if needed.
         */
@@ -1147,13 +1196,10 @@ class CPhoneState :
 
         // Internal variable for EikonEnv to avoid
         // use of static system calls
-        CEikonEnv* iEnv; // Not owned
+        CEikonEnv& iEnv;
 
         // Call header manager.
         CPhoneCallHeaderManager* iCallHeaderManager;
-        
-        // Call header manager.
-        TPhoneTransitionHandler* iTransitionHandler;
 
         // Number entry manager
         CPhoneNumberEntryManager* iNumberEntryManager;
@@ -1169,6 +1215,11 @@ class CPhoneState :
          * Handle to the Operator logo resource.
          */
         TInt iLogoHandle;
+
+        /**
+         * Current startup ui sequence phase.
+         */ 
+        TInt iStartupUiPhase;
         };
 
 #endif // CPHONESTATE_H

@@ -140,8 +140,8 @@
 
 // Kastor effect IDs, aknskincontent/101f84b9.sel
 // These effects cannot be used for internal transitions (Call UI<->Dialer)
-const TInt KTouchPhoneUiOpenEffect  = 3;
-const TInt KTouchPhoneUiCloseEffect = 5;
+const TInt KTouchDialerOpenEffect  = 3;
+const TInt KTouchDialerCloseEffect = 5;
 
 const TInt KTouchCallUiOpenEffect  = 1000;
 const TInt KTouchCallUiCloseEffect = 1001;
@@ -841,6 +841,7 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             iMenuController->SetMuteFlag( aCommandParam );
             iBubbleWrapper->SetPhoneMuted( aCommandParam );
             iIncallIndicator->HandleMuteChange( aCommandParam );
+            iAudioController->HandleMuteChange( aCommandParam );
             iToolbarController->SetMuteFlag( aCommandParam );
             if ( iButtonsController )
                 {
@@ -1121,15 +1122,7 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
                                                 booleanParam->Boolean() );
             break;
             }
-		 
-		 case EPhoneViewSetVoipCallDTMFVisibilityFlag:
-            {
-            TPhoneCmdParamBoolean*  booleanParam =
-                static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
-            iMenuController->SetHideVoipCallDTMFVisibilityFlag(
-                                                    booleanParam->Boolean() );
-            break;
-            }
+
         case EPhoneViewSetVideoCallDTMFVisibilityFlag:
             {
             TPhoneCmdParamBoolean*  booleanParam =
@@ -3379,7 +3372,7 @@ void CPhoneViewController::UpdateAudioPathOptions(
 
     // btaa menu options
     iMenuController->SetBTAccFlag( &btaaParam );
-	iToolbarController->SetBTAccFlag( &btaaParam );
+
     iAudioController->HandleIhfChange( &ihfParam );
 
     if ( iButtonsController )
@@ -3419,8 +3412,7 @@ void CPhoneViewController::UpdateAudioAvailabilityOptions(
 
     // btaa menu options
     iMenuController->SetBTAccAvailableFlag( &btAvailableParam );
-	iToolbarController->SetBTAccAvailableFlag( &btAvailableParam );
-	
+
     if ( iButtonsController )
         {
         iButtonsController->SetBTAccAvailableFlag( &btAvailableParam );
@@ -3859,11 +3851,11 @@ void CPhoneViewController::HandleTransitionEffect(
     switch ( aType )
         {
         case EPhoneTransEffectDialerCreate:
-        case EPhoneTransEffectPhoneUiOpen:
-            useEffect = KTouchPhoneUiOpenEffect;
+        case EPhoneTransEffectDialerOpen:
+            useEffect = KTouchDialerOpenEffect;
             break;
-        case EPhoneTransEffectPhoneUiClose:
-            useEffect = KTouchPhoneUiCloseEffect;
+        case EPhoneTransEffectDialerClose:
+            useEffect = KTouchDialerCloseEffect;
             break;
         case EPhoneTransEffectAppStartFromDialer:
             useEffect = AknTransEffect::EApplicationStart;
@@ -4136,7 +4128,7 @@ TBool CPhoneViewController::CanTransEffectBeUsed(
     /* In case transition is from idle to dialer or to incoming call 
     show transition effects as well. */
     else if ( isIdleInForeground && 
-              ( aType == EPhoneTransEffectPhoneUiOpen ||
+              ( aType == EPhoneTransEffectDialerOpen ||
                 aType == EPhoneTransEffectCallUiAppear ) )
         {
         okToUseEffect = ETrue;
@@ -4145,7 +4137,7 @@ TBool CPhoneViewController::CanTransEffectBeUsed(
     when call is created from some other then phone app for example logs or from phonebook*/
     else if ( !isPhoneForeground && 
               !isIdleInForeground && 
-              ( aType == EPhoneTransEffectPhoneUiOpen ||
+              ( aType == EPhoneTransEffectDialerOpen ||
                 aType == EPhoneTransEffectCallUiAppear ) )
         {
         okToUseEffect = ETrue;
@@ -4164,7 +4156,7 @@ TBool CPhoneViewController::IsOkToUseThisTypeOfEffectInsidePhoneApp(
     switch ( aType )
         {
         case EPhoneTransEffectDialerCreate:
-        case EPhoneTransEffectPhoneUiOpen:
+        case EPhoneTransEffectDialerOpen:
             okToUse = !iDialerActive;
             break;
         case EPhoneTransEffectAppStartFromDialer:
@@ -4172,7 +4164,7 @@ TBool CPhoneViewController::IsOkToUseThisTypeOfEffectInsidePhoneApp(
             break;
         /* No need to check dialer activity below because effects are 
         common to callhandling/dialer */
-        case EPhoneTransEffectPhoneUiClose:
+        case EPhoneTransEffectDialerClose:
         case EPhoneTransEffectCallUiAppear:
         case EPhoneTransEffectCallUiDisappear:
             okToUse = ETrue;

@@ -117,12 +117,9 @@ void CPEContactExtensionWrapper::InitializeL(
 // ---------------------------------------------------------------------------
 //
 TInt CPEContactExtensionWrapper::GetAddressForMatching( 
-        RBuf& aParsedAddress, 
-        TInt& aMeaningfulDigits, 
-        TBool& aAllowUserNameMatch )
+        RBuf& aParsedAddress, TInt& aMeaningfulDigits )
     {
-    return iPlugin->GetAddressForMatching( 
-            aParsedAddress, aMeaningfulDigits, aAllowUserNameMatch );
+    return iPlugin->GetAddressForMatching( aParsedAddress, aMeaningfulDigits );
     }
 
 

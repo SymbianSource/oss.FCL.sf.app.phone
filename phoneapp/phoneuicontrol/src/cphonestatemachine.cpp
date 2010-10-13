@@ -41,8 +41,7 @@ EXPORT_C CPhoneStateMachine::CPhoneStateMachine(
     MPhoneViewCommandHandle* aViewCommandHandle ) :
     iOldStateId( EPhoneStateNull ),
     iNewStateId( EPhoneStateNull ),
-    iViewCommandHandle( aViewCommandHandle ),
-    iEnv( CEikonEnv::Static() ) // codescanner::eikonenvstatic
+    iViewCommandHandle( aViewCommandHandle )
     {
     __ASSERT_ALWAYS( aViewCommandHandle,
     	Panic( EPhoneCtrlParameterNotInitialized ) );
@@ -225,14 +224,5 @@ EXPORT_C void CPhoneStateMachine::HandlePropertyChangedL(const TUid& aCategory,
 		}
 	State()->HandlePropertyChangedL( aCategory, aKey, aValue );
 	}
-
-// -----------------------------------------------------------
-// CPhoneStateMachine::EikonEnv
-// -----------------------------------------------------------
-//
-EXPORT_C CEikonEnv* CPhoneStateMachine::EikonEnv() const
-    {
-    return iEnv;
-    }
 	
 // End of File

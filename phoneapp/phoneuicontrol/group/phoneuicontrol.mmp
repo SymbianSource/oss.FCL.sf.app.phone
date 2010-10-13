@@ -54,7 +54,6 @@ SOURCE          cphonecallheadermanager.cpp
 SOURCE          cphonenumberentrymanager.cpp
 SOURCE          cphonecbamanager.cpp
 SOURCE          cphonesecuritymodeobserver.cpp
-SOURCE          tphonetransitionhandler.cpp
 
 /* Languages */
 LANG SC

@@ -116,20 +116,14 @@ MVPbkContactStoreList& CPhCntContactManager::ContactStoresL() const
 //
 MPhCntContactMatchStrategy* CPhCntContactManager::CreateContactMatchStrategyL(
     MVPbkContactFindObserver& aObserver,
-    TDuplicateRemovalStrategy aStrategy )
+    TDuplicateRemovalStrategy aRemoveDuplicatesStrategy )
     {
-    const TUint32 removeDuplicatesStrategyFlag =
-        CVPbkPhoneNumberMatchStrategy::EVPbkDuplicatedContactsMatchFlag |
-        CVPbkPhoneNumberMatchStrategy::EVPbkBestMatchingFlag;
-    const TUint32 dontRemoveDuplicatesStrategyFlag = 
-        CVPbkPhoneNumberMatchStrategy::EVPbkBestMatchingFlag;
-        
+    
     return CPhCntContactMatchStrategy::NewL(
         *iContactManager,
         *iContactStoreUris,
         aObserver,
-        aStrategy == ERemoveDuplicates ? 
-            removeDuplicatesStrategyFlag : dontRemoveDuplicatesStrategyFlag );
+        aRemoveDuplicatesStrategy );
     }
 
 // ---------------------------------------------------------------------------

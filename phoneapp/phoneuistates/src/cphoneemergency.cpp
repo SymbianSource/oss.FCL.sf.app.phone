@@ -207,10 +207,7 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
 
     // Re-enable global notes, this enables secui (if needed) to come on top
     // if call creation was rejected by user
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
+    EnableGlobalNotifiersL();
 
     if ( iOnScreenDialer && IsDTMFEditorVisibleL() )
         {
@@ -332,7 +329,7 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
 
     if ( aCallId == KPEEmergencyCallId )
         {
-        if ( !IsSimOk() || IsSimStateNotPresentWithSecurityModeEnabled() )
+        if ( !IsSimOk() )
             {
             TPhoneCmdParamBoolean visibleMode;
             visibleMode.SetBoolean( ETrue );
@@ -351,19 +348,19 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
         iViewCommandHandle->HandleCommandL( EPhoneViewShowToolbar );
 
         // Disable global notes when the phone is dialling
-        TPhoneCmdParamBoolean globalNotifierParam;
-        globalNotifierParam.SetBoolean( ETrue );
-        iViewCommandHandle->ExecuteCommandL(
-            EPhoneViewSetGlobalNotifiersDisabled,
-            &globalNotifierParam );
+        DisableGlobalNotifiersL();
 
         // Capture keys when the phone is dialling
         CaptureKeysDuringCallNotificationL( ETrue );
 
         // Indicate that the Phone needs to be sent to the background if
         // an application other than the top application is in the foreground
-        SetNeedToReturnToForegroundAppStatusL( !TopAppIsDisplayedL() );
-        
+        TPhoneCmdParamBoolean booleanParam;
+        booleanParam.SetBoolean( !TopAppIsDisplayedL() );
+        iViewCommandHandle->ExecuteCommandL(
+                EPhoneViewSetNeedToReturnToForegroundAppStatus,
+            &booleanParam );
+
         // Bring Phone app in the foreground
         TPhoneCmdParamInteger uidParam;
         uidParam.SetInteger( KUidPhoneApplication.iUid );
@@ -405,12 +402,8 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalNote );
 
     // Re-enable global notes
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
-          &globalNotifierParam );
+    EnableGlobalNotifiersL();
+    EnableEikonNotifiersL();
 
     if(  TouchCallHandlingSupported() )
         {
@@ -445,7 +438,7 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
     emergencyHeaderParam.SetCipheringIndicatorAllowed(
         iStateMachine->PhoneEngineInfo()->SecureSpecified() );
 
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
 
     // Notify the view
     iViewCommandHandle->ExecuteCommandL(
@@ -461,7 +454,7 @@ void CPhoneEmergency::HandleConnectingL( TInt aCallId )
         aCallId,
         &headerParam );
 
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
 
     UpdateInCallCbaL();
     }
@@ -474,7 +467,7 @@ void CPhoneEmergency::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneEmergency::HandleConnectedL() ");
 
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
 
     TPhoneCmdParamCallHeaderData emergencyHeaderParam;
     emergencyHeaderParam.SetCallState( EPEStateConnected );
@@ -484,7 +477,7 @@ void CPhoneEmergency::HandleConnectedL( TInt aCallId )
         aCallId,
         &emergencyHeaderParam );
 
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
     SetToolbarDimming( ETrue );
     UpdateInCallCbaL();
     }

@@ -43,7 +43,8 @@ TPhoneCallHeaderParam::TPhoneCallHeaderParam(
         MPhoneStateMachine& aStateMachine ) 
         : iManagerUtility ( aManagerUtility ),
           iStateMachine ( aStateMachine ),
-          iCallHeaderType ( CBubbleManager::ENormal )
+          iCallHeaderType ( CBubbleManager::ENormal ),
+          iSetDivertIndication ( EFalse )
     {
     }
 
@@ -487,8 +488,7 @@ void TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader(
     TPhoneCmdParamCallHeaderData* aCallHeaderData )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader( ) ");
-    TBool forwarded = iStateMachine.PhoneEngineInfo()->CallForwarded( aCallId );
-    if ( forwarded )
+    if( iSetDivertIndication )
         {
         aCallHeaderData->AddCallFlag( CBubbleManager::EDiverted );
         }
@@ -499,6 +499,19 @@ void TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader(
                 "TPhoneCallHeaderParam::SetDivertIndicatorToCallHeader - CallALSLine() == CCCECallParameters::ECCELineTypeAux");
         aCallHeaderData->SetLine2( ETrue );    
         }        
+    }
+
+// ---------------------------------------------------------------------------
+// TPhoneCallHeaderParam::SetDivertIndication
+// ---------------------------------------------------------------------------
+//
+void TPhoneCallHeaderParam::SetDivertIndication( const TBool aDivertIndication )
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "TPhoneCallHeaderParam::SetDivertIndication( ) ");
+    iSetDivertIndication = aDivertIndication;           
+    __PHONELOG1( EBasic, EPhoneControl, 
+                "TPhoneCallHeaderParam::SetDivertIndication() - iSetDivertIndication: %d ", 
+                iSetDivertIndication )
     }
 
 // ---------------------------------------------------------------------------
@@ -597,15 +610,7 @@ void TPhoneCallHeaderParam::UpdateCallHeaderInfoL(
         else
             {
             aCallHeaderData->SetCNAPText( iStateMachine.PhoneEngineInfo()->
-                RemotePhoneNumber( aCallId ), CBubbleManager::ELeft );
-
-            // No contact name, use phonenumber when available.
-            if ( iStateMachine.PhoneEngineInfo()->RemotePhoneNumber( aCallId ).Length() 
-                    && !ContactInfoAvailable( aCallId ) )
-                {
-                aCallHeaderData->SetParticipantListCLI(
-                        TPhoneCmdParamCallHeaderData::EPhoneParticipantCNAPText );
-                }
+                RemotePhoneNumber( aCallId ), CBubbleManager::ELeft );       
             }
         }
     else
@@ -645,9 +650,6 @@ void TPhoneCallHeaderParam::UpdateCallHeaderInfoL(
     SetCallerImage( 
             aCallId, 
             aCallHeaderData ); 
-    
-    // Update divert indication
-    SetDivertIndicatorToCallHeader( aCallId, aCallHeaderData );
     }
 
 // ---------------------------------------------------------------------------

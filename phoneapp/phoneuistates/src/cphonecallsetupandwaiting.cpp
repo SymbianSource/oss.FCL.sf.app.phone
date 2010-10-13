@@ -182,7 +182,7 @@ void CPhoneCallSetupAndWaiting::HandleIdleL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneCallSetupAndWaiting::HandleIdleL()");
         
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
             
     // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
@@ -238,7 +238,7 @@ void CPhoneCallSetupAndWaiting::HandleIdleL( TInt aCallId )
         iStateMachine->ChangeState( EPhoneStateAlerting );            
         }
     
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
     }
         
 // -----------------------------------------------------------
@@ -264,7 +264,7 @@ void CPhoneCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     
-    TransitionHandlerL().BeginUiUpdateLC();
+    CPhoneState::BeginUiUpdateLC();
 
     // Update bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -276,7 +276,7 @@ void CPhoneCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     CPhoneState::SetTouchPaneButtons( EPhoneWaitingCallButtons );
     SetToolbarDimming( EFalse );
     
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
  
     if ( CPhoneState::IsNumberEntryUsedL() )
         {

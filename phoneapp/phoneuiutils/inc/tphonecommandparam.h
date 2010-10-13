@@ -102,7 +102,6 @@ class TPhoneCommandParam
         EPhoneParamIdGlobalWaitNote,
         EPhoneNumberEntryObserver,
         EPhoneParamIdPointer,
-        EPhoneParamIdEffect,
         // Add new params before this
         EPhoneParamIdLast
         };

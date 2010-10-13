@@ -42,7 +42,7 @@
 _LIT ( KPhoneMifFileName, "phoneui.mif" );
 _LIT( KToolbarButtonEmptyStr, "" );
 
-const TInt KNumberOfButtons = 6;
+const TInt KNumberOfButtons = 5;
 struct SPhoneToolbarButton
     {
     TInt iIconIndex;
@@ -71,11 +71,7 @@ const SPhoneToolbarButton bArray[KNumberOfButtons] =
 	        {  EMbmPhoneuiQgn_indi_tb_handset,
 	           EMbmPhoneuiQgn_indi_tb_handset_mask,
 	           EPhoneInCallCmdHandset
-	        },
-	        {  EMbmPhoneuiQgn_indi_tb_bthf,
-               EMbmPhoneuiQgn_indi_tb_bthf,
-               EPhoneInCallCmdBtHandsfree
-           }
+	        }
         }; 
 
 
@@ -207,27 +203,8 @@ void CPhoneToolbarController::UpdateToolbar()
     iToolbar->HideItem( EPhoneInCallCmdUnmute, !iMuteFlag, ETrue );   
 
     // Show 'Handset'/'Ihf' icon
-     if ( iWiredAccFlag )
-         {    
-         __PHONELOG( EBasic, EPhoneUIView, "CPhoneToolbarController::UpdateToolbar(), wired ");
-         iToolbar->HideItem( EPhoneInCallCmdHandset, ETrue, EFalse );
-         iToolbar->HideItem( EPhoneInCallCmdBtHandsfree, ETrue, EFalse );
-         iToolbar->HideItem( EPhoneInCallCmdActivateIhf, EFalse, ETrue );
-         }
-     else if ( iBTAccAvailableFlag && !iBTAccFlag )
-         {    
-         __PHONELOG( EBasic, EPhoneUIView, "CPhoneToolbarController::UpdateToolbar(), BT ");
-         iToolbar->HideItem( EPhoneInCallCmdActivateIhf, ETrue, EFalse );
-         iToolbar->HideItem( EPhoneInCallCmdHandset, ETrue, EFalse );
-         iToolbar->HideItem( EPhoneInCallCmdBtHandsfree, EFalse, ETrue );
-         }
-     else
-         {
-         __PHONELOG( EBasic, EPhoneUIView, "CPhoneToolbarController::UpdateToolbar(), else ");
-         iToolbar->HideItem( EPhoneInCallCmdHandset, !iIhfFlag, EFalse );
-         iToolbar->HideItem( EPhoneInCallCmdActivateIhf, iIhfFlag, EFalse );
-         iToolbar->HideItem( EPhoneInCallCmdBtHandsfree, ETrue, ETrue );
-         }
+    iToolbar->HideItem( EPhoneInCallCmdActivateIhf, iIhfFlag, EFalse );
+    iToolbar->HideItem( EPhoneInCallCmdHandset, !iIhfFlag, ETrue );
     }   
 
 // ---------------------------------------------------------------------------
@@ -287,10 +264,6 @@ void  CPhoneToolbarController::GetTooltipTextL( TInt aCommandId, HBufC*& aText )
             resourceId = R_PHONEUI_TOOLTIP_HANDSET;
             break;
             
-        case EPhoneInCallCmdBtHandsfree:
-            resourceId = R_PHONEUI_TOOLTIP_BT_HANDSFREE;
-            break;
-            
         default:
             aText = KNullDesC().Alloc();
             break;
@@ -323,9 +296,6 @@ TAknsItemID CPhoneToolbarController::GetSkinIdL( TInt aCommandId )
             break;
         case EPhoneInCallCmdHandset:
             skinId = KAknsIIDQgnIndiButtonHandset;
-            break;
-        case EPhoneInCallCmdBtHandsfree:
-            skinId = KAknsIIDQgnIndiButtonBluetooth;
             break;
         default:
             skinId = KAknsIIDNone;
@@ -439,38 +409,6 @@ void CPhoneToolbarController::SetWiredAccFlag( TPhoneCommandParam* aCommandParam
             }
         }
     }
-// ---------------------------------------------------------
-// CPhoneToolbarController::SetBTAccFlag
-// ---------------------------------------------------------
-//
-void CPhoneToolbarController::SetBTAccFlag( TPhoneCommandParam* aCommandParam )
-    {
-    if ( aCommandParam->ParamId() == TPhoneCommandParam::EPhoneParamIdBoolean )
-        {
-        TPhoneCmdParamBoolean* booleanParam = 
-            static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
-        iBTAccFlag = booleanParam->Boolean();
-        UpdateToolbar(); 
-        }     
-    }
-
-// ---------------------------------------------------------
-// CPhoneToolbarController::SetBTAccAvailableFlag
-// ---------------------------------------------------------
-//
-void CPhoneToolbarController::SetBTAccAvailableFlag( TPhoneCommandParam* aCommandParam )
-    {
-    // Check is the given parameter valid
-    if ( aCommandParam->ParamId() == TPhoneCommandParam::EPhoneParamIdBoolean )
-        {
-        TPhoneCmdParamBoolean* accFlag = 
-            static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
-
-        iBTAccAvailableFlag = accFlag->Boolean();
-        UpdateToolbar();
-        }
-    }
-
 
 // ---------------------------------------------------------
 // CPhoneToolbarController::SetCallInProgressFlag
@@ -518,7 +456,6 @@ void CPhoneToolbarController::DimToolbar( const TBool aDimmed )
     iToolbar->SetItemDimmed( EPhoneInCallCmdUnmute, aDimmed, ETrue );
     iToolbar->SetItemDimmed( EPhoneInCallCmdActivatEPhonebook, aDimmed, ETrue );
     iToolbar->SetItemDimmed( EPhoneInCallCmdHandset, aDimmed, ETrue );  
-    iToolbar->SetItemDimmed( EPhoneInCallCmdBtHandsfree, aDimmed, ETrue );
     // Don't dim/undim iHF when complete toolbar dimming is changed. 
     if ( !iWiredAccFlag )
         {

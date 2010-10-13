@@ -297,16 +297,13 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndWaitingAndCallSetup::HandleConnectingL");
     
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     
     UpdateRemoteInfoDataL ( aCallId );
 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalNote );
     // Re-enable global notes
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
+    EnableGlobalNotifiersL();
 
     // Stop capturing keys
     CaptureKeysDuringCallNotificationL( EFalse );
@@ -322,7 +319,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectingL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         }
     
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
         
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );    
     }
@@ -336,7 +333,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectedL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndWaitingAndCallSetup::HandleConnectedL");
     
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     
     UpdateRemoteInfoDataL ( aCallId );
     
@@ -358,7 +355,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConnectedL( TInt aCallId )
     
     SetTouchPaneButtons( EPhoneWaitingCallButtons );    
     SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
     
     // Go to Conference And Single And Waiting state
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );  
@@ -385,7 +382,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL()
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL");
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
@@ -431,7 +428,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL()
             iStateMachine->ChangeState( EPhoneStateCallSetupAndWaiting );
             }
         }
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
     }
 
 // -----------------------------------------------------------
@@ -444,10 +441,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleIdleL( TInt aCallId )
          "CPhoneConferenceAndWaitingAndCallSetup::HandleIdleL");        
 
     // Re-enable global notes
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
+    EnableGlobalNotifiersL();
 
     // Stop capturing keys
     CaptureKeysDuringCallNotificationL( EFalse );
@@ -481,7 +475,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleIdleL( TInt aCallId )
             }            
         else
             {
-            TransitionHandlerL().BeginUiUpdateLC();
+            BeginUiUpdateLC();
             TPhoneCmdParamCallStateData callStateData;
             callStateData.SetCallState( EPEStateRinging );
             iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
@@ -509,7 +503,7 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleIdleL( TInt aCallId )
                 UpdateCbaL( EPhoneCallHandlingInCallCBA );                  
                 iStateMachine->ChangeState( EPhoneStateConferenceAndCallSetup );
                 }
-            TransitionHandlerL().EndUiUpdate();
+            EndUiUpdate();
             }
         }
     }

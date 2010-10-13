@@ -30,8 +30,6 @@ public:
     virtual void NameOrderChanged() = 0;
     
     virtual void FavouritesChanged() = 0;
-    
-    virtual void StoreConfigurationChanged() = 0;
     };
 
 #endif //__MCONTACTDATAMANAGEROBSERVER_H__

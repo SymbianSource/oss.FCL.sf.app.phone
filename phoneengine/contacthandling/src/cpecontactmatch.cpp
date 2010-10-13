@@ -691,10 +691,8 @@ void CPEContactMatch::MatchWithVoipAddressUsingExtensionL( TInt aCallId,
     RBuf parsedAddress;
     CleanupClosePushL( parsedAddress );
     TInt digitsformatching( 0 );
-    TBool allowUserNameMatch( EFalse );
-    User::LeaveIfError( plugin.GetAddressForMatching( 
-            parsedAddress, digitsformatching, allowUserNameMatch ) );
-			
+    User::LeaveIfError( plugin.GetAddressForMatching( parsedAddress, digitsformatching ) );
+
     CDesCArray* array = new ( ELeave ) CDesC16ArrayFlat( 1 );
     CleanupStack::PushL( array );
     User::LeaveIfError( plugin.GetContactStoreUris( *array ) );
@@ -706,20 +704,17 @@ void CPEContactMatch::MatchWithVoipAddressUsingExtensionL( TInt aCallId,
     
     // Digits for matching. Supported range is between 4-20.
     // If not valid value use whole address length for matching.
-    if ( digitsformatching != 0 && 
-         ( digitsformatching < KMinValueOfMeaningfulDigits ||
-           digitsformatching > KMaxValueOfMeaningfulDigits ) )
-        {
-        digitsformatching = parsedAddress.Length();
-        }
-		
+    digitsformatching = ( digitsformatching < KMinValueOfMeaningfulDigits || 
+                          digitsformatching > KMaxValueOfMeaningfulDigits ) ? 
+                          parsedAddress.Length() : digitsformatching;
+    
     // Use service specific parameters for matching.
     TEFLOGSTRING3( KTAINT, "CNT MatchWithVoipAddressUsingExtensionL >\
         CPhCntMatcher::MatchVoipNumber, NUMBER: %S, CALL ID: %d",
         &remoteNumber, aCallId )
     iContactMatcher->MatchVoipNumber( aMatch, 
         parsedAddress.Left( Min( parsedAddress.Length(), KPEPhoneNumberMaxLength ) ), 
-        allowUserNameMatch, array, digitsformatching );                                       
+        ETrue, array, digitsformatching );                                       
     
     CleanupStack::PopAndDestroy( array );
     CleanupStack::PopAndDestroy( &parsedAddress );

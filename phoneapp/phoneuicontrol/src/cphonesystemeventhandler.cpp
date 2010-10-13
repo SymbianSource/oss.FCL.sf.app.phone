@@ -97,6 +97,11 @@ void CPhoneSystemEventHandler::ConstructL()
     	KCoreAppUIsAutolockStatus,
     	this );
     
+    // Set up notifications for startup ui sequence phase changes.
+    CPhonePubSubProxy::Instance()->NotifyChangeL(
+        KPSUidStartup,
+        KPSStartupUiPhase,
+        this );
 
     if ( CPhoneCenRepProxy::Instance()->IsTelephonyFeatureSupported(
             KTelephonyLVFlagSwivelInDevice ))

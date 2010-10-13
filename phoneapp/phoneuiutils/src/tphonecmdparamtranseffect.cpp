@@ -32,7 +32,6 @@ EXPORT_C TPhoneCmdParamTransEffect::TPhoneCmdParamTransEffect():
     iType( EPhoneTransEffectNone ),
     iAppUid( KNullUid )
     {
-    iParamId = EPhoneParamIdEffect;
     }
 
 // ---------------------------------------------------------

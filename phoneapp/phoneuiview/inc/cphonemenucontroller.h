@@ -112,8 +112,6 @@ class CPhoneMenuController : public CBase, public MPhonePubSubObserver
         void SetAllowDtmfOptionsFlag( TBool aAllowDtmfOptions );
         
         void SetVoipEnabledFlag( TPhoneCommandParam* aCommandParam );
-
-		void SetHideVoipCallDTMFVisibilityFlag ( TBool aHideVideoCallDTMFVisibility ); 
         
         void SetHideVideoCallDTMFVisibilityFlag ( TBool aHideVideoCallDTMFVisibility );
 
@@ -194,7 +192,6 @@ class CPhoneMenuController : public CBase, public MPhonePubSubObserver
         TBool iAllowDtmfOptionsFlag;
         TBool iVoipEnabledFlag;  
         TBool iHideVideoCallDTMFVisibility;
-		TBool iHideVoipCallDTMFVisibility; 
         TBool iInvalidCsPhoneNumber;
 		TBool iSecurityMode;
         // Eikon environment delivered from CPhoneViewController

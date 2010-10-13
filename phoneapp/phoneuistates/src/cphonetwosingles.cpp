@@ -76,10 +76,7 @@ EXPORT_C void CPhoneTwoSingles::ConstructL()
     CPhoneGsmInCall::ConstructL();
     
     // Re-enable global notes
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
+    EnableGlobalNotifiersL();
     
     CPhonePubSubProxy::Instance()->ChangePropertyValue(
                     KPSUidScreenSaver,
@@ -195,7 +192,7 @@ void CPhoneTwoSingles::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSingles::HandleIdleL()");
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
 
     // Remove call 
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
@@ -245,7 +242,7 @@ void CPhoneTwoSingles::HandleIdleL( TInt aCallId )
         default:
             break;
         }
-    TransitionHandlerL().EndUiUpdate(); 
+    EndUiUpdate(); 
     }
 
 // -----------------------------------------------------------
@@ -355,7 +352,7 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
         callLabelId, 
         CCoeEnv::Static() );
     callHeaderParam.SetCLIText( conferenceText, CBubbleManager::ERight );
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     
     callHeaderParam.SetCiphering(
         iStateMachine->PhoneEngineInfo()->IsSecureCall( aCallId ) );
@@ -378,9 +375,11 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
 
     SetTouchPaneButtons( EPhoneConferenceButtons );
     SetTouchPaneButtonEnabled( EPhoneInCallCmdPrivate );
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
     
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
+    
+    // Go to conference state
     // No need for CBA update
     iStateMachine->ChangeState( EPhoneStateConference );
     }
@@ -392,12 +391,17 @@ EXPORT_C void CPhoneTwoSingles::HandleConnectedConferenceL( TInt aCallId )
 void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
-            "CPhoneTwoSingles::HandleIncomingL()");
+        "CPhoneTwoSingles::HandleIncomingL()");
+    
     CPhonePubSubProxy::Instance()->ChangePropertyValue(
                     KPSUidScreenSaver,
                     KScreenSaverAllowScreenSaver,
                     EPhoneScreensaverNotAllowed );
-    TransitionHandlerL().IncomingCallUiUpdateLC();
+    
+    IsNumberEntryUsedL() ? 
+        BeginTransEffectLC( ECallUiAppear ) :
+        BeginTransEffectLC( ENumberEntryOpen );
+    BeginUiUpdateLC();
     
     // Hide the number entry if it exists
     if ( IsNumberEntryUsedL() )
@@ -405,22 +409,27 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
         SetNumberEntryVisibilityL( EFalse );    
         }
     
-    // Get allow waiting call header param value.
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
+    
+    // Get allow waiting call header param value.
     AllowShowingOfWaitingCallHeaderL( dialerParam );
     
     // Close fast swap window if it's displayed
-    EikonEnv()->DismissTaskList();
+    CEikonEnv::Static()->DismissTaskList();
 
+    // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
     
     // Set touch controls
     SetTouchPaneButtonDisabled( EPhoneCallComingCmdAnswer );
+    
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
 
-    TransitionHandlerL().EndUiUpdateAndEffect();
+    EndUiUpdate();
+    EndTransEffect();
 
+    // Go to incoming state
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
     iStateMachine->ChangeState( EPhoneStateTwoSinglesAndWaiting );        
     }
@@ -431,7 +440,7 @@ void CPhoneTwoSingles::HandleIncomingL( TInt aCallId )
 //
 void CPhoneTwoSingles::DisplayIncomingCallL( 
     TInt aCallId, 
-    const TPhoneCmdParamBoolean /*aCommandParam*/ )
+    const TPhoneCmdParamBoolean aCommandParam )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates,
          "CPhoneTwoSingles::DisplayIncomingCallL()"); 
@@ -443,7 +452,11 @@ void CPhoneTwoSingles::DisplayIncomingCallL(
 
     // Indicate that the Phone needs to be sent to the background if
     // an application other than the top application is in the foreground
-    SetNeedToReturnToForegroundAppStatusL( !TopAppIsDisplayedL() );
+    TPhoneCmdParamBoolean booleanParam;
+    booleanParam.SetBoolean( !TopAppIsDisplayedL() );
+    iViewCommandHandle->ExecuteCommandL( 
+        EPhoneViewSetNeedToReturnToForegroundAppStatus,
+        &booleanParam );
 
     // Bring Phone app in the foreground
     TPhoneCmdParamInteger uidParam;

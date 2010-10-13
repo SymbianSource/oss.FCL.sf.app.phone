@@ -44,7 +44,7 @@ file=ABI_DIR\BUILD_DIR\LOGHANDLING.DLL      SHARED_LIB_DIR\LOGHANDLING.DLL
 file=ABI_DIR\BUILD_DIR\peservicehandling.dll      SHARED_LIB_DIR\peservicehandling.dll
 
 data=DATAZ_\private\1000A86C\backup_registration.xml  private\1000A86C\backup_registration.xml
-data=DATAZ_\private\100058B3\backup_registration.xml  private\100058B3\backup_registration.xml
+
 
 // SIS stubs
 data=ZSYSTEM\install\audiohandling_stub.sis     System\Install\audiohandling_stub.sis

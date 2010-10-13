@@ -270,9 +270,9 @@ void CPhoneNumberEntryManager::HandleCreateNumberEntryL()
             else
                 {
                 // Effect is shown when dialer is created.
-                iState->TransitionHandlerL().BeginTransEffectLC( EPhoneTransEffectDialerCreate );
+                iState->BeginTransEffectLC( ENumberEntryCreate );
                 iViewCommandHandle.ExecuteCommandL( EPhoneViewCreateNumberEntry );
-                iState->TransitionHandlerL().EndTransEffect();
+                iState->EndTransEffect();
                 // Go to current state implementation
                 iCbaManager.UpdateInCallCbaL();
                 iState->UpdateInCallContextMenuL();
@@ -433,8 +433,7 @@ void CPhoneNumberEntryManager::KeyEventForExistingNumberEntryL(
     else if( aKeyEvent.iCode == EKeyLeftArrow ||
            aKeyEvent.iCode == EKeyRightArrow ||
            aKeyEvent.iCode == EKeyUpArrow ||
-           aKeyEvent.iCode == EKeyDownArrow ||
-           aKeyEvent.iCode == EKeySpace )
+           aKeyEvent.iCode == EKeyDownArrow )
            {
            iViewCommandHandle.HandleCommandL(
                EPhoneViewSendKeyEventToNumberEntry, &keyEventParam );

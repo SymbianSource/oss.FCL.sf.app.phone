@@ -25,16 +25,15 @@
 #include <dialer.rsg>
 #include <eikimage.h>           // CEikImage
 #include <barsread.h>           // TResourceReader
-#include <featmgr.h>
 #include <eiklabel.h> 
 #include <aknappui.h>
 #include <AknUtils.h>
 #include <AknsDrawUtils.h>
 #include <applayout.cdl.h>
 #include <AknLayoutFont.h>
-#include <AknLayout2Def.h>
+#include <aknlayout2def.h>
 #include <AknPhoneNumberEditor.h>
-#include <AknLayout2ScalableDef.h>
+#include <aknlayout2scalabledef.h>
 #include <AknsBasicBackgroundControlContext.h>
 #include <AknsFrameBackgroundControlContext.h>
 #include <aknlayoutscalable_apps.cdl.h>
@@ -51,8 +50,6 @@
 const TInt KNumberEntryControlCount = 2; //  = number entry, label
 
 _LIT( KPhoneValidChars, "0123456789*#+pwPW" );
-_LIT( KPhoneVanityValidChars, "0123456789*#+pwABCDEFGHIJKLMNOPQRSTUVWXYZ" );
-
 const TInt KKeyCtrlA( 1 );
 const TInt KKeyCtrlC( 3 );
 const TInt KKeyCtrlV( 22 );
@@ -192,10 +189,9 @@ void CDialerNumberEntry::SetFocus( TBool aFocus, TDrawNow aDrawNow )
         {       
         DoSetFocus( aFocus, aDrawNow );
         }
-
     DIALER_PRINT("numberentry::SetFocus>");
     }
-    
+
 // ---------------------------------------------------------------------------
 // CDialerNumberEntry::SetLateFocus 
 // ---------------------------------------------------------------------------
@@ -231,7 +227,7 @@ void CDialerNumberEntry::DoSetFocus( TBool aFocus, TDrawNow aDrawNow )
         iEditor->SetFocus( aFocus );
         }
 
-    // Don't allow usage of late focuser until next layout change or Dialer launch
+    // Don't allow usage of late focuser until next layout change
     iLateFocuserCanBeUsed = EFalse;
 
     DIALER_PRINT("numberentry::DoSetFocus>");  
@@ -581,7 +577,7 @@ void CDialerNumberEntry::SetLayout()
     
     HandleEditorFormatting();
     iEditor->DrawDeferred();
-    
+
     // Allow usage of late focuser
     iLateFocuserCanBeUsed = ETrue;
     }
@@ -958,40 +954,22 @@ void CDialerNumberEntry::SetOperationMode( TDialerOperationMode aMode )
 
 // -----------------------------------------------------------------------------
 // CDialerNumberEntry::Validate
+//
+// Copied from cphonekeys.
 // -----------------------------------------------------------------------------
 //
 TBool CDialerNumberEntry::Validate( const TDesC& aString )
     {
     DIALER_PRINT("numberentry::Validate");
-    
-    if ( aString.Length() == 0 )
-        {
-        return EFalse;
-        }
-    
-    // check first character
+    TLex input( aString );
     TPtrC valid( KPhoneValidChars );
-    if ( valid.Locate( aString[0] ) == KErrNotFound )
+
+    while ( valid.Locate( input.Peek() ) != KErrNotFound )
         {
-        return EFalse;
+        input.Inc();
         }
     
-    // if vanitydialing feature is enabled, also capital A-Z are accepted after first character
-    if ( FeatureManager::FeatureSupported( KFeatureIdFfHomeScreenVanityDialing ) )
-        {
-        valid.Set( KPhoneVanityValidChars );
-        }
-    
-    // check rest of the string
-    for ( TInt i = 1; i < aString.Length(); i++ )
-        {
-        if ( valid.Locate( aString[i] ) == KErrNotFound )
-            {
-            return EFalse;
-            }
-        }
-    
-    return ETrue;
+    return !input.Remainder().Length();
     }
 
 // End of File

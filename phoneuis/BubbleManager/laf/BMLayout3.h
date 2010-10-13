@@ -23,7 +23,7 @@
 // INCLUDES
 #include <calslbs.h>
 #include <bldvariant.hrh> 
-#include <AknLayoutDef.h>
+#include <aknlayoutdef.h>
 
 /**
 * Call3 (video cli) layout coordinates from Application LAF 

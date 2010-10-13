@@ -82,10 +82,7 @@ EXPORT_C void CPhoneSingleCall::ConstructL()
     CPhoneGsmInCall::ConstructL();
     
     // Re-enable global notes
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
+    EnableGlobalNotifiersL();
 
     TPhoneCmdParamBoolean holdFlag;
     holdFlag.SetBoolean( EFalse );
@@ -497,11 +494,15 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::HandleIncomingL()");
+    
     CPhonePubSubProxy::Instance()->ChangePropertyValue(
                     KPSUidScreenSaver,
                     KScreenSaverAllowScreenSaver,
                     EPhoneScreensaverNotAllowed );
-    TransitionHandlerL().IncomingCallUiUpdateLC();
+    IsNumberEntryUsedL() ? 
+        BeginTransEffectLC( ECallUiAppear ) :
+        BeginTransEffectLC( ENumberEntryOpen );
+    BeginUiUpdateLC();
     
     // Hide the number entry if it exists
     if ( IsNumberEntryUsedL() )
@@ -509,20 +510,23 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
         SetNumberEntryVisibilityL( EFalse );    
         }
     
-    // Get allow waiting call header param value.
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
+    
+    // Get allow waiting call header param value.
     AllowShowingOfWaitingCallHeaderL( dialerParam );    
 
     // Close fast swap window if it's displayed
-    EikonEnv()->DismissTaskList();
+    CEikonEnv::Static()->DismissTaskList();
 
     // Show incoming call buttons
-    SetTouchPaneButtons( EPhoneWaitingCallButtons );
-    
+    SetTouchPaneButtons( EPhoneWaitingCallButtons );    
+
+    // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
-    TransitionHandlerL().EndUiUpdateAndEffect();
-    
+
+    EndUiUpdate();
+    EndTransEffect();
     // This query is required to dismiss
     // Operation cannot be completed in waiting and single state
     if ( iSwitchToVideoQuery )
@@ -539,7 +543,7 @@ void CPhoneSingleCall::HandleIncomingL( TInt aCallId )
 //
 void CPhoneSingleCall::DisplayIncomingCallL( 
     TInt aCallId, 
-    const TPhoneCmdParamBoolean /*aCommandParam*/ )
+    const TPhoneCmdParamBoolean aCommandParam )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleCall::DisplayIncomingCallL()");
@@ -557,8 +561,12 @@ void CPhoneSingleCall::DisplayIncomingCallL(
     
     // Indicate that the Phone needs to be sent to the background if
     // an application other than the top application is in the foreground
-    SetNeedToReturnToForegroundAppStatusL( !TopAppIsDisplayedL() );
-    
+    TPhoneCmdParamBoolean booleanParam;
+    booleanParam.SetBoolean( !TopAppIsDisplayedL() );
+    iViewCommandHandle->ExecuteCommandL( 
+        EPhoneViewSetNeedToReturnToForegroundAppStatus,
+        &booleanParam );
+
     // Bring Phone app in the foreground
     TPhoneCmdParamInteger uidParam;
     uidParam.SetInteger( KUidPhoneApplication.iUid );

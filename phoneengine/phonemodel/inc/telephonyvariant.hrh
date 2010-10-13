@@ -35,12 +35,6 @@
 */
 #define KTelephonyLVFlagCoverHideSendEndKey 0x00000004
 
-/**
-* Shows contact name in Call UI even if there are several matches for the phone number.
-*
-*/
-#define KTelephonyLVFlagShowContactWhenSeveralMatches 0x00000008
-
 /** 
 * KTelephonyLVFlagScrollSoftKeys defines status of scroll softkeys. When the 
 * flag is set on in KTelephonyConfigFlags scroll softkeys are enabled. 
@@ -94,13 +88,6 @@
 * @since Series 60 2.6
 */
 #define KTelephonyLVFlagAdvancedENCheck 0x00000200
-
-/**
-* Clear Code Customization
-* When the flag is set, different notes are shown if call fails.
-* Requrement id: 414-7525.
-*/
-#define KTelephonyLVFlagClearCodeCustomization 0x00000400
 
 /**
 * KTelephonyLVFlagArbitraryVideoScaling defines if video player

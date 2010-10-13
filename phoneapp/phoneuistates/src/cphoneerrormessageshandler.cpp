@@ -21,8 +21,6 @@
 #include <telephonydomainpskeys.h>
 #include <UikonInternalPSKeys.h>
 #include <ccpdefs.h>
-#include <phoneui.rsg>
-#include <telephonyvariant.hrh>
 
 #include "phoneui.pan"
 #include "phonerssbase.h"
@@ -36,7 +34,6 @@
 #include "tphonecmdparamglobalnote.h"
 #include "tphonecmdparamnote.h"
 #include "cphonemainresourceresolver.h"
-#include "cphonecenrepproxy.h"
 
 
 // ================= MEMBER FUNCTIONS =======================
@@ -113,32 +110,9 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalInfoNoteL( TInt aResourceId 
         TPhoneCmdParamGlobalNote globalNoteParam;
       
         globalNoteParam.SetType( EAknGlobalInformationNote );
-        
-        if ( CPhoneCenRepProxy::Instance()->
-                IsTelephonyFeatureSupported( KTelephonyLVFlagClearCodeCustomization ) )
-            {
-			// Show varied note if clear code customization is enabled
-            TInt variedNote( KErrNotFound );
-            //Get varied resource
-            variedNote = ResourceVariation();
-            if ( variedNote != KErrNotFound )
-                {
-                globalNoteParam.SetTextResourceId( variedNote );
-                }
-            else
-                {
-				// If varied resource is not found, show original note.
-                globalNoteParam.SetTextResourceId( 
-                    CPhoneMainResourceResolver::Instance()->
-                    ResolveResourceID( aResourceId ) );
-                }
-            }
-        else
-            {
-            globalNoteParam.SetTextResourceId( 
-                CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( aResourceId ) );
-            }
+        globalNoteParam.SetTextResourceId( 
+            CPhoneMainResourceResolver::Instance()->
+            ResolveResourceID( aResourceId ) );
         globalNoteParam.SetTone( EAvkonSIDInformationTone );
 
         iViewCommandHandle->ExecuteCommandL( 
@@ -169,32 +143,9 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalErrorNoteL( TInt aResourceId
             
         TPhoneCmdParamGlobalNote globalNoteParam;
         globalNoteParam.SetType( EAknGlobalErrorNote );
-        
-        if (  CPhoneCenRepProxy::Instance()->
-                IsTelephonyFeatureSupported( KTelephonyLVFlagClearCodeCustomization ) )
-            {
-			// Show varied note if clear code customization is enabled
-            TInt variedNote( KErrNotFound );
-            //Get varied resource
-            variedNote = ResourceVariation();
-            if ( variedNote != KErrNotFound )
-                {
-                globalNoteParam.SetTextResourceId( variedNote );
-                }
-            else
-                {
-				// If varied resource is not found, show original note.
-                globalNoteParam.SetTextResourceId( 
-                    CPhoneMainResourceResolver::Instance()->
-                    ResolveResourceID( aResourceId ) );
-                }
-            }
-        else
-            {
-            globalNoteParam.SetTextResourceId( 
-                CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( aResourceId ) );
-            }
+        globalNoteParam.SetTextResourceId( 
+            CPhoneMainResourceResolver::Instance()->
+            ResolveResourceID( aResourceId ) );
         globalNoteParam.SetTone( CAknNoteDialog::EErrorTone );
 
         iViewCommandHandle->ExecuteCommandL(  
@@ -225,32 +176,9 @@ EXPORT_C void CPhoneErrorMessagesHandler::SendGlobalWarningNoteL( TInt aResource
             
         TPhoneCmdParamGlobalNote globalNoteParam;
         globalNoteParam.SetType( EAknGlobalWarningNote );
-        
-        if ( CPhoneCenRepProxy::Instance()->
-                IsTelephonyFeatureSupported( KTelephonyLVFlagClearCodeCustomization ) )
-            {
-			// Show varied note if clear code customization is enabled
-            TInt variedNote( KErrNotFound );
-            //Get varied resource
-            variedNote = ResourceVariation();
-            if ( variedNote != KErrNotFound )
-                {
-                globalNoteParam.SetTextResourceId( variedNote );
-                }
-            else
-                {
-				// If varied resource is not found, show original note.
-                globalNoteParam.SetTextResourceId( 
-                    CPhoneMainResourceResolver::Instance()->
-                    ResolveResourceID( aResourceId ) );
-                }
-            }
-        else
-            {
-            globalNoteParam.SetTextResourceId( 
-                CPhoneMainResourceResolver::Instance()->
-                ResolveResourceID( aResourceId ) );
-            }
+        globalNoteParam.SetTextResourceId( 
+            CPhoneMainResourceResolver::Instance()->
+            ResolveResourceID( aResourceId ) );
         globalNoteParam.SetTone( EAvkonSIDWarningTone );
 
         iViewCommandHandle->ExecuteCommandL( 
@@ -281,7 +209,6 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
     __PHONELOG1( EBasic, EPhoneControl,
             "PhoneUIControl: CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL - aErrorInfo.iErrorCode =%d ",
             aErrorInfo.iErrorCode);
-    iCallId = aErrorInfo.iCallId;
 
     switch( aErrorInfo.iErrorCode )
         {
@@ -640,7 +567,6 @@ EXPORT_C void CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL( const TPEError
                 aErrorInfo.iErrorCode);
             break;
         } 
-    iCallId = KErrNotFound;
     }    
 
 // -----------------------------------------------------------
@@ -681,124 +607,4 @@ TBool CPhoneErrorMessagesHandler::IsVoiceCall( const TInt aCallId ) const
             ->CallType( aCallId )== EPECallTypeCSVoice );
 	}
 
-// -----------------------------------------------------------------------------
-// CPhoneErrorMessagesHandler::ResourceVariation
-// -----------------------------------------------------------------------------
-TInt CPhoneErrorMessagesHandler::ResourceVariation() const
-    {
-    TInt resource( KErrNotFound );
-    
-    TInt callId = (KErrNotFound == iCallId) ? 
-        iStateMachine->PhoneEngineInfo()->CallId() :
-        iCallId;
-
-    //get exit code error from EngineInfo
-    TInt callError = iStateMachine->PhoneEngineInfo()->ProtocolError( callId );
-    
-    switch( callError )
-            {
-            case KErrGsmCCUnassignedNumber:
-                resource = R_NOTE_VAR_CAUSE_1;                
-                break;
-                
-            case KErrGsmCCNoRouteToDestination:
-                resource = R_NOTE_VAR_CAUSE_3;                
-                break;
-   
-            case KErrGsmCCOperatorDeterminedBarring:
-                resource = R_NOTE_VAR_CAUSE_8;                
-                break;
-                   
-            case KErrGsmCCUserBusy:
-                resource = R_NOTE_VAR_CAUSE_17;                
-                break;
-                
-            case KErrGsmCCUserNotResponding:
-                resource = R_NOTE_VAR_CAUSE_18;                
-                break;
-                
-            case KErrGsmCCCallRejected:
-                resource = R_NOTE_VAR_CAUSE_21;
-                break;
-                
-            case KErrGsmCCNumberChanged:
-                resource = R_NOTE_VAR_CAUSE_22;
-                break;
-                
-            case KErrGsmCCDestinationOutOfOrder:
-                resource = R_NOTE_VAR_CAUSE_27;
-                break;
-
-            case KErrGsmCCFacilityRejected:
-                resource = R_NOTE_VAR_CAUSE_29;                
-                break;
-                
-            case KErrGsmCCNetworkOutOfOrder:
-                resource = R_NOTE_VAR_CAUSE_38;                
-                break;
-                
-            case KErrGsmCCTemporaryFailure:
-                resource = R_NOTE_VAR_CAUSE_41;                
-                break;
-                
-            case KErrGsmCCSwitchingEquipmentCongestion:
-                resource = R_NOTE_VAR_CAUSE_42;                
-                break;
-                
-            case KErrGsmCCAccessInformationDiscarded:
-                resource = R_NOTE_VAR_CAUSE_43;                
-                break;
-                
-            case KErrGsmCCRequestedChannelNotAvailable:
-                resource = R_NOTE_VAR_CAUSE_44;                
-                break;
-                
-            case KErrGsmCCResourceNotAvailable:
-                resource = R_NOTE_VAR_CAUSE_47;                
-                break;
-                
-            case KErrGsmCCIncomingCallsBarredInCug:
-                resource = R_NOTE_VAR_CAUSE_55;                
-                break;
-                
-            case KErrGsmCCBearerCapabilityNotAuthorised:
-                resource = R_NOTE_VAR_CAUSE_57;                
-                break;
-                
-            case KErrGsmCCServiceNotAvailable:
-                resource = R_NOTE_VAR_CAUSE_63;                
-                break;
-                
-            case KErrGsmCCBearerServiceNotImplemented:
-                resource = R_NOTE_VAR_CAUSE_65;                
-                break;
-                
-            case KErrGsmCCRequestedFacilityNotImplemented:
-                resource = R_NOTE_VAR_CAUSE_69;                
-                break;
-                
-            case KErrGsmCCUserNotInCug:
-                resource = R_NOTE_VAR_CAUSE_87;                
-                break;
-                
-            case KErrGsmCCIncompatibleDestination:
-                resource = R_NOTE_VAR_CAUSE_88;                
-                break;
-                
-            case KErrGsmCCSemanticallyIncorrectMessage:
-                resource = R_NOTE_VAR_CAUSE_95;                
-                break;
-                
-            case KErrGsmCCUnspecifiedProtocolError:
-                resource = R_NOTE_VAR_CAUSE_111;                
-                break;
-                
-            case KErrGsmCCUnspecifiedInterworkingError:
-                resource = R_NOTE_VAR_CAUSE_127;
-                break;
-            default:
-                break;
-            }  
-    return resource;
-    }
 // End of File

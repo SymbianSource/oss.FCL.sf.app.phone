@@ -69,14 +69,9 @@ public:
     *                            of address will be used for matching (e.g. by value 0).
     *                            If length of the address is less than value of the parameter the whole
     *                            of address will be used for matching.
-	* @param aAllowUserNameMatch - ETrue on return if matching using the user name part of 
-    *                              the address is allowed.
     * @return - Return KErrNone if operation succeed.
     */
-    virtual TInt GetAddressForMatching( 
-        RBuf& aParsedAddress, 
-        TInt& aMeaningfulDigits, 
-        TBool& aAllowUserNameMatch ) = 0;
+    virtual TInt GetAddressForMatching( RBuf& aParsedAddress, TInt& aMeaningfulDigits ) = 0;
 
     /**
     * Returns contact store uris which are opened and will be used for matching.

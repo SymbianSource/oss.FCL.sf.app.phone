@@ -33,11 +33,6 @@
 #include "CPhCntContact.h"
 #include "cphcntvpbkcontactid.h"
 #include "CPhCntContactManager.h"
-#include "pevirtualengine.h"
-
-// Characters that are needed to be stripped out 
-// from phone number before dialing.
-_LIT( KInvalidPhonenumberCharacters, " ()-" );
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -102,27 +97,6 @@ void CPhCntSpeedDialImpl::CopyNumberL(
         User::Leave( KErrArgument );
         }
     }
-
-// ---------------------------------------------------------------------------
-//  CPhCntSpeedDialImpl::ParseNumber
-// ---------------------------------------------------------------------------
-//
-void CPhCntSpeedDialImpl::ParseNumber( TDes& aNumber )
-    {
-    TBuf< KPEPhoneNumberMaxLength > parsedNumber = KNullDesC();
-    TLex parser( aNumber );
-    TChar c;
-    while( !parser.Eos() )
-        {
-        c = parser.Get();
-        if ( KErrNotFound == KInvalidPhonenumberCharacters().Locate( c ) )
-            {
-            parsedNumber.Append( c );
-            }
-        }
-    aNumber = parsedNumber;
-    }
-	
 // ---------------------------------------------------------------------------
 //  CPhCntSpeedDialImpl::CopyContactInfoToFieldInfoL
 // ---------------------------------------------------------------------------
@@ -212,7 +186,6 @@ TInt CPhCntSpeedDialImpl::GetSpeedDialFieldL(
         TPhCntNumber speedDial( contact->SpeedDialNumber( aSpeedDialPosition ) );
         CopyNumberL( aPhoneNumber, speedDial.Number() );        
         CleanupStack::PopAndDestroy( contact );
-        ParseNumber( aPhoneNumber );
         }
     return err;
     }
@@ -236,7 +209,6 @@ TInt CPhCntSpeedDialImpl::GetSpeedDialFieldL(
         CopyNumberL( aPhoneNumber, speedDial.Number() );         
         CopyContactInfoToFieldInfoL( *contact, aSpeedDialPosition, aFieldInfo );        
         CleanupStack::PopAndDestroy( contact );
-        ParseNumber( aPhoneNumber );
         }
     return err;
     }

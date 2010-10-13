@@ -27,9 +27,9 @@
 #include <AknUtils.h>
 #include <AknsDrawUtils.h>
 #include <AknLayoutFont.h>
-#include <AknLayout2Def.h>
+#include <aknlayout2def.h>
 #include <layoutmetadata.cdl.h>
-#include <AknLayout2ScalableDef.h>
+#include <aknlayout2scalabledef.h>
 #include <aknlayoutscalable_apps.cdl.h>
 #include <AknsBasicBackgroundControlContext.h>
 #include <AknsFrameBackgroundControlContext.h>

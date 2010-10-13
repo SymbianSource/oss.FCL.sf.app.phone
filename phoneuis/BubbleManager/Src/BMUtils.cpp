@@ -36,7 +36,7 @@
 #include    <AknBidiTextUtils.h>
 #include    <featmgr.h>
 #include    <aknlayoutscalable_apps.cdl.h>
-#include    <AknLayout2ScalableDef.h>
+#include    <aknlayout2scalabledef.h>
 #include    <applayout.cdl.h>
 #include    <layoutmetadata.cdl.h>
 
@@ -1462,6 +1462,72 @@ void BubbleUtils::PrepareBubbleImageL(
     
     CleanupStack::PopAndDestroy( 2, maskDev );
     CleanupStack::Pop( mask );
+    }
+
+// ---------------------------------------------------------------------------
+// BubbleUtils::AddTransparencyToBubbleImageL
+// ---------------------------------------------------------------------------
+//    
+void BubbleUtils::AddTransparencyToBubbleImageL(
+    const TAknsItemID& aFrameID,
+    const TRect& aOuterRect,
+    const TRect& aInnerRect,    
+    CEikImage*& aBubble )
+    {
+    
+    const CFbsBitmap* currentMask = aBubble->Mask();
+    TSize maskSize( currentMask->SizeInPixels() );
+    TRect rect( maskSize );
+    
+    // create transparency frame
+    CFbsBitmap* transparency = new(ELeave) CFbsBitmap;
+    CleanupStack::PushL( transparency );
+    User::LeaveIfError( transparency->Create( aOuterRect.Size(), 
+                                              EGray256 ) );
+    CFbsBitmapDevice* transparencyDev = CFbsBitmapDevice::NewL( transparency );
+    CleanupStack::PushL( transparencyDev );
+    CFbsBitGc* transparencyCtx;
+    User::LeaveIfError( transparencyDev->CreateContext( transparencyCtx ) );
+    CleanupStack::PushL( transparencyCtx );
+    MAknsSkinInstance* skin = AknsUtils::SkinInstance();
+    AknsDrawUtils::DrawFrame( skin,
+                              *transparencyCtx,
+                              aOuterRect,
+                              aInnerRect,
+                              aFrameID,
+                              KAknsIIDDefault,
+                              KAknsDrawParamDefault );
+    
+    CleanupStack::PopAndDestroy( 2, transparencyDev );
+            
+    // create solid black mask
+    CFbsBitmap* solidBlack = new(ELeave) CFbsBitmap;
+    CleanupStack::PushL( solidBlack );
+    User::LeaveIfError( solidBlack->Create( maskSize, EGray256 ) );
+    CFbsBitmapDevice* dev = CFbsBitmapDevice::NewL( solidBlack );
+    CleanupStack::PushL( dev );
+    CFbsBitGc* gc;
+    User::LeaveIfError( dev->CreateContext( gc ) ); 
+    CleanupStack::PushL( gc );
+    
+    gc->SetBrushColor( KRgbBlack );
+    gc->SetBrushStyle( CGraphicsContext::ESolidBrush );
+    gc->DrawRect( rect );
+    
+    // blit original mask on the black mask using transparency mask
+    gc->BitBltMasked( TPoint(0,0), 
+                      currentMask,
+                      TRect( currentMask->SizeInPixels() ), 
+                      transparency, 
+                      ETrue );
+ 
+    CleanupStack::PopAndDestroy( 2, dev);
+    
+    CleanupStack::Pop(solidBlack);
+    aBubble->SetMask( solidBlack );
+        
+    CleanupStack::PopAndDestroy( transparency );
+    delete currentMask;
     }
 
 // ---------------------------------------------------------------------------

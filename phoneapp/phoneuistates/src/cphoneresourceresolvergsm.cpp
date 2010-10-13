@@ -40,8 +40,7 @@
 // might leave.
 // -----------------------------------------------------------------------------
 //
-EXPORT_C CPhoneResourceResolverGSM::CPhoneResourceResolverGSM() :
-    iEnv( *CEikonEnv::Static() ) // codescanner::performance::eikonenvstatic
+EXPORT_C CPhoneResourceResolverGSM::CPhoneResourceResolverGSM(): iEnv( *CEikonEnv::Static() )
     {
     }
 

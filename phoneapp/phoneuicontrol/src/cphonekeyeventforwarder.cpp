@@ -156,7 +156,7 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventL(
 
     ret = OfferKeyEventBeforeControlStackL( aKeyEvent, aType );
 
-    if ( !aKeyEvent.iRepeats && aKeyEvent.iCode != EKeyEscape )
+    if ( !aKeyEvent.iRepeats )
         {
         // Convert event. Use already converted iKeyPressedDown.
         TKeyEvent keyEvent = aKeyEvent;
@@ -756,7 +756,7 @@ void CPhoneKeyEventForwarder::ConvertKeyCodeL( TUint& aCode,
             {
             aCode = numCode;
             }
-        else 
+        else
             {
             switch ( aKeyEvent.iScanCode )
                 {

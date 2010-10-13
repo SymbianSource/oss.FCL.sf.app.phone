@@ -107,7 +107,6 @@ void CPECallInfo::Reset( TBool aIsConference )
     iForwardAddressChoices = NULL;
     iCallIndex = KPEInvalidCallIndex;
     iDoCallBackRequest = EFalse;
-    iProtocolSpesificErrorCode = KErrNone;
     }
 
 // ---------------------------------------------------------------------------
@@ -669,22 +668,6 @@ TBool CPECallInfo::DoCallBackRequest() const
     {
     return iDoCallBackRequest;
     }
+    
    
-// ---------------------------------------------------------------------------
-// Sets protocol spesific error code
-// ---------------------------------------------------------------------------
-//
-void CPECallInfo::SetProtocolError( TInt aError )
-    {
-    iProtocolSpesificErrorCode = aError;
-    }
-
-// ---------------------------------------------------------------------------
-// Gets protocol spesific error code
-// ---------------------------------------------------------------------------
-//
-TInt CPECallInfo::ProtocolError() const
-    {
-    return iProtocolSpesificErrorCode;
-    }
 // End of File

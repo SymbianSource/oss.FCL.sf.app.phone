@@ -165,9 +165,9 @@ EXPORT_C void CPhoneIncoming::HandlePhoneEngineMessageL(
                
                // Prevent execution of CPhoneStateIncoming::HandleIdleL, only remove
                // the call bubble
-               TransitionHandlerL().BeginUiUpdateLC();
+               BeginUiUpdateLC();
                iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-               TransitionHandlerL().EndUiUpdate();
+               EndUiUpdate();
 
                iWaitingCallId = KErrNotFound;
                }
@@ -193,12 +193,16 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneIncoming::HandleIncomingL()");
+    
     TPhoneCmdParamCallStateData callState;
     callState.SetCallState( EPEStateConnected );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCallIdByState, &callState );
     TInt connectedCall = callState.CallId(); 
     
-    TransitionHandlerL().IncomingCallUiUpdateLC();
+    IsNumberEntryUsedL() ? 
+        BeginTransEffectLC( ECallUiAppear ) :
+        BeginTransEffectLC( ENumberEntryOpen );
+    BeginUiUpdateLC();
     
     // Hide the number entry if it exists
     if ( IsNumberEntryUsedL() )
@@ -208,10 +212,11 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     
     TPhoneCmdParamBoolean dialerParam;
     dialerParam.SetBoolean( ETrue );
+    
     AllowShowingOfWaitingCallHeaderL( dialerParam );
       
     // Close fast swap window if it's displayed
-    EikonEnv()->DismissTaskList();
+    CEikonEnv::Static()->DismissTaskList();
     
     // If the 1st incoming call became Connected, this is waiting call
     // If the 1st incoming call went just Idle, this is a normal call
@@ -230,8 +235,11 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
         }
     
     SetToolbarDimming( EFalse );
+    // Display incoming call
     DisplayIncomingCallL( aCallId, dialerParam );
-    TransitionHandlerL().EndUiUpdateAndEffect();
+
+    EndUiUpdate();
+    EndTransEffect();
 
     if ( connectedCall > KErrNotFound )
         {
@@ -265,8 +273,12 @@ void CPhoneIncoming::DisplayIncomingCallL(
     
     // Indicate that the Phone needs to be sent to the background if
     // an application other than the top application is in the foreground
-    SetNeedToReturnToForegroundAppStatusL( !TopAppIsDisplayedL() );
-    
+    TPhoneCmdParamBoolean booleanParam;
+    booleanParam.SetBoolean( !TopAppIsDisplayedL() );
+    iViewCommandHandle->ExecuteCommandL( 
+            EPhoneViewSetNeedToReturnToForegroundAppStatus,
+        &booleanParam );
+
     // Bring Phone app in the foreground
     TPhoneCmdParamInteger uidParam;
     uidParam.SetInteger( KUidPhoneApplication.iUid );

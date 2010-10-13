@@ -19,9 +19,9 @@
 // INCLUDE FILES
 #include <aknnavi.h>
 #include <aknnavide.h>
-
+#include <StringLoader.h>
 #include <avkon.rsg>
-
+#include <phoneui.rsg>
 #include <telephonyvariant.hrh>
 #include <eikenv.h>
 #include <eikappui.h>
@@ -39,6 +39,9 @@
 #include "phoneui.hrh"
 
 // CONSTANTS
+// Defines how long time volume control is shown when volume is changed 
+// while device is muted. Duration in microseconds.
+const TInt KPhoneDelayVolumeControlToDefaultAfterReleased = 1000000;
 
 // ================= MEMBER FUNCTIONS =======================
 // C++ default constructor can NOT contain any code, that
@@ -78,6 +81,13 @@ void CPhoneAudioController::ConstructL()
     // To get touch input, pen check in HandleControlEventL()
     iEarVolumeControl->DecoratedControl()->SetObserver( this );
     iIhfVolumeControl->DecoratedControl()->SetObserver( this );            
+  
+    // Create "muted" navi decorator
+    HBufC* mutedText = StringLoader::LoadLC( R_PHONE_INCALL_MUTED_PANE );
+    iMutedControl = iStatusPane->NaviPane().CreateMessageLabelL( *mutedText );
+    CleanupStack::PopAndDestroy( mutedText );
+        
+    iNaviPaneUpdateTimer = CPhoneTimer::NewL();
 
     iActivateRecoveryId = CPhoneRecoverySystem::Instance()->AddL( 
         TCallBack( DoRecoverActivateL, this ),
@@ -111,6 +121,8 @@ CPhoneAudioController::~CPhoneAudioController()
     CCoeEnv::Static()->RemoveForegroundObserver( *this );
     CPhoneRecoverySystem::Remove( iActivateRecoveryId );
      
+    delete iNaviPaneUpdateTimer;   
+    delete iMutedControl;
     delete iIhfVolumeControl;
     delete iEarVolumeControl;
     }
@@ -126,8 +138,8 @@ void CPhoneAudioController::ActivateVolumeControlL()
     if ( iVolumeControlCount == 1 ) // First time activation
         {
         // Decide whether decorator should be Ear or ihf decorator
-        CAknNavigationDecorator& selectedVolumeDecorator =VolumeDecorator();  
-        PushL( selectedVolumeDecorator ); 
+        CAknNavigationDecorator& selectedDecorator = SelectDecoratorL(); 
+        PushL( selectedDecorator ); 
         }
     }
 
@@ -156,11 +168,16 @@ void CPhoneAudioController::ActivateL()
     
     if( iVolumeControlCount )
         {
-        // Decide whether decorator should be Ear, Ihf decorator
-        CAknNavigationDecorator& selectedVolumeDecorator = VolumeDecorator(); 
-        PushL( selectedVolumeDecorator );                    
-        TInt volumeLevel = VolumeLevel();             
-        SetVolumeLevel( VolumeControl(), volumeLevel );                       
+        // Decide whether decorator should be Ear, Ihf or Muted decorator
+        CAknNavigationDecorator& selectedDecorator = SelectDecoratorL(); 
+        PushL( selectedDecorator );     
+        
+        if( &selectedDecorator != iMutedControl )
+            {            
+            TInt volumeLevel = VolumeLevel(); 
+            
+            SetVolumeLevel( VolumeControl(), volumeLevel );                 
+            }      
         }
     }
     
@@ -208,12 +225,34 @@ void CPhoneAudioController::HandleVolumeChangeL(
         {
         iEarVolume = volumeParam->Integer();
         }
+    
+    if( iMuted )
+        {
+        // Enable timed control transition in muted state    
+        iTimedMuteTransferPending = ETrue; 
+        }
+    else
+        {        
+        iTimedMuteTransferPending = EFalse; 
+        }
      
     // Activate the approriate volume control
     CPhoneRecoverySystem::Instance()->RecoverNow( 
         iActivateRecoveryId, 
         CTeleRecoverySystem::EPhonePriorityStandard );
-    
+
+    if( iTimedMuteTransferPending )    
+        {
+        iTimedMuteTransferPending = EFalse;     
+        
+        // Cancel any pending request
+        iNaviPaneUpdateTimer->CancelTimer();
+
+        // Activate change to Muted decorator after given delay        
+        iNaviPaneUpdateTimer->After(                    
+            KPhoneDelayVolumeControlToDefaultAfterReleased,
+            TCallBack( DoUpdateNaviPaneToDefault, this ) );           
+        }
     }
     
 // ---------------------------------------------------------
@@ -230,6 +269,28 @@ void CPhoneAudioController::HandleIhfChange(
         static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
     
     iIhfMode = booleanParam->Boolean();    
+    
+    // Set state transition flag 
+    iIhfTransferPending = ETrue; 
+    }
+    
+// ---------------------------------------------------------
+// CPhoneAudioController::HandleMuteChange
+//
+// Updates incall indicator according to current call state.
+// ---------------------------------------------------------
+//
+void CPhoneAudioController::HandleMuteChange(
+    TPhoneCommandParam* aCommandParam )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioController::HandleMuteChange()");
+    TPhoneCmdParamBoolean* booleanParam =
+        static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
+
+    iMuted = booleanParam->Boolean();
+    
+    // Decide whether decorator should be ear, ihf or muted decorator
+    TRAP_IGNORE( PushL( SelectDecoratorL() ) );
     }
     
 // -----------------------------------------------------------------------------
@@ -255,6 +316,20 @@ void CPhoneAudioController::PushL( CAknNavigationDecorator& aNew )
         {
         iOldControl = &aNew;
         }
+    }
+
+// -----------------------------------------------------------------------------
+// CPhoneAudioController::DoUpdateNaviPaneToDefault
+// -----------------------------------------------------------------------------
+//
+TInt CPhoneAudioController::DoUpdateNaviPaneToDefault( TAny* aAny )
+    {
+    __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneAudioController::DoUpdateNaviPaneToDefault()");
+    CPhoneAudioController* self = static_cast< CPhoneAudioController* >( aAny );
+    CPhoneRecoverySystem::Instance()->RecoverNow( 
+        self->iActivateRecoveryId, 
+        CTeleRecoverySystem::EPhonePriorityStandard );
+    return KErrNone;
     }
 
 // -----------------------------------------------------------------------------
@@ -364,6 +439,43 @@ TInt CPhoneAudioController::VolumeLevel()
         }        
         
     return volumeLevel;
+    }
+
+// -----------------------------------------------------------------------------
+// CPhoneAudioController::SelectDecoratorL
+// -----------------------------------------------------------------------------
+//    
+CAknNavigationDecorator& CPhoneAudioController::SelectDecoratorL()
+    {
+    __LOGMETHODSTARTEND( EPhoneUIView,"CPhoneAudioController::SelectDecoratorL()" );                                     
+    CAknNavigationDecorator* newDecorator = NULL;    
+    if ( !iMuted )
+        {
+        __PHONELOG( EBasic, EPhoneUIView,"CPhoneAudioController::SelectDecoratorL() - volume decorator " );     
+        newDecorator = &VolumeDecorator();
+        }
+    else 
+        {
+        if ( iIhfTransferPending || !iTimedMuteTransferPending )
+            {
+            __PHONELOG( EBasic, EPhoneUIView,"CPhoneAudioController::SelectDecoratorL() - muted decorator " );         
+            newDecorator = iMutedControl;    
+            }            
+        else 
+            {
+            __PHONELOG( EBasic, EPhoneUIView,"CPhoneAudioController::SelectDecoratorL() - volume decorator " );         
+            newDecorator = &VolumeDecorator();
+            
+            // In muted state the volume decorator must be first 
+            // pushed to container to enable volume popup showing 
+            PushL( *newDecorator );             
+            }
+        }
+
+    // Clear IHF transfer flag. 
+    iIhfTransferPending = EFalse;
+           
+    return *newDecorator;         
     }
 
 // -----------------------------------------------------------------------------

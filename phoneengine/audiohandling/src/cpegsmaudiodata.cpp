@@ -35,7 +35,7 @@
 // None.
 
 // CONSTANTS
-const TInt KDtmfSilent = 0;
+// None.
 
 // MACROS
 // None.
@@ -158,14 +158,9 @@ EXPORT_C void CPEGsmAudioData::PlayDtmfTone
         "AUD CPEGsmAudioData::PlayDtmfTone, aTone = %s, volume = %d", 
         &aTone, 
         volume );
-		
-    // If profile key tones setting is OFF, the volume will be O 
-	// Don't play dtmf tone here to avoid interrupting the possible touch tone's playing.
-    if ( KDtmfSilent != volume )
-        {
-        iDtmfTonePlayer->SetVolume( volume );
-        iDtmfTonePlayer->PlayDtmfTone( aTone );
-        }
+
+	iDtmfTonePlayer->SetVolume( volume );
+    iDtmfTonePlayer->PlayDtmfTone( aTone );
     }
 
 // -----------------------------------------------------------------------------

@@ -99,6 +99,14 @@ class TPhoneCallHeaderParam
         * of call bubble.
         */
         CBubbleManager::TPhoneCallTypeFlags CallHeaderType() const;
+            
+        /**
+        * Setter for divert indication showing in bubble.
+        * @param aDivertIndication ETrue to show divert indication,
+        *        EFalse to not. Usually setting EFalse isn't necessary
+        *        as it's a default value in bubble creation.
+        */
+        void SetDivertIndication( const TBool aDivertIndication );
         
         /**
         * Return remote info data
@@ -252,6 +260,8 @@ class TPhoneCallHeaderParam
         MPhoneCallHeaderManagerUtility& iManagerUtility;
         MPhoneStateMachine& iStateMachine;
         CBubbleManager::TPhoneCallTypeFlags iCallHeaderType;
+        TBool iSetDivertIndication;
+            
     };
 
 #endif // TPHONECALLHEADERPARAM_H

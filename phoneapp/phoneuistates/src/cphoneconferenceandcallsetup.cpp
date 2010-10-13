@@ -248,17 +248,14 @@ void CPhoneConferenceAndCallSetup::HandleConnectingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndCallSetup::HandleConnectingL()");
     
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
         
     UpdateRemoteInfoDataL ( aCallId );
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalNote );
     
     // Re-enable global notes
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
+    EnableGlobalNotifiersL();
 
     // Stop capturing keys
     CaptureKeysDuringCallNotificationL( EFalse );
@@ -282,7 +279,7 @@ void CPhoneConferenceAndCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );       
         
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();        
     }
     
 // -----------------------------------------------------------
@@ -296,7 +293,7 @@ void CPhoneConferenceAndCallSetup::HandleConnectedL( TInt aCallId )
     // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
  
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
         
     // Show bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -316,7 +313,7 @@ void CPhoneConferenceAndCallSetup::HandleConnectedL( TInt aCallId )
     
     SetTouchPaneButtons( EPhoneConferenceAndSingleButtons );
     SetTouchPaneButtonDisabled( EPhoneInCallCmdPrivate );
-    TransitionHandlerL().EndUiUpdate(); 
+    EndUiUpdate(); 
     
     UpdateCbaL ( EPhoneCallHandlingNewCallSwapCBA );
    
@@ -332,10 +329,7 @@ void CPhoneConferenceAndCallSetup::HandleIdleL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndCallSetup::HandleIdleL()");
     // Re-enable global notes
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
+    EnableGlobalNotifiersL();
 
     // Stop capturing keys
     CaptureKeysDuringCallNotificationL( EFalse );
@@ -381,8 +375,8 @@ void CPhoneConferenceAndCallSetup::HandleIdleL( TInt aCallId )
     else
         {
         // Remove  outgoing call 
-        TransitionHandlerL().BeginTransEffectLC( EPhoneTransEffectPhoneUiOpen );
-        TransitionHandlerL().BeginUiUpdateLC();
+        BeginTransEffectLC( ENumberEntryOpen );
+        BeginUiUpdateLC();
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
         CheckIfRestoreNEContentAfterDtmfDialer();
         if ( IsNumberEntryUsedL() )
@@ -392,7 +386,8 @@ void CPhoneConferenceAndCallSetup::HandleIdleL( TInt aCallId )
             }
             
         SetTouchPaneButtons( EPhoneConferenceButtons );
-        TransitionHandlerL().EndUiUpdateAndEffect();
+        EndUiUpdate();
+        EndTransEffect(); 
         UpdateCbaL( EPhoneCallHandlingInCallCBA );
         iStateMachine->ChangeState( EPhoneStateConference );
         }

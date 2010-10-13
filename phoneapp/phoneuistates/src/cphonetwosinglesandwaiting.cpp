@@ -217,7 +217,7 @@ void CPhoneTwoSinglesAndWaiting::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSinglesAndWaiting::HandleIdleL()");
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     if ( !IsNumberEntryUsedL() )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose ); 
@@ -232,7 +232,7 @@ void CPhoneTwoSinglesAndWaiting::HandleIdleL( TInt aCallId )
         {
         StateTransitionToSingleAndWaitingL();
         }
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
     }
 
 // -----------------------------------------------------------
@@ -309,7 +309,7 @@ void CPhoneTwoSinglesAndWaiting::HandleConnectedConferenceL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneTwoSinglesAndWaiting::HandleConnectedConferenceL()");
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     // Update call state
     TPhoneCmdParamCallHeaderData callHeaderParam;
 
@@ -343,11 +343,17 @@ void CPhoneTwoSinglesAndWaiting::HandleConnectedConferenceL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewCreateConference, aCallId,
         &callHeaderParam );
         
-    SetNeedToReturnToForegroundAppStatusL( EFalse );
+    // Clear the flag
+    TPhoneCmdParamBoolean booleanParam;
+    booleanParam.SetBoolean( EFalse );
+    iViewCommandHandle->ExecuteCommandL( 
+         EPhoneViewSetNeedToReturnToForegroundAppStatus,
+         &booleanParam );
         
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
+    // Go to Conference And Waiting state
     // No need for CBA update
-    iStateMachine->ChangeState( EPhoneStateConferenceAndWaiting );
+    iStateMachine->ChangeState( EPhoneStateConferenceAndWaiting );                
     }
     
 // -----------------------------------------------------------

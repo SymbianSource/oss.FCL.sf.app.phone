@@ -23,7 +23,7 @@
 #include <aknenv.h>
 #include <applayout.cdl.h>
 #include <AknUtils.h>
-#include <AknLayout2ScalableDef.h>
+#include <aknlayout2scalabledef.h>
 #include <aknlayoutscalable_apps.cdl.h>
 #include <layoutmetadata.cdl.h>
 

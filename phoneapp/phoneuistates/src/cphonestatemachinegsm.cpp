@@ -295,10 +295,6 @@ EXPORT_C MPhoneState* CPhoneStateMachineGSM::State()
         {
         __PHONELOGSTATECHANGE( iOldStateId, iNewStateId );
         iOldStateId = iNewStateId;
-        
-        // Needs to be set or any attempts to access eikon env handle
-        // will fail
-        iState->SetEikonEnv( EikonEnv() );
         }
 
     return iState;

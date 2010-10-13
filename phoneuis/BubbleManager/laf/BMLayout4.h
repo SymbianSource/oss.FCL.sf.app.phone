@@ -23,7 +23,7 @@
 // INCLUDES
 #include <calslbs.h>
 #include <bldvariant.hrh> 
-#include <AknLayoutDef.h>
+#include <aknlayoutdef.h>
 
 /**
 * Layout coordinates from Application LAF

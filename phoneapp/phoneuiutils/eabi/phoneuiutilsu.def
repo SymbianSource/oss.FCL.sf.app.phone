@@ -420,5 +420,4 @@ EXPORTS
 	_ZThn4_N26CPhoneResourceResolverBaseD1Ev @ 419 NONAME
 	_ZThn4_NK26CPhoneResourceResolverBase17ResolveResourceIDERKi @ 420 NONAME
 	_ZN19CPhoneQwertyHandler16ConvertToNumericER9TKeyEvent @ 421 NONAME
-	_ZN23PhoneVanityDialingUtils24DoVanityNumberConversionER6TDes16 @ 422 NONAME
 

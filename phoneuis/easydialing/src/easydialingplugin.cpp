@@ -46,6 +46,9 @@
 
 // Virtual phonebook header files
 #include <VPbkContactStoreUris.h>
+#include <CVPbkContactStoreUriArray.h>
+#include <TVPbkContactStoreUriPtr.h>
+#include <CVPbkContactLinkArray.h>
 #include <VPbkEng.rsg> // contains virtual phonebook data fields
 #include <phoneui.rsg> 
 
@@ -179,9 +182,20 @@ CEasyDialingPlugin* CEasyDialingPlugin::NewL()
 void CEasyDialingPlugin::ConstructL()
     {
     iLongTapped = EFalse;
-    // Create contact data manager.
-    iContactDataManager = CEasyDialingContactDataManager::NewL();
-    iContactDataManager->SetObserver( this );
+    
+    // Create a contact store array.
+    HBufC* defaultCdb = VPbkContactStoreUris::DefaultCntDbUri().AllocLC();
+    iContactDataStores.AppendL( defaultCdb );
+    CleanupStack::Pop( defaultCdb );
+
+    // Create a contact manager instance.
+    iContactStoreUriArray = CVPbkContactStoreUriArray::NewL();
+    iContactStoreUriArray->AppendL( TVPbkContactStoreUriPtr( VPbkContactStoreUris::DefaultCntDbUri() ) );
+    iContactManager = CVPbkContactManager::NewL( *iContactStoreUriArray );
+    
+    iContactDataManager = new (ELeave) CEasyDialingContactDataManager(iContactManager);
+    iContactDataManager->ConstructL();
+    iContactDataManager->SetObserver(this);
 
     // Find a handle to ca launcher extension MCCAConnectionExt.
     // Easydialing has to use the extension API, because it needs function CloseAppL
@@ -199,7 +213,7 @@ void CEasyDialingPlugin::ConstructL()
     User::LeaveIfNull( any );
     iContactLauncher = static_cast<MCCAConnectionExt*>( any );
     
-    iCenrepListener = CEasyDialingCenrepListener::NewL( this );
+    iCenrepListener = CEasyDialingCenrepListener::NewL(this);
    
     iContactorService = CEDContactorService::NewL( this );
 
@@ -230,6 +244,8 @@ CEasyDialingPlugin::~CEasyDialingPlugin()
     delete iCenrepListener;
     delete iContactDataManager;
     delete iPredictiveSearchQuery;
+    delete iContactManager;
+    delete iContactStoreUriArray;
     iContactDataStores.ResetAndDestroy();
 
     if ( iPredictiveContactSearchHandler )
@@ -392,6 +408,10 @@ void CEasyDialingPlugin::InitPredictiveContactSearchL()
     iPredictiveContactSearchHandler = CPSRequestHandler::NewL();
     iPredictiveContactSearchHandler->AddObserverL(this);
 
+    // Put the searched contact fields into array.
+    RArray<TInt> contact_fields;
+    CleanupClosePushL(contact_fields);
+
     // Check which relevant contact fields are indexed in PCS search.
     iFirstNamePCSIndex = FindContactFieldPCSIndexL( R_VPBK_FIELD_TYPE_FIRSTNAME );
     iLastNamePCSIndex = FindContactFieldPCSIndexL( R_VPBK_FIELD_TYPE_LASTNAME );
@@ -415,48 +435,32 @@ void CEasyDialingPlugin::InitPredictiveContactSearchL()
         User::Leave( KErrEasyDialingNoLastNamePCSIndexing );
         }
 
-    SetupPcsSettingsL();
-
-    iPredictiveSearchQuery = CPsQuery::NewL();
-    }
-
-// -----------------------------------------------------------------------------
-// SetupPcsSettingsL
-// -----------------------------------------------------------------------------
-//
-void CEasyDialingPlugin::SetupPcsSettingsL()
-    {
-    // Get current store configuration from Phonebook settings
-    iContactDataStores.ResetAndDestroy();
-    iContactDataManager->GetCurrentStoreUrisL( iContactDataStores );
-    
-    // Put the searched contact fields into array.
-    RArray<TInt> contact_fields;
-    CleanupClosePushL(contact_fields);
-
     // First name, last name and company name (if supported) are used in PCS search.
-    contact_fields.Append( R_VPBK_FIELD_TYPE_FIRSTNAME );
-    contact_fields.Append( R_VPBK_FIELD_TYPE_LASTNAME );
-    contact_fields.Append( R_VPBK_FIELD_TYPE_COMPANYNAME );
+    contact_fields.Append(R_VPBK_FIELD_TYPE_FIRSTNAME);
+    contact_fields.Append(R_VPBK_FIELD_TYPE_LASTNAME);
+    if ( iCompanyNamePCSIndex != KErrNotFound )
+        {
+        contact_fields.Append(R_VPBK_FIELD_TYPE_COMPANYNAME);
+        }
 
-    // Create and fill PS settings object.
+    SetSortOrderL( iContactDataManager->NameOrder() );
+
+    // Create and fill ps settings object.
     CPsSettings* ps_settings = CPsSettings::NewL();
-    CleanupStack::PushL( ps_settings );
+    CleanupStack::PushL(ps_settings);
 
-    ps_settings->SetSearchUrisL( iContactDataStores );
-    ps_settings->SetMaxResults( KEDMaximumMatchingContactsCount );
-    ps_settings->SetSortType( EAlphabetical );
-    ps_settings->SetDisplayFieldsL( contact_fields );
+    ps_settings->SetSearchUrisL(iContactDataStores);
+    ps_settings->SetMaxResults(KEDMaximumMatchingContactsCount);
+    ps_settings->SetSortType(EAlphabetical);
+    ps_settings->SetDisplayFieldsL(contact_fields);
 
     // Set the PCS settings.
-    iPredictiveContactSearchHandler->SetSearchSettingsL( *ps_settings );
+    iPredictiveContactSearchHandler->SetSearchSettingsL(*ps_settings);
 
-    CleanupStack::PopAndDestroy( ps_settings );
-    CleanupStack::PopAndDestroy( &contact_fields );
+    CleanupStack::PopAndDestroy(ps_settings);
+    CleanupStack::PopAndDestroy(&contact_fields);
 
-    // Set the sort order. This must happen after the contact store settings
-    // are up-to-date.
-    SetSortOrderL( iContactDataManager->NameOrder() );
+    iPredictiveSearchQuery = CPsQuery::NewL();
     }
 
 // -----------------------------------------------------------------------------
@@ -469,22 +473,19 @@ void CEasyDialingPlugin::SetSortOrderL( CEasyDialingContactDataManager::TNameOrd
     CleanupClosePushL( fields );
     if ( aNameOrder == CEasyDialingContactDataManager::EFirstnameLastname )
         {
-        fields.AppendL( R_VPBK_FIELD_TYPE_FIRSTNAME );
-        fields.AppendL( R_VPBK_FIELD_TYPE_LASTNAME );
+        fields.Append(R_VPBK_FIELD_TYPE_FIRSTNAME);
+        fields.Append(R_VPBK_FIELD_TYPE_LASTNAME);
         }
     else
         {
-        fields.AppendL( R_VPBK_FIELD_TYPE_LASTNAME );
-        fields.AppendL( R_VPBK_FIELD_TYPE_FIRSTNAME );
+        fields.Append(R_VPBK_FIELD_TYPE_LASTNAME);
+        fields.Append(R_VPBK_FIELD_TYPE_FIRSTNAME);
         }
-    fields.AppendL( R_VPBK_FIELD_TYPE_COMPANYNAME );
-    
-    // Set the same order for each contact store. PCS automatically ignores
-    // fields not supported by the given store.
-    for ( TInt i = 0 ; i < iContactDataStores.Count() ; ++i )
+    if ( iCompanyNamePCSIndex != KErrNotFound )
         {
-        iPredictiveContactSearchHandler->ChangeSortOrderL( *iContactDataStores[i], fields );
+        fields.Append(R_VPBK_FIELD_TYPE_COMPANYNAME);
         }
+    iPredictiveContactSearchHandler->ChangeSortOrderL( *iContactDataStores[0], fields );
     CleanupStack::PopAndDestroy( &fields );
     }
 
@@ -847,22 +848,6 @@ void CEasyDialingPlugin::FavouritesChanged()
     }
 
 // -----------------------------------------------------------------------------
-// StoreConfigurationChanged
-// From MContactDataManagerObserver
-// -----------------------------------------------------------------------------
-//
-void CEasyDialingPlugin::StoreConfigurationChanged()
-    {
-    TRAP_IGNORE( 
-        // Reconfigure PCS to update its store settings
-        SetupPcsSettingsL();
-        // Contacts available have changed and a new search is needed if we have
-        // previous results shown.
-        DoHandleContactsChangedL() 
-        );
-    }
-
-// -----------------------------------------------------------------------------
 // InformContactorEvent
 // From MEDContactorObserver
 // -----------------------------------------------------------------------------
@@ -932,10 +917,7 @@ void CEasyDialingPlugin::LaunchSearchL()
         // not to the keyboard it is made with. While this is not strictly
         // identical to checking the used keyboard, this behaves identically
         // in most of the normal cases, and makes the logic simpler.
-        // In case of hybrid mode keyboard, use always predictive default 
-        // keyboard.
-        if ( iKeyboardMode == EDefaultKeyboard && 
-             IsItuTCharacter( iSearchString[i] ) )
+        if ( IsItuTCharacter( iSearchString[i] ) )
             {
             item->SetMode( EPredictiveItuT );
             }
@@ -1025,10 +1007,8 @@ TInt CEasyDialingPlugin::FindContactFieldPCSIndexL( TInt aIndex )
     RArray<TInt> fieldOrder;
     CleanupClosePushL( fieldOrder );
 
-    // PCS uses the same data plugin for all the Phonebook databases
-    // (i.e. phone contacts, SIM contacts, SDN contacts), and there can be only
-    // one data order per plugin. Thus, data order for all databases supported
-    // by us is the same, and it's enough to ask data order just for the default CDB.
+    // Current implementation searches only from default database.
+    // Later this may be expanded to search SIM contacts as well.
     const TDesC& defaultCdb = VPbkContactStoreUris::DefaultCntDbUri();
 
     iPredictiveContactSearchHandler->GetDataOrderL( defaultCdb, fieldOrder );
@@ -1094,7 +1074,7 @@ void CEasyDialingPlugin::HandlePsResultsUpdateL( RPointerArray<CPsClientData>& a
         TInt indexFromEnd = numberOfPCSMatches - i - 1;
 
         MVPbkContactLink* link = iPredictiveContactSearchHandler->ConvertToVpbkLinkLC(
-                *(aResults[indexFromEnd]), iContactDataManager->ContactManager() );
+                *(aResults[indexFromEnd]), *iContactManager );
         if ( !iContactDataManager->IsFavL( link ) )
             {
             // handle favourites separately, in another loop
@@ -1461,14 +1441,34 @@ TBool CEasyDialingPlugin::InitializeMenuPaneL( CEikMenuPane& aMenuPane, TInt aMe
             message = iContactDataManager->UniEditorAvailable( index );
             }
             
-        
-        aMenuPane.SetItemDimmed( EEasyDialingVoiceCall, !voiceCall ); 
-        aMenuPane.SetItemDimmed( EEasyDialingVideoCall, !videoCall ); 
+        // Call menu item is not show if neither voice call nor video call are possible. 
+        aMenuPane.SetItemDimmed( EEasyDialingVoiceCall, !voiceCall && !videoCall ); 
         aMenuPane.SetItemDimmed( EEasyDialingSendMessage, !message ); 
         
         LOGSTRING("EasyDialingPlugin::InitializeMenuPaneL: InitializeMenuPaneL done" );
         
         return ETrue;  
+        }
+    
+    else if ( aMenuResourceId == R_EASYDIALING_OPTIONS_CALL_MENU )
+        {
+        TBool voiceCall = EFalse;
+        TBool videoCall = EFalse;
+        
+        if ( iContactListBox->CurrentItemIndex() >= 0 ) 
+            {
+            TInt index = iContactListBox->CurrentContactDataIndex();
+            
+            voiceCall = iContactDataManager->VoiceCallAvailable( index );
+            videoCall = iContactDataManager->VideoCallAvailable( index );
+            }
+        
+        aMenuPane.SetItemDimmed( EEasyDialingVoiceCall, !voiceCall ); 
+        aMenuPane.SetItemDimmed( EEasyDialingVideoCall, !videoCall ); 
+
+        LOGSTRING("EasyDialingPlugin::InitializeMenuPaneL: InitializeMenuPaneL for call submenu done" );
+        
+        return ETrue;
         }
     
     else if ( aMenuResourceId == R_EASYDIALING_OPTIONS_ON_OFF_CASCADE_MENU )
@@ -1514,7 +1514,7 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
         }
  
     
-    TBool ret(ETrue);
+    TBool ret(EFalse);
     
     switch ( aCommand )
         {
@@ -1522,6 +1522,7 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
             
             iRememberFocus = ETrue;
             AsyncActionLaunchL( ELaunchCurrentContact );
+            ret = ETrue;
             break;
 
         // EEasyDialingEnterKeyAction is sent when Enter key is pressed.
@@ -1531,6 +1532,7 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
             // Make a call.
             iRememberFocus = ETrue;
             AsyncActionLaunchL( ECallCurrentContact );
+            ret = ETrue;
             break;
             
         // Video call is selectable only through menu.
@@ -1538,6 +1540,7 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
             // Make a video call.
             iRememberFocus = ETrue;
             AsyncActionLaunchL( EVideoCallCurrentContact );
+            ret = ETrue;
             break;
                 
         // Uni-editor message is selectable only through menu.
@@ -1545,6 +1548,7 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
             // Create a message.
             iRememberFocus = ETrue;
             AsyncActionLaunchL( ESendMessageCurrentContact );
+            ret = ETrue;
             break;
                     
         // EEasyDialingCallHandlingActivated is sent when the in-call-ui of telephony gets activated
@@ -1561,37 +1565,41 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
                 iNewSearchNeeded = EFalse;
                 iContactLauncher->CloseAppL();
                 }
+            ret = ETrue;
             break;
             
         case EEasyDialingOn:
             
             iCenrepListener->SetEasyDialingSettingsValue( 1 );
+            ret = ETrue;
             break;
 
         case EEasyDialingOff:
             
             iCenrepListener->SetEasyDialingSettingsValue( 0 );
+            ret = ETrue;
             break;    
             
         case EEasyDialingClosePopup:
             
             // Not only Number Entry is removed but also closes down number selection popup in case it happens to be open.
             iContactorService->CancelService();
+            ret = ETrue;
             break;
             
         case EEasyDialingVkbOpened:
             
             iVirtualKeyboardOpen = ETrue;
+            ret = ETrue;
             break;
                   
         case EEasyDialingVkbClosed:
             
             iVirtualKeyboardOpen = EFalse;
-            HandleGainingForeground();
+            ret = ETrue;
             break;
             
         default:
-            ret = EFalse;
             break;
         }
     return ret;
@@ -1605,16 +1613,6 @@ TBool CEasyDialingPlugin::HandleCommandL( TInt aCommand )
 TBool CEasyDialingPlugin::IsEnabled() const
     {
     return ( iCenrepListener && iCenrepListener->Value() != 0 );
-    }
-
-// -----------------------------------------------------------------------------
-// SetKeyboardMode
-// Sets keyboard mode
-// -----------------------------------------------------------------------------
-//
-void CEasyDialingPlugin::SetKeyboardMode( TKeyboardMode aMode )
-    {
-    iKeyboardMode = aMode;
     }
 
 // -----------------------------------------------------------------------------
@@ -1677,7 +1675,7 @@ void CEasyDialingPlugin::AsyncActionLaunchL( TEasyDialingAction aAction )
         iContactToBeLaunchedName = AllocWithoutHighlightSeparatorsLC( fullNameSeparators );
         CleanupStack::Pop( iContactToBeLaunchedName );
         }
-    
+
     CancelActionLaunchAndInputBlock();
     
     if ( aAction == ELaunchSearch )
@@ -1729,7 +1727,7 @@ TInt CEasyDialingPlugin::AsyncCallBackToLaunchAction( TAny* aPtr )
 //
 // -----------------------------------------------------------------------------
 //
-void CEasyDialingPlugin::DoLaunchActionL()
+void CEasyDialingPlugin::DoLaunchActionL( )
     {
     if ( iActionToBeLaunched == EInitializePcs )
         {
@@ -1929,7 +1927,7 @@ void CEasyDialingPlugin::HandleGainingForeground()
         // search is made, all data is loaded again.
         iContactDataManager->Reload();
         
-        TRAP_IGNORE( LaunchSearchL() );
+        LaunchSearchL();
         }
     }
 
@@ -1971,7 +1969,7 @@ void CEasyDialingPlugin::DoHandleContactsChangedL()
     if ( iSearchString.Length() > 0 && IsEnabled() )
         {
         CAknAppUi* appUi = static_cast<CAknAppUi*>( iCoeEnv->AppUi() );
-        if ( appUi->IsForeground() && !iVirtualKeyboardOpen )
+        if ( appUi->IsForeground() )
             {
             // Do new search immediately, if contacts change while we are on the
             // foreground. This can happen for example if view is switched to

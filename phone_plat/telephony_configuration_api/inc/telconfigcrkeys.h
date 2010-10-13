@@ -31,8 +31,7 @@ const TUid KCRUidTelConfiguration = {0x102828B8};
 /**
 * Amount of digits to be used in contact matching.
 * This allows a customer to variate the amount of digits to be matched.
-* Note that altough PhoneApp doesn't use this value anymore, there are other
-* users for it in S60 SW. 
+* Legal values: 7-11.
 */
 const TUint32 KTelMatchDigits                               = 0x00000001;
 

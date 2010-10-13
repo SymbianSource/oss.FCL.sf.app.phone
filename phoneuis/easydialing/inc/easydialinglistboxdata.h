@@ -155,15 +155,15 @@ private:
         const TExtendedColors& aColors ) const;
     
     /**
-     * Draws the Contact Thumbnail Icon if any, else draws the dummy contact thumbnail.
+     * Draws the Contact Thumbnail Icon if any else draws the dummy contact thumbnail.
      * @param   aGc Graphics context.
      * @param   aBoundingBox    Rectangle containing bounds for contact thumbnail.
-     * @param   aContactIndex   Contact index for the contact data manager
+     * @param   aDescId Descriptor containing contact id.
      */
-    void DrawContactThumbnail(
+    TBool DrawContactThumbnail(
             CWindowGc& aGc,
             TRect aBoundingBox,
-            TInt aContactIndex ) const;
+            TPtrC aDescId) const;
     
     /**
      * Draws the Action Menu.
@@ -181,21 +181,6 @@ private:
      * @param   aEffectiveRect The whole listbox item rect. Used for mirroring.
      */
     void DrawFavouriteIcon(
-            CWindowGc& aGc, 
-            TRect aNameRectUnMirrored,
-            TRect aEffectiveRect) const;
-    
-    /**
-     * Draws the SIM or Service Number icon. Takes the name rect as a parameter. Name rect
-     * must be unmirrored, because the mirroring is done as the last thing
-     * before drawing.
-     * @param   aIcon The icon to be drawn
-     * @param   aGc Graphics context.
-     * @param   aNameRectUnMirrored Name rect, after which the icon is drawn
-     * @param   aEffectiveRect The whole listbox item rect. Used for mirroring.
-     */
-    void DrawSimIcon(
-            CGulIcon& aIcon,
             CWindowGc& aGc, 
             TRect aNameRectUnMirrored,
             TRect aEffectiveRect) const;
@@ -228,12 +213,6 @@ private:
     
     /** Favourite icon. Owned. */
     CGulIcon* iFavouriteIcon;
-    
-    /** SIM contact icon. Owned. */
-    CGulIcon* iSimContactIcon;
-    
-    /** Service contact icon. Owned. */
-    CGulIcon* iSdnContactIcon;
     
     /** Pointer to listbox. Not owned. */
     CEasyDialingListBox* iControl;

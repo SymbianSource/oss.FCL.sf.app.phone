@@ -58,6 +58,8 @@ const TInt KEDMaxPhoneNumberLength = 64;
 
 class CPSRequestHandler;
 class CPsQuery;
+class CVPbkContactStoreUriArray;
+class CVPbkContactManager;
 class CEasyDialingListBox;
 class MVPbkContactLink;
 class CEasyDialingCenrepListener;
@@ -94,7 +96,7 @@ public:
     * Destructor. 
     */
     virtual ~CEasyDialingPlugin();
-    
+
 public: // from CCoeControl 
 
     /**
@@ -116,7 +118,7 @@ public: // from CCoeControl
     * From CCoeControl
     */
     void MakeVisible( TBool aVisible );
-    
+ 
     /**
     * From CCoeControl
     */
@@ -211,12 +213,6 @@ public: // from CDialingExtensionInterface
      */
     TBool IsEnabled() const;
 
-    /**
-     * Tells if extension is currently enabled from settings.
-     * @return  ETrue if extension is enabled, EFalse otherwise.
-     */
-    void SetKeyboardMode( TKeyboardMode aMode );
-    
 public:
 
     /**
@@ -228,7 +224,7 @@ public:
     * From MEasyDialingCenrepListenerObserver.
     */
     void EasyDialingContactThumbnailsSettingsChanged( TInt aThumbnailSettingValue );
-    
+        
     /**
     * From MContactDataManagerObserver.
     */
@@ -243,11 +239,6 @@ public:
     * From MContactDataManagerObserver.
     */
     void FavouritesChanged();
-    
-    /**
-    * From MContactDataManagerObserver.
-    */
-    void StoreConfigurationChanged();
     
     /**
     * From MEDContactorObserver.
@@ -287,8 +278,6 @@ private:
     void ConstructL ();
     
     void InitPredictiveContactSearchL();
-    
-    void SetupPcsSettingsL();
     
     void SetSortOrderL( CEasyDialingContactDataManager::TNameOrder aNameOrder );
     
@@ -457,6 +446,12 @@ private:
     /** Array of used data stores. Owned. */
     RPointerArray<TDesC> iContactDataStores;
     
+    /** Contact store array. Owned. */
+    CVPbkContactStoreUriArray* iContactStoreUriArray;
+    
+    /** Contact manager handle. Owned. */
+    CVPbkContactManager* iContactManager;
+	
     /** Search result field index for first name field. */
     TInt iFirstNamePCSIndex;
     
@@ -522,7 +517,7 @@ private:
     
     /** Is virtual keyboard currently open or not.*/
     TBool iVirtualKeyboardOpen;
-    
+
     /** First line of info text shown when number entry is empty. Owned. */
     HBufC* iInfoLabelTextLine1;
     
@@ -535,11 +530,9 @@ private:
     /** Label for showing second line of info text when number entry is empty. Owned. */
     CEikLabel* iInfoLabelLine2;
     
-    /** Keyboard mode to be used in matching. */
-    TKeyboardMode iKeyboardMode;
-	
-	/** 'Flag' if contact have been long tapped, so ECE launcher opens. Long tap contact = True, default = False */
+    /** 'Flag' if contact have been long tapped, so ECE launcher opens. Long tap contact = True, default = False */
     TBool iLongTapped;
+
 };
 
 

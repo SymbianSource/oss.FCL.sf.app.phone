@@ -836,9 +836,6 @@ NONSHARABLE_CLASS( CPEMessageHandler ) : public CBase
         TBool iEmergencyCallActive;
         //
         TBool iBtaaDisconnected;
-		// Flag to associate switch to vid/voice call operation and video call's reconnect operation.
-		// Use to fetch the right SwitchToNumber.
-        TBool iSwitchToVidCalReconFlag;
         //Client Information, member variable because emergency call from phone client
         //is not allowed to allocate memory. 
         CPEClientInformation* iClientInformation;

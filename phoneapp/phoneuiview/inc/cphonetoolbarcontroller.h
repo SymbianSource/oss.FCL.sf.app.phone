@@ -67,41 +67,13 @@ public:
     * Disables toolbar
     */ 
     void HideToolbar();	
-
-    /**
-    * Sets mute flag.
-    * @param aCommandParam command parameter
-    */        
+    
     void SetMuteFlag( TPhoneCommandParam* aCommandParam );
 
-    /**
-    * Sets integrated handsfree in use -flag.
-    * @param aCommandParam command parameter
-    */        
     void SetIhfFlag( TPhoneCommandParam* aCommandParam );
-
-    /**
-    * Sets wired accessory in use -flag.
-    * @param aCommandParam command parameter
-    */        
+    
     void SetWiredAccFlag( TPhoneCommandParam* aCommandParam );
-
-    /**
-    * Sets Bluetooth accessory in use -flag.
-    * @param aCommandParam command parameter
-    */    
-    void SetBTAccFlag( TPhoneCommandParam* aCommandParam );
-
-    /**
-    * Sets Bluetooth accessory is available -flag.
-    * @param aCommandParam command parameter
-    */        
-    void SetBTAccAvailableFlag( TPhoneCommandParam* aCommandParam );
-
-    /**
-    * Sets call is in progress state -flag.
-    * @param aCommandParam command parameter
-    */        
+    
     void SetCallInProgressFlag( TPhoneCommandParam* aCommandParam ); 
     
     /**
@@ -199,23 +171,13 @@ private: // data
      * CoeEnv 
      */
     CCoeEnv& iCoeEnv;    
-    
-    // Muted or not
+        
     TBool iMuteFlag;
     
-    // Integrated handsfree in use or not
     TBool iIhfFlag;
     
-    // Wired accessory in use or not
     TBool iWiredAccFlag;
     
-    // Bluetooth accessory in use or not
-    TBool iBTAccFlag;
-    
-    // Bluetooth accessory is available or not
-    TBool iBTAccAvailableFlag;
-    
-    // A call is progressing or not
     TBool iCallInProgress;
 
     // Dim activate IHF button

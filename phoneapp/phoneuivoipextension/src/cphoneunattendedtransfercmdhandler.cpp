@@ -198,11 +198,9 @@ void CPhoneUnattendedTransferCmdHandler::ShowTransferDialerL()
             &customDialerParam );
         
         // Open transfer dialer
-        phoneState->
-            TransitionHandlerL().BeginTransEffectLC( EPhoneTransEffectCallUiDisappear );
+        phoneState->BeginTransEffectLC( ECallUiDisappear );
         iViewCommandHandle.ExecuteCommandL( EPhoneViewCreateNumberEntry );
-        phoneState->
-            TransitionHandlerL().EndTransEffect();
+        phoneState->EndTransEffect();
         
         // Update CBA to transfer dialer CBA
         TPhoneCmdParamInteger resourceId;

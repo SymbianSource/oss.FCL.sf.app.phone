@@ -204,17 +204,14 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetup::HandleConnectingL()");
     
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     
     UpdateRemoteInfoDataL ( aCallId );
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveGlobalNote );
     
     // Re-enable global notes
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
+    EnableGlobalNotifiersL();
 
     // Stop capturing keys
     CaptureKeysDuringCallNotificationL( EFalse );
@@ -230,7 +227,7 @@ void CPhoneSingleAndCallSetup::HandleConnectingL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewUpdateBubble, aCallId, 
         &callHeaderParam );
 
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
         
     // Set Hold flag to view EFalse that dtmf menu item not delete
     TPhoneCmdParamBoolean holdFlag;
@@ -251,7 +248,7 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleAndCallSetup::HandleConnectedL()");
     
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     
     // Show bubble
     TPhoneCmdParamCallHeaderData callHeaderParam;
@@ -276,8 +273,9 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
 
     SetTouchPaneButtons( EPhoneTwoSinglesButtons );
     
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();        
     
+     // Go to two singles state
     UpdateCbaL( EPhoneCallHandlingNewCallSwapCBA );
     iStateMachine->ChangeState( EPhoneStateTwoSingles );
     
@@ -290,7 +288,7 @@ void CPhoneSingleAndCallSetup::HandleConnectedL( TInt aCallId )
 void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetup::HandleIdleL()");
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     // Find out do we have single or outgoing call left
@@ -328,7 +326,7 @@ void CPhoneSingleAndCallSetup::HandleIdleL( TInt aCallId )
         UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
         iStateMachine->ChangeState( EPhoneStateCallSetup );
         }
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
     }
 
 // -----------------------------------------------------------

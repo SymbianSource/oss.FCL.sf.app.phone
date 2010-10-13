@@ -50,7 +50,7 @@ PRJ_EXPORTS
 ../loc/phone.loc                                APP_LAYER_LOC_EXPORT_PATH(phone.loc)
 ../loc/voip.loc                                 APP_LAYER_LOC_EXPORT_PATH(voip.loc)
 ../loc/dialer.loc    				APP_LAYER_LOC_EXPORT_PATH(dialer.loc)
-../loc/variedcallhandling.loc 			APP_LAYER_LOC_EXPORT_PATH(variedcallhandling.loc)
+
 
 PRJ_EXTENSIONS
 START EXTENSION s60/mifconv

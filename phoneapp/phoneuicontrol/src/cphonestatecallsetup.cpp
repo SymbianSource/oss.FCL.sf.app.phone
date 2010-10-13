@@ -87,23 +87,11 @@ EXPORT_C void CPhoneStateCallSetup::ConstructL()
     // Enable the volume display
     iViewCommandHandle->ExecuteCommandL( EPhoneViewShowNaviPaneAudioVolume );   
     HandleAudioOutputChangedL();
-
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateDialing );
-    iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState, &callStateData );
-    if ( callStateData.CallId() > KErrNotFound && IsVideoCall( callStateData.CallId() ) )
-        {
-        CPhonePubSubProxy::Instance()->ChangePropertyValue(
-                        KPSUidScreenSaver,
-                        KScreenSaverAllowScreenSaver,
-                        EPhoneScreensaverNotAllowed );
-        }
-    
-    if ( IsKeyLockOn() )
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewDisableKeyLockWithoutNote );
-        }
-    
+     
+    CPhonePubSubProxy::Instance()->ChangePropertyValue(
+                    KPSUidScreenSaver,
+                    KScreenSaverAllowScreenSaver,
+                    EPhoneScreensaverNotAllowed );
     }
 
 // -----------------------------------------------------------
@@ -576,10 +564,12 @@ void CPhoneStateCallSetup::CancelDTMFSendingL()
 //
 void CPhoneStateCallSetup::HandleConnectedL( TInt aCallId )
     {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleConnectedL()");
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateCallSetup::HandleConnectedL()");        
+
+    // Close menu bar, if it is displayed
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
         
     // Remove the number entry if it isn't DTMF dialer
     if ( !iOnScreenDialer || !IsNumberEntryVisibleL() || !IsDTMFEditorVisibleL() )
@@ -601,9 +591,11 @@ void CPhoneStateCallSetup::HandleConnectedL( TInt aCallId )
 
     SetToolbarDimming( EFalse );
 
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
     
+    // Go to single state
     UpdateCbaL( EPhoneCallHandlingInCallCBA );    
+
     iStateMachine->ChangeState( EPhoneStateSingle );
     }
 
@@ -617,15 +609,13 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
     if ( !NeedToReturnToForegroundAppL() &&
          IsNumberEntryUsedL() )
         {
-        TransitionHandlerL().
-                BeginTransEffectLC( EPhoneTransEffectCallUiDisappear );
+        BeginTransEffectLC( ECallUiDisappear );
         }
     else 
         {
-        TransitionHandlerL().
-                BeginTransEffectLC( EPhoneTransEffectPhoneUiOpen );
+        BeginTransEffectLC( ENumberEntryOpen );
         }
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     
     // Disable the volume display
     iViewCommandHandle->ExecuteCommandL( EPhoneViewHideNaviPaneAudioVolume );
@@ -638,21 +628,8 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
       
     if ( IsNumberEntryUsedL() )
         {
-        if ( NeedToReturnToForegroundAppL() )
-            {
-            // Return phone to the background if send to background is needed.
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
-    
-            iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
-    
-            // Set Number Entry CBA
-            iCbaManager->SetCbaL( EPhoneNumberAcqCBA );
-            }
-        else
-            {
-            // Show the number entry if it exists
-            SetNumberEntryVisibilityL(ETrue);
-            }
+        // Show the number entry if it exists
+        SetNumberEntryVisibilityL(ETrue);
         }    
     else if ( NeedToReturnToForegroundAppL() )
         {
@@ -668,7 +645,8 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
         DisplayIdleScreenL();
         }
         
-    TransitionHandlerL().EndUiUpdateAndEffect();
+    EndUiUpdate();
+    EndTransEffect(); 
     // No need update cba
     iStateMachine->ChangeState( EPhoneStateIdle );
     }
@@ -684,10 +662,7 @@ void CPhoneStateCallSetup::HandleRemoteTerminatedL( TInt aCallId )
     // Remove call header
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( 
-        EPhoneViewSetGlobalNotifiersDisabled, &globalNotifierParam );
+    EnableGlobalNotifiersL();
 
     // Video call not possible note is shown by 
     // CPhoneErrorMessagesHandler::ShowErrorSpecificNoteL method,

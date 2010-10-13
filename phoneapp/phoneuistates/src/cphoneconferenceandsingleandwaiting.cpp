@@ -198,7 +198,7 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndSingleAndWaiting::HandleIdleL()");
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     SetTouchPaneButtonEnabled( EPhoneCallComingCmdAnswer );
     SetTouchPaneButtons( EPhoneWaitingCallButtons );
 
@@ -240,7 +240,7 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
                 }
             }
         }
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
     }
 
 // -----------------------------------------------------------
@@ -341,7 +341,7 @@ void CPhoneConferenceAndSingleAndWaiting::HandleConferenceIdleL()
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndSingleAndWaiting::HandleConferenceIdleL()");
     
-    TransitionHandlerL().BeginUiUpdateLC();    
+    BeginUiUpdateLC();    
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );    
         
@@ -353,7 +353,7 @@ void CPhoneConferenceAndSingleAndWaiting::HandleConferenceIdleL()
 
     MakeTransitionAccordingToActiveCallsL();
     
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();    	    
     }
 
 // --------------------------------------------------------------

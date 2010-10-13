@@ -2680,24 +2680,4 @@ TBool CPEEngineInfoImpl::CheckIfCallStateExists( const TPEState& aCallState )
     return stateExists;
     }
 
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::SetProtocolError
-// Sets the protocol spesific error code to callinfo
-// -----------------------------------------------------------------------------
-//
-void CPEEngineInfoImpl::SetProtocolError( TInt aError, TInt aCallId )
-    {
-    iCurrentCalls[ aCallId ]->SetProtocolError( aError );
-    }
-
-// -----------------------------------------------------------------------------
-// CPEEngineInfoImpl::ProtocolError
-// Gets the protocol spesific error code from callinfo
-// -----------------------------------------------------------------------------
-//
-TInt CPEEngineInfoImpl::ProtocolError( const TInt aCallId ) const
-    {
-    return iCurrentCalls[ aCallId ]->ProtocolError();
-    }
-	
 // End of File

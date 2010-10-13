@@ -162,7 +162,6 @@ CPEMessageHandler::CPEMessageHandler(
             iExternalDataHandler( aExternalDataHandler ),
             iSimStateMonitor( aSimStateMonitor ),
             iFsSession( aFsSession ),
-			iSwitchToVidCalReconFlag( EFalse ),
             iServiceHandling( aServiceHandling ),
             iDataStore( *aModel.DataStore() )
     {
@@ -1880,17 +1879,8 @@ TInt CPEMessageHandler::HandleDialCallL(
     // Check the phone number for prefix change and change the prefix if needed
     CheckPrefix();
 
-    if( iSwitchToVidCalReconFlag )
-        {
-        phoneNumber = iDataStore.SwitchToNumberCommand();
-		// Clear flag to match the previous set operation in HandleSwitchToVideoOrVoice() function.
-        iSwitchToVidCalReconFlag = EFalse;
-        }
-    else
-        {
-        phoneNumber = iDataStore.PhoneNumber();
-        }
-    
+    phoneNumber = iDataStore.PhoneNumber();
+  
     __ASSERT_ALWAYS( !( phoneNumber == KNullDesC ), User::Leave( ECCPErrorInvalidPhoneNumber ));
     
     // Number parser operations
@@ -2735,7 +2725,6 @@ TInt CPEMessageHandler::HandleSwitchToVideoOrVoice( const TInt aCallId )
             iDataStore.SetSwitchToNumberCommand( iDataStore.WholeOutgoingPhoneNumber( aCallId ) );  
             // Clear phonenumber to prevent using the wrong number in MO video call.
             iDataStore.SetPhoneNumber( KNullDesC() );
-            iSwitchToVidCalReconFlag = ETrue;
             }
         else
             {
@@ -2764,8 +2753,6 @@ TInt CPEMessageHandler::ContinueSwitchToCall( const TInt aCallId )
     TInt errorCode( ECCPErrorNone );
   
     TPEPhoneNumber phoneNumber = iDataStore.SwitchToNumberCommand();
-    RemovePreAndPostFix( phoneNumber );
-    
     TEFLOGSTRING2( KTAINT, 
         "PE CPEMessageHandler::ContinueSwitchToCall, phoneNumber : %S", 
         &phoneNumber );

@@ -74,10 +74,7 @@ public:
     * From CTelMatchingExtension.
     * @see CTelMatchingExtension.
     */
-    TInt GetAddressForMatching( 
-        RBuf& aParsedAddress, 
-        TInt& aMeaningfulDigits, 
-        TBool& aAllowUserNameMatch );
+    TInt GetAddressForMatching( RBuf& aParsedAddress, TInt& aMeaningfulDigits );
 
     /**
     * From CTelMatchingExtension.

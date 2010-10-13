@@ -21,8 +21,6 @@
 #include <CVPbkContactManager.h>
 #include <MVPbkContactStoreList.h>
 #include <MVPbkContactLink.h>
-#include <CPbk2StoreConfiguration.h>
-#include <CVPbkContactStoreUriArray.h>
 #include <VPbkContactStoreUris.h>
 #include <TVPbkContactStoreUriPtr.h>
 #include <CVPbkTopContactManager.h>
@@ -30,19 +28,21 @@
 #include <TVPbkStoreContactAnalyzer.h>
 #include <MVPbkFieldType.h>
 #include <VPbkEng.rsg>
+
 #include <MVPbkContactViewBase.h>
 #include <MVPbkBaseContactFieldCollection.h>
 #include <MVPbkContactFieldTextData.h>
 #include <MVPbkContactFieldData.h>
+
 #include <CVPbkContactLinkArray.h>
 #include <MVPbkContactLink.h>
 #include <MVPbkContactOperationBase.h>
 #include <MVPbkOperationObserver.h>
-#include <MVPbkContactStore.h>
-#include <MVPbkContactStoreProperties.h>
+#include <MVPbkContactStore.h>          // MVPbkContactStore
 #include <MVPbkStoreContact.h>
-#include <PbkGlobalSettingFactory.h>
 #include <centralrepository.h>
+
+#include <PbkGlobalSettingFactory.h>
 
 #include "easydialingcontactdata.h"
 #include "easydialingcontactdatamanager.h"
@@ -52,30 +52,12 @@
 #include "easydialinglogger.h"
 
 // ---------------------------------------------------------------------------
-// CEasyDialingContactDataManager::NewL
-// ---------------------------------------------------------------------------
-//
-CEasyDialingContactDataManager* CEasyDialingContactDataManager::NewL()
-    {
-    CEasyDialingContactDataManager* self = 
-            new ( ELeave ) CEasyDialingContactDataManager();
-    CleanupStack::PushL( self );
-    self->ConstructL();
-    CleanupStack::Pop( self );
-    return self;
-    }
-
-// ---------------------------------------------------------------------------
 // CEasyDialingContactDataManager::CEasyDialingContactDataManager
 // ---------------------------------------------------------------------------
 //
-CEasyDialingContactDataManager::CEasyDialingContactDataManager()
-        : iPbkStoreConfiguration(NULL), 
-          iImageOperation(NULL), 
-          iContactManager(NULL), 
-          iContactOperation(NULL),
-          iContactThumbnailSetting(ETrue), 
-          iStoreReady(EFalse)
+CEasyDialingContactDataManager::CEasyDialingContactDataManager(CVPbkContactManager* aContactManager)
+        : iImageOperation(NULL), iContactManager(aContactManager), iContactOperation(NULL),
+          iContactThumbnailSetting(ETrue), iStoreReady(EFalse)
     {
     }
 
@@ -94,19 +76,11 @@ CEasyDialingContactDataManager::~CEasyDialingContactDataManager()
     delete iImageOperation;
     delete iContactOperation;
     delete iFavsView;
-
-    if ( iContactManager )
+    if (iContactStore)
         {
-        TRAP_IGNORE( iContactManager->ContactStoresL().CloseAll( *this ) );
+        iContactStore->Close( *this);
         }
-    delete iContactManager;
     
-    if ( iPbkStoreConfiguration )
-        {
-        iPbkStoreConfiguration->RemoveObserver( *this );
-        }
-    delete iPbkStoreConfiguration;
-
     if ( iPbkSettings )
         {
         iPbkSettings->Close();
@@ -120,43 +94,31 @@ CEasyDialingContactDataManager::~CEasyDialingContactDataManager()
 //
 void CEasyDialingContactDataManager::ConstructL()
     {
-    // Create contact store configuration handler
-    iPbkStoreConfiguration = CPbk2StoreConfiguration::NewL();
-    iPbkStoreConfiguration->AddObserverL( *this );
-    
-    // Create manager for all the supported contact stores
-    CVPbkContactStoreUriArray* supportedStores = 
-            iPbkStoreConfiguration->SupportedStoreConfigurationL();
-    CleanupStack::PushL( supportedStores );
-    iContactManager = CVPbkContactManager::NewL( *supportedStores );
-    CleanupStack::PopAndDestroy( supportedStores );
-    
-    // Open the stores and start observing them
-    iContactManager->ContactStoresL().OpenAllL( *this );
-
     iImageManager = CPbk2ImageManager::NewL(*iContactManager);
     
+    TVPbkContactStoreUriPtr uri( VPbkContactStoreUris::DefaultCntDbUri() );
+    iContactStore = iContactManager->ContactStoresL().Find( uri );
+
     iVPbkTopContactManager = CVPbkTopContactManager::NewL( *iContactManager );
 
     iImageManagerParams.iFlags = TPbk2ImageManagerParams::EScaleImage | TPbk2ImageManagerParams::EKeepAspectRatio;
     iThumbnailFieldType = iContactManager->FieldTypes().Find( R_VPBK_FIELD_TYPE_THUMBNAILPIC );
 
+    // Open the store
+    iContactStore->OpenL( *this );
+    
     // Read easydialing setting from cenrep.
     CRepository* cenrep = CRepository::NewL( KCRUidEasyDialSettings );
     CleanupStack::PushL( cenrep );
     User::LeaveIfError( cenrep->Get( KEasyDialingContactThumbnails, iContactThumbnailSetting ) );
     CleanupStack::PopAndDestroy( cenrep );
     
-    // Start observing Phoenbook setting for the name order
     iPbkSettings = PbkGlobalSettingFactory::CreatePersistentSettingL();
     iPbkSettings->ConnectL( MPbkGlobalSetting::EGeneralSettingCategory );
     iPbkSettings->RegisterObserverL( this );
 
     // Get name order from Phonebook settings
     UpdateNameOrderL();
-    
-    // Check if store with favourites is configured to be searched.
-    SetupFavStoreSearchedL();
     }
 
 // ---------------------------------------------------------------------------
@@ -166,15 +128,6 @@ void CEasyDialingContactDataManager::ConstructL()
 void CEasyDialingContactDataManager::SetObserver(MContactDataManagerObserver* aObserver)
     {
     iObserver = aObserver;
-    }
-
-// ---------------------------------------------------------------------------
-// CEasyDialingContactDataManager::ContactManager
-// ---------------------------------------------------------------------------
-//
-CVPbkContactManager& CEasyDialingContactDataManager::ContactManager()
-    {
-    return *iContactManager;
     }
 
 // ---------------------------------------------------------------------------
@@ -208,13 +161,12 @@ HBufC* CEasyDialingContactDataManager::GetThumbnailIdL(
     if (newIndex == KErrNotFound)
         {
         MVPbkContactLink* newLink = aContact->CloneLC();
-        CEasyDialingContactData* newData = new (ELeave) CEasyDialingContactData(newLink);
+        CEasyDialingContactData *newThumbnail = new (ELeave) CEasyDialingContactData(newLink);
         CleanupStack::Pop(); // newLink
         newIndex = iContactDataArray.Count();
-        CleanupStack::PushL(newData);
-        iContactDataArray.AppendL(newData);
-        CleanupStack::Pop(newData);
-        SetStoreFlagsForContact(newData);
+        CleanupStack::PushL(newThumbnail);
+        iContactDataArray.AppendL(newThumbnail);
+        CleanupStack::Pop(newThumbnail);
         }
     
     iContactDataArray[ newIndex ]->SetFav( aFav );
@@ -227,41 +179,33 @@ HBufC* CEasyDialingContactDataManager::GetThumbnailIdL(
     }
 
 // ---------------------------------------------------------------------------
-// CEasyDialingContactDataManager::IndexForId 
+// CEasyDialingContactDataManager::GetThumbnailAndFav 
 // ---------------------------------------------------------------------------
 //
-TInt CEasyDialingContactDataManager::IndexForId( const TDesC& aId ) const
+TBool CEasyDialingContactDataManager::GetThumbnailAndFav(const TDesC& aId, CFbsBitmap*& aThumbnail, TBool& aFav)
     {
+    LOGSTRING("CEasyDialingContactDataManager: GetThumbnailAndFav");
     TUint idVal(0);
     TLex lex(aId);
     lex.Val(idVal, EHex);
-    return idVal;
-    }
-
-// ---------------------------------------------------------------------------
-// CEasyDialingContactDataManager::GetThumbnail 
-// ---------------------------------------------------------------------------
-//
-TBool CEasyDialingContactDataManager::GetThumbnail( TInt aIndex, CFbsBitmap*& aThumbnail )
-    {
-    LOGSTRING("CEasyDialingContactDataManager: GetThumbnail");
     
     TBool retVal;
     
-    CEasyDialingContactData* contactData = iContactDataArray[aIndex];
-    if ( contactData->IsLoaded() )
+    CEasyDialingContactData* thumbnail = iContactDataArray[idVal];
+    aFav = thumbnail->Fav();
+    if (thumbnail->IsLoaded())
         {
-        aThumbnail = contactData->Thumbnail();
+        aThumbnail = thumbnail->Thumbnail();
         retVal = ETrue;
         }
     else
         {
         aThumbnail = NULL;
         retVal = EFalse;
-        if (iWaitingContacts.Find(aIndex) == KErrNotFound)
+        if (iWaitingContacts.Find(idVal) == KErrNotFound)
             {
-            LOGSTRING1("iWaitingContacts.Append %d", aIndex);
-            iWaitingContacts.Append(aIndex);
+            LOGSTRING1("iWaitingContacts.Append %d", idVal);
+            iWaitingContacts.Append(idVal);
             TRAPD(err, LoadNextContactDataL());
             if (err)
                 {
@@ -269,38 +213,8 @@ TBool CEasyDialingContactDataManager::GetThumbnail( TInt aIndex, CFbsBitmap*& aT
                 }
             }
         }    
-    LOGSTRING("CEasyDialingContactDataManager: GetThumbnail Exit");
+    LOGSTRING("CEasyDialingContactDataManager: GetThumbnailAndFav Exit");
     return retVal;
-    }
-
-// ---------------------------------------------------------------------------
-// CEasyDialingContactDataManager::IsFav
-// ---------------------------------------------------------------------------
-//
-TBool CEasyDialingContactDataManager::IsFav( TInt aIndex ) const
-    {
-    CEasyDialingContactData* contactData = iContactDataArray[aIndex];
-    return contactData->Fav();
-    }
-
-// ---------------------------------------------------------------------------
-// CEasyDialingContactDataManager::IsSimContact
-// ---------------------------------------------------------------------------
-//
-TBool CEasyDialingContactDataManager::IsSimContact( TInt aIndex ) const
-    {
-    CEasyDialingContactData* contactData = iContactDataArray[aIndex];
-    return contactData->IsSimContact();
-    }
-
-// ---------------------------------------------------------------------------
-// CEasyDialingContactDataManager::IsSdnContact
-// ---------------------------------------------------------------------------
-//
-TBool CEasyDialingContactDataManager::IsSdnContact( TInt aIndex ) const
-    {
-    CEasyDialingContactData* contactData = iContactDataArray[aIndex];
-    return contactData->IsSdnContact();
     }
 
 // ---------------------------------------------------------------------------
@@ -325,7 +239,7 @@ TBool CEasyDialingContactDataManager::IsFavL( MVPbkContactLink* aLink )
 //
 TInt CEasyDialingContactDataManager::NumberOfFavsL()
     {
-    if ( iFavsView && iFavsViewReady && iFavStoreSearched )
+    if ( iFavsView && iFavsViewReady )
         {
         return iFavsView->ContactCountL();
         }
@@ -341,7 +255,7 @@ TInt CEasyDialingContactDataManager::NumberOfFavsL()
 //
 MVPbkContactLink* CEasyDialingContactDataManager::FavLinkLC( TInt aIndex )
     {
-    if ( !iFavsView || !iFavsViewReady || !iFavStoreSearched )
+    if ( !iFavsView || !iFavsViewReady )
         {
         // LC function should not return normally unless it has actually
         // put something to cleanup stack
@@ -401,23 +315,6 @@ HBufC* CEasyDialingContactDataManager::FavContactStringLC( TInt aIndex, TNameOrd
 CEasyDialingContactDataManager::TNameOrder CEasyDialingContactDataManager::NameOrder()
     {
     return iNameOrder;
-    }
-
-// ---------------------------------------------------------------------------
-// CEasyDialingContactDataManager::GetCurrentStoreUrisL
-// ---------------------------------------------------------------------------
-//
-void CEasyDialingContactDataManager::GetCurrentStoreUrisL( RPointerArray<TDesC>& aUris )
-    {
-    CVPbkContactStoreUriArray* storeUris = iPbkStoreConfiguration->CurrentConfigurationL();
-    CleanupStack::PushL( storeUris );
-    for ( TInt i = 0 ; i < storeUris->Count() ; ++i )
-        {
-        HBufC* dbUri = (*storeUris)[i].UriDes().AllocLC();
-        aUris.AppendL( dbUri );
-        CleanupStack::Pop( dbUri );
-        }
-    CleanupStack::PopAndDestroy( storeUris );
     }
 
 // ---------------------------------------------------------------------------
@@ -491,21 +388,17 @@ void CEasyDialingContactDataManager::LoadNextContactDataL()
     if ( !iImageOperation && !iContactOperation && iWaitingContacts.Count() && iStoreReady && !iPause )
         {
         // first we need to load the contact item
-        const TInt index( iWaitingContacts[0] );
-        
-        if ( index >= 0 && index < iContactDataArray.Count() )
+        CEasyDialingContactData* tn = iContactDataArray[iWaitingContacts[0]];
+        iContactOperation = iContactManager->RetrieveContactL( *(tn->ContactLink()), *this);
+
+        if (!iContactOperation)
             {
-            CEasyDialingContactData* data = iContactDataArray[index];
-            iContactOperation = iContactManager->RetrieveContactL( *(data->ContactLink()), *this);
-            if (!iContactOperation)
-                {
-                data->LoadingComplete();
-                RDebug::Print(_L("iWaitingContacts.Remove %d"), iWaitingContacts[0]);
-                iWaitingContacts.Remove(0);
-                LoadNextContactDataL();
-                }
+            tn->LoadingComplete();
+            RDebug::Print(_L("iWaitingContacts.Remove %d"), iWaitingContacts[0]);            
+            iWaitingContacts.Remove(0);
+            LoadNextContactDataL();
             }
-        }
+        }          
     LOGSTRING("CEasyDialingContactDataManager: LoadNextContactDataL Exit");
     }
 
@@ -517,14 +410,9 @@ void CEasyDialingContactDataManager::LoadNextContactDataL()
 void CEasyDialingContactDataManager::Pbk2ImageGetComplete(MPbk2ImageOperation& aOperation, CFbsBitmap* aBitmap)
     {
     LOGSTRING("CEasyDialingContactDataManager: Pbk2ImageGetComplete");
-    TInt index( KErrNotFound );
-    if ( iWaitingContacts.Count() > 0 )
-        {
-        index = iWaitingContacts[0];
-        LOGSTRING1("iWaitingContacts.Remove %d", iWaitingContacts[0]);
-        iWaitingContacts.Remove(0);
-        }
-    
+    TInt index = iWaitingContacts[0];
+    LOGSTRING1("iWaitingContacts.Remove %d", iWaitingContacts[0]);            
+    iWaitingContacts.Remove(0);
     delete &aOperation;
     iImageOperation = NULL;
     delete iStoreContact;
@@ -547,30 +435,6 @@ void CEasyDialingContactDataManager::Pbk2ImageGetFailed(MPbk2ImageOperation& aOp
     {
     LOGSTRING("CEasyDialingContactDataManager: Pbk2ImageGetFailed");
     Pbk2ImageGetComplete(aOperation, NULL);
-    }
-
-// -----------------------------------------------------------------------------
-// ConfigurationChanged
-// From MPbk2StoreConfigurationObserver
-// Called when contact store configuration changes
-// -----------------------------------------------------------------------------
-//
-void CEasyDialingContactDataManager::ConfigurationChanged()
-    {
-    TRAP_IGNORE( SetupFavStoreSearchedL() );
-    iObserver->StoreConfigurationChanged();
-    }
-
-// -----------------------------------------------------------------------------
-// ConfigurationChangedComplete
-// From MPbk2StoreConfigurationObserver
-// Called when contact store configuration change has been informed to all
-// observers
-// -----------------------------------------------------------------------------
-//
-void CEasyDialingContactDataManager::ConfigurationChangedComplete()
-    {
-    // no implementation needed
     }
 
 // ---------------------------------------------------------------------------
@@ -645,15 +509,13 @@ void CEasyDialingContactDataManager::UpdateNameOrderL()
 void CEasyDialingContactDataManager::DoHandleImageGetCompleteL(CFbsBitmap* aBitmap, TInt aIndex)
     {
     LOGSTRING("CEasyDialingContactDataManager: DoHandleImageGetCompleteL");
-    if ( aIndex >= 0 && aIndex < iContactDataArray.Count() ) 
+    CEasyDialingContactData *tn = iContactDataArray[aIndex];
+    tn->LoadingComplete();
+    if (aBitmap)
         {
-        CEasyDialingContactData* data = iContactDataArray[aIndex];
-        data->LoadingComplete();
-        if (aBitmap)
-            {
-            data->SetThumbnail(aBitmap);
-            }
+        tn->SetThumbnail(aBitmap);
         }
+    
     LoadNextContactDataL();
     InformObserver();
     LOGSTRING("CEasyDialingContactDataManager: DoHandleImageGetCompleteL Exit");
@@ -694,7 +556,7 @@ TBool CEasyDialingContactDataManager::VoiceCallAvailable( TInt aIndex )
         }
     
     LOGSTRING1("CEasyDialingContactDataManager: VoiceCallAvailable returns %d", ret);
-    return ret;
+    return ret;    
     }
 
 
@@ -715,7 +577,7 @@ TBool CEasyDialingContactDataManager::VideoCallAvailable( TInt aIndex )
         }
     
     LOGSTRING1("CEasyDialingContactDataManager: VideoCallAvailable returns %d", ret);
-    return ret;
+    return ret;    
     }
 
 
@@ -736,7 +598,7 @@ TBool CEasyDialingContactDataManager::UniEditorAvailable( TInt aIndex )
         }
     
     LOGSTRING1("CEasyDialingContactDataManager: UniEditorAvailable returns %d", ret);
-    return ret;
+    return ret;    
     }
 
 
@@ -785,20 +647,29 @@ void CEasyDialingContactDataManager::HandleError(TInt /*aError*/)
         iObserver->AllContactDataLoaded();
         }
     }
-
+    	
 // ---------------------------------------------------------------------------
 // CEasyDialingContactDataManager::StoreReady
-// from MVPbkContactStoreListObserver
+// from MVPbkContactStoreObserver
+// Called when the contact store is ready to be used, signals
+// the next engine state.
 // @param aContactStore The store that is ready.
 // ---------------------------------------------------------------------------
 //
+
 void CEasyDialingContactDataManager::StoreReady( MVPbkContactStore& /*aContactStore*/ )
     {
+    // next open the favourites view
+    TRAPD( err, iVPbkTopContactManager->GetTopContactsViewL( *this, *this ) );
+    if ( err )
+        {
+        HandleError( err );
+        }
     }
-
+    
 // ---------------------------------------------------------------------------
 // CEasyDialingContactDataManager::StoreUnavailable
-// from MVPbkContactStoreListObserver
+// from MVPbkContactStoreObserver
 // Called when a contact store becomes unavailable.
 // @param aContactStore The store that became unavailable.
 // @param aReason The reason why the store is unavailable.
@@ -808,44 +679,25 @@ void CEasyDialingContactDataManager::StoreReady( MVPbkContactStore& /*aContactSt
 void CEasyDialingContactDataManager::StoreUnavailable( MVPbkContactStore& /*aContactStore*/,
         TInt /*aReason*/ )
     {
-    // Opening some contact database failed. Easydialing can operate without
-    // any database connections, but thumbnails and favourite stars can't be 
-    // shown, and availability of action menu items can't be checked.
+    // Opening main contact database failed. Easydialing can operate without
+    // it, but thumbnails and favourite stars can't be shown, and availability
+    // of action menu items can't be checked.
     //   Of course, if easydialing can't open the database, probably PCSServer
     // can't open it either...
     }
 
 // ---------------------------------------------------------------------------
 // CEasyDialingContactDataManager::HandleStoreEventL
-// from MVPbkContactStoreListObserver
+// from MVPbkContactStoreObserver
 // Called when changes occur in the contact store.
-// IGNORED because ED plugin reacts to contact modifications by listening
-// to PCS cache update events.
+// IGNORED.
 // @param aContactStore A store whose event it is.
 // @param aStoreEvent The event that has occurred.
 // ---------------------------------------------------------------------------
 //
-void CEasyDialingContactDataManager::HandleStoreEventL( MVPbkContactStore& /*aContactStore*/,
-        TVPbkContactStoreEvent /*aStoreEvent*/ )
+void CEasyDialingContactDataManager::HandleStoreEventL(MVPbkContactStore& /*aContactStore*/,
+        TVPbkContactStoreEvent /*aStoreEvent*/)
     {
-    }
-
-// -----------------------------------------------------------------------------
-// CEasyDialingPlugin::OpenComplete
-// From MVPbkContactStoreListObserver.
-// Called when all contact stores are ready to be used, signals
-// the next engine state.
-//
-// -----------------------------------------------------------------------------
-//
-void CEasyDialingContactDataManager::OpenComplete()
-    {
-    // next open the favourites view
-    TRAPD( err, iVPbkTopContactManager->GetTopContactsViewL( *this, *this ) );
-    if ( err )
-        {
-        HandleError( err );
-        }
     }
 
 // ---------------------------------------------------------------------------
@@ -859,7 +711,7 @@ void CEasyDialingContactDataManager::VPbkOperationFailed(
     // Loading list of favourite contacts failed.
     // Continue as if none of the contacts are favourited.
     delete iFavsOperation;
-    iFavsOperation = NULL;
+    iFavsOperation = NULL;        
     delete iFavsView;
     iFavsView = NULL;
     iFavsViewReady = EFalse;
@@ -991,9 +843,10 @@ void CEasyDialingContactDataManager::DoHandleContactOperationCompleteL(
         // Find out the available communication methods for the contact.
         GetAvailableServicesL( aContact, aIndex );
         
+                
         // Next initiate async thumbnail get operation.
         
-        if (GetContactThumbnailSetting()) // reads the iContactThumbnailSetting value if it is false we dont fetch images
+        if(GetContactThumbnailSetting()) // reads the iContactThumbnailSetting value if it is false we dont fetch images
             {
             if (iImageManager->HasImage(*iStoreContact, *iThumbnailFieldType))
                 {
@@ -1008,7 +861,7 @@ void CEasyDialingContactDataManager::DoHandleContactOperationCompleteL(
             {
             CEasyDialingContactData *tn = iContactDataArray[aIndex];
             tn->LoadingComplete();
-            LOGSTRING1("iWaitingContacts.Remove %d", iWaitingContacts[0]);
+            LOGSTRING1("iWaitingContacts.Remove %d", iWaitingContacts[0]);            
             iWaitingContacts.Remove(0);
             delete iStoreContact;
             iStoreContact = NULL;
@@ -1019,9 +872,9 @@ void CEasyDialingContactDataManager::DoHandleContactOperationCompleteL(
     else
         {
         // Opening contact failed. Mark contact data loaded, so it's not opened again.
-        CEasyDialingContactData* data = iContactDataArray[aIndex];
-        data->LoadingComplete();
-        LOGSTRING1("iWaitingContacts.Remove %d", iWaitingContacts[0]);
+        CEasyDialingContactData *tn = iContactDataArray[aIndex];
+        tn->LoadingComplete();
+        LOGSTRING1("iWaitingContacts.Remove %d", iWaitingContacts[0]);            
         iWaitingContacts.Remove(0);
         LoadNextContactDataL();
         InformObserver();
@@ -1071,17 +924,13 @@ void CEasyDialingContactDataManager::VPbkSingleContactOperationComplete(
     LOGSTRING("CEasyDialingContactDataManager: VPbkSingleContactOperationComplete");
     delete &aOperation;
     iContactOperation = NULL;
-    if ( iWaitingContacts.Count() > 0 )
+    TInt index = iWaitingContacts[0];
+    LOGSTRING1("VPbkSingleContactOperationComplete, Index=%d", index);
+    TRAPD(err, DoHandleContactOperationCompleteL(aContact, index));
+    if (err)
         {
-        TInt index = iWaitingContacts[0];
-        LOGSTRING1("VPbkSingleContactOperationComplete, Index=%d", index);
-        TRAPD(err, DoHandleContactOperationCompleteL(aContact, index));
-        if ( err )
-            {
-            HandleError(err);
-            }
+        HandleError(err);
         }
-    
     LOGSTRING("CEasyDialingContactDataManager: VPbkSingleContactOperationComplete Exit");
     }
 
@@ -1148,38 +997,6 @@ void  CEasyDialingContactDataManager::Reload( )
         {
         iContactDataArray[ i ]->DeleteThumbnail();
         }
-    }
-
-// ---------------------------------------------------------------------------
-// CEasyDialingContactDataManager::SetupFavStoreSearchedL
-// ---------------------------------------------------------------------------
-//
-void CEasyDialingContactDataManager::SetupFavStoreSearchedL()
-    {
-    // Check if favourite contact store (i.e. the default contact store) is one
-    // of the stores configured to be searched.
-    CVPbkContactStoreUriArray* storeUris = 
-            iPbkStoreConfiguration->CurrentConfigurationL();
-    iFavStoreSearched = 
-            storeUris->IsIncluded( VPbkContactStoreUris::DefaultCntDbUri() );
-    delete storeUris;
-    }
-
-// ---------------------------------------------------------------------------
-// CEasyDialingContactDataManager::SetStoreFlagsForContact
-// ---------------------------------------------------------------------------
-//
-void CEasyDialingContactDataManager::SetStoreFlagsForContact( 
-        CEasyDialingContactData* aContactData ) const
-    {
-    MVPbkContactLink* link = aContactData->ContactLink();
-    const TDesC& uri = link->ContactStore().StoreProperties().Uri().UriDes();
-    
-    TBool isSim = ( uri.Compare( VPbkContactStoreUris::SimGlobalAdnUri() ) == 0 );
-    aContactData->SetSimContact( isSim );
-    
-    TBool isSdn = ( uri.Compare( VPbkContactStoreUris::SimGlobalSdnUri() ) == 0 );
-    aContactData->SetSdnContact( isSdn );
     }
 
 

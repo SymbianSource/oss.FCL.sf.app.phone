@@ -410,8 +410,8 @@ void CBubbleMainPaneControl::StartScaling( CFbsBitmap *aSourceBitmap )
     iScaledImage = NULL;
 
     // create a bitmap for scaled size
-    TRAPD( err, iScaledImage = new (ELeave) CFbsBitmap );
-    if ( err != KErrNone )
+    iScaledImage = new CFbsBitmap();
+    if ( !iScaledImage )
         {
         // no scaling in error cases
         iScaler->SetState( CTelBubbleImageScaler::EScalingIdle );
@@ -421,8 +421,8 @@ void CBubbleMainPaneControl::StartScaling( CFbsBitmap *aSourceBitmap )
     TSize size = aSourceBitmap->SizeInPixels();
     TRect scaledRect( 0, 0, size.iWidth * SCALE_FACTOR, size.iHeight * SCALE_FACTOR );
     
-    TRAP( err, iScaledImage->Create( scaledRect.Size(), aSourceBitmap->DisplayMode() ) );
-    if ( err != KErrNone )
+    TInt error = iScaledImage->Create( scaledRect.Size(), aSourceBitmap->DisplayMode() );
+    if ( error != KErrNone )
         {
         delete iScaledImage;
         iScaledImage = NULL;

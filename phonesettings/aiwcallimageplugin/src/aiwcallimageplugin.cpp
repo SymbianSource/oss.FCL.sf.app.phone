@@ -109,7 +109,7 @@ void CAiwCallImagePlugin::HandleServiceCmdL(
     const CAiwGenericParamList& aInParamList,
     CAiwGenericParamList& /*aOutParamList*/,
     TUint aCmdOptions,
-    const MAiwNotifyCallback* aCallback )
+    const MAiwNotifyCallback* /*aCallback*/ )
     {
     
     // Cancel bit must always be checked. Support can be implemented if necessary.
@@ -132,23 +132,7 @@ void CAiwCallImagePlugin::HandleServiceCmdL(
             
         if ( index >= 0 && genericParam )
             {
-            TInt err = SetCallImagePathL( genericParam );
-            if ( aCallback )
-                {
-                TInt eventId = err ? KAiwEventError : KAiwEventCompleted;
-                // Must cast this because of AIW bug
-                MAiwNotifyCallback* nonConstCallback =
-                        const_cast<MAiwNotifyCallback*> ( aCallback );
-                CAiwGenericParamList* eventParamList = CAiwGenericParamList::NewL();
-                CleanupStack::PushL( eventParamList );
-                nonConstCallback->HandleNotifyL( 
-                        aCmdId,
-                        eventId,
-                        *eventParamList,
-                        aInParamList );
-                CleanupStack::PopAndDestroy( eventParamList );
-                }
-            User::LeaveIfError( err );
+             User::LeaveIfError( SetCallImagePathL( genericParam ) );
             }
         }
     }

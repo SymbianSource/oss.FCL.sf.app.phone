@@ -20,17 +20,27 @@
 #define CPHCNTCONTACTMATCHSTRATEGY_H
 
 #include <e32base.h>
+#include <cenrepnotifyhandler.h>
 #include <CVPbkPhoneNumberMatchStrategy.h>
+#include <cntdb.h>  // KBestMatchingPhoneNumbers
 
 #include "mphcntcontactmatchstrategy.h"
 #include "mphcntcontactstoreeventobserver.h"
 
+#include "MPhCntContactManager.h"
+
 class CVPbkContactManager;
 class MVPbkContactFindObserver;
 class CVPbkPhoneNumberMatchStrategy;
+class CRepository;
 class CVPbkContactStoreUriArray;
 class CPhCntContactStoreUris;
 class CCntRawPhoneNumberExtractor;
+
+// Digit count used to match CS number.
+const TInt KPhCntMatchMin = 7;
+const TInt KPhCntMatchMax = 11;
+const TInt KPhCntMatchDefault = KBestMatchingPhoneNumbers;
 
 /**
  *  Strategy for matcing CS contacts.
@@ -40,7 +50,7 @@ class CCntRawPhoneNumberExtractor;
  */
 NONSHARABLE_CLASS( CPhCntContactMatchStrategy ) :
     public CBase,
-    public MPhCntContactMatchStrategy,
+    public MPhCntContactMatchStrategy,    
     private MPhCntContactStoreEventObserver
     {
 public:
@@ -52,14 +62,13 @@ public:
      * @param aContactManager Contact manager.
      * @param aUriArray Array of contact store URI's used.
      * @param aObserver Observer for finding contacts.
-     * @param aMatchFlags A bitset of flags for matching strategy. Has zero or
-     * more CVPbkPhoneNumberMatchStrategy::TVPbkPhoneNumberMatchFlags flags set.
+     * @param aRemoveDuplicatesStrategy Contact dupe removal strategy
      */
     static CPhCntContactMatchStrategy* NewL(
         CVPbkContactManager& aContactManager,
         CPhCntContactStoreUris& aContactStoreUris,
         MVPbkContactFindObserver& aObserver,
-        TUint32 aMatchFlags );
+        MPhCntContactManager::TDuplicateRemovalStrategy aRemoveDuplicatesStrategy );
 
     /**
      * Destructor.
@@ -78,8 +87,8 @@ public:
      */
     void FindMatchesL( const TDesC& aPhoneNumber );
 
-private:
-
+private:    
+    
     /**
      * Creates contact match strategy with given numbers
      * of digits.
@@ -88,19 +97,6 @@ private:
      * @return Error code.
      */
     TInt CreateContactMatchStrategy();
-
-// From base class MCenRepNotifyHandlerCallback
-
-    /**
-     * From base class MCenRepNotifyHandlerCallback
-     * This callback method is used to notify the client about
-     * changes for string value keys, i.e. key type is EStringKey.
-     *
-     * @param aId Id of the key that has changed.
-     * @param aNewValue The new value of the key.
-     */
-    void HandleNotifyString( TUint32 aId, const TDesC16& aNewValue );
-
 
 // From base class MPhCntContactStoreEventObserver
 
@@ -116,12 +112,11 @@ private:
      * Method to ease unit testing. Creates the actual instance of iMatchStrategy.
      */
     virtual TInt DoCreateMatchStrategy();
-    
+        
     /**
-     * Makes the actual matching request using number
-     * Declared virtual to ease unit testing.
+     * Removes postfix from aNumber    
      */
-    virtual void DoMatchL( const TDesC& aNumber );
+    TDesC* RemoveExtraCharactersLC( const TDesC& aNumber );
 
 protected:
 
@@ -129,10 +124,26 @@ protected:
         CVPbkContactManager& aContactManager,
         CPhCntContactStoreUris& aContactStoreUris,
         MVPbkContactFindObserver& aObserver,
-        TUint32 aMatchFlags );
+        MPhCntContactManager::TDuplicateRemovalStrategy aRemoveDuplicatesStrategy );
 
     void ConstructL();
 
+    TUint32 FillMatchFlags() const;
+    
+    virtual TInt ReadMatchDigitsValueL(); 
+    
+    /**
+     * Makes the actual matching request using number
+     * Declared virtual to ease unit testing.
+     */
+    virtual void DoMatchL( const TDesC& aNumber );   
+    
+    /**
+     * Enables to inject match strategy to ease unit testing
+     */
+    void SetVPbkPhoneNumberMatchStrategy( 
+            CVPbkPhoneNumberMatchStrategy* aMatchStrategy );
+    
 private: // data
 
     /**
@@ -140,7 +151,7 @@ private: // data
      * Own.
      */
     CVPbkPhoneNumberMatchStrategy* iMatchStrategy;
-
+        
      /**
       * Contact manager is needed with match strategy.
       * Not own.
@@ -167,24 +178,19 @@ private: // data
     CVPbkContactStoreUriArray* iUriArray;
 
     /**
+     * Number of digits used with matching.
+     */
+    TInt iNumberOfDigits;
+
+    /**
      * Number extractor.
      * Own.
      */
     CCntRawPhoneNumberExtractor* iNumberExtractor;
-
-protected:  // data
-
-    /**
-     * A bitset of matching strategy flags. Changed from
-     * CVPbkPhoneNumberMatchStrategy::TVPbkPhoneNumberMatchFlags enum to TUint32
-     * in order to support multiple flags, as in
-     * CVPbkPhoneNumberMatchStrategy::TConfig.
-	 * 
-	 * Protected because a unit test class derives from this class.
-     */
-    TUint32 iMatchFlags;
-
+    
+    MPhCntContactManager::TDuplicateRemovalStrategy iRemoveDuplicatesStrategy;
+    
     };
 
-
 #endif // CPHCNTCONTACTMATCHSTRATEGY_H
+

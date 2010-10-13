@@ -289,13 +289,8 @@ void CPhoneGsmInCall::BringIncomingToForegroundL()
         &uidParam );
     
     // Disable global notes when there is an incoming call
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( ETrue );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
-        &globalNotifierParam );
-    
+    DisableGlobalNotifiersL();
+    DisableEikonNotifiersL();
     }
 
 // -----------------------------------------------------------
@@ -397,6 +392,55 @@ void CPhoneGsmInCall::HandleHoldNoteL(
         
     iViewCommandHandle->ExecuteCommandL( 
             EPhoneViewShowGlobalNote, &globalNoteParam ); 
+    }
+
+
+// ---------------------------------------------------------
+// CPhoneGsmInCall::SetDivertIndication
+// ---------------------------------------------------------
+//
+EXPORT_C void CPhoneGsmInCall::SetDivertIndication( const TBool aDivertIndication )
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneGsmInCall::SetDivertIndication()");
+           
+    CPhoneState::SetDivertIndication( aDivertIndication );    
+    
+    TRAP_IGNORE( HandeDivertIndicationL() );
+	}
+
+// ---------------------------------------------------------
+// CPhoneGsmInCall::HandeDivertIndicationL
+// ---------------------------------------------------------
+//
+void CPhoneGsmInCall::HandeDivertIndicationL()
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneGsmInCall::HandeDivertIndicationL()");
+       
+    TBuf< KPhoneContactNameMaxLength > remoteInfoText( KNullDesC );
+    TInt ringingCallId ( KErrNotFound );
+        
+    ringingCallId = GetRingingCallL();
+    
+    if( ringingCallId > KErrNotFound )
+       {
+       TPhoneCmdParamCallHeaderData divertData;
+    
+       divertData.SetCallFlag( CBubbleManager::EDiverted );
+       
+       GetRemoteInfoDataL( ringingCallId, remoteInfoText );
+       divertData.SetCLIText( 
+                  remoteInfoText,
+                  CBubbleManager::ERight );
+       
+       divertData.SetCiphering(
+           iStateMachine->PhoneEngineInfo()->IsSecureCall( ringingCallId ) );
+       divertData.SetCipheringIndicatorAllowed(
+           iStateMachine->PhoneEngineInfo()->SecureSpecified() );
+           
+       iViewCommandHandle->ExecuteCommandL( 
+           EPhoneViewUpdateCallHeaderRemoteInfoData, ringingCallId,
+           &divertData );
+        }
     }
 
 // End of File

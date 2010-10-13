@@ -53,7 +53,6 @@ SOURCE          ctelewaitingidle.cpp
 SOURCE          phoneloggerviewcommands.cpp
 SOURCE          phonestatestrings.cpp
 SOURCE          phonestatestringsgsm.cpp
-SOURCE          phonevanitydialingutils.cpp
 SOURCE          rphoneanimclearblacklist.cpp
 SOURCE          tphonecmdparamappinfo.cpp
 SOURCE          tphonecmdparamaudiooutput.cpp

@@ -362,20 +362,16 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::HandleConnectedL ()" );
     // Re-enable global notes
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
-        &globalNotifierParam );
+    EnableGlobalNotifiersL();
+    EnableEikonNotifiersL();
     // Stop tone playing, if necessary
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     // Update single call
     UpdateSingleActiveCallL( aCallId );
     SetTouchPaneButtons( EPhoneIncallButtons );
     SetToolbarDimming( EFalse );
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
     iCbaManager->UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateSingle );
     }
@@ -422,15 +418,13 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneStateIncoming::HandleIdleL ()" );
-    TransitionHandlerL().IdleCallUiUpdateLC();
+    BeginTransEffectLC( ENumberEntryClose );
+    BeginUiUpdateLC();
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
     
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
-        &globalNotifierParam );
+    EnableEikonNotifiersL();
     
     SetDefaultFlagsL();
     
@@ -462,7 +456,8 @@ void CPhoneStateIncoming::HandleIdleL( TInt aCallId )
         }
  
     DeleteTouchPaneButtons();
-    TransitionHandlerL().EndUiUpdateAndEffect();
+    EndUiUpdate();
+    EndTransEffect();
     iCbaManager->UpdateCbaL( EPhoneEmptyCBA );
     iStateMachine->ChangeState( EPhoneStateIdle );
     }
@@ -635,10 +630,7 @@ void CPhoneStateIncoming::OpenSoftRejectMessageEditorL()
         MPEPhoneModel::EPEMessageStopTonePlay );
     
     // Re-enable global notes. Otherwise message editor is not opened.
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetEikonNotifiersDisabled,
-        &globalNotifierParam );
+    EnableEikonNotifiersL();
 
     // Change the CBA to Options..Reject
     iCbaManager->SetCbaL( EPhoneCallHandlingIncomingRejectCBA );

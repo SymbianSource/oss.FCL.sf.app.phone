@@ -79,7 +79,6 @@ SOURCE          cphcntcontactstoreuris.cpp
 SOURCE          tphcntcontactstorestate.cpp
 SOURCE          cphcntcontactdataselectionimpl.cpp
 SOURCE          cphcntstoreloaderimpl.cpp
-SOURCE          tphcntcontactselectionstrategy.cpp
 
 USERINCLUDE     ../ContactService/inc
 USERINCLUDE     ../inc

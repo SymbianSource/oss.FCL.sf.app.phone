@@ -131,6 +131,5 @@ LIBRARY serviceprovidersettings.lib
 // Libraries used for R&D purposes only
 DEBUGLIBRARY flogger.lib
 
-
 // End of File
 

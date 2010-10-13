@@ -131,7 +131,7 @@ static TRect ContactNameBoundingBox(
         const TRect& aItemRect, 
         const CFont* aContactNameFont, 
         TBool aArrowIconShown,
-        TBool aFavOrSimIconShown, 
+        TBool aIsFavourite, 
         TBool aThumbnailsShown );
 static TRect CompanyNameBoundingBox(
         const TRect& aItemRect, 
@@ -139,7 +139,6 @@ static TRect CompanyNameBoundingBox(
         TBool aIsCurrentItem,
         TBool aThumbnailsShown );
 static TRect FavouriteIconBoundingBox( const TRect& aContactNameBoundingBox );
-static TRect SimIconBoundingBox( const TRect& aContactNameBoundingBox );
 static TRect MirrorLayoutBoundingBox(const TRect& aSourceRect, TRect& aBoundingBoxRect);
 static TInt BaseLineOffset( const TRect& aTextBoundingBox, const CFont* aFont );
 static TBool ContainsRightToLeftText( const TDesC& aDesc );
@@ -252,8 +251,6 @@ CEasyDialingListBoxData::~CEasyDialingListBoxData()
     delete iColorBitmap;
     delete iDummyThumbnail;
     delete iFavouriteIcon;
-    delete iSimContactIcon;
-    delete iSdnContactIcon;
     
     iContactDataManager = NULL;
     }
@@ -310,8 +307,6 @@ void CEasyDialingListBoxData::ConstructLD()
     {
     CFormattedCellListBoxData::ConstructLD();
     
-    MAknsSkinInstance* skin = AknsUtils::SkinInstance();
-    
     // EasyDialing bitmap file is attempted to be read from the same directory where the
     // executed binary is located
     TFileName dllFileName;
@@ -340,14 +335,6 @@ void CEasyDialingListBoxData::ConstructLD()
     // Create the favourite icon bitmap and mask
     iFavouriteIcon = CreateIconL( KFavouriteIconBitmapFile, 
             EMbmPhonebook2Qgn_prop_pb_topc, EMbmPhonebook2Qgn_prop_pb_topc_mask );
-
-    // Create SIM contact icon from the skin 
-    iSimContactIcon = AknsUtils::CreateGulIconL( skin, KAknsIIDQgnPropNrtypSimContact, bitmapFileName,
-            EMbmEasydialingQgn_prop_nrtyp_sim_contact, EMbmEasydialingQgn_prop_nrtyp_sim_contact_mask );
-
-    // Create Service Dialing Number contact icon from the skin
-    iSdnContactIcon = AknsUtils::CreateGulIconL( skin, KAknsIIDQgnPropNrtypSdn, bitmapFileName,
-            EMbmEasydialingQgn_prop_nrtyp_sdn, EMbmEasydialingQgn_prop_nrtyp_sdn_mask );
     }
 
 
@@ -420,13 +407,11 @@ void CEasyDialingListBoxData::DrawDataFormatted(
     {
     TPtrC cellText;
 
-    TInt error = TextUtils::ColumnText( cellText, 0, aText );
+    TInt error = TextUtils::ColumnText( cellText , 0, aText );
     __ASSERT_DEBUG( error == KErrNone, EasyDialingPanic( EEasyDialingPanicInvalidListBoxModelString ) );
     __ASSERT_DEBUG( iContactNameFont, EasyDialingPanic( EEasyDialingNoFontFound ) );
     __ASSERT_DEBUG( iCompanyNameFont, EasyDialingPanic( EEasyDialingNoFontFound ) );
     
-    TInt contactDataIndex = iContactDataManager->IndexForId( cellText );
-
     MAknListBoxTfxInternal* transApi = CAknListLoader::TfxApiInternal( &aGc );
     if ( transApi )
         {
@@ -443,9 +428,6 @@ void CEasyDialingListBoxData::DrawDataFormatted(
         boundingBox = MirrorLayoutBoundingBox( aItemRect, boundingBox );
         }
     
-    //Draws the Contact Thumbnail Icon if exists, else draws the dummy contact thumbnail
-    DrawContactThumbnail( aGc, boundingBox, contactDataIndex );
-
     // Arrow icon is drawn if the item is in focus and listbox has focus
     // (and not only the temporary visual focus caused by touching a list item).
     TBool showArrowIcon = aHighlight && iControl->IsFocused();
@@ -459,46 +441,31 @@ void CEasyDialingListBoxData::DrawDataFormatted(
         DrawArrowIcon( aGc, arrowRect );
         }
 
-    TBool favOrSimContact = 
-            iContactDataManager->IsFav( contactDataIndex ) ||
-            iContactDataManager->IsSimContact( contactDataIndex ) ||
-            iContactDataManager->IsSdnContact( contactDataIndex );
+    //Draws the Contact Thumbnail Icon if exists, else draws the dummy contact thumbnail
+    TBool fav = DrawContactThumbnail( aGc, boundingBox, cellText );
+
+    error = TextUtils::ColumnText( cellText , 1, aText );
+    __ASSERT_DEBUG( error == KErrNone, EasyDialingPanic( EEasyDialingPanicInvalidListBoxModelString ) );
+
     boundingBox = ContactNameBoundingBox( aItemRect,
                                           iContactNameFont,
                                           showArrowIcon,
-                                          favOrSimContact,
+                                          fav,
                                           iContactDataManager->GetContactThumbnailSetting() );
-    
-    // Draw favorite or sim icon if necessary. Only one of these can be drawn.
-    TRect nameRectUnMirrored = boundingBox;
-    if ( iContactDataManager->IsFav( contactDataIndex ) )
-        {
-        DrawFavouriteIcon( aGc, nameRectUnMirrored, aItemRect );
-        }
-    else if ( iContactDataManager->IsSimContact( contactDataIndex ) )
-        {
-        DrawSimIcon( *iSimContactIcon, aGc, nameRectUnMirrored, aItemRect );
-        }
-    else if ( iContactDataManager->IsSdnContact( contactDataIndex ) )
-        {
-        DrawSimIcon( *iSdnContactIcon, aGc, nameRectUnMirrored, aItemRect );
-        }
-    
-    // Mirror the bounding box for text drawing if necessary.
+    TRect nameRectUnMirrored = boundingBox; // used for favourite star drawing
+
     if ( AknLayoutUtils::LayoutMirrored() )
         {
         boundingBox = MirrorLayoutBoundingBox( aItemRect, boundingBox );
         }
 
-    // Draw 1st row text
-    error = TextUtils::ColumnText( cellText , 1, aText );
-    __ASSERT_DEBUG( error == KErrNone, EasyDialingPanic( EEasyDialingPanicInvalidListBoxModelString ) );
-
+    // favourite icon size is set the same as contact name bounding box height.
+    TInt favouriteIconSize = boundingBox.Height();
+    
     TInt err( KErrNone );
     TRAP( err, DrawTextWithMatchHighlightL(
             boundingBox, aGc, cellText, iContactNameFont, aColors, aHighlight ) );
 
-    // Draw 2nd row text
     if ( !err && TextUtils::ColumnText( cellText , 2, aText ) == KErrNone ) 
         {
         TRect companyNameBoundingBox = CompanyNameBoundingBox( 
@@ -511,6 +478,12 @@ void CEasyDialingListBoxData::DrawDataFormatted(
                 companyNameBoundingBox, aGc, cellText, iCompanyNameFont, aColors, aHighlight ) );
         }
 
+    if ( !err && fav )
+        {
+        // Draws the Favourite Icon
+        DrawFavouriteIcon( aGc, nameRectUnMirrored, aItemRect );
+        }
+    
     if ( transApi )
         {
         aGc.CancelClippingRect();
@@ -522,13 +495,14 @@ void CEasyDialingListBoxData::DrawDataFormatted(
 // DrawContactThumbnail
 // 
 // Draws the Contact Thumbnail Icon if any, else draws the dummy contact thumbnail
+// Also check if this is a favorite contact and return true if this is.
 // -----------------------------------------------------------------------------
 //
-void CEasyDialingListBoxData::DrawContactThumbnail(
-        CWindowGc& aGc, TRect aBoundingBox, TInt aContactIndex ) const
+TBool CEasyDialingListBoxData::DrawContactThumbnail(CWindowGc& aGc, TRect aBoundingBox, TPtrC aCellText) const
     {
+    TBool fav(EFalse);
     CFbsBitmap* thumbnail(NULL);
-    TBool isLoaded = iContactDataManager->GetThumbnail(aContactIndex, thumbnail);
+    TBool isLoaded = iContactDataManager->GetThumbnailAndFav(aCellText, thumbnail, fav);
     if ( isLoaded && thumbnail )
         {
         // center the thumbnail in its rect
@@ -543,12 +517,13 @@ void CEasyDialingListBoxData::DrawContactThumbnail(
         {
         // draw dummy thumnbnail, but only if we know that the contact doesn't
         // have a thumbnail, and thumbnail drawing is enabled.
-        AknIconUtils::SetSize( iDummyThumbnail->Bitmap(), aBoundingBox.Size() );
-        AknIconUtils::SetSize( iDummyThumbnail->Mask(), aBoundingBox.Size() );
+        AknIconUtils::SetSize(iDummyThumbnail->Bitmap(), aBoundingBox.Size());
+        AknIconUtils::SetSize(iDummyThumbnail->Mask(), aBoundingBox.Size());
         aGc.BitBltMasked( aBoundingBox.iTl, iDummyThumbnail->Bitmap(),
                 TRect( TPoint(0,0), aBoundingBox.Size() ), 
                 iDummyThumbnail->Mask(), ETrue );
         }
+    return fav;
     }
 
 
@@ -616,38 +591,6 @@ void CEasyDialingListBoxData::DrawFavouriteIcon(
                 sourceRect, iFavouriteIcon->Mask(), ETrue );
         }
     }
-
-// -----------------------------------------------------------------------------
-// DrawSimIcon
-// 
-// Draws the SIM or SDN contact icon
-// -----------------------------------------------------------------------------
-//
-void CEasyDialingListBoxData::DrawSimIcon(
-        CGulIcon& aIcon,
-        CWindowGc& aGc, 
-        TRect aNameRectUnMirrored,
-        TRect aEffectiveRect ) const
-    {
-    TRect simIconBoundingBox;
-
-    simIconBoundingBox = SimIconBoundingBox( aNameRectUnMirrored );
-
-    if ( AknLayoutUtils::LayoutMirrored() )
-        {
-        simIconBoundingBox = MirrorLayoutBoundingBox(aEffectiveRect, simIconBoundingBox);
-        }
-
-    aGc.SetBrushStyle( CGraphicsContext::ENullBrush );
-    TRect sourceRect( TPoint(0,0), simIconBoundingBox.Size() );
-
-    // Set size for the bitmap and mask
-    AknIconUtils::SetSize( aIcon.Bitmap(), simIconBoundingBox.Size() );
-    AknIconUtils::SetSize( aIcon.Mask(), simIconBoundingBox.Size() );
-    aGc.BitBltMasked( simIconBoundingBox.iTl, aIcon.Bitmap(), 
-            sourceRect, aIcon.Mask(), ETrue );
-    }
-
 // -----------------------------------------------------------------------------
 // SetContactDataManager
 // 
@@ -808,7 +751,7 @@ static TRect ContactNameBoundingBox(
         const TRect& aItemRect,
         const CFont* aContactNameFont,
         TBool aArrowIconShown,
-        TBool aFavOrSimIconShown,
+        TBool aIsFavourite,
         TBool aThumbnailsShown )
     {
     // Position X will contain the starting position of text from left side of item rect.
@@ -832,9 +775,8 @@ static TRect ContactNameBoundingBox(
         rightMargin += KArrowIconSizePercent * aItemRect.Height() / KCent;
         }
     
-    // If item is favourite or a SIM contact, reserve space for the icon. 
-    // Icon dimensions are the same as bounding box height.
-    if ( aFavOrSimIconShown )
+    // If item is favourite, reserve space for favourite icon. Icon dimensions are the same as bounding box height.
+    if ( aIsFavourite )
         {
         rightMargin += height;
         }
@@ -929,17 +871,6 @@ static TRect FavouriteIconBoundingBox( const TRect& aContactNameBoundingBox )
     return rect;
     }
 
-
-// -----------------------------------------------------------------------------
-// SimIconBoundingBox
-// Calculates the area to which the sim/sdn icon is drawn.
-// -----------------------------------------------------------------------------
-//
-static TRect SimIconBoundingBox( const TRect& aContactNameBoundingBox )
-    {
-    // use the same bounding box as is used for the favourite icon
-    return FavouriteIconBoundingBox( aContactNameBoundingBox );
-    }
 
 
 // -----------------------------------------------------------------------------

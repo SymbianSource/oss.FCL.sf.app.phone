@@ -237,9 +237,7 @@ enum
     EPhoneViewSetIncallBubbleFalse,
     EPhoneViewIsDisplayingMenuOrDialog,
 
-	EPhoneViewSetVoipCallDTMFVisibilityFlag, 
-	
-    EPhoneAmountOfCommands // Don't remove this, this should always be the last in list.
+    EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.
 };
 
 

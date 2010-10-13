@@ -158,16 +158,11 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
     // when the remote party receives the call. So, in CDMA, the user
     // should still be able to cancel the MO call before the call is connected.
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneCallSetup::HandleConnectingL()");
-    TransitionHandlerL().BeginUiUpdateLC();
+    BeginUiUpdateLC();
     UpdateRemoteInfoDataL ( aCallId );
     
-    SetNeedToReturnToForegroundAppStatusL( EFalse );
-    
     // Re-enable global notes
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( EFalse );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-        &globalNotifierParam );
+    EnableGlobalNotifiersL();
 
     // Stop capturing keys
     CaptureKeysDuringCallNotificationL( EFalse );
@@ -187,7 +182,7 @@ EXPORT_C void CPhoneCallSetup::HandleConnectingL( TInt aCallId )
 
     SetToolbarButtonLoudspeakerEnabled();
 
-    TransitionHandlerL().EndUiUpdate();
+    EndUiUpdate();
     
     UpdateCbaL( EPhoneCallHandlingInCallCBA );
     iStateMachine->ChangeState( EPhoneStateAlerting );

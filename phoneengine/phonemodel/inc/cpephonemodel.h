@@ -119,11 +119,6 @@ NONSHARABLE_CLASS( CPEPhoneModel )
         * Constructs Contact Handling Phase Two
         */           
         void ConstructContactHandlingPhaseTwoL();
-        
-       /**
-         * Gets call error from callinfo
-         */ 
-        void SetCallError( TInt aCallId );
 
 // Functions from CPEPhonemodelIF
 
@@ -326,9 +321,6 @@ NONSHARABLE_CLASS( CPEPhoneModel )
         
         // Mediator command handler
         CPERemotePartyInfoMediator* iMediatorCommunicationHandler;
-        
-        // Mobile call info.
-        RMobileCall::TMobileCallInfoV3* iCallInfo;
 
     };
 

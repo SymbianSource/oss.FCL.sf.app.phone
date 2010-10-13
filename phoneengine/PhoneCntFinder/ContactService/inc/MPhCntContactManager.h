@@ -54,7 +54,7 @@ public:
     enum TDuplicateRemovalStrategy {
         ERemoveDuplicates,
         EDontRemoveDuplicates
-    };
+    };    
     
     /**
      * Retrieves contact from phonebook.
@@ -81,12 +81,13 @@ public:
      *
      * @since S60 v3.1
      * @param aObserver Contact match strategy observer.
-     * @param aStrategy Contact dupe removal strategy
+     * @param aRemoveDuplicatesStrategy Contact dupe removal strategy
+     * 
      * @return New contact match strategy instance.
      */
     virtual MPhCntContactMatchStrategy* CreateContactMatchStrategyL(
         MVPbkContactFindObserver& aObserver,
-        TDuplicateRemovalStrategy aStrategy )= 0;
+        TDuplicateRemovalStrategy aRemoveDuplicatesStrategy )= 0;
     
     /**
      * Gives access to contact name formatter.

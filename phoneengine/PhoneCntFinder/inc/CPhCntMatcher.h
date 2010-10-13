@@ -54,7 +54,7 @@ class CPhCntMatcher
         * @param aTelNumber Number to match against.
         * @return Error code: KErrNone - one match found
         *                     KErrNotFound - no matches found
-        *                     KErrNotFound - several matches -> no match
+        *                     KErrAlreadyExists - several matches -> no match
         *                     KErrUnderflow - Number too short for matching
         *                     KErrAccessDenied - Can't get phonebook instance
         *                     other - normal Symbian OS error

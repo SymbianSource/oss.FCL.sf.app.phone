@@ -286,6 +286,16 @@ CBubbleManager::TPhoneCallTypeFlags CPhoneCallHeaderManager::CallHeaderType() co
     }
 
 // ---------------------------------------------------------------------------
+//  CPhoneCallHeaderManager::SetDivertIndication
+// ---------------------------------------------------------------------------
+//
+void CPhoneCallHeaderManager::SetDivertIndication( const TBool aDivertIndication )
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneCallHeaderManager::SetDivertIndication()");
+    iCallHeaderParam->SetDivertIndication( aDivertIndication );           
+    }
+
+// ---------------------------------------------------------------------------
 // CPhoneCallHeaderManager::SetPhoneNumberAvailabilityL
 // ---------------------------------------------------------------------------
 //

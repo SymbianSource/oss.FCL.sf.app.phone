@@ -161,17 +161,13 @@ const TInt KClockWindowIdle = 2;
 
 // Used in CPhoneKeys
 // The character to be used as the 'wait' character, by DTMF code.
-const TUint KPhoneDtmfWaitCharacter = 'w';
-const TUint KPhoneDtmfWaitCharacterUpper = 'W';
+const TUint KPhoneDtmfWaitCharacter  = 'w';
 
 // The character to be used as the 'soft pause' character, by DTMF code.
 const TUint KPhoneDtmfPauseCharacter = 'p';
-const TUint KPhoneDtmfPauseCharacterUpper = 'P';
 
 // The character to be used as the 'speed-dial' character, by DTMF code.
 const TUint KPhoneDtmfSpeedDialCharacter = '+';
-
-const TUint KPhoneDtmfPlusCharacter = 135;  // Bluetooth SU-8W '+'
 
 // The length of the speed dial prefix, used to prevent buffer overflow
 const TUint KPhoneDtmfSpeedDialPrefixLength = 1;
