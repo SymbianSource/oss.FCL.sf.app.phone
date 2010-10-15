@@ -11,7 +11,7 @@
 *
 * Contributors:
 *
-* Description:  Converts Symbian resources PhoneAction objects.
+* Description:  Converts Symbian resources QString or HbAction objects.
 *
 */
 
@@ -20,7 +20,7 @@
 
 #include <QObject>
 #include <QMap>
-#include "phoneaction.h"
+#include <xqteluicommandextension.h>
 
 #ifdef BUILD_PHONEUIQTVIEWADAPTER
 #define PHONEURESOURCEADAPTER_EXPORT Q_DECL_EXPORT
@@ -60,14 +60,14 @@ public:
     PhoneUIQtButtonsController* buttonsController ();
     
     /*!
-        \fn QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int symbianResourceId)
+        \fn QString PhoneResourceAdapter::convert (int symbianResourceId)
         
         This method converts given Symbian resource id to mapping of translated
         texts, actions etc.
         
         Returns map of actions.
     */
-    QMap<PhoneAction::ActionType, PhoneAction *> convert (int symbianResourceId, ...);
+    QString convert (int symbianResourceId, ...);
  
     /*!
         \fn QString PhoneResourceAdapter::convert (int symbianResourceId)
@@ -115,15 +115,16 @@ public:
     QList<HbAction*> convertToHbActions(int symbianResourceId) const;
 
     /*!
-        \fn QString PhoneResourceAdapter::convertToToolBarCommandList()
+        \fn QList<XQTelUiCommandExtension::ToolBarCommand>
+             convertToToolBarCommandList()
         
-        Converts given Symbian command id to tool bar command list.
+        Converts given Symbian command id to tool bar extension command list.
         
         Returns command list.
     */
-    QList<PhoneAction::ToolBarItem> convertToToolBarCommandList(
-            int symbianResourceId ) const;
-    
+    QList<XQTelUiCommandExtension::ToolBarCommand>
+        convertToToolBarCommandList(
+            int symbianResourceId ) const;    
 protected:    
 
     /*!

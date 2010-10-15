@@ -24,11 +24,8 @@ INCLUDEPATH += inc
 SOURCEPATH += src
 
 # Input
-HEADERS += inc/cpplugincommon.h \
-           inc/cpphonelocalisation.h 
-           
-SOURCES += src/cpphonelocalisation.cpp 
-           
+HEADERS += inc/cpplugincommon.h
+                      
 symbian: {
     SOURCES += src/cpplugincommon.cpp 
     }
@@ -75,3 +72,5 @@ symbian: {
 }
 
 BLD_INF_RULES.prj_exports += "./rom/cptelephonyutils_stub.sis /epoc32/data/z/system/install/cptelephonyutils_stub.sis"
+
+symbian:MMP_RULES += SMPSAFE

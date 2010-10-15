@@ -94,4 +94,6 @@ EPhoneViewSetMuteFlag EPhoneViewSetMuteFlag
 EPhoneViewLaunchLogs EPhoneViewLaunchLogs 
 EPhoneViewSetBlueToothFlag EPhoneViewSetBlueToothFlag 
 EPhoneViewSetBluetoothAvailableFlag EPhoneViewSetBluetoothAvailableFlag
+EPhoneViewSetVideoCallOnTop EPhoneViewSetVideoCallOnTop
+EPhoneViewSetRingingFlag EPhoneViewSetRingingFlag
 EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.

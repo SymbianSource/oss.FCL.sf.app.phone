@@ -28,7 +28,6 @@
 #include "mphonestatemachine.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparaminteger.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "tphonecmdparamcallheaderdata.h"
 #include "tphonecmdparamglobalnote.h"
 #include "tphonecmdparamstring.h"
@@ -477,13 +476,14 @@ void CPhoneStateCallSetup::HandleIdleL( TInt aCallId )
         iViewCommandHandle->ExecuteCommand(
                 EPhoneViewGetNumberFromEntry,
                 &stringParam );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         iViewCommandHandle->ExecuteCommandL( EPhoneViewLaunchLogs, &stringParam );
         }    
     else
         {
         RemoveDialogsAndSendPhoneToBackgroundL();
         }
+    
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
     EndUiUpdate();
     CleanupStack::PopAndDestroy( phoneNumber );
     iStateMachine->ChangeState( EPhoneStateIdle );

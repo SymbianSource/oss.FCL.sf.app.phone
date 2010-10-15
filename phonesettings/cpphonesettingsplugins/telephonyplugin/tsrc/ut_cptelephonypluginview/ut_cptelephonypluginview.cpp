@@ -24,6 +24,7 @@
 #include <hbdataform.h>
 #include <hbdataformmodel.h>
 #include "cptelephonypluginview.h"
+#include <cppluginloader.h>
 
 
 class DummyPlugin : public CpPluginInterface
@@ -43,9 +44,7 @@ public:
   UT_CpTelephonyPluginView::UT_CpTelephonyPluginView
  */
 UT_CpTelephonyPluginView::UT_CpTelephonyPluginView() 
-    : m_callspluginview(NULL)
 {
-
 }
 
 /*!
@@ -53,9 +52,7 @@ UT_CpTelephonyPluginView::UT_CpTelephonyPluginView()
  */
 UT_CpTelephonyPluginView::~UT_CpTelephonyPluginView()
 {
-    delete m_callspluginview;
 }
-
 
 
 /*!
@@ -64,22 +61,8 @@ UT_CpTelephonyPluginView::~UT_CpTelephonyPluginView()
 void UT_CpTelephonyPluginView::init()
 {
     initialize();
-
-    CpPluginInterface *nullPlugin=0;
-    DummyPlugin *ret = new DummyPlugin;
-
-    QList<CpSettingFormItemData*> list;
-    list.append(new CpSettingFormItemData);
-    expect("CpPluginLoader::loadCpPluginInterface").
-            with(QString("cpcallsplugin")).returns(ret);
-    expect("DummyPlugin::createSettingFormItemData").returns(list);
-    expect("CpPluginLoader::loadCpPluginInterface").
-            with(QString("cpdivertplugin")).returns(nullPlugin);
-    
-    m_callspluginview = new CpTelephonyPluginView;
-    QVERIFY( verify() );
-
 }
+
 
 /*!
   UT_CpTelephonyPluginView::cleanup
@@ -87,10 +70,8 @@ void UT_CpTelephonyPluginView::init()
 void UT_CpTelephonyPluginView::cleanup()
 {
     reset();
-    
-    delete m_callspluginview;
-    m_callspluginview = NULL;
 }
+
 
 /*!
   UT_CpTelephonyPluginView::t_memleak
@@ -100,21 +81,66 @@ void UT_CpTelephonyPluginView::t_memleak()
     QList<CpSettingFormItemData*> list;
     list.append(new CpSettingFormItemData);
     DummyPlugin *ret = new DummyPlugin;
-    expect("CpPluginLoader::loadCpPluginInterface").
-            with(QString("cpcallsplugin")).returns(ret);
-    expect("DummyPlugin::createSettingFormItemData").returns(list);
-    
-    ret = new DummyPlugin;
-    expect("CpPluginLoader::loadCpPluginInterface").
-            with(QString("cpdivertplugin")).returns(ret);
-    expect("DummyPlugin::createSettingFormItemData").returns(list);
-    
-    
+
+    HbDataForm *form = new HbDataForm;
+    EXPECT(HbView, widget).returns(form);
+
+    EXPECT(CpPluginLoader, loadCpPluginInterface).
+        with(QString("cpcallsplugin")).returns(ret); // Ownership change.
+    EXPECT(DummyPlugin, createSettingFormItemData).returns(list);
+
+    // For clarity, create a new pointer instead of using the existing one. 
+    DummyPlugin *dummy = new DummyPlugin;
+    EXPECT(CpPluginLoader, loadCpPluginInterface).
+        with(QString("cpdivertplugin")).returns(dummy); // Ownership change.
+    EXPECT(DummyPlugin, createSettingFormItemData).returns(list);
+
+    QModelIndex index;
+    EXPECT(HbDataFormModel, indexFromItem).returns<QModelIndex>(index);
+
     CpTelephonyPluginView *tmp = new CpTelephonyPluginView;
-    QVERIFY( verify() );
+    QVERIFY(verify());
     delete tmp;
+    delete form;
+
+    // Test constructor that doesn't call any other functions.
+    EXPECT(HbView, widget).returns<QGraphicsWidget *>(0);
+    CpTelephonyPluginView *tmp2 = new CpTelephonyPluginView;
+    QVERIFY(verify());
+    delete tmp2;
 }
 
+
+void UT_CpTelephonyPluginView::t_construct2()
+{
+    QVariantList list;
+    list.append("blah");
+    list.append("blaah");
+
+    // Test constructor that doesn't call any other functions.
+    EXPECT(HbView, widget).returns<QGraphicsWidget *>(0);
+    CpTelephonyPluginView *tmp = new CpTelephonyPluginView(list);
+    QVERIFY(verify());
+    delete tmp;
+
+    // Do the "real" test.
+    QModelIndex index;
+    HbDataForm *form = new HbDataForm;
+    EXPECT(HbView, widget).returns(form);
+
+    DummyPlugin *dummy = new DummyPlugin;
+    EXPECT(CpPluginLoader, loadCpPluginInterface).
+        with(QString("blaah")).returns(dummy); // Ownership change.
+    QList<CpSettingFormItemData*> list2;
+    list2.append(new CpSettingFormItemData);
+    EXPECT(DummyPlugin, createSettingFormItemData).returns(list2);
+
+    EXPECT(HbDataFormModel, indexFromItem).returns<QModelIndex>(index);
+    CpTelephonyPluginView *tmp2 = new CpTelephonyPluginView(list);
+    QVERIFY(verify());
+    delete form;
+    delete tmp2;
+}
 
 
 QTEST_MAIN_S60UI(UT_CpTelephonyPluginView)

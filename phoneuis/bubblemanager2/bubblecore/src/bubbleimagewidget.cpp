@@ -121,7 +121,7 @@ void BubbleImageWidget::paint(
         QPainterPath clip;
         qreal rounding = BubbbleImageRounding *
                          HbDeviceProfile::profile(this).unitValue();
-        clip.addRoundedRect(rect(), rounding, rounding);
+        clip.addRoundRect(rect(), rounding);
         painter->setClipPath(clip);
 
 #ifdef __WINS__

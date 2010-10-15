@@ -68,6 +68,7 @@ SOURCE          mock_cphonecustomizationvoip.cpp
 SOURCEPATH      ../../../../internal/mocks/phoneuicontrol
 SOURCE          mock_cphonestate.cpp
 SOURCE          mock_cphonestatemachine.cpp
+SOURCE          mock_phonecallutil.cpp
 
 SOURCEPATH      ../../../../../internal/mocks/eikmenupane
 SOURCE          mock_coemain.cpp
@@ -134,3 +135,4 @@ LIBRARY         starterclient.lib
 LIBRARY         gdi.lib
 LIBRARY         symbianmock.lib
 
+SMPSAFE

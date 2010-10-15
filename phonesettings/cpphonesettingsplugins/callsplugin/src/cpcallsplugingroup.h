@@ -59,6 +59,8 @@ private:
     
     void insertMappedListItems(); 
     
+    void revertCallWaitingSelection();
+    
 public slots:
     
     void showCallDurationStateChanged();

@@ -24,6 +24,7 @@
 #include <hbmainwindow.h>
 #include <phoneappcommands.hrh>
 #include <hbmenu.h>
+#include <hbaction.h>
 #include "phoneuiqtviewadapter.h"
 #include "tphonecmdparaminteger.h"
 #include "tphonecmdparamaudiooutput.h"
@@ -75,6 +76,7 @@ extern int m_removeCallFromConferenceCallId;
 extern int m_setPrivateFromConferenceCallId;
 extern int m_removeCallHeaderCallId;
 extern bool m_isVoiceCall;
+extern bool m_EPhoneViewPlayHandsFreeActivatedTone_called;
 
 // Own assert initialization  
 /*void qt_assert(const char *assertion, const char *file, int line)
@@ -91,7 +93,7 @@ public:
 
     // From PhoneUIQtViewIF
     BubbleManagerIF& bubbleManager ();
-    void addBubbleCommand (int bubbleId, const PhoneAction& action);
+    void addBubbleCommand (int bubbleId, HbAction *action);
     void clearBubbleCommands (int bubbleId);
     void addParticipantListAction(
             int commandId,  
@@ -100,7 +102,7 @@ public:
     void clearParticipantListActions();
     void hideToolbar () { };
     void showToolbar () { m_showToolbarCalled = true; };
-    void setToolbarActions (const QList<PhoneAction*>& actions) {m_toolbarActionCount = actions.count(); };
+    void setToolbarActions (const QList<HbAction *> &actions) {m_toolbarActionCount = actions.count(); };
     int volumeSliderValue () { m_volumeSliderValueCalled = true; return 5; };
     void removeVolumeSlider () { m_removeVolumeSliderCalled = true; };
     void setVolumeSliderValue (
@@ -120,7 +122,8 @@ public:
     void clearDialpad() { m_clearDialpadCalled = true; };
     void clearAndHideDialpad() { m_clearAndHideDialpadCalled = true;};
     void bringToForeground() {};
-    void setMenuActions(const QList<PhoneAction*>& ) { m_setMenuActionsCalled = true;};
+	void hide() {};
+    void setMenuActions(const QList<HbAction *> & ) { m_setMenuActionsCalled = true;};
     void shutdownPhoneApp() {};
     void setBackButtonVisible(bool ) {};
     HbMenu &menuReference(){return m_menu;};
@@ -222,9 +225,7 @@ private slots:
     void testHandleCommandL ();
     void testGetSelectedConferenceMember ();
     void testSetAudioPath ();
-    void testMuteRingToneOnAnswer ();
     void testStopRingTone ();
-    void testMuteRingTone ();
     void testPlayRingTone ();
     void testShowGlobalNote ();
     void testSetExpandActions();
@@ -246,6 +247,7 @@ private slots:
     void testOpenLogs();
     void testSetFlags();
     void testCaptureEndKey();
+    void testPlayHandsFreeActivatedTone();
 
 private:
     PhoneUIQtViewAdapter *m_adapter; // class under test
@@ -317,13 +319,13 @@ BubbleManagerIF& TestPhoneUIQtViewAdapter::bubbleManager ()
 }
 
 void TestPhoneUIQtViewAdapter::addBubbleCommand (
-        int bubbleId, const PhoneAction& action)
+        int bubbleId, HbAction* action)
 {
     if (m_actionMap.keys().contains(bubbleId)) {
-        m_actionMap.value(bubbleId)->append(action.command());
+        m_actionMap.value(bubbleId)->append(action->property("command").toInt());
     } else {
         QList<int> *list = new QList<int>();
-        list->append(action.command());
+        list->append(action->property("command").toInt());
         m_actionMap.insert( bubbleId, list);
     }
 }
@@ -408,7 +410,7 @@ void TestPhoneUIQtViewAdapter::testCallIdByState ()
 {
     TPhoneCmdParamCallStateData data;
     data.SetCallState (EPEStateConnected);
-    m_adapter->HandleCommandL (EPhoneViewGetCallIdByState, &data);
+    m_adapter->ExecuteCommand (EPhoneViewGetCallIdByState, &data);
     QCOMPARE (data.CallId(), 0);
 }
 
@@ -762,22 +764,10 @@ void TestPhoneUIQtViewAdapter::testSetAudioPath ()
 
 }
 
-void TestPhoneUIQtViewAdapter::testMuteRingToneOnAnswer ()
-{
-    m_adapter->ExecuteCommandL(EPhoneViewMuteRingToneOnAnswer);
-    QVERIFY( m_EPhoneViewMuteRingToneOnAnswer_called == true );
-}
-
 void TestPhoneUIQtViewAdapter::testStopRingTone ()
 {
     m_adapter->ExecuteCommandL(EPhoneViewStopRingTone);
     QVERIFY( m_EPhoneViewStopRingTone_called == true );
-}
-
-void TestPhoneUIQtViewAdapter::testMuteRingTone ()
-{
-    m_adapter->ExecuteCommandL(EPhoneViewMuteRingTone);
-    QVERIFY( m_EPhoneViewMuteRingTone_called == true );
 }
 
 void TestPhoneUIQtViewAdapter::testPlayRingTone ()
@@ -833,6 +823,7 @@ void TestPhoneUIQtViewAdapter::testDialpadVisibility ()
     
     m_showDialpadCalled = false;
     m_hideDialpadCalled = false;
+    m_isDialpadVisible = true;
     
     param.SetBoolean(EFalse);
     m_adapter->ExecuteCommandL(EPhoneViewSetNumberEntryVisible, &param);
@@ -1102,6 +1093,13 @@ void TestPhoneUIQtViewAdapter::testCaptureEndKey()
     QVERIFY(false == m_captured);
     QVERIFY(m_capturedKey == Qt::Key_0);
 }
+
+void TestPhoneUIQtViewAdapter::testPlayHandsFreeActivatedTone()
+{
+    m_adapter->ExecuteCommandL(EPhoneViewPlayHandsFreeActivatedTone);
+    QVERIFY( m_EPhoneViewPlayHandsFreeActivatedTone_called == true );
+}
+
 
 PHONE_UITEST_MAIN(TestPhoneUIQtViewAdapter)
 #include "unit_tests.moc"

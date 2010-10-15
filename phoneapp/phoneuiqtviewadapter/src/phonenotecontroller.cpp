@@ -27,8 +27,10 @@
 #include <hbaction.h>
 #include <phoneappcommands.hrh>
 #include <hbstringutil.h>
+#include <xqsystemtoneservice.h>
 
-PhoneNoteController::PhoneNoteController(QObject *parent) : 
+PhoneNoteController::PhoneNoteController(XQSystemToneService& toneservice,
+                                         QObject *parent ) : 
     QObject(parent), 
     m_dtmfNote(0),
     m_queryNote(0)
@@ -36,7 +38,7 @@ PhoneNoteController::PhoneNoteController(QObject *parent) :
     PHONE_TRACE
     m_signalMapper = new QSignalMapper(this);
     connect(m_signalMapper, SIGNAL(mapped(int)), this, SIGNAL(command (int)));
-    m_globalNotes = new PhoneGlobalNotes(this);
+    m_globalNotes = new PhoneGlobalNotes(toneservice, this);
     connect(m_globalNotes, SIGNAL(command(int)), this, SIGNAL(command(int)));
 }
 

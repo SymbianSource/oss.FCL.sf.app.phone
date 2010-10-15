@@ -16,7 +16,11 @@
 */
 #include <QDebug>
 #include <smcmockclassincludes.h>
-#include "hbdataform.h"
+#include <hbdataform.h>
+
+#include <QAbstractItemModel>
+#include <HbAbstractViewItem>
+#include <HbDataFormModelItem>
 
 // ============================ MEMBER FUNCTIONS ===============================
 
@@ -26,6 +30,13 @@
 //
 HbAbstractItemViewPrivate* temp(NULL);
 HbAbstractItemContainer* temp2(NULL);
+
+HbDataForm::HbDataForm(
+        QGraphicsItem *parent)
+        :HbAbstractItemView(*temp, temp2, 0, parent)
+{
+
+}
 
 HbDataForm::HbDataForm( 
         HbDataFormPrivate & /*dd*/,
@@ -77,8 +88,8 @@ void HbDataForm::scrollTo(
         const QModelIndex & index,
         ScrollHint hint )
     {
-  //  SMC_MOCK_METHOD2( void, const QModelIndex &, index, 
-    //    ScrollHint, hint )
+    SMC_MOCK_METHOD2( void, const QModelIndex &, index, 
+        ScrollHint, hint )
     }
 
 // -----------------------------------------------------------------------------
@@ -89,8 +100,8 @@ void HbDataForm::setExpanded(
         const QModelIndex & index,
         bool expanded )
     {
- //   SMC_MOCK_METHOD2( void, const QModelIndex &, index, 
-   //     bool, expanded )
+    SMC_MOCK_METHOD2( void, const QModelIndex &, index, 
+        bool, expanded )
     }
 
 
@@ -101,7 +112,7 @@ void HbDataForm::setExpanded(
 bool HbDataForm::isExpanded( 
         const QModelIndex & index ) const
     {
-  //  SMC_MOCK_METHOD1( bool, const QModelIndex &, index )
+    SMC_MOCK_METHOD1( bool, const QModelIndex &, index )
     }
 
 
@@ -154,7 +165,7 @@ QString HbDataForm::description(  ) const
 QGraphicsItem * HbDataForm::primitive( 
         HbStyle::Primitive primitive ) const
     {
- //   SMC_MOCK_METHOD1( QGraphicsItem *, HbStyle::Primitive, primitive )
+    SMC_MOCK_METHOD1( QGraphicsItem *, HbStyle::Primitive, primitive )
     }
 
 
@@ -166,8 +177,8 @@ void HbDataForm::setModel(
         QAbstractItemModel * model,
         HbAbstractViewItem * prototype )
     {
-//    SMC_MOCK_METHOD2( void, QAbstractItemModel *, model, 
-  //      HbAbstractViewItem *, prototype )
+    SMC_MOCK_METHOD2( void, QAbstractItemModel *, model, 
+        HbAbstractViewItem *, prototype )
     }
 
 
@@ -181,11 +192,11 @@ void HbDataForm::addConnection(
         QObject * receiver,
         const char * slot )
     {
- /*   SMC_MOCK_METHOD4( void, HbDataFormModelItem *, item, 
+    SMC_MOCK_METHOD4( void, HbDataFormModelItem *, item, 
         const char *, signal, 
         QObject *, receiver, 
         const char *, slot )
-   */ }
+    }
 
 
 // -----------------------------------------------------------------------------
@@ -198,11 +209,11 @@ void HbDataForm::removeConnection(
         QObject * receiver,
         const char * slot )
     {
- /*   SMC_MOCK_METHOD4( void, HbDataFormModelItem *, item, 
+    SMC_MOCK_METHOD4( void, HbDataFormModelItem *, item, 
         const char *, signal, 
         QObject *, receiver, 
         const char *, slot )
-   */ }
+    }
 
 
 // -----------------------------------------------------------------------------
@@ -222,7 +233,7 @@ void HbDataForm::removeAllConnection(  )
 void HbDataForm::removeAllConnection( 
         HbDataFormModelItem * item )
     {
-//    SMC_MOCK_METHOD1( void, HbDataFormModelItem *, item )
+    SMC_MOCK_METHOD1( void, HbDataFormModelItem *, item )
     }
 
 
@@ -233,7 +244,7 @@ void HbDataForm::removeAllConnection(
 void HbDataForm::itemShown( 
         const QModelIndex & index )
     {
-   // SMC_MOCK_METHOD1( void, const QModelIndex &, index )
+    SMC_MOCK_METHOD1( void, const QModelIndex &, index )
     }
 
 
@@ -246,9 +257,9 @@ void HbDataForm::rowsInserted(
         int start,
         int end )
     {
-//    SMC_MOCK_METHOD3( void, const QModelIndex &, parent, 
-  //      int, start, 
-    //    int, end )
+    SMC_MOCK_METHOD3( void, const QModelIndex &, parent, 
+        int, start, 
+        int, end )
     }
 
 
@@ -261,9 +272,9 @@ void HbDataForm::rowsAboutToBeRemoved(
         int start,
         int end )
     {
-//    SMC_MOCK_METHOD3( void, const QModelIndex &, index, 
-  //      int, start, 
-    //    int, end )
+    SMC_MOCK_METHOD3( void, const QModelIndex &, index, 
+        int, start, 
+        int, end )
     }
 
 
@@ -275,8 +286,8 @@ void HbDataForm::dataChanged(
         const QModelIndex & topLeft,
         const QModelIndex & bottomRight )
     {
-  //  SMC_MOCK_METHOD2( void, const QModelIndex &, topLeft, 
-    //    const QModelIndex &, bottomRight )
+    SMC_MOCK_METHOD2( void, const QModelIndex &, topLeft, 
+        const QModelIndex &, bottomRight )
     }
 
 
@@ -287,7 +298,7 @@ void HbDataForm::dataChanged(
 void HbDataForm::initStyleOption( 
         HbStyleOptionDataForm * option )
     {
- //   SMC_MOCK_METHOD1( void, HbStyleOptionDataForm *, option )
+    //SMC_MOCK_METHOD1( void, HbStyleOptionDataForm *, option )
     }
 
 

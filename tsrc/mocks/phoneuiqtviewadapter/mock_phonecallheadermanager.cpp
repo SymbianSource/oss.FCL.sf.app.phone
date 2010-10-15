@@ -15,6 +15,7 @@
 */
 #include <QDebug>
 #include <smcmockclassincludes.h>
+#include <mpeengineinfo.h>
 #include "phonecallheadermanager.h"
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -24,11 +25,12 @@
 // -----------------------------------------------------------------------------
 //
 PhoneCallHeaderManager::PhoneCallHeaderManager( 
-        PhoneBubbleWrapper & m_bubbleWrapper,
+        PhoneBubbleWrapper & bubbleWrapper,
         PhoneUIQtViewIF & view,
-        QObject * parent )
-    //:
-    //QObject( /*m_bubbleWrapper, view, parent*/ )
+        QObject * parent ) :
+        QObject( parent ),
+        m_bubbleWrapper(bubbleWrapper),
+        m_view(view)
     {
     
     }
@@ -75,40 +77,6 @@ void PhoneCallHeaderManager::createEmergencyCallHeader(
     {
     SMC_MOCK_METHOD1( void, int, callId )
     }
-
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderManager::updateCallHeaderState
-// -----------------------------------------------------------------------------
-//
-void PhoneCallHeaderManager::updateCallHeaderState( 
-        int callId )
-    {
-    SMC_MOCK_METHOD1( void, int, callId )
-    }
-
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderManager::updateCallHeaderRemoteInfo
-// -----------------------------------------------------------------------------
-//
-void PhoneCallHeaderManager::updateCallHeaderRemoteInfo( 
-        int callId )
-    {
-    SMC_MOCK_METHOD1( void, int, callId )
-    }
-
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderManager::updateCallHeaderRemoteInfoAndLabel
-// -----------------------------------------------------------------------------
-//
-void PhoneCallHeaderManager::updateCallHeaderRemoteInfoAndLabel( 
-        int callId )
-    {
-    SMC_MOCK_METHOD1( void, int, callId )
-    }
-
 
 // -----------------------------------------------------------------------------
 // PhoneCallHeaderManager::handleCipheringInfoChange
@@ -183,15 +151,5 @@ void PhoneCallHeaderManager::removeAllCallHeaders(  )
     SMC_MOCK_METHOD0( void )
     }
 
-
-// -----------------------------------------------------------------------------
-// PhoneCallHeaderManager::isVideoCall
-// -----------------------------------------------------------------------------
-//
-bool PhoneCallHeaderManager::isVideoCall( 
-        int callId ) const
-    {
-    SMC_MOCK_METHOD1( bool, int, callId )
-    }
 
 

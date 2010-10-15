@@ -22,7 +22,6 @@
 #include <QString>
 #include "tphonecmdparamnote.h"
 #include "tphonecmdparamglobalnote.h"
-#include "phoneaction.h"
 #include <hbdevicenotificationdialogsymbian.h>
 #include <hbdevicemessageboxsymbian.h>
 #include <hbdeviceprogressdialogsymbian.h>
@@ -47,9 +46,11 @@ class PhoneGlobalNotes : public QObject,
 public:
 
     /*!
-        \fn PhoneGlobalNotes (QObject *parent)
+        \fn PhoneGlobalNotes (XQSystemToneService &toneservice,
+                              QObject *parent)
     */
-    PhoneGlobalNotes(QObject *parent = 0);
+    PhoneGlobalNotes(XQSystemToneService &toneservice,
+                     QObject *parent = 0);
         
     /*!
         Destructor

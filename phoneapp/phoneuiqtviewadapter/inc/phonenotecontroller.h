@@ -21,7 +21,6 @@
 #include <QObject>
 #include <QString>
 #include "tphonecmdparamnote.h"
-#include "phoneaction.h"
 
 // FORWARD DECLARATION
 class TPhoneCommandParam;
@@ -34,6 +33,7 @@ class QSignalMapper;
 class QTimer;
 class PhoneGlobalNotes;
 class HbDialog;
+class XQSystemToneService;
 
 class PhoneNoteController : public QObject
 {
@@ -42,9 +42,11 @@ class PhoneNoteController : public QObject
 public:
 
     /*!
-        \fn PhoneNoteController (QObject *parent)
+        \fn PhoneNoteController (XQSystemToneService& toneservice,
+                                 QObject *parent)
     */
-    PhoneNoteController(QObject *parent = 0);
+    PhoneNoteController(XQSystemToneService& toneservice,
+                        QObject *parent = 0);
         
     /*!
         Destructor

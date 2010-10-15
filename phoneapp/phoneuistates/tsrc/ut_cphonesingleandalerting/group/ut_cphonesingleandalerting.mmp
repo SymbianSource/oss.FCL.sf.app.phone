@@ -45,6 +45,8 @@ SOURCE          cphonealerting.cpp
 SOURCEPATH      ../../../../../internal/mocks/phoneapp/phoneuicontrol
 SOURCE          mock_cphonenumberentrymanager.cpp
  
+SOURCEPATH      ../../../../internal/mocks/phoneuicontrol
+SOURCE          mock_phonecallutil.cpp 
 
 // Sources required by the test suite
 SOURCEPATH      ../src
@@ -73,5 +75,4 @@ LIBRARY         CommonEngine.lib     //StringLoader
 LIBRARY         cone.lib
 LIBRARY         symbianmock.lib
 
-
-
+SMPSAFE

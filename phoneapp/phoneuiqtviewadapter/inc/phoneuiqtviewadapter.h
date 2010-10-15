@@ -28,7 +28,7 @@
 #include <QMap>
 #include <apgwgnam.h>
 #include "mphoneviewcommandhandle.h"
-#include "phoneaction.h"
+#include "rphonetoneclient.h"
 
 class PhoneUIQtViewIF;
 class PhoneBubbleWrapper;
@@ -45,6 +45,7 @@ class PhoneVisibilityHandler;
 class PhoneAppLauncher;
 class MPEEngineInfo;
 class PhoneCallHeaderManager;
+class XQSystemToneService;
 
 class PHONEUIQTVIEWADAPTER_EXPORT PhoneUIQtViewAdapter : 
     public QObject, 
@@ -530,12 +531,18 @@ private:
     */
     bool convertKey(TKeyCode symbianKey, Qt::Key &qtKey);
     
+    /*!
+        /fn void playHandsFreeActivatedTone()
+        This method play handfree activated tone.
+    */    
+    void playHandsFreeActivatedTone();
+    
 private:
 
     PhoneUIQtViewIF &m_view;
     int m_idleUid;
     PhoneBubbleWrapper *m_bubbleWrapper;
-    CPhoneRingingToneController *m_ringingtonecontroller;
+    RPhoneToneClient m_toneClient;  
     PhoneResourceAdapter *m_resourceAdapter;
     PhoneNoteController *m_noteController;
     TelephonyService *m_telephonyService;
@@ -544,13 +551,13 @@ private:
     PhoneIndicatorController *m_indicatorController;
     PhoneCallHeaderManager *m_phoneCallHeaderManager;
     bool m_dialpadAboutToClose;
-    bool m_homeScreenToForeground;
-	PhoneVisibilityHandler *m_visibilityHandler;
+    PhoneVisibilityHandler *m_visibilityHandler;
 	PhoneAppLauncher *m_appLauncher;
 	bool m_clearDialpadOnClose;
 	bool m_speakerAsDefaultButton;
 	bool m_ringingTonePlaying;
-    MPEEngineInfo*  m_engineInfo;
+    MPEEngineInfo *m_engineInfo;
+    XQSystemToneService *m_toneService;
 };
 
 #endif // PHONEUIQTVIEWADAPTER_H

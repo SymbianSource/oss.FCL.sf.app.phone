@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -44,6 +44,7 @@ class PSetCallWaitingWrapper;
 class PSetWrapper;
 class PsUiDivertNoteHandler;
 class PsUiWaitingNoteHandler;
+class PsUiCliNoteHandler;
 
 // CLASS DECLARATION
 
@@ -286,8 +287,10 @@ NONSHARABLE_CLASS( CPEParserSSHandler ) : public CPhoneGsmSsHandler,
         // Owned call barring.
         CPsetCallBarring* iBarring;
     
-        // Owned calling line identity.
+        // Calling line identity. Not own.
         CPsetCli* iCli;
+        // Calling line identity note handler. Own.
+        PsUiCliNoteHandler* iCliNoteHandler;
         
         // Call diverting. Not own.
         CPsetCallDiverting* iDivert;  

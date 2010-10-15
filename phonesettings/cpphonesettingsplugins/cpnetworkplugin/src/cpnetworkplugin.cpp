@@ -15,6 +15,7 @@
  *
  */
 #include <cpsettingformentryitemdataimpl.h>
+
 #include "cpnetworkplugin.h"
 #include "cpnetworkpluginview.h"
 #include "cppluginlogging.h"
@@ -25,20 +26,15 @@
  */
 CpNetworkPlugin::CpNetworkPlugin() : 
     QObject(NULL),
-    m_localisation(NULL),
+    m_translator(NULL),
     m_networkStatus(NULL)
 {
     INSTALL_TRACE_MSG_HANDLER;
     DPRINT << ": IN";
     
-    // Create guarded objects
-    m_localisation.reset(new PhoneLocalisation); 
+    m_translator.reset(new HbTranslator(QString("telephone_cp"))); 
+    m_translator->loadCommon();
     m_networkStatus.reset(new CpNetworkStatus); 
-    
-    // Install required translations
-    m_localisation->installTranslator(
-            PhoneLocalisation::
-            TranslationFileCommon);
     
     DPRINT << ": OUT";
 }

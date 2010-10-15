@@ -53,5 +53,9 @@ SOURCES += ../../../tsrc/mocks/mock_cppluginloader.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpbasesettingview.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpitemdatahelper.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpsettingformitemdata.cpp
+SOURCES += ../../../tsrc/mocks/mock_hbview.cpp
+SOURCES += ../../../tsrc/mocks/mock_hbdataformmodel.cpp
+SOURCES += ../../../tsrc/mocks/mock_hbdataform.cpp
+SOURCES += ../../../tsrc/mocks/mock_hbabstractitemview.cpp
 
 symbian:MMP_RULES += SMPSAFE

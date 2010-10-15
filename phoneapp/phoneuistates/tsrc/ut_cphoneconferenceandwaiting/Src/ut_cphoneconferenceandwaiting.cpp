@@ -98,11 +98,12 @@ void ut_cphoneconferenceandwaiting::SetupL(  )
     iViewCmdHandleMock = new CPhoneViewCommandHandleMock();
     iStateMachineMock = CPhoneStateMachineGSM::NewL( iViewCmdHandleMock );
     
-    iMockContext->ExpectCallL( "TPhoneCmdParamCallStateData::CallId" ).
+    iMockContext->ExpectCallL( "PhoneCallUtil::CallIdByState" ).
         ReturnsL( 2 );
     iStateConferenceAndWaiting = CPhoneConferenceAndWaiting::NewL(
             iStateMachineMock, iViewCmdHandleMock, NULL );
 
+    iMockContext->Reset();
     }
 
 void ut_cphoneconferenceandwaiting::Setup_NoRingingCallIdL(  )
@@ -115,10 +116,11 @@ void ut_cphoneconferenceandwaiting::Setup_NoRingingCallIdL(  )
     iViewCmdHandleMock = new CPhoneViewCommandHandleMock();
     iStateMachineMock = CPhoneStateMachineGSM::NewL( iViewCmdHandleMock );
     
-    iMockContext->ExpectCallL( "TPhoneCmdParamCallStateData::CallId" ).
+    iMockContext->ExpectCallL( "PhoneCallUtil::CallIdByState" ).
         ReturnsL( -1 );
     iStateConferenceAndWaiting = CPhoneConferenceAndWaiting::NewL(
             iStateMachineMock, iViewCmdHandleMock, NULL );
+    iMockContext->Reset();
     }
     
 

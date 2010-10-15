@@ -19,11 +19,11 @@
 #define CPNETWORKPLUGIN_H
 
 #include <qobject.h>
+
 #include <cpplugininterface.h>
 #include <cplauncherinterface.h>
+#include <HbTranslator>
 #include "cpnetworkstatus.h"
-#include "cpphonelocalisation.h"
-
 
 class CpNetworkPlugin 
     : public QObject, 
@@ -53,7 +53,7 @@ public:
     CpBaseSettingView *createSettingView(const QVariant &hint) const;
 
 private:
-    QScopedPointer<PhoneLocalisation> m_localisation;
+    QScopedPointer<HbTranslator> m_translator;
     QScopedPointer<CpNetworkStatus> m_networkStatus; 
 };
 

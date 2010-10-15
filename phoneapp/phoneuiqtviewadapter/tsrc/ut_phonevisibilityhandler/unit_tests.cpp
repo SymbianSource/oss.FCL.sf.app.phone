@@ -60,7 +60,7 @@ public:
 
     // From PhoneUIQtViewIF
     BubbleManagerIF& bubbleManager () {};
-    void addBubbleCommand (int , const PhoneAction& ) {};
+    void addBubbleCommand (int , HbAction * ) {};
     void clearBubbleCommands (int ) {};
     void addParticipantListAction(
             int ,  
@@ -69,7 +69,7 @@ public:
     void clearParticipantListActions() {};
     void hideToolbar () {};
     void showToolbar () {};
-    void setToolbarActions (const QList<PhoneAction*>& ) {};
+    void setToolbarActions (const QList<HbAction *> & ) {};
     int volumeSliderValue () {};
     void removeVolumeSlider () {};
     void setVolumeSliderValue (
@@ -87,7 +87,8 @@ public:
     void clearAndHideDialpad() {};
     void clearDialpad() {};
     void bringToForeground() { m_bringToForegroundCalled = true;};
-    void setMenuActions(const QList<PhoneAction*>& ) {};
+	  void hide() {};
+    void setMenuActions(const QList<HbAction *> & ) {};
     void shutdownPhoneApp() {};
     void setBackButtonVisible(bool ) {};
     HbMenu &menuReference() {};
@@ -219,7 +220,7 @@ void TestPhoneVisibilityHandler::t_normal()
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), ECoeWinPriorityAlwaysAtFront + 100);
     
     // send backgroud is called last
-    m_handler->sendToBackground(false);
+    m_handler->sendToBackground();
     QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
 }
@@ -259,7 +260,7 @@ void TestPhoneVisibilityHandler::t_carmode()
     QVERIFY(m_bringToForegroundCalled == false);
     
     // send backgroud is called last
-    m_handler->sendToBackground(false);
+    m_handler->sendToBackground();
     QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
 }
@@ -303,7 +304,7 @@ void TestPhoneVisibilityHandler::t_devicelock()
 
     
     // send backgroud is called last
-    m_handler->sendToBackground(false);
+    m_handler->sendToBackground();
     QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
     
@@ -317,6 +318,7 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     
     // bringToForeground is call
     m_handler->bringToForeground();
+    m_handler->windowVisibilityChange(true);
     QVERIFY(m_bringToForegroundCalled);
     QVERIFY(g_disableKeyGuardCalled);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), 0);
@@ -324,7 +326,8 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     
     cleanup();
     // send backgroud is called last
-    m_handler->sendToBackground(false);
+    m_handler->sendToBackground();
+    m_handler->windowVisibilityChange(false);
     QVERIFY(!g_enableKeyGuardCalled);
     QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
@@ -336,6 +339,7 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     
     // bringToForeground is call
     m_handler->bringToForeground();
+    m_handler->windowVisibilityChange(true);
     QVERIFY(m_bringToForegroundCalled);
     QVERIFY(g_disableKeyGuardCalled);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), 0);
@@ -343,7 +347,8 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     
     cleanup();
     // send backgroud is called last
-    m_handler->sendToBackground(false);
+    m_handler->sendToBackground();
+    m_handler->windowVisibilityChange(false);
     QVERIFY(g_enableKeyGuardCalled);
     QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
@@ -355,6 +360,7 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     
     // bringToForeground is call
     m_handler->bringToForeground();
+    m_handler->windowVisibilityChange(true);
     QVERIFY(m_bringToForegroundCalled);
     QVERIFY(g_disableKeyGuardCalled);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), 0);
@@ -363,7 +369,9 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     cleanup();
     // Test that keyguard is not enabled when phone is background
     CEikonEnv::Static()->RootWin().SetOrdinalPosition(-1, ECoeWinPriorityNormal);
-    m_handler->sendToBackground(false);
+    m_handler->windowVisibilityChange(false);
+    m_handler->sendToBackground();
+    m_handler->windowVisibilityChange(false);
     QVERIFY(!g_enableKeyGuardCalled);
     QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
@@ -375,6 +383,7 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     
     // bringToForeground is call
     m_handler->bringToForeground();
+    m_handler->windowVisibilityChange(true);
     QVERIFY(m_bringToForegroundCalled);
     QVERIFY(g_disableKeyGuardCalled);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), 0);
@@ -382,13 +391,15 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     
     cleanup();
     m_handler->bringToForeground();
+    m_handler->windowVisibilityChange(true);
     QVERIFY(m_bringToForegroundCalled);
     QVERIFY(g_disableKeyGuardCalled);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), ECoeWinPriorityAlwaysAtFront + 100);
     
     cleanup();
-    m_handler->sendToBackground(false);
+    m_handler->sendToBackground();
+    m_handler->windowVisibilityChange(false);
     QVERIFY(g_enableKeyGuardCalled);
     QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);
@@ -398,6 +409,7 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     
     // bringToForeground is call
     m_handler->bringToForeground();
+    m_handler->windowVisibilityChange(true);
     QVERIFY(m_bringToForegroundCalled);
     QVERIFY(g_disableKeyGuardCalled);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), 0);
@@ -406,13 +418,15 @@ void TestPhoneVisibilityHandler::t_keyGuardHandling()
     cleanup();
     g_keyGuardEnabled = true; 
     m_handler->bringToForeground();
+    m_handler->windowVisibilityChange(true);
     QVERIFY(m_bringToForegroundCalled);
     QVERIFY(g_disableKeyGuardCalled);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPosition(), 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), ECoeWinPriorityAlwaysAtFront + 100);
     
     cleanup();
-    m_handler->sendToBackground(false);
+    m_handler->sendToBackground();
+    m_handler->windowVisibilityChange(false);
     QVERIFY(g_enableKeyGuardCalled);
     QVERIFY(CEikonEnv::Static()->RootWin().OrdinalPosition() > 0);
     QCOMPARE(CEikonEnv::Static()->RootWin().OrdinalPriority(), m_startPriority);

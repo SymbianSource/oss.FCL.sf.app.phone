@@ -37,6 +37,7 @@ SOURCE          mock_cphonenumberentrymanager.cpp
 
 SOURCEPATH      ../../../../internal/mocks/phoneuicontrol
 SOURCE          mock_cphonestate.cpp
+SOURCE          mock_phonecallutil.cpp
 
 SOURCEPATH      ../../../../internal/mocks/phoneuiutils
 SOURCE          mock_tphonetouchbuttonconfig.cpp
@@ -78,4 +79,4 @@ LIBRARY         symbianmock.lib
 LIBRARY         efsrv.lib
 LIBRARY         phoneuiutils.lib
 
-
+SMPSAFE

@@ -45,7 +45,6 @@ SOURCES += ../../src/phoneresourceadapter.cpp
 HEADERS += ../../inc/phoneuiqtbuttonscontroller.h
 SOURCES += ../../src/phoneuiqtbuttonscontroller.cpp
 SOURCES += ../../../../tsrc/mocks/orbit/mock_hbicon.cpp
-SOURCES += ../../../../tsrc/mocks/phoneuiview2/mock_phoneaction.cpp
 SOURCES += ../../../../tsrc/mocks/orbit/mock_hbaction.cpp
 SOURCES += unit_tests.cpp
 

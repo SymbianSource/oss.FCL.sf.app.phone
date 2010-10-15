@@ -29,6 +29,7 @@ public:
     PhoneUiHouseHold (HbMainWindow &window);
     ~PhoneUiHouseHold ();
 
+    void reloadTranslators();
 
 private:
     PhoneUiHouseHoldPrivate* mHouseHoldPrivate;

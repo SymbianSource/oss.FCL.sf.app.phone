@@ -61,11 +61,10 @@ bool Tools::videoSupported()
 
 SettingsWrapper::SettingsWrapper(QObject *parent): 
     QObject(parent),
-    m_settings(NULL),
-    m_deviceInfo(NULL)
+    m_settings(NULL)
 {
     m_settings = new XQSettingsManager(this);
-    m_deviceInfo = new QSystemDeviceInfo(this);
+
 }
 
 SettingsWrapper::~SettingsWrapper()
@@ -210,4 +209,28 @@ bool SettingsWrapper::isOngoingCall() const
         callOngoing = true; 
     }
     return callOngoing;
+}
+
+bool SettingsWrapper::isConnectedToNetwork() const 
+{
+    DPRINT << ": IN";
+    
+    const QScopedPointer<QSystemNetworkInfo> networkInfo(new QSystemNetworkInfo);
+    bool connected(false);
+    
+    QSystemNetworkInfo::NetworkStatus wcdmaStatus = 
+            networkInfo->networkStatus(QSystemNetworkInfo::WcdmaMode);
+    QSystemNetworkInfo::NetworkStatus gsmStatus = 
+            networkInfo->networkStatus(QSystemNetworkInfo::GsmMode);
+    
+    if (QSystemNetworkInfo::Connected == wcdmaStatus ||
+        QSystemNetworkInfo::HomeNetwork == wcdmaStatus ||
+        QSystemNetworkInfo::Roaming == wcdmaStatus ||
+        QSystemNetworkInfo::Connected == gsmStatus ||
+        QSystemNetworkInfo::HomeNetwork == gsmStatus ||
+        QSystemNetworkInfo::Roaming == gsmStatus) {
+        connected = true;
+    }
+    DPRINT << ": OUT " << connected;
+    return connected;    
 }

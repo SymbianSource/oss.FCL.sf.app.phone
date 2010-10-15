@@ -50,6 +50,7 @@ SOURCE          cphonenumberentrymanager.cpp
 SOURCE          cphoneuicommandmanager.cpp
 SOURCE          phonenoteutil.cpp 
 SOURCE          phoneaudioutil.cpp
+SOURCE          phonecallutil.cpp
 
 /* Languages */
 LANG SC
@@ -98,5 +99,6 @@ LIBRARY         starterclient.lib
 
 LIBRARY         phonemediatorcenter.lib
 
+LIBRARY         apparc.lib
 
 SMPSAFE

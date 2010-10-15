@@ -36,7 +36,6 @@
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparamstring.h"
 #include "tphonecmdparamcallheaderdata.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "phonestatedefinitionsgsm.h"
 #include "phonelogger.h"
 

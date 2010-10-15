@@ -24,7 +24,6 @@
 #include <spdefinitions.h>
 #include "phonecommandextensionwrapper.h"
 #include "phoneuiqtviewif.h"
-#include "phoneaction.h"
 
 // FORWARD DECLARATION
 class HbAction;
@@ -71,7 +70,7 @@ public:
         Returns push button actions for call.
 
     */
-    QMap<PhoneAction::ActionType, PhoneAction *> pushButtonActionsForCall( 
+    QList<HbAction *> pushButtonActionsForCall( 
             int callState,
             bool emergencyCall,
             QMap<int,int> callStates,
@@ -85,7 +84,7 @@ public:
         Returns tool bar actions for call.
 
     */
-    QList<PhoneAction *> toolBarActions( 
+    QList<HbAction *> toolBarActions( 
             int resourceId,
             QMap<int,int> callStates,
             QMap<int,int> serviceIds,
@@ -116,7 +115,7 @@ private:
         Maps ui command extension commands to
         phone app commands.
     */
-    int mapCommand(int command) const;
+    int mapCommand(int extensionCommand) const;
     
     /*!
         \fn void commandExtension()
@@ -193,27 +192,7 @@ private:
         and held calls exists).
     */
     void setMultiCallFlag(QList<int> callStates) const;
-    
-    /*!
-        \fn void mapToExtensionToolBarItems()
-        
-        Maps phone action tool bar item list to ui command extension
-        tool bar item list.
-    */
-    void mapToExtensionToolBarItems(
-            const QList<PhoneAction::ToolBarItem> &sourceList, 
-            QList<XQTelUiCommandExtension::ToolBarCommand> &toolBarCmdList) const;
- 
-    /*!
-        \fn void mapToPhoneActionToolBarItems()
-        
-        Maps ui command extension tool bar item list to phone action
-        tool bar item list.
-    */
-    void mapToPhoneActionToolBarItems( 
-            const QList<XQTelUiCommandExtension::ToolBarCommand> &sourceList,
-            QList<PhoneAction::ToolBarItem> &commandList) const;        
-    
+
     /*!
         \fn void buttonCommandList()
         
@@ -224,12 +203,13 @@ private:
                                  QList<int> callStates) const;
     
     /*!
-        \fn void mapCommandToAction()
+        \fn HbAction *createAction(int extensionCommand, bool enabled)
         
-        Maps push button command to phone action.
-    */
-    PhoneAction *mapCommandToAction(int command,
-                                    bool disabled=false) const;
+        Converts given extension command id to HbAction.
+        
+        Returns action.
+     */
+    HbAction *createAction(int extensionCommand, bool enabled = true) const;
     
     /*!
         \fn void emergencyCall()

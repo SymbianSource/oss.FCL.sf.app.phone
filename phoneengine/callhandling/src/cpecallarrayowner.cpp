@@ -315,8 +315,10 @@ CPESingleCall* CPECallArrayOwner::CreateDataCallL( MPEMessageSender& aOwner )
             if( !GetCallObject( callId ) )
                 {
                 call = CPESingleCall::NewL( aOwner );
+                CleanupStack::PushL( call );
                 call->SetCallId( callId );
-                iCallArray->Append( call );
+                iCallArray->AppendL( call );
+                CleanupStack::Pop();
                 break;
                 }
             }

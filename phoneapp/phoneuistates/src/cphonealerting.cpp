@@ -25,7 +25,6 @@
 #include "mphonestatemachine.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparaminteger.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "phoneviewcommanddefinitions.h"
 #include "phoneui.hrh"
 #include "cphonemainresourceresolver.h"
@@ -229,26 +228,6 @@ EXPORT_C TBool CPhoneAlerting::HandleCommandL( TInt aCommand )
     __LOGMETHODSTARTEND( EPhoneUIStates,  
         "CPhoneAlerting::HandleCommandL()" );
     return CPhoneGsmInCall::HandleCommandL( aCommand );
-    }
-
-// -----------------------------------------------------------
-// CPhoneAlerting::IsVideoCallAlertingL
-// -----------------------------------------------------------
-//
-TBool CPhoneAlerting::IsVideoCallAlertingL()
-    {
-    __LOGMETHODSTARTEND( EPhoneUIStates,  
-        "CPhoneAlerting::IsVideoCallAlerting()" );
-    TBool retVal = EFalse;
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateConnecting );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    if ( callStateData.CallId() > KErrNotFound )
-        {
-        retVal = IsVideoCall( callStateData.CallId() );
-        }
-    return retVal;
     }
     
 // -----------------------------------------------------------

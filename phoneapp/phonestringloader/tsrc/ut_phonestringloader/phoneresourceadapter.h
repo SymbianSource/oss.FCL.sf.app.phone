@@ -17,7 +17,6 @@
 
 #include <QObject>
 #include <QMap>
-#include "phoneaction.h"
 
 #ifndef PHONERESOURCEADAPTER_H
 #define PHONERESOURCEADAPTER_H
@@ -27,7 +26,7 @@ class PhoneResourceAdapter : public QObject
     Q_OBJECT
 public:
     static PhoneResourceAdapter* Instance(QObject *parent = 0);
-    QMap<PhoneAction::ActionType, PhoneAction *> convert (int symbianResourceId, ...);
+    QString convert (int symbianResourceId, ...);
 };
 
 #endif

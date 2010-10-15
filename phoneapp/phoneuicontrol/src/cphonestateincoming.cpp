@@ -34,7 +34,6 @@
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparamcallheaderdata.h"
 #include "tphonecmdparaminteger.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "tphonecmdparamringtone.h"
 #include "tphonecmdparamsfidata.h"
 #include "tphonecmdparamstring.h"
@@ -54,6 +53,7 @@
 #include "cphonereleasecommand.h"
 #include "mphonecustomization.h"
 #include "mphonestorage.h"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -88,15 +88,12 @@ EXPORT_C void CPhoneStateIncoming::ConstructL()
     {
     CPhoneState::BaseConstructL();
     
-    // Fetch incoming call's id from view
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateRinging );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    if( callStateData.CallId() > KErrNotFound  )
+    // Fetch incoming call's id
+    TInt callId = PhoneCallUtil::CallIdByState( EPEStateRinging );
+    if( callId > KErrNotFound  )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveQuery );
-        iRingingCallId = callStateData.CallId();
+        iRingingCallId = callId;
         }
     else
         {
@@ -322,6 +319,11 @@ void CPhoneStateIncoming::HandleConnectedL( TInt aCallId )
     SetBackButtonActive(ETrue);
     EndUiUpdate();
 
+    if ( PhoneCallUtil::IsVideoCall( aCallId ) )
+        {
+        iViewCommandHandle->ExecuteCommand( EPhoneViewSetVideoCallOnTop );
+        }
+    
     iStateMachine->ChangeState( EPhoneStateSingle );
     }
 
@@ -442,15 +444,11 @@ void CPhoneStateIncoming::DisconnectWaitingCallL()
         "CPhoneStateIncoming::DisconnectWaitingCallL ()" );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewStopRingTone );
 
-    // The ringing call might have changed
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateRinging );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    
-    if ( callStateData.CallId() > KErrNotFound )
+    // The ringing call might have changed   
+    TInt callId = PhoneCallUtil::CallIdByState( EPEStateRinging );   
+    if ( callId > KErrNotFound )
         {
-        iRingingCallId = callStateData.CallId();
+        iRingingCallId = callId;
         }
     
     iStateMachine->SetCallId( iRingingCallId );
@@ -505,35 +503,6 @@ void CPhoneStateIncoming::OpenSoftRejectMessageL()
         sfiDataParam.SetNumber( iStateMachine->PhoneEngineInfo()->RemotePhoneNumber( iRingingCallId ) );
         }
     iViewCommandHandle->ExecuteCommandL( EPhoneViewOpenSoftRejectEditor, &sfiDataParam );
-    }
-
-
-// -----------------------------------------------------------
-// CPhoneStateIncoming::GetNumberEntryVisibleMenuBar
-// -----------------------------------------------------------
-//
-TInt CPhoneStateIncoming::GetNumberEntryVisibleMenuBar()
-    {
-    TInt resource(EPhoneIncomingCallMenubarWithNumberEntry);
-    if( IsVideoCall ( iRingingCallId ) )
-        {
-        resource = EPhoneIncomingVideoCallMenubarWithNumberEntry;
-        }
-    return resource;
-    }
-
-// -----------------------------------------------------------
-// CPhoneStateIncoming::GetNumberEntryNotVisibleMenuBar
-// -----------------------------------------------------------
-//
-TInt CPhoneStateIncoming::GetNumberEntryNotVisibleMenuBar()
-    {
-    TInt resource(EPhoneIncomingCallMenubar);
-    if( IsVideoCall ( iRingingCallId ) )
-        {
-        resource =  EPhoneIncomingVideoCallMenubar;
-        }
-    return resource;
     }
 
 // -----------------------------------------------------------

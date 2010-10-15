@@ -76,8 +76,6 @@ symbian {
             -lengineinfo \
             -lmediatorclient \
             -lestor \
-            -lxqservice \
-            -lxqserviceutil \
             -llibglib \
             -lpsetwrapper \
             -lpsuinotes

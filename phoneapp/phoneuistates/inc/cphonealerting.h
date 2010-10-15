@@ -89,11 +89,6 @@ class CPhoneAlerting : public CPhoneGsmInCall
         * @param aCommand - selected command
         */
         IMPORT_C virtual TBool HandleCommandL( TInt aCommand );
- 
-        /**
-        * Check is alerting call Video call
-        */
-        TBool IsVideoCallAlertingL();
                 
         /**
         * From CPhoneState.

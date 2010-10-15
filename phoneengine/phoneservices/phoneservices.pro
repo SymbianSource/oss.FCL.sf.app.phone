@@ -55,3 +55,6 @@ for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$headers.pa
 
 BLD_INF_RULES.prj_exports += \
  "./rom/phoneservices_stub.sis /epoc32/data/z/system/install/phoneservices_stub.sis"
+
+symbian:MMP_RULES += SMPSAFE
+

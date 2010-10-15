@@ -28,6 +28,7 @@
 class CPhoneSingleAndCallSetupAndWaiting;
 class CPhoneStateMachineStub;
 class CPhoneViewController;
+class CSmcMockContext;
 
 // CLASS DEFINITION
 /**
@@ -65,6 +66,7 @@ NONSHARABLE_CLASS( ut_cphsingleandcallsetupandwait )
                     
         CPhoneSingleAndCallSetupAndWaiting * iStateSingleAndCallSetupAndWaiting;
 
+        CSmcMockContext* iMockContext;
 
         EUNIT_DECLARE_TEST_TABLE;
 

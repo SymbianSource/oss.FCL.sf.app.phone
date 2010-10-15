@@ -25,7 +25,6 @@ class QString;
 class HbIcon;
 class HbAction;
 class HbMenu;
-class PhoneAction;
 
 class PhoneUIQtViewIF
 {
@@ -43,11 +42,11 @@ public:
         \fn void PhoneUIQtViewIF::addBubbleCommand ()
         
         Adds new command to bubble. Command id will be emitted as
-        a parameter from view's command(int) signal.
+        a parameter from view's command(int) signal.  Ownership transferred.
     */
     virtual void addBubbleCommand ( 
         int bubbleId,
-        const PhoneAction& action ) = 0;
+        HbAction *action ) = 0;
     
     /*!
         \fn void PhoneUIQtViewIF::clearBubbleCommands ()
@@ -76,9 +75,9 @@ public:
     /*!
         \fn void PhoneUIQtViewIF::setToolbarActions()
         
-        Sets toolbar actions.
+        Sets toolbar actions. Ownership transferred.
     */
-    virtual void setToolbarActions(const QList<PhoneAction*>& actions) = 0;    
+    virtual void setToolbarActions(const QList<HbAction *> &actions) = 0;    
     
     /*!
         \fn void PhoneUIQtViewIF::hideToolbar ()
@@ -184,11 +183,18 @@ public:
     virtual void bringToForeground() = 0;
     
     /*!
+        \fn void PhoneUIQtViewIF::hide()
+        
+        Lowers the phone to the bottom of the stack.
+     */
+    virtual void hide() = 0;
+    
+    /*!
         \fn void PhoneUIQtViewIF::setToolbarActions()
         
-       Sets menu actions.
+       Sets menu actions. Ownership transferred.
     */
-    virtual void setMenuActions(const QList<PhoneAction*>& actions) = 0;
+    virtual void setMenuActions(const QList<HbAction *> &actions) = 0;
       
     /*!
         \fn void PhoneUIQtView::shutdownPhoneApp()

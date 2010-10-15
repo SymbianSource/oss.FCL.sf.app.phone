@@ -18,6 +18,13 @@
 #include <smcmockclassincludes.h>
 #include <hbview.h>
 
+#include <HbIcon>
+#include <HbMenu>
+#include <HbToolBar>
+#include <HbDockWidget>
+#include <HbAction>
+
+
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
@@ -59,6 +66,7 @@ QString HbView::title(  ) const
 //
 HbIcon HbView::icon(  ) const
     {
+    SMC_MOCK_METHOD0( HbIcon )
     }
 
 
@@ -67,8 +75,9 @@ HbIcon HbView::icon(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbView::setIcon( 
-        const HbIcon & )
+        const HbIcon & icon )
     {
+    SMC_MOCK_METHOD1( void, const HbIcon &, icon )
     }
 
 
@@ -78,6 +87,7 @@ void HbView::setIcon(
 //
 HbMenu * HbView::menu(  ) const
     {
+    SMC_MOCK_METHOD0( HbMenu * )
     }
 
 
@@ -86,8 +96,9 @@ HbMenu * HbView::menu(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbView::setMenu( 
-        HbMenu * )
+        HbMenu * menu )
     {
+    SMC_MOCK_METHOD1( void, HbMenu *, menu )
     }
 
 
@@ -97,6 +108,7 @@ void HbView::setMenu(
 //
 HbMenu * HbView::takeMenu(  )
     {
+    SMC_MOCK_METHOD0( HbMenu * )
     }
 
 
@@ -106,6 +118,7 @@ HbMenu * HbView::takeMenu(  )
 //
 HbToolBar * HbView::toolBar(  ) const
     {
+    SMC_MOCK_METHOD0( HbToolBar * )
     }
 
 
@@ -114,8 +127,9 @@ HbToolBar * HbView::toolBar(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbView::setToolBar( 
-        HbToolBar *  )
+        HbToolBar * toolBar )
     {
+    SMC_MOCK_METHOD1( void, HbToolBar *, toolBar )
     }
 
 
@@ -125,6 +139,7 @@ void HbView::setToolBar(
 //
 HbToolBar * HbView::takeToolBar(  )
     {
+    SMC_MOCK_METHOD0( HbToolBar * )
     }
 
 
@@ -134,6 +149,7 @@ HbToolBar * HbView::takeToolBar(  )
 //
 HbDockWidget * HbView::dockWidget(  ) const
     {
+    SMC_MOCK_METHOD0( HbDockWidget * )
     }
 
 
@@ -142,8 +158,9 @@ HbDockWidget * HbView::dockWidget(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbView::setDockWidget( 
-        HbDockWidget *  )
+        HbDockWidget * dockWidget )
     {
+    SMC_MOCK_METHOD1( void, HbDockWidget *, dockWidget )
     }
 
 
@@ -153,6 +170,7 @@ void HbView::setDockWidget(
 //
 QGraphicsWidget * HbView::widget(  ) const
     {
+    SMC_MOCK_METHOD0( QGraphicsWidget * )
     }
 
 
@@ -161,8 +179,9 @@ QGraphicsWidget * HbView::widget(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbView::setWidget( 
-        QGraphicsWidget *  )
+        QGraphicsWidget * widget )
     {
+    SMC_MOCK_METHOD1( void, QGraphicsWidget *, widget )
     }
 
 
@@ -172,6 +191,7 @@ void HbView::setWidget(
 //
 QGraphicsWidget * HbView::takeWidget(  )
     {
+    SMC_MOCK_METHOD0( QGraphicsWidget * )
     }
 
 
@@ -180,8 +200,9 @@ QGraphicsWidget * HbView::takeWidget(  )
 // -----------------------------------------------------------------------------
 //
 void HbView::showItems( 
-        Hb::SceneItems  )
+        Hb::SceneItems /*items*/ )
     {
+    //SMC_MOCK_METHOD1( void, Hb::SceneItems, items )
     }
 
 
@@ -190,8 +211,9 @@ void HbView::showItems(
 // -----------------------------------------------------------------------------
 //
 void HbView::hideItems( 
-        Hb::SceneItems  )
+        Hb::SceneItems /*items*/ )
     {
+    //SMC_MOCK_METHOD1( void, Hb::SceneItems, items )
     }
 
 
@@ -201,6 +223,7 @@ void HbView::hideItems(
 //
 Hb::SceneItems HbView::visibleItems(  ) const
     {
+    SMC_MOCK_METHOD0( Hb::SceneItems )
     }
 
 
@@ -209,8 +232,9 @@ Hb::SceneItems HbView::visibleItems(  ) const
 // -----------------------------------------------------------------------------
 //
 bool HbView::isItemVisible( 
-        Hb::SceneItem  ) const
+        Hb::SceneItem /*item*/ ) const
     {
+    //SMC_MOCK_METHOD1( bool, Hb::SceneItem, item )
     }
 
 
@@ -219,11 +243,11 @@ bool HbView::isItemVisible(
 // -----------------------------------------------------------------------------
 //
 void HbView::setItemVisible( 
-        Hb::SceneItem item,
-        bool visible )
+        Hb::SceneItem /*item*/,
+        bool /*visible*/ )
     {
-    SMC_MOCK_METHOD2( void, Hb::SceneItem, item, 
-        bool, visible )
+    /*SMC_MOCK_METHOD2( void, Hb::SceneItem, item, 
+        bool, visible )*/
     }
 
 
@@ -243,7 +267,7 @@ bool HbView::isContentFullScreen(  ) const
 //
 HbView::HbViewFlags HbView::viewFlags(  ) const
     {
-    // SMC_MOCK_METHOD0( HbViewFlags )
+    SMC_MOCK_METHOD0( HbView::HbViewFlags )
     }
 
 
@@ -275,11 +299,11 @@ void HbView::setStatusBarVisible(
 // -----------------------------------------------------------------------------
 //
 void HbView::addAction( 
-        HbAction * action,
+        HbAction * actione,
         ActionContainer preferredActionContainer )
     {
-   // SMC_MOCK_METHOD2( void, HbAction *, action, 
-     //   ActionContainer, preferredActionContainer )
+    SMC_MOCK_METHOD2( void, HbAction *, actione, 
+        ActionContainer, preferredActionContainer )
     }
 
 
@@ -298,9 +322,9 @@ HbAction * HbView::navigationAction(  ) const
 // -----------------------------------------------------------------------------
 //
 void HbView::setNavigationAction( 
-        HbAction * action )
+        HbAction * actione )
     {
- //   SMC_MOCK_METHOD1( void, HbAction *, action )
+    SMC_MOCK_METHOD1( void, HbAction *, actione )
     }
 
 
@@ -331,9 +355,9 @@ void HbView::setContentFullScreen(
 // -----------------------------------------------------------------------------
 //
 void HbView::setViewFlags( 
-        HbViewFlags flags )
+        HbViewFlags /*flags*/ )
     {
-  //  SMC_MOCK_METHOD1( void, HbViewFlags, flags )
+    //SMC_MOCK_METHOD1( void, HbViewFlags, flags )
     }
 
 
@@ -355,7 +379,7 @@ void HbView::titleChanged(
 void HbView::iconChanged( 
         const HbIcon & icon )
     {
-  //  SMC_MOCK_METHOD1( void, const HbIcon &, icon )
+    SMC_MOCK_METHOD1( void, const HbIcon &, icon )
     }
 
 
@@ -420,7 +444,18 @@ HbView::HbView(
 bool HbView::event( 
         QEvent * event )
     {
-  //  SMC_MOCK_METHOD1( bool, QEvent *, event )
+    SMC_MOCK_METHOD1( bool, QEvent *, event )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbView::changeEvent
+// -----------------------------------------------------------------------------
+//
+void HbView::changeEvent( 
+        QEvent * event )
+    {
+    SMC_MOCK_METHOD1( void, QEvent *, event )
     }
 
 

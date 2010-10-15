@@ -23,7 +23,6 @@
 #include "mphonestatemachine.h"
 #include "phoneviewcommanddefinitions.h"
 #include "tphonecmdparamcallheaderdata.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparaminteger.h"
 #include "phonestatedefinitionsgsm.h"
@@ -32,6 +31,7 @@
 #include "phoneui.hrh"
 #include "tphonecmdparamglobalnote.h"
 #include "cphonemainresourceresolver.h"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -155,32 +155,22 @@ void CPhoneSingleAndCallSetup::HandleKeyMessageL(
                 }
             else
                 {
-                // Fetch active call's id from view
-                TPhoneCmdParamCallStateData callStateData;
                 // Find the dialing call
-                callStateData.SetCallState( EPEStateDialing );
-                iViewCommandHandle->HandleCommandL(
-                    EPhoneViewGetCallIdByState, &callStateData ); 
-            
-                if( callStateData.CallId() > KErrNotFound )
+                TInt callId = PhoneCallUtil::CallIdByState( EPEStateDialing ); 
+                if( callId > KErrNotFound )
                     {
                     // Release the call
-                    iStateMachine->SetCallId( 
-                        callStateData.CallId() );
+                    iStateMachine->SetCallId( callId );
                     iStateMachine->SendPhoneEngineMessage( 
                         MPEPhoneModel::EPEMessageRelease );
                     }
                 else
                     {
-                    callStateData.SetCallState( EPEStateDisconnecting );
-                    iViewCommandHandle->HandleCommandL(
-                        EPhoneViewGetCallIdByState, &callStateData );
-                    
-                     if ( callStateData.CallId() > KErrNotFound )
+                    callId = PhoneCallUtil::CallIdByState( EPEStateDisconnecting );
+                    if ( callId > KErrNotFound )
                         {    
                         // Release the call
-                        iStateMachine->SetCallId( 
-                            callStateData.CallId() );
+                        iStateMachine->SetCallId( callId );
                         iStateMachine->SendPhoneEngineMessage( 
                             MPEPhoneModel::EPEMessageRelease );   
                         }
@@ -294,30 +284,21 @@ TBool CPhoneSingleAndCallSetup::HandleCommandL( TInt aCommand )
         case EPhoneInCallCmdEndThisOutgoingCall:
             {
             // Fetch  call's id from view
-            TPhoneCmdParamCallStateData callStateData;
-            callStateData.SetCallState( EPEStateDialing );
-            iViewCommandHandle->HandleCommandL(
-                EPhoneViewGetCallIdByState, &callStateData );
-                
-            if ( callStateData.CallId() > KErrNotFound )
+            TInt callId = PhoneCallUtil::CallIdByState( EPEStateDialing );
+            if ( callId > KErrNotFound )
                 {
                 // Release the call
-                iStateMachine->SetCallId( 
-                    callStateData.CallId() );
+                iStateMachine->SetCallId( callId );
                 iStateMachine->SendPhoneEngineMessage( 
                     MPEPhoneModel::EPEMessageRelease );    
                 }
             else
                 {
-                callStateData.SetCallState( EPEStateDisconnecting );
-                iViewCommandHandle->HandleCommandL(
-                    EPhoneViewGetCallIdByState, &callStateData );
-                
-                 if ( callStateData.CallId() > KErrNotFound )
+                callId = PhoneCallUtil::CallIdByState( EPEStateDisconnecting );
+                if ( callId > KErrNotFound )
                     {    
                     // Release the call
-                    iStateMachine->SetCallId( 
-                        callStateData.CallId() );
+                    iStateMachine->SetCallId( callId );
                     iStateMachine->SendPhoneEngineMessage( 
                         MPEPhoneModel::EPEMessageRelease );   
                     }

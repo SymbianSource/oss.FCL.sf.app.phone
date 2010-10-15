@@ -33,7 +33,6 @@
 #include "cphonemainresourceresolver.h"
 #include "phoneui.hrh"
 
-#include "tphonecmdparamcallstatedata.h"
 #include "tphonecmdparamcallheaderdata.h"
 
 // ================= MEMBER FUNCTIONS =======================

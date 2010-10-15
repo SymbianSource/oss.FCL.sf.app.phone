@@ -63,13 +63,17 @@ public:
      * Control visiblity
      */
     void bringToForeground();
-    void sendToBackground(bool homeScreenForeground);
+    void bringVideoCallToForeground();
+    void sendToBackground();
     void hideDeviceDialogs(bool hide);
     
     /**
-     * Return true if phone is visible application
+     * Return true if some (or all) of the phone window is visible, 
+     * either directly or through a transparent window
      */
-    bool phoneVisible();
+    bool phoneVisible() const;
+    
+    void windowVisibilityChange(bool isVisible);
     
 public: // from MPhonePubSubObserver
 
@@ -133,6 +137,9 @@ private:
     
     /** Key guard status before phone came top */
     bool m_keyguardOnBeforeForeground;
+    
+    /** Phone visible */
+    bool m_phoneVisible;
 };
 
 #endif // PHONEVISIBILITYHANDLER_H

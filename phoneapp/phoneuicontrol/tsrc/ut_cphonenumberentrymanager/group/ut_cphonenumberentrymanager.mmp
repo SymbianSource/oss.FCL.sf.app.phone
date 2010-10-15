@@ -112,3 +112,5 @@ LIBRARY                 charconv.lib
 LIBRARY                 symbianmock.lib
 LIBRARY                 gdi.lib          // TZoomFactor
 LIBRARY                 ws32.lib         // RWsSession
+
+SMPSAFE

@@ -45,19 +45,18 @@ SOURCES += ut_cpnetworkplugin.cpp
 # code to be tested
 HEADERS += ../../src/cpnetworkplugin.h \
            ../../src/cpnetworkpluginview.h \
-           ../../src/cpnetworkstatus.h \
-           ../../../cptelephonyutils/inc/cpphonelocalisation.h           
+           ../../src/cpnetworkstatus.h     
        
 SOURCES += ../../src/cpnetworkplugin.cpp 
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cpnetworkpluginview.cpp
-SOURCES += ../../../tsrc/mocks/mock_cpphonelocalisation.cpp
 SOURCES += ../../../tsrc/mocks/mock_hbicon.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpsettingformentryitemdata.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpbasesettingview.cpp
 SOURCES += ../../../tsrc/mocks/mock_hbview.cpp
 SOURCES += ../../../tsrc/mocks/mock_cpnetworkstatus.cpp
+SOURCES += ../../../tsrc/mocks/mock_hbtranslator.cpp
 
 
 

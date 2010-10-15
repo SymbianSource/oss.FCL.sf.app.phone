@@ -49,7 +49,6 @@ HEADERS += ../../callsplugin/src/*.h                            \
            ../../barringplugin/inc/*.h                          \
            ../../cpnetworkplugin/src/*.h                        \
            ../../cptelephonyutils/inc/cpplugincommon.h          \
-           ../../cptelephonyutils/inc/cpphonelocalisation.h     \
            ../../telephonyplugin/src/cptelephonypluginview.h    \
            /epoc32/include/platform/mw/psetwrapper.h            \
            /epoc32/include/platform/mw/psuinotes.h              \

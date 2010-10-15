@@ -34,6 +34,7 @@
 #include    "tphonecmdparamcallstatedata.h"
 #include    "telinternalsingletonuids.h"
 #include    "cphonestatehandle.h"
+#include    "phonecallutil.h"
 
 // CONSTANTS
 
@@ -159,12 +160,8 @@ void CPhoneBtaaDisconnectHandler::HandleConnectionLostL()
            
     if ( FeatureManager::FeatureSupported( KFeatureIdCsVideoTelephony ) )
         {
-        // Fetch active call's id from view
-        TPhoneCmdParamCallStateData callStateData;
-        callStateData.SetCallState( EPEStateConnected );
-        iViewCommandHandle->HandleCommandL( 
-            EPhoneViewGetCallIdByState, &callStateData );
-        TInt call = callStateData.CallId();
+        // Fetch active call's id
+        TInt call = PhoneCallUtil::CallIdByState( EPEStateConnected );
         if ( call != KErrNotFound &&
             iStateMachine->PhoneEngineInfo()->CallType( call ) == EPECallTypeVideo )
             {
@@ -251,15 +248,11 @@ void CPhoneBtaaDisconnectHandler::TerminateAllCallsL()
     
     if( iVideoCallStatus )
         {
-        // Fetch active call's id from view
-        TPhoneCmdParamCallStateData callStateData;
-        callStateData.SetCallState( EPEStateConnected );
-        iViewCommandHandle->HandleCommandL(
-            EPhoneViewGetCallIdByState, &callStateData );
-            
-        if ( callStateData.CallId() != KErrNotFound )
+        // Fetch active call's id
+        TInt callId = PhoneCallUtil::CallIdByState( EPEStateConnected );    
+        if ( callId != KErrNotFound )
             {
-            iStateMachine->SetCallId( callStateData.CallId() );
+            iStateMachine->SetCallId( callId );
             iStateMachine->SendPhoneEngineMessage( 
                 MPEPhoneModel::EPEMessageRelease );        
             }

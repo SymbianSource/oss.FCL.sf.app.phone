@@ -29,7 +29,6 @@
 #include "tphonecmdparamcallheaderdata.h"
 #include "tphonecmdparamglobalnote.h"
 #include "tphonecmdparamstring.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "phoneviewcommanddefinitions.h"
 #include "phoneui.hrh"
 #include "cphonemainresourceresolver.h"
@@ -37,6 +36,7 @@
 #include "phonestatedefinitionsgsm.h"
 #include "phonelogger.h"
 #include "mphonestorage.h"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -71,11 +71,7 @@ void CPhoneTwoSinglesAndWaiting::ConstructL()
     {
     CPhoneTwoSingles::ConstructL();
     
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateRinging );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    iRingingCallId = callStateData.CallId();
+    iRingingCallId = PhoneCallUtil::CallIdByState( EPEStateRinging );
     }
 
 // -----------------------------------------------------------

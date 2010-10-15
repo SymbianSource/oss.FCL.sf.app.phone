@@ -46,3 +46,5 @@ symbian: {
 }
 
 BLD_INF_RULES.prj_exports += "./rom/cpbarringplugin_stub.sis /epoc32/data/z/system/install/cpbarringplugin_stub.sis"
+
+symbian:MMP_RULES += SMPSAFE

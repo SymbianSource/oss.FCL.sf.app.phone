@@ -28,3 +28,7 @@ PhoneUiHouseHold::~PhoneUiHouseHold ()
     delete mHouseHoldPrivate;
 }
 
+void PhoneUiHouseHold::reloadTranslators()
+{
+    mHouseHoldPrivate->loadTranslators();
+}

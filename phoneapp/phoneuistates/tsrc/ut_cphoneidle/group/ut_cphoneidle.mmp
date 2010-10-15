@@ -86,4 +86,4 @@ LIBRARY         apgrfx.lib
 LIBRARY         symbianmock.lib
 LIBRARY         efsrv.lib 
 
-
+SMPSAFE

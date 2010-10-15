@@ -76,8 +76,7 @@ NONSHARABLE_CLASS( CPEPhoneModel )
             EPELogHandlingPhaseTwo,
             EPEContactHandlingPhaseTwo,
             EPEMediatorCommandHandler,
-            EPEPhoneServices,
-            EPENetworkHandling
+            EPEPhoneServices
             };
 
         /**

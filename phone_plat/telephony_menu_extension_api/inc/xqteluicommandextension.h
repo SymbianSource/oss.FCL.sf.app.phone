@@ -75,6 +75,10 @@ public:
     class ToolBarCommand
         {
     public:
+        ToolBarCommand() :
+            mCommandId(0), mIsEnabled(false) {}
+        ToolBarCommand(int command, bool isEnabled) :
+            mCommandId(command), mIsEnabled(isEnabled) {}
         
         // Tool Bar command Id
         int mCommandId;
@@ -82,6 +86,10 @@ public:
         // Is command enabled
         bool mIsEnabled;
 
+        // Comparison operator
+        bool operator==(const ToolBarCommand& c)
+            { return ((c.mCommandId == mCommandId) && 
+                    (c.mIsEnabled == mIsEnabled)); }
         };
     
     /*!

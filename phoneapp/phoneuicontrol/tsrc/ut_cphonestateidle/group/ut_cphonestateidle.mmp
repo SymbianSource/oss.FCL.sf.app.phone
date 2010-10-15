@@ -36,7 +36,13 @@ SOURCE          ut_cphonestateidle_DllMain.cpp
 
 SOURCEPATH      ../../../../../internal/mocks/phoneengine/engineinfo
 SOURCE          mock_cpeengineinfoimpl.cpp
- 
+
+SOURCEPATH      ../../../../../internal/mocks/
+SOURCE          mock_apacmdln.cpp
+SOURCE          mock_apgcli.cpp
+SOURCE          mock_apgtask.cpp
+SOURCE          mock_apaid.cpp
+
 // Code under test
 SOURCEPATH      ../../../src
 SOURCE          CPhoneStateIdle.cpp
@@ -110,3 +116,5 @@ LIBRARY         efsrv.lib
 LIBRARY         euser.lib
 LIBRARY         gdi.lib
 LIBRARY         symbianmock.lib
+
+SMPSAFE

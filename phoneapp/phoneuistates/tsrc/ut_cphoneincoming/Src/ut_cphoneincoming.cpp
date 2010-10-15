@@ -161,7 +161,7 @@ void ut_cphoneincoming::Teardown(  )
 //  
 void ut_cphoneincoming::T_HandleWaiting()
     {     
-    iMockContext->ExpectCallL( "TPhoneCmdParamCallStateData::CallId" ).
+    iMockContext->ExpectCallL( "PhoneCallUtil::CallIdByState" ).
         ReturnsL( 1 );
     iMockContext->ExpectCallL( "CPhoneStateMachine::ChangeState" ).
         WithL( EPhoneStateWaitingInSingle );

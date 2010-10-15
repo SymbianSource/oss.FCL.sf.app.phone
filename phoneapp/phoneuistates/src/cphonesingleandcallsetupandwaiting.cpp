@@ -34,9 +34,9 @@
 #include "tphonecmdparamstring.h"
 #include "tphonecmdparamcallheaderdata.h"
 #include "tphonecmdparamglobalnote.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "phonestatedefinitionsgsm.h"
 #include "phonelogger.h"
+#include "phonecallutil.h"
 
 enum TTerminatedCall
 {
@@ -79,11 +79,7 @@ void CPhoneSingleAndCallSetupAndWaiting::ConstructL()
     {
     CPhoneGsmInCall::ConstructL();
 
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateRinging );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    iWaitingCallId = callStateData.CallId();
+    iWaitingCallId = PhoneCallUtil::CallIdByState( EPEStateRinging );
     }
 
 // -----------------------------------------------------------
@@ -225,44 +221,12 @@ TBool CPhoneSingleAndCallSetupAndWaiting::HandleCommandL( TInt aCommand )
 void CPhoneSingleAndCallSetupAndWaiting::HandleIdleL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndCallSetupAndWaiting::HandleIdleL() ");
-    // Fetch call ids for hold, ringing and alerting bubbles
-    TInt holdCallId;
-    TInt ringingCallId;
-    TInt alertingCallId;
-    TPhoneViewResponseId heldResponse;
-    TPhoneViewResponseId ringingResponse;
-    TPhoneViewResponseId alertingResponse;
-    TPhoneCmdParamCallStateData callStateData;
     
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
-    
-    callStateData.SetCallState( EPEStateHeld );
-    heldResponse = iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    holdCallId = callStateData.CallId();
-    
-    callStateData.SetCallState( EPEStateRinging );
-    ringingResponse = iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    ringingCallId = callStateData.CallId();
-                
-    callStateData.SetCallState( EPEStateConnecting );
-    alertingResponse = iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    alertingCallId = callStateData.CallId();
-    
-    if( heldResponse != EPhoneViewResponseSuccess ||
-        ringingResponse != EPhoneViewResponseSuccess ||
-        alertingResponse != EPhoneViewResponseSuccess )
-        {
-        // Some or all call id fetches were unsuccesfull.
-        // Terminate all connections and return to idle state.
-        // TBD: Kill all bubbles here
-        iStateMachine->SendPhoneEngineMessage(
-            MPEPhoneModel::EPEMessageTerminateAllConnections );
-        CPhoneGsmInCall::HandleIdleL( aCallId );
-        return;
-        }
+
+    TInt holdCallId = PhoneCallUtil::CallIdByState( EPEStateHeld );
+    TInt ringingCallId = PhoneCallUtil::CallIdByState( EPEStateRinging );
+    TInt alertingCallId = PhoneCallUtil::CallIdByState( EPEStateConnecting );
 
     // Find out which call was terminated
     TTerminatedCall terminatedCall = ENull;

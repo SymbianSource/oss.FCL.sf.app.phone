@@ -54,3 +54,5 @@ SOURCES += ../../../../tsrc/stubs/stubs.cpp
 SOURCES += unit_tests.cpp
 
 include(../../../../tsrc/common/phonetest.pri)
+
+symbian:MMP_RULES += SMPSAFE

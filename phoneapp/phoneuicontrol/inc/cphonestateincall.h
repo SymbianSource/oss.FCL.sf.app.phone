@@ -102,18 +102,6 @@ class CPhoneStateInCall : public CPhoneState
         * @return ETrue if active otherwise EFalse
         */
         IMPORT_C virtual TBool IsVideoCallActiveL();
-         
-        /**
-        * Method for quering is video call ringing.
-        * @return ETrue if ringing otherwise EFalse
-        */
-        IMPORT_C virtual TBool IsVideoCallRingingL();
-        
-        /**
-        * Method for quering ringing call .
-        * @return call id otherwise KErrNotFound
-        */
-        IMPORT_C virtual TBool GetRingingCallL();
         
         /**
         * Search and release outgoingcall

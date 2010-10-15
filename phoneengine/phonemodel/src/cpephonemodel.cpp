@@ -38,8 +38,6 @@
 #include <mccedtmfinterface.h>
 #include <mpecontacthandling.h>
 #include <mpeloghandling.h>
-#include <xqservicerequest.h>
-#include <xqappmgr.h>
 #include "phoneservices.h"
 
 // CONSTANTS
@@ -1406,36 +1404,7 @@ TBool CPEPhoneModel::StepL()
             __ASSERT_DEBUG( iEngineInfo, Panic( EPEPanicNullPointer ) );
             iPhoneServices = new PhoneServices(*iMessageHandler, *iEngineInfo);
             TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 16.2" );
-            break;
-            }
-
-        case CPEPhoneModel::EPENetworkHandling:
-            {
-            TEFLOGSTRING( KTAOBJECT, "CPEPhoneModel::StepL: 18.1" );
             continueStepping = EFalse;
-            QString service("networkhandlingstarter");
-            QString interface("com.nokia.symbian.IStart");
-            QString operation("start()");
-            XQApplicationManager appManager;
-            
-            QScopedPointer<XQAiwRequest> request(
-                    appManager.create(service, interface, operation, false));
-            if (request == NULL) {
-                TEFLOGSTRING(KTAOBJECT, 
-                        "CPEPhoneModel::StepL 18.2 error, service not found");
-                break;
-            }
-            XQRequestInfo info;
-            info.setForeground(false);
-            request->setInfo(info);
-            request->setSynchronous(false);
-            if (!request->send()) {
-                int error = request->lastError();
-                TEFLOGSTRING2(KTAOBJECT, 
-                        "CPEPhoneModel::StepL 18.3 error %d", error);
-                break;
-            }
-            TEFLOGSTRING(KTAOBJECT, "CPEPhoneModel::StepL: 18.4");
             break;
             }
 

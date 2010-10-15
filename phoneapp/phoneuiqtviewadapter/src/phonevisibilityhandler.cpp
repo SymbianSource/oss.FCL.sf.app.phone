@@ -40,10 +40,11 @@ PhoneVisibilityHandler::PhoneVisibilityHandler(PhoneUIQtViewIF &view, QObject *p
     m_hideDeviceDialogs(false),
     m_deviceLockEnabled(false),
     m_carModeSubscriber(0),
-    m_carModePublisher(0)
+    m_carModePublisher(0),
+    m_phoneVisible(false)
 {
-    PHONE_TRACE;
-    sendToBackground(false); // Send phone to background
+    PHONE_TRACE
+    sendToBackground(); // Send phone to background
 
     m_carModePublisher = new QValueSpacePublisher("/phone",this);
     m_carModePublisher->setValue(QString("/carmode"),QVariant(false));
@@ -63,7 +64,6 @@ PhoneVisibilityHandler::PhoneVisibilityHandler(PhoneUIQtViewIF &view, QObject *p
     
     QT_TRAP_THROWING(CPhonePubSubProxy::Instance()->NotifyChangeL(
         KPSUidCoreApplicationUIs, KCoreAppUIsAutolockStatus, this));
-
 }
 
 
@@ -72,7 +72,7 @@ PhoneVisibilityHandler::PhoneVisibilityHandler(PhoneUIQtViewIF &view, QObject *p
  */
 PhoneVisibilityHandler::~PhoneVisibilityHandler()
 {
-    PHONE_TRACE;
+    PHONE_TRACE
     CPhonePubSubProxy::Instance()->CancelAllNotifications(this);
 }
 
@@ -81,13 +81,25 @@ PhoneVisibilityHandler::~PhoneVisibilityHandler()
  */
 void PhoneVisibilityHandler::bringToForeground()
 {
-    PHONE_TRACE2("m_carModeEnabled=", m_carModeEnabled);
+    PHONE_TRACE2("m_carModeEnabled=", m_carModeEnabled)
     
     if (!m_carModeEnabled) {
         disableKeyGuard();
-        m_view.bringToForeground();
-        adjustVisibility(BringForwards);
+        adjustVisibility(BringForwards);    // change coe priority
+        m_view.bringToForeground(); // change z-order
     }
+}
+
+/*!
+    PhoneVisibilityHandler::bringVideoCallToForeground.
+ */
+void PhoneVisibilityHandler::bringVideoCallToForeground()
+{
+    PHONE_TRACE
+    TApaTaskList taskList(m_eikonEnv->WsSession());
+    const TUid KVideoTelUid = TUid::Uid(0x101F8681);
+    TApaTask task = taskList.FindApp(KVideoTelUid);
+    task.BringToForeground();
 }
 
 /*!
@@ -95,7 +107,7 @@ void PhoneVisibilityHandler::bringToForeground()
  */
 void PhoneVisibilityHandler::hideDeviceDialogs(bool hide)
 {
-    PHONE_TRACE2(": hide =", hide);
+    PHONE_TRACE2(": hide =", hide)
     m_hideDeviceDialogs = hide;
     adjustVisibility(KeepCurrentPos);
 }
@@ -103,39 +115,36 @@ void PhoneVisibilityHandler::hideDeviceDialogs(bool hide)
 /*!
     PhoneVisibilityHandler::phoneVisible.
  */
-bool PhoneVisibilityHandler::phoneVisible()
+bool PhoneVisibilityHandler::phoneVisible() const
 {
     PHONE_TRACE
-    // Should we check if there is phone's devicedialogs visible?
-    return (m_eikonEnv->RootWin().OrdinalPosition() == 0);
+    return m_phoneVisible;
+}
+
+/*!
+     PhoneVisibilityHandler::windowVisibilityChange
+ */
+void PhoneVisibilityHandler::windowVisibilityChange(bool visible)
+{
+    PHONE_TRACE2(": visible =", visible)
+    m_phoneVisible = visible;
 }
 
 /*!
     PhoneVisibilityHandler::sendToBackground.
  */
-void PhoneVisibilityHandler::sendToBackground(bool homeScreenForeground)
+void PhoneVisibilityHandler::sendToBackground()
 {
-    PHONE_TRACE4(": homeScreenForeground =", homeScreenForeground, 
-        ", m_carModeEnabled =", m_carModeEnabled);
+    PHONE_TRACE2(":m_carModeEnabled =", m_carModeEnabled)
     
     if(m_carModeEnabled) {
         // Don't bring homescreen to foreground
         return;
     }
-    
     enableKeyGuard();
-    
-    bool setHsToForeground = homeScreenForeground && phoneVisible();
     // Send phone back on WSERV stack
-    adjustVisibility(SendToBack);
-    
-    // Fetch homescreen to foreground if needed
-    if (setHsToForeground) {
-        _LIT(KPhoneHsAppName,"hsapplication");
-        TApaTaskList taskList(m_eikonEnv->WsSession());
-        TApaTask task = taskList.FindApp(KPhoneHsAppName);
-        task.BringToForeground();
-    }
+    m_view.hide();  // change z-order
+    adjustVisibility(SendToBack); // change coe priority
 }
 
 /*!
@@ -151,7 +160,6 @@ void PhoneVisibilityHandler::HandlePropertyChangedL(const TUid& aCategory,
         PHONE_TRACE2(": m_deviceLockEnabled=", m_deviceLockEnabled);
         m_view.setRestrictedMode(m_deviceLockEnabled);
         adjustVisibility(KeepCurrentPos);
-
     }
 }
 
@@ -205,7 +213,6 @@ int PhoneVisibilityHandler::ongoingCalls()
         amountOfCalls = callInfos->GetCallsL().Count();
         CleanupStack::PopAndDestroy(callInfos);
         );
-    
     return amountOfCalls;
 }
 
@@ -223,36 +230,33 @@ int PhoneVisibilityHandler::ongoingCalls()
 void PhoneVisibilityHandler::adjustVisibility(AdjustAction action)
 {
     PHONE_TRACE
+    int ordinalPos = m_eikonEnv->RootWin().OrdinalPosition();
     if (m_carModeEnabled || (action == SendToBack)) {
-        PHONE_TRACE1(": SendPhoneToBackground");
+        PHONE_TRACE1(": SendPhoneToBackground")
         m_eikonEnv->RootWin().SetOrdinalPosition(-1, ECoeWinPriorityNeverAtFront);
-        
     } else if ((KeepCurrentPos == action) &&
         (m_eikonEnv->RootWin().OrdinalPriority() == ECoeWinPriorityNeverAtFront)) {
         // Skip situations where phone is put to back
         // and action is not to bring it up
         // Execution must come here if there is no calls
-        PHONE_TRACE1(": Skip");
+        PHONE_TRACE1(": Skip")
         
     } else if (m_hideDeviceDialogs) {
-        PHONE_TRACE1(": Hide dialogs");
+        PHONE_TRACE1(": Hide dialogs")
         m_eikonEnv->RootWin().SetOrdinalPosition(0, ECoeWinPriorityAlwaysAtFront + 100);
         
     } else if (m_deviceLockEnabled) {
         // critical notes are allowed to show on top of Phone application
-        PHONE_TRACE1(": Devicelock");
+        PHONE_TRACE1(": Devicelock")
         m_eikonEnv->RootWin().SetOrdinalPosition(0, ECoeWinPriorityAlwaysAtFront + 1);
         
     } else if (BringForwards == action) {
         // Try to show phone with normal priority
-        PHONE_TRACE1(": Bring forward");
-        m_eikonEnv->RootWin().SetOrdinalPosition(0, ECoeWinPriorityNormal);
-        
+        PHONE_TRACE1(": Bring forward")
+        m_eikonEnv->RootWin().SetOrdinalPosition(ordinalPos, ECoeWinPriorityNormal);
     } else {
         // Normalize visiblity after ie. device lock
-        PHONE_TRACE1(": Normalize");
-        int ordinalPos = m_eikonEnv->RootWin().OrdinalPosition();
-        
+        PHONE_TRACE1(": Normalize")
         m_eikonEnv->RootWin().SetOrdinalPosition(ordinalPos, ECoeWinPriorityNormal);
         // Flush is needed here, because otherwise launching an application may fail
         // if done same time with normalization.
@@ -262,14 +266,12 @@ void PhoneVisibilityHandler::adjustVisibility(AdjustAction action)
 
 void PhoneVisibilityHandler::carModeChanged()
 {
-    PHONE_TRACE;
+    PHONE_TRACE
     m_carModeEnabled = m_carModeSubscriber->value().toBool();
     
     if(!m_carModeEnabled && (ongoingCalls() > 0)) {
         bringToForeground();
     }
-
     // Adjust visibility according mode (TODO!)
-    PHONE_TRACE2(": m_carModeEnabled=", m_carModeEnabled);
-    //adjustVisibility(KeepCurrentPos);	
+    PHONE_TRACE2(": m_carModeEnabled=", m_carModeEnabled)
 }

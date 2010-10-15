@@ -56,3 +56,5 @@ SOURCES += unit_tests.cpp
 # MOCKED DEPENDENCIES
 HEADERS += 
 include(../../../../tsrc/common/phoneuitest.pri)
+
+symbian:MMP_RULES += SMPSAFE

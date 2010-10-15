@@ -24,8 +24,8 @@
 #include "phonelogger.h"
 #include "cphonemainresourceresolver.h"
 #include "tphonecmdparaminteger.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "tphonecmdparamboolean.h"
+#include "phonecallutil.h"
 
 
 // ======== MEMBER FUNCTIONS ========
@@ -115,19 +115,15 @@ TBool CPhoneUiCommandManager::SoftRejectStatus()
 void CPhoneUiCommandManager::SetSoftRejectDimmedFlag()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneUiCommandManager::GetIncomingCallSilenceCBA ()" );
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateRinging );
-    TRAPD( err, iViewCommandHandle.HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData ) );
     TPhoneCmdParamBoolean dimSoftRejectParam;
-    
-    if ( err == KErrNone && callStateData.CallId() > KErrNotFound )
+    TInt callId = PhoneCallUtil::CallIdByState( EPEStateRinging );
+    if ( callId > KErrNotFound )
         {
         TBool privateNumber = iStateMachine.PhoneEngineInfo()->
-                RemotePhoneNumber( callStateData.CallId() ).Length() == 0;
+                RemotePhoneNumber( callId ).Length() == 0;
         
         TBool voip = iStateMachine.PhoneEngineInfo()->
-                CallType( callStateData.CallId() ) == EPECallTypeVoIP;
+                CallType( callId ) == EPECallTypeVoIP;
         
         dimSoftRejectParam.SetBoolean( privateNumber || !iSoftRejectStatus || voip );        
         }

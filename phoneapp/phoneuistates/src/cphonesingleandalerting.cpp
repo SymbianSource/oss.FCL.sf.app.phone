@@ -26,13 +26,13 @@
 #include "tphonecmdparaminteger.h"
 #include "tphonecmdparamcallheaderdata.h"
 #include "tphonecmdparamglobalnote.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "phoneviewcommanddefinitions.h"
 #include "phoneui.hrh"
 #include "cphonemainresourceresolver.h"
 #include "phonerssbase.h"
 #include "phonestatedefinitionsgsm.h"
 #include "phonelogger.h"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -173,12 +173,8 @@ void CPhoneSingleAndAlerting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneSingleAndAlerting::HandleConnectedL()");
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateConnecting );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-        
-    if( callStateData.CallId() == aCallId )
+    TInt callId = PhoneCallUtil::CallIdByState( EPEStateConnecting );     
+    if( callId == aCallId )
         {
         UpdateCallHeaderAndUiCommandsL( aCallId );
         iStateMachine->ChangeState( EPhoneStateTwoSingles );

@@ -21,7 +21,6 @@
 #include <QSignalSpy>
 //#include <hbglobal_p.h>
 #include <stringloader.h>
-#include "phoneaction.h"
 #include "phoneresourceadapter.h"
 
 class TestPhoneStringLoader : public QObject
@@ -70,18 +69,16 @@ PhoneResourceAdapter* PhoneResourceAdapter::Instance (QObject *parent)
     return m_resource_adapter;
 }
 
-QMap<PhoneAction::ActionType, PhoneAction *> PhoneResourceAdapter::convert (int symbianResourceId, ...)
+QString PhoneResourceAdapter::convert (int symbianResourceId, ...)
 {
     m_resourceId = symbianResourceId;
     m_convertCalled = true;
-    QMap<PhoneAction::ActionType, PhoneAction *> map;
+    QString ret = "";
     if (m_set_text_map) {
-        PhoneAction *text = new PhoneAction;
-        text->setText(tr("Test"));
-        map[PhoneAction::Text] = text; 
+        ret = tr("Test");
     }
-        
-    return map;
+    
+    return ret;
 }
 
 TestPhoneStringLoader::TestPhoneStringLoader ()

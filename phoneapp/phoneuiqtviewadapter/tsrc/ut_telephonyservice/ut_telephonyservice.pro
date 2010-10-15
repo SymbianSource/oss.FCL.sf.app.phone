@@ -22,17 +22,19 @@ INCLUDEPATH += .
 CONFIG += hb
 CONFIG += qtestlib
 
-INCLUDEPATH += \epoc32\include\platform\mw \
-               \epoc32\include\platform \
-               \epoc32\include\platform\app \
+INCLUDEPATH += /epoc32/include/platform/mw \
+               /epoc32/include/platform \
+               /epoc32/include/platform/app \
                ../../../phoneuiutils/inc/ \
                ../../../phoneuiview2/inc \
+               ../../../phoneringingtoneplayer/inc \
                ../../../../inc \
                ../../../phoneui2/srcdata \
                ../../../../tsrc/common
 
    
 LIBS += -lphoneuiutils \
+	-lphoneringingtoneplayer \
         -lxqservice \
         -lxqserviceutil \
         -lmocklib \

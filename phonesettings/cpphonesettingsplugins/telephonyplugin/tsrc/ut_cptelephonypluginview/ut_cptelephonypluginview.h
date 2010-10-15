@@ -34,13 +34,10 @@ public:
 private slots:
 
     void init();
-
     void cleanup();
     
     void t_memleak();
-
-private:
-    CpTelephonyPluginView *m_callspluginview;
+    void t_construct2();
 
 };
 

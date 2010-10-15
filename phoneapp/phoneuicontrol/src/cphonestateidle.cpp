@@ -30,6 +30,7 @@
 #include <mpeengineinfo.h>
 #include <mpeclientinformation.h>
 #include <bldvariant.hrh>
+#include <apaid.h>
 
 #include "cphonepubsubproxy.h"
 #include "cphonecenrepproxy.h"
@@ -45,7 +46,6 @@
 #include "tphonecmdparamappinfo.h"
 #include "cphonekeys.h"
 
-#include "tphonecmdparamcallstatedata.h"
 #include "phoneviewcommanddefinitions.h"
 #include "phoneui.hrh"
 #include "phonerssbase.h"
@@ -54,6 +54,7 @@
 #include "phoneui.pan"
 #include "mphonecustomization.h"
 
+const TUid KNetworkHandlingStarterUid = { 0x2002E67A };
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -71,6 +72,9 @@ EXPORT_C CPhoneStateIdle::CPhoneStateIdle(
 // Destructor
 EXPORT_C CPhoneStateIdle::~CPhoneStateIdle()
     {
+    __LOGMETHODSTARTEND(
+        EPhoneControl, "CPhoneStateIdle::~CPhoneStateIdle()" );
+    CloseQtProcess(KNetworkHandlingStarterUid);
     }
 
 // -----------------------------------------------------------
@@ -81,6 +85,8 @@ EXPORT_C void CPhoneStateIdle::ConstructL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::ConstructL() ");
     CPhoneState::BaseConstructL();
+
+    LaunchQtProcessL(KNetworkHandlingStarterUid);
     }
 
 // -----------------------------------------------------------
@@ -289,7 +295,11 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::HandleIncomingL( ) ");
     HandleAudioAvailableOutputChangedL();
-    SetRingingTonePlaybackL( aCallId );
+    
+    TPhoneCmdParamBoolean ringingParam;
+    ringingParam.SetBoolean( ETrue );        
+    iViewCommandHandle->ExecuteCommand(
+            EPhoneViewSetRingingFlag,&ringingParam);
     
     BeginUiUpdateLC();
     iNumberEntryManager->SetVisibilityIfNumberEntryUsedL(EFalse);
@@ -298,6 +308,8 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
     UpdateUiCommands();
     EndUiUpdate();
     
+	SetRingingTonePlaybackL( aCallId );
+	
     ChangeTo( EPhoneStateIncoming );
     }
 
@@ -452,7 +464,7 @@ void CPhoneStateIdle::DialVideoCallL()
             {
             // call the number
             iStateMachine->PhoneEngineInfo()->SetPhoneNumber( *phoneNumber );
-            DialMultimediaCallL();
+            DialMultimediaCall();
             CleanupStack::PopAndDestroy( phoneNumber );
             }
         }
@@ -609,7 +621,7 @@ EXPORT_C void CPhoneStateIdle::DialMultimediaCallL()
         }
     else
         {
-        CPhoneState::DialMultimediaCallL();
+        CPhoneState::DialMultimediaCall();
         }
     }
 
@@ -688,5 +700,39 @@ void CPhoneStateIdle::ChangeTo( TInt aState )
            aState );
     iStateMachine->ChangeState( aState );
     }
+    
+// -----------------------------------------------------------
+// CPhoneStateIdle::LaunchQtProcessL
+// -----------------------------------------------------------
+//
+void CPhoneStateIdle::LaunchQtProcessL(TUid aUid)
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::LaunchQtProcessL()" );
+    TApaAppInfo appInfo;
+    RApaLsSession lsSession;
+    User::LeaveIfError( lsSession.Connect() );
+    CleanupClosePushL( lsSession );
+    User::LeaveIfError( lsSession.GetAppInfo( appInfo, aUid ) );
+    CApaCommandLine* cmdLine = CApaCommandLine::NewLC();
+    cmdLine->SetExecutableNameL( appInfo.iFullName );
+    cmdLine->SetCommandL( EApaCommandRun );
+    User::LeaveIfError( lsSession.StartApp( *cmdLine ) );
+    CleanupStack::PopAndDestroy( 2 );
+    }
 
+// -----------------------------------------------------------
+// CPhoneStateIdle::CloseQtProcess
+// -----------------------------------------------------------
+//
+void CPhoneStateIdle::CloseQtProcess(TUid aUid)
+    {
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::CloseQtProcess()" );
+    TApaTaskList appList( iEnv->WsSession() );
+    TApaTask task = appList.FindApp( aUid );
+    if ( task.Exists() )
+        {
+        task.KillTask();
+        }
+    }
+    
 // End of File

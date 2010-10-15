@@ -15,6 +15,7 @@
 *
 */
 
+#include "cphonemediatorsender.h"
 #include "phoneuiqtviewadapter.h"
 #include "phoneuiqtviewif.h"
 #include "phonebubblewrapper.h"
@@ -29,7 +30,7 @@
 #include "tphonecmdparamkeycapture.h"
 #include "cphonepubsubproxy.h"
 #include "pevirtualengine.h"
-#include "cphoneringingtonecontroller.h"
+#include "rphonetoneclient.h"
 #include "phoneresourceadapter.h"
 #include "phoneui.hrh"
 #include "cphonemediatorfactory.h"
@@ -60,6 +61,7 @@
 #include <hbstringutil.h>
 #include <xqaiwdecl.h>
 #include <mpeengineinfo.h>
+#include <xqsystemtoneservice.h>
 
 
 //CONSTANTS
@@ -80,7 +82,6 @@ PhoneUIQtViewAdapter::PhoneUIQtViewAdapter (PhoneUIQtViewIF &view, QObject *pare
     QObject (parent),
     m_view (view),
     m_bubbleWrapper(0),
-    m_ringingtonecontroller(0),
     m_resourceAdapter(0),
     m_noteController(0),
     m_telephonyService(0),
@@ -89,19 +90,20 @@ PhoneUIQtViewAdapter::PhoneUIQtViewAdapter (PhoneUIQtViewIF &view, QObject *pare
     m_indicatorController(0),
     m_phoneCallHeaderManager(0),
     m_dialpadAboutToClose(false),
-    m_homeScreenToForeground(false),
     m_visibilityHandler(0),
     m_appLauncher(0),
     m_clearDialpadOnClose(true),
     m_speakerAsDefaultButton(false),
     m_ringingTonePlaying(false)
 {
+    m_toneService = new XQSystemToneService(this);
     m_bubbleWrapper = new PhoneBubbleWrapper(m_view.bubbleManager(), this);
-    m_noteController = new PhoneNoteController(this);
+    m_noteController = new PhoneNoteController(*m_toneService, this);
     m_uiCommandController = new PhoneUiCommandController(view, this);
-    m_phoneCallHeaderManager = new PhoneCallHeaderManager(*m_bubbleWrapper, m_view, this);
+    m_phoneCallHeaderManager = new PhoneCallHeaderManager(*m_bubbleWrapper,
+                                                          m_view, this);
 
-    TRAPD( error, m_ringingtonecontroller = CPhoneRingingToneController::NewL () );
+    int error = m_toneClient.Connect();
     qt_symbian_throwIfError(error);
     m_resourceAdapter = PhoneResourceAdapter::Instance(this);
 
@@ -130,11 +132,12 @@ PhoneUIQtViewAdapter::PhoneUIQtViewAdapter (PhoneUIQtViewIF &view, QObject *pare
 
 PhoneUIQtViewAdapter::~PhoneUIQtViewAdapter ()
 {
-    delete m_ringingtonecontroller;
+    m_toneClient.Close();
 }
 
 void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId)
 {
+    PHONE_TRACE1(aCmdId)
     switch (aCmdId) {
     case EPhoneAppShutDown:
         {
@@ -147,17 +150,17 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId)
         break;
         
     case EPhoneViewMuteRingToneOnAnswer:
-        m_ringingtonecontroller->MuteRingingToneOnAnswer();
+        m_toneClient.StopPlayingL();
         break;
 
     case EPhoneViewStopRingTone:
-        m_ringingTonePlaying = false;
-        m_ringingtonecontroller->StopPlaying();
+         m_ringingTonePlaying = false;
+         m_toneClient.StopPlayingL();
         break;
 
     case EPhoneViewMuteRingTone:
         m_ringingTonePlaying = false;
-        m_ringingtonecontroller->MuteRingingTone();
+         m_toneClient.StopPlayingL();
         break;
 
     case EPhoneViewHideNaviPaneAudioVolume:
@@ -174,8 +177,7 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId)
 
     case EPhoneViewSendToBackground:
     case EPhoneViewBringIdleToForeground:
-        m_visibilityHandler->sendToBackground(m_homeScreenToForeground);
-        m_homeScreenToForeground = false;
+        m_visibilityHandler->sendToBackground();
         break;
     case EPhoneViewRemoveAllCallHeaders:
         removeAllCallHeaders();
@@ -209,14 +211,18 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId)
     case EPhoneViewUpdateFSW:
         setHidden(true);
         break;
+    case EPhoneViewPlayHandsFreeActivatedTone:
+        playHandsFreeActivatedTone();
+        break;        
     default:
         break;
     }
- CPhoneMediatorFactory::Instance()->Sender()->SendEvent( aCmdId );
+    CPhoneMediatorFactory::Instance()->Sender()->SendEvent( aCmdId );
 }
 
 void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TInt aCallId)
 {
+    PHONE_TRACE1(aCmdId)
     switch (aCmdId) {
     case EPhoneViewRemoveCallHeader:
         {
@@ -257,10 +263,11 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TInt aCa
 
 void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TPhoneCommandParam* aCommandParam)
 {
+    PHONE_TRACE1(aCmdId)
     switch (aCmdId) {
     case EPhoneViewPlayRingTone:
         m_ringingTonePlaying = true;
-        m_ringingtonecontroller->PlayRingToneL( aCommandParam );
+        m_toneClient.PlayRingingToneL( aCommandParam );
         break;
     case EPhoneViewSetNaviPaneAudioVolume:
         setAudioVolumeSliderValue (aCommandParam);
@@ -314,6 +321,7 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TPhoneCo
 void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TInt aCallId,
     TPhoneCommandParam *aCommandParam)
 {
+    PHONE_TRACE1(aCmdId)
     switch (aCmdId) {
     case EPhoneViewGetCallExistsInConference:
         conferenceCallId(aCallId, aCommandParam);
@@ -340,6 +348,7 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TInt aCa
 void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TInt aCallId,
     TDesC &aMessage)
 {
+    PHONE_TRACE1(aCmdId)
     switch (aCmdId) {
 
     default:
@@ -350,6 +359,7 @@ void PhoneUIQtViewAdapter::ExecuteCommandL (TPhoneViewCommandId aCmdId, TInt aCa
 
 TPhoneViewResponseId PhoneUIQtViewAdapter::HandleCommandL (TPhoneViewCommandId aCmdId)
 {
+    PHONE_TRACE1(aCmdId)
     TPhoneViewResponseId response = EPhoneViewResponseSuccess;
 
     switch (aCmdId) {
@@ -376,12 +386,10 @@ TPhoneViewResponseId PhoneUIQtViewAdapter::HandleCommandL (TPhoneViewCommandId a
 TPhoneViewResponseId PhoneUIQtViewAdapter::HandleCommandL (TPhoneViewCommandId aCmdId,
     TPhoneCommandParam *aCommandParam)
 {
+    PHONE_TRACE1(aCmdId)
     TPhoneViewResponseId viewResponse = EPhoneViewResponseSuccess;
 
     switch (aCmdId) {
-    case EPhoneViewGetCallIdByState:
-        viewResponse = callIdByState (aCommandParam);
-        break;
     case EPhoneViewSelectedConfMember:
         viewResponse = getSelectedConferenceMember (aCommandParam);
         break;
@@ -394,6 +402,7 @@ TPhoneViewResponseId PhoneUIQtViewAdapter::HandleCommandL (TPhoneViewCommandId a
 
 void PhoneUIQtViewAdapter::ExecuteCommand (TPhoneViewCommandId aCmdId)
 {
+    PHONE_TRACE1(aCmdId)
     switch (aCmdId) {
     case EPhoneSetConferenceExpanded:
         m_bubbleWrapper->bubbleManager ().startChanges ();
@@ -410,6 +419,9 @@ void PhoneUIQtViewAdapter::ExecuteCommand (TPhoneViewCommandId aCmdId)
     case EPhoneViewOpenContacts:
         openContacts();
         break;
+    case EPhoneViewSetVideoCallOnTop:
+        m_visibilityHandler->bringVideoCallToForeground();
+        break;
     default:
         break;
     }
@@ -417,6 +429,7 @@ void PhoneUIQtViewAdapter::ExecuteCommand (TPhoneViewCommandId aCmdId)
 
 void PhoneUIQtViewAdapter::ExecuteCommand (TPhoneViewCommandId aCmdId, TPhoneCommandParam *aCommandParam)
 {
+    PHONE_TRACE1(aCmdId)
     switch (aCmdId) {
     case EPhoneViewGetAudioVolumeLevel:
         writeAudioVolumeLevel (aCommandParam);
@@ -430,8 +443,7 @@ void PhoneUIQtViewAdapter::ExecuteCommand (TPhoneViewCommandId aCmdId, TPhoneCom
 		}
         break;
     case EPhoneViewHsToForegroundAfterCall: {
-        TPhoneCmdParamBoolean *param = static_cast<TPhoneCmdParamBoolean *>(aCommandParam);
-        m_homeScreenToForeground = param->Boolean();
+        //TODO: remove EPhoneViewHsToForegroundAfterCall
         }
         break;
     case EPhoneViewSetIhfFlag: {
@@ -464,6 +476,11 @@ void PhoneUIQtViewAdapter::ExecuteCommand (TPhoneViewCommandId aCmdId, TPhoneCom
         PhoneResourceAdapter::Instance()->buttonsController()->
                 setButtonFlags(PhoneUIQtButtonsController::BluetoothAvailable, 
                                param->Boolean());
+        }
+        break;
+    case EPhoneViewSetRingingFlag: {
+        TPhoneCmdParamBoolean *param = static_cast<TPhoneCmdParamBoolean *>(aCommandParam);
+        m_ringingTonePlaying = param->Boolean();
         }
         break;
     case EPhoneViewStartCapturingKey: {
@@ -508,6 +525,9 @@ void PhoneUIQtViewAdapter::ExecuteCommand (TPhoneViewCommandId aCmdId, TPhoneCom
     case EPhoneViewSetTouchPaneButtons:
         setTouchButtons (aCommandParam);
         setExpandActions();
+        break;
+    case EPhoneViewGetCallIdByState:
+        callIdByState(aCommandParam);
         break;
     default:
         break;
@@ -560,11 +580,13 @@ void PhoneUIQtViewAdapter::handleWindowDeactivated()
 
 void PhoneUIQtViewAdapter::onFocusLost()
 {
+    m_visibilityHandler->windowVisibilityChange(false);
     m_indicatorController->enableActiveCallIndicator();
 }
 
 void PhoneUIQtViewAdapter::onFocusGained()
 {
+    m_visibilityHandler->windowVisibilityChange(true);
     m_indicatorController->disableActiveCallIndicator();
 }
 
@@ -580,7 +602,6 @@ void PhoneUIQtViewAdapter::createCallHeader(
     if( m_phoneCallHeaderManager->isVoiceCall(callId) ){
         m_indicatorController->setActiveCallData();
     }
-
 }
 
 void PhoneUIQtViewAdapter::createEmergencyCallHeader(int callId)
@@ -639,7 +660,7 @@ void PhoneUIQtViewAdapter::setTouchButtons (TPhoneCommandParam *commandParam)
         m_view.clearBubbleCommands(m_bubbleWrapper->bubbles().value(callId));
 
 		// Get bubble actions by call type
-        QMap<PhoneAction::ActionType, PhoneAction *> actions =
+        QList<HbAction *> actions =
             m_uiCommandController->pushButtonActionsForCall(
                                m_bubbleWrapper->callStates().value(callId),
                                emergencyCall,
@@ -648,13 +669,11 @@ void PhoneUIQtViewAdapter::setTouchButtons (TPhoneCommandParam *commandParam)
                                m_bubbleWrapper->serviceIdByCallId(callId),
                                callId);
 
-        QList<PhoneAction *> values = actions.values();
-        for (int i = 0; i < values.size (); ++i) {
-            PhoneAction *action = values.at (i);
-            m_view.addBubbleCommand(m_bubbleWrapper->bubbles().value(callId),
-                                    *action);
-            delete action;
+        foreach (HbAction *action, actions) {
+            m_view.addBubbleCommand(
+                    m_bubbleWrapper->bubbles().value(callId), action);
         }
+
     }
 
     setExpandedConferenceCallHeader();
@@ -681,7 +700,7 @@ void PhoneUIQtViewAdapter::setToolbarButtons (TPhoneCommandParam *commandParam)
         serviceId = m_bubbleWrapper->serviceIdByCallId(callId);
     }
     
-    QList<PhoneAction*> actions = m_uiCommandController->toolBarActions(
+    QList<HbAction *> actions = m_uiCommandController->toolBarActions(
                                         intParam.Integer(),
                                         m_bubbleWrapper->callStates(),
                                         m_bubbleWrapper->serviceIds(),
@@ -692,7 +711,6 @@ void PhoneUIQtViewAdapter::setToolbarButtons (TPhoneCommandParam *commandParam)
         m_view.setToolbarActions(actions);
     }
 
-    qDeleteAll(actions);
 }
 
 void PhoneUIQtViewAdapter::writeAudioVolumeLevel (TPhoneCommandParam *commandParam)
@@ -932,7 +950,7 @@ void PhoneUIQtViewAdapter::setDialpadVisibility(
     if (booleanParam->Boolean()) {
         m_dialpadAboutToClose = false;
         m_view.showDialpad();
-    } else {
+    } else if (m_view.isDialpadVisible()) {
         m_clearDialpadOnClose = false;
         m_view.hideDialpad();
     }
@@ -1082,8 +1100,7 @@ void PhoneUIQtViewAdapter::openLogs(TPhoneCommandParam *commandParam)
     
     bool phoneVisible = m_visibilityHandler->phoneVisible();
     
-    m_homeScreenToForeground = false;
-    m_visibilityHandler->sendToBackground(m_homeScreenToForeground);
+    m_visibilityHandler->sendToBackground();
     
     if (phoneVisible) { 
         // Activate logs dialer only if telephone is on the top.
@@ -1125,4 +1142,8 @@ bool PhoneUIQtViewAdapter::convertKey(
     return ret;
 }
 
-
+void PhoneUIQtViewAdapter::playHandsFreeActivatedTone()
+{
+    m_toneService->playTone(
+            XQSystemToneService::IntegratedHandsFreeActivatedTone); 
+}

@@ -26,6 +26,12 @@
 #include "TPhoneCommandParam.h"
 #include "CPhoneMainResourceResolver.h"
 #include "phoneappcommands.hrh"
+#include <csmcmockcontext.h>
+#include <smcdefaultvalue.h>
+#include <msmcmockspecbuilder.h>
+#include <smcobjecttotypemapper.h>
+#include <smcmacros.h>
+#include <msmcmockaction.h>
 
 #define protected public
 #include "CPhoneTwoSinglesAndWaiting.h"
@@ -49,6 +55,7 @@ ut_cphonetwosinglesandwaiting* ut_cphonetwosinglesandwaiting::NewL()
 
 ut_cphonetwosinglesandwaiting::~ut_cphonetwosinglesandwaiting()
     {
+    CSmcMockContext::Release();
     }
 
 ut_cphonetwosinglesandwaiting::ut_cphonetwosinglesandwaiting()
@@ -58,12 +65,14 @@ ut_cphonetwosinglesandwaiting::ut_cphonetwosinglesandwaiting()
 void ut_cphonetwosinglesandwaiting::ConstructL()
     {
     CEUnitTestSuiteClass::ConstructL();
+    iMockContext = CSmcMockContext::InstanceL();
     }
 
 // - Test methods -----------------------------------------------------------
 
 void ut_cphonetwosinglesandwaiting::SetupL(  )
     {
+    iMockContext->InitializeL();
     iViewCommandHandle = CPhoneViewController::NewL();
     iStateMachine = CPhoneStateMachineStub::NewL(); 
      
@@ -79,6 +88,7 @@ void ut_cphonetwosinglesandwaiting::Teardown(  )
     delete iStateTwoSinglesAndWaiting;
     delete iViewCommandHandle;
     delete iStateMachine;
+    iMockContext->Reset();
     }
     
 // -----------------------------------------------------------------------------

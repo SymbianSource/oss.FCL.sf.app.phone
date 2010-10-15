@@ -19,6 +19,7 @@
 #include <QtGui>
 #include <hbapplication.h>
 #include <QSignalSpy>
+#include <xqsystemtoneservice.h>
 //#include <hbglobal_p.h>
 #include "phonenotecontroller.h"
 #include "phoneresourceids.h"
@@ -74,7 +75,8 @@ TestPhoneNoteController::~TestPhoneNoteController ()
 
 void TestPhoneNoteController::initTestCase ()
 {
-    m_noteController = new PhoneNoteController();
+    XQSystemToneService* toneservice = new XQSystemToneService(this);
+    m_noteController = new PhoneNoteController(*toneservice);
 }
 
 void TestPhoneNoteController::cleanupTestCase ()

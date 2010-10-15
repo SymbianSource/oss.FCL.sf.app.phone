@@ -218,6 +218,10 @@ public:
 		EPhoneViewSetBlueToothFlag,
 		/** EPhoneViewSetBluetoothAvailableFlag */
 		EPhoneViewSetBluetoothAvailableFlag,
+		/** EPhoneViewSetVideoCallOnTop */
+		EPhoneViewSetVideoCallOnTop,
+		/** EPhoneViewSetRingingFlag */
+		EPhoneViewSetRingingFlag,
 		/** , // Don't remove this, this should always be the last in list. */
 		EPhoneAmountOfCommands
 		};

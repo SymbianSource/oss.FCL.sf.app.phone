@@ -77,13 +77,15 @@ SOURCES += phoneindicatorcontroller_stub.cpp
 SOURCES += phoneuiqtbuttonscontroller_stub.cpp
 HEADERS += phonebubblewrapper.h
 SOURCES += phonebubblewrapper_stub.cpp
-SOURCES += cphoneringingtonecontroller_stub.cpp
+SOURCES += rphonetoneclient_stub.cpp
 SOURCES += cphonemediatorfactory_stub.cpp
 SOURCES += cphonemediatorsender_stub.cpp
 SOURCES += phonecallheadermanager_stub.cpp
 SOURCES += phonenotecontroller_stub.cpp
 HEADERS += ../../inc/phoneapplauncher.h
 SOURCES += phoneapplauncher_stub.cpp
+HEADERS += xqsystemtoneservice.h
+SOURCES += xqsystemtoneservice_stub.cpp
 SOURCES += unit_tests.cpp
 
 

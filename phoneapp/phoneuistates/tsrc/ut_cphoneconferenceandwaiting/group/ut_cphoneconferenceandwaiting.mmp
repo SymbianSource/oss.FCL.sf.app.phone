@@ -30,6 +30,7 @@ SOURCEPATH    ../../../../internal/mocks/phoneuicontrol
 SOURCE        mock_CPhoneState.cpp
 SOURCE        mock_cphonestateincall.cpp
 SOURCE        mock_cphonestatemachine.cpp
+SOURCE        mock_phonecallutil.cpp
 
 SOURCEPATH    ../../../../../internal/mocks/phoneapp/phoneuicontrol
 SOURCE        mock_cphonenumberentrymanager.cpp
@@ -103,3 +104,4 @@ LIBRARY         ws32.lib         // RWsSession
 LIBRARY         gdi.lib          // TZoomFactor
 LIBRARY         bafl.lib         // CBaActiveScheduler
 
+SMPSAFE

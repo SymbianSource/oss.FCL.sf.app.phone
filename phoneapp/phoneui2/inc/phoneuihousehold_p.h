@@ -71,13 +71,20 @@ public:
       const TUint aKey,
       const TInt aValue );
 
+    /**
+	* Creates new translators, loads translation files for current language
+	*/
+    void loadTranslators();  
+
 private:
     
    /**
     * Constructor
     */
     void ConstructL();
-    
+
+    void resetTranslators();    
+   
 private:
     // Startup states.
     // EPhoneStartupInitial - Initial state.
@@ -97,8 +104,8 @@ private:
     // Recovery id for startup signalling.
     TRecoveryId iStartupSignalRecoveryId;
 
-    //Boolean flag. ETrue iff we have reached light idle
-    TBool iLightIdleReached;
+    //Boolean flag. True if we have reached light idle
+    bool iLightIdleReached;
 
     CPhoneUIController* iPhoneUIController;
     
@@ -112,6 +119,8 @@ private:
     
     //List for translators
     QList<HbTranslator*> m_translators;
+    
+    bool m_featMgrInit;
     
 };
 

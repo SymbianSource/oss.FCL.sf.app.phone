@@ -37,3 +37,5 @@ SOURCES += unit_tests.cpp \
 HEADERS += ../../inc/phoneuiqtbuttonscontroller.h
 
 include(../../../../tsrc/common/phonetest.pri)
+
+symbian:MMP_RULES += SMPSAFE

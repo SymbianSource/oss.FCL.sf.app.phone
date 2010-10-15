@@ -1,8 +1,7 @@
-/*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+/** Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
+* under the terms of the License "Eclipse Public License v1.0"
 * which accompanies this distribution, and is available
 * at the URL "http://www.eclipse.org/legal/epl-v10.html".
 *
@@ -73,6 +72,19 @@ bool HbDeviceMessageBox::question(
     SMC_MOCK_METHOD3( bool, const QString &, text, 
         const QString &, acceptButtonText, 
         const QString &, rejectButtonText )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::question
+// -----------------------------------------------------------------------------
+//
+bool HbDeviceMessageBox::question( 
+        const QString & text,
+        HbMessageBox::StandardButtons buttons )
+    {
+    SMC_MOCK_METHOD2( bool, const QString &, text, 
+        int /*HbMessageBox::StandardButtons*/, buttons )
     }
 
 
@@ -177,6 +189,27 @@ void HbDeviceMessageBox::setMessageBoxType(
 HbMessageBox::MessageBoxType HbDeviceMessageBox::messageBoxType(  ) const
     {
     SMC_MOCK_METHOD0( HbMessageBox::MessageBoxType )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::setStandardButtons
+// -----------------------------------------------------------------------------
+//
+void HbDeviceMessageBox::setStandardButtons( 
+        HbMessageBox::StandardButtons buttons )
+    {
+    SMC_MOCK_METHOD1( void, int /* HbMessageBox::StandardButtons*/, buttons )
+    }
+
+
+// -----------------------------------------------------------------------------
+// HbDeviceMessageBox::standardButtons
+// -----------------------------------------------------------------------------
+//
+HbMessageBox::StandardButtons HbDeviceMessageBox::standardButtons(  ) const
+    {
+    SMC_MOCK_METHOD0( int /*HbMessageBox::StandardButtons*/ )
     }
 
 

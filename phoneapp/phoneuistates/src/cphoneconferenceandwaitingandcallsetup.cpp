@@ -27,11 +27,11 @@
 #include "phonelogger.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparaminteger.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "cphonemainresourceresolver.h"
 #include "phonerssbase.h"
 #include "tphonecmdparamglobalnote.h"
 #include "phoneui.hrh"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -237,25 +237,18 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleConferenceIdleL()
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
     iNumberEntryManager->SetVisibilityIfNumberEntryUsedL(ETrue);
 
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateConnected );
-    iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
-        &callStateData );
- 
-    if( callStateData.CallId() > KErrNotFound ) //  No need update cba's. 
+    TInt callId = PhoneCallUtil::CallIdByState( EPEStateConnected );
+    if( callId > KErrNotFound ) //  No need update cba's. 
         {        
         UpdateUiCommands();
         iStateMachine->ChangeState( EPhoneStateSingleAndCallSetupAndWaiting );
         }
     else 
         {
-        callStateData.SetCallState( EPEStateHeld );
-        iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
-            &callStateData );
-        
+        callId = PhoneCallUtil::CallIdByState( EPEStateHeld );
         UpdateUiCommands();
         
-        if( callStateData.CallId() > KErrNotFound )
+        if( callId > KErrNotFound )
             {     
             iStateMachine->ChangeState( EPhoneStateSingleAndCallSetupAndWaiting );
             }
@@ -306,11 +299,8 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleIdleL( TInt aCallId )
         else
             {
             BeginUiUpdateLC();
-            TPhoneCmdParamCallStateData callStateData;
-            callStateData.SetCallState( EPEStateRinging );
-            iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
-                &callStateData );
-            if( callStateData.CallId() > KErrNotFound )
+            TInt callId = PhoneCallUtil::CallIdByState( EPEStateRinging );
+            if( callId > KErrNotFound )
                 { 
                 // Show the number entry if callsetup failed with number busy
                 // etc reason.

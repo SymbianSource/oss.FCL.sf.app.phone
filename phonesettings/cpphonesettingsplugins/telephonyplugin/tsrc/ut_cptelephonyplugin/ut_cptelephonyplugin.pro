@@ -48,6 +48,6 @@ SOURCES += ../../src/cptelephonyplugin.cpp
 
 # mocks needed for testing
 SOURCES += ../../../tsrc/mocks/mock_cptelephonypluginview.cpp
-
+SOURCES += ../../../tsrc/mocks/mock_hbtranslator.cpp
 
 symbian:MMP_RULES += SMPSAFE

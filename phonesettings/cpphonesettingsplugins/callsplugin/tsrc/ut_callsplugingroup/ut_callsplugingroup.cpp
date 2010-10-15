@@ -126,19 +126,36 @@ void UT_CpCallsPluginGroup::t_callWaitingCurrentIndexChanged()
     QList<unsigned char> basicServiceGroupIds;
 
     // check status case
+    bool bIsConnected = true;
+    EXPECT(SettingsWrapper, isConnectedToNetwork).returns(bIsConnected);
     EXPECT(PSetCallWaitingWrapper, getCallWaitingStatus);
     m_callspluginGroup->callWaitingCurrentIndexChanged();
 
     // active case
     m_callspluginGroup->handleCallWaitingGetStatus(
         PSetCallWaitingWrapper::StatusActive, basicServiceGroupIds);
+    EXPECT(SettingsWrapper, isConnectedToNetwork).returns(bIsConnected);
     EXPECT(PSetCallWaitingWrapper, setCallWaiting);
     m_callspluginGroup->callWaitingCurrentIndexChanged();
 
     // deactive case
     m_callspluginGroup->handleCallWaitingGetStatus(
         PSetCallWaitingWrapper::StatusDisabled, basicServiceGroupIds);
+    EXPECT(SettingsWrapper, isConnectedToNetwork).returns(bIsConnected);
     EXPECT(PSetCallWaitingWrapper, setCallWaiting);
+    m_callspluginGroup->callWaitingCurrentIndexChanged();
+    
+    // offline case
+    m_callspluginGroup->handleCallWaitingGetStatus(
+        PSetCallWaitingWrapper::StatusActive, basicServiceGroupIds);
+    EXPECT(SettingsWrapper, isPhoneOffline).returns(bIsConnected);
+    m_callspluginGroup->callWaitingCurrentIndexChanged();
+    
+    // no network case
+    m_callspluginGroup->handleCallWaitingGetStatus(
+        PSetCallWaitingWrapper::StatusDisabled, basicServiceGroupIds);
+    bIsConnected = false;
+    EXPECT(SettingsWrapper, isConnectedToNetwork).returns(bIsConnected);
     m_callspluginGroup->callWaitingCurrentIndexChanged();
 
     QVERIFY(verify());

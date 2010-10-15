@@ -128,6 +128,9 @@ enum
     EPhoneViewSetSoftRejectDimmed,
     EPhoneViewDisableDeviceLock,
     EPhoneViewIsRingingTonePlaying,
+    EPhoneViewSetVideoCallOnTop,
+    EPhoneViewSetRingingFlag,
+    EPhoneViewPlayHandsFreeActivatedTone,
     EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.
 };
 

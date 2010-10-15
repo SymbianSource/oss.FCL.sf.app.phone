@@ -42,3 +42,8 @@ const QString& LogsEvent::number() const
 {
     return QString();
 }
+
+LogsEvent::LogsEventType LogsEvent::eventType() const
+{
+    return LogsEvent::TypeVoiceCall;
+}

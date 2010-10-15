@@ -118,7 +118,9 @@ _STLIT8(K91, "EPhoneViewSetMuteFlag");
 _STLIT8(K92, "EPhoneViewLaunchLogs");
 _STLIT8(K93, "EPhoneViewSetBlueToothFlag");
 _STLIT8(K94, "EPhoneViewSetBluetoothAvailableFlag");
-_STLIT8(K95, ", // Don't remove this, this should always be the last in list.");
+_STLIT8(K95, "EPhoneViewSetVideoCallOnTop");
+_STLIT8(K96, "EPhoneViewSetRingingFlag");
+_STLIT8(K97, ", // Don't remove this, this should always be the last in list.");
 
 // Intermediate
 const void * const KStringPointers[] =
@@ -217,8 +219,10 @@ const void * const KStringPointers[] =
 	(const void*)&K92,
 	(const void*)&K93,
 	(const void*)&K94,
-	(const void*)&K95
+	(const void*)&K95,
+	(const void*)&K96,
+	(const void*)&K97
 	};
 
-const TStringTable PhoneLoggerviewCommands::Table = {95, KStringPointers, EFalse};
+const TStringTable PhoneLoggerviewCommands::Table = {97, KStringPointers, EFalse};
 

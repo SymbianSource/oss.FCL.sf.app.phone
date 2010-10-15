@@ -37,7 +37,10 @@ SOURCEPATH    ../../../../internal/mocks/phoneuiutils
 SOURCE        mock_tphonetouchbuttonconfig.cpp
 
 SOURCEPATH    ../../../../../internal/mocks/phoneapp/phoneuicontrol
-SOURCE       mock_cphonenumberentrymanager.cpp
+SOURCE        mock_cphonenumberentrymanager.cpp
+
+SOURCEPATH    ../../../../internal/mocks/phoneuicontrol
+SOURCE        mock_phonecallutil.cpp
  
 SOURCEPATH    ../../../../phoneuistates/src
 SOURCE        CPhoneSingleAndCallSetupAndWaiting.cpp
@@ -74,5 +77,4 @@ LIBRARY         CommonEngine.lib     //StringLoader
 LIBRARY         cone.lib
 LIBRARY         SymbianMock.lib
 
-
-
+SMPSAFE

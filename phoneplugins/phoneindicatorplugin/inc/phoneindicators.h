@@ -51,15 +51,16 @@ struct PhoneIndicatorInfo
     const char *primaryText;
     const char *secondaryText;
     Interaction interaction;
+    HbIndicatorInterface::Category catecory;
 };
 
 Q_DECLARE_METATYPE(PhoneIndicatorInfo)
 
 static const int PhoneIndicatorCount = 3;
 static const PhoneIndicatorInfo IndicatorInfos[PhoneIndicatorCount] = {
-    {"qtg_mono_info.svg",   "Missed call", "Name/Number", OpenMissedCallView },
-    {"qtg_mono_info.svg",   "Active call", " ", OpenCallUi },
-    {"qtg_mono_info.svg",   "Active diverts", " ", OpenDiverSettingsView }
+    {"qtg_mono_missed_call_unseen",   "Missed call", "Name/Number", OpenMissedCallView, HbIndicatorInterface::NotificationCategory },
+    {"qtg_mono_call",   "Active call", " ", OpenCallUi, HbIndicatorInterface::NotificationCategory },
+    {"qtg_mono_call_diverted",   "Active diverts", " ", OpenDiverSettingsView, HbIndicatorInterface::SettingCategory }
 };
 
 #endif // PHONEINDICATORS_H

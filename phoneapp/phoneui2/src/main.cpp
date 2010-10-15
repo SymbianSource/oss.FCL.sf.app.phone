@@ -21,14 +21,14 @@
 #include <hbtoolbar.h>
 #include <xqserviceutil.h>
 
-#include "hbphonemainwindow.h"
+#include "phonemainwindow.h"
 #include "phoneapplication.h"
 
 
 int main (int argc, char *argv[])
 {
     PhoneApplication app(argc, argv, Hb::NoSplash);
-    HbPhoneMainWindow window;
+    PhoneMainWindow window;
     QObject::connect(&app,SIGNAL(focusLost()),&window,SLOT(onFocusLost()));
     QObject::connect(&app,SIGNAL(focusGained()),&window,SLOT(onFocusGained()));
     XQServiceUtil::toBackground( true );

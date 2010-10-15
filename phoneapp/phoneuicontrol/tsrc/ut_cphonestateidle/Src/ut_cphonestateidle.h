@@ -34,6 +34,7 @@ class CSmcMockContext;
 class CCoeEnv;
 class CPhoneCustomizationVoip;
 class TPhoneCommandParam;
+class TApaTask;
 
 TBool operator==(const TPhoneCommandParam& param1, const TPhoneCommandParam& param2 );
 
@@ -85,6 +86,7 @@ NONSHARABLE_CLASS( ut_cphonestateidle )
         CPEEngineInfo* iEngineInfoMock;
         CCoeEnv* iCoeEnvMock;
         CPhoneCustomizationVoip* iCustomizationMock;
+        TApaTask* iTask;
 
         EUNIT_DECLARE_TEST_TABLE;
 

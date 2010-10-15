@@ -27,7 +27,7 @@ PhoneIndicatorInterface::PhoneIndicatorInterface(
                 const QString &indicatorType,
                 int typeIndex,
                 Interaction interaction) :
-        HbIndicatorInterface( indicatorType, HbIndicatorInterface::NotificationCategory,
+        HbIndicatorInterface( indicatorType, IndicatorInfos[typeIndex].catecory,
         (interaction == InteractionNone) ? NoInteraction : InteractionActivated),
         m_typeIndex(typeIndex),
         m_interaction(interaction),

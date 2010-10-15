@@ -37,7 +37,7 @@ bool PhoneApplication::symbianEventFilter(const QSymbianEvent *event)
         const TWsEvent *wsevent = event->windowServerEvent();
         if ( wsevent->Type() == EEventWindowVisibilityChanged ){
             TUint visible = wsevent->VisibilityChanged()->iFlags;
-            if ( visible & TWsVisibilityChangedEvent::EFullyVisible ){
+            if ( visible & TWsVisibilityChangedEvent::EPartiallyVisible ){
                 emit focusGained();
             }else if (visible & TWsVisibilityChangedEvent::ENotVisible){
                 emit focusLost();

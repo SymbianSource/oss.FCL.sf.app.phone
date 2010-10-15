@@ -18,7 +18,7 @@
 #include "ut_cphonestateidle.h"
 #include <EUnitMacros.h>
 #include <EUnitDecorators.h>
-
+#include <apgtask.h>
 #include <featmgr.h>
 #include <coemain.h>
 #include "cpeengineinfo.h"
@@ -55,11 +55,6 @@ RWindowGroup::RWindowGroup() {}
 
 MWsClientClass::MWsClientClass() {}
 RWindowTreeNode::RWindowTreeNode() {}
-
-#include <APGTASK.h>
-TApaTaskList::TApaTaskList(RWsSession &aSession ) : iWsSession( aSession ) {}
-TApaTask TApaTaskList::FindApp(TUid) {}
-TInt TApaTask::Exists() const {return EFalse;}
 
 // needed for mocking CPhoneMainResourceResolver::Instance()
 class CPhoneMainResourceResolverMock : public CPhoneMainResourceResolver
@@ -137,7 +132,10 @@ void ut_cphonestateidle::ConstructL()
 void ut_cphonestateidle::SetupL(  )
     {
     iMockContext->InitializeL();
-
+    
+    RWsSession wsSession;
+    iTask = new TApaTask(wsSession);
+    SmcDefaultValue<TApaTask>::SetL( *iTask );
     iCoeEnvMock = new (ELeave ) CCoeEnv();
     SmcDefaultValue<CCoeEnv*>::SetL( iCoeEnvMock );
 
@@ -181,6 +179,9 @@ void ut_cphonestateidle::Teardown(  )
     delete iCoeEnvMock;
     iCoeEnvMock = NULL;
     SmcDefaultValue<CCoeEnv*>::Reset();
+    SmcDefaultValue<TApaTask>::Reset();
+    delete iTask;
+    iTask = NULL;
     }
 
 
@@ -368,7 +369,7 @@ void ut_cphonestateidle::T_DialVideoCallL()
             ReturnsL( phoneNumber );
     iMockContext->ExpectCallL( "CPEEngineInfoImpl::SetPhoneNumber" ).
             WithL( KPhoneNumber() );
-    iMockContext->ExpectCallL( "CPhoneState::DialMultimediaCallL" );
+    iMockContext->ExpectCallL( "CPhoneState::DialMultimediaCall" );
 
     //DialVideoCallL is used via handlecommand because it's private method.
     iStateIdle->HandleCommandL( EPhoneNumberAcqCmdVideoCall );

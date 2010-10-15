@@ -109,7 +109,7 @@ CpTelephonyPluginView::CpTelephonyPluginView(const QVariantList &params) :
         CpSettingFormItemData* expandedItem(NULL);
         foreach (QVariant var, params){
             items.append(groupItemFromPlugin(var.toString()));
-            if(!expanded){
+            if (!expanded && !items.isEmpty()) {
                 expandedItem = items.last();
                 expanded = true;
             }

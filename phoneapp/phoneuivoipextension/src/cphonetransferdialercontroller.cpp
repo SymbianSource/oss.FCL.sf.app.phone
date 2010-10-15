@@ -218,14 +218,20 @@ HBufC* CPhoneTransferDialerController::GetTooltipTextL( TInt aCommandId ) const
     switch( aCommandId )
         {                            
         case EPhoneCmdTransferDialerOk:
+        	{
             resourceId = R_VOIP_DIALER_TOOLTIP_ACCEPT;
             break;    
+            }
         case EPhoneCmdTransferDialerSearch:
+        	{
             resourceId = R_VOIP_DIALER_TOOLTIP_SEARCH;
-            break;                      
+            break;     
+            }                 
        default:
-           tooltip = KNullDesC().Alloc();
-           break;
+           {
+		    User::Leave(KErrNotFound);
+            break;
+           }
        }
            
     if ( resourceId )

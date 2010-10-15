@@ -97,3 +97,4 @@ LIBRARY         ws32.lib        // RWsSession
 LIBRARY         gdi.lib         // TZoomFactor
 LIBRARY         bafl.lib        // CBaActiveScheduler
 
+SMPSAFE

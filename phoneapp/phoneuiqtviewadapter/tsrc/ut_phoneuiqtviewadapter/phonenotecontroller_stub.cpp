@@ -19,6 +19,7 @@
 #include "phoneresourceadapter.h"
 #include <QtDebug>
 #include <hbdevicemessagebox.h>
+#include <xqsystemtoneservice.h>
 
 bool m_showGlobalNoteCalled;
 bool m_showQueryCalled;
@@ -28,8 +29,10 @@ bool m_removeNoteCalled;
 bool m_removeQueryCalled;
 bool m_removeGlobalWaitNoteCalled;
 
-PhoneNoteController::PhoneNoteController(QObject *parent) : QObject (parent)
+PhoneNoteController::PhoneNoteController(XQSystemToneService& toneservice,
+        QObject *parent) : QObject (parent)
 {
+    Q_UNUSED(toneservice);
     m_showGlobalNoteCalled = false;
 }
 

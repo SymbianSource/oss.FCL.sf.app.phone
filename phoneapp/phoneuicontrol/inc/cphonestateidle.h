@@ -217,6 +217,16 @@ class CPhoneStateIdle : public CPhoneState
        * value to false.
        */
        void ChangeTo( TInt aState );
+        
+        /**
+        * Launch Qt process.
+        */
+        void LaunchQtProcessL(TUid aUid);
+        
+        /**
+        * Close Qt process.
+        */
+        void CloseQtProcess(TUid aUid);
          
     private:
     

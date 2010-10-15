@@ -30,7 +30,7 @@
 #include "mphonestatemachine.h"
 #include "mphonestorage.h"
 #include "cphonecenrepproxy.h"
-#include "tphonecmdparamcallstatedata.h"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -183,10 +183,7 @@ void CPhoneIncoming::HandleIncomingL( TInt aCallId )
     {
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneIncoming::HandleIncomingL()");
-    TPhoneCmdParamCallStateData callState;
-    callState.SetCallState( EPEStateConnected );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewGetCallIdByState, &callState );
-    TInt connectedCall = callState.CallId(); 
+    TInt connectedCall = PhoneCallUtil::CallIdByState( EPEStateConnected ); 
     
     DisplayCallHeaderL( aCallId, ECheckIfNEUsedBeforeSettingVisibilityFalse );
 

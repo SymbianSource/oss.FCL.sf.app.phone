@@ -29,13 +29,13 @@
 #include "phonelogger.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparaminteger.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "cphonemainresourceresolver.h"
 #include "phonerssbase.h"
 #include "tphonecmdparamglobalnote.h"
 #include "phoneui.hrh"
 #include "cphonecenrepproxy.h"
 #include "mphonestorage.h"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -69,12 +69,7 @@ CPhoneConferenceAndWaiting::~CPhoneConferenceAndWaiting()
 void CPhoneConferenceAndWaiting::ConstructL()
     {
     CPhoneConference::ConstructL();
-    
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateRinging );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    iRingingCallId = callStateData.CallId();
+    iRingingCallId = PhoneCallUtil::CallIdByState( EPEStateRinging );
     }
 
 // -----------------------------------------------------------
@@ -188,14 +183,9 @@ void CPhoneConferenceAndWaiting::HandleKeyMessageL(
 void CPhoneConferenceAndWaiting::HandleConnectedL( TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneConferenceAndWaiting::HandleConnectedL()");
-    TPhoneCmdParamCallStateData callStateData;
     if ( iRingingCallId == KErrNotFound )
         {
-        TPhoneCmdParamCallStateData callStateData;
-        callStateData.SetCallState( EPEStateRinging );
-        iViewCommandHandle->HandleCommandL(
-            EPhoneViewGetCallIdByState, &callStateData );
-        iRingingCallId = callStateData.CallId();   
+        iRingingCallId = PhoneCallUtil::CallIdByState( EPEStateRinging );   
         }
     
     if ( iRingingCallId == aCallId )
@@ -232,11 +222,7 @@ void CPhoneConferenceAndWaiting::HandleIdleL( TInt aCallId )
     __LOGMETHODSTARTEND(EPhoneUIStates, "CPhoneConferenceAndWaiting::HandleIdleL()");
     if ( iRingingCallId == KErrNotFound )
         {
-        TPhoneCmdParamCallStateData callStateData;
-        callStateData.SetCallState( EPEStateRinging );
-        iViewCommandHandle->HandleCommandL(
-            EPhoneViewGetCallIdByState, &callStateData );
-        iRingingCallId = callStateData.CallId();   
+        iRingingCallId = PhoneCallUtil::CallIdByState( EPEStateRinging );   
         }
     
     if( iRingingCallId == aCallId )
@@ -283,7 +269,8 @@ void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
         {
         case ENoActiveCalls: // Go to incoming state
             {           
-            BringIncomingToForegroundL(); 
+            BringIncomingToForegroundL();
+            SetRingingTonePlaybackL( iRingingCallId );
             UpdateCallHeaderAndUiCommandsL( iRingingCallId );
             
             if ( iNumberEntryManager->IsNumberEntryVisibleL() )
@@ -291,7 +278,6 @@ void CPhoneConferenceAndWaiting::HandleConferenceIdleL()
                 iNumberEntryManager->SetNumberEntryVisibilityL(EFalse);   
                 }
             
-            SetRingingTonePlaybackL( iRingingCallId );
             SetBackButtonActive(EFalse);
             iStateMachine->ChangeState( EPhoneStateIncoming );
             }
@@ -346,11 +332,7 @@ void CPhoneConferenceAndWaiting::HandleWentOneToOneL( TInt aCallId )
     
     if ( iRingingCallId == KErrNotFound )
         {
-        TPhoneCmdParamCallStateData callStateData;
-        callStateData.SetCallState( EPEStateRinging );
-        iViewCommandHandle->HandleCommandL(
-            EPhoneViewGetCallIdByState, &callStateData );
-        iRingingCallId = callStateData.CallId();
+        iRingingCallId = PhoneCallUtil::CallIdByState( EPEStateRinging );
         }
         
     TPhoneCmdParamBoolean conferenceBubbleExists;

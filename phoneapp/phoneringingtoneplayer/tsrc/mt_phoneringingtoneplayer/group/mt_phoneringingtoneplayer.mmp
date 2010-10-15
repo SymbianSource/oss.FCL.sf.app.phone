@@ -1,0 +1,59 @@
+/*
+* Copyright (c) 2010-2010 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  MT_phoneringingtoneplayer
+*
+*/
+
+
+#include <platform_paths.hrh>
+#include <digia/eunit/eunitcaps.h>
+
+TARGET          mt_phoneringingtoneplayer.dll
+TARGETTYPE      dll
+TARGETPATH      /DigiaEUnit/Tests
+UID             0x1000af5a 0x01700000
+
+CAPABILITY              EUNIT_CAPS
+VENDORID                VID_DEFAULT
+
+SOURCEPATH              ../src
+SOURCE                  devsoundstub.cpp
+SOURCE                  mt_phoneringingtoneplayermain.cpp
+SOURCE                  mt_phoneringingtoneplayer.cpp
+
+SOURCEPATH              ../../../src
+SOURCE                  cphonetoneserver.cpp
+SOURCE                  rphonetoneclient.cpp
+SOURCE                  cphonetoneserversession.cpp
+SOURCE                  cphonetoneserverplaybackcontroller.cpp
+SOURCEPATH                  ../../../../phoneuiutils/src/
+SOURCE                  tphonecommandparam.cpp
+SOURCE                  tphonecmdparamringtone.cpp
+
+USERINCLUDE             ../../../inc
+USERINCLUDE             ../../../../phoneuiutils/inc
+USERINCLUDE             ../src
+USERINCLUDE            ../../../../phoneui2/srcdata
+
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE           ../../../../../inc
+SYSTEMINCLUDE           /epoc32/include/Digia/EUnit
+
+
+LIBRARY         EUnit.lib
+LIBRARY         EUnitUtil.lib
+LIBRARY         euser.lib
+
+
+// End of file

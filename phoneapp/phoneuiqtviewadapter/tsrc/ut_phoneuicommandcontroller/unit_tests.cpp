@@ -49,8 +49,8 @@ public:
 
     // From PhoneUIQtViewIF
     BubbleManagerIF& bubbleManager ();
-    void addBubbleCommand (int bubbleId, const PhoneAction& action);
-    void clearBubbleCommands (int bubbleId);
+    void addBubbleCommand (int bubbleId, HbAction *action) {};
+    void clearBubbleCommands (int bubbleId) {};
     void addParticipantListAction(
             int commandId,  
             const QString &text, 
@@ -58,7 +58,7 @@ public:
     void clearParticipantListActions();
     void hideToolbar () { };
     void showToolbar () { m_showToolbarCalled = true; };
-    void setToolbarActions (const QList<PhoneAction*>& actions) {m_toolbarActionCount = actions.count(); };
+    void setToolbarActions (const QList<HbAction *> &actions) {m_toolbarActionCount = actions.count(); };
     int volumeSliderValue () { m_volumeSliderValueCalled = true; return 5; };
     void removeVolumeSlider () { m_removeVolumeSliderCalled = true; };
     void setVolumeSliderValue (
@@ -78,7 +78,8 @@ public:
     void clearAndHideDialpad() { m_clearAndHideDialpadCalled = true;};
     void clearDialpad() {};
     void bringToForeground() {};
-    void setMenuActions(const QList<PhoneAction*>& ) { m_setMenuActionsCalled = true;};
+	void hide() {};
+    void setMenuActions(const QList<HbAction *> & ) { m_setMenuActionsCalled = true;};
     void shutdownPhoneApp() {};
     void setBackButtonVisible(bool ) {};
     HbMenu &menuReference(){ HbMenu* menu = NULL; return *menu;};
@@ -221,17 +222,6 @@ BubbleManagerIF& TestPhoneUiCommandController::bubbleManager ()
     return *this;
 }
 
-void TestPhoneUiCommandController::addBubbleCommand (
-        int bubbleId, const PhoneAction& action)
-{
-
-}
-
-void TestPhoneUiCommandController::clearBubbleCommands (int bubbleId)
-{
-
-}
-
 void TestPhoneUiCommandController::addParticipantListAction(
     int commandId,
     const QString& text, 
@@ -325,7 +315,7 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
     callStates[callId] = EPEStateConnected;
     serviceIds[callId] = serviceId;
     
-    QMap<PhoneAction::ActionType, PhoneAction *> actions = 
+    QList<HbAction *> actions = 
         m_commandController->pushButtonActionsForCall(
             callState,
             emergencyCall,
@@ -334,9 +324,9 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
     
-    QVERIFY(0<actions.values().count());
+    QVERIFY(0<actions.count());
     
-    qDeleteAll(actions.values());
+    qDeleteAll(actions);
     actions.clear();
     
     m_setInvalidButtonCommands = true;
@@ -348,8 +338,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
     
-    QVERIFY(0==actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0==actions.count());
+    qDeleteAll(actions);
     actions.clear();  
     m_setInvalidButtonCommands = false;
     
@@ -361,8 +351,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
  
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     PhoneResourceAdapter::Instance()->buttonsController()->
@@ -378,8 +368,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
  
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[callId] = EPEStateRinging;
@@ -392,8 +382,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
  
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[callId] = EPEStateIdle;
@@ -406,8 +396,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
  
-    QVERIFY(0==actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0==actions.count());
+    qDeleteAll(actions);
     actions.clear();
 
     callStates[callId] = EPEStateDisconnecting;
@@ -420,8 +410,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
  
-    QVERIFY(0==actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0==actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[callId] = EPEStateConferenceIdle;
@@ -434,8 +424,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
  
-    QVERIFY(0==actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0==actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[callId] = EPEStateUnknown;
@@ -448,8 +438,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
  
-    QVERIFY(0==actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0==actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[callId] = EPEStateDialing;
@@ -462,8 +452,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
  
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[callId] = EPEStateConnecting;
@@ -476,8 +466,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
  
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[callId] = EPEStateConnectedConference;
@@ -490,8 +480,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
  
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[callId] = EPEStateHeldConference;
@@ -504,8 +494,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
  
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     //////////////////////////////////////////////////////////////////////////
@@ -524,8 +514,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
     
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[2] = EPEStateHeldConference;
@@ -538,8 +528,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
     
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     serviceId = 3;
@@ -554,8 +544,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
     
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     actions = m_commandController->pushButtonActionsForCall(
@@ -566,8 +556,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
     
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[2] = EPEStateHeldConference;
@@ -580,8 +570,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
     
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[2] = EPEStateConnectedConference;
@@ -595,8 +585,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
     
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callState = EPEStateConnectedConference;
@@ -608,8 +598,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
     
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     callStates[callId] = EPEStateConnected;
@@ -625,8 +615,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
     
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     PhoneResourceAdapter::Instance()->buttonsController()->
@@ -649,8 +639,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             callId);
     
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     actions = m_commandController->pushButtonActionsForCall(
@@ -661,8 +651,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             3);
     
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
     actions = m_commandController->pushButtonActionsForCall(
@@ -673,8 +663,8 @@ void TestPhoneUiCommandController::testPushButtonActionsForCall()
             serviceId,
             2);
     
-    QVERIFY(0<actions.values().count());
-    qDeleteAll(actions.values());
+    QVERIFY(0<actions.count());
+    qDeleteAll(actions);
     actions.clear();
     
 }
@@ -701,7 +691,7 @@ void TestPhoneUiCommandController::testToolBarActionsForCall()
             setButtonFlags(PhoneUIQtButtonsController::Ihf, false);
     
     
-    QList<PhoneAction *> actions = 
+    QList<HbAction *> actions = 
         m_commandController->toolBarActions(
             R_PHONEUI_DIALER_CBA,
             callStates,
@@ -710,10 +700,10 @@ void TestPhoneUiCommandController::testToolBarActionsForCall()
             callId);
     
     QVERIFY(4==actions.count());
-    QVERIFY(EPhoneInCallCmdActivateIhf == actions.at(0)->command());
-    QVERIFY(EPhoneInCallCmdHold == actions.at(1)->command());
-    QVERIFY(EPhoneInCallCmdContacts == actions.at(2)->command());
-    QVERIFY(EPhoneInCallCmdDialer == actions.at(3)->command());
+    QVERIFY(EPhoneInCallCmdActivateIhf == actions[0]->property("command"));
+    QVERIFY(EPhoneInCallCmdHold == actions[1]->property("command"));
+    QVERIFY(EPhoneInCallCmdContacts == actions[2]->property("command"));
+    QVERIFY(EPhoneInCallCmdDialer == actions[3]->property("command"));
     
     qDeleteAll(actions);
     actions.clear();
@@ -772,10 +762,10 @@ void TestPhoneUiCommandController::testToolBarActionsForCall()
             callId);
     
     QVERIFY(4==actions.count());
-    QVERIFY(EPhoneInCallCmdJoin == actions.at(0)->command());
-    QVERIFY(EPhoneInCallCmdUnhold == actions.at(1)->command());
-    QVERIFY(EPhoneInCallCmdEndThisOutgoingCall == actions.at(2)->command());
-    QVERIFY(EPhoneCallComingCmdSilent == actions.at(3)->command());
+    QVERIFY(EPhoneInCallCmdJoin == actions[0]->property("command"));
+    QVERIFY(EPhoneInCallCmdUnhold == actions[1]->property("command"));
+    QVERIFY(EPhoneInCallCmdEndThisOutgoingCall == actions[2]->property("command"));
+    QVERIFY(EPhoneCallComingCmdSilent == actions[3]->property("command"));
     
     qDeleteAll(actions);
     actions.clear();

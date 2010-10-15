@@ -38,9 +38,9 @@
 #include "phonestatedefinitions.h"
 #include "tphonecmdparamglobalnote.h"
 #include "phonestatedefinitionsgsm.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "cphonekeys.h"
 #include "phonelogger.h"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -319,12 +319,8 @@ void CPhoneConference::HandleConferenceIdleL()
             
         case EOneActiveCall:
             {
-            TPhoneCmdParamCallStateData callStateData;
-            callStateData.SetCallState( EPEStateRinging );
-            iViewCommandHandle->HandleCommandL(
-                EPhoneViewGetCallIdByState, &callStateData );
-                
-            if( callStateData.CallId() > KErrNotFound )
+            TInt callId = PhoneCallUtil::CallIdByState( EPEStateRinging );    
+            if( callId > KErrNotFound )
                 {
                 UpdateUiCommands();
                 iStateMachine->ChangeState( EPhoneStateWaitingInSingle );    

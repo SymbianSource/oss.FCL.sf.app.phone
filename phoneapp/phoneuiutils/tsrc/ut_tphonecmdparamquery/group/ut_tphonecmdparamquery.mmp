@@ -56,3 +56,5 @@ LIBRARY                 EUnitUtil.lib
 LIBRARY                 euser.lib
 
 // Libraries required by the tested code
+
+SMPSAFE

@@ -58,6 +58,7 @@ class TELEPHONYUTILS_EXPORT SettingsWrapper : public QObject
 public:
     SettingsWrapper(QObject *parent = NULL);
     ~SettingsWrapper();
+    
 public:
     /*!
       Show call duration setting
@@ -101,6 +102,13 @@ public:
      */
     bool isOngoingCall() const;
 	
+    /*! 
+     Checks if network is connected.
+     Return true if connected.
+     Return false if not connected.
+    */
+    bool isConnectedToNetwork() const; 
+    
 	/*!
      Forbidden Icon support
      */
@@ -132,7 +140,7 @@ private: // Data
     // Own
     XQSettingsManager *m_settings;
     
-    QSystemDeviceInfo *m_deviceInfo;
+
 };
 
 #endif // CPPLUGINCOMMON_H

@@ -124,3 +124,4 @@ LIBRARY                 ws32.lib         // RWsSession
 
 LIBRARY                 CommonEngine.lib
 
+SMPSAFE

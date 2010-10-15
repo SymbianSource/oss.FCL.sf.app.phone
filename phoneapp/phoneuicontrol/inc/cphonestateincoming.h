@@ -130,18 +130,6 @@ class CPhoneStateIncoming : public CPhoneState
         void DisconnectWaitingCallL();
         
         /**
-        * Gets resource to use when number entry is open
-        * @return resource id
-        */
-        TInt GetNumberEntryVisibleMenuBar();
-        
-        /**
-        * Gets resource to use when number entry is closed
-        * @return resource id
-        */
-        TInt GetNumberEntryNotVisibleMenuBar();
-        
-        /**
         * Show disconnected note
         */        
         void ShowDisconnectingL( TInt aCallId ); 

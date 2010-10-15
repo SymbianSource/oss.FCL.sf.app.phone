@@ -16,6 +16,7 @@
  */
 #include <cpsettingformentryitemdataimpl.h>
 #include <cpitemdatahelper.h>
+
 #include "cptelephonyplugin.h"
 #include "cptelephonypluginview.h"
 #include "cppluginlogging.h"
@@ -26,23 +27,13 @@
 */
 CpTelephonyPlugin::CpTelephonyPlugin() : 
     QObject(0),
-    m_localisation(0)
+    m_translator(NULL)
 {
     // Install plugin specific msg handler
     INSTALL_TRACE_MSG_HANDLER;  
     DPRINT << ": IN";
-    
-    // Set scoped pointer 
-    m_localisation.reset(new PhoneLocalisation(this)); 
-    
-    // Install required translations
-    m_localisation->installTranslator(
-            PhoneLocalisation::
-            TranslationFileCommon);
-    m_localisation->installTranslator(
-            PhoneLocalisation::
-            TranslationFileTelephoneCp);
-
+    m_translator.reset(new HbTranslator(QString("telephone_cp"))); 
+    m_translator->loadCommon();
     DPRINT << ": OUT"; 
 }
 

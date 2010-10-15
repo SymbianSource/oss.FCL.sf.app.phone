@@ -26,7 +26,6 @@ class QString;
 class HbIcon;
 class HbAction;
 class HbMenu;
-class PhoneAction;
 
 class PhoneUIQtViewIFStub : public PhoneUIQtViewIF
 {
@@ -52,7 +51,7 @@ public:
     */
     void addBubbleCommand ( 
         int bubbleId,
-        const PhoneAction& action ) {};
+        HbAction* action ) {};
     
     /*!
         \fn void PhoneUIQtViewIF::clearBubbleCommands ()
@@ -83,7 +82,7 @@ public:
         
         Sets toolbar actions.
     */
-    void setToolbarActions(const QList<PhoneAction*>& actions) {};    
+    void setToolbarActions(const QList<HbAction *> &actions) {};    
     
     /*!
         \fn void PhoneUIQtViewIF::hideToolbar ()
@@ -188,12 +187,14 @@ public:
     */
     void bringToForeground() {};
     
+    void hide() {};
+    
     /*!
         \fn void PhoneUIQtViewIF::setToolbarActions()
         
        Sets menu actions.
     */
-    void setMenuActions(const QList<PhoneAction*>& actions) {};
+    void setMenuActions(const QList<HbAction *> &actions) {};
       
     /*!
         \fn void PhoneUIQtView::shutdownPhoneApp()

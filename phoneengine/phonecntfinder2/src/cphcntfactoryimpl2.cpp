@@ -55,8 +55,6 @@ CPhCntFactoryImpl2* CPhCntFactoryImpl2::NewL()
 //
 CPhCntFactoryImpl2::~CPhCntFactoryImpl2()
     {
-
-    FeatureManager::UnInitializeLib();
     }
 
 
@@ -136,7 +134,6 @@ CPhCntFactoryImpl2::CPhCntFactoryImpl2()
 //
 void CPhCntFactoryImpl2::ConstructL()
     {
-    FeatureManager::InitializeLibL();
     }
 
 

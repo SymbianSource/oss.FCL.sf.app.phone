@@ -41,13 +41,13 @@
 #include "phonerssbase.h"
 #include "phonestatedefinitionsgsm.h"
 #include "tphonecmdparamglobalnote.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "phonelogger.h"
 #include "cphonepubsubproxy.h"
 #include "cphonemediatorfactory.h"
 #include "cphonemediatorsender.h"
 #include "mphonestorage.h"
 #include "cphonecenrepproxy.h"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -83,28 +83,19 @@ EXPORT_C void CPhoneSingleCall::ConstructL()
     iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
         &globalNotifierParam );
     
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateConnected );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    
+    TInt callId = PhoneCallUtil::CallIdByState( EPEStateConnected );
     // No connected call, 
-    if( callStateData.CallId() == KErrNotFound )
+    if( callId == KErrNotFound )
         {
         //find the held call.
-        callStateData.SetCallState( EPEStateHeld );
-        iViewCommandHandle->HandleCommandL(
-            EPhoneViewGetCallIdByState, &callStateData );
-        // No held call.
-        if ( callStateData.CallId() == KErrNotFound ) 
+        callId = PhoneCallUtil::CallIdByState( EPEStateHeld );
+        if ( callId == KErrNotFound ) 
             {
             // find the disconnected call.
-            callStateData.SetCallState( EPEStateDisconnecting );
-            iViewCommandHandle->HandleCommandL(
-                    EPhoneViewGetCallIdByState, &callStateData );    
+            callId = PhoneCallUtil::CallIdByState( EPEStateDisconnecting );  
             }
         }
-    iCallId = callStateData.CallId();      
+    iCallId = callId;      
     }
 
 // -----------------------------------------------------------

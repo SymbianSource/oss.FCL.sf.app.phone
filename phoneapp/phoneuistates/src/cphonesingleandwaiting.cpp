@@ -37,12 +37,12 @@
 #include "tphonecmdparamstring.h"
 #include "tphonecmdparamcallheaderdata.h"
 #include "tphonecmdparamglobalnote.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "phonestatedefinitionsgsm.h"
 #include "phonelogger.h"
 #include "cphonecenrepproxy.h"
 #include "cphonepubsubproxy.h"
 #include "mphonestorage.h"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -73,19 +73,13 @@ CPhoneSingleAndWaiting::~CPhoneSingleAndWaiting()
 void CPhoneSingleAndWaiting::ConstructL()
     {
     CPhoneGsmInCall::ConstructL();
-    
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateConnected );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
 
-    if ( callStateData.CallId() == KErrNotFound )
+    iSingleCallId = PhoneCallUtil::CallIdByState( EPEStateConnected );
+    if ( iSingleCallId == KErrNotFound )
         {
-        callStateData.SetCallState( EPEStateHeld );
-        iViewCommandHandle->HandleCommandL(
-            EPhoneViewGetCallIdByState, &callStateData );
+        iSingleCallId = PhoneCallUtil::CallIdByState( EPEStateHeld );
         }
-    iSingleCallId = callStateData.CallId();
+
     __PHONELOG1( EBasic, EPhoneUIStates,
         "CPhoneSingleAndWaiting::ConstructL()  (iSingleCallId=%d)", iSingleCallId);
     }
@@ -179,12 +173,8 @@ TBool CPhoneSingleAndWaiting::HandleCommandL( TInt aCommand )
 
         case EPhoneCallComingCmdReject: // fall through
             {
-            // Get waiting callid
-            TPhoneCmdParamCallStateData callStateData;
-            callStateData.SetCallState( EPEStateRinging );
-            iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
-                &callStateData );
-            iStateMachine->SetCallId( callStateData.CallId() );
+            iStateMachine->SetCallId( 
+                    PhoneCallUtil::CallIdByState( EPEStateRinging ) );
             iStateMachine->SendPhoneEngineMessage(
                 MPEPhoneModel::EPEMessageReject );
             break;
@@ -252,25 +242,15 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
 
     if ( iSingleCallId == KErrNotFound )
         {
-        TPhoneCmdParamCallStateData callStateData;
-        callStateData.SetCallState( EPEStateDisconnecting );
-        iViewCommandHandle->HandleCommandL(
-            EPhoneViewGetCallIdByState, &callStateData );
-
-        if ( callStateData.CallId() == KErrNotFound )
+        iSingleCallId = PhoneCallUtil::CallIdByState( EPEStateDisconnecting );
+        if ( iSingleCallId == KErrNotFound )
             {
-            callStateData.SetCallState( EPEStateConnected );
-            iViewCommandHandle->HandleCommandL(
-                EPhoneViewGetCallIdByState, &callStateData );
-
-            if ( callStateData.CallId() == KErrNotFound )
+            iSingleCallId = PhoneCallUtil::CallIdByState( EPEStateConnected );
+            if ( iSingleCallId == KErrNotFound )
                 {
-                callStateData.SetCallState( EPEStateHeld );
-                iViewCommandHandle->HandleCommandL(
-                    EPhoneViewGetCallIdByState, &callStateData );
+                iSingleCallId = PhoneCallUtil::CallIdByState( EPEStateHeld );
                 }
             }
-        iSingleCallId = callStateData.CallId();
         }
 
     __PHONELOG1( EBasic, EPhoneControl, 
@@ -287,26 +267,23 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
 
         // Get waiting callId
-        TPhoneCmdParamCallStateData callStateData;
-        callStateData.SetCallState( EPEStateRinging );
-        iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
-            &callStateData );
+        TInt callId = PhoneCallUtil::CallIdByState( EPEStateRinging );
         
         __PHONELOG1( EBasic, EPhoneControl, 
             "CPhoneSingleAndWaiting::HandleIdleL EPEStateRinging CallId(%d)",
-            callStateData.CallId() );
+            callId );
         
         // Display ringing bubble
-        if ( callStateData.CallId() > KErrNotFound )
-            {           
-            UpdateCallHeaderAndUiCommandsL( callStateData.CallId() );
+        if ( callId > KErrNotFound )
+            {
+            SetRingingTonePlaybackL( callId );
+            UpdateCallHeaderAndUiCommandsL( callId );
 
             if ( iNumberEntryManager->IsNumberEntryVisibleL() )
                 {
                 iNumberEntryManager->SetNumberEntryVisibilityL(EFalse);
                 }
             
-            SetRingingTonePlaybackL( callStateData.CallId() );
             BringIncomingToForegroundL();
             }
         SetBackButtonActive(EFalse);
@@ -322,6 +299,11 @@ void CPhoneSingleAndWaiting::HandleIdleL( TInt aCallId )
         if ( iNumberEntryManager->IsNumberEntryUsedL() )
             {
             iNumberEntryManager->SetNumberEntryVisibilityL(ETrue);
+            }
+        
+        if ( PhoneCallUtil::IsVideoCall( iSingleCallId ) )
+            {
+            iViewCommandHandle->ExecuteCommand( EPhoneViewSetVideoCallOnTop );
             }
         
         UpdateUiCommands();

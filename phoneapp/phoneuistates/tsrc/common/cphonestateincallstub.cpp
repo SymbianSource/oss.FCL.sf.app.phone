@@ -79,17 +79,6 @@ TBool CPhoneStateInCall::IsVideoCallActiveL()
     
     }
 
-TBool CPhoneStateInCall::GetRingingCallL(  )
-    {
-    
-    }
-
-TBool CPhoneStateInCall::IsVideoCallRingingL()
-    {
-    
-    }
-
-
 void CPhoneStateInCall::DisconnectOutgoingCallL()
     {
     

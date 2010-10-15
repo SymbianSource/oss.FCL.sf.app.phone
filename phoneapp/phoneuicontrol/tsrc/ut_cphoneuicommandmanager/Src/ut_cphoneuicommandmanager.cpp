@@ -168,7 +168,8 @@ void ut_cphoneuicommandmanager::T_CPhoneUiCommandManager__EmptyL(  )
  */
 void ut_cphoneuicommandmanager::T_UpdateUiCommands(  )
     {
-    /*expect call from SetButtonFlags*/
+    /*expect call from SetButtonFlags*/   
+    iMockContext->ExpectCallL( "PhoneCallUtil::CallIdByState" ).ReturnsL(KErrNotFound);
     TPhoneCmdParamBoolean muteParam;
     iMockContext->ExpectCallL( "CPhoneViewCommandHandleMock::ExecuteCommand" ).
             WithL<TPhoneViewCommandId, TPhoneCommandParam&> ( EPhoneViewSetMuteFlag, muteParam ); 

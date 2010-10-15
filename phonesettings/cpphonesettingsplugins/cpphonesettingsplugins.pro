@@ -24,5 +24,3 @@ symbian: {
         "./rom/cpphonesettingsplugins.iby CORE_APP_LAYER_IBY_EXPORT_PATH(cpphonesettingsplugins.iby)" \
         "./rom/cpphonesettingsplugins_resources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(cpphonesettingsplugins_resources.iby)"
 }
-HEADERS = cptelephonyutils/inc/cpphonelocalisation.h
-SOURCES = cptelephonyutils/src/cpphonelocalisation.cpp

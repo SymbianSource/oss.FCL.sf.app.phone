@@ -21,7 +21,6 @@
 #include "mphonestatemachine.h"
 #include "phoneviewcommanddefinitions.h"
 #include "tphonecmdparamcallheaderdata.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "phonestatedefinitionsgsm.h"
 #include "phonelogger.h"
 #include "tphonecmdparamboolean.h"
@@ -30,6 +29,7 @@
 #include "phonerssbase.h"
 #include "tphonecmdparamglobalnote.h"
 #include "phoneui.hrh"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -275,13 +275,9 @@ void CPhoneConferenceAndCallSetup::HandleConferenceIdleL()
     __LOGMETHODSTARTEND( EPhoneUIStates, 
         "CPhoneConferenceAndCallSetup::HandleConferenceIdleL()");
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveConferenceBubble );
-    
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateConnecting );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
 
-    if ( callStateData.CallId() > KErrNotFound )
+    TInt callId = PhoneCallUtil::CallIdByState( EPEStateConnecting );
+    if ( callId > KErrNotFound )
         {
         // Go to alerting and single state
         UpdateUiCommands();

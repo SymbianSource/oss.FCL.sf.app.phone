@@ -144,7 +144,14 @@ bool SettingsWrapper::isPhoneOffline(  ) const
     SMC_MOCK_METHOD0( bool )
     }
 
-
+// -----------------------------------------------------------------------------
+// SettingsWrapper::isConnectedToNetwork
+// -----------------------------------------------------------------------------
+//
+bool SettingsWrapper::isConnectedToNetwork(  ) const
+    {
+    SMC_MOCK_METHOD0( bool )
+    }
 // -----------------------------------------------------------------------------
 // SettingsWrapper::isOngoingCall
 // -----------------------------------------------------------------------------

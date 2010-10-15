@@ -207,9 +207,13 @@ bool DialService::hasCapability()
         PHONE_TRACE1("NetworkServices capability missing");
         return false;
     }
-    if (!caps.contains(ECapabilityNetworkControl)) {
-        PHONE_TRACE1("NetworkControl capability missing");
-        return false;
+    if (!caps.contains(ECapabilityTrustedUI)) {
+        PHONE_TRACE1("TrustedUI capability missing");
+        //fallback to check for NetworkControl, backwards compatibility
+        if (!caps.contains(ECapabilityNetworkControl)) {
+        	  PHONE_TRACE1("NetworkControl capability missing");
+            return false;
+      }
     }
 	return true;
 }

@@ -29,16 +29,17 @@
 
 const TInt KCriticalLevel = 2;
 
-PhoneGlobalNotes::PhoneGlobalNotes(QObject *parent) : 
-    QObject(parent),
+PhoneGlobalNotes::PhoneGlobalNotes(XQSystemToneService& toneservice,
+                                   QObject *parent) : 
+    QObject(parent),                                   
     m_timer(0),
-    m_toneService(0),
+    m_toneService(&toneservice),    
     m_queryCanceledCommand(-1),
     m_timeoutCommand(-1),
     iProgressDialog(0)
+    
 {
     PHONE_TRACE
-    m_toneService = new XQSystemToneService(this);
 
     m_timer = new QTimer(this);
     m_timer->setSingleShot(true);

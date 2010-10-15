@@ -18,12 +18,10 @@
 #include <platform_paths.hrh>
 
 // Capability assignment.
-CAPABILITY ALL -TCB
+CAPABILITY ALL -TCB 
 
 // Assign Vendor ID.
 VENDORID VID_DEFAULT
-
-VERSION 10.0
 
 TARGET          phoneringingtoneplayer.dll
 TARGETTYPE      dll
@@ -32,11 +30,10 @@ UID             0x1000008d 0x2002134E
 SOURCEPATH      ../src
 
 
-SOURCE          cphoneaudioplayer.cpp
-SOURCE          cphoneringingtone.cpp
-SOURCE          cphoneringingtonecontroller.cpp
-SOURCE          cphoneringingtoneplayer.cpp 
-SOURCE          cphonettsplayer.cpp
+SOURCE          cphonetoneserver.cpp
+SOURCE          rphonetoneclient.cpp
+SOURCE          cphonetoneserversession.cpp
+SOURCE          cphonetoneserverplaybackcontroller.cpp
 
 /* Languages */
 LANG SC

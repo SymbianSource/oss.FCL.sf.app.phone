@@ -95,4 +95,5 @@ LIBRARY         gdi.lib      	// TZoomFactor
 LIBRARY    		CentralRepository.lib
  
 
+SMPSAFE
 

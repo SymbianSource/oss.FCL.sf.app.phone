@@ -1,7 +1,7 @@
 EXPORTS
-	?StopPlaying@CPhoneRingingToneController@@QAEXXZ @ 1 NONAME ; void CPhoneRingingToneController::StopPlaying(void)
-	?PlayRingToneL@CPhoneRingingToneController@@QAEXPAVTPhoneCommandParam@@@Z @ 2 NONAME ; void CPhoneRingingToneController::PlayRingToneL(class TPhoneCommandParam *)
-	?NewL@CPhoneRingingToneController@@SAPAV1@XZ @ 3 NONAME ; class CPhoneRingingToneController * CPhoneRingingToneController::NewL(void)
-	?MuteRingingToneOnAnswer@CPhoneRingingToneController@@QAEXXZ @ 4 NONAME ; void CPhoneRingingToneController::MuteRingingToneOnAnswer(void)
-	?MuteRingingTone@CPhoneRingingToneController@@QAEXXZ @ 5 NONAME ; void CPhoneRingingToneController::MuteRingingTone(void)
+	?StopPlayingL@RPhoneToneClient@@QAEXXZ @ 1 NONAME ; void RPhoneToneClient::StopPlayingL(void)
+	??0RPhoneToneClient@@QAE@XZ @ 2 NONAME ; RPhoneToneClient::RPhoneToneClient(void)
+	?Connect@RPhoneToneClient@@QAEHXZ @ 3 NONAME ; int RPhoneToneClient::Connect(void)
+	??1RPhoneToneClient@@QAE@XZ @ 4 NONAME ; RPhoneToneClient::~RPhoneToneClient(void)
+	?PlayRingingToneL@RPhoneToneClient@@QAEXPAVTPhoneCommandParam@@@Z @ 5 NONAME ; void RPhoneToneClient::PlayRingingToneL(class TPhoneCommandParam *)
 

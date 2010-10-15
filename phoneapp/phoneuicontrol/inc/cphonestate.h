@@ -249,7 +249,7 @@ class CPhoneState :
         /**
         * Dial CS multimedia call
         */
-        IMPORT_C void DialMultimediaCallL();
+        IMPORT_C void DialMultimediaCall();
 
         /**
         * Disconnect call
@@ -438,26 +438,11 @@ class CPhoneState :
     protected:
 
        /**
-       * Checks if call is waiting, returns ETrue if call is waiting
-       * otherwise EFalse.
-       * @param aCallId, call id.
-       */
-       TBool IsWaitingCallL( const TInt aCallId );
-
-       /**
        * Checks status of KFeatureIdSideVolumeKeys and KTelephonyLVFlagScrollVolumeKeys
        * keys. If KTelephonyLVFlagScrollVolumeKeys is false and KFeatureIdSideVolumeKeys is true
        * then side volume keys are only supported and method returns true, otherwise false.
        */
        TBool OnlySideVolumeKeySupported();
-
-       /**
-       * Checks if device has connected call ongoing.
-       * List of connected call states: EPEStateConnected
-       *                                EPEStateConnectedConference
-       *                                EPEStateConnecting
-       */
-       TBool IsAnyConnectedCalls();
 
     private:
 
@@ -574,15 +559,15 @@ class CPhoneState :
         // Number entry manager
         CPhoneNumberEntryManager* iNumberEntryManager;
 
+        // Internal variable for EikonEnv to avoid
+        // use of static system calls
+        CEikonEnv* iEnv; // Not owned
 
     private:
 
         // Previously handled SIM card state.
         TPESimState iPreviousSimState;
 
-        // Internal variable for EikonEnv to avoid
-        // use of static system calls
-        CEikonEnv* iEnv; // Not owned
         };
 
 #endif // CPHONESTATE_H

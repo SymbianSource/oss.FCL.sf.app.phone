@@ -98,3 +98,5 @@ LIBRARY         apgrfx.lib
 LIBRARY         RemConCoreApi.lib
 LIBRARY         efsrv.lib
 LIBRARY         gdi.lib
+
+SMPSAFE

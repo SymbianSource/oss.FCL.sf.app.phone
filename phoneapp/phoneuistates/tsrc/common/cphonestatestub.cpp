@@ -326,10 +326,10 @@ void CPhoneState::IncreaseAudioVolumeL()
 // <-------------------------- COMMON STATE FUNCTIONS ------------------------>
 
 // -----------------------------------------------------------
-// CPhoneState::DialMultimediaCallL
+// CPhoneState::DialMultimediaCall
 // -----------------------------------------------------------
 //
-void CPhoneState::DialMultimediaCallL()
+void CPhoneState::DialMultimediaCall()
     {
     }
 
@@ -628,15 +628,6 @@ void CPhoneState::SetRingingTonePlaybackL( TInt /*aCallId*/ )
 void CPhoneState::HandleCugInUseNoteL()
     {
     
-    }
-
-// -----------------------------------------------------------
-// CPhoneState::IsWaitingCallL
-// -----------------------------------------------------------
-//
-TBool CPhoneState::IsWaitingCallL( const TInt /*aCallId*/  )
-    {
-  
     }
 
 // ---------------------------------------------------------

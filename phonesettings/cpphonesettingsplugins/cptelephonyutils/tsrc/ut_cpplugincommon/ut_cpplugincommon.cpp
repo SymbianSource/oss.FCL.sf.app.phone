@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -75,9 +75,13 @@ void UT_CpPluginCommon::t_memleak()
  */
 void UT_CpPluginCommon::t_showCallDuration()
 {
-    EXPECT(XQSettingsManager, readItemValue).
-        returns(QVariant(23324));
+    // Case CenrepKeyValueOff
+    EXPECT(XQSettingsManager, readItemValue).returns(QVariant(0));
+    mWrapper->showCallDuration();
+    QVERIFY(verify());
     
+    // Case CenrepKeyValueOn
+    EXPECT(XQSettingsManager, readItemValue).returns(QVariant(1));
     mWrapper->showCallDuration();
     QVERIFY(verify());
 }
@@ -224,9 +228,53 @@ void UT_CpPluginCommon::t_isPhoneOffline()
  */
 void UT_CpPluginCommon::t_isOngoingCall()
 {
+    // Case EPSCTsyCallStateNone
     EXPECT(XQSettingsManager, readItemValue).
                     returns(QVariant(1));
     mWrapper->isOngoingCall();
+    QVERIFY( verify() );
+    
+    // Case EPSCTsyCallStateConnected
+    EXPECT(XQSettingsManager, readItemValue).
+                    returns(QVariant(7));
+    mWrapper->isOngoingCall();
+    QVERIFY( verify() );    
+}
+
+/*!
+  UT_CpPluginCommon::t_forbiddenIconSupported
+ */
+void UT_CpPluginCommon::t_forbiddenIconSupported()
+{
+    EXPECT(XQSettingsManager, readItemValue).
+                returns(QVariant(true));
+    mWrapper->forbiddenIconSupported(); 
+    QVERIFY( verify() );
+}
+
+/*!
+  UT_CpPluginCommon::t_isConnectedToNetwork
+ */
+void UT_CpPluginCommon::t_isConnectedToNetwork()
+{
+    // Not connected to network
+    QT_TRAP_THROWING(SmcDefaultValue< QSystemNetworkInfo::NetworkStatus >::
+            SetL(QSystemNetworkInfo::NoNetworkAvailable));
+    EXPECT(QtMobility::QSystemNetworkInfo, networkStatus).
+            with(QSystemNetworkInfo::WcdmaMode);
+    EXPECT(QtMobility::QSystemNetworkInfo, networkStatus).
+            with(QSystemNetworkInfo::GsmMode);
+    mWrapper->isConnectedToNetwork(); 
+    QVERIFY( verify() );
+    
+    // Connected to network
+    QT_TRAP_THROWING(SmcDefaultValue< QSystemNetworkInfo::NetworkStatus >::
+            SetL(QSystemNetworkInfo::Connected));
+    EXPECT(QtMobility::QSystemNetworkInfo, networkStatus).
+            with(QSystemNetworkInfo::WcdmaMode);
+    EXPECT(QtMobility::QSystemNetworkInfo, networkStatus).
+            with(QSystemNetworkInfo::GsmMode);
+    mWrapper->isConnectedToNetwork(); 
     QVERIFY( verify() );
 }
 

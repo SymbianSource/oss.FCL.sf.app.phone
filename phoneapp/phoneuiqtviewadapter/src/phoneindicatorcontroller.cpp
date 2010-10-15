@@ -109,7 +109,7 @@ void PhoneIndicatorController::setActiveCallData()
 {
     PHONE_TRACE
     m_cli = hbTrId("txt_phone_dblist_ongoing_call");
-    m_callImage = "qtg_mono_call";
+    m_callImage = "qtg_large_active_call";
 }
 
 void PhoneIndicatorController::clearActiveCallData()
@@ -214,7 +214,19 @@ void PhoneIndicatorController::setMissedallIndicatorData()
                         QVariant( HbIndicatorInterface::SecondaryTextRole ).toString(), 
                         lastMissedCallFrom );
             }
-            QString iconName = "qtg_mono_missed_call_unseen";
+            QString iconName;
+            switch(event->eventType()){
+                case LogsEvent::TypeVoiceCall:
+                    iconName = "qtg_large_missed_voice_call_unseen";
+                    break;
+                case LogsEvent::TypeVoIPCall:
+                    iconName = "qtg_large_missed_voip_call_unseen";
+                    break;
+                case LogsEvent::TypeVideoCall:
+                    iconName = "qtg_large_missed_video_call_unseen";
+                    break;
+            }
+                    
             parameters.insert(
                     QVariant( HbIndicatorInterface::DecorationNameRole ).toString(),
                     iconName );

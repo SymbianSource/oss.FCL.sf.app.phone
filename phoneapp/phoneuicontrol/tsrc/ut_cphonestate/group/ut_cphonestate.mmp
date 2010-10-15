@@ -43,6 +43,7 @@ SOURCE          mock_cphonestatemachine.cpp
 SOURCE          mock_cphoneaccessorybthandler.cpp
 SOURCE          mock_phonenoteutil.cpp
 SOURCE          mock_phoneaudioutil.cpp
+SOURCE          mock_phonecallutil.cpp
  
 SOURCEPATH      ../../../../../internal/mocks/phoneapp/phoneuicontrol
 SOURCE          mock_cphoneuicommandmanager.cpp
@@ -133,3 +134,4 @@ LIBRARY         efsrv.lib
 LIBRARY         symbianmock.lib
 LIBRARY         hal.lib
 
+SMPSAFE

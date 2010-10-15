@@ -52,3 +52,5 @@ SYSTEMINCLUDE           /epoc32/include/Digia/EUnit
 LIBRARY                 EUnit.lib
 LIBRARY                 EUnitUtil.lib
 LIBRARY                 euser.lib
+
+SMPSAFE

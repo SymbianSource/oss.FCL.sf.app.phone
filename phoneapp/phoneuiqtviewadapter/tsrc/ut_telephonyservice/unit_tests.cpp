@@ -41,7 +41,7 @@ public: // PhoneUIQtViewIF
         BubbleManagerIF& bubbleManager (){};
         void addBubbleCommand ( 
                 int ,
-                const PhoneAction&  ){};
+                HbAction * ){};
         void clearBubbleCommands (int ){};
         void addParticipantListAction(
                 int ,  
@@ -50,7 +50,7 @@ public: // PhoneUIQtViewIF
         void clearParticipantListActions(){};
         void hideToolbar () {};
         void showToolbar () {};
-        void setToolbarActions (const QList<PhoneAction*>& ){};
+        void setToolbarActions (const QList<HbAction *> & ){};
         int volumeSliderValue () { return 0; };
         void removeVolumeSlider () {};
         void setVolumeSliderValue (
@@ -68,7 +68,8 @@ public: // PhoneUIQtViewIF
         void clearAndHideDialpad(){};
         void clearDialpad() {};
         void bringToForeground() {};
-        void setMenuActions(const QList<PhoneAction*>& ){};
+		void hide() {};
+        void setMenuActions(const QList<HbAction *> & ){};
         void shutdownPhoneApp() {};
         void setBackButtonVisible(bool ) {};        
         HbMenu &menuReference() {};

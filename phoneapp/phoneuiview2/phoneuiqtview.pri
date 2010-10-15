@@ -16,7 +16,7 @@
 
 HEADERS += ./inc/phoneuiqtviewif.h
 HEADERS += ./inc/phoneuiqtview.h
-HEADERS += ./inc/phoneaction.h
+HEADERS += ./inc/phoneuiqtview_p.h
 
 SOURCES += ./src/phoneuiqtview.cpp
-SOURCES += ./src/phoneaction.cpp
+SOURCES += ./src/phoneuiqtview_p.cpp

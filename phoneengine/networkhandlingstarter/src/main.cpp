@@ -26,6 +26,7 @@ int main(int argc, char **argv)
 {
     HbApplication app(argc, argv, Hb::NoSplash);
     NetworkHandlingStarter service;
+    service.start();
     XQServiceUtil::toBackground(true);
     return app.exec();
 }

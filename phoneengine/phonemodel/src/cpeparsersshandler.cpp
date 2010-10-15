@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies). 
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies). 
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -39,7 +39,9 @@
 #include <psuidivertnotehandler.h>
 #include <psetcalldivertingwrapper.h>
 #include <psuiwaitingnotehandler.h>
+#include <psuiclinotehandler.h>
 #include <psetcallwaitingwrapper.h>
+#include <psetcliwrapper.h>
 
 // CONSTANTS
 const TInt KPEDefinedBasicServiceGroup = 99;
@@ -87,12 +89,12 @@ CPEParserSSHandler* CPEParserSSHandler::NewL(
 // Destructor
 CPEParserSSHandler::~CPEParserSSHandler()
     {    
-    delete iCli;
     delete iBarring;
-    delete iWaiting;
     delete iSettings;
     
     delete iCallDivertingHandler;
+    delete iCallWaitingHandler;
+    delete iCliNoteHandler;
     delete iPsetWrapper;
     
 
@@ -964,9 +966,7 @@ void CPEParserSSHandler::ConnectToSsEngineL()
 // -----------------------------------------------------------------------------
 //
 void CPEParserSSHandler::CreateCWObsL()
-    {
-    ConnectToSsEngineL();
-   
+    { 
     if ( !iPsetWrapper )
         {
         iPsetWrapper = new PSetWrapper;    
@@ -1008,7 +1008,13 @@ void CPEParserSSHandler::CreateCFObsL()
 //
 void CPEParserSSHandler::CreateCliObsL()
     {
-    ConnectToSsEngineL();
+    if ( !iPsetWrapper )
+        {
+        iPsetWrapper = new PSetWrapper;    
+        iCliNoteHandler = new PsUiCliNoteHandler(iPsetWrapper->cliWrapper());
+        iCli = &iPsetWrapper->cliWrapper().getCPsetCli();
+        iCli->SetRequestObserver(this);
+        }
     }   
      
 // -----------------------------------------------------------------------------
@@ -1051,8 +1057,6 @@ void CPEParserSSHandler::ResetVariables()
     delete iBarring;
     iBarring = NULL;
     
-    delete iCli;
-    iCli = NULL;
     delete iSettings;
     iSettings = NULL;
     
@@ -1063,6 +1067,10 @@ void CPEParserSSHandler::ResetVariables()
     iWaiting = NULL;
     delete iCallWaitingHandler;
     iCallWaitingHandler = NULL;
+    
+    iCli = NULL;
+    delete iCliNoteHandler;
+    iCliNoteHandler = NULL;
     
     delete iPsetWrapper;
     iPsetWrapper = NULL;

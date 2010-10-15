@@ -27,13 +27,13 @@
 #include "phonelogger.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparaminteger.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "cphonemainresourceresolver.h"
 #include "phonerssbase.h"
 #include "tphonecmdparamglobalnote.h"
 #include "phoneui.hrh"
 #include "mphonestorage.h"
 #include "cphonecenrepproxy.h"
+#include "phonecallutil.h"
 #include <telephonyvariant.hrh>
 
 // ================= MEMBER FUNCTIONS =======================
@@ -151,11 +151,8 @@ void CPhoneConferenceAndSingleAndWaiting::HandleIdleL( TInt aCallId )
             }
         else
             {
-            TPhoneCmdParamCallStateData callStateData;
-            callStateData.SetCallState( EPEStateRinging );
-            iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
-                &callStateData );
-            if( callStateData.CallId() >= 0 )
+            TInt callId = PhoneCallUtil::CallIdByState( EPEStateRinging );
+            if( callId >= 0 )
                 {
                 // We have Conference and Waiting calls left
                 MakeStateTransitionToConferenceAndWaitingL( aCallId );
@@ -266,14 +263,11 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
          {
          case ENoActiveCalls: // Go to incoming state
             {
-            TPhoneCmdParamCallStateData callStateData;
-            callStateData.SetCallState( EPEStateRinging );
-            iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
-                &callStateData );
-            if ( callStateData.CallId() != KErrNotFound )
+            TInt callId = PhoneCallUtil::CallIdByState( EPEStateRinging );
+            if ( callId != KErrNotFound )
                 {
-                UpdateCallHeaderAndUiCommandsL( callStateData.CallId() );
-                SetRingingTonePlaybackL( callStateData.CallId() );
+                SetRingingTonePlaybackL( callId );
+                UpdateCallHeaderAndUiCommandsL( callId );
                 SetBackButtonActive(EFalse);
                 iStateMachine->ChangeState( EPhoneStateIncoming );
                 }

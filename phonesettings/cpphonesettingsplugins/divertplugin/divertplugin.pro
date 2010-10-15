@@ -53,3 +53,5 @@ symbian: {
 }
 
 BLD_INF_RULES.prj_exports += "./rom/cpdivertplugin_stub.sis /epoc32/data/z/system/install/cpdivertplugin_stub.sis"
+
+symbian:MMP_RULES += SMPSAFE

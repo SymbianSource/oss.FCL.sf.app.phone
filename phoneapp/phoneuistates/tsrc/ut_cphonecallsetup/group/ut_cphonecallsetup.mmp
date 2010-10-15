@@ -69,3 +69,5 @@ LIBRARY          avkon.lib // AknTextUtils
 LIBRARY          CommonEngine.lib //StringLoader 
 LIBRARY          cone.lib
 LIBRARY          apgrfx.lib
+
+SMPSAFE

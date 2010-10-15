@@ -38,7 +38,8 @@ private slots:
 
     void testCreateItem();
     void testUpdateChildItems();
-
+    void testUpdateChildItemsFirstTime();
+    
 private:
     BubbleParticipantListItem* mItem;
     HbMainWindow* mMainWindow;
@@ -77,6 +78,25 @@ void ut_BubbleParticipantListItem::testUpdateChildItems()
     mItem->addAction(&act2);
     mItem->updateChildItems();
     mItem->updateChildItems();
+}
+
+void ut_BubbleParticipantListItem::testUpdateChildItemsFirstTime()
+{
+    BubbleParticipantListItem* listItem = new BubbleParticipantListItem();
+    mMainWindow->addView(listItem);
+    
+    // with two actions
+    HbAction act1("Action-1");
+    HbAction act2("Action-2");
+    listItem->addAction(&act1);
+    listItem->addAction(&act2);
+   
+    listItem->updateChildItems();
+    
+    mMainWindow->show();
+    QTest::qWait(300); // Give HbMainWindow time to complete show() function call.
+    
+    listItem->clearActions();
 }
 
 BUBBLE_TEST_MAIN(ut_BubbleParticipantListItem)

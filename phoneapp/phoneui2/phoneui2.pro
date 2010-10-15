@@ -26,7 +26,7 @@ symbian {
     TARGET.CAPABILITY = ALL -TCB
     TARGET.UID3 = 0x100058B3
     TARGET.VID = VID_DEFAULT
-    TARGET.EPOCHEAPSIZE = 0x1000 0xA00000
+    TARGET.EPOCHEAPSIZE = 0x1000 0xA00000 // codescanner::largeepocheapsizevalues
     DEFINES += FT_SYMBIAN_INTEGRATION
     VERSION = 10.0
 
@@ -57,7 +57,7 @@ symbian {
       RSS_RULES += "hidden = KAppIsHidden;"
 }
 
-HEADERS += ./inc/hbphonemainwindow.h \
+HEADERS += ./inc/phonemainwindow.h \
            ./inc/phoneuikeyeventadapter.h \
            ./inc/phoneuicommandadapter.h \
            ./inc/phoneuihousehold.h \
@@ -67,7 +67,7 @@ HEADERS += ./inc/hbphonemainwindow.h \
 SOURCES   += ./src/main.cpp \
              ./src/phoneuikeyeventadapter.cpp \
              ./src/phoneuicommandadapter.cpp \
-             ./src/hbphonemainwindow.cpp \
+             ./src/phonemainwindow.cpp \
              ./src/phoneuihousehold.cpp \
              ./src/phoneuihousehold_p.cpp \
              ./src/phoneapplication.cpp

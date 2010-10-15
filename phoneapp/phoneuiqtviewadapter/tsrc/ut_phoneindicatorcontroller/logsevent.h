@@ -26,6 +26,14 @@ class LogsEvent: public QObject
 Q_OBJECT
  
 public:
+
+enum LogsEventType
+        {
+        TypeUndefined = -1,
+        TypeVoiceCall,
+        TypeVideoCall,
+        TypeVoIPCall
+        };
  
     LogsEvent();
     virtual ~LogsEvent();
@@ -34,6 +42,7 @@ public:
     bool isRemotePartyPrivate()const ;
     const QString& remoteParty() const;
     const QString& number() const;
+    LogsEventType eventType() const;
 };
 
 #endif /* LOGSEVENT_H_ */

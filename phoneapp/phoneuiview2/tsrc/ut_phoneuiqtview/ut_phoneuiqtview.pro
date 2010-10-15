@@ -20,8 +20,8 @@ TARGET =
 TARGET.UID3 = 0xEA9BEF3F
 DEPENDPATH += . ../../src/
 INCLUDEPATH += .
-CONFIG += hb qtestlib //mobility
-//MOBILITY += systeminfo
+CONFIG += hb qtestlib mobility
+MOBILITY += systeminfo
 
 symbian {
 
@@ -36,9 +36,10 @@ symbian {
     LIBS += -lbubblemanager2 \
             -lxqserviceutil \
             -ldialpad \
-            -lxqkeycapture
+            -lxqkeycapture \
+            -lmocklib \
+            -lsymbianmock
 
-    DEFINES += FT_SYMBIAN_INTEGRATION
 } else:win32 {
     INCLUDEPATH += c:/hb/include/hbcore \
         c:/hb/include/hbwidgets \
@@ -54,16 +55,32 @@ DEFINES += BUILD_PHONEUIQTVIEW
 # Input
 HEADERS += ../../inc/phoneuiqtview.h \
            ../../inc/phoneuiqtviewif.h \
-           ../../inc/phoneaction.h \
-           hbtoolbar.h \
-           hbvolumesliderpopup.h \
-           qsysteminfo.h
+           ../../inc/phoneuiqtview_p.h
+           
 SOURCES += ../../src/phoneuiqtview.cpp \
-           ../../src/phoneaction.cpp \
+           ../../src/phoneuiqtview_p.cpp \
            unit_tests.cpp \
-           hbtoolbar_stub.cpp \
-           hbvolumesliderpopup_stub.cpp \
-           qsysteminfo_stub.cpp 
+           ../../../../tsrc/mocks/orbit/mock_hbaction.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hbicon.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hbmainwindow.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hbview.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hbwidget.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hbwidgetbase.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hblineedit.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hbabstractedit.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hbtoolbar.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hbvolumesliderpopup.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hbsliderpopup.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hbdialog.cpp \
+           ../../../../tsrc/mocks/orbit/mock_hbpopup.cpp \
+           ../../../../tsrc/mocks/qtgui/mock_qgraphicsview.cpp \
+           ../../../../tsrc/mocks/qtgui/mock_qgraphicswidget.cpp \
+           ../../../../tsrc/mocks/qtgui/mock_qgraphicsitem.cpp \
+           ../../../../tsrc/mocks/bubblemanager/mock_bubblemanager2.cpp \
+           ../../../../tsrc/mocks/qtmobility/mock_qsysteminfo.cpp \
+           ../../../../tsrc/mocks/qtmobility/mock_xqkeycapture.cpp \
+           ../../../../tsrc/mocks/phonesrv/mock_dialpad.cpp \
+           ../../../../tsrc/mocks/phonesrv/mock_dialpadkeyhandler.cpp
            
 
 

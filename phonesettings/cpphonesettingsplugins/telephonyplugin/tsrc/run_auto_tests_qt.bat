@@ -138,6 +138,7 @@ pushd .
 call cd %1
 call qmake
 call sbs --config winscw_udeb --keepgoing CLEAN
+call sbs RESOURCE
 if [%INSTRUMENT%] EQU [TRUE] (
 call ctcwrap -n %PATH_TO_COVERAGE_DATA%\%1 -i d -C "EXCLUDE=*" -C "NO_EXCLUDE=%TESTED_SRC%" "%SBS_CALL%"
 ) else (

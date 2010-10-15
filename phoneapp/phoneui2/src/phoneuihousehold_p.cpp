@@ -41,26 +41,24 @@
 
 PhoneUiHouseHoldPrivate::PhoneUiHouseHoldPrivate(HbMainWindow &window) :
     iAppsReady (0), iStartupSignalRecoveryId (0), iLightIdleReached (EFalse), 
-    iPhoneUIController (0), m_window (window)
+    iPhoneUIController (0), m_window (window), m_featMgrInit(false)
 {
     PHONE_DEBUG("phoneui - Start phoneapp");
     
-    TRAPD( error, ConstructL() );
-    qt_symbian_throwIfError(error);
+    QT_TRAP_THROWING( ConstructL() );
 }
 
 PhoneUiHouseHoldPrivate::~PhoneUiHouseHoldPrivate()
 {
-    while (!m_translators.isEmpty()) {
-        HbTranslator *translator = m_translators.takeFirst();
-        delete translator;
-        translator = 0;
-    }
-    
+    resetTranslators();
+
     delete iKeyEventAdapter;
     delete iCommandAdapter;
     delete iPhoneUIController;
     delete iViewAdapter;
+    if (m_featMgrInit) {
+        FeatureManager::UnInitializeLib();
+    }
 }
 
 TInt PhoneUiHouseHoldPrivate::DoStartupSignalL( TAny* aAny )
@@ -74,21 +72,16 @@ TInt PhoneUiHouseHoldPrivate::DoStartupSignalL( TAny* aAny )
             appUi->DoStartupSignalSecurityL();
 }
 
-
 TInt PhoneUiHouseHoldPrivate::DoStartupSignalIdleL()
     {
     PHONE_DEBUG("phoneui::DoStartupSignalIdleL()");
+    //Workaround: pre-load libs
+    m_window.show();
     // Idle application has already started
     if ( !( iAppsReady & EPhoneIdleStartedUp ) )
         {
         PHONE_DEBUG("phoneui::DoStartupSignalIdleL() Idle App started ");
         iAppsReady += EPhoneIdleStartedUp;
-        
-        // Remove Phone application from Fast Swap Window.
-        //    iPhoneViewController->SetHiddenL( ETrue );
-        
-        // Avkon removal            
-        // hack to make sure EPhonePhase1Ok is set - to be fixed properly
        
         PHONE_DEBUG("phoneui::DoStartupSignalIdleL() Phone and Idle apps have both been started");    
         CPhonePubSubProxy::Instance()->ChangePropertyValue(
@@ -124,8 +117,7 @@ void PhoneUiHouseHoldPrivate::HandlePropertyChangedL(
 {
     PHONE_DEBUG("phoneui::HandlePropertyChangedL()");
     
-    if ( aCategory == KPSUidStartup )
-        {
+    if ( aCategory == KPSUidStartup ){
         
         const TInt startupState = CPhonePubSubProxy::Instance()->Value(
             KPSUidStartup,
@@ -137,34 +129,24 @@ void PhoneUiHouseHoldPrivate::HandlePropertyChangedL(
             startupState == ESwStateEmergencyCallsOnly ||
             startupState == ESwStateNormalRfOn ||
             startupState == ESwStateNormalRfOff ||
-            startupState == ESwStateNormalBTSap )
-            {
+            startupState == ESwStateNormalBTSap ){
             PHONE_DEBUG("phoneui::HandlePropertyChangedL() Try to update the startup signal again..." );
             // Try to update the startup signal again
             CPhoneRecoverySystem::Instance()->RecoverNow(
                 iStartupSignalRecoveryId, 
                 CTeleRecoverySystem::EPhonePriorityHigh );    
-            }
         }
+    }
 }
 
 void PhoneUiHouseHoldPrivate::ConstructL()
 {
     new( ELeave ) CPhoneLogger( KUidPhoneUILoggerSingleton );
     FeatureManager::InitializeLibL();
+    m_featMgrInit = true;
     
-    HbTranslator *translator = new HbTranslator(QString("telephone"));
-
-	if (translator) {
-        translator->loadCommon();
-        m_translators.append(translator);
-	}
+    loadTranslators();
     
-	HbTranslator *translator2 = new HbTranslator(QString("telephone_cp"));
-    if (translator2) {
-        m_translators.append(translator2);
-    }
-
     PhoneUIQtView *view = new PhoneUIQtView(m_window);
     iViewAdapter = new PhoneUIQtViewAdapter(*view);
     iPhoneUIController = CPhoneUIController::NewL(iViewAdapter);
@@ -187,12 +169,6 @@ void PhoneUiHouseHoldPrivate::ConstructL()
     QObject::connect(&m_window, SIGNAL(focusGained()),iViewAdapter, SLOT(onFocusGained()));
     QObject::connect(iViewAdapter->noteController(), SIGNAL(command (int)), 
                      iCommandAdapter, SLOT(handleCommand (int))); 
-    
-    // Disable default Send key functionality in application framework 
-    // avkon removal
-//    CAknAppUi *appUi = static_cast<CAknAppUi*>(CEikonEnv::Static()->AppUi());
-//    appUi->SetKeyEventFlags( CAknAppUiBase::EDisableSendKeyShort | 
-//                             CAknAppUiBase::EDisableSendKeyLong );
     
     // CLI Name.
     TInt err = RProperty::Define( 
@@ -315,3 +291,28 @@ void PhoneUiHouseHoldPrivate::ConstructL()
     }
 }
 
+void PhoneUiHouseHoldPrivate::loadTranslators()
+{
+    PHONE_DEBUG2("PhoneUiHouseHoldPrivate::LoadTranslators, locale:", QLocale::system().name());
+    resetTranslators();
+    
+    HbTranslator *translator2 = new HbTranslator(QString("telephone_cp"));
+    if (translator2) {
+        m_translators.append(translator2);
+    }
+    
+    HbTranslator *translator = new HbTranslator(QString("telephone"));
+    if (translator) {
+        translator->loadCommon();
+        m_translators.append(translator); //most used translation file added last
+    }
+}
+
+void PhoneUiHouseHoldPrivate::resetTranslators()
+{
+    while (!m_translators.isEmpty()) {
+        HbTranslator *translator = m_translators.takeFirst();
+        delete translator;
+        translator = 0;
+    }
+}

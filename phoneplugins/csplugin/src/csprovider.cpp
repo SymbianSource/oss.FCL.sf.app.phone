@@ -106,6 +106,7 @@ CSProvider::~CSProvider()
         delete iCallAddedHandler;
         delete iCipheringStatusMonitor;
         delete iDTMFProvider;
+        delete iConferenceCall;
 
         CSPLOGSTRING(CSPOBJECT, "CSProvider::~CSProvider close lines");
         iLineContainer.Close();

@@ -27,6 +27,12 @@
 #include "TPhoneCommandParam.h"
 #include "CPhoneMainResourceResolver.h"
 #include "phoneappcommands.hrh"
+#include <csmcmockcontext.h>
+#include <smcdefaultvalue.h>
+#include <msmcmockspecbuilder.h>
+#include <smcobjecttotypemapper.h>
+#include <smcmacros.h>
+#include <msmcmockaction.h>
 
 
 // - Construction -----------------------------------------------------------
@@ -48,6 +54,7 @@ ut_cphsingleandcallsetupandwait* ut_cphsingleandcallsetupandwait::NewL()
 
 ut_cphsingleandcallsetupandwait::~ut_cphsingleandcallsetupandwait()
     {
+    CSmcMockContext::Release();
     }
 
 ut_cphsingleandcallsetupandwait::ut_cphsingleandcallsetupandwait()
@@ -57,6 +64,7 @@ ut_cphsingleandcallsetupandwait::ut_cphsingleandcallsetupandwait()
 void ut_cphsingleandcallsetupandwait::ConstructL()
     {
     CEUnitTestSuiteClass::ConstructL();
+    iMockContext = CSmcMockContext::InstanceL();
     }
 
 // - Test methods -----------------------------------------------------------
@@ -65,6 +73,7 @@ void ut_cphsingleandcallsetupandwait::ConstructL()
 
 void ut_cphsingleandcallsetupandwait::SetupL(  )
     {
+    iMockContext->InitializeL();
     iViewCommandHandle = CPhoneViewController::NewL();
     iStateMachine = CPhoneStateMachineStub::NewL(); 
      
@@ -80,6 +89,7 @@ void ut_cphsingleandcallsetupandwait::Teardown(  )
     delete iStateSingleAndCallSetupAndWaiting;
     delete iViewCommandHandle;
     delete iStateMachine;
+    iMockContext->Reset();
     }
     
 // -----------------------------------------------------------------------------

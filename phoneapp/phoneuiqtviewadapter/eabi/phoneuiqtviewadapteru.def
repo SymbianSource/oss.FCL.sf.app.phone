@@ -109,4 +109,5 @@ EXPORTS
 	_ZThn8_N20PhoneUIQtViewAdapter15ExecuteCommandLEiiR7TDesC16 @ 108 NONAME
 	_ZThn8_N20PhoneUIQtViewAdapterD0Ev @ 109 NONAME
 	_ZThn8_N20PhoneUIQtViewAdapterD1Ev @ 110 NONAME
+	_ZN20PhoneUIQtViewAdapter26playHandsFreeActivatedToneEv @ 111 NONAME
 

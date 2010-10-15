@@ -52,9 +52,6 @@ private slots:
     void testConvertToHbActions();
     void testConvertToToolBarCommandList();
     void testBtToolBarCommandList();
-
-private:
-    void testIncallToolbar (int id); // helper function
     
 private:
     PhoneResourceAdapter *m_resourceAdapter; // class under test
@@ -95,79 +92,52 @@ void TestPhoneResourceAdapter::testConvert ()
     PhoneUIQtButtonsController* buttonsController = 
         m_resourceAdapter->buttonsController ();
     
-    QMap<PhoneAction::ActionType, PhoneAction *> map;
-    PhoneAction *action = map [PhoneAction::LeftButton];
+    QString result = 0;
     
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_incoming_call") );        
-    map = m_resourceAdapter->convert(R_PHONEUI_MTCAL_INCOMING_CALL);
-    QVERIFY(verify());
-    QCOMPARE (map.size (), 1);
+    result = m_resourceAdapter->convert(R_PHONEUI_MTCAL_INCOMING_CALL);
+    QCOMPARE (result, QString("txt_phone_other_incoming_call"));
 
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_disconnected") );
-    map = m_resourceAdapter->convert (R_PHONEUI_INCALL_CALL_DISCONNECTED);
-    QVERIFY(verify());
-    QCOMPARE (map.size (), 1);
+    result = m_resourceAdapter->convert (R_PHONEUI_INCALL_CALL_DISCONNECTED);
+    QCOMPARE(result, QString("txt_phone_other_disconnected"));
     
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_on_hold") );
-    map = m_resourceAdapter->convert (R_PHONEUI_INCALL_CALL_HELD);
-    QVERIFY(verify());
-    QCOMPARE (map.size (), 1);
+    result = m_resourceAdapter->convert (R_PHONEUI_INCALL_CALL_HELD);
+    QCOMPARE(result, QString("txt_phone_other_on_hold"));
 
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_waiting") );
-    map = m_resourceAdapter->convert (R_PHONEUI_MULTC_WAITING);
-    QVERIFY(verify());
-    QCOMPARE (map.size (), 1);
+    result = m_resourceAdapter->convert (R_PHONEUI_MULTC_WAITING);
+    QCOMPARE(result, QString("txt_phone_other_waiting"));
 
-    EXPECT( PhoneAction, setText).with ( QString("%:0%H%:1%T%:2%S%:3") );
-    map = m_resourceAdapter->convert (R_PHONEUI_TIME_DURAT_LONG_WITH_ZERO);
-    QVERIFY(verify());
-    QCOMPARE (map.size (), 1);
+    result = m_resourceAdapter->convert (R_PHONEUI_TIME_DURAT_LONG_WITH_ZERO);
+    QCOMPARE(result, QString("%:0%H%:1%T%:2%S%:3"));
     
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_calling") );
-    map = m_resourceAdapter->convert (R_PHONEUI_OUT_GOING_CALL);
-    QVERIFY(verify());
-    QCOMPARE (map.size (), 1);
+    result = m_resourceAdapter->convert (R_PHONEUI_OUT_GOING_CALL);
+    QCOMPARE(result, QString("txt_phone_other_calling"));
 
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_private_number") );
-    map = m_resourceAdapter->convert (R_PHONEUI_MTCAL_CLI_WITHHELD);
-    QVERIFY(verify());
-    QCOMPARE (map.size (), 1);
+    result = m_resourceAdapter->convert (R_PHONEUI_MTCAL_CLI_WITHHELD);
+    QCOMPARE(result, QString("txt_phone_other_private_number"));
 
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_unknown_number") );
-    map = m_resourceAdapter->convert (R_PHONEUI_MTCAL_CLI_UNKNOWN);
-    QVERIFY(verify());
-    QCOMPARE (map.size (), 1);
+    result = m_resourceAdapter->convert (R_PHONEUI_MTCAL_CLI_UNKNOWN);
+    QCOMPARE(result, QString("txt_phone_other_unknown_number"));
 
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_emergency_call") );
-    map = m_resourceAdapter->convert (R_PHONEUI_EMERGENCY_CALL_HEADER);
-    QVERIFY(verify());
-    QCOMPARE (map.size (), 1);
+    result = m_resourceAdapter->convert (R_PHONEUI_EMERGENCY_CALL_HEADER);
+    QCOMPARE(result, QString("txt_phone_other_emergency_call"));
 
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_attempting") );
-    map = m_resourceAdapter->convert (R_PHONEUI_ATTEMPTING_EMERGENCY_CALL_TEXT);
-    QVERIFY(verify());
-    QCOMPARE (map.size (), 1);
+    result = m_resourceAdapter->convert (R_PHONEUI_ATTEMPTING_EMERGENCY_CALL_TEXT);
+    QCOMPARE(result, QString("txt_phone_other_attempting"));
         
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_other_conference_call") );
-    map = m_resourceAdapter->convert (R_PHONEUI_CONFERENCE_CALL);
-    QVERIFY(verify());
-    QCOMPARE (map.size (), 1);
+    result = m_resourceAdapter->convert (R_PHONEUI_CONFERENCE_CALL);
+    QCOMPARE(result, QString("txt_phone_other_conference_call"));
     
     TBuf<10> buffer(_L("123"));
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_info_sending") );
-    map = m_resourceAdapter->convert (R_PHONEUI_SENDING_DTMF_WAIT_NOTE_TEXT, &buffer);
-    QVERIFY(verify());
-    QCOMPARE (map.size(), 1);
+    result = m_resourceAdapter->convert (R_PHONEUI_SENDING_DTMF_WAIT_NOTE_TEXT, &buffer);
+    QCOMPARE(result, QString("txt_phone_info_sending"));
     
-    EXPECT( PhoneAction, setText).with ( QString("txt_phone_info_send_string") );
-    map = m_resourceAdapter->convert(R_PHONEUI_DTMF_WAIT_CHARACTER_CONFIRMATION_QUERY_TEXT, &buffer);
-    QVERIFY(verify());
-    QCOMPARE(map.size(), 1);
+    result = m_resourceAdapter->convert(R_PHONEUI_DTMF_WAIT_CHARACTER_CONFIRMATION_QUERY_TEXT, &buffer);
+    QCOMPARE(result, QString("txt_phone_info_send_string"));
     
     // TODO
-    map = m_resourceAdapter->convert (R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA);
+    result = m_resourceAdapter->convert (R_PHONEUI_CALLHANDLING_INCALL_HANDSET_CBA);
     
-    map = m_resourceAdapter->convert (0);
+    result = m_resourceAdapter->convert (0);
     // QCOMPARE (map.size (), 0);
 }
 
@@ -333,37 +303,6 @@ void TestPhoneResourceAdapter::testConvertToString2 ()
     QCOMPARE( testString2, QString ("") );
 }
 
-void TestPhoneResourceAdapter::testIncallToolbar (int id)
-{
-    QMap<PhoneAction::ActionType, PhoneAction *> map;
-    PhoneAction *action;
-    map = m_resourceAdapter->convert (id);
-    QCOMPARE (map.size (), 4);
-    
-    switch(id) {
-    case R_PHONEUI_CALLHANDLING_INCALL_UNMUTE_CBA:
-        action = map [PhoneAction::ToolbarButton1];
-        QCOMPARE (action->icon (), HbIcon("qtg_mono_dialer"));
-        action = map [PhoneAction::ToolbarButton2];
-        QCOMPARE (action->icon (), HbIcon("qtg_mono_mic_unmute"));
-        QCOMPARE (action->command (), (int)EPhoneInCallCmdUnmute);    
-        action = map [PhoneAction::ToolbarButton3];
-        QCOMPARE (action->icon (), HbIcon("qtg_mono_speaker"));
-        QCOMPARE (action->command (), (int)EPhoneInCallCmdActivateIhf);        
-        break;
-    default:    
-        action = map [PhoneAction::ToolbarButton1];
-        QCOMPARE (action->icon (), HbIcon("qtg_mono_dialer"));
-        action = map [PhoneAction::ToolbarButton2];
-        QCOMPARE (action->icon (), HbIcon("qtg_mono_mic_mute"));
-        QCOMPARE (action->command (), (int)EPhoneInCallCmdMute);    
-        action = map [PhoneAction::ToolbarButton3];
-        QCOMPARE (action->icon (), HbIcon("qtg_mono_speaker"));
-        QCOMPARE (action->command (), (int)EPhoneInCallCmdActivateIhf);
-        break;
-    }
-}
-
 void TestPhoneResourceAdapter::testDefaultToolbarResourceId()
 {
     QVERIFY(m_resourceAdapter->defaultToolbarResourceId()==
@@ -424,84 +363,84 @@ void TestPhoneResourceAdapter::testConvertToToolBarCommandList ()
     PhoneUIQtButtonsController* buttonsController = 
         m_resourceAdapter->buttonsController();
     
-    QList<PhoneAction::ToolBarItem> testList;
+    QList<XQTelUiCommandExtension::ToolBarCommand> testList;
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCOMINGCALL_CBA);
     QCOMPARE(2,testList.count());
-    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
-    QVERIFY(PhoneCallComingCmdSilent == testList.at(1).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
+    QVERIFY(PhoneCallComingCmdSoftReject == testList[0].mCommandId);
+    QVERIFY(PhoneCallComingCmdSilent == testList[1].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(true == testList[1].mIsEnabled);
     testList.clear();
     
     // Set soft reject dimmed
     buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,true);
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCOMINGCALL_CBA);
     QCOMPARE(2,testList.count());
-    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
-    QVERIFY(PhoneCallComingCmdSilent == testList.at(1).mCommandId);
-    QVERIFY(false == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
+    QVERIFY(PhoneCallComingCmdSoftReject == testList[0].mCommandId);
+    QVERIFY(PhoneCallComingCmdSilent == testList[1].mCommandId);
+    QVERIFY(false == testList[0].mIsEnabled);
+    QVERIFY(true == testList[1].mIsEnabled);
     testList.clear();    
     
     // Set soft reject
     buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,false);
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCOMINGCALL_REJECT_CBA);
     QCOMPARE(2,testList.count());
-    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdReject == testList.at(1).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
+    QVERIFY(PhoneCallComingCmdSoftReject == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdReject == testList[1].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(true == testList[1].mIsEnabled);
     testList.clear(); 
     
     // Set soft reject dimmed
     buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,true);
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCOMINGCALL_REJECT_CBA);
     QCOMPARE(2,testList.count());
-    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdReject == testList.at(1).mCommandId);
-    QVERIFY(false == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
+    QVERIFY(PhoneCallComingCmdSoftReject == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdReject == testList[1].mCommandId);
+    QVERIFY(false == testList[0].mIsEnabled);
+    QVERIFY(true == testList[1].mIsEnabled);
     testList.clear(); 
     
     // Set soft reject
     buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,false);
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCOMINGCALL_SOFT_REJECT_CBA);
     QCOMPARE(2,testList.count());
-    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
-    QVERIFY(PhoneCallComingCmdSilent == testList.at(1).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(false == testList.at(1).mEnabled);
+    QVERIFY(PhoneCallComingCmdSoftReject == testList[0].mCommandId);
+    QVERIFY(PhoneCallComingCmdSilent == testList[1].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(false == testList[1].mIsEnabled);
     testList.clear(); 
     
     // Set soft reject dimmed
     buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,true);
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCOMINGCALL_SOFT_REJECT_CBA);
     QCOMPARE(2,testList.count());
-    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
-    QVERIFY(PhoneCallComingCmdSilent == testList.at(1).mCommandId);
-    QVERIFY(false == testList.at(0).mEnabled);
-    QVERIFY(false == testList.at(1).mEnabled);
+    QVERIFY(PhoneCallComingCmdSoftReject == testList[0].mCommandId);
+    QVERIFY(PhoneCallComingCmdSilent == testList[1].mCommandId);
+    QVERIFY(false == testList[0].mIsEnabled);
+    QVERIFY(false == testList[1].mIsEnabled);
     testList.clear(); 
     
     // Set soft reject
     buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,false);
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_CALLWAITING_CBA);
     QCOMPARE(2,testList.count());
-    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdJoinToConference == testList.at(1).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(false == testList.at(1).mEnabled);
+    QVERIFY(PhoneCallComingCmdSoftReject == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdJoinToConference == testList[1].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(false == testList[1].mIsEnabled);
     testList.clear(); 
     
     // Set soft reject dimmed
     buttonsController->setButtonFlags(PhoneUIQtButtonsController::DisableSoftReject,true);
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_CALLWAITING_CBA);
     QCOMPARE(2,testList.count());
-    QVERIFY(PhoneCallComingCmdSoftReject == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdJoinToConference == testList.at(1).mCommandId);
-    QVERIFY(false == testList.at(0).mEnabled);
-    QVERIFY(false == testList.at(1).mEnabled);
+    QVERIFY(PhoneCallComingCmdSoftReject == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdJoinToConference == testList[1].mCommandId);
+    QVERIFY(false == testList[0].mIsEnabled);
+    QVERIFY(false == testList[1].mIsEnabled);
     testList.clear(); 
     
     // Set soft reject
@@ -509,34 +448,34 @@ void TestPhoneResourceAdapter::testConvertToToolBarCommandList ()
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_EMERGENCY_CBA);
     QCOMPARE(2,testList.count());
-    QVERIFY(PhoneInCallCmdActivateIhf == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenDialer == testList.at(1).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
+    QVERIFY(PhoneInCallCmdActivateIhf == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenDialer == testList[1].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(true == testList[1].mIsEnabled);
     testList.clear(); 
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_DIALER_CBA);
     QCOMPARE(4,testList.count());
-    QVERIFY(PhoneInCallCmdActivateIhf == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdHold == testList.at(1).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenContacts == testList.at(2).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenDialer == testList.at(3).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
-    QVERIFY(true == testList.at(2).mEnabled);
-    QVERIFY(true == testList.at(3).mEnabled);
+    QVERIFY(PhoneInCallCmdActivateIhf == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdHold == testList[1].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenContacts == testList[2].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenDialer == testList[3].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(true == testList[1].mIsEnabled);
+    QVERIFY(true == testList[2].mIsEnabled);
+    QVERIFY(true == testList[3].mIsEnabled);
     testList.clear(); 
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA);
     QCOMPARE(4,testList.count());
-    QVERIFY(PhoneInCallCmdActivateIhf == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdHold == testList.at(1).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenContacts == testList.at(2).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenDialer == testList.at(3).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
-    QVERIFY(true == testList.at(2).mEnabled);
-    QVERIFY(true == testList.at(3).mEnabled);
+    QVERIFY(PhoneInCallCmdActivateIhf == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdHold == testList[1].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenContacts == testList[2].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenDialer == testList[3].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(true == testList[1].mIsEnabled);
+    QVERIFY(true == testList[2].mIsEnabled);
+    QVERIFY(true == testList[3].mIsEnabled);
     testList.clear(); 
     
     // Set flags hold and ihf
@@ -545,34 +484,34 @@ void TestPhoneResourceAdapter::testConvertToToolBarCommandList ()
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_EMERGENCY_CBA);
     QCOMPARE(2,testList.count());
-    QVERIFY(PhoneInCallCmdDeactivateIhf == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenDialer == testList.at(1).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
+    QVERIFY(PhoneInCallCmdDeactivateIhf == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenDialer == testList[1].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(true == testList[1].mIsEnabled);
     testList.clear(); 
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_INCALL_DIALER_CBA);
     QCOMPARE(4,testList.count());
-    QVERIFY(PhoneInCallCmdDeactivateIhf == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdUnhold == testList.at(1).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenContacts == testList.at(2).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenDialer == testList.at(3).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
-    QVERIFY(true == testList.at(2).mEnabled);
-    QVERIFY(true == testList.at(3).mEnabled);
+    QVERIFY(PhoneInCallCmdDeactivateIhf == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdUnhold == testList[1].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenContacts == testList[2].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenDialer == testList[3].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(true == testList[1].mIsEnabled);
+    QVERIFY(true == testList[2].mIsEnabled);
+    QVERIFY(true == testList[3].mIsEnabled);
     testList.clear(); 
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA);
     QCOMPARE(4,testList.count());
-    QVERIFY(PhoneInCallCmdDeactivateIhf == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdUnhold == testList.at(1).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenContacts == testList.at(2).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenDialer == testList.at(3).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
-    QVERIFY(true == testList.at(2).mEnabled);
-    QVERIFY(true == testList.at(3).mEnabled);
+    QVERIFY(PhoneInCallCmdDeactivateIhf == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdUnhold == testList[1].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenContacts == testList[2].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenDialer == testList[3].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(true == testList[1].mIsEnabled);
+    QVERIFY(true == testList[2].mIsEnabled);
+    QVERIFY(true == testList[3].mIsEnabled);
     testList.clear(); 
     
     // Set flag multi call
@@ -580,14 +519,14 @@ void TestPhoneResourceAdapter::testConvertToToolBarCommandList ()
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA);
     QCOMPARE(4,testList.count());
-    QVERIFY(PhoneInCallCmdDeactivateIhf == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdSwap == testList.at(1).mCommandId);
-    QVERIFY(PhoneInCallCmdCreateConference == testList.at(2).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenDialer == testList.at(3).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(true == testList.at(1).mEnabled);
-    QVERIFY(true == testList.at(2).mEnabled);
-    QVERIFY(true == testList.at(3).mEnabled);
+    QVERIFY(PhoneInCallCmdDeactivateIhf == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdSwap == testList[1].mCommandId);
+    QVERIFY(PhoneInCallCmdCreateConference == testList[2].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenDialer == testList[3].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(true == testList[1].mIsEnabled);
+    QVERIFY(true == testList[2].mIsEnabled);
+    QVERIFY(true == testList[3].mIsEnabled);
     testList.clear();
     
     // Set flag outgoing and conference call
@@ -596,26 +535,26 @@ void TestPhoneResourceAdapter::testConvertToToolBarCommandList ()
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCALL_UNMUTE_CBA);
     QCOMPARE(4,testList.count());
-    QVERIFY(PhoneInCallCmdDeactivateIhf == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdSwap == testList.at(1).mCommandId);
-    QVERIFY(PhoneInCallCmdJoinToConference == testList.at(2).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenDialer == testList.at(3).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(false == testList.at(1).mEnabled);
-    QVERIFY(false == testList.at(2).mEnabled);
-    QVERIFY(true == testList.at(3).mEnabled);
+    QVERIFY(PhoneInCallCmdDeactivateIhf == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdSwap == testList[1].mCommandId);
+    QVERIFY(PhoneInCallCmdJoinToConference == testList[2].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenDialer == testList[3].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(false == testList[1].mIsEnabled);
+    QVERIFY(false == testList[2].mIsEnabled);
+    QVERIFY(true == testList[3].mIsEnabled);
     testList.clear(); 
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_CALLSETUP_EMPTY_DTMFDIALER_CBA);
     QCOMPARE(4,testList.count());
-    QVERIFY(PhoneInCallCmdDeactivateIhf == testList.at(0).mCommandId);
-    QVERIFY(PhoneInCallCmdSwap == testList.at(1).mCommandId);
-    QVERIFY(PhoneInCallCmdJoinToConference == testList.at(2).mCommandId);
-    QVERIFY(PhoneInCallCmdOpenDialer == testList.at(3).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
-    QVERIFY(false == testList.at(1).mEnabled);
-    QVERIFY(false == testList.at(2).mEnabled);
-    QVERIFY(true == testList.at(3).mEnabled);
+    QVERIFY(PhoneInCallCmdDeactivateIhf == testList[0].mCommandId);
+    QVERIFY(PhoneInCallCmdSwap == testList[1].mCommandId);
+    QVERIFY(PhoneInCallCmdJoinToConference == testList[2].mCommandId);
+    QVERIFY(PhoneInCallCmdOpenDialer == testList[3].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
+    QVERIFY(false == testList[1].mIsEnabled);
+    QVERIFY(false == testList[2].mIsEnabled);
+    QVERIFY(true == testList[3].mIsEnabled);
     testList.clear(); 
 }
 
@@ -625,21 +564,21 @@ void TestPhoneResourceAdapter::testBtToolBarCommandList ()
     PhoneUIQtButtonsController* buttonsController = 
         m_resourceAdapter->buttonsController();
     
-    QList<PhoneAction::ToolBarItem> testList;
+    QList<XQTelUiCommandExtension::ToolBarCommand> testList;
     buttonsController->setButtonFlags(PhoneUIQtButtonsController::BluetoothAvailable,true);
     buttonsController->setButtonFlags(PhoneUIQtButtonsController::IhfAsPushButton,false);
     
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCALL_BTAA_CBA);
     QVERIFY(0 < testList.count());
-    QVERIFY(PhoneInCallCmdBtHandsfree == testList.at(0).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
+    QVERIFY(PhoneInCallCmdBtHandsfree == testList[0].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
     testList.clear();
     
     buttonsController->setButtonFlags(PhoneUIQtButtonsController::Btaa,true);
     testList = m_resourceAdapter->convertToToolBarCommandList(R_PHONEUI_CALLHANDLING_INCALL_BTAA_CBA);
     QVERIFY(0 < testList.count());
-    QVERIFY(PhoneInCallCmdHandset == testList.at(0).mCommandId);
-    QVERIFY(true == testList.at(0).mEnabled);
+    QVERIFY(PhoneInCallCmdHandset == testList[0].mCommandId);
+    QVERIFY(true == testList[0].mIsEnabled);
     testList.clear(); 
 }
 

@@ -21,26 +21,21 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
-INCLUDEPATH += ..\..\src
+INCLUDEPATH += ../../src
+INCLUDEPATH += ../../../../inc
 
 
 # Input
-HEADERS += ..\..\inc\phoneuihousehold.h
-HEADERS += ..\..\inc\hbphonemainwindow.h
+HEADERS += ../../inc/phoneuihousehold.h
+HEADERS += ../../inc/phonemainwindow.h
 
 SOURCES += phoneuihousehold_stub.cpp
 SOURCES += hbmainwindow_stub.cpp
 SOURCES += ut_phonemainwindow.cpp
-SOURCES += ..\..\src\hbphonemainwindow.cpp
+SOURCES += ../../src/phonemainwindow.cpp
 
 
-
-TARGET.CAPABILITY = ALL -TCB
-
-
-
-
-
-
-
-symbian:MMP_RULES += SMPSAFE
+symbian {
+    TARGET.CAPABILITY = ALL -TCB
+    MMP_RULES += SMPSAFE
+}

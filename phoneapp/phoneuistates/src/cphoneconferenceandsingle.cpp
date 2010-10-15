@@ -30,7 +30,6 @@
 #include "phonelogger.h"
 #include "tphonecmdparamboolean.h"
 #include "tphonecmdparaminteger.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "cphonemainresourceresolver.h"
 #include "phonerssbase.h"
 #include "tphonecmdparamglobalnote.h"

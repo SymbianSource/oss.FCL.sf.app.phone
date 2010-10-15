@@ -28,7 +28,6 @@
 #include "tphonecmdparaminteger.h"
 #include "tphonecmdparamcallheaderdata.h"
 #include "tphonecmdparamglobalnote.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "phoneviewcommanddefinitions.h"
 #include "phoneui.hrh"
 #include "cphonemainresourceresolver.h"
@@ -37,6 +36,7 @@
 #include "phonelogger.h"
 #include "cphonemediatorfactory.h"
 #include "cphonemediatorsender.h"
+#include "phonecallutil.h"
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -131,16 +131,13 @@ void CPhoneCallSetupAndWaiting::HandleIdleL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
 
     // Find out do we have waiting or outgoing call left
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateRinging );
-    iViewCommandHandle->HandleCommandL( EPhoneViewGetCallIdByState,
-        &callStateData );
-
-    if( callStateData.CallId() > KErrNotFound )
+    TInt callId = PhoneCallUtil::CallIdByState( EPEStateRinging );
+    
+    if( callId > KErrNotFound )
         {
         BringIncomingToForegroundL();       
-        SetRingingTonePlaybackL( callStateData.CallId() );
-        UpdateCallHeaderAndUiCommandsL( callStateData.CallId() );
+        SetRingingTonePlaybackL( callId );
+        UpdateCallHeaderAndUiCommandsL( callId );
         SetBackButtonActive(EFalse);
         iStateMachine->ChangeState( EPhoneStateIncoming );
         }

@@ -20,9 +20,10 @@
 
 #include <QObject>
 #include <QList>
+#include <HbTranslator>
 #include <cpplugininterface.h>
 #include <cplauncherinterface.h>
-#include "cpphonelocalisation.h"
+
 
 /*!
     \class CpTelephonyPlugin
@@ -53,10 +54,11 @@ public:
      @see CpLauncherInterface.
      */
     virtual CpBaseSettingView *createSettingView(const QVariant &hint) const;
-    
+
+
 private: 
-    
-    QScopedPointer<PhoneLocalisation> m_localisation; 
+
+    QScopedPointer<HbTranslator> m_translator;
 };
 
 #endif /* CPTELEPHONYPLUGIN_H */

@@ -423,29 +423,45 @@ void CpCallsPluginGroup::callWaitingCurrentIndexChanged()
 {
     DPRINT << ": IN";
 
-    QVariant text = m_DataItemCallWaiting->contentWidgetData("text");
-    QString callWaitingText = text.toString();
-
-    if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_check_status")) {
-        // Clicked first time, user want to check feature status
-        DPRINT << "checking status";
-        m_callWaitingWrapper->getCallWaitingStatus();
-    } else if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_on")) {
-        DPRINT << "activate";
-        // User want to activate call waiting feature
-        m_callWaitingWrapper->setCallWaiting(
-            PSetCallWaitingWrapper::ActivateCallWaiting,
-            AllTeleAndBearer);
-    } else if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_off")) {
-        DPRINT << "deactivate";
-        // User want to deactivate call waiting feature
-        m_callWaitingWrapper->setCallWaiting(
-            PSetCallWaitingWrapper::DeactivateCallWaiting,
-            AllTeleAndBearer);
-    } else {
-        DWARNING << ": Error, unhandled index!";
+    QString callWaitingText = 
+            m_DataItemCallWaiting->contentWidgetData("text").toString();
+    
+    //Check if offline or no network coverage
+    if (m_cpSettingsWrapper->isPhoneOffline()){
+        revertCallWaitingSelection();
+        emit showGlobalNote(
+                    m_activeNoteId, 
+                    emit hbTrId("txt_phone_info_offline_not_allowed"), 
+                    HbMessageBox::MessageTypeWarning);
+    } else if (!m_cpSettingsWrapper->isConnectedToNetwork()){ 
+        revertCallWaitingSelection();
+        emit showGlobalNote(
+                    m_activeNoteId, 
+                    emit hbTrId("txt_phone_info_no_network_coverage"), 
+                    HbMessageBox::MessageTypeWarning);
+    } else{
+        if (callWaitingText == 
+                hbTrId("txt_phone_setlabel_call_waiting_val_check_status")) {
+            // Clicked first time, user want to check feature status
+            DPRINT << "checking status";
+            m_callWaitingWrapper->getCallWaitingStatus();
+        } else if (callWaitingText == 
+                hbTrId("txt_phone_setlabel_call_waiting_val_on")) {
+            DPRINT << "activate";
+            // User want to activate call waiting feature
+            m_callWaitingWrapper->setCallWaiting(
+                PSetCallWaitingWrapper::ActivateCallWaiting,
+                AllTeleAndBearer);
+        } else if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_off")) {
+            DPRINT << "deactivate";
+            // User want to deactivate call waiting feature
+            m_callWaitingWrapper->setCallWaiting(
+                PSetCallWaitingWrapper::DeactivateCallWaiting,
+                AllTeleAndBearer);
+        } else {
+            DWARNING << ": Error, unhandled index!";
+        }
     }
-
     DPRINT << ": OUT";
 }
 
@@ -593,11 +609,33 @@ void CpCallsPluginGroup::handleCallWaitingError(int errorCode)
 {
     DPRINT << ": IN";
     DPRINT << "errorCode:" << errorCode;
-
+    
+    revertCallWaitingSelection();
+    
     emit cancelNote(m_activeNoteId);
     emit showGlobalErrorNote(m_activeNoteId, errorCode);
     
     DPRINT << ": OUT";
 }
 
+void CpCallsPluginGroup::revertCallWaitingSelection()
+{
+    DPRINT << ": IN";
+    QString callWaitingText = m_DataItemCallWaiting->contentWidgetData("text").toString();
+    if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_on")){
+        DPRINT << "Call waiting on, revert to OFF:";
+        m_DataItemCallWaiting->setContentWidgetData(
+            "text", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_off")));
+        m_DataItemCallWaiting->setContentWidgetData(
+            "additionalText", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_on")));
+    }
+    if (callWaitingText == hbTrId("txt_phone_setlabel_call_waiting_val_off")) {
+        DPRINT << "Call waiting off, revert to ON:";
+        m_DataItemCallWaiting->setContentWidgetData(
+            "text", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_on")));
+        m_DataItemCallWaiting->setContentWidgetData(
+            "additionalText", QVariant(hbTrId("txt_phone_setlabel_call_waiting_val_off")));    
+    }
+    DPRINT << ": OUT";
+}
 // End of File. 

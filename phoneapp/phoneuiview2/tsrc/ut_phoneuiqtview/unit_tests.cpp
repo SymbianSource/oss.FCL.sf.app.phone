@@ -16,6 +16,7 @@
 */
 
 #include <QtTest/QtTest>
+#include <mockservice.h>
 #include <QtGui>
 #include <QVariant>
 #include <QKeyEvent>
@@ -27,33 +28,25 @@
 #include <hbinstance.h>
 #include <hbmainwindow.h>
 #include <bubblemanagerif.h>
-#define protected public
-#define private public
-#include "phoneuiqtview.h"
-#undef public
-#include "phoneaction.h"
+#include "phoneuiqtview_p.h"
 #include <hbtoolbar.h>
 #include <hbvolumesliderpopup.h>
 #include <hbaction.h>
 #include <dialpad.h>
 #include <hblineedit.h>
 #include "xqserviceutil.h"
-#include "phoneaction.h"
+#define private public
+#include "phoneuiqtview.h"
 
 //CONSTANTS
 static const int KMAXVOLUME = 10;
 static const int KMINVOLUME = 0;
 static const int KVOLUMECOMMAND = 5;
 
-bool m_qtimer_stop_called;
-QString m_networkName;
-bool m_take_menu_called;
-bool m_set_menu_called;
-
 #define PHONE_QT_VIEW_TEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
 { \
-    HbApplication app(argc, argv); \
+    QCoreApplication app(argc, argv); \
     TestObject tc; \
     QResource::registerResource("../hbcore.rcc"); \
     int ret = QTest::qExec(&tc, argc, argv); \
@@ -65,7 +58,7 @@ int main(int argc, char *argv[]) \
     return ret; \
 }
 
-class TestPhoneUIQtView : public QObject
+class TestPhoneUIQtView : public QObject, public MockService
 {
     Q_OBJECT
     
@@ -91,7 +84,6 @@ private slots:
     void testVolumeSliderChanged ();
     void testParticipantListAction ();
     void testSetExpandAction ();
-    void testPhoneAction ();
     void testSetOrientation ();
     void testBackButtonClicked();
     void testShowDialpad();
@@ -109,16 +101,13 @@ private:
 private:
     PhoneUIQtView *m_view; // class under test
     HbMainWindow *m_main_window;
-
+    HbLineEdit *m_lineEdit;
+    HbToolBar *m_toolBar;
 };
 
-void QTimer::stop()
-{
-    m_qtimer_stop_called = true;   
-}
-    
 TestPhoneUIQtView::TestPhoneUIQtView ()
-{    
+{
+
 }
 
 TestPhoneUIQtView::~TestPhoneUIQtView ()
@@ -128,169 +117,197 @@ TestPhoneUIQtView::~TestPhoneUIQtView ()
 void TestPhoneUIQtView::initTestCase ()
 {	
     m_main_window = new HbMainWindow();
+    m_lineEdit = new HbLineEdit();
+    m_toolBar = new HbToolBar();
+    SmcDefaultValue<QPointF>::SetL(QPointF(0, 0));
+    SmcDefaultValue<QRectF>::SetL(QRectF(0, 0, 0, 0));
+    SmcDefaultValue<QVariant>::SetL(QVariant(0));
+    SmcDefaultValue<Qt::Orientation>::SetL(Qt::Horizontal);
+    SmcDefaultValue<HbLineEdit *>::SetL(m_lineEdit);
+    SmcDefaultValue<HbLineEdit &>::SetL(*m_lineEdit);
+    
+    EXPECT(HbView, setTitle).with(QString("Unit test network"));
+    EXPECT(QtMobility::QSystemNetworkInfo, networkName).returns(QString("Unit test network"));
     m_view = new PhoneUIQtView(*m_main_window);
-    QCOMPARE(m_networkName, QString("Unit test network"));
+    QVERIFY(verify());
 }
 
 void TestPhoneUIQtView::cleanupTestCase ()
 {
+    SmcDefaultValue<QPointF>::Reset();
+    SmcDefaultValue<QRectF>::Reset();
+    SmcDefaultValue<QVariant>::Reset();
+    SmcDefaultValue<Qt::Orientation>::Reset();
+    SmcDefaultValue<HbLineEdit *>::Reset();
+    SmcDefaultValue<HbLineEdit &>::Reset();
     delete m_view;
+    delete m_lineEdit;
+    delete m_toolBar;
+    delete m_main_window;
 }
 
-void TestPhoneUIQtView::init ()
+void TestPhoneUIQtView::init()
 {
-    m_qtimer_stop_called = false;
-    m_take_menu_called = false;
-    m_set_menu_called = false;
+    initialize();
 }
 
 void TestPhoneUIQtView::cleanup ()
 {
+    reset();
 }
 
 void TestPhoneUIQtView::testAddBubbleCommand ()
 {
-    m_view->bubbleManager ().startChanges ();
+    m_view->bubbleManager().startChanges();
     int bubbleId = createCallHeader();
     int bubbleId2 = createCallHeader();
     
-    PhoneAction action1;
-    action1.setText("Command 1");
-    action1.setCommand(1);
-    action1.setActionRole(PhoneAction::None);
+    HbAction *action1 = new HbAction;
+    action1->setText("Command 1");
+    action1->setProperty("command", 1);
+    action1->setSoftKeyRole(QAction::NoSoftKey);
     
-    PhoneAction action2;
-    action2.setText("Command 2");
-    action2.setCommand(2);
-    action2.setActionRole(PhoneAction::Accept);
+    HbAction *action2 = new HbAction;
+    action2->setText("Command 2");
+    action2->setProperty("command", 2);
+    action2->setSoftKeyRole(QAction::PositiveSoftKey);
     
-    PhoneAction action3;
-    action3.setText("Command 3");
-    action3.setCommand(3);
-    action3.setActionRole(PhoneAction::Decline);
+    HbAction *action3 = new HbAction;
+    action3->setText("Command 3");
+    action3->setProperty("command", 3);
+    action3->setSoftKeyRole(QAction::NegativeSoftKey);
     
-    m_view->addBubbleCommand (bubbleId, action1);
-    m_view->addBubbleCommand (bubbleId, action2);
-    m_view->addBubbleCommand (bubbleId2, action3);
-    m_view->bubbleManager ().endChanges ();
+    m_view->addBubbleCommand(bubbleId, action1);
+    m_view->addBubbleCommand(bubbleId, action2);
+    m_view->addBubbleCommand(bubbleId2, action3);
+    m_view->bubbleManager().endChanges();
     
-    m_view->bubbleManager ().startChanges ();
-    m_view->clearBubbleCommands (bubbleId);
-    m_view->clearBubbleCommands (bubbleId2);
-    m_view->clearBubbleCommands (bubbleId2);
-    m_view->bubbleManager ().endChanges ();
+    m_view->bubbleManager().startChanges();
+    m_view->clearBubbleCommands(bubbleId);
+    m_view->clearBubbleCommands(bubbleId2);
+    m_view->clearBubbleCommands(bubbleId2);
+    m_view->bubbleManager().endChanges();
 }
 
 void TestPhoneUIQtView::testHideToolbar ()
 {
-    m_view->hideToolbar ();
-    QCOMPARE (m_hideCalled, true);	
+    EXPECT(HbView, toolBar).returns(m_toolBar);
+    m_view->hideToolbar();
+    QVERIFY(verify());
 }
 
 void TestPhoneUIQtView::testShowToolbar ()
 {
-    m_view->showToolbar ();
-    QCOMPARE (m_showCalled, true);
+    EXPECT(HbView, toolBar).returns(m_toolBar);
+    m_view->showToolbar();
+    QVERIFY(verify());
 }
 
 void TestPhoneUIQtView::testAddToolbarActions ()
 {
-    m_actions.clear();
     HbIcon icon ("foo.jpg");
-    PhoneAction *testAction = new PhoneAction ();
+    HbAction *testAction = new HbAction ();
     testAction->setIcon(icon);
     testAction->setText("foo");
-    testAction->setCommand(20);
-    QList<PhoneAction*> actions;
+    testAction->setProperty("command", 20);
+    QList<HbAction*> actions;
+    QList<QAction *> retActions;
+    EXPECT(QGraphicsWidget, actions).returns(retActions);
     actions.append(testAction);
     
     m_view->setToolbarActions(actions);
-    QCOMPARE (m_action->icon(), icon);
-    QCOMPARE(true, m_toolBarUpdateCalled);
+    //QCOMPARE (m_action->icon(), icon);
+    //QCOMPARE(true, m_toolBarUpdateCalled);
     
+    actions[0] = new HbAction();
+    EXPECT(QGraphicsWidget, actions).returns(retActions);
     m_view->setToolbarActions(actions);
     
-    m_toolBarUpdateCalled = false;
-    PhoneAction *testAction2 = new PhoneAction ();
+    EXPECT(QGraphicsItem, update);
+    HbAction *testAction2 = new HbAction ();
     testAction2->setIcon(icon);
     testAction2->setText("foo2");
-    testAction2->setCommand(21);
+    testAction2->setProperty("command", 21);
+    actions[0] = new HbAction();
     actions.append(testAction2);
     
+    EXPECT(QGraphicsWidget, actions).returns(retActions);
     m_view->setToolbarActions(actions);
-    QCOMPARE(true, m_toolBarUpdateCalled);
+    QVERIFY(verify());
     actions.removeOne(testAction2);
     
-    m_toolBarUpdateCalled = false;
+    EXPECT(QGraphicsItem, update);
+    actions[0] = new HbAction();
+    EXPECT(QGraphicsWidget, actions).returns(retActions);
     m_view->setToolbarActions(actions);
-    QCOMPARE(true, m_toolBarUpdateCalled);
+    QVERIFY(verify());
     
     actions.clear();
-    delete testAction;
-    delete testAction2;
 }
 
 void TestPhoneUIQtView::testSetVolumeSliderValue ()
 {
-    m_view->setVolumeSliderValue (1, KVOLUMECOMMAND, KMAXVOLUME, KMINVOLUME);
-    QCOMPARE (m_volumeSliderContructorCalled, true);
-    QCOMPARE (m_sliderRangeMin, KMINVOLUME);
-    QCOMPARE (m_sliderRangeMax, KMAXVOLUME);
-    QCOMPARE (m_volumeSliderSetTimeoutCalled, true);
-    QCOMPARE (m_sliderTimeout, 10000);
-    QCOMPARE (m_volumeSliderSetValueCalled, true);
-    QCOMPARE (m_sliderValue, 1);
-    QCOMPARE (m_volumeSliderShowCalled, true);
-    
-    // reset values
-    m_volumeSliderContructorCalled = false;
-    m_volumeSliderSetValueCalled = false;
-    m_sliderRangeMin = -1;
-    m_sliderRangeMax = -1;
-    m_volumeSliderSetTimeoutCalled = false;
-    m_sliderTimeout = -1;
-    m_volumeSliderSetValueCalled = false;
-    m_sliderValue = -1;
-    m_volumeSliderShowCalled = false;
+    EXPECT(HbPopup, setDismissPolicy).with(HbDialog::TapOutside);
+    EXPECT(HbPopup, setTimeout).with(10000);
+    EXPECT(HbSliderPopup, minimum).returns(0);
+    EXPECT(HbSliderPopup, maximum).returns(100);
+    EXPECT(HbSliderPopup, setRange).with(KMINVOLUME, KMAXVOLUME);
+    EXPECT(HbSliderPopup, setValue).with(1);
+    EXPECT(QGraphicsItem, isVisible).returns(false);
+    //EXPECT(QGraphicsItem, show);
+    m_view->setVolumeSliderValue(1, KVOLUMECOMMAND, KMAXVOLUME, KMINVOLUME);
 
+    QVERIFY(verify());
+    reset();
+    
     // The second call shouldn't create a new instance
+    EXPECT(HbPopup, setDismissPolicy).with(HbDialog::TapOutside).times(0);
+    EXPECT(HbPopup, setTimeout).with(10000).times(0);
+    EXPECT(HbSliderPopup, minimum).returns(0);
+    EXPECT(HbSliderPopup, maximum).returns(100);
+    EXPECT(HbSliderPopup, setRange).with(KMINVOLUME, KMAXVOLUME);
+    EXPECT(HbSliderPopup, setValue).with(2);
+    EXPECT(QGraphicsItem, isVisible).returns(true);
+    //EXPECT(QGraphicsItem, show).times(0);
     m_view->setVolumeSliderValue (2, KVOLUMECOMMAND, KMAXVOLUME, KMINVOLUME);
-    QCOMPARE (m_volumeSliderContructorCalled, false);
-    QCOMPARE (m_sliderRangeMin, KMINVOLUME);
-    QCOMPARE (m_sliderRangeMax, KMAXVOLUME);
-    QCOMPARE (m_volumeSliderSetTimeoutCalled, false);
-    QCOMPARE (m_sliderTimeout, -1);
-    QCOMPARE (m_volumeSliderSetValueCalled, true);
-    QCOMPARE (m_sliderValue, 2);
-    QCOMPARE (m_volumeSliderShowCalled, false);
+    
+    QVERIFY(verify());
 }
 
 void TestPhoneUIQtView::testRemoveVolumeSlider ()
 {
+    //EXPECT(QGraphicsItem, hide);
     m_view->setVolumeSliderValue (1, KVOLUMECOMMAND, KMAXVOLUME, KMINVOLUME);
     m_view->removeVolumeSlider ();
-    QCOMPARE (m_volumeSliderHideCalled, true);
+    QVERIFY(verify());
 }
 
 void TestPhoneUIQtView::testVolumeSliderValue ()
 {
-    m_sliderValue = -1;
-    int value = m_view->volumeSliderValue ();
-    QCOMPARE (m_sliderValue, -1);
-    m_view->setVolumeSliderValue (3, KVOLUMECOMMAND, KMAXVOLUME, KMINVOLUME);
-    value = m_view->volumeSliderValue ();
-    QCOMPARE (m_volumeSliderValueCalled, true);
+    EXPECT(HbSliderPopup, value).returns(4);
+    int value = m_view->volumeSliderValue();
+    QCOMPARE (value, -1);
+    
+    // Create slider
+    m_view->setVolumeSliderValue (1, KVOLUMECOMMAND, KMAXVOLUME, KMINVOLUME);
+    
+    EXPECT(HbSliderPopup, value).returns(7);
+    value = m_view->volumeSliderValue();
+    QCOMPARE (value, 7);
+    
+    EXPECT(HbSliderPopup, value).returns(3);
+    value = m_view->volumeSliderValue();
     QCOMPARE (value, 3);
 }
 
 void TestPhoneUIQtView::testVolumeSliderChanged ()
 {
-    m_view->setVolumeSliderValue (3, KVOLUMECOMMAND, KMAXVOLUME, KMINVOLUME);
-    QSignalSpy spy (m_view, SIGNAL(command(int)));
-    m_view->volumeSliderChanged (1);
-    QCOMPARE (spy.count(), 1);
-    int command = qvariant_cast<int>(spy.at (0).at (0));
-    QCOMPARE (command, (int)KVOLUMECOMMAND);
+    m_view->setVolumeSliderValue(3, KVOLUMECOMMAND, KMAXVOLUME, KMINVOLUME);
+    QSignalSpy spy(m_view, SIGNAL(command(int)));
+    m_view->m_priv->volumeSliderChanged(1);
+    QCOMPARE(spy.count(), 1);
+    int command = qvariant_cast<int>(spy.at(0).at(0));
+    QCOMPARE(command, (int)KVOLUMECOMMAND);
 }
 
 void TestPhoneUIQtView::testParticipantListAction ()
@@ -324,34 +341,16 @@ void TestPhoneUIQtView::testSetExpandAction ()
     m_view->bubbleManager ().endChanges ();
 }
 
-void TestPhoneUIQtView::testPhoneAction ()
-{
-    PhoneAction *action = new PhoneAction ();
-    QString string("Action");
-    action->setText(string);
-    HbIcon icon;
-    action->setIcon(icon);
-    int commandId(1);
-    action->setCommand(commandId);
-    action->setDisabled(true);
-    QCOMPARE( string, action->text() );
-    QCOMPARE( icon, action->icon() );
-    QCOMPARE( commandId, action->command() );
-    QCOMPARE( true, action->isDisabled() );
-    delete action;
-}
-
 void TestPhoneUIQtView::testSetOrientation ()
 {
-
-    m_setOrientationCalled = false;
-    
+    EXPECT(HbToolBar, setOrientation).times(0);
     m_view->handleOrientationChange(Qt::Vertical);
-    QVERIFY( false == m_setOrientationCalled );
+    QVERIFY(verify());
     
+    reset(); // Reset mock framework
+    EXPECT(HbToolBar, setOrientation).times(1);
     m_view->handleOrientationChange(Qt::Horizontal);
-    QVERIFY( true == m_setOrientationCalled );
-    
+    QVERIFY(verify());
 }
 
 void TestPhoneUIQtView::testBackButtonClicked()
@@ -363,46 +362,74 @@ void TestPhoneUIQtView::testBackButtonClicked()
 
 void TestPhoneUIQtView::testShowDialpad()
 {
+    EXPECT(QGraphicsItem, isVisible).returns(true);
+    EXPECT(Dialpad, closeDialpad);
     m_view->hideDialpad();
+    QVERIFY(verify());
+
+    EXPECT(QGraphicsItem, isVisible).returns(false);
+    EXPECT(Dialpad, openDialpad);
     m_view->showDialpad();
+    QVERIFY(verify());
+    
+    reset();
+    EXPECT(QGraphicsItem, isVisible).returns(true);
+    EXPECT(Dialpad, openDialpad).times(0);
     m_view->showDialpad();
-    QVERIFY(true == m_view->isDialpadVisible());
+    QVERIFY(verify());
+    
+    EXPECT(Dialpad, closeDialpad);
+    EXPECT(QGraphicsItem, isVisible).returns(true);
     m_view->hideDialpad();
+    QVERIFY(verify());
 }
 
 void TestPhoneUIQtView::testDialpadText()
 {
     m_view->showDialpad();
     m_view->clearDialpad();
-    QVERIFY(QString("") == m_view->dialpadText());
+    EXPECT(HbLineEdit, text).returns(QString("12345"));
+    QCOMPARE(m_view->dialpadText(), QString("12345"));
     m_view->clearAndHideDialpad();
+    QVERIFY(verify());
 }
 
 void TestPhoneUIQtView::testSetMenuActions()
 {
-    QList<PhoneAction*> actions;
+    EXPECT(HbView, takeMenu);
+    QList<HbAction *> actions;
+    QList<QAction *> retActions;
+    EXPECT(QGraphicsWidget, actions).returns(retActions).times(1);
     m_view->setMenuActions(actions);
+    QVERIFY(verify());
+    reset();
     
-    QVERIFY(m_take_menu_called);
+    HbAction* action = new HbAction; 
+    action->setText(QString("test"));
+    action->setProperty("command", 1);
+    actions.append(action);
     
-    PhoneAction* phoneAction = new PhoneAction; 
-    phoneAction->setText(QString("test"));
-    phoneAction->setCommand(1);
-    actions.append(phoneAction);
-    
+    retActions.append(new HbAction);
+    EXPECT(HbView, takeMenu).times(0);
+    EXPECT(QGraphicsWidget, actions).returns(retActions).times(1);
     m_view->setMenuActions(actions);
-    qDeleteAll(actions);
     actions.clear();
+    retActions.clear();
+    QVERIFY(verify());
+    reset();
     
-    m_take_menu_called = false;
+    EXPECT(HbView, takeMenu);
+    EXPECT(QGraphicsWidget, actions).returns(retActions).times(1);
     m_view->setMenuActions(actions);
-    QVERIFY(m_take_menu_called);
+    
+    QVERIFY(verify());
+    reset();
 }
 
 //Private methods
 int TestPhoneUIQtView::createCallHeader ()
 {
-    int bubble = m_view->bubbleManager().createCallHeader ();
+    int bubble = m_view->bubbleManager().createCallHeader();
 
     return bubble;
 }
@@ -421,16 +448,17 @@ void TestPhoneUIQtView::testLongEndKeyPressEventOutsideTelephony()
 void TestPhoneUIQtView::testNetworkNameChanged()
 {
     // Title is changed for GmsMode
-    m_view->networkNameChanged(QSystemNetworkInfo::GsmMode, QString("test"));
-    QCOMPARE(m_networkName, QString("test"));
+    EXPECT(HbView, setTitle).with(QString("test"));
+    m_view->m_priv->networkNameChanged(QSystemNetworkInfo::GsmMode, QString("test"));
 
     // Title is changed for WcdmaMode
-    m_view->networkNameChanged(QSystemNetworkInfo::WcdmaMode, QString("test2"));
-    QCOMPARE(m_networkName, QString("test2"));
+    EXPECT(HbView, setTitle).with(QString("test2"));
+    m_view->m_priv->networkNameChanged(QSystemNetworkInfo::WcdmaMode, QString("test2"));
 
     // Other modes shouldn't affect the title
-    m_view->networkNameChanged(QSystemNetworkInfo::CdmaMode, QString("another operator"));
-    QCOMPARE(m_networkName, QString("test2"));
+    EXPECT(HbView, setTitle).times(0);
+    m_view->m_priv->networkNameChanged(QSystemNetworkInfo::CdmaMode, QString("another operator"));
+    QVERIFY(verify());
 }
 
 void TestPhoneUIQtView::testCaptureKey()
@@ -453,53 +481,40 @@ void TestPhoneUIQtView::testRestrictedMode()
     QSignalSpy upSpy(m_view, SIGNAL(keyReleased(QKeyEvent*)));
 
     m_view->setRestrictedMode(true);
-    m_view->m_dialpad->editor().setText("1"); // emits signal
-    QCOMPARE(m_view->m_dialpad->isCallButtonEnabled(), false);
-    m_view->eventFilter(0, &oneDown);
-    m_view->eventFilter(0, &oneUp);
-    m_view->eventFilter(0, &yesDown);
-    m_view->eventFilter(0, &yesUp);
+    
+    EXPECT(HbLineEdit, text).returns(QString("1")).times(4);
+    EXPECT(Dialpad, setCallButtonEnabled).times(0);
+    EXPECT(Dialpad, isCallButtonEnabled).returns(false);
+    /*m_view->m_priv->onEditorContentChanged(); // Simulate signal
+    */
+    m_view->m_priv->eventFilter(0, &oneDown);
+    m_view->m_priv->eventFilter(0, &oneUp);
+    m_view->m_priv->eventFilter(0, &yesDown);
+    m_view->m_priv->eventFilter(0, &yesUp);
     QCOMPARE(downSpy.count(), 1); // Only Key_1 is passed
     QCOMPARE(upSpy.count(), 1); // Only Key_1 is passed
-    QCOMPARE(m_view->m_dialpad->isCallButtonEnabled(), false);
-    QCOMPARE(m_view->m_backAction->isEnabled(), false);
+    QCOMPARE(m_view->m_priv->m_backAction->isEnabled(), false);
     
     // Test backbutton
     m_view->setBackButtonVisible(true);
-    QCOMPARE(m_view->m_backAction->isEnabled(), false);
+    QCOMPARE(m_view->m_priv->m_backAction->isEnabled(), false);
 
     // Test return to normal mode
     downSpy.clear();
     upSpy.clear();
     m_view->setRestrictedMode(false);
-    m_view->m_dialpad->editor().setText("1"); // emits signal
-    QCOMPARE(m_view->m_dialpad->isCallButtonEnabled(), true);
-    m_view->eventFilter(0, &oneDown);
-    m_view->eventFilter(0, &oneUp);
-    m_view->eventFilter(0, &yesDown);
-    m_view->eventFilter(0, &yesUp);
+    EXPECT(HbLineEdit, text).returns(QString("1")).times(5);
+    EXPECT(Dialpad, setCallButtonEnabled).with(true);
+    EXPECT(Dialpad, isCallButtonEnabled).returns(true).times(4);
+    m_view->m_priv->onEditorContentChanged(); // Simulate signal
+    m_view->m_priv->eventFilter(0, &oneDown);
+    m_view->m_priv->eventFilter(0, &oneUp);
+    m_view->m_priv->eventFilter(0, &yesDown);
+    m_view->m_priv->eventFilter(0, &yesUp);
     QCOMPARE(downSpy.count(), 2);
     QCOMPARE(upSpy.count(), 2);
-    QCOMPARE(m_view->m_dialpad->isCallButtonEnabled(), true);
-    QCOMPARE(m_view->m_backAction->isEnabled(), true);
+    QCOMPARE(m_view->m_priv->m_backAction->isEnabled(), true);
 }
-
-HbMenu * HbView::takeMenu()
-{
-    m_take_menu_called = true; 
-    return 0;
-}
-
-void HbView::setMenu(HbMenu* menu)
-{
-    m_set_menu_called = true;
-}
-
-void HbView::setTitle (const QString &title)
-{
-    m_networkName = title;
-}
-
 
 PHONE_QT_VIEW_TEST_MAIN(TestPhoneUIQtView)
 Q_DECLARE_METATYPE(QKeyEvent *)

@@ -59,7 +59,7 @@ void PhoneAudioUtil::HandleAudioMuteChangedL()
 // ---------------------------------------------------------
 //
 void PhoneAudioUtil::HandleAudioOutputChangedL()
-    {    
+    {   
     MPhoneViewCommandHandle* viewCommandHandle = 
             ViewCommandHandle();
 
@@ -102,10 +102,9 @@ void PhoneAudioUtil::HandleAudioOutputChangedL()
         {
         CPhoneBtaaDisconnectHandler::InstanceL()->Cancel();
         }
-    else if ( RouteParameters.iShowNote && audioOutput == EPELoudspeaker )
+    else if ( audioOutput == EPELoudspeaker )
         {
-        // Avkon removal
-        // TODO Play tone
+        viewCommandHandle->ExecuteCommandL( EPhoneViewPlayHandsFreeActivatedTone );
         }
     }
 

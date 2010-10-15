@@ -67,7 +67,6 @@
 #include "tphonecmdparamglobalnote.h"
 #include "tphonecmdparamquery.h"
 #include "tphonecmdparamstring.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "tphonecmdparambitmap.h"
 #include "tphonecmdparamappinfo.h"
 #include "tphonecmdparamtranseffect.h"
@@ -100,6 +99,8 @@
 #include "cphoneclearblacklist.h"
 #include "phonenoteutil.h"
 #include "phoneaudioutil.h"
+#include "phonecallutil.h"
+
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -835,13 +836,12 @@ EXPORT_C void CPhoneState::IncreaseAudioVolumeL()
 // CPhoneState::DialMultimediaCallL
 // -----------------------------------------------------------
 //
-EXPORT_C void CPhoneState::DialMultimediaCallL()
+EXPORT_C void CPhoneState::DialMultimediaCall()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::DialMultimediaCall() ");
     __ASSERT_DEBUG( iStateMachine->PhoneEngineInfo(),
         Panic( EPhoneCtrlInvariant ) );
-    iStateMachine->PhoneEngineInfo()->SetCallTypeCommand( EPECallTypeVideo );
-    iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageDial );
+    PhoneCallUtil::DialMultimediaCall();
     }
 
 // -----------------------------------------------------------
@@ -852,12 +852,7 @@ EXPORT_C void CPhoneState::DialVoiceCallL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::DialVoiceCallL() ");
     __ASSERT_DEBUG( iStateMachine->PhoneEngineInfo(), Panic( EPhoneCtrlInvariant ) );
-    TPhoneCmdParamBoolean globalNotifierParam;
-    globalNotifierParam.SetBoolean( ETrue );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewSetGlobalNotifiersDisabled,
-            &globalNotifierParam );
-    iStateMachine->PhoneEngineInfo()->SetCallTypeCommand( EPECallTypeCSVoice );
-    iStateMachine->SendPhoneEngineMessage( MPEPhoneModel::EPEMessageDial );
+    PhoneCallUtil::DialVoiceCallL();
     }
 
 // -----------------------------------------------------------
@@ -867,39 +862,7 @@ EXPORT_C void CPhoneState::DialVoiceCallL()
 EXPORT_C TBool CPhoneState::DisconnectCallL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::DisconnectCallL( ) ");
-    TPhoneCmdParamInteger callIdParam;
-    iViewCommandHandle->ExecuteCommand( 
-            EPhoneViewGetExpandedBubbleCallId, &callIdParam );
-    TBool ret = EFalse;
-    if( callIdParam.Integer() > KErrNotFound )
-        {
-        iStateMachine->SetCallId( callIdParam.Integer() );
-        if( IsVideoCall( callIdParam.Integer() ) )
-            {
-            // Video call can be released only after we get response to VT Shutdown Command
-            CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( 
-                    KMediatorVideoTelephonyDomain,
-                             KCatPhoneToVideotelCommands,
-                             EVtCmdReleaseDataport,
-                   TVersion( KPhoneToVideotelCmdVersionMajor,
-                             KPhoneToVideotelCmdVersionMinor,
-                             KPhoneToVideotelCmdVersionBuild ),
-                   KNullDesC8,
-                   CPhoneReleaseCommand::NewL( *iStateMachine ) );
-            }
-        else
-            {
-            iStateMachine->SendPhoneEngineMessage(
-                MPEPhoneModel::EPEMessageRelease );
-            }
-        ret = ETrue;
-        }
-    else
-        {
-        __PHONELOG( EOnlyFatal, EPhoneControl,
-            "CPhoneState::DisconnectCallL has negative call id!" );
-        }
-    return ret;
+    return PhoneCallUtil::DisconnectCallL();
     }
 
 // -----------------------------------------------------------
@@ -945,30 +908,6 @@ EXPORT_C void CPhoneState::UpdateSingleActiveCallL( TInt aCallId )
         {
         iNumberEntryManager->SetNumberEntryVisibilityL(ETrue);
         }
-    }
-
-// -----------------------------------------------------------
-// CPhoneState::IsWaitingCallL
-// -----------------------------------------------------------
-//
-TBool CPhoneState::IsWaitingCallL( const TInt aCallId  )
-    {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::IsWaitingCallL( ) ");
-    TBool waiting( EFalse );
-    if ( aCallId >= 0 && 
-         iStateMachine->PhoneEngineInfo()->CallState( aCallId ) == EPEStateRinging )
-        {
-        TPhoneCmdParamInteger activeCallCount;
-        iViewCommandHandle->ExecuteCommandL(
-            EPhoneViewGetCountOfActiveCalls, &activeCallCount );
-        
-        if( activeCallCount.Integer() > 0 )
-            {
-            waiting = ETrue;
-            }
-        }
-    
-    return waiting;
     }
 
 // -----------------------------------------------------------
@@ -1204,12 +1143,7 @@ void CPhoneState::HandleCallSecureStatusChangeL( TInt aCallId )
 EXPORT_C TBool CPhoneState::IsVideoCall( const TInt aCallId )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::IsVideoCall( ) ");
-    if ( aCallId < 0 )
-        {
-        return EFalse;
-        }
-
-    return EPECallTypeVideo == iStateMachine->PhoneEngineInfo()->CallType( aCallId );
+    return PhoneCallUtil::IsVideoCall( aCallId );
     }
 
 // ---------------------------------------------------------
@@ -1724,24 +1658,6 @@ void CPhoneState::LoadResource( TDes& aData, const TInt aResource ) const
             EikonEnv() );
     }
 
-// -----------------------------------------------------------
-// CPhoneState::IsAnyConnectedCalls
-// -----------------------------------------------------------
-//
-TBool CPhoneState::IsAnyConnectedCalls()
-    {
-    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneState::IsAnyConnectedCalls() ");
-    TBool connectedCall(EFalse);
-    if ( iStateMachine->PhoneEngineInfo()->CheckIfCallStateExists( EPEStateConnected ) ||
-        iStateMachine->PhoneEngineInfo()->CheckIfCallStateExists( EPEStateConnecting ) ||
-        iStateMachine->PhoneEngineInfo()->CheckIfCallStateExists( EPEStateConnectedConference ) )
-        {
-        connectedCall = ETrue;
-        }
-    __PHONELOG1( EBasic, EPhoneControl, "CPhoneState::IsAnyConnectedCalls: (%d)", connectedCall );
-    return connectedCall;
-    }
-
 // ---------------------------------------------------------
 // CPhoneState::SetToolbarButtonLoudspeakerEnabled
 // ---------------------------------------------------------
@@ -1780,22 +1696,13 @@ EXPORT_C void CPhoneState::OpenSoftRejectMessageEditorL()
     __LOGMETHODSTARTEND(EPhoneControl,
         "CPhoneState::OpenSoftRejectMessageEditorL ()" );
     iUiCommandManager->SetSoftRejectStatus( EFalse );
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateRinging );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
 
-    TInt ringingCallId( KErrNotFound );
-    // Do nothing if negative incoming call id
-    if( callStateData.CallId() > KErrNotFound  )
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveQuery );
-        ringingCallId = callStateData.CallId();
-        }
+    TInt ringingCallId( PhoneCallUtil::CallIdByState( EPEStateRinging ) );
     
     TPhoneCmdParamSfiData sfiDataParam;
-    if (KErrNotFound != ringingCallId) 
+    if( ringingCallId > KErrNotFound  )
         {
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveQuery );
         if ( iStateMachine->PhoneEngineInfo()->
                 RemoteName( ringingCallId ).Length() )
             {
@@ -1827,7 +1734,7 @@ EXPORT_C void CPhoneState::DisplayCallHeaderL(
         TNumberEntrySetRule aRule )
     {
     __LOGMETHODSTARTEND(EPhoneControl, 
-            "CPhoneState::BringIncomingCallHeaderToForegroundL( ) ");
+            "CPhoneState::DisplayCallHeaderL( ) ");
     BeginUiUpdateLC();
     switch ( aRule )
        {
@@ -1843,8 +1750,8 @@ EXPORT_C void CPhoneState::DisplayCallHeaderL(
            break;
        }
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemovePhoneDialogs );
-    iViewCommandHandle->ExecuteCommandL( EPhoneViewBringPhoneAppToForeground );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewCreateCallHeader, aCallId );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewBringPhoneAppToForeground );
     UpdateUiCommands();
     EndUiUpdate();
     }

@@ -53,3 +53,5 @@ LIBRARY                 EUnit.lib
 LIBRARY                 EUnitUtil.lib
 LIBRARY                 euser.lib
 LIBRARY                 phoneuiutils.lib
+
+SMPSAFE

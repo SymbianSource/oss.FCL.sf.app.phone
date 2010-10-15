@@ -19,8 +19,10 @@
 #include <QDebug>
 #include <hbapplication.h>
 #include <hbglobal_p.h>
-#include "hbphonemainwindow.h"
+#include "phonemainwindow.h"
+#include "phoneuihousehold.h"
 
+void PhoneUiHouseHold::reloadTranslators() {}
 
 class U_PhoneMainWindow: public QObject
 {
@@ -37,7 +39,7 @@ private slots:
 	
 private:
 	
-    HbPhoneMainWindow* m_Window; // widget under test
+    PhoneMainWindow* m_Window; // widget under test
 
 };
 
@@ -52,7 +54,7 @@ U_PhoneMainWindow::~U_PhoneMainWindow()
 void U_PhoneMainWindow::initTestCase()
 {
 
-    m_Window = new HbPhoneMainWindow();
+    m_Window = new PhoneMainWindow();
 	
 }
 

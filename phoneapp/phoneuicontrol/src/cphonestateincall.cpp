@@ -32,7 +32,6 @@
 #include "tphonecmdparamstring.h"
 #include "tphonecmdparamnote.h"
 #include "tphonecmdparamquery.h"
-#include "tphonecmdparamcallstatedata.h"
 #include "tphonecmdparamkeycapture.h"
 #include "tphonecmdparamsfidata.h"
 #include "mphonestatemachine.h"
@@ -50,6 +49,8 @@
 #include "cphonemediatorsender.h"
 #include "cphoneterminateallconnectionscommand.h"
 #include "mphonecustomization.h"
+#include "phonecallutil.h"
+
 
 // ================= MEMBER FUNCTIONS =======================
 
@@ -247,9 +248,10 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
         iViewCommandHandle->ExecuteCommand(
                 EPhoneViewGetNumberFromEntry,
                 &stringParam );
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
         showDialer = ETrue;
         }
+    
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNumberEntry );
     
     if ( IsAutoLockOn() || !showDialer )
         {
@@ -612,24 +614,18 @@ void CPhoneStateInCall::LaunchDtmfListQueryL()
     __LOGMETHODSTARTEND(EPhoneControl,  
         "CPhoneStateInCall::LaunchDtmfListQueryL()" );
     
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateConnected );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-   
-    if ( callStateData.CallId() == KErrNotFound )
+    TInt callId = PhoneCallUtil::CallIdByState( EPEStateConnected );
+    if ( callId == KErrNotFound )
         {
-        callStateData.SetCallState( EPEStateConnecting );
-        iViewCommandHandle->HandleCommandL(
-            EPhoneViewGetCallIdByState, &callStateData );    
+        callId = PhoneCallUtil::CallIdByState( EPEStateConnecting );
         }
         
-    if ( callStateData.CallId() > KErrNotFound )
+    if ( callId > KErrNotFound )
         {
         //Get Array of DTMF strings from PhoneEngine
         const CDesCArray& dtmfArray = 
         iStateMachine->PhoneEngineInfo()->
-        RemotePredefinedDtmfStrings( callStateData.CallId() );
+        RemotePredefinedDtmfStrings( callId );
         TInt itemCount = dtmfArray.Count();  
         if ( itemCount )
             {
@@ -658,7 +654,7 @@ void CPhoneStateInCall::LaunchDtmfListQueryL()
             "CPhoneStateInCall::LaunchDtmfListQueryL() No found valid call id" );
         }
     // if there is a connected call only then open DtmfListQuery.
-    if ( IsAnyConnectedCalls() )
+    if ( PhoneCallUtil::IsAnyConnectedCalls() )
        {
        TPhoneCmdParamQuery queryDialogParam;
        queryDialogParam.SetQueryType( EPhoneDtmfListQueryDialog );
@@ -678,53 +674,8 @@ EXPORT_C TBool CPhoneStateInCall::IsVideoCallActiveL()
     {
     __LOGMETHODSTARTEND(EPhoneControl,  
         "CPhoneStateInCall::IsVideoCallActive()" );
-    TBool retVal = EFalse;
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateConnected );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    if ( callStateData.CallId() > KErrNotFound )
-        {
-        retVal = IsVideoCall( callStateData.CallId() );
-        }
-    return retVal;
-    }
-    
-// ---------------------------------------------------------
-// CPhoneStateInCall::IsVideoCallRingingL
-// ---------------------------------------------------------
-//
-
-EXPORT_C TBool CPhoneStateInCall::IsVideoCallRingingL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl,  
-        "CPhoneStateInCall::IsVideoCallRingingL()" );
-    TBool retVal = EFalse;
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateRinging );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    if ( callStateData.CallId() > KErrNotFound )
-        {
-        retVal = IsVideoCall( callStateData.CallId() );
-        }
-    return retVal;
-    }
-
-// ---------------------------------------------------------
-// CPhoneStateInCall::GetRingingCallL
-// ---------------------------------------------------------
-//
-
-EXPORT_C TInt CPhoneStateInCall::GetRingingCallL()
-    {
-    __LOGMETHODSTARTEND(EPhoneControl,  
-        "CPhoneStateInCall::GetRingingCallL()" );
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateRinging );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    return callStateData.CallId();
+    return PhoneCallUtil::CheckIfCallExists(
+                EPEStateConnected, EPECallTypeVideo);
     }
 
 // -----------------------------------------------------------
@@ -734,24 +685,17 @@ EXPORT_C TInt CPhoneStateInCall::GetRingingCallL()
 EXPORT_C void CPhoneStateInCall::DisconnectOutgoingCallL()
     {
     __LOGMETHODSTARTEND(EPhoneControl, 
-        "CPhoneStateInCall::DisconnectOutgoingCallL()");
-    TPhoneCmdParamCallStateData callStateData;
-    callStateData.SetCallState( EPEStateConnecting );
-    iViewCommandHandle->HandleCommandL(
-        EPhoneViewGetCallIdByState, &callStateData );
-    if( callStateData.CallId() == KErrNotFound )
+        "CPhoneStateInCall::DisconnectOutgoingCallL()");    
+    TInt callId = PhoneCallUtil::CallIdByState( EPEStateConnecting );
+    if( callId == KErrNotFound )
         {
         // No connecting call, find the dialing call
-        callStateData.SetCallState( EPEStateDialing );
-        iViewCommandHandle->HandleCommandL(
-            EPhoneViewGetCallIdByState, &callStateData );
+        callId = PhoneCallUtil::CallIdByState( EPEStateDialing );
         
-        if( callStateData.CallId() == KErrNotFound )
+        if( callId == KErrNotFound )
             {
             // No dialing call, find the disconnectinging call
-            callStateData.SetCallState( EPEStateDisconnecting );
-            iViewCommandHandle->HandleCommandL(
-                EPhoneViewGetCallIdByState, &callStateData );
+            callId = PhoneCallUtil::CallIdByState( EPEStateDisconnecting );
             }
         else
             {
@@ -759,9 +703,9 @@ EXPORT_C void CPhoneStateInCall::DisconnectOutgoingCallL()
             }
         }
 
-    if( callStateData.CallId() > KErrNotFound )
+    if( callId > KErrNotFound )
         {
-        iStateMachine->SetCallId( callStateData.CallId() );
+        iStateMachine->SetCallId( callId );
         iStateMachine->SendPhoneEngineMessage( 
             MPEPhoneModel::EPEMessageRelease );
         }
@@ -782,12 +726,8 @@ void CPhoneStateInCall::HandleEndKeyPressL( TPhoneKeyEventMessages aMessage )
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateInCall::HandleEndKeyPressL()");
     if ( aMessage == EPhoneKeyLongPress )
         {
-        TPhoneCmdParamCallStateData callStateData;
-        callStateData.SetCallState( EPEStateConnected );
-        iViewCommandHandle->HandleCommandL(
-            EPhoneViewGetCallIdByState, &callStateData );
-
-        if( IsVideoCall( callStateData.CallId() ) )
+        if( PhoneCallUtil::CheckIfCallExists(
+                EPEStateConnected, EPECallTypeVideo) )
             {
             // Video call can be released only after we get response to VT Shutdown Command 
             CPhoneMediatorFactory::Instance()->Sender()->IssueCommand( 
