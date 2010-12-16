@@ -442,6 +442,12 @@ public:
 		EPhoneViewSetIncallBubbleFalse,
 		/** EPhoneViewIsDisplayingMenuOrDialog */
 		EPhoneViewIsDisplayingMenuOrDialog,
+		/** EPhoneViewSetQwertyModeAndOrientation */
+		EPhoneViewSetQwertyModeAndOrientation,
+		/** EPhoneViewIsCallWaiting */
+		EPhoneViewIsCallWaiting,
+		/** EPhoneViewLockCallUiOrientationIfNeeded */
+		EPhoneViewLockCallUiOrientationIfNeeded,
 		/** , // Don't remove this, this should always be the last in list. */
 		EPhoneAmountOfCommands
 		};

@@ -37,6 +37,9 @@
 #include "cphonelistquerydialog.h"
 #include "cphonetimer.h"
 
+// CONSTANTS
+const TInt KPhoneRestartWaitNoteInterval = 5000000;
+
 // ================= MEMBER FUNCTIONS =======================
 // C++ default constructor can NOT contain any code, that
 // might leave.
@@ -113,12 +116,17 @@ void CPhoneQueryController::CreateQueryL(
 
 	    case TPhoneCommandParam::EPhoneParamRebootQuery:
 	        {
-	        TRequestStatus status = KRequestPending;
-	        CAknGlobalConfirmationQuery* query = CAknGlobalConfirmationQuery::NewLC();
-	        query->ShowConfirmationQueryL(
-	            status, params.QueryPrompt(), params.DefaultCba(), R_QGN_NOTE_INFO_ANIM );
-	        User::WaitForRequest( status );
-	        CleanupStack::PopAndDestroy( query );
+            ClearTimer();
+            iTimer = CPhoneTimer::NewL();
+            iTimer->After( KPhoneRestartWaitNoteInterval, this );
+
+            iSimSwitchRestartWaitNote = CAknGlobalNote::NewL();
+            iSimSwitchRestartWaitNote->SetSoftkeys( R_AVKON_SOFTKEYS_EMPTY );
+            // Show the global note
+            iSimSwitchRestartWaitNote->ShowNoteL( iStatus, 
+                    EAknGlobalWaitNote, params.QueryPrompt()  );
+
+            SetActive();        
 	        }
 	        break;
 
@@ -760,6 +768,17 @@ void CPhoneQueryController::DoCancel()
     {
     __LOGMETHODSTARTEND(EPhoneUIView, "CPhoneQueryController::DoCancel( ) ");
 
+    if ( iSimSwitchRestartWaitNote )
+        {
+        TRAP_IGNORE( iSimSwitchRestartWaitNote->CancelNoteL( KErrCancel ) );
+
+        delete iSimSwitchRestartWaitNote;
+        iSimSwitchRestartWaitNote = NULL;
+        TRAP_IGNORE( static_cast<MEikCommandObserver*>( iEikEnv.EikAppUi() )
+            ->ProcessCommandL( EPhoneCmdRestartPhone ) );
+        return;
+        }
+    
     if ( iActiveAvkonQuery == EPhoneGlobalQueryDialog )
         {
         ClearTimer();

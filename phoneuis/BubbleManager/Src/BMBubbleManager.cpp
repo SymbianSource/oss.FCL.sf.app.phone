@@ -3308,13 +3308,11 @@ void CBubbleManager::BuildMainPaneImage()
         {
         // single active
         header = activeHeader;
-        iCallObjectChanged = ETrue;
         }
     else if ( holdHeader )
         {
         // single hold and no image yet
         header = holdHeader;
-        iCallObjectChanged = ETrue;
         }
                 
     if ( header->IsInConference() || header->CallObjectText().Length() )
@@ -3323,7 +3321,8 @@ void CBubbleManager::BuildMainPaneImage()
         return;            
         }
 
-    if ( !iMainPaneControl->IsUsed() || iCallObjectChanged )
+    if ( !iMainPaneControl->IsUsed() || iCallObjectChanged || 
+         (header->BubbleId()!=iMainPaneControl->BubbleId()) ) // foreground header changed
         {
         iMainPaneControl->Reset();
         iMainPaneControl->ReadBubbleHeader( *header );

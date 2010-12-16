@@ -234,6 +234,9 @@ enum
 
     // Update cba in case of emergency call
     EPhoneCmdUpdateEmergencyCba,
+    
+    // Restart phone
+    EPhoneCmdRestartPhone,
 
     EPhoneCmdLast
     };

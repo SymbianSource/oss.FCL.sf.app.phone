@@ -38,6 +38,9 @@
 #include <AknsFrameBackgroundControlContext.h>
 #include <aknlayoutscalable_apps.cdl.h>
 #include <layoutmetadata.cdl.h>
+#include <aknenv.h>                  // CAknEnv
+#include <aknEditStateIndicator.h>
+#include <AknIndicatorContainer.h>
 
 #include "cdialernumberentry.h"
 #include "dialercommon.h"
@@ -275,9 +278,48 @@ TInt CDialerNumberEntry::ChangeEditorMode( TBool aDefaultMode )
 //
 TInt CDialerNumberEntry::GetEditorMode() const
     {
-    return iEditor->GetEditorMode();
+    TInt editorMode = iEditor->GetEditorMode();
+    TInt indicatorMode = GetEditorModeByEditingStateIndicator();
+    // Indicator mode indicates the current input mode of FEP
+    // which may differ from editor mode if for e.g. qwerty is open and
+    // numeric mode is used.
+    if ( editorMode != indicatorMode )
+        {
+        return indicatorMode;
+        }
+    else
+        {
+        return editorMode;
+        }
     }
     
+// --------------------------------------------------------------------------
+// TInt CDialerNumberEntry::GetEditorModeByEditingStateIndicator
+// --------------------------------------------------------------------------
+//  
+TInt CDialerNumberEntry::GetEditorModeByEditingStateIndicator() const
+    {
+    TInt mode( EAknEditorNullInputMode );
+    
+    if ( IsIndicatorStateOn( EAknNaviPaneEditorIndicatorNumberCase )  || 
+         IsIndicatorStateOn( EAknNaviPaneEditorIndicatorNumberCaseSelect )  ||
+         IsIndicatorStateOn( EAknNaviPaneEditorIndicatorArabicIndicNumberCase )  ||
+         IsIndicatorStateOn( EAknNaviPaneEditorIndicatorDevanagariIndicNumberCase )  ||
+         IsIndicatorStateOn( EAknNaviPaneEditorIndicatorJapaneseFullNumeric )   || 
+         IsIndicatorStateOn( EAknNaviPaneEditorIndicatorFnKeyPressed )  || 
+         IsIndicatorStateOn( EAknNaviPaneEditorIndicatorFnKeyLocked ) ) 
+    
+        {
+        mode = EAknEditorNumericInputMode;
+        }
+    else
+        {
+        mode = EAknEditorTextInputMode;
+        }
+    return mode;
+    }
+
+
 // ---------------------------------------------------------------------------
 // CDialerNumberEntry::SetTextToNumberEntry
 // ---------------------------------------------------------------------------
@@ -970,6 +1012,32 @@ TBool CDialerNumberEntry::Validate( const TDesC& aString )
         }
     
     return !input.Remainder().Length();
+    }
+
+// -----------------------------------------------------------------------------
+// CDialerNumberEntry::IsIndicatorStateOn
+// -----------------------------------------------------------------------------
+//
+TBool CDialerNumberEntry::IsIndicatorStateOn( TInt aIndicatorState ) const
+    {
+    TBool ret( EFalse );
+    
+    MAknEditingStateIndicator* stateIndicator = 
+         iAvkonEnv->EditingStateIndicator();
+    
+     if ( stateIndicator )
+        {
+        CAknIndicatorContainer* indicatorContainer = 
+        stateIndicator->IndicatorContainer();
+        
+        if ( indicatorContainer )
+            {
+            ret = ( EAknIndicatorStateOn == 
+                           indicatorContainer->IndicatorState( 
+                                   TUid::Uid( aIndicatorState ) ) ); 
+            }
+        }
+     return ret;
     }
 
 // End of File

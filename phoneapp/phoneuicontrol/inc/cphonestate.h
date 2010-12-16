@@ -1139,6 +1139,11 @@ class CPhoneState :
         * Sets little bubble value if dialler is open.
         */
         void SetLittleBubbleVisibilityL(TPhoneCommandParam* aCommandParam);
+        
+        /**
+         * Check if there is a waiting call.
+         */
+        TBool IsWaitingCall();
 
     private: // NumberEntry functions.
 

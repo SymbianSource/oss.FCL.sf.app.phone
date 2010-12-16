@@ -277,4 +277,6 @@ EXPORTS
 	_ZThn8_N16CPhoneTwoSingles17HandleKeyMessageLEN15MPhoneKeyEvents22TPhoneKeyEventMessagesE8TKeyCode @ 276 NONAME
 	_ZThn8_N16CPhoneTwoSinglesD0Ev @ 277 NONAME
 	_ZThn8_N16CPhoneTwoSinglesD1Ev @ 278 NONAME
+	_ZN14CPhoneIncoming24HandleCreateNumberEntryLERK9TKeyEvent10TEventCode @ 279 NONAME
+	_ZThn8_N14CPhoneIncoming24HandleCreateNumberEntryLERK9TKeyEvent10TEventCode @ 280 NONAME
 

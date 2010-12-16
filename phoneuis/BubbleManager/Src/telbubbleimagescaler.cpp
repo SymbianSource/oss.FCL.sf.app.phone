@@ -25,8 +25,7 @@
 //
 CTelBubbleImageScaler::CTelBubbleImageScaler(
         MTelBubbleImageScalerObserver& aObserver) :
-    CActive(CActive::EPriorityStandard), iObserver(aObserver), iState(EScalingIdle),
-    iScaler( NULL )
+    CActive(CActive::EPriorityStandard), iObserver(aObserver), iState(EScalingIdle)    
     {
     }
 

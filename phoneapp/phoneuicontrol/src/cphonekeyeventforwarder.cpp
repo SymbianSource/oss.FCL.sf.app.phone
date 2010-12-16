@@ -36,7 +36,6 @@
 #include "cphoneqwertyhandler.h"
 #include "tphonecmdparampointer.h"
 #include "tphonecmdparamboolean.h"
-#include "mphoneqwertymodeobserver.h"
 #include "cdialer.h"
 
 // CONSTANTS
@@ -174,7 +173,7 @@ TKeyResponse CPhoneKeyEventForwarder::OfferKeyEventL(
         
         // Open number entry view if any allowed character key
         // is pressed on homescreen or in-call ui
-        if ( aType != EEventKeyUp && IsKeyAllowedL( keyEvent ) )
+        if ( aType != EEventKeyUp && IsKeyAllowed( keyEvent ) )
             {
             // Do not open number entry with up key
             iStateMachine->State()->HandleCreateNumberEntryL( keyEvent, aType );
@@ -236,6 +235,7 @@ void CPhoneKeyEventForwarder::ConstructL( const TRect& aRect )
             static_cast<CDialer*>( ptrParam.Pointer() );
             
     iQwertyHandler->AddQwertyModeObserverL( *qwertyObserver );
+    iQwertyHandler->AddQwertyModeObserverL( *this );
     
     if ( AknLayoutUtils::PenEnabled() )
         {
@@ -252,29 +252,23 @@ void CPhoneKeyEventForwarder::ConstructL( const TRect& aRect )
     }
 
 // -----------------------------------------------------------------------------
-// CPhoneKeyEventForwarder::IsKeyAllowedL
+// CPhoneKeyEventForwarder::IsKeyAllowed
 // -----------------------------------------------------------------------------
 //
-TBool CPhoneKeyEventForwarder::IsKeyAllowedL( const TKeyEvent& aKeyEvent )
+TBool CPhoneKeyEventForwarder::IsKeyAllowed( const TKeyEvent& aKeyEvent )
     {
-    __LOGMETHODSTARTEND( EPhoneControl,
-        "CPhoneKeyEventForwarder::IsKeyAllowedL");
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneKeyEventForwarder::IsKeyAllowed" );
 
     TKeyEvent keyEvent( aKeyEvent );
-    
-    // Check keyboard mode
-    TBool isModeNumeric = iViewCommandHandle->HandleCommandL(
-          EPhoneViewIsNumberEntryNumericMode ) == EPhoneViewResponseSuccess;
 
-    // Check if key is a numeric key
-    TBool isNumeric = CPhoneKeys::IsNumericKey( keyEvent, EEventKey );
-    
-    // Check if key is alpha numeric key and alphabet input is allowed
-    TBool isAllowedAlphaNumeric =
-       iStateMachine->State()->IsAlphanumericSupportedAndCharInput( keyEvent );
+    // Check if key event is a numeric input
+    TBool isNumerical = CPhoneKeys::IsNumericKey( keyEvent, EEventKey );
 
-    return ( ( isModeNumeric && isNumeric ) || 
-             ( !isModeNumeric && isAllowedAlphaNumeric ) );
+    // Check if key event is an alphanumerical input
+    TBool isAlphanumerical = 
+	    iStateMachine->State()->IsAlphanumericSupportedAndCharInput( keyEvent );
+
+    return ( isNumerical || isAlphanumerical );
     }
 
 // -----------------------------------------------------------------------------
@@ -783,6 +777,9 @@ void CPhoneKeyEventForwarder::ConvertKeyCodeL( TUint& aCode,
                 case EStdKeyApplication0:
                     aCode = EKeyApplication0;
                     break;
+                case EStdKeyBackspace:
+                    aCode = EKeyBackspace;
+                    break;
                 default:
                     aCode = aKeyEvent.iScanCode; // Use default code
                     break;
@@ -792,6 +789,27 @@ void CPhoneKeyEventForwarder::ConvertKeyCodeL( TUint& aCode,
 
     __PHONELOG1( EBasic, EPhoneControl,
         "CPhoneKeyEventHandler::ConvertKeyCodeL aCode (%d)", aCode );
+    }
+
+// -----------------------------------------------------------------------------
+// CPhoneKeyEventForwarder::HandleQwertyModeChange
+// -----------------------------------------------------------------------------
+//    
+void CPhoneKeyEventForwarder::HandleQwertyModeChange( TInt aMode )
+    {
+    TPhoneCmdParamBoolean  booleanParam;
+    booleanParam.SetBoolean( aMode );
+    TRAP_IGNORE( iViewCommandHandle->
+            ExecuteCommandL( EPhoneViewSetQwertyModeAndOrientation, 
+                    &booleanParam ) );
+    }
+
+// -----------------------------------------------------------------------------
+// CPhoneKeyEventForwarder::HandleKeyboardLayoutChange
+// -----------------------------------------------------------------------------
+//
+void CPhoneKeyEventForwarder::HandleKeyboardLayoutChange()
+    {
     }
 
 //  End of File

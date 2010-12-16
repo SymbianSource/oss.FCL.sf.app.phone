@@ -123,16 +123,16 @@ EXPORT_C void CPhoneIncoming::HandlePhoneEngineMessageL(
         case MEngineMonitor::EPEMessageRemoteResumed:
                 SendGlobalInfoNoteL( EPhoneInformationConnectedNote );
             break;
-		
-		case MEngineMonitor::EPEMessageShowVersion:
-			{
-			if ( iStateMachine->SecurityMode()->IsSecurityMode() )
-				{
-				// Do nothing if security mode is enabled.
-				return;
-				}
-			}
-		// Fall through
+        
+        case MEngineMonitor::EPEMessageShowVersion:
+            {
+            if ( iStateMachine->SecurityMode()->IsSecurityMode() )
+                {
+                // Do nothing if security mode is enabled.
+                return;
+                }
+            }
+        // Fall through
 
         // fall through.
         case MEngineMonitor::EPEMessageIssuingSSRequest:
@@ -350,5 +350,17 @@ void CPhoneIncoming::AllowShowingOfWaitingCallHeaderL(
          CPhoneState::HandleErrorL( aErrorInfo );
          }
      }
- 
-// End of File
+ // -----------------------------------------------------------   
+ // CPhoneIncoming::HandleCreateNumberEntryL
+ // -----------------------------------------------------------
+ //
+EXPORT_C void CPhoneIncoming::HandleCreateNumberEntryL( 
+         const TKeyEvent& /* aKeyEvent */ ,
+         TEventCode /* aEventCode */ )
+     {
+     // Empty implementation
+     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneIncoming::HandleCreateNumberEntryL() ");
+     
+     }
+	 
+ // End of File

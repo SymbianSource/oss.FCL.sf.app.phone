@@ -319,6 +319,15 @@ class CPhoneStateIdle : public CPhoneState
           */
          void ChangeTo( TInt aState );
          
+         /**
+         * Opens or creates number entry and forwards key event to it.
+         * @param aKeyEvent - key event
+         * @param aCode - event code
+         */
+         void OpenNumberEntryWithKeyEventL( 
+                 const TKeyEvent& aKeyEvent,
+                 TEventCode aEventCode );
+         
     private:
         
          // True if call initiliazed.

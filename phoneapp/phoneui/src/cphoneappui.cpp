@@ -305,11 +305,6 @@ void CPhoneAppUI::ConstructL()
 
     // Update the Apps ready flag
     iAppsReady += EPhoneStartedUp;
-    
-    if ( FeatureManager::FeatureSupported( KFeatureIdOnScreenDialer ) )     
-        {
-        iOnScreenDialer = ETrue;   
-        }
     __PHONELOG( EBasic, EPhonePhoneapp, "CPhoneAppUI::ConstructL() Phone started..." );
     __PHONELOG( EBasic, EPhonePhoneapp, "CPhoneAppUI::ConstructL() done..." );
     }

@@ -232,7 +232,9 @@ TBool CPhoneTransferDialerController::ButtonDimmed( TButtonIndex aIndex ) const
 //
 TBool CPhoneTransferDialerController::EasyDialingAllowed() const
     {
-    return EFalse;
+    // Needs to be true to enable possible qwerty mode to transfer dialer.
+    // Doesn't affect EasyDialing on/off.
+    return ETrue;
     }
 
 // ---------------------------------------------------------------------------

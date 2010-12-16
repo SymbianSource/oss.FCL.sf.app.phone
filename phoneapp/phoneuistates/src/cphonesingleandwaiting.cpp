@@ -705,4 +705,17 @@ void CPhoneSingleAndWaiting::HandleDisconnectingL( TInt aCallId )
     __LOGMETHODSTARTEND( EPhoneUIStates, "CPhoneSingleAndWaiting::HandleDisconnectingL( ) ");
     }
 
+// -----------------------------------------------------------
+// CPhoneSingleAndWaiting::HandleCreateNumberEntryL
+// -----------------------------------------------------------
+//
+void CPhoneSingleAndWaiting::HandleCreateNumberEntryL( 
+        const TKeyEvent& /* aKeyEvent */ ,
+        TEventCode /* aEventCode */ )
+    {
+    // Empty implementation
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneSingleAndWaiting::HandleCreateNumberEntryL() ");
+    
+    }
+	
 // End of File

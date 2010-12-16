@@ -157,7 +157,7 @@ const TInt KDialerInputMaxChars( 100 );
 // ---------------------------------------------------------------------------
 //
 CPhoneViewController::CPhoneViewController() :
-    iEikEnv( *CEikonEnv::Static() ),
+    iEikEnv( *CEikonEnv::Static() ),// codescanner::performance::eikonenvstatic
     iHelpCommand( KINCAL_HLP_CALL_HANDLING ),
     iBlockingDialogIsDisplayed( EFalse ),
     iIdleUid( KErrNotFound ),
@@ -167,7 +167,9 @@ CPhoneViewController::CPhoneViewController() :
     iDialerActive( EFalse ),
     iPriotityChanged( EFalse ),
     iSecurityMode( ETrue ),
-    iNeedToReturnToForegroundAppAfterCall( EFalse )
+    iNeedToReturnToForegroundAppAfterCall( EFalse ),
+    iQwertyMode( EFalse ),
+    iLockCallUiInCurrentOrientation( EFalse )
     {
     }
 
@@ -238,8 +240,8 @@ void CPhoneViewController::ConstructL( TRect aRect )
         {
         iDialerActive = EFalse;
         // Create dialer controller
-        iDialerController = CPhoneDialerController::NewL( iBubbleWrapper,
-                                                          *coeEnv );
+        iDialerController = CPhoneDialerController::NewL( 
+            iBubbleWrapper, *coeEnv );
         // Create dialer view
         iDialerView = CPhoneDialerView::NewL( aRect );
         iDialerView->DrawableWindow()->SetOrdinalPosition( -1 );
@@ -258,8 +260,8 @@ void CPhoneViewController::ConstructL( TRect aRect )
         iDialerController->SetEasyDialingController( iEasyDialingController );
 
         // Create controller for DTMF mode of the dialer
-        iDtmfDialerController = CPhoneDtmfDialerController::NewL( iBubbleWrapper,
-                                                                  *coeEnv );
+        iDtmfDialerController = CPhoneDtmfDialerController::NewL( 
+            iBubbleWrapper, *coeEnv );
         }
 
     User::LeaveIfError( iKeyLock.Connect() );
@@ -271,6 +273,15 @@ void CPhoneViewController::ConstructL( TRect aRect )
     iIncallBubble = CAknIncallBubble::NewL();
 
     User::LeaveIfError( iSkinServerSession.Connect( this ) );
+    
+    TInt orientation(0);
+    if ( KErrNone == CPhoneCenRepProxy::Instance()->GetInt(
+            KCRUidTelPrivateVariation,
+            KTelCallUiOrientation,
+            orientation ) )
+        {
+        iLockCallUiInCurrentOrientation = orientation;
+        }
     }
 
 // -----------------------------------------------------------------------------
@@ -1212,6 +1223,45 @@ EXPORT_C void CPhoneViewController::ExecuteCommandL(
             iMenuController->SetConferenceAndWaitingVideoFlag( booleanParam->Boolean() );
             }
             break;
+        case EPhoneViewSetQwertyModeAndOrientation:
+            {
+            TPhoneCmdParamBoolean*  booleanParam =
+                            static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
+            iQwertyMode = booleanParam->Boolean();
+#ifndef FF_LAYOUT_640_480_TOUCH_VGA4
+            SetOrientationL();
+#endif
+            }
+            break;
+        case EPhoneViewLockCallUiOrientationIfNeeded:
+            {
+            if ( iLockCallUiInCurrentOrientation )
+                {
+                TPhoneCmdParamBoolean*  booleanParam =
+                                static_cast<TPhoneCmdParamBoolean*>( aCommandParam );
+                if ( booleanParam->Boolean() )
+                    {
+                    TInt screenMode = iEikEnv.ScreenDevice()->CurrentScreenMode();
+                    if ( screenMode )
+                        {
+                        iCallUiOrientation = CAknAppUi::EAppUiOrientationLandscape;
+                        }
+                    else
+                        {
+                        iCallUiOrientation = CAknAppUi::EAppUiOrientationPortrait;
+                        }
+    #ifndef FF_LAYOUT_640_480_TOUCH_VGA4
+                    SetOrientationL();
+    #endif
+                    }
+                else
+                    {
+                    iCallUiOrientation = 
+                            CAknAppUi::EAppUiOrientationUnspecified;
+                    }
+                }
+            }
+            break;
         default:
             __PHONELOG( EBasic, EPhonePhoneapp,
              "CPhoneViewController::ExecuteCommandL -> UnKnownMessage !!! " );
@@ -1737,7 +1787,7 @@ EXPORT_C TPhoneViewResponseId CPhoneViewController::HandleCommandL(
                 // Remove DTMF dialer when exist
                 if ( IsDtmfDialerActive() )
                     {
-                    static_cast<MEikCommandObserver*>( CEikonEnv::Static()->EikAppUi() )
+                    static_cast<MEikCommandObserver*>( iEikEnv.EikAppUi() )
                     ->ProcessCommandL( EPhoneDtmfDialerExit );
                     }
                 else if ( iCustomization &&
@@ -2290,7 +2340,7 @@ EXPORT_C void CPhoneViewController::HandleSecurityModeChanged( TBool aIsEnabled 
         // Update cba if security mode changes while emergency call is ongoing
         if ( emergencyCallOngoing )
             {
-            TRAP_IGNORE( static_cast<MEikCommandObserver*>( CEikonEnv::Static()->EikAppUi() )
+            TRAP_IGNORE( static_cast<MEikCommandObserver*>( iEikEnv.EikAppUi() )
                                 ->ProcessCommandL( EPhoneCmdUpdateEmergencyCba ) );
             }
 
@@ -2832,12 +2882,12 @@ void CPhoneViewController::SetEikonNotifiersDisabled(
         if ( !iPriotityChanged )
             {
             //Store current ordinal priority.
-            iPrevious = CEikonEnv::Static()->RootWin().OrdinalPriority();
+            iPrevious = iEikEnv.RootWin().OrdinalPriority();
             iPriotityChanged = ETrue;
             //Rise window priority in order to get phoneview on top of eikon
             //notifiers. e.g. Select USB mode notifier is the one which using
             //eikon notiers.
-            CEikonEnv::Static()->RootWin().SetOrdinalPosition(
+            iEikEnv.RootWin().SetOrdinalPosition(
                     0,
                     ECoeWinPriorityAlwaysAtFront-1 );
             __PHONELOG( EBasic, EPhoneUIView,
@@ -2847,8 +2897,8 @@ void CPhoneViewController::SetEikonNotifiersDisabled(
     // enable notifiers, sametime reset previous rootwin priority
     else if ( iPriotityChanged )
         {
-        TInt ordinalPos = CEikonEnv::Static()->RootWin().OrdinalPosition();
-        CEikonEnv::Static()->RootWin().SetOrdinalPosition(
+        TInt ordinalPos = iEikEnv.RootWin().OrdinalPosition();
+        iEikEnv.RootWin().SetOrdinalPosition(
                 ordinalPos,
                 iPrevious );
         iPriotityChanged = EFalse;
@@ -3905,6 +3955,10 @@ void CPhoneViewController::SetControltoDialerL()
     if ( !iDialerActive )
         {
         iDialerActive = ETrue;
+#ifndef FF_LAYOUT_640_480_TOUCH_VGA4
+        SetOrientationL();
+#endif
+        iAudioController->DeactivateVolumeControl();
 
         // Ensure that toolbar and menu commands are up-to-date
         TBuf<1> temp; // we are only interested if the text is empty or not
@@ -3953,6 +4007,12 @@ void CPhoneViewController::SetControltoCallHandlingL()
     if ( iDialerActive )
         {
         iDialerActive = EFalse;
+#ifndef FF_LAYOUT_640_480_TOUCH_VGA4
+        SetOrientationL();
+#endif
+        
+        iAudioController->ActivateVolumeControlL();
+
         // Hide dialer view. Do this before resizing status pane to prevent unnecessary
         // resizing of dialer components. Hiding dialer view already before showing
         // phone view might cause screen flickering but tests have proven it doesn't happen.
@@ -4309,4 +4369,46 @@ void CPhoneViewController::SkinPackageChanged( const TAknsSkinStatusPackageChang
     __LOGMETHODSTARTEND( EPhoneUIView, "CPhoneViewController::SkinPackageChanged()" );
     iPhoneView->DrawNow();
     }
+
+// -----------------------------------------------------------------------------
+// CPhoneViewController::SetOrientation
+// -----------------------------------------------------------------------------
+//
+void CPhoneViewController::SetOrientationL() 
+    {
+    CAknAppUi::TAppUiOrientation orientation(
+            CallUiOrientation() );
+    
+    if ( iQwertyMode )
+        {
+        orientation = CAknAppUi::EAppUiOrientationLandscape;
+        }
+    else if ( iDialerActive )
+        {
+        orientation = CAknAppUi::EAppUiOrientationAutomatic;
+        }
+
+    static_cast<CAknAppUi*>( iEikEnv.EikAppUi() )->
+                        SetOrientationL( orientation );
+    }
+
+// -----------------------------------------------------------------------------
+// CPhoneViewController::CallUiOrientation
+// -----------------------------------------------------------------------------
+//
+CAknAppUi::TAppUiOrientation CPhoneViewController::CallUiOrientation() 
+    {
+    CAknAppUi::TAppUiOrientation orientation(
+            CAknAppUi::EAppUiOrientationPortrait);
+    
+    if ( iLockCallUiInCurrentOrientation &&
+         iCallUiOrientation !=
+            CAknAppUi::EAppUiOrientationUnspecified )
+        {
+        orientation = iCallUiOrientation;
+        }
+
+    return orientation;
+    }
+
 // End of File

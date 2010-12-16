@@ -415,8 +415,9 @@ void CDialer::OpenVkbL()
 //
 TInt CDialer::GetEditorMode() const
     {
+    // Do additional editor mode check if alphanumeric mode is allowed
     return ( iEditorType == ENumericEditor ) ? 
-        EAknEditorNumericInputMode : EAknEditorTextInputMode;
+        EAknEditorNumericInputMode : iNumberEntry->GetEditorMode();
     }
 
 // ---------------------------------------------------------------------------

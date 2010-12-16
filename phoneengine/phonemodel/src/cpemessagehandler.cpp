@@ -1420,9 +1420,25 @@ void CPEMessageHandler::CheckAndHideIdentity(
 			case RMobileCall::ERemoteIdentityUnavailableNoCliInteractionWithOtherService:
 			case RMobileCall::ERemoteIdentityAvailableNoCliCoinOrPayphone:
 			case RMobileCall::ERemoteIdentityUnavailableNoCliCoinOrPayphone:
-			case RMobileCall::ERemoteIdentityAvailableNoCliUnavailable:
-				{
-				HideIdentification( EPEUnknownNumber, aCallId );
+                {
+                HideIdentification( EPEUnknownNumber, aCallId );
+                break;
+                }
+            case RMobileCall::ERemoteIdentityAvailableNoCliUnavailable:
+                {
+                // If the network has specified that the CLI
+                // information of the remote party is not available but the
+                // MobileCallRemotePartyInfoV1::iRemoteNumber parameter has been
+                // populated with some other string , yet it is empty, 
+                // show "Private number" instead of the string.
+                if( iDataStore.RemotePhoneNumber( aCallId ).Length() == 0 )
+                    {
+                    HideIdentification( EPEPrivateNumber, aCallId );
+                    }
+                else 
+                    {
+                    HideIdentification( EPEUnknownNumber, aCallId );
+                    }
 				break;
 				}
 			case RMobileCall::ERemoteIdentityAvailable:

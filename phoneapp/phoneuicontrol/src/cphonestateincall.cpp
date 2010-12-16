@@ -316,7 +316,13 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
     iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveCallHeader, aCallId );
     iViewCommandHandle->ExecuteCommandL( EPhoneViewHideToolbar );
     SetDefaultFlagsL();
-        
+    
+    // Reset orientation flag
+    TPhoneCmdParamBoolean orientationParam;
+    orientationParam.SetBoolean( EFalse );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewLockCallUiOrientationIfNeeded,
+            &orientationParam );
+    
     if ( IsNumberEntryUsedL() )
         {
         if ( NeedToReturnToForegroundAppL() )
@@ -334,13 +340,11 @@ EXPORT_C void CPhoneStateInCall::HandleIdleL( TInt aCallId )
             if ( IsDTMFEditorVisibleL() )
                 {      
                 CloseDTMFEditorL();
-                // Display idle screen and update CBA's
                 DisplayIdleScreenL();
                 }
             else if ( iOnScreenDialer && IsCustomizedDialerVisibleL() )
                 {            
                 CloseCustomizedDialerL();
-                // Display idle screen and update CBA's
                 DisplayIdleScreenL();
                 } 
             }

@@ -104,6 +104,13 @@ NONSHARABLE_CLASS(CDialerNumberEntry) :
         * @return editor mode.
         */
         TInt GetEditorMode() const;
+        
+        /**
+        * Return current editor mode by editing state 
+        * indicator. 
+        * @return editor mode.
+        */
+        TInt GetEditorModeByEditingStateIndicator() const;
 
         /**
         * Set text to number entry
@@ -299,6 +306,13 @@ NONSHARABLE_CLASS(CDialerNumberEntry) :
          * Checks editor formatting.
          */
         void HandleEditorFormatting(); 
+        
+        /**
+        * Checks if indicator state is on for given
+        * indicator state.
+        * @param TInt aIndicatorState
+        */
+        TBool IsIndicatorStateOn( TInt aIndicatorState ) const;
          
     private:    // Data
         

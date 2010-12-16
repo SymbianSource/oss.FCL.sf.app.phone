@@ -63,6 +63,7 @@
 #include "mphonecustomization.h"
 #include <easydialingcommands.hrh>
 #include "mphonesecuritymodeobserver.h"
+#include "tphonecmdparamkeyevent.h"
 
 //CONSTANTS
 const TInt  KMaxParamLength = 1024;
@@ -156,13 +157,6 @@ EXPORT_C void CPhoneStateIdle::HandleKeyEventL(
     if ( !IsAnyQueryActiveL() )
         {
         // Handle numeric keys when key events are received in idle state
-        HandleNumericKeyEventL( aKeyEvent, aEventCode );  
-        }
-    else if ( iStateMachine->SecurityMode()->IsSecurityMode()
-        && CPhoneKeys::IsNumericKey( aKeyEvent, aEventCode ) )
-        {
-        iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveNote );
-        // Handle numeric keys when key events are received in single state
         HandleNumericKeyEventL( aKeyEvent, aEventCode );  
         }
     else if ( aEventCode == EEventKeyUp )
@@ -287,16 +281,9 @@ EXPORT_C void CPhoneStateIdle::HandleKeyMessageL(
                 }           
             }
             break;
-            
-        // "O" key
-        case KPhoneDtmf0Character:
-            if ( aMessage == EPhoneKeyLongPress && IsSimOk() )
-                {
-                LaunchApplicationL();
-                }
-            break;
-            
+
         // number key
+        case KPhoneDtmf0Character:
         case KPhoneDtmf1Character:
         case KPhoneDtmf2Character:
         case KPhoneDtmf3Character:
@@ -308,8 +295,22 @@ EXPORT_C void CPhoneStateIdle::HandleKeyMessageL(
         case KPhoneDtmf9Character:
             if ( aMessage == EPhoneKeyLongPress && IsSimOk() )
                 {
-                HandleNumberLongKeyPressL();
+                if ( KPhoneDtmf0Character == aCode )
+                    {
+                    LaunchApplicationL();
+                    }
+                else 
+                    {
+                    HandleNumberLongKeyPressL();
+                    }
                 }
+            else if ( iStateMachine->SecurityMode()->IsSecurityMode() 
+                    && !IsNumberEntryUsedL() )
+                {
+                TKeyEvent numberKeyEvent;
+                numberKeyEvent.iCode = aCode;
+                OpenNumberEntryWithKeyEventL( numberKeyEvent, EEventKey );
+                }           
             break;
 
 #ifdef RD_INTELLIGENT_TEXT_INPUT   
@@ -427,6 +428,12 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
 
     SetRingingTonePlaybackL( aCallId );
     
+    // Set current orientation
+    TPhoneCmdParamBoolean orientationParam;
+    orientationParam.SetBoolean( ETrue );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewLockCallUiOrientationIfNeeded,
+            &orientationParam );
+    
     CPhonePubSubProxy::Instance()->ChangePropertyValue(
         KPSUidScreenSaver,
         KScreenSaverAllowScreenSaver,
@@ -437,10 +444,10 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
         BeginTransEffectLC( ENumberEntryOpen );
     BeginUiUpdateLC();
     
-    // Hide the number entry if it exists
     if ( IsNumberEntryUsedL() )
         {
-        SetNumberEntryVisibilityL(EFalse);    
+        // Hide the number entry if it exists
+        SetNumberEntryVisibilityL(EFalse);
         }
      
     // Close fast swap window if it's displayed
@@ -451,23 +458,20 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
     SetTouchPaneButtonEnabled( EPhoneCallComingCmdSilent );
     SetTouchPaneButtonEnabled( EPhoneInCallCmdHold );
     
-    // Display incoming call
     DisplayIncomingCallL( aCallId );
 
     EndUiUpdate();
     EndTransEffect();
     
-    // Go to incoming state
     iCbaManager->UpdateIncomingCbaL( aCallId );
     UpdateSilenceButtonDimming();
     UpdateIncomingContextMenuL( aCallId );
     //Dim toolbar items
     SetToolbarDimming( ETrue );
-    //request that dimmed toolbar is visible.
     iViewCommandHandle->HandleCommandL( EPhoneViewShowToolbar );
     
     ChangeTo( EPhoneStateIncoming );
-         
+    
     // Reset divert indication
     SetDivertIndication( EFalse );
     }
@@ -481,6 +485,13 @@ void CPhoneStateIdle::HandleIncomingL( TInt aCallId )
 EXPORT_C void CPhoneStateIdle::HandleDialingL( TInt aCallId )
     {    
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneStateIdle::HandleDialingL( ) ");
+    
+    // Set current orientation
+    TPhoneCmdParamBoolean orientationParam;
+    orientationParam.SetBoolean( ETrue );
+    iViewCommandHandle->ExecuteCommandL( EPhoneViewLockCallUiOrientationIfNeeded,
+            &orientationParam );
+    
     DisplayCallSetupL( aCallId );
     ChangeTo( EPhoneStateCallSetup );
     }
@@ -1485,4 +1496,20 @@ TBool CPhoneStateIdle::IsCallInitialized()
     return iCallInitialized;
     }
 
+// ---------------------------------------------------------
+// CPhoneStateIdle::OpenNumberEntryWithKeyEventL
+// ---------------------------------------------------------
+//
+void CPhoneStateIdle::OpenNumberEntryWithKeyEventL( const TKeyEvent& aKeyEvent,
+        TEventCode aEventCode ) 
+    {
+    iViewCommandHandle->HandleCommandL( EPhoneViewOpenNumberEntry );
+    
+    TPhoneCmdParamKeyEvent keyEventParam;
+    keyEventParam.SetKeyEvent( aKeyEvent );
+    keyEventParam.SetEventCode( aEventCode );
+    
+    iViewCommandHandle->HandleCommandL(
+            EPhoneViewSendKeyEventToNumberEntry, &keyEventParam );
+    }
 // End of File

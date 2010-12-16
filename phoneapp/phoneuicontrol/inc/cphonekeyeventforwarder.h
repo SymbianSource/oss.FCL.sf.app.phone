@@ -24,14 +24,14 @@
 #include    <coecntrl.h>
 #include    <peninputsrveventhandler.h>
 #include    <peninputclient.h>
- 
+#include    "mphoneqwertymodeobserver.h"
+
 // FORWARD DECLARATIONS
 class MPhoneStateMachine;
 class MPhoneKeyEventHandler;
 class MPhoneViewCommandHandle;
 class CPhoneTimer;
 class CPhoneQwertyHandler;
-class MPhoneQwertyModeObserver;
 class CEikMenuBar;
 
 // CLASS DECLARATION
@@ -42,7 +42,8 @@ class CEikMenuBar;
 */
 class CPhoneKeyEventForwarder 
     : public CCoeControl,
-    public MPenUiActivationHandler
+    public MPenUiActivationHandler,
+    public MPhoneQwertyModeObserver
     {
     public:  // Constructors and destructor      
         
@@ -197,7 +198,7 @@ class CPhoneKeyEventForwarder
          * Checks from the statemachine is the given keyevent 
          * one which produces a legal character in the current mode.
          */
-        TBool IsKeyAllowedL( const TKeyEvent& aKeyEvent );
+        TBool IsKeyAllowed( const TKeyEvent& aKeyEvent );
                 
         /**
          * Checks is the given key special character (*, 0, # ) from half-qwerty
@@ -226,6 +227,19 @@ class CPhoneKeyEventForwarder
          */
         void HandleTouchDialerKeyEventL( const TKeyEvent& aKeyEvent );
 
+    private: // From MPhoneQwertyModeObserver
+        
+        /**
+        * Handle Qwerty mode change.
+        * @param aMode 0 = off, 1 = on
+        */
+        void HandleQwertyModeChange( TInt aMode );
+        
+        /**
+        * Handle qwerty keyboard layout change.
+        */
+        void HandleKeyboardLayoutChange();
+        
     private:    // Data
         
         /**

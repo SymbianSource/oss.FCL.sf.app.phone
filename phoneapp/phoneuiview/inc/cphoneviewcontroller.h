@@ -25,6 +25,7 @@
 #include <cntdef.h>
 #include <cphcntspeeddialmonitor.h>
 #include <AknsSrvClient.h>
+#include <aknappui.h>
 
 #include "mphoneviewcommandhandle.h"
 #include "cphonerecoverysystem.h"
@@ -704,8 +705,28 @@ class CPhoneViewController :
          void SkinPackageChanged(
              const TAknsSkinStatusPackageChangeReason aReason );
 
-    private:    // Data
+         /**
+         * Sets orientation.
+         */
+         void SetOrientationL();
 
+         void CreateDialerAndSetItActiveControlL();
+         
+         TInt GetDialerCBAResource() const;
+
+         /**
+         * Returns orientation for call ui view.
+         */
+         CAknAppUi::TAppUiOrientation CallUiOrientation();
+		 
+		 TBool IsPhoneAppInForeground();
+         
+         TBool IsDialerActiveControlAndInForeground();
+         
+         void SetDialerAsActiveControlInPhoneAppL();
+         
+    private:    // Data
+         
         CPhoneView* iPhoneView;
 
         CPhoneDialerView* iDialerView;
@@ -855,6 +876,15 @@ class CPhoneViewController :
 
         // Server wich sends events about background image changes
         RAknsSrvSession iSkinServerSession;
+        
+        // Qwerty mode flag
+        TBool iQwertyMode;
+        
+        // Call Ui orietation
+        CAknAppUi::TAppUiOrientation iCallUiOrientation;
+        
+        // Call Ui orietation flag
+        TBool iLockCallUiInCurrentOrientation;
     };
 
 #endif // CPHONEVIEWCONTROLLER_H

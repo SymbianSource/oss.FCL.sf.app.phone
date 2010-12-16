@@ -347,6 +347,12 @@ class CPhoneQueryController :
         CAknGlobalNote* iGlobalWaitNote;
 
         /**
+        * Global wait note for sim switch phone restart.
+        * Own.
+        */
+        CAknGlobalNote* iSimSwitchRestartWaitNote;
+        
+        /**
          * Flag for check is command already handled.
          */
         TBool iCommandHandled;

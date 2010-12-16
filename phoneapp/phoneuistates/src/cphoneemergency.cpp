@@ -224,6 +224,12 @@ void CPhoneEmergency::HandleIdleL( TInt aCallId )
         // Close menu bar, if it is displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
+        // Reset current orientation flag
+        TPhoneCmdParamBoolean orientationParam;
+        orientationParam.SetBoolean( EFalse );
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewLockCallUiOrientationIfNeeded,
+                &orientationParam );
+        
         const TBool isSimStateNotPresentWithSecurityMode = IsSimStateNotPresentWithSecurityModeEnabled();
 
         // Sim IS not ok when making emergency call from Pin query, no note
@@ -339,6 +345,12 @@ void CPhoneEmergency::HandleDialingL( TInt aCallId )
         // Close menu bar, if it is displayed
         iViewCommandHandle->ExecuteCommandL( EPhoneViewMenuBarClose );
 
+        // Set current orientation
+        TPhoneCmdParamBoolean orientationParam;
+        orientationParam.SetBoolean( ETrue );
+        iViewCommandHandle->ExecuteCommandL( EPhoneViewLockCallUiOrientationIfNeeded,
+                &orientationParam );
+        
         // Dim toolbar items
         SetToolbarDimming( ETrue );
 

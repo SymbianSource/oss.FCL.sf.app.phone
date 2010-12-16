@@ -169,6 +169,11 @@ private: // methods
      */
     TInt ChineseScriptToUseL() const;
     
+    /**
+     * Check if the second label should be shown.
+     */
+    TBool ShowSecondLabel() const;
+            
 private: // data
     
     /** Control environment to use for resource management */

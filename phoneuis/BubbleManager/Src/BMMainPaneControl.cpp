@@ -78,10 +78,8 @@ CBubbleMainPaneControl* CBubbleMainPaneControl::NewL(
 CBubbleMainPaneControl::~CBubbleMainPaneControl()
     {
     delete iScaler;
-    iScaler = NULL;
     
     delete iScaledImage;
-    iScaledImage = NULL;	
     }
 
 // ---------------------------------------------------------------------------
@@ -91,9 +89,7 @@ CBubbleMainPaneControl::~CBubbleMainPaneControl()
 void CBubbleMainPaneControl::ReadBubbleHeader( 
     const CBubbleHeader& aHeader )
     {
-    iBubble = aHeader.BubbleId();
     TBool thumbnail( EFalse );
-    TBool noScaling( EFalse );
     
     if ( aHeader.CallObjectImage() )
         {
@@ -113,16 +109,8 @@ void CBubbleMainPaneControl::ReadBubbleHeader(
     
     iThreeLinedBubble = ( aHeader.CNAP().Length() > 0 );
     
-    // PrepareBitmapsL() needs to know if a brand new thumbnail is about to get prepared.
-    if ( thumbnail && (iOldBitmap != NULL) && (iOldBitmap == iBitmap) && (iScaler->GetState() != CTelBubbleImageScaler::EScalingStarted) )
-        {
-        noScaling = ETrue;
-        }
-    
     if ( iBitmap )
         {
-        iOldBitmap = iBitmap;
-        
         CFbsBitmap* bitmap( NULL );
         CFbsBitmap* mask( NULL );
         TBool bitmapOwnership( EFalse );
@@ -134,7 +122,7 @@ void CBubbleMainPaneControl::ReadBubbleHeader(
                                     maskOwnership,
                                     aHeader.CallObjectImageType() == 
                                     CBubbleHeader::EThemeImage,
-                                    noScaling ));
+                                    thumbnail ));
         
         if ( err )
             {
@@ -153,13 +141,17 @@ void CBubbleMainPaneControl::ReadBubbleHeader(
             image->SetImage( bitmap, EFalse, mask, maskOwnership );
             } 
         
-        iIsUsed = ETrue;
-        MakeVisible( ETrue );
+        iBubble = aHeader.BubbleId();        
+        iIsUsed = ETrue;        
         
-        // upscale thumbnails if loading it for the first time.
-        if ( thumbnail && !noScaling && ( iScaler->GetState() != CTelBubbleImageScaler::EScalingStarted ) )
+        if ( thumbnail )
             {
+            // make visible after scaling is completed
             StartScaling( iBitmap );
+            }
+        else 
+            {
+            MakeVisible( ETrue );
             }
         }
     }
@@ -176,7 +168,7 @@ void CBubbleMainPaneControl::PrepareBitmapsL(
     TBool aIsScalable,
     TBool aThumbnail )
     {
-    if ( aThumbnail )
+    if ( aThumbnail && iScaledImage )
         {
         aBitmap = iScaledImage;
         }
@@ -262,6 +254,10 @@ void CBubbleMainPaneControl::Reset()
         iIsUsed = EFalse;
         MakeVisible( EFalse );
         iBubble = KErrNotFound;
+        
+        iScaler->Cancel();               
+        delete iScaledImage;
+        iScaledImage = NULL;        
         
         if ( iCallImage && 
              iCallImage->ControlType() == 
@@ -370,10 +366,8 @@ void CBubbleMainPaneControl::ImageScalingComplete( TInt aError,
 
         SizeChanged();
         
-        iIsUsed = ETrue;
-        MakeVisible( ETrue );
-        
-        Parent()->DrawNow(); // refreshing view with scaled image
+        MakeVisible( ETrue );        
+        iBubbleManager.DrawDeferred(); // refreshing view with scaled image
         }
     else if ( aError == KErrCancel )
         {
@@ -384,6 +378,8 @@ void CBubbleMainPaneControl::ImageScalingComplete( TInt aError,
     else
         {
         // draw the unscaled image in error cases
+        MakeVisible( ETrue );        
+        iBubbleManager.DrawDeferred();
     
         delete iScaledImage;
         iScaledImage = NULL;
@@ -399,15 +395,9 @@ void CBubbleMainPaneControl::ImageScalingComplete( TInt aError,
 //
 void CBubbleMainPaneControl::StartScaling( CFbsBitmap *aSourceBitmap )
     {
-    if ( !iScaler )
-        {
-        return;
-        }
-    
     iScaler->Cancel(); // cancels any outstanding scaling requests
     
     delete iScaledImage;
-    iScaledImage = NULL;
 
     // create a bitmap for scaled size
     iScaledImage = new CFbsBitmap();

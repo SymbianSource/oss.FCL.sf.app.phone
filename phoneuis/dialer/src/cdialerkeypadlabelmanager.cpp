@@ -285,7 +285,9 @@ TPtrC CDialerKeyPadLabelManager::ButtonSecondAlphaLabel( TInt aIndex ) const
     __ASSERT_DEBUG( aIndex < iKeypadSecondLabelArray->Count(), DialerPanic(EDialerPanicLabelNotFound) );
 
     TPtrC label( KNullDesC );
-    if ( aIndex < iKeypadSecondLabelArray->Count() )
+    
+    if ( ( aIndex < iKeypadSecondLabelArray->Count() ) &&
+            ShowSecondLabel() )
         {
         label.Set( (*iKeypadSecondLabelArray)[ aIndex ] );
         }
@@ -567,6 +569,33 @@ TInt CDialerKeyPadLabelManager::ChineseScriptToUseL() const
     __ASSERT_DEBUG( !err, DialerPanic(EDialerPanicChineseScriptError) );
     
     return script;
+    }
+
+// ---------------------------------------------------------------------------
+// ShowSecondLabel
+//
+// ---------------------------------------------------------------------------
+//
+TBool CDialerKeyPadLabelManager::ShowSecondLabel() const
+    {
+    TLanguage lang = User::Language();
+    TBool showSecondLabel;
+    
+    switch( lang )
+        {
+        case ELangLatvian:
+        case ELangLithuanian:
+        case ELangEstonian:
+        case ELangCroatian:
+        case ELangHungarian:  // Flow trough
+            showSecondLabel = EFalse;
+            break;
+        default:
+            showSecondLabel = ETrue;
+            break;
+        }
+    
+    return showSecondLabel;
     }
 
 

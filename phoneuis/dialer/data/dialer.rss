@@ -69,7 +69,7 @@ RESOURCE EIK_APP_INFO
 RESOURCE PHONE_NUMBER_EDITOR r_inputfield
     {
     maxChars = 100;
-    maxLines = 5;
+    maxLines = 6;
     truncation = <0x2026>; // three dots: ...
     formats =
         {

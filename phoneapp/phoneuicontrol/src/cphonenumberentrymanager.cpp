@@ -210,7 +210,6 @@ void CPhoneNumberEntryManager::SetNumberEntryVisibilityL( TPhoneCmdParamBoolean 
     iViewCommandHandle.ExecuteCommandL( EPhoneViewSetNumberEntryVisible, &aVisible );
     if ( aVisible.Boolean() )
         {
-        // Set Number Entry CBA
         iCbaManager.UpdateCbaL( EPhoneNumberAcqCBA );
         }
     }
@@ -299,7 +298,6 @@ void CPhoneNumberEntryManager::HandleCreateNumberEntryL()
             SetNumberEntryVisibilityL(booleanParam);
             }
         }
-    
     }
 
 // -----------------------------------------------------------
@@ -399,7 +397,7 @@ void CPhoneNumberEntryManager::KeyEventForExistingNumberEntryL(
     TPhoneCmdParamKeyEvent keyEventParam;
     keyEventParam.SetKeyEvent( aKeyEvent );
     keyEventParam.SetEventCode( aEventCode );
-
+    
     if ( IsValidAlphaNumericKey( aKeyEvent, aEventCode ) 
             || aKeyEvent.iCode == KKeyCtrlA
             || aKeyEvent.iCode == KKeyCtrlC
@@ -428,16 +426,16 @@ void CPhoneNumberEntryManager::KeyEventForExistingNumberEntryL(
             // cleared
             HandleNumberEntryClearedL();
             }
-
         }
     else if( aKeyEvent.iCode == EKeyLeftArrow ||
            aKeyEvent.iCode == EKeyRightArrow ||
            aKeyEvent.iCode == EKeyUpArrow ||
            aKeyEvent.iCode == EKeyDownArrow )
-           {
-           iViewCommandHandle.HandleCommandL(
-               EPhoneViewSendKeyEventToNumberEntry, &keyEventParam );
-           }
+        {
+        iViewCommandHandle.HandleCommandL(
+            EPhoneViewSendKeyEventToNumberEntry, &keyEventParam );
+        }
+        
     }
 
 // -----------------------------------------------------------------------------
@@ -477,18 +475,21 @@ TBool CPhoneNumberEntryManager::IsValidAlphaNumericKey(
 TBool CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput(
         const TKeyEvent& aKeyEvent ) const
     {
-    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput( ) ");
-    
-    TBool numericMode = EFalse;
-    TRAP_IGNORE( numericMode = ( iViewCommandHandle.HandleCommandL( EPhoneViewIsNumberEntryNumericMode ) 
-            == EPhoneViewResponseSuccess ) );
-    
-    TBool ret = !numericMode &&
-                ( ( aKeyEvent.iScanCode >= KPhoneKeyStart &&
-                    aKeyEvent.iScanCode <= KPhoneKeyEnd ) ||
-                  aKeyEvent.iModifiers & EModifierSpecial );
+    __LOGMETHODSTARTEND( EPhoneControl, 
+        "CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput( )" );
+
+    TBool isAlphanumericalCharacter = EFalse;
+
+    if ( aKeyEvent.iScanCode >= KPhoneKeyStart && aKeyEvent.iScanCode <= KPhoneKeyEnd )
+        {
+        isAlphanumericalCharacter = ETrue;
+        }
+
+    TBool ret = ( isAlphanumericalCharacter || aKeyEvent.iModifiers & EModifierSpecial );
+
     __PHONELOG1( EBasic, EPhoneControl, 
-            "CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput: %d", ret );
+        "CPhoneNumberEntryManager::IsAlphanumericSupportedAndCharInput: %d", ret );
+    
     return ret;
     }
 

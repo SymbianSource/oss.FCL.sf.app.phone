@@ -278,10 +278,11 @@ void CPhoneConferenceAndWaiting::MakeStateTransitionToConferenceAndSingleL( TInt
             aCallId, &callHeaderParam );
     if ( IsNumberEntryUsedL() )
         {
+        UpdateCbaL( EPhoneCallHandlingInCallCBA );
+        
         if ( NeedToReturnToForegroundAppL() )
             {
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
-            UpdateCbaL( EPhoneCallHandlingInCallCBA );
             }
         }
     else
@@ -322,12 +323,13 @@ void CPhoneConferenceAndWaiting::HandleIdleL( TInt aCallId )
             
         if ( IsNumberEntryUsedL() )
             {
+            UpdateCbaL( EPhoneCallHandlingInCallCBA );
+            
             if ( NeedToReturnToForegroundAppL() ) 
                 {
                 // Return phone to the background if menu application is needed to foreground.
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
-                UpdateCbaL( EPhoneCallHandlingInCallCBA );
                 }
             }
         else
@@ -526,4 +528,16 @@ void CPhoneConferenceAndWaiting::HandleWentOneToOneL( TInt aCallId )
     EndUiUpdate();
     }
 
+// -----------------------------------------------------------
+// CPhoneConferenceAndWaiting::HandleCreateNumberEntryL
+// -----------------------------------------------------------
+//
+void CPhoneConferenceAndWaiting::HandleCreateNumberEntryL( 
+        const TKeyEvent& /* aKeyEvent */ ,
+        TEventCode /* aEventCode */ )
+    {
+    // Empty implementation
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndWaiting::HandleCreateNumberEntryL() ");   
+    }
+	
 // End of File

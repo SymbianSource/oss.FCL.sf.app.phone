@@ -290,5 +290,16 @@ void CPhoneCallSetupAndWaiting::HandleConnectedL( TInt aCallId )
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );   
     iStateMachine->ChangeState( EPhoneStateWaitingInSingle );        
     }
-    
+// -----------------------------------------------------------   
+// CPhoneCallSetupAndWaiting::HandleCreateNumberEntryL
+// -----------------------------------------------------------
+//
+void CPhoneCallSetupAndWaiting::HandleCreateNumberEntryL( 
+        const TKeyEvent& /* aKeyEvent */ ,
+        TEventCode /* aEventCode */ )
+    {
+    // Empty implementation
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneCallSetupAndWaiting::HandleCreateNumberEntryL() ");   
+    }
+	
 // End of File

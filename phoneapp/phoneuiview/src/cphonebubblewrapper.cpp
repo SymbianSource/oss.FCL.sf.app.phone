@@ -154,15 +154,15 @@ CPhoneBubbleWrapper::~CPhoneBubbleWrapper()
     delete iBubbleManager;
     delete iVideoCallAnimationHeader;
     if( iParticipants )
-	    {
-	    iParticipants->Reset();
-    	delete iParticipants;
-	    }
-	delete iCallTheme;
+        {
+        iParticipants->Reset();
+        delete iParticipants;
+        }
+    delete iCallTheme;
 
-	iVideoPlayerObserver = NULL;
-	iDialerNumberEntry = NULL;
-	
+    iVideoPlayerObserver = NULL;
+    iDialerNumberEntry = NULL;
+    
     }
 
 // -----------------------------------------------------------------------------
@@ -178,16 +178,16 @@ void CPhoneBubbleWrapper::RemoveCallHeaderL( TInt aCallId )
         {
         iBubbleManager->StartChanges();
 
-		if( aCallId == KVideoTelephonyCallId1 ||
-			aCallId == KVideoTelephonyCallId2 )
-    		{
-    		CPhoneCallHeaderTextAnimation::InstanceL()->RemoveAnimatingVideoCallHeader();
-    		delete iVideoCallAnimationHeader;
-    		iVideoCallAnimationHeader = NULL;
-    		}
+        if( aCallId == KVideoTelephonyCallId1 ||
+            aCallId == KVideoTelephonyCallId2 )
+            {
+            CPhoneCallHeaderTextAnimation::InstanceL()->RemoveAnimatingVideoCallHeader();
+            delete iVideoCallAnimationHeader;
+            iVideoCallAnimationHeader = NULL;
+            }
 
         // remove the bubble
-		iBubbleExtensionManager->StopCall( bubble );
+        iBubbleExtensionManager->StopCall( bubble );
         iBubbleManager->RemoveCallHeader( bubble );
         iBubbleManager->EndChanges();
         iMapping->RemoveFromMapping( aCallId );
@@ -198,8 +198,8 @@ void CPhoneBubbleWrapper::RemoveCallHeaderL( TInt aCallId )
             "CPhoneBubbleWrapper::RemoveCallHeader ShownHeaderCount = %d",
             iBubbleManager->ShownHeaderCount() );
 
-		if (!FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) &&
-		    iConference && ( iBubbleManager->ShownHeaderCount() == 1 ) )
+        if (!FeatureManager::FeatureSupported( KFeatureIdTouchCallHandling ) &&
+            iConference && ( iBubbleManager->ShownHeaderCount() == 1 ) )
             {
             SetConferenceExpand( ETrue );
             }
@@ -234,9 +234,9 @@ CBubbleManager::TBubbleId CPhoneBubbleWrapper::CreateCallHeaderL(
     iMapping->AddToMappingL( bubble, aCallId, CBubbleManager::ENone, NULL );
 
     if ( iConference )
-	    {
-	    SetConferenceExpand( EFalse );
-	    }
+        {
+        SetConferenceExpand( EFalse );
+        }
 
     // Set call state
     PrepareCallStateL(
@@ -250,11 +250,11 @@ CBubbleManager::TBubbleId CPhoneBubbleWrapper::CreateCallHeaderL(
         bubble, 
         callHeaderParam->CallFlag() );
 
-	 __PHONELOG1(
-	    EBasic,
-	    EPhoneUIView,
-	    "CPhoneBubbleWrapper::CreateCallHeader callHeaderParam->CLIText = %S",
-	    &callHeaderParam->CLIText() );
+     __PHONELOG1(
+        EBasic,
+        EPhoneUIView,
+        "CPhoneBubbleWrapper::CreateCallHeader callHeaderParam->CLIText = %S",
+        &callHeaderParam->CLIText() );
 
     // Set CLI text
     iBubbleManager->SetCLI(
@@ -283,11 +283,11 @@ CBubbleManager::TBubbleId CPhoneBubbleWrapper::CreateCallHeaderL(
         iCipheringIndicatorAllowed &&
         !callHeaderParam->Ciphering() );
 
-	 __PHONELOG1(
-	    EBasic,
-	    EPhoneUIView,
-	    "CPhoneBubbleWrapper::CreateCallHeader Line2() = %d",
-	    callHeaderParam->Line2() );
+     __PHONELOG1(
+        EBasic,
+        EPhoneUIView,
+        "CPhoneBubbleWrapper::CreateCallHeader Line2() = %d",
+        callHeaderParam->Line2() );
 
     // Set line2 indicator
     iBubbleManager->SetCallFlag(
@@ -300,13 +300,13 @@ CBubbleManager::TBubbleId CPhoneBubbleWrapper::CreateCallHeaderL(
         callHeaderParam->NumberType() ) );
 
     if ( !iCallImageTextSupported )
-		{
+        {
         if( callHeaderParam->Thumbnail() )
             {
             // Thumbnail
             iBubbleManager->SetThumbnail( bubble, callHeaderParam->Thumbnail(), NULL );
             }
-		}
+        }
     else  // call object display
         {
         if ( callHeaderParam->CallerText().Length() )
@@ -382,21 +382,21 @@ CBubbleManager::TBubbleId CPhoneBubbleWrapper::CreateCallHeaderL(
 // -----------------------------------------------------------------------------
 //
 void CPhoneBubbleWrapper::StartMOVideoCallAnimationHeaderL(
-	CBubbleManager::TBubbleId aBubbleId,
-	const TDesC& aStateLabelText,
+    CBubbleManager::TBubbleId aBubbleId,
+    const TDesC& aStateLabelText,
     const TDesC& aStateShortLabelText)
-	{
+    {
     __LOGMETHODSTARTEND(EPhoneUIView, "CPhoneBubbleWrapper::StartMOVideoCallAnimationHeaderL");
 
-	// We have MO video call - start animating
-	iVideoCallAnimationHeader = CPhoneCallHeaderTextAnimation::InstanceL();
-	iVideoCallAnimationHeader->StartAnimatingVideoCallHeaderL(
-		aBubbleId,
-		aStateLabelText,
-		aStateShortLabelText,
-		*iBubbleManager );
+    // We have MO video call - start animating
+    iVideoCallAnimationHeader = CPhoneCallHeaderTextAnimation::InstanceL();
+    iVideoCallAnimationHeader->StartAnimatingVideoCallHeaderL(
+        aBubbleId,
+        aStateLabelText,
+        aStateShortLabelText,
+        *iBubbleManager );
 
-	}
+    }
 
 // -----------------------------------------------------------------------------
 // CPhoneBubbleWrapper.::CreateEmergencyCallHeaderL
@@ -471,15 +471,15 @@ void CPhoneBubbleWrapper::UpdateCallHeaderDisplay(
 
         SetCallHeaderParameters( bubble, callHeaderParam );
 
-		if( iVideoCallAnimationHeader )
-			{
-			if( callHeaderParam->CallState() != EPEStateDialing )
-				{
-				iVideoCallAnimationHeader->RemoveAnimatingVideoCallHeader();
-				delete iVideoCallAnimationHeader;
-    		    iVideoCallAnimationHeader = NULL;
-				}
-			}
+        if( iVideoCallAnimationHeader )
+            {
+            if( callHeaderParam->CallState() != EPEStateDialing )
+                {
+                iVideoCallAnimationHeader->RemoveAnimatingVideoCallHeader();
+                delete iVideoCallAnimationHeader;
+                iVideoCallAnimationHeader = NULL;
+                }
+            }
         // End changes
         iBubbleManager->EndChanges();
         }
@@ -986,18 +986,18 @@ void CPhoneBubbleWrapper::PrepareCallStateL(
 
     if( aState == EPEStateDialing &&
         ( aCallId == KVideoTelephonyCallId1 ||
-	    aCallId == KVideoTelephonyCallId2 ) )
-		{
+        aCallId == KVideoTelephonyCallId2 ) )
+        {
         StartMOVideoCallAnimationHeaderL( bubble,
                                           aStateLabelText,
                                           aStateShortLabelText );
-		}
+        }
 
     // Stop video call header animation if no EPEStateDialing state
-	if( iVideoCallAnimationHeader && ( aState != EPEStateDialing ))
-    	{
-    	iVideoCallAnimationHeader->RemoveAnimatingVideoCallHeader();
-    	}
+    if( iVideoCallAnimationHeader && ( aState != EPEStateDialing ))
+        {
+        iVideoCallAnimationHeader->RemoveAnimatingVideoCallHeader();
+        }
 
     CBubbleManager::TPhoneCallState callState = GetBubbleState( aState );
 
@@ -1148,13 +1148,13 @@ void CPhoneBubbleWrapper::CreateConferenceL(
     TPhoneCmdParamCallHeaderData* callHeaderParam =
             static_cast<TPhoneCmdParamCallHeaderData*>( aCommandParam );
 
-	if( !iParticipants )
-		{
-		// Create participants array if doesn't exist
-	    iParticipants = new ( ELeave ) CParticipantArray(
-	        KConferenceMaxParticipants );
-	    iParticipants->SetReserveL( KConferenceMaxParticipants );
-		}
+    if( !iParticipants )
+        {
+        // Create participants array if doesn't exist
+        iParticipants = new ( ELeave ) CParticipantArray(
+            KConferenceMaxParticipants );
+        iParticipants->SetReserveL( KConferenceMaxParticipants );
+        }
 
     // find out call ids for initial conference members
     TInt firstCallId( KErrNotFound );
@@ -1239,30 +1239,13 @@ void CPhoneBubbleWrapper::CreateConferenceL(
             iBubbleManager->SetLabel( bubble, KNullDesC );
             iBubbleManager->SetCallTime( bubble, KNullDesC );
             }
-
-    	// If image/text is enabled and theme image is set, use it
-      	if( iCallImageTextSupported )
-    	  	{
-            if ( iCallTheme->CallImageThemeSettings() == 2 )
-                {
-                // 4. Theme image
-                iBubbleManager->SetCallObjectFromTheme( conference );
-                }
-            else if ( iCallTheme->CallImageThemeSettings() == 1 )
-                {
-                // 5. User defined theme image
-                iBubbleManager->SetCallObjectImage(
-                    conference,
-                    iCallTheme->CallImageThemeFilePath() );
-                }
-    	  	}
-      	
-      	// Read and save internally the simplified conference call header 
-      	// setting for the service where conference is to be created.
-      	SetSimplifiedConferenceCallHeaderStatus( 
-      	    IsSimplifiedConferenceCallHeaderEnabledL( 
-      	        callHeaderParam->ServiceId() ) );
-      	
+          
+          // Read and save internally the simplified conference call header 
+          // setting for the service where conference is to be created.
+          SetSimplifiedConferenceCallHeaderStatus( 
+              IsSimplifiedConferenceCallHeaderEnabledL( 
+                  callHeaderParam->ServiceId() ) );
+          
         iBubbleManager->EndChanges();
         iConference = ETrue;
         }
@@ -1303,22 +1286,22 @@ void CPhoneBubbleWrapper::RemoveConferenceL()
     {
     __LOGMETHODSTARTEND(EPhoneUIView, "CPhoneBubbleWrapper::RemoveConference");
 
-	if ( iConference )
-		{
-		iBubbleManager->StartChanges();
+    if ( iConference )
+        {
+        iBubbleManager->StartChanges();
 
-	    // Set conference bubble state and remove bubble
-	    RemoveConferenceBubbleL();
+        // Set conference bubble state and remove bubble
+        RemoveConferenceBubbleL();
 
-	    TInt count = iParticipants->Count();
+        TInt count = iParticipants->Count();
 
-	    // empty participants list
-	    iParticipants->Delete(0, count);
+        // empty participants list
+        iParticipants->Delete(0, count);
 
-	    iBubbleManager->EndChanges();
+        iBubbleManager->EndChanges();
 
-	    iConference = EFalse;
-		}
+        iConference = EFalse;
+        }
     }
 // ---------------------------------------------------------
 // CPhoneBubbleWrapper::AddToConferenceL
@@ -1367,7 +1350,7 @@ void CPhoneBubbleWrapper::RemoveFromConferenceL( TInt aCallId )
         iBubbleManager->StartChanges();
         TInt count = iParticipants->Count();
         CBubbleManager::TBubbleId bubble = CreateBubbleL( aCallId );
-	    iBubbleManager->RemoveRowFromConference( bubble );
+        iBubbleManager->RemoveRowFromConference( bubble );
 
         // If there are enough participants for conference, then
         // simply remove it from conference.
@@ -1381,9 +1364,9 @@ void CPhoneBubbleWrapper::RemoveFromConferenceL( TInt aCallId )
             RemoveConferenceL();
             }
 
-	    iBubbleManager->RemoveCallHeader( bubble );
-	    iMapping->RemoveFromMapping( aCallId );
-	    iBubbleManager->EndChanges();
+        iBubbleManager->RemoveCallHeader( bubble );
+        iMapping->RemoveFromMapping( aCallId );
+        iBubbleManager->EndChanges();
         }
     }
 
@@ -2215,7 +2198,7 @@ void CPhoneBubbleWrapper::ToggleNumberEntryAlphaNumericMode(
         modeAlpha->SetBoolean( !iIsNumberEntryModeNumeric );
         }
     }
-        
+
 // -----------------------------------------------------------------------------
 // CPhoneBubbleWrapper::OpenVKBL
 // -----------------------------------------------------------------------------

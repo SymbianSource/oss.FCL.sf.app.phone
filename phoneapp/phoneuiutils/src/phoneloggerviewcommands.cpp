@@ -230,7 +230,10 @@ _STLIT8(K203, "EPhoneViewGetQwertyModeObserver");
 _STLIT8(K204, "EPhoneViewSetIncallBubbleTrue");
 _STLIT8(K205, "EPhoneViewSetIncallBubbleFalse");
 _STLIT8(K206, "EPhoneViewIsDisplayingMenuOrDialog");
-_STLIT8(K207, ", // Don't remove this, this should always be the last in list.");
+_STLIT8(K207, "EPhoneViewSetQwertyModeAndOrientation");
+_STLIT8(K208, "EPhoneViewIsCallWaiting");
+_STLIT8(K209, "EPhoneViewLockCallUiOrientationIfNeeded");
+_STLIT8(K210, ", // Don't remove this, this should always be the last in list.");
 
 // Intermediate
 const void * const KStringPointers[] =
@@ -441,8 +444,11 @@ const void * const KStringPointers[] =
 	(const void*)&K204,
 	(const void*)&K205,
 	(const void*)&K206,
-	(const void*)&K207
+	(const void*)&K207,
+	(const void*)&K208,
+	(const void*)&K209,
+	(const void*)&K210
 	};
 
-const TStringTable PhoneLoggerviewCommands::Table = {207, KStringPointers, EFalse};
+const TStringTable PhoneLoggerviewCommands::Table = {210, KStringPointers, EFalse};
 

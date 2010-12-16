@@ -113,6 +113,12 @@ const TUint32 KTelButton3AppUID                             = 0x00FF0302;
 */
 const TUint32 KTelButton3AppParam                           = 0x00FF0303;
 
+/**
+* A optional parameter to be passed to the application defined in
+* KTelCallUiViewOrietation. This key is of type Int.
+*/
+const TUint32 KTelCallUiOrientation                         = 0x00FF0401;
+
 #endif      // TELEPHONYPRIVATECRKEYS_H
 
 // End of file

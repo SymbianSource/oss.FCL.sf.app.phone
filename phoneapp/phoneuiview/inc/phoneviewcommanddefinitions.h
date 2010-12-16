@@ -236,6 +236,9 @@ enum
     EPhoneViewSetIncallBubbleTrue,
     EPhoneViewSetIncallBubbleFalse,
     EPhoneViewIsDisplayingMenuOrDialog,
+    EPhoneViewSetQwertyModeAndOrientation,
+    EPhoneViewIsCallWaiting,
+    EPhoneViewLockCallUiOrientationIfNeeded,
 
     EPhoneAmountOfCommands, // Don't remove this, this should always be the last in list.
 };

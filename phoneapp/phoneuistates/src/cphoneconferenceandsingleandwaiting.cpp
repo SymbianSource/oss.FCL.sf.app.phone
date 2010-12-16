@@ -297,14 +297,14 @@ void CPhoneConferenceAndSingleAndWaiting::MakeStateTransitionToConferenceAndSing
 
     if ( IsNumberEntryUsedL() )
         {
+        UpdateCbaL( EPhoneCallHandlingInCallCBA );
+        
         if ( NeedToReturnToForegroundAppL() ) 
             {
             // Return phone to the background if send to background is needed.
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSendToBackground );
 
             iViewCommandHandle->ExecuteCommandL( EPhoneViewSetControlAndVisibility );
- 
-            UpdateCbaL( EPhoneCallHandlingInCallCBA );
             }
         else
             {
@@ -500,5 +500,15 @@ void CPhoneConferenceAndSingleAndWaiting::MakeTransitionAccordingToActiveCallsL(
          }
 
     }
-    
+// -----------------------------------------------------------
+// CPhoneConferenceAndSingleAndWaiting::HandleCreateNumberEntryL
+// -----------------------------------------------------------
+//
+void CPhoneConferenceAndSingleAndWaiting::HandleCreateNumberEntryL( 
+        const TKeyEvent& /* aKeyEvent */ ,
+        TEventCode /* aEventCode */ )
+    {
+    // Empty implementation
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndSingleAndWaiting::HandleCreateNumberEntryL() ");   
+    }
 // End of File

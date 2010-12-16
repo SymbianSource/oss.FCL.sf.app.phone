@@ -281,11 +281,6 @@ class CPhoneAppUI :
         
         // System evenviroment notifier
         CEnvironmentChangeNotifier* iEnvChangeNotifier;
-        
-        //Indicates whether onscreen dialer is defined
-        TBool iOnScreenDialer;
-        
-
     };
 
 #endif      // CPHONEAPPUI_H   

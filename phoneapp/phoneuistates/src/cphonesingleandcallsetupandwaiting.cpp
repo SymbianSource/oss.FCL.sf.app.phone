@@ -649,7 +649,16 @@ void CPhoneSingleAndCallSetupAndWaiting::UpdateInCallCbaL()
         UpdateCbaL( EPhoneCallHandlingCallSetupCBA );
         }
     }
-    
-                
+// -----------------------------------------------------------
+// CPhoneSingleAndCallSetupAndWaiting::HandleCreateNumberEntryL
+// -----------------------------------------------------------
+//
+void CPhoneSingleAndCallSetupAndWaiting::HandleCreateNumberEntryL( 
+        const TKeyEvent& /* aKeyEvent */ ,
+        TEventCode /* aEventCode */ )
+    {
+    // Empty implementation
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneSingleAndCallSetupAndWaiting::HandleCreateNumberEntryL() ");   
+    }
 
 // End of File

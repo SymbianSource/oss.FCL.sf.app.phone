@@ -377,5 +377,16 @@ void CPhoneTwoSinglesAndWaiting::HandleNumberEntryClearedL()
         "CPhoneTwoSinglesAndWaiting::HandleNumberEntryClearedL()");
     UpdateCbaL( EPhoneCallHandlingCallWaitingCBA );
     }
-    
+// -----------------------------------------------------------
+// CPhoneTwoSinglesAndWaiting::HandleCreateNumberEntryL
+// -----------------------------------------------------------
+//
+void CPhoneTwoSinglesAndWaiting::HandleCreateNumberEntryL( 
+        const TKeyEvent& /* aKeyEvent */ ,
+        TEventCode /* aEventCode */ )
+    {
+    // Empty implementation
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneTwoSinglesAndWaiting::HandleCreateNumberEntryL() ");   
+    }
+
 // End of File

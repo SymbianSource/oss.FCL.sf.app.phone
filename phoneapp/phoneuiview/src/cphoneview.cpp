@@ -316,8 +316,27 @@ void CPhoneView::SetRect( const TRect &aRect )
         {
         if ( Layout_Meta_Data::IsLandscapeOrientation() )
             {
-            // In landscape and in security mode aRect is ok.
-            CCoeControl::SetRect( aRect );    
+            TRect controlRect( aRect );
+            TRect toolbarRect, applicationRect;
+
+            AknLayoutUtils::LayoutMetricsRect( 
+                AknLayoutUtils::EApplicationWindow, applicationRect );
+
+            TAknWindowLineLayout lineLayout =
+                AknLayoutScalable_Avkon::area_side_right_pane( 0 ).LayoutLine();
+
+            TAknLayoutRect layoutRect;
+            layoutRect.LayoutRect( applicationRect, lineLayout );
+            toolbarRect = layoutRect.Rect();
+
+            // Reduce toolbar area from control's rect if it intersects it.
+            if ( toolbarRect.Intersects( controlRect ) )
+                {
+                controlRect.iBr.iX = toolbarRect.iTl.iX;
+                __PHONELOG( EBasic, EPhoneUIView, "CPhoneView::SetRect() Update" );
+                }
+
+            CCoeControl::SetRect( controlRect );
             }
         else
             {     

@@ -70,8 +70,9 @@ EXPORTS
 	?HandleConnectedConferenceL@CPhoneTwoSingles@@MAEXH@Z @ 69 NONAME ; void CPhoneTwoSingles::HandleConnectedConferenceL(int)
 	??0CPhoneTwoSingles@@IAE@PAVMPhoneStateMachine@@PAVMPhoneViewCommandHandle@@PAVMPhoneCustomization@@@Z @ 70 NONAME ; CPhoneTwoSingles::CPhoneTwoSingles(class MPhoneStateMachine *, class MPhoneViewCommandHandle *, class MPhoneCustomization *)
 	?HandlePropertyChangedL@CPhoneStartupSimlockUi@@UAEXABVTUid@@IH@Z @ 71 NONAME ; void CPhoneStartupSimlockUi::HandlePropertyChangedL(class TUid const &, unsigned int, int)
-	?DoStateSpecificCallSetUpDefinitionsL@CPhoneSingleCall@@UAEXXZ @ 72  NONAME ; void CPhoneSingleCall::DoStateSpecificCallSetUpDefinitionsL(void)
-	?DoStateSpecificCallSetUpDefinitionsL@CPhoneSingleAndWaiting@@UAEXXZ @ 73  NONAME ; void CPhoneSingleAndWaiting::DoStateSpecificCallSetUpDefinitionsL(void)
-	?DoStateSpecificCallSetUpDefinitionsL@CPhoneConference@@UAEXXZ @ 74  NONAME ; void CPhoneConference::DoStateSpecificCallSetUpDefinitionsL(void)
-	?DoStateSpecificCallSetUpDefinitionsL@CPhoneConferenceAndWaiting@@UAEXXZ @ 75  NONAME ; void CPhoneConferenceAndWaiting::DoStateSpecificCallSetUpDefinitionsL(void)
+	?DoStateSpecificCallSetUpDefinitionsL@CPhoneSingleCall@@UAEXXZ @ 72 NONAME ; void CPhoneSingleCall::DoStateSpecificCallSetUpDefinitionsL(void)
+	?DoStateSpecificCallSetUpDefinitionsL@CPhoneSingleAndWaiting@@UAEXXZ @ 73 NONAME ; void CPhoneSingleAndWaiting::DoStateSpecificCallSetUpDefinitionsL(void)
+	?DoStateSpecificCallSetUpDefinitionsL@CPhoneConference@@UAEXXZ @ 74 NONAME ; void CPhoneConference::DoStateSpecificCallSetUpDefinitionsL(void)
+	?DoStateSpecificCallSetUpDefinitionsL@CPhoneConferenceAndWaiting@@UAEXXZ @ 75 NONAME ; void CPhoneConferenceAndWaiting::DoStateSpecificCallSetUpDefinitionsL(void)
+	?HandleCreateNumberEntryL@CPhoneIncoming@@MAEXABUTKeyEvent@@W4TEventCode@@@Z @ 76 NONAME ; void CPhoneIncoming::HandleCreateNumberEntryL(struct TKeyEvent const &, enum TEventCode)
 

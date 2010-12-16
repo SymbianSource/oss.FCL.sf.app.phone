@@ -94,12 +94,11 @@ EXPORT_C void CPhoneStateIncoming::ConstructL()
     callStateData.SetCallState( EPEStateRinging );
     iViewCommandHandle->HandleCommandL(
         EPhoneViewGetCallIdByState, &callStateData );
-
+    
     // Do nothing if negative incoming call id
     if( callStateData.CallId() > KErrNotFound  )
         {
         iViewCommandHandle->ExecuteCommandL( EPhoneViewRemoveQuery );
-        
         iRingingCallId = callStateData.CallId();
         }
     else

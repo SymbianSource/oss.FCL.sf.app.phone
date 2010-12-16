@@ -507,5 +507,16 @@ void CPhoneConferenceAndWaitingAndCallSetup::HandleIdleL( TInt aCallId )
             }
         }
     }
-    
+// -----------------------------------------------------------
+// CPhoneConferenceAndWaitingAndCallSetup::HandleCreateNumberEntryL
+// -----------------------------------------------------------
+//
+void CPhoneConferenceAndWaitingAndCallSetup::HandleCreateNumberEntryL( 
+        const TKeyEvent& /* aKeyEvent */ ,
+        TEventCode /* aEventCode */ )
+    {
+    // Empty implementation
+    __LOGMETHODSTARTEND(EPhoneControl, "CPhoneConferenceAndWaitingAndCallSetup::HandleCreateNumberEntryL() ");   
+    }
+
 // End of File

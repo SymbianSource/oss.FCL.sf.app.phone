@@ -87,6 +87,13 @@ class CPhoneIncoming : public CPhoneStateIncoming
         */
         virtual void HandleLongHashL();
 
+        /**
+        * Passes create number entry command forward if NE can be created.
+        */
+        IMPORT_C void HandleCreateNumberEntryL(
+                const TKeyEvent& aKeyEvent,
+                TEventCode aEventCode );
+
     private:
         
         /**

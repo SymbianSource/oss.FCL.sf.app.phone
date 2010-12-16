@@ -502,9 +502,6 @@ void CPhoneState::HandleSimStateChangedL()
             if ( iPreviousSimState == EPESimNotPresent )
                 {
                 __PHONELOG( EBasic, EPhoneControl, "SIM card was inserted, rebooting the phone" );
-                RStarterSession starterSession;
-                User::LeaveIfError( starterSession.Connect() );
-                CleanupClosePushL( starterSession );
 
                 HBufC* queryText = StringLoader::LoadLC( resolver.ResolveResourceID( EPhoneRebootRequired ) );
 
@@ -514,8 +511,7 @@ void CPhoneState::HandleSimStateChangedL()
                 queryParams.SetDefaultCba( R_AVKON_SOFTKEYS_OK_EMPTY );
                 iViewCommandHandle->ExecuteCommandL( EPhoneViewShowQuery, &queryParams );
 
-                starterSession.Reset( RStarterSession::ESIMStatusChangeReset );
-                CleanupStack::PopAndDestroy( 2, &starterSession ); // queryText
+                CleanupStack::PopAndDestroy( queryText ); // queryText
                 }
             break;
             }
@@ -1081,9 +1077,19 @@ EXPORT_C void CPhoneState::HandleNumericKeyEventL(
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::HandleNumericKeyEventL( ) ");
 
-    TBool numberEntryUsed = IsNumberEntryUsedL();
-
-    if ( numberEntryUsed && ( aKeyEvent.iRepeats == 0 ||
+    TBool allowKeyEvent = IsNumberEntryUsedL();
+    
+    if ( IsWaitingCall() 
+            && !IsNumberEntryVisibleL() )
+        {
+        // If there is a waiting call and number entry is not visible, 
+        // only key presses simulated by dialer are allowed.
+        allowKeyEvent = ( ( aKeyEvent.iModifiers & ( EModifierNumLock | EModifierKeypad ) ) 
+                == ( EModifierNumLock | EModifierKeypad ) );
+        }
+   
+    if ( allowKeyEvent && 
+            ( aKeyEvent.iRepeats == 0 ||
               aKeyEvent.iScanCode == EStdKeyBackspace ||
               aKeyEvent.iScanCode == EStdKeyLeftArrow ||
               aKeyEvent.iScanCode == EStdKeyUpArrow   ||
@@ -1093,7 +1099,6 @@ EXPORT_C void CPhoneState::HandleNumericKeyEventL(
         // Number entry exists but may be hidden
         KeyEventForExistingNumberEntryL( aKeyEvent, aEventCode );
         }
-
     }
 
 // -----------------------------------------------------------------------------
@@ -1788,11 +1793,21 @@ EXPORT_C TBool CPhoneState::HandleCommandL( TInt aCommand )
 // CPhoneState::ProcessCommandL
 // -----------------------------------------------------------------------------
 //
-EXPORT_C TBool CPhoneState::ProcessCommandL( TInt /*aCommand*/ )
+EXPORT_C TBool CPhoneState::ProcessCommandL( TInt aCommand )
     {
     __LOGMETHODSTARTEND(EPhoneControl, "CPhoneState::ProcessCommandL() ");
-    // no implementation.
-    return EFalse;
+    TBool commandHandled( EFalse );
+    if ( aCommand == EPhoneCmdRestartPhone )
+        {
+        RStarterSession starterSession;
+        User::LeaveIfError( starterSession.Connect() );
+
+        starterSession.Reset( RStarterSession::ESIMStatusChangeReset );
+        starterSession.Close();
+        commandHandled = ETrue;
+        }
+
+    return commandHandled;
     }
 
 // <-------------------------- REMOTE CONTROL EVENTS ------------------------->
@@ -4883,6 +4898,30 @@ EXPORT_C void CPhoneState::CloseClearNumberEntryAndLoadEffectL(
 TBool CPhoneState::AllStartupQueriesDisplayed()
     {
     return ( EStartupUiPhaseAllDone == iStartupUiPhase );
+    }
+
+// -----------------------------------------------------------
+// CPhoneState::IsWaitingCall
+// -----------------------------------------------------------
+//
+TBool CPhoneState::IsWaitingCall()
+    {
+    __LOGMETHODSTARTEND( EPhoneControl, "CPhoneState::IsWaitingCall() ");
+    
+    MPEEngineInfo* engineInfo = iStateMachine->PhoneEngineInfo();
+    TBool isWaitingCall = EFalse;
+    if( engineInfo )
+        {
+        for( TInt i = 0; i < KPEMaximumNumberOfCalls; i++ )
+            {
+            if( engineInfo->CallState( i ) == EPEStateRinging )
+                {
+                isWaitingCall = ETrue;
+                break;
+                }
+            }
+        }
+    return isWaitingCall;
     }
 
 // -----------------------------------------------------------

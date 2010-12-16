@@ -94,6 +94,13 @@ class CPhoneTwoSinglesAndWaiting : public CPhoneTwoSingles
         
         virtual void UpdateInCallCbaL();
         
+        /**
+        * Passes create number entry command forward if NE can be created.
+        */
+        void HandleCreateNumberEntryL(
+                const TKeyEvent& aKeyEvent,
+                TEventCode aEventCode );
+        
      private:
 
         void HandleIdleL( TInt aCallId );
